@@ -309,6 +309,122 @@ void spoton::slotPoptasticSettingsReset(bool state)
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
 }
 
+void spoton::slotPoptasticSettingsReset(void)
+{
+  QMessageBox mb(m_poptasticRetroPhoneDialog);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to reset your Poptastic "
+		"settings?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+  m_poptasticRetroPhoneSettingsUi.account->clear();
+  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+  m_poptasticRetroPhoneSettingsUi.capath->clear();
+  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
+  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.in_password->clear();
+  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
+  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
+  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
+  m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
+  m_poptasticRetroPhoneSettingsUi.in_username->clear();
+  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
+    (m_poptasticRetroPhoneSettingsUi.number_of_messages->minimum());
+  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.out_password->clear();
+  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
+  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
+  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
+  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
+  m_poptasticRetroPhoneSettingsUi.out_username->clear();
+  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue(5.00);
+  m_poptasticRetroPhoneSettingsUi.proxy->setChecked(false);
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
+  m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
+  m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
+  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
+  m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
+  m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
+  m_settings["gui/poptasticCAPath"] = "";
+  m_settings["gui/poptasticName"] = "";
+  m_settings["gui/poptasticNameEmail"] = "";
+  m_settings["gui/poptasticNumberOfMessages"] =
+    m_poptasticRetroPhoneSettingsUi.number_of_messages->value();
+  m_settings["gui/poptasticRefreshInterval"] = 5.00;
+
+  QSettings settings;
+
+  settings.remove("gui/poptasticCAPath");
+  settings.remove("gui/poptasticName");
+  settings.remove("gui/poptasticNameEmail");
+  settings.remove("gui/poptasticNumberOfMessages");
+  settings.remove("gui/poptasticRefreshInterval");
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM poptastic");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotSelectCAPath(void)
+{
+  QString fileName("");
+
+  if(m_poptasticRetroPhoneSettingsUi.selectcapath == sender())
+    {
+      QFileDialog dialog(m_poptasticRetroPhoneDialog);
+
+      dialog.setWindowTitle
+	(tr("%1: Select CA File").
+	 arg(SPOTON_APPLICATION_NAME));
+      dialog.setFileMode(QFileDialog::ExistingFile);
+      dialog.setDirectory(QDir::homePath());
+      dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+      dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+      if(dialog.exec() == QDialog::Accepted)
+	{
+	  fileName = dialog.selectedFiles().value(0);
+	  m_poptasticRetroPhoneSettingsUi.capath->setText
+	    (dialog.selectedFiles().value(0));
+	}
+    }
+  else
+    fileName = m_poptasticRetroPhoneSettingsUi.capath->text();
+}
+
 void spoton::slotTestPoptasticPop3Settings(void)
 {
   CURL *curl = 0;
@@ -594,122 +710,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotPoptasticSettingsReset(void)
-{
-  QMessageBox mb(m_poptasticRetroPhoneDialog);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to reset your Poptastic "
-		"settings?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
-  m_poptasticRetroPhoneSettingsUi.account->clear();
-  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
-  m_poptasticRetroPhoneSettingsUi.capath->clear();
-  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
-  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
-  m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(0);
-  m_poptasticRetroPhoneSettingsUi.in_password->clear();
-  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
-  m_poptasticRetroPhoneSettingsUi.in_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue(995);
-  m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
-  m_poptasticRetroPhoneSettingsUi.in_username->clear();
-  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
-    (m_poptasticRetroPhoneSettingsUi.number_of_messages->minimum());
-  m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
-  m_poptasticRetroPhoneSettingsUi.out_password->clear();
-  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip("");
-  m_poptasticRetroPhoneSettingsUi.out_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue(587);
-  m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
-  m_poptasticRetroPhoneSettingsUi.out_username->clear();
-  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue(5.00);
-  m_poptasticRetroPhoneSettingsUi.proxy->setChecked(false);
-  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
-  m_poptasticRetroPhoneSettingsUi.proxy_password->clear();
-  m_poptasticRetroPhoneSettingsUi.proxy_server_address->clear();
-  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue(1);
-  m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
-  m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
-  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
-  m_settings["gui/poptasticCAPath"] = "";
-  m_settings["gui/poptasticName"] = "";
-  m_settings["gui/poptasticNameEmail"] = "";
-  m_settings["gui/poptasticNumberOfMessages"] =
-    m_poptasticRetroPhoneSettingsUi.number_of_messages->value();
-  m_settings["gui/poptasticRefreshInterval"] = 5.00;
-
-  QSettings settings;
-
-  settings.remove("gui/poptasticCAPath");
-  settings.remove("gui/poptasticName");
-  settings.remove("gui/poptasticNameEmail");
-  settings.remove("gui/poptasticNumberOfMessages");
-  settings.remove("gui/poptasticRefreshInterval");
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM poptastic");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotSelectCAPath(void)
-{
-  QString fileName("");
-
-  if(m_poptasticRetroPhoneSettingsUi.selectcapath == sender())
-    {
-      QFileDialog dialog(m_poptasticRetroPhoneDialog);
-
-      dialog.setWindowTitle
-	(tr("%1: Select CA File").
-	 arg(SPOTON_APPLICATION_NAME));
-      dialog.setFileMode(QFileDialog::ExistingFile);
-      dialog.setDirectory(QDir::homePath());
-      dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-      dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-      if(dialog.exec() == QDialog::Accepted)
-	{
-	  fileName = dialog.selectedFiles().value(0);
-	  m_poptasticRetroPhoneSettingsUi.capath->setText
-	    (dialog.selectedFiles().value(0));
-	}
-    }
-  else
-    fileName = m_poptasticRetroPhoneSettingsUi.capath->text();
 }
 
 void spoton::slotSetNeighborPriority(void)
