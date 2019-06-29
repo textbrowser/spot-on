@@ -946,6 +946,89 @@ void spoton::slotReloadEmailNames(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotSavePoptasticAccount(void)
+{
+  prepareDatabasesFromUI();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString error(savePoptasticAccount());
+
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while "
+			     "attempting to save the Poptastic "
+			     "information.").arg(error));
+  else
+    {
+      QList<QHash<QString, QVariant> > list;
+      bool ok = true;
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      list = spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), &ok);
+      QApplication::restoreOverrideCursor();
+
+      if(ok)
+	{
+	  QString account
+	    (m_poptasticRetroPhoneSettingsUi.account->currentText());
+	  bool initial = m_poptasticRetroPhoneSettingsUi.account->count() == 0;
+
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
+	  m_poptasticRetroPhoneSettingsUi.account->clear();
+	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
+	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
+
+	  for(int i = 0; i < list.size(); i++)
+	    {
+	      m_poptasticRetroPhoneSettingsUi.account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
+		(list.at(i)["in_username"].toString());
+	    }
+
+	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
+
+	  int index = -1;
+
+	  if((index = m_poptasticRetroPhoneSettingsUi.account->
+	      findText(account)) >= 0)
+	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(0);
+
+	  index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	    findText(m_settings["gui/poptasticName"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+	      setCurrentIndex(0);
+
+	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	    findText(m_settings["gui/poptasticNameEmail"].toByteArray());
+
+	  if(index >= 0)
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(index);
+	  else
+	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
+	      setCurrentIndex(0);
+
+	  if(initial)
+	    updatePoptasticNameSettingsFromWidgets(m_crypts.value("chat", 0));
+
+	  slotReloadEmailNames();
+	}
+    }
+}
+
 void spoton::slotSelectCAPath(void)
 {
   QString fileName("");
@@ -2494,87 +2577,4 @@ void spoton::initializeUrlDistillers(void)
 void spoton::slotViewEchoKeyShare(void)
 {
   m_echoKeyShare->show(this);
-}
-
-void spoton::slotSavePoptasticAccount(void)
-{
-  prepareDatabasesFromUI();
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString error(savePoptasticAccount());
-
-  QApplication::restoreOverrideCursor();
-
-  if(!error.isEmpty())
-    QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred while "
-			     "attempting to save the Poptastic "
-			     "information.").arg(error));
-  else
-    {
-      QList<QHash<QString, QVariant> > list;
-      bool ok = true;
-
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      list = spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), &ok);
-      QApplication::restoreOverrideCursor();
-
-      if(ok)
-	{
-	  QString account
-	    (m_poptasticRetroPhoneSettingsUi.account->currentText());
-	  bool initial = m_poptasticRetroPhoneSettingsUi.account->count() == 0;
-
-	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
-	  m_poptasticRetroPhoneSettingsUi.account->clear();
-	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
-	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
-
-	  for(int i = 0; i < list.size(); i++)
-	    {
-	      m_poptasticRetroPhoneSettingsUi.account->addItem
-		(list.at(i)["in_username"].toString());
-	      m_poptasticRetroPhoneSettingsUi.chat_primary_account->addItem
-		(list.at(i)["in_username"].toString());
-	      m_poptasticRetroPhoneSettingsUi.email_primary_account->addItem
-		(list.at(i)["in_username"].toString());
-	    }
-
-	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
-
-	  int index = -1;
-
-	  if((index = m_poptasticRetroPhoneSettingsUi.account->
-	      findText(account)) >= 0)
-	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(index);
-	  else
-	    m_poptasticRetroPhoneSettingsUi.account->setCurrentIndex(0);
-
-	  index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	    findText(m_settings["gui/poptasticName"].toByteArray());
-
-	  if(index >= 0)
-	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	      setCurrentIndex(index);
-	  else
-	    m_poptasticRetroPhoneSettingsUi.chat_primary_account->
-	      setCurrentIndex(0);
-
-	  index = m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	    findText(m_settings["gui/poptasticNameEmail"].toByteArray());
-
-	  if(index >= 0)
-	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	      setCurrentIndex(index);
-	  else
-	    m_poptasticRetroPhoneSettingsUi.email_primary_account->
-	      setCurrentIndex(0);
-
-	  if(initial)
-	    updatePoptasticNameSettingsFromWidgets(m_crypts.value("chat", 0));
-
-	  slotReloadEmailNames();
-	}
-    }
 }
