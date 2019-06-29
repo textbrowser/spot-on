@@ -43,6 +43,261 @@ extern "C"
 #include "spot-on.h"
 #include "ui_spot-on-keyboard.h"
 
+QByteArray spoton::poptasticName(void) const
+{
+  return m_settings.value("gui/poptasticName").toByteArray();
+}
+
+QHash<QString, spoton_crypt *> spoton::crypts(void) const
+{
+  return m_crypts;
+}
+
+QString spoton::savePoptasticAccount(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return "Invalid spoton_crypt object. This is a fatal flaw.";
+  else if(m_poptasticRetroPhoneSettingsUi.in_username->text().
+	  trimmed().isEmpty())
+    return "Empty Incoming Server Username.";
+
+  QString connectionName("");
+  QString error("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "poptastic.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO poptastic "
+	   "(in_authentication, "
+	   "in_method, in_password, in_remove_remote, in_server_address, "
+	   "in_server_port, in_ssltls, in_username, "
+	   "in_username_hash, "
+	   "in_verify_host, in_verify_peer, "
+	   "out_authentication, "
+	   "out_method, out_password, out_server_address, "
+	   "out_server_port, out_ssltls, out_username, "
+	   "out_verify_host, out_verify_peer, "
+	   "proxy_enabled, "
+	   "proxy_password, proxy_server_address, proxy_server_port, "
+	   "proxy_type, proxy_username, smtp_localname) "
+	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.addBindValue
+	  (m_poptasticRetroPhoneSettingsUi.in_authentication->
+	   currentText());
+	query.addBindValue
+	  (crypt->
+	   encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_method->
+			       currentText().toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+					in_password->
+					text().
+					toUtf8(), &ok).toBase64());
+
+	query.addBindValue(m_poptasticRetroPhoneSettingsUi.
+			   in_remove_remote->isChecked() ? 1 : 0);
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 in_server_address->
+				 text().trimmed().
+				 toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_server_port->
+					value()), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_ssltls->
+				 currentText().toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 in_username->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     keyedHash(m_poptasticRetroPhoneSettingsUi.
+		       in_username->text().trimmed().toLatin1(),
+		       &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_verify_host->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					in_verify_peer->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	query.addBindValue
+	  (m_poptasticRetroPhoneSettingsUi.out_authentication->
+	   currentText());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_method->currentText().toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_password->
+				 text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_server_address->
+				 text().trimmed().
+				 toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_server_port->
+					value()), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_ssltls->currentText().toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 out_username->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_verify_host->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					out_verify_peer->isChecked() ?
+					1 : 0), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					proxy->
+					isChecked() ? 1 : 0),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_password->text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_server_address->text().
+				 trimmed().toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(QByteArray::
+				 number(m_poptasticRetroPhoneSettingsUi.
+					proxy_server_port->
+					value()), &ok).toBase64());
+
+	query.addBindValue(m_poptasticRetroPhoneSettingsUi.proxy_type->
+			   currentText().toUpper());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 proxy_username->
+				 text().trimmed().toUtf8(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
+				 smtp_localname->text().
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(!query.exec())
+	      error = query.lastError().text();
+	  }
+	else
+	  error = "An error occured with spoton_crypt.";
+      }
+    else
+      error = "Unable to access poptastic.db.";
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return error;
+}
+
 static QStringList curl_protocols(void)
 {
   QStringList list;
@@ -2241,16 +2496,6 @@ void spoton::slotViewEchoKeyShare(void)
   m_echoKeyShare->show(this);
 }
 
-QHash<QString, spoton_crypt *> spoton::crypts(void) const
-{
-  return m_crypts;
-}
-
-QByteArray spoton::poptasticName(void) const
-{
-  return m_settings.value("gui/poptasticName").toByteArray();
-}
-
 void spoton::slotSavePoptasticAccount(void)
 {
   prepareDatabasesFromUI();
@@ -2332,249 +2577,4 @@ void spoton::slotSavePoptasticAccount(void)
 	  slotReloadEmailNames();
 	}
     }
-}
-
-QString spoton::savePoptasticAccount(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return "Invalid spoton_crypt object. This is a fatal flaw.";
-  else if(m_poptasticRetroPhoneSettingsUi.in_username->text().
-	  trimmed().isEmpty())
-    return "Empty Incoming Server Username.";
-
-  QString connectionName("");
-  QString error("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare
-	  ("INSERT OR REPLACE INTO poptastic "
-	   "(in_authentication, "
-	   "in_method, in_password, in_remove_remote, in_server_address, "
-	   "in_server_port, in_ssltls, in_username, "
-	   "in_username_hash, "
-	   "in_verify_host, in_verify_peer, "
-	   "out_authentication, "
-	   "out_method, out_password, out_server_address, "
-	   "out_server_port, out_ssltls, out_username, "
-	   "out_verify_host, out_verify_peer, "
-	   "proxy_enabled, "
-	   "proxy_password, proxy_server_address, proxy_server_port, "
-	   "proxy_type, proxy_username, smtp_localname) "
-	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.addBindValue
-	  (m_poptasticRetroPhoneSettingsUi.in_authentication->
-	   currentText());
-	query.addBindValue
-	  (crypt->
-	   encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_method->
-			       currentText().toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-					in_password->
-					text().
-					toUtf8(), &ok).toBase64());
-
-	query.addBindValue(m_poptasticRetroPhoneSettingsUi.
-			   in_remove_remote->isChecked() ? 1 : 0);
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 in_server_address->
-				 text().trimmed().
-				 toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					in_server_port->
-					value()), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_ssltls->
-				 currentText().toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 in_username->text().
-				 trimmed().toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     keyedHash(m_poptasticRetroPhoneSettingsUi.
-		       in_username->text().trimmed().toLatin1(),
-		       &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					in_verify_host->isChecked() ?
-					1 : 0), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					in_verify_peer->isChecked() ?
-					1 : 0), &ok).toBase64());
-
-	query.addBindValue
-	  (m_poptasticRetroPhoneSettingsUi.out_authentication->
-	   currentText());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_method->currentText().toLatin1(),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_password->
-				 text().
-				 toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_server_address->
-				 text().trimmed().
-				 toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					out_server_port->
-					value()), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_ssltls->currentText().toLatin1(),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_username->text().
-				 trimmed().toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					out_verify_host->isChecked() ?
-					1 : 0), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					out_verify_peer->isChecked() ?
-					1 : 0), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					proxy->
-					isChecked() ? 1 : 0),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 proxy_password->text().
-				 toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 proxy_server_address->text().
-				 trimmed().toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(QByteArray::
-				 number(m_poptasticRetroPhoneSettingsUi.
-					proxy_server_port->
-					value()), &ok).toBase64());
-
-	query.addBindValue(m_poptasticRetroPhoneSettingsUi.proxy_type->
-			   currentText().toUpper());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 proxy_username->
-				 text().trimmed().toUtf8(),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.addBindValue
-	    (crypt->
-	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 smtp_localname->text().
-				 toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  {
-	    if(!query.exec())
-	      error = query.lastError().text();
-	  }
-	else
-	  error = "An error occured with spoton_crypt.";
-      }
-    else
-      error = "Unable to access poptastic.db.";
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return error;
 }
