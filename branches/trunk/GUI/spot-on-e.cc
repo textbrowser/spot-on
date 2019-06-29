@@ -53,6 +53,11 @@ QHash<QString, spoton_crypt *> spoton::crypts(void) const
   return m_crypts;
 }
 
+QStandardItemModel *spoton::starbeamReceivedModel(void) const
+{
+  return m_starbeamReceivedModel;
+}
+
 QString spoton::savePoptasticAccount(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -575,6 +580,15 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("proxy_username").toString());
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
     (hash.value("smtp_localname", "localhost").toString());
+}
+
+void spoton::slotActiveUrlDistribution(bool state)
+{
+  m_settings["gui/activeUrlDistribution"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/activeUrlDistribution", state);
 }
 
 void spoton::slotConfigurePoptastic(void)
@@ -1767,7 +1781,8 @@ void spoton::prepareSMP(const QString &hash)
     chat->setSMPVerified(false);
 }
 
-void spoton::slotVerifySMPSecret(const QString &hash, const QString &keyType,
+void spoton::slotVerifySMPSecret(const QString &hash,
+				 const QString &keyType,
 				 const QString &oid)
 {
   /*
@@ -1827,7 +1842,8 @@ void spoton::slotVerifySMPSecret(void)
   verifySMPSecret(hash, keyType, oid);
 }
 
-void spoton::verifySMPSecret(const QString &hash, const QString &keyType,
+void spoton::verifySMPSecret(const QString &hash,
+			     const QString &keyType,
 			     const QString &oid)
 {
   if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
@@ -2428,11 +2444,6 @@ void spoton::showError(const QString &error)
 			arg(SPOTON_APPLICATION_NAME), error.trimmed());
 }
 
-QStandardItemModel *spoton::starbeamReceivedModel(void) const
-{
-  return m_starbeamReceivedModel;
-}
-
 void spoton::slotSaveStarBeamAutoVerify(bool state)
 {
   m_settings["gui/starbeamAutoVerify"] = state;
@@ -2563,15 +2574,6 @@ void spoton::slotSearchResultsPerPage(int value)
   QSettings settings;
 
   settings.setValue("gui/searchResultsPerPage", value);
-}
-
-void spoton::slotActiveUrlDistribution(bool state)
-{
-  m_settings["gui/activeUrlDistribution"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/activeUrlDistribution", state);
 }
 
 void spoton::slotViewEchoKeyShare(void)
