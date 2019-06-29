@@ -54,6 +54,97 @@ static QStringList curl_protocols(void)
   return list;
 }
 
+void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
+{
+  if(hash.isEmpty())
+    return;
+
+  int index = -1;
+
+  index = m_poptasticRetroPhoneSettingsUi.in_method->findText
+    (hash.value("in_method").toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.in_password->setText
+    (hash.value("in_password").toString());
+  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip
+    (m_poptasticRetroPhoneSettingsUi.in_password->text());
+  m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked
+    (hash.value("in_remove_remote").toBool());
+  m_poptasticRetroPhoneSettingsUi.in_server_address->setText
+    (hash.value("in_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
+    (hash.value("in_server_port").toInt());
+  index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
+    (hash.value("in_ssltls").toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.in_username->setText
+    (hash.value("in_username").toString());
+  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
+    (hash.value("in_verify_host").toBool());
+  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
+    (hash.value("in_verify_peer").toBool());
+  index = m_poptasticRetroPhoneSettingsUi.out_method->findText
+    (hash.value("out_method").toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
+
+  m_poptasticRetroPhoneSettingsUi.out_password->setText
+    (hash.value("out_password").toString());
+  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip
+    (m_poptasticRetroPhoneSettingsUi.out_password->text());
+  m_poptasticRetroPhoneSettingsUi.out_server_address->setText
+    (hash.value("out_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
+    (hash.value("out_server_port").toInt());
+  index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
+    (hash.value("out_ssltls").toString());
+
+  if(index >= 0)
+    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(index);
+  else
+    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
+
+  m_poptasticRetroPhoneSettingsUi.out_username->setText
+    (hash.value("out_username").toString());
+  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
+    (hash.value("out_verify_host").toBool());
+  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
+    (hash.value("out_verify_peer").toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy->setChecked
+    (hash.value("proxy_enabled").toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible
+    (hash.value("proxy_enabled").toBool());
+  m_poptasticRetroPhoneSettingsUi.proxy_password->setText
+    (hash.value("proxy_password").toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
+    (hash.value("proxy_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
+    (hash.value("proxy_server_port").toInt());
+
+  if(hash.value("proxy_type").toString().toUpper() == "SOCKS5")
+    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(1);
+  else
+    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
+
+  m_poptasticRetroPhoneSettingsUi.proxy_username->setText
+    (hash.value("proxy_username").toString());
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
+    (hash.value("smtp_localname", "localhost").toString());
+}
+
 void spoton::slotConfigurePoptastic(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -2486,95 +2577,4 @@ QString spoton::savePoptasticAccount(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   return error;
-}
-
-void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
-{
-  if(hash.isEmpty())
-    return;
-
-  int index = -1;
-
-  index = m_poptasticRetroPhoneSettingsUi.in_method->findText
-    (hash.value("in_method").toString());
-
-  if(index >= 0)
-    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(index);
-  else
-    m_poptasticRetroPhoneSettingsUi.in_method->setCurrentIndex(2);
-
-  m_poptasticRetroPhoneSettingsUi.in_password->setText
-    (hash.value("in_password").toString());
-  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip
-    (m_poptasticRetroPhoneSettingsUi.in_password->text());
-  m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked
-    (hash.value("in_remove_remote").toBool());
-  m_poptasticRetroPhoneSettingsUi.in_server_address->setText
-    (hash.value("in_server_address").toString());
-  m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
-    (hash.value("in_server_port").toInt());
-  index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
-    (hash.value("in_ssltls").toString());
-
-  if(index >= 0)
-    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(index);
-  else
-    m_poptasticRetroPhoneSettingsUi.in_ssltls->setCurrentIndex(2);
-
-  m_poptasticRetroPhoneSettingsUi.in_username->setText
-    (hash.value("in_username").toString());
-  m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
-    (hash.value("in_verify_host").toBool());
-  m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
-    (hash.value("in_verify_peer").toBool());
-  index = m_poptasticRetroPhoneSettingsUi.out_method->findText
-    (hash.value("out_method").toString());
-
-  if(index >= 0)
-    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(index);
-  else
-    m_poptasticRetroPhoneSettingsUi.out_method->setCurrentIndex(0);
-
-  m_poptasticRetroPhoneSettingsUi.out_password->setText
-    (hash.value("out_password").toString());
-  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip
-    (m_poptasticRetroPhoneSettingsUi.out_password->text());
-  m_poptasticRetroPhoneSettingsUi.out_server_address->setText
-    (hash.value("out_server_address").toString());
-  m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
-    (hash.value("out_server_port").toInt());
-  index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
-    (hash.value("out_ssltls").toString());
-
-  if(index >= 0)
-    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(index);
-  else
-    m_poptasticRetroPhoneSettingsUi.out_ssltls->setCurrentIndex(2);
-
-  m_poptasticRetroPhoneSettingsUi.out_username->setText
-    (hash.value("out_username").toString());
-  m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
-    (hash.value("out_verify_host").toBool());
-  m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
-    (hash.value("out_verify_peer").toBool());
-  m_poptasticRetroPhoneSettingsUi.proxy->setChecked
-    (hash.value("proxy_enabled").toBool());
-  m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible
-    (hash.value("proxy_enabled").toBool());
-  m_poptasticRetroPhoneSettingsUi.proxy_password->setText
-    (hash.value("proxy_password").toString());
-  m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
-    (hash.value("proxy_server_address").toString());
-  m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
-    (hash.value("proxy_server_port").toInt());
-
-  if(hash.value("proxy_type").toString().toUpper() == "SOCKS5")
-    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(1);
-  else
-    m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
-
-  m_poptasticRetroPhoneSettingsUi.proxy_username->setText
-    (hash.value("proxy_username").toString());
-  m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
-    (hash.value("smtp_localname", "localhost").toString());
 }
