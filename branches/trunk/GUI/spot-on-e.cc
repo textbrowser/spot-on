@@ -309,6 +309,183 @@ static QStringList curl_protocols(void)
   return list;
 }
 
+void spoton::computeFileDigest(const QByteArray &expectedFileHash,
+			       const QString &fileName,
+			       const QString &oid,
+			       spoton_crypt *crypt)
+{
+  Q_UNUSED(expectedFileHash);
+
+  QFile file;
+
+  file.setFileName(fileName);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "starbeam.db");
+
+	if(db.open())
+	  {
+	    QByteArray hash
+	      (spoton_crypt::sha1FileHash(fileName,
+					  m_starbeamDigestInterrupt));
+
+	    if(!m_starbeamDigestInterrupt.fetchAndAddOrdered(0))
+	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  file.close();
+}
+
+void spoton::initializeUrlDistillers(void)
+{
+  spoton_misc::prepareUrlDistillersDatabase();
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "urls_distillers_information.db");
+
+    if(db.open())
+      {
+	QList<QList<QVariant> > list;
+	QList<QVariant> tuple;
+
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("download");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("download");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("download");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("download");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("shared");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("ftp:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("gopher:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("http:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+	tuple.append(QUrl::fromUserInput("https:"));
+	tuple.append("upload");
+	tuple.append("accept");
+	list << tuple;
+	tuple.clear();
+
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    QByteArray direction(list.at(i).value(1).toByteArray());
+	    QByteArray domain
+	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
+	       list.at(i).value(0).toUrl().host().toUtf8() +
+	       list.at(i).value(0).toUrl().path().toUtf8());
+	    QByteArray permission(list.at(i).value(2).toByteArray());
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare("INSERT INTO distillers "
+			  "(direction, "
+			  "direction_hash, "
+			  "domain, "
+			  "domain_hash, "
+			  "permission) "
+			  "VALUES "
+			  "(?, ?, ?, ?, ?)");
+	    query.bindValue
+	      (0,
+	       crypt->encryptedThenHashed(direction, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1,
+		 crypt->keyedHash(direction, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2,
+		 crypt->encryptedThenHashed(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->keyedHash(domain, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 {
   if(hash.isEmpty())
@@ -2314,46 +2491,6 @@ void spoton::slotSaveAlternatingColors(bool state)
     }
 }
 
-void spoton::computeFileDigest(const QByteArray &expectedFileHash,
-			       const QString &fileName,
-			       const QString &oid,
-			       spoton_crypt *crypt)
-{
-  Q_UNUSED(expectedFileHash);
-
-  QFile file;
-
-  file.setFileName(fileName);
-
-  if(file.open(QIODevice::ReadOnly))
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
-
-	if(db.open())
-	  {
-	    QByteArray hash
-	      (spoton_crypt::sha1FileHash(fileName,
-					  m_starbeamDigestInterrupt));
-
-	    if(!m_starbeamDigestInterrupt.fetchAndAddOrdered(0))
-	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  file.close();
-}
-
 void spoton::slotDeriveGeminiPairViaSMP(void)
 {
   int row = m_ui.participants->currentRow();
@@ -2435,143 +2572,6 @@ void spoton::slotActiveUrlDistribution(bool state)
   QSettings settings;
 
   settings.setValue("gui/activeUrlDistribution", state);
-}
-
-void spoton::initializeUrlDistillers(void)
-{
-  spoton_misc::prepareUrlDistillersDatabase();
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  prepareDatabasesFromUI();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
-
-    if(db.open())
-      {
-	QList<QList<QVariant> > list;
-	QList<QVariant> tuple;
-
-	tuple.append(QUrl::fromUserInput("ftp:"));
-	tuple.append("download");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("gopher:"));
-	tuple.append("download");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("http:"));
-	tuple.append("download");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
-	tuple.append("download");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("ftp:"));
-	tuple.append("shared");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("gopher:"));
-	tuple.append("shared");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("http:"));
-	tuple.append("shared");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
-	tuple.append("shared");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("ftp:"));
-	tuple.append("upload");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("gopher:"));
-	tuple.append("upload");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("http:"));
-	tuple.append("upload");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-	tuple.append(QUrl::fromUserInput("https:"));
-	tuple.append("upload");
-	tuple.append("accept");
-	list << tuple;
-	tuple.clear();
-
-	for(int i = 0; i < list.size(); i++)
-	  {
-	    QByteArray direction(list.at(i).value(1).toByteArray());
-	    QByteArray domain
-	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
-	       list.at(i).value(0).toUrl().host().toUtf8() +
-	       list.at(i).value(0).toUrl().path().toUtf8());
-	    QByteArray permission(list.at(i).value(2).toByteArray());
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.prepare("INSERT INTO distillers "
-			  "(direction, "
-			  "direction_hash, "
-			  "domain, "
-			  "domain_hash, "
-			  "permission) "
-			  "VALUES "
-			  "(?, ?, ?, ?, ?)");
-	    query.bindValue
-	      (0,
-	       crypt->encryptedThenHashed(direction, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1,
-		 crypt->keyedHash(direction, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2,
-		 crypt->encryptedThenHashed(domain, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->keyedHash(domain, &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->encryptedThenHashed(permission, &ok).toBase64());
-
-	    if(ok)
-	      ok = query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotViewEchoKeyShare(void)
