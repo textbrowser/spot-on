@@ -582,6 +582,36 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("smtp_localname", "localhost").toString());
 }
 
+void spoton::setSBField(const QString &oid, const QVariant &value,
+			const QString &field)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  (QString("UPDATE transmitted SET %1 = ? "
+		   "WHERE OID = ? AND status_control <> 'deleted'").
+	   arg(field));
+	query.bindValue(0, value);
+	query.bindValue(1, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::showError(const QString &error)
 {
   if(error.trimmed().isEmpty())
@@ -2239,36 +2269,6 @@ void spoton::slotSetSBReadInterval(void)
     return;
 
   setSBField(oid, rational, "read_interval");
-}
-
-void spoton::setSBField(const QString &oid, const QVariant &value,
-			const QString &field)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare
-	  (QString("UPDATE transmitted SET %1 = ? "
-		   "WHERE OID = ? AND status_control <> 'deleted'").
-	   arg(field));
-	query.bindValue(0, value);
-	query.bindValue(1, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotShareStarBeam(void)
