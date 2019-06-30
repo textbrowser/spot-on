@@ -582,6 +582,15 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("smtp_localname", "localhost").toString());
 }
 
+void spoton::showError(const QString &error)
+{
+  if(error.trimmed().isEmpty())
+    return;
+
+  QMessageBox::critical(this, tr("%1: Error").
+			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+}
+
 void spoton::slotActiveUrlDistribution(bool state)
 {
   m_settings["gui/activeUrlDistribution"] = state;
@@ -1707,6 +1716,53 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   saveGemini(gemini, oid);
 }
 
+void spoton::slotDeriveGeminiPairViaSMP(void)
+{
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item2 = m_ui.participants->item
+    (row, 3); // public_key_hash
+
+  if(!item1 || !item2)
+    return;
+  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+
+  spoton_smp *smp = m_smps.value(item2->text(), 0);
+
+  if(!smp)
+    return;
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QPair<QByteArray, QByteArray> gemini;
+  QString error("");
+
+  gemini = spoton_crypt::derivedKeys
+    ("aes256",
+     "sha512",
+     spoton_common::GEMINI_ITERATION_COUNT,
+     smp->guessWhirlpool().toHex(),
+     smp->guessSha(),
+     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
+     false,
+     error);
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    return;
+
+  saveGemini(gemini, item1->text());
+}
+
 void spoton::slotPrepareSMP(const QString &hash)
 {
   /*
@@ -2435,15 +2491,6 @@ void spoton::slotShareStarBeam(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::showError(const QString &error)
-{
-  if(error.trimmed().isEmpty())
-    return;
-
-  QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error.trimmed());
-}
-
 void spoton::slotSaveStarBeamAutoVerify(bool state)
 {
   m_settings["gui/starbeamAutoVerify"] = state;
@@ -2500,53 +2547,6 @@ void spoton::slotSaveAlternatingColors(bool state)
       settings.setValue(str, state);
       emit updateEmailWindows();
     }
-}
-
-void spoton::slotDeriveGeminiPairViaSMP(void)
-{
-  int row = m_ui.participants->currentRow();
-
-  if(row < 0)
-    return;
-
-  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
-  QTableWidgetItem *item2 = m_ui.participants->item
-    (row, 3); // public_key_hash
-
-  if(!item1 || !item2)
-    return;
-  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
-    return; // Temporary!
-
-  spoton_smp *smp = m_smps.value(item2->text(), 0);
-
-  if(!smp)
-    return;
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QPair<QByteArray, QByteArray> gemini;
-  QString error("");
-
-  gemini = spoton_crypt::derivedKeys
-    ("aes256",
-     "sha512",
-     spoton_common::GEMINI_ITERATION_COUNT,
-     smp->guessWhirlpool().toHex(),
-     smp->guessSha(),
-     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
-     false,
-     error);
-  QApplication::restoreOverrideCursor();
-
-  if(!error.isEmpty())
-    return;
-
-  saveGemini(gemini, item1->text());
 }
 
 void spoton::slotOntopChatDialogs(bool state)
