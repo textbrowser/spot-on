@@ -354,6 +354,27 @@ void spoton::computeFileDigest(const QByteArray &expectedFileHash,
   file.close();
 }
 
+void spoton::initializeSMP(const QString &hash)
+{
+  if(hash.isEmpty())
+    return;
+
+  spoton_smp *smp = 0;
+
+  if(m_smps.contains(hash))
+    smp = m_smps.value(hash, 0);
+
+  if(smp)
+    smp->initialize();
+  else
+    spoton_misc::logError("spoton::initializeSMP(): smp is zero!");
+
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+
+  if(chat)
+    chat->setSMPVerified(false);
+}
+
 void spoton::initializeUrlDistillers(void)
 {
   spoton_misc::prepareUrlDistillersDatabase();
@@ -580,6 +601,44 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("proxy_username").toString());
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
     (hash.value("smtp_localname", "localhost").toString());
+}
+
+void spoton::prepareSMP(const QString &hash)
+{
+  if(hash.isEmpty())
+    return;
+
+  spoton_smp *smp = 0;
+
+  if(m_smps.contains(hash))
+    smp = m_smps.value(hash, 0);
+
+  QString guess("");
+  spoton_virtual_keyboard dialog(QApplication::activeWindow());
+
+  if(smp)
+    dialog.m_ui.passphrase->setText(smp->guessString());
+
+  if(dialog.exec() == QDialog::Accepted)
+    guess = dialog.m_ui.passphrase->text();
+  else
+    return;
+
+  if(!smp)
+    {
+      smp = new spoton_smp();
+      m_smps[hash] = smp;
+    }
+
+  if(smp)
+    smp->setGuess(guess);
+  else
+    spoton_misc::logError("spoton::prepareSMP(): smp is zero!");
+
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+
+  if(chat)
+    chat->setSMPVerified(false);
 }
 
 void spoton::setSBField(const QString &oid, const QVariant &value,
@@ -1829,44 +1888,6 @@ void spoton::slotPrepareSMP(void)
   prepareSMP(hash);
 }
 
-void spoton::prepareSMP(const QString &hash)
-{
-  if(hash.isEmpty())
-    return;
-
-  spoton_smp *smp = 0;
-
-  if(m_smps.contains(hash))
-    smp = m_smps.value(hash, 0);
-
-  QString guess("");
-  spoton_virtual_keyboard dialog(QApplication::activeWindow());
-
-  if(smp)
-    dialog.m_ui.passphrase->setText(smp->guessString());
-
-  if(dialog.exec() == QDialog::Accepted)
-    guess = dialog.m_ui.passphrase->text();
-  else
-    return;
-
-  if(!smp)
-    {
-      smp = new spoton_smp();
-      m_smps[hash] = smp;
-    }
-
-  if(smp)
-    smp->setGuess(guess);
-  else
-    spoton_misc::logError("spoton::prepareSMP(): smp is zero!");
-
-  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
-
-  if(chat)
-    chat->setSMPVerified(false);
-}
-
 void spoton::slotVerifySMPSecret(const QString &hash,
 				 const QString &keyType,
 				 const QString &oid)
@@ -2143,27 +2164,6 @@ void spoton::slotInitializeSMP(void)
     return; // Not allowed!
 
   initializeSMP(hash);
-}
-
-void spoton::initializeSMP(const QString &hash)
-{
-  if(hash.isEmpty())
-    return;
-
-  spoton_smp *smp = 0;
-
-  if(m_smps.contains(hash))
-    smp = m_smps.value(hash, 0);
-
-  if(smp)
-    smp->initialize();
-  else
-    spoton_misc::logError("spoton::initializeSMP(): smp is zero!");
-
-  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
-
-  if(chat)
-    chat->setSMPVerified(false);
 }
 
 void spoton::slotSaveRefreshEmail(bool state)
