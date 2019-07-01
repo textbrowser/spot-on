@@ -757,7 +757,8 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
        arg(m_kernelSocket.peerPort()));
 }
 
-void spoton::setSBField(const QString &oid, const QVariant &value,
+void spoton::setSBField(const QString &oid,
+			const QVariant &value,
 			const QString &field)
 {
   QString connectionName("");
@@ -1222,6 +1223,42 @@ void spoton::slotDeletePoptasticAccount(void)
 
       slotReloadEmailNames();
     }
+}
+
+void spoton::slotInitializeSMP(const QString &hash)
+{
+  /*
+  ** Chat windows only please!
+  */
+
+  initializeSMP(hash);
+}
+
+void spoton::slotInitializeSMP(void)
+{
+  QString hash("");
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+      if(item)
+	temporary = item->data(Qt::UserRole).toBool();
+
+      item = m_ui.participants->item(row, 3); // public_key_hash
+
+      if(item)
+	hash = item->text();
+    }
+
+  if(hash.isEmpty())
+    return;
+  else if(temporary) // Temporary friend?
+    return; // Not allowed!
+
+  initializeSMP(hash);
 }
 
 void spoton::slotPoptasticAccountChanged(const QString &text)
@@ -2096,42 +2133,6 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
   QSettings settings;
 
   settings.setValue("gui/launchKernelAfterAuth", state);
-}
-
-void spoton::slotInitializeSMP(const QString &hash)
-{
-  /*
-  ** Chat windows only please!
-  */
-
-  initializeSMP(hash);
-}
-
-void spoton::slotInitializeSMP(void)
-{
-  QString hash("");
-  bool temporary = true;
-  int row = -1;
-
-  if((row = m_ui.participants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-      if(item)
-	temporary = item->data(Qt::UserRole).toBool();
-
-      item = m_ui.participants->item(row, 3); // public_key_hash
-
-      if(item)
-	hash = item->text();
-    }
-
-  if(hash.isEmpty())
-    return;
-  else if(temporary) // Temporary friend?
-    return; // Not allowed!
-
-  initializeSMP(hash);
 }
 
 void spoton::slotSaveRefreshEmail(bool state)

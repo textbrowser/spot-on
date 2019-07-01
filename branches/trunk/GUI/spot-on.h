@@ -593,7 +593,8 @@ class spoton: public QMainWindow
   QString participantKeyType(QTableWidget *table) const;
   QString saveCommonUrlCredentials
     (const QPair<QByteArray, QByteArray> &keys,
-     const QString &cipherType, const QString &hashType,
+     const QString &cipherType,
+     const QString &hashType,
      spoton_crypt *crypt) const;
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
@@ -617,7 +618,8 @@ class spoton: public QMainWindow
 				 spoton_crypt *crypt,
 				 bool *ok);
   void askKernelToReadStarBeamKeys(void);
-  void authenticate(spoton_crypt *crypt, const QString &oid,
+  void authenticate(spoton_crypt *crypt,
+		    const QString &oid,
 		    const QString &message = "");
   void authenticationRequested(const QByteArray &data);
   void cancelUrlQuery(void);
@@ -690,7 +692,8 @@ class spoton: public QMainWindow
   void showUrls(const QString &link, const QString &querystr);
   void updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt);
   void updatePublicKeysLabel(void);
-  void verifySMPSecret(const QString &hash, const QString &keyType,
+  void verifySMPSecret(const QString &hash,
+		       const QString &keyType,
 		       const QString &oid);
 
  private slots:
@@ -1081,7 +1084,8 @@ class spoton: public QMainWindow
   void slotVacuumDatabases(void);
   void slotValidatePassphrase(void);
   void slotVerify(void);
-  void slotVerifySMPSecret(const QString &hash, const QString &keyType,
+  void slotVerifySMPSecret(const QString &hash,
+			   const QString &keyType,
 			   const QString &oid);
   void slotVerifySMPSecret(void);
   void slotViewEchoKeyShare(void);
