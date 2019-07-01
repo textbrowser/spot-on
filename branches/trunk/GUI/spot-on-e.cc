@@ -512,6 +512,55 @@ void spoton::initializeUrlDistillers(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::playSound(const QString &name)
+{
+#if QT_VERSION >= 0x050000
+  QMediaPlayer *player = findChild<QMediaPlayer *> ();
+
+  if(player)
+    player->deleteLater();
+
+  if(m_locked)
+    return;
+
+  if(!m_optionsUi.play_sounds->isChecked())
+    return;
+
+  QFileInfo fileInfo;
+  QString str
+    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
+		     QDir::separator() + "Sounds" + QDir::separator() +
+		     name));
+
+  fileInfo.setFile(str);
+
+  if(!fileInfo.isReadable() || fileInfo.size() < 8192)
+    return;
+
+  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
+  connect(player,
+	  SIGNAL(error(QMediaPlayer::Error)),
+	  this,
+	  SLOT(slotMediaError(QMediaPlayer::Error)));
+  connect(player,
+	  SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
+	  this,
+	  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
+  player->setMedia(QUrl::fromLocalFile(str));
+  player->setVolume(100);
+  player->play();
+#else
+  if(m_locked)
+    return;
+
+  if(!m_optionsUi.play_sounds->isChecked())
+    return;
+
+  Q_UNUSED(name);
+  QApplication::beep();
+#endif
+}
+
 void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 {
   if(hash.isEmpty())
@@ -639,6 +688,73 @@ void spoton::prepareSMP(const QString &hash)
 
   if(chat)
     chat->setSMPVerified(false);
+}
+
+void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
+				 const QString &keyType,
+				 const QString &oid)
+{
+  if(keyType.isEmpty())
+    return;
+  else if(list.isEmpty())
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+  else if(oid.isEmpty())
+    return;
+
+  QString magnet("magnet:?");
+
+  for(int i = 0; i < list.size(); i++)
+    magnet.append
+      (QString("value=%2&").arg(list.at(i).toBase64().constData()));
+
+  magnet.append("xt=urn:smp");
+
+  QByteArray message;
+  QByteArray name;
+
+  if(keyType.toLower() == "chat")
+    message.append("message_");
+  else
+    message.append("poptasticmessage_");
+
+  message.append(QString("%1_").arg(oid));
+
+  if(keyType.toLower() == "chat")
+    name = m_settings.value("gui/nodeName", "unknown").toByteArray();
+  else
+    name = m_settings.value("gui/poptasticName",
+			    "unknown@unknown.org").toByteArray();
+
+  if(name.isEmpty())
+    {
+      if(keyType.toLower() == "chat")
+	name = "unknown";
+      else
+	name = "unknown@unknown.org";
+    }
+
+  message.append(name.toBase64());
+  message.append("_");
+  message.append(magnet.toLatin1().toBase64());
+  message.append("_");
+  message.append(QByteArray("1").toBase64()); // Artificial sequence number.
+  message.append("_");
+  message.append(QDateTime::currentDateTime().toUTC().
+		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::sendSMPLinkToKernel(): write() failure for "
+	       "%1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::setSBField(const QString &oid, const QVariant &value,
@@ -1949,154 +2065,6 @@ void spoton::slotVerifySMPSecret(void)
   verifySMPSecret(hash, keyType, oid);
 }
 
-void spoton::verifySMPSecret(const QString &hash,
-			     const QString &keyType,
-			     const QString &oid)
-{
-  if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
-    return;
-
-  spoton_smp *smp = 0;
-
-  if(!m_smps.contains(hash))
-    return;
-  else
-    smp = m_smps.value(hash, 0);
-
-  QList<QByteArray> list;
-  bool ok = true;
-
-  if(smp)
-    {
-      smp->initialize();
-      list = smp->step1(&ok);
-    }
-  else
-    {
-      ok = false;
-      spoton_misc::logError("spoton::verifySMPSecret(): smp is zero!");
-    }
-
-  if(ok)
-    sendSMPLinkToKernel(list, keyType, oid);
-}
-
-void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
-				 const QString &keyType,
-				 const QString &oid)
-{
-  if(keyType.isEmpty())
-    return;
-  else if(list.isEmpty())
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-  else if(oid.isEmpty())
-    return;
-
-  QString magnet("magnet:?");
-
-  for(int i = 0; i < list.size(); i++)
-    magnet.append
-      (QString("value=%2&").arg(list.at(i).toBase64().constData()));
-
-  magnet.append("xt=urn:smp");
-
-  QByteArray message;
-  QByteArray name;
-
-  if(keyType.toLower() == "chat")
-    message.append("message_");
-  else
-    message.append("poptasticmessage_");
-
-  message.append(QString("%1_").arg(oid));
-
-  if(keyType.toLower() == "chat")
-    name = m_settings.value("gui/nodeName", "unknown").toByteArray();
-  else
-    name = m_settings.value("gui/poptasticName",
-			    "unknown@unknown.org").toByteArray();
-
-  if(name.isEmpty())
-    {
-      if(keyType.toLower() == "chat")
-	name = "unknown";
-      else
-	name = "unknown@unknown.org";
-    }
-
-  message.append(name.toBase64());
-  message.append("_");
-  message.append(magnet.toLatin1().toBase64());
-  message.append("_");
-  message.append(QByteArray("1").toBase64()); // Artificial sequence number.
-  message.append("_");
-  message.append(QDateTime::currentDateTime().toUTC().
-		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::sendSMPLinkToKernel(): write() failure for "
-	       "%1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::playSound(const QString &name)
-{
-#if QT_VERSION >= 0x050000
-  QMediaPlayer *player = findChild<QMediaPlayer *> ();
-
-  if(player)
-    player->deleteLater();
-
-  if(m_locked)
-    return;
-
-  if(!m_optionsUi.play_sounds->isChecked())
-    return;
-
-  QFileInfo fileInfo;
-  QString str
-    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
-		     QDir::separator() + "Sounds" + QDir::separator() +
-		     name));
-
-  fileInfo.setFile(str);
-
-  if(!fileInfo.isReadable() || fileInfo.size() < 8192)
-    return;
-
-  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
-  connect(player,
-	  SIGNAL(error(QMediaPlayer::Error)),
-	  this,
-	  SLOT(slotMediaError(QMediaPlayer::Error)));
-  connect(player,
-	  SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
-	  this,
-	  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
-  player->setMedia(QUrl::fromLocalFile(str));
-  player->setVolume(100);
-  player->play();
-#else
-  if(m_locked)
-    return;
-
-  if(!m_optionsUi.play_sounds->isChecked())
-    return;
-
-  Q_UNUSED(name);
-  QApplication::beep();
-#endif
-}
-
 #if QT_VERSION >= 0x050000
 void spoton::slotMediaError(QMediaPlayer::Error error)
 {
@@ -2579,4 +2547,36 @@ void spoton::slotSearchResultsPerPage(int value)
 void spoton::slotViewEchoKeyShare(void)
 {
   m_echoKeyShare->show(this);
+}
+
+void spoton::verifySMPSecret(const QString &hash,
+			     const QString &keyType,
+			     const QString &oid)
+{
+  if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
+    return;
+
+  spoton_smp *smp = 0;
+
+  if(!m_smps.contains(hash))
+    return;
+  else
+    smp = m_smps.value(hash, 0);
+
+  QList<QByteArray> list;
+  bool ok = true;
+
+  if(smp)
+    {
+      smp->initialize();
+      list = smp->step1(&ok);
+    }
+  else
+    {
+      ok = false;
+      spoton_misc::logError("spoton::verifySMPSecret(): smp is zero!");
+    }
+
+  if(ok)
+    sendSMPLinkToKernel(list, keyType, oid);
 }
