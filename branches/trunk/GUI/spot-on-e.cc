@@ -796,6 +796,15 @@ void spoton::showError(const QString &error)
 			arg(SPOTON_APPLICATION_NAME), error.trimmed());
 }
 
+void spoton::slotAcceptGeminis(bool state)
+{
+  m_settings["gui/acceptGeminis"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptGeminis", state);
+}
+
 void spoton::slotActiveUrlDistribution(bool state)
 {
   m_settings["gui/activeUrlDistribution"] = state;
@@ -1461,6 +1470,53 @@ void spoton::slotSelectCAPath(void)
     fileName = m_poptasticRetroPhoneSettingsUi.capath->text();
 }
 
+void spoton::slotSetNeighborPriority(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+  QThread::Priority priority = QThread::HighPriority;
+
+  if(!action)
+    return;
+  else
+    priority = QThread::Priority(action->property("priority").toInt());
+
+  QModelIndexList list;
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  if(priority < 0 || priority > 7)
+    priority = QThread::HighPriority;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "priority = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, priority);
+	query.bindValue(1, list.at(0).data());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotTestPoptasticPop3Settings(void)
 {
   CURL *curl = 0;
@@ -1746,62 +1802,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotSetNeighborPriority(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-  QThread::Priority priority = QThread::HighPriority;
-
-  if(!action)
-    return;
-  else
-    priority = QThread::Priority(action->property("priority").toInt());
-
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  if(priority < 0 || priority > 7)
-    priority = QThread::HighPriority;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "priority = ? "
-		      "WHERE OID = ?");
-	query.bindValue(0, priority);
-	query.bindValue(1, list.at(0).data());
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotAcceptGeminis(bool state)
-{
-  m_settings["gui/acceptGeminis"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptGeminis", state);
 }
 
 void spoton::slotShareKeysWithKernel(const QString &link)
