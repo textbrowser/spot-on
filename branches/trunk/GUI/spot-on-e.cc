@@ -1397,6 +1397,15 @@ void spoton::slotReloadEmailNames(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotRemoveOtmOnExit(bool state)
+{
+  m_settings["gui/removeOtmOnExit"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/removeOtmOnExit", state);
+}
+
 void spoton::slotSavePoptasticAccount(void)
 {
   prepareDatabasesFromUI();
@@ -1480,6 +1489,41 @@ void spoton::slotSavePoptasticAccount(void)
     }
 }
 
+void spoton::slotSaveSharePrivateKeys(bool state)
+{
+  m_settings["gui/sharePrivateKeysWithKernel"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/sharePrivateKeysWithKernel", state);
+
+  if(state)
+    if(m_keysShared.value("keys_sent_to_kernel") == "ignore")
+      m_keysShared["keys_sent_to_kernel"] = "false";
+}
+
+void spoton::slotSaveUrlDistribution(int index)
+{
+  Q_UNUSED(index);
+
+  QString str("linear");
+
+  m_settings["gui/urlDistribution"] = str;
+
+  QSettings settings;
+
+  settings.setValue("gui/urlDistribution", str);
+}
+
+void spoton::slotSearchResultsPerPage(int value)
+{
+  m_settings["gui/searchResultsPerPage"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/searchResultsPerPage", value);
+}
+
 void spoton::slotSelectCAPath(void)
 {
   QString fileName("");
@@ -1552,6 +1596,12 @@ void spoton::slotSetNeighborPriority(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotShareKeysWithKernel(const QString &link)
+{
+  Q_UNUSED(link);
+  m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
 void spoton::slotTestPoptasticPop3Settings(void)
@@ -1839,38 +1889,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotShareKeysWithKernel(const QString &link)
-{
-  Q_UNUSED(link);
-  m_keysShared["keys_sent_to_kernel"] = "false";
-}
-
-void spoton::slotSaveUrlDistribution(int index)
-{
-  Q_UNUSED(index);
-
-  QString str("linear");
-
-  m_settings["gui/urlDistribution"] = str;
-
-  QSettings settings;
-
-  settings.setValue("gui/urlDistribution", str);
-}
-
-void spoton::slotSaveSharePrivateKeys(bool state)
-{
-  m_settings["gui/sharePrivateKeysWithKernel"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/sharePrivateKeysWithKernel", state);
-
-  if(state)
-    if(m_keysShared.value("keys_sent_to_kernel") == "ignore")
-      m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
 void spoton::slotShowOptions(void)
@@ -2525,24 +2543,6 @@ void spoton::slotOntopChatDialogs(bool state)
   QSettings settings;
 
   settings.setValue("gui/ontopChatDialogs", state);
-}
-
-void spoton::slotRemoveOtmOnExit(bool state)
-{
-  m_settings["gui/removeOtmOnExit"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/removeOtmOnExit", state);
-}
-
-void spoton::slotSearchResultsPerPage(int value)
-{
-  m_settings["gui/searchResultsPerPage"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/searchResultsPerPage", value);
 }
 
 void spoton::slotViewEchoKeyShare(void)
