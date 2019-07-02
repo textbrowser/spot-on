@@ -1356,6 +1356,30 @@ void spoton::slotInitializeSMP(void)
   initializeSMP(hash);
 }
 
+#if QT_VERSION >= 0x050000
+void spoton::slotMediaError(QMediaPlayer::Error error)
+{
+  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+
+  if(!player)
+    return;
+
+  if(error != QMediaPlayer::NoError)
+    player->deleteLater();
+}
+
+void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
+{
+  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+
+  if(!player)
+    return;
+
+  if(status == QMediaPlayer::EndOfMedia)
+    player->deleteLater();
+}
+#endif
+
 void spoton::slotOntopChatDialogs(bool state)
 {
   m_settings["gui/ontopChatDialogs"] = state;
@@ -1475,6 +1499,42 @@ void spoton::slotPoptasticSettingsReset(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotPrepareSMP(const QString &hash)
+{
+  /*
+  ** Chat windows only please!
+  */
+
+  prepareSMP(hash);
+}
+
+void spoton::slotPrepareSMP(void)
+{
+  QString hash("");
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+      if(item)
+	temporary = item->data(Qt::UserRole).toBool();
+
+      item = m_ui.participants->item(row, 3); // public_key_hash
+
+      if(item)
+	hash = item->text();
+    }
+
+  if(hash.isEmpty())
+    return;
+  else if(temporary) // Temporary friend?
+    return; // Not allowed!
+
+  prepareSMP(hash);
 }
 
 void spoton::slotReloadEmailNames(void)
@@ -2081,42 +2141,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("Failure!\nError: %1.").arg(error));
 }
 
-void spoton::slotPrepareSMP(const QString &hash)
-{
-  /*
-  ** Chat windows only please!
-  */
-
-  prepareSMP(hash);
-}
-
-void spoton::slotPrepareSMP(void)
-{
-  QString hash("");
-  bool temporary = true;
-  int row = -1;
-
-  if((row = m_ui.participants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-      if(item)
-	temporary = item->data(Qt::UserRole).toBool();
-
-      item = m_ui.participants->item(row, 3); // public_key_hash
-
-      if(item)
-	hash = item->text();
-    }
-
-  if(hash.isEmpty())
-    return;
-  else if(temporary) // Temporary friend?
-    return; // Not allowed!
-
-  prepareSMP(hash);
-}
-
 void spoton::slotVerifySMPSecret(const QString &hash,
 				 const QString &keyType,
 				 const QString &oid)
@@ -2177,30 +2201,6 @@ void spoton::slotVerifySMPSecret(void)
 
   verifySMPSecret(hash, keyType, oid);
 }
-
-#if QT_VERSION >= 0x050000
-void spoton::slotMediaError(QMediaPlayer::Error error)
-{
-  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
-
-  if(!player)
-    return;
-
-  if(error != QMediaPlayer::NoError)
-    player->deleteLater();
-}
-
-void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
-{
-  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
-
-  if(!player)
-    return;
-
-  if(status == QMediaPlayer::EndOfMedia)
-    player->deleteLater();
-}
-#endif
 
 void spoton::slotLaunchKernelAfterAuthentication(bool state)
 {
