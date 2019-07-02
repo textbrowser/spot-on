@@ -371,47 +371,64 @@ class spoton_neighbor: public QThread
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
   void prepareDtls(void);
 #endif
-  void process0000(int length, const QByteArray &data,
+  void process0000(int length,
+		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
-  void process0000a(int length, const QByteArray &data,
+  void process0000a(int length,
+		    const QByteArray &data,
 		    const QString &messageType);
-  void process0000b(int length, const QByteArray &data,
+  void process0000b(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0000d(int length, const QByteArray &data,
+  void process0000d(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0001a(int length, const QByteArray &data);
-  void process0001b(int length, const QByteArray &data,
+  void process0001a(int length,
+		    const QByteArray &data);
+  void process0001b(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0001c(int length, const QByteArray &data,
+  void process0001c(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0002a(int length, const QByteArray &data,
+  void process0002a(int length,
+		    const QByteArray &data,
 		    const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
-  void process0002b(int length, const QByteArray &data,
+  void process0002b(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys,
 		    const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   void process0011(int length, const QByteArray &data);
   void process0012(int length, const QByteArray &data);
-  void process0013(int length, const QByteArray &data,
+  void process0013(int length,
+		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0014(int length, const QByteArray &data);
   void process0030(int length, const QByteArray &data);
-  void process0040a(int length, const QByteArray &data,
+  void process0040a(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0040b(int length, const QByteArray &data,
+  void process0040b(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
   void process0050(int length, const QByteArray &data);
   void process0051(int length, const QByteArray &data);
   void process0065(int length, const QByteArray &data);
   void process0070(int length, const QByteArray &data);
-  void process0080(int length, const QByteArray &data,
+  void process0080(int length,
+		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
-  void process0090(int length, const QByteArray &data,
+  void process0090(int length,
+		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
-  void process0091a(int length, const QByteArray &data,
+  void process0091a(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0091b(int length, const QByteArray &data,
+  void process0091b(int length,
+		    const QByteArray &data,
 		    const QList<QByteArray> &symmetricKeys);
-  void process0092(int length, const QByteArray &data,
+  void process0092(int length,
+		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
   void process0095a(int length, const QByteArray &data);
   void process0095b(int length, const QByteArray &data);
@@ -528,7 +545,8 @@ class spoton_neighbor: public QThread
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);
-  void slotWrite(const QByteArray &data, const qint64 id,
+  void slotWrite(const QByteArray &data,
+		 const qint64 id,
 		 const QPairByteArrayByteArray &adaptiveEchoPair);
   void slotWriteParsedApplicationData(const QByteArray &data);
   void slotWriteURLs(const QByteArray &data);

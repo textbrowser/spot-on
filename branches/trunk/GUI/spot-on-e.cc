@@ -1604,6 +1604,15 @@ void spoton::slotShareKeysWithKernel(const QString &link)
   m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
+void spoton::slotShowOptions(void)
+{
+  m_optionsWindow->showNormal();
+  m_optionsWindow->activateWindow();
+  m_optionsWindow->raise();
+  m_optionsUi.scrollArea->setFocus();
+  spoton_utilities::centerWidget(m_optionsWindow, this);
+}
+
 void spoton::slotTestPoptasticPop3Settings(void)
 {
   CURL *curl = 0;
@@ -1889,15 +1898,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotShowOptions(void)
-{
-  m_optionsWindow->showNormal();
-  m_optionsWindow->activateWindow();
-  m_optionsWindow->raise();
-  m_optionsUi.scrollArea->setFocus();
-  spoton_utilities::centerWidget(m_optionsWindow, this);
 }
 
 void spoton::slotSetIconSize(int index)
