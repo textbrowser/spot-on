@@ -1261,6 +1261,15 @@ void spoton::slotInitializeSMP(void)
   initializeSMP(hash);
 }
 
+void spoton::slotOntopChatDialogs(bool state)
+{
+  m_settings["gui/ontopChatDialogs"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/ontopChatDialogs", state);
+}
+
 void spoton::slotPoptasticAccountChanged(const QString &text)
 {
   QList<QHash<QString, QVariant> > list;
@@ -1404,6 +1413,42 @@ void spoton::slotRemoveOtmOnExit(bool state)
   QSettings settings;
 
   settings.setValue("gui/removeOtmOnExit", state);
+}
+
+void spoton::slotSaveAlternatingColors(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(!checkBox)
+    return;
+
+  QString str("");
+
+  if(checkBox == m_optionsUi.chatAlternatingRowColors)
+    {
+      m_ui.participants->setAlternatingRowColors(state);
+      str = "gui/chatAlternatingRowColors";
+    }
+  else if(checkBox == m_optionsUi.emailAlternatingRowColors)
+    {
+      m_ui.emailParticipants->setAlternatingRowColors(state);
+      str = "gui/emailAlternatingRowColors";
+    }
+  else if(checkBox == m_optionsUi.urlsAlternatingRowColors)
+    {
+      m_ui.urlParticipants->setAlternatingRowColors(state);
+      str = "gui/urlsAlternatingRowColors";
+    }
+
+  if(!str.isEmpty())
+    {
+      m_settings[str] = state;
+
+      QSettings settings;
+
+      settings.setValue(str, state);
+      emit updateEmailWindows();
+    }
 }
 
 void spoton::slotSaveOpenLinks(bool state)
@@ -2498,51 +2543,6 @@ void spoton::slotSaveCustomStatus(void)
   QSettings settings;
 
   settings.setValue("gui/customStatus", text.trimmed().toUtf8());
-}
-
-void spoton::slotSaveAlternatingColors(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(!checkBox)
-    return;
-
-  QString str("");
-
-  if(checkBox == m_optionsUi.chatAlternatingRowColors)
-    {
-      m_ui.participants->setAlternatingRowColors(state);
-      str = "gui/chatAlternatingRowColors";
-    }
-  else if(checkBox == m_optionsUi.emailAlternatingRowColors)
-    {
-      m_ui.emailParticipants->setAlternatingRowColors(state);
-      str = "gui/emailAlternatingRowColors";
-    }
-  else if(checkBox == m_optionsUi.urlsAlternatingRowColors)
-    {
-      m_ui.urlParticipants->setAlternatingRowColors(state);
-      str = "gui/urlsAlternatingRowColors";
-    }
-
-  if(!str.isEmpty())
-    {
-      m_settings[str] = state;
-
-      QSettings settings;
-
-      settings.setValue(str, state);
-      emit updateEmailWindows();
-    }
-}
-
-void spoton::slotOntopChatDialogs(bool state)
-{
-  m_settings["gui/ontopChatDialogs"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/ontopChatDialogs", state);
 }
 
 void spoton::slotViewEchoKeyShare(void)
