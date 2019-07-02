@@ -1406,6 +1406,15 @@ void spoton::slotRemoveOtmOnExit(bool state)
   settings.setValue("gui/removeOtmOnExit", state);
 }
 
+void spoton::slotSaveOpenLinks(bool state)
+{
+  m_settings["gui/openLinks"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/openLinks", state);
+}
+
 void spoton::slotSavePoptasticAccount(void)
 {
   prepareDatabasesFromUI();
@@ -1549,6 +1558,25 @@ void spoton::slotSelectCAPath(void)
     }
   else
     fileName = m_poptasticRetroPhoneSettingsUi.capath->text();
+}
+
+void spoton::slotSetIconSize(int index)
+{
+  QSettings settings;
+  QSize size;
+
+  if(index == 0)
+    size = QSize(16, 16);
+  else if(index == 1)
+    size = QSize(24, 24);
+  else if(index == 2)
+    size = QSize(32, 32);
+  else
+    size = QSize(64, 64);
+
+  m_settings["gui/tabIconSize"] = size;
+  m_ui.tab->setIconSize(size);
+  settings.setValue("gui/tabIconSize", size);
 }
 
 void spoton::slotSetNeighborPriority(void)
@@ -1898,34 +1926,6 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
-}
-
-void spoton::slotSetIconSize(int index)
-{
-  QSettings settings;
-  QSize size;
-
-  if(index == 0)
-    size = QSize(16, 16);
-  else if(index == 1)
-    size = QSize(24, 24);
-  else if(index == 2)
-    size = QSize(32, 32);
-  else
-    size = QSize(64, 64);
-
-  m_settings["gui/tabIconSize"] = size;
-  m_ui.tab->setIconSize(size);
-  settings.setValue("gui/tabIconSize", size);
-}
-
-void spoton::slotSaveOpenLinks(bool state)
-{
-  m_settings["gui/openLinks"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/openLinks", state);
 }
 
 void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
