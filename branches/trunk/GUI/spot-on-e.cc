@@ -1854,6 +1854,226 @@ void spoton::slotShareKeysWithKernel(const QString &link)
   m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
+void spoton::slotShareStarBeam(void)
+{
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+  if(!item)
+    return;
+  else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+  else if(item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+	  toString() == "poptastic")
+    return;
+
+  QString error("");
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Some of this logic is redundant. Please see sendMessage().
+  */
+
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      showError(error);
+      return;
+    }
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    {
+      error = tr("The connection to the kernel is not encrypted.");
+      showError(error);
+      return;
+    }
+
+  QModelIndexList list(m_ui.participants->selectionModel()->
+		       selectedRows(1)); // OID
+
+  if(list.isEmpty())
+    {
+      error = tr
+	("Please select at least one participant for StarBeam sharing.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Select a file.
+  */
+
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
+			arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QFileInfo fileInfo(dialog.selectedFiles().value(0));
+
+  if(!fileInfo.exists() || !fileInfo.isReadable())
+    {
+      error = tr("The selected file is not readable.");
+      showError(error);
+      return;
+    }
+
+  /*
+  ** Create a StarBeam magnet.
+  */
+
+  QByteArray eKey(spoton_crypt::strongRandomBytes(spoton_crypt::
+						  cipherKeyLength("aes256")).
+		  toBase64());
+  QByteArray mKey(spoton_crypt::
+		  strongRandomBytes(spoton_crypt::
+				    XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+		  toBase64());
+  QByteArray magnet;
+  bool ok = true;
+
+  magnet.append("magnet:?");
+  magnet.append("ct=aes256&");
+  magnet.append("ek=");
+  magnet.append(eKey);
+  magnet.append("&");
+  magnet.append("ht=sha512&");
+  magnet.append("mk=");
+  magnet.append(mKey);
+  magnet.append("&");
+  magnet.append("xt=urn:starbeam");
+  m_ui.message->setText(magnet);
+  sendMessage(&ok);
+
+  if(!ok)
+    return;
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+
+  /*
+  ** Create a StarBeam database entry.
+  */
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QByteArray encryptedMosaic;
+	QByteArray mosaic
+	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
+	   toBase64());
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO transmitted "
+		      "(file, hash, missing_links, mosaic, nova, "
+		      "position, pulse_size, read_interval, "
+		      "status_control, total_size, ultra) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->
+	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
+			       &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->
+	     encryptedThenHashed
+	     (spoton_crypt::
+	      sha1FileHash(fileInfo.absoluteFilePath()).toHex(),
+	      &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  {
+	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
+
+	    if(ok)
+	      query.bindValue(3, encryptedMosaic.toBase64());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (5, crypt->encryptedThenHashed("0", &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->
+	     encryptedThenHashed(QByteArray::number(spoton_common::
+						    ELEGANT_STARBEAM_SIZE),
+				 &ok).toBase64());
+
+	query.bindValue(7, 2.500);
+	query.bindValue(8, "transmitting");
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->
+	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
+				 &ok).toBase64());
+
+	query.bindValue(10, 1);
+
+	if(ok)
+	  query.exec();
+
+	query.prepare("INSERT INTO transmitted_magnets "
+		      "(magnet, magnet_hash, transmitted_oid) "
+		      "VALUES (?, ?, (SELECT OID FROM transmitted WHERE "
+		      "mosaic = ?))");
+
+	if(ok)
+	  query.bindValue
+	    (0, crypt->
+	     encryptedThenHashed(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(2, encryptedMosaic.toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotShowOptions(void)
 {
   m_optionsWindow->showNormal();
@@ -2323,226 +2543,6 @@ void spoton::slotSetSBReadInterval(void)
     return;
 
   setSBField(oid, rational, "read_interval");
-}
-
-void spoton::slotShareStarBeam(void)
-{
-  int row = m_ui.participants->currentRow();
-
-  if(row < 0)
-    return;
-
-  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-  if(!item)
-    return;
-  else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
-    return; // Temporary!
-  else if(item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
-	  toString() == "poptastic")
-    return;
-
-  QString error("");
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      showError(error);
-      return;
-    }
-
-  /*
-  ** Some of this logic is redundant. Please see sendMessage().
-  */
-
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    {
-      error = tr("The interface is not connected to the kernel.");
-      showError(error);
-      return;
-    }
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    {
-      error = tr("The connection to the kernel is not encrypted.");
-      showError(error);
-      return;
-    }
-
-  QModelIndexList list(m_ui.participants->selectionModel()->
-		       selectedRows(1)); // OID
-
-  if(list.isEmpty())
-    {
-      error = tr
-	("Please select at least one participant for StarBeam sharing.");
-      showError(error);
-      return;
-    }
-
-  /*
-  ** Select a file.
-  */
-
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
-			arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() != QDialog::Accepted)
-    return;
-
-  QFileInfo fileInfo(dialog.selectedFiles().value(0));
-
-  if(!fileInfo.exists() || !fileInfo.isReadable())
-    {
-      error = tr("The selected file is not readable.");
-      showError(error);
-      return;
-    }
-
-  /*
-  ** Create a StarBeam magnet.
-  */
-
-  QByteArray eKey(spoton_crypt::strongRandomBytes(spoton_crypt::
-						  cipherKeyLength("aes256")).
-		  toBase64());
-  QByteArray mKey(spoton_crypt::
-		  strongRandomBytes(spoton_crypt::
-				    XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-		  toBase64());
-  QByteArray magnet;
-  bool ok = true;
-
-  magnet.append("magnet:?");
-  magnet.append("ct=aes256&");
-  magnet.append("ek=");
-  magnet.append(eKey);
-  magnet.append("&");
-  magnet.append("ht=sha512&");
-  magnet.append("mk=");
-  magnet.append(mKey);
-  magnet.append("&");
-  magnet.append("xt=urn:starbeam");
-  m_ui.message->setText(magnet);
-  sendMessage(&ok);
-
-  if(!ok)
-    return;
-
-  prepareDatabasesFromUI();
-
-  QString connectionName("");
-
-  /*
-  ** Create a StarBeam database entry.
-  */
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QByteArray encryptedMosaic;
-	QByteArray mosaic
-	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
-	   toBase64());
-	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO transmitted "
-		      "(file, hash, missing_links, mosaic, nova, "
-		      "position, pulse_size, read_interval, "
-		      "status_control, total_size, ultra) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->
-	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
-			       &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->
-	     encryptedThenHashed
-	     (spoton_crypt::
-	      sha1FileHash(fileInfo.absoluteFilePath()).toHex(),
-	      &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  {
-	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
-
-	    if(ok)
-	      query.bindValue(3, encryptedMosaic.toBase64());
-	  }
-
-	if(ok)
-	  query.bindValue
-	    (4, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (5, crypt->encryptedThenHashed("0", &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (6, crypt->
-	     encryptedThenHashed(QByteArray::number(spoton_common::
-						    ELEGANT_STARBEAM_SIZE),
-				 &ok).toBase64());
-
-	query.bindValue(7, 2.500);
-	query.bindValue(8, "transmitting");
-
-	if(ok)
-	  query.bindValue
-	    (9, crypt->
-	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
-				 &ok).toBase64());
-
-	query.bindValue(10, 1);
-
-	if(ok)
-	  query.exec();
-
-	query.prepare("INSERT INTO transmitted_magnets "
-		      "(magnet, magnet_hash, transmitted_oid) "
-		      "VALUES (?, ?, (SELECT OID FROM transmitted WHERE "
-		      "mosaic = ?))");
-
-	if(ok)
-	  query.bindValue
-	    (0, crypt->
-	     encryptedThenHashed(magnet, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->keyedHash(magnet, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue(2, encryptedMosaic.toBase64());
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotViewEchoKeyShare(void)
