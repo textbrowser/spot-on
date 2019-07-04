@@ -1724,6 +1724,15 @@ void spoton::slotSaveSharePrivateKeys(bool state)
       m_keysShared["keys_sent_to_kernel"] = "false";
 }
 
+void spoton::slotSaveStarBeamAutoVerify(bool state)
+{
+  m_settings["gui/starbeamAutoVerify"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/starbeamAutoVerify", state);
+}
+
 void spoton::slotSaveUrlDistribution(int index)
 {
   Q_UNUSED(index);
@@ -2534,15 +2543,6 @@ void spoton::slotShareStarBeam(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSaveStarBeamAutoVerify(bool state)
-{
-  m_settings["gui/starbeamAutoVerify"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/starbeamAutoVerify", state);
 }
 
 void spoton::slotViewEchoKeyShare(void)
