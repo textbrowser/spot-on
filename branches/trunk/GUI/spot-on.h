@@ -599,7 +599,8 @@ class spoton: public QMainWindow
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
   QThread::Priority neighborThreadPriority(void) const;
-  bool addFriendsKey(const QByteArray &key, const QString &type,
+  bool addFriendsKey(const QByteArray &key,
+		     const QString &type,
 		     QWidget *parent);
   bool deleteAllUrls(void);
   bool isKernelActive(void) const;
@@ -685,7 +686,8 @@ class spoton: public QMainWindow
   void sendSMPLinkToKernel(const QList<QByteArray> &list,
 			   const QString &keyType,
 			   const QString &oid);
-  void setSBField(const QString &oid, const QVariant &value,
+  void setSBField(const QString &oid,
+		  const QVariant &value,
 		  const QString &field);
   void sharePublicKeyWithParticipant(const QString &keyType);
   void showError(const QString &error);

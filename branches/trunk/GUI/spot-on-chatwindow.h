@@ -75,8 +75,10 @@ class spoton_chatwindow: public QMainWindow
   void slotPrepareSMP(void);
   void slotSendMessage(void);
   void slotSetIcons(void);
-  void slotSetStatus(const QIcon &icon, const QString &name,
-		     const QString &id, const QString &status);
+  void slotSetStatus(const QIcon &icon,
+		     const QString &name,
+		     const QString &id,
+		     const QString &status);
   void slotShareStarBeam(void);
   void slotVerifySMPSecret(void);
 
@@ -87,7 +89,8 @@ class spoton_chatwindow: public QMainWindow
   void initializeSMP(const QString &publicKeyHash);
   void messageSent(void);
   void prepareSMP(const QString &publicKeyHash);
-  void verifySMPSecret(const QString &publicKeyHash, const QString &keyType,
+  void verifySMPSecret(const QString &publicKeyHash,
+		       const QString &keyType,
 		       const QString &oid);
 };
 
