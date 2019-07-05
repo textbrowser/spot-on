@@ -1356,6 +1356,15 @@ void spoton::slotInitializeSMP(void)
   initializeSMP(hash);
 }
 
+void spoton::slotLaunchKernelAfterAuthentication(bool state)
+{
+  m_settings["gui/launchKernelAfterAuth"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/launchKernelAfterAuth", state);
+}
+
 #if QT_VERSION >= 0x050000
 void spoton::slotMediaError(QMediaPlayer::Error error)
 {
@@ -2429,15 +2438,6 @@ void spoton::slotVerifySMPSecret(void)
     return; // Not allowed!
 
   verifySMPSecret(hash, keyType, oid);
-}
-
-void spoton::slotLaunchKernelAfterAuthentication(bool state)
-{
-  m_settings["gui/launchKernelAfterAuth"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/launchKernelAfterAuth", state);
 }
 
 void spoton::slotSaveRefreshEmail(bool state)
