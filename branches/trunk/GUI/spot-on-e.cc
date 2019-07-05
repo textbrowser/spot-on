@@ -1720,6 +1720,15 @@ void spoton::slotSavePoptasticAccount(void)
     }
 }
 
+void spoton::slotSaveRefreshEmail(bool state)
+{
+  m_settings["gui/refreshEmail"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/refreshEmail", state);
+}
+
 void spoton::slotSaveSharePrivateKeys(bool state)
 {
   m_settings["gui/sharePrivateKeysWithKernel"] = state;
@@ -1855,6 +1864,102 @@ void spoton::slotSetNeighborPriority(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotSetSBPulseSize(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QString oid("");
+  int integer = 15000;
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.transmitted->item(row, 2); // Pulse Size
+
+      if(item)
+	integer = item->text().toInt();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  bool ok = true;
+
+  integer = QInputDialog::getInt
+    (this,
+     tr("%1: StarBeam Pulse Size").arg(SPOTON_APPLICATION_NAME),
+     tr("&Pulse Size"),
+     integer,
+     spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
+     static_cast<int> (spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE),
+     1,
+     &ok);
+
+  if(!ok)
+    return;
+
+  QByteArray bytes(crypt->encryptedThenHashed(QByteArray::number(integer),
+					      &ok).toBase64());
+
+  if(ok)
+    setSBField(oid, bytes, "pulse_size");
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting to "
+			     "secure the pulse size."));
+}
+
+void spoton::slotSetSBReadInterval(void)
+{
+  QString oid("");
+  double rational = 1.500;
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.transmitted->item(row, 8); // Read Interval
+
+      if(item)
+	rational = item->text().toDouble();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  bool ok = true;
+
+  rational = QInputDialog::getDouble
+    (this, tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
+     tr("&Read Interval"), rational, 0.100, 60.000, 3, &ok);
+
+  if(!ok)
+    return;
+
+  setSBField(oid, rational, "read_interval");
 }
 
 void spoton::slotShareKeysWithKernel(const QString &link)
@@ -2438,111 +2543,6 @@ void spoton::slotVerifySMPSecret(void)
     return; // Not allowed!
 
   verifySMPSecret(hash, keyType, oid);
-}
-
-void spoton::slotSaveRefreshEmail(bool state)
-{
-  m_settings["gui/refreshEmail"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/refreshEmail", state);
-}
-
-void spoton::slotSetSBPulseSize(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QString oid("");
-  int integer = 15000;
-  int row = -1;
-
-  if((row = m_ui.transmitted->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.transmitted->item
-	(row, m_ui.transmitted->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-
-      item = m_ui.transmitted->item(row, 2); // Pulse Size
-
-      if(item)
-	integer = item->text().toInt();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  bool ok = true;
-
-  integer = QInputDialog::getInt
-    (this,
-     tr("%1: StarBeam Pulse Size").arg(SPOTON_APPLICATION_NAME),
-     tr("&Pulse Size"),
-     integer,
-     spoton_common::MINIMUM_STARBEAM_PULSE_SIZE,
-     static_cast<int> (spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE),
-     1,
-     &ok);
-
-  if(!ok)
-    return;
-
-  QByteArray bytes(crypt->encryptedThenHashed(QByteArray::number(integer),
-					      &ok).toBase64());
-
-  if(ok)
-    setSBField(oid, bytes, "pulse_size");
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting to "
-			     "secure the pulse size."));
-}
-
-void spoton::slotSetSBReadInterval(void)
-{
-  QString oid("");
-  double rational = 1.500;
-  int row = -1;
-
-  if((row = m_ui.transmitted->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.transmitted->item
-	(row, m_ui.transmitted->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-
-      item = m_ui.transmitted->item(row, 8); // Read Interval
-
-      if(item)
-	rational = item->text().toDouble();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  bool ok = true;
-
-  rational = QInputDialog::getDouble
-    (this, tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
-     tr("&Read Interval"), rational, 0.100, 60.000, 3, &ok);
-
-  if(!ok)
-    return;
-
-  setSBField(oid, rational, "read_interval");
 }
 
 void spoton::slotViewEchoKeyShare(void)
