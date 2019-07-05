@@ -27,11 +27,69 @@
 
 #include <QDataStream>
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-starbeamanalyzer.h"
+#include "spot-on.h"
 #include "ui_spot-on-adaptive-echo-prompt.h"
 #include "ui_spot-on-ipinformation.h"
+
+QString spoton::currentTabName(void) const
+{
+  QMapIterator<int, QWidget *> it(m_tabWidgets);
+  QString name("");
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value() == m_ui.tab->currentWidget())
+	{
+	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
+	  break;
+	}
+    }
+
+  return name;
+}
+
+QStringList spoton::parseAEMagnet(const QString &magnet) const
+{
+  QStringList list1(QString(magnet).remove("magnet:?").split("&"));
+  QStringList list2;
+
+  while(!list1.isEmpty())
+    {
+      QString str(list1.takeFirst());
+
+      if(str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+	  list2.append(str);
+	}
+      else if(str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+	  list2.append(str);
+	}
+      else if(str.startsWith("to="))
+	{
+	  str.remove(0, 3);
+	  list2.append(str);
+	}
+      else if(str.startsWith("xt="))
+	{
+	  str.remove(0, 3);
+	  list2.append("urn:adaptive-echo");
+	}
+      else
+	break;
+    }
+
+  if(!list2.contains("urn:adaptive-echo"))
+    list2.clear();
+
+  return list2;
+}
 
 static bool lengthGreaterThan(const QString &string1, const QString &string2)
 {
@@ -2080,45 +2138,6 @@ void spoton::slotResendMail(void)
   slotRefreshMail();
 }
 
-QStringList spoton::parseAEMagnet(const QString &magnet) const
-{
-  QStringList list1(QString(magnet).remove("magnet:?").split("&"));
-  QStringList list2;
-
-  while(!list1.isEmpty())
-    {
-      QString str(list1.takeFirst());
-
-      if(str.startsWith("ct="))
-	{
-	  str.remove(0, 3);
-	  list2.append(str);
-	}
-      else if(str.startsWith("ht="))
-	{
-	  str.remove(0, 3);
-	  list2.append(str);
-	}
-      else if(str.startsWith("to="))
-	{
-	  str.remove(0, 3);
-	  list2.append(str);
-	}
-      else if(str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-	  list2.append("urn:adaptive-echo");
-	}
-      else
-	break;
-    }
-
-  if(!list2.contains("urn:adaptive-echo"))
-    list2.clear();
-
-  return list2;
-}
-
 void spoton::slotCopyAEMagnet(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());
@@ -2353,25 +2372,6 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
       QSqlDatabase::removeDatabase(connectionName);
     }
-}
-
-QString spoton::currentTabName(void) const
-{
-  QMapIterator<int, QWidget *> it(m_tabWidgets);
-  QString name("");
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value() == m_ui.tab->currentWidget())
-	{
-	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
-	  break;
-	}
-    }
-
-  return name;
 }
 
 void spoton::slotReceiversChanged(QTableWidgetItem *item)
