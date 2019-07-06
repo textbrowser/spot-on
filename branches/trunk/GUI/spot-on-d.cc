@@ -33,6 +33,11 @@
 #include "ui_spot-on-adaptive-echo-prompt.h"
 #include "ui_spot-on-ipinformation.h"
 
+static bool lengthGreaterThan(const QString &string1, const QString &string2)
+{
+  return string1.length() > string2.length();
+}
+
 QString spoton::currentTabName(void) const
 {
   QMapIterator<int, QWidget *> it(m_tabWidgets);
@@ -50,6 +55,51 @@ QString spoton::currentTabName(void) const
     }
 
   return name;
+}
+
+QString spoton::mapIconToEmoticon(const QString &content)
+{
+  QList<QString> list;
+  QMap<QString, QString> map;
+  QString str(content);
+
+  map[":-)"] = map[":)"] = map[":O)"] = map[":]"] = map[":}"] =
+    "<img src=\":/emoticons/smile.png\"></img>";
+  map[":-D"] = map[":D"] = "<img src=\":/emoticons/laugh.png\"></img>";
+  map[":-))"] = "<img src=\":/emoticons/happy.png\"></img>";
+  map[":-("] = map[":("] =
+    map[":-["] = map[":["] =
+    map[":{"] = "<img src=\":/emoticons/sad.png\"></img>";
+  map[";)"] = "<img src=\":/emoticons/wink.png\"></img>";
+  map[":-||"] = "<img src=\":/emoticons/angry.png\"></img>";
+  map[":'-("] = map[":'("] = "<img src=\":/emoticons/crying.png\"></img>";
+  map[":-O"] = map[":O"] =
+    "<img src=\":/emoticons/shocked.png\"></img>";
+  map[":*"] = map[":^*"] = map[":-)(-:"] =
+    "<img src=\":/emoticons/kiss.png\"></img>";
+  map[":-P"] = map[":P"] =
+    "<img src=\":/emoticons/tongue.png\"></img>";
+  map[":-/"] = map[":\\"] =
+    "<img src=\":/emoticons/confused.png\"></img>";
+  map[":|"] = map[":-|"] = "<img src=\":/emoticons/neutral.png\"></img>";
+  map["O:-)"] =
+    "<img src=\":/emoticons/angel.png\"></img>";
+  map["}:)"] = map["}:-)"] = "<img src=\":/emoticons/devil.png\"></img>";
+  map["O-)"] = "<img src=\":/emoticons/cyclops.png\"></img>";
+  map["(T)"] = "<img src=\":/emoticons/phone.png\"></img>";
+  map["C:-)"] = map["C:)"] = "<img src=\":/emoticons/skywalker.png\"></img>";
+  map["8-)"] = map["B-)"] = map["|;-)"] =
+    "<img src=\":/emoticons/glasses-cool.png\"></img>";
+  map["@>-->--"] = map["@}-;-'---"] =
+    "<img src=\":/emoticons/rose.png\"></img>";
+
+  list = map.keys();
+  std::sort(list.begin(), list.end(), lengthGreaterThan);
+
+  for(int i = 0; i < list.size(); i++)
+    str.replace(list.at(i), map[list.at(i)], Qt::CaseInsensitive);
+
+  return str;
 }
 
 QStringList spoton::parseAEMagnet(const QString &magnet) const
@@ -91,9 +141,48 @@ QStringList spoton::parseAEMagnet(const QString &magnet) const
   return list2;
 }
 
-static bool lengthGreaterThan(const QString &string1, const QString &string2)
+bool spoton::promptBeforeExit(void)
 {
-  return string1.length() > string2.length();
+  if(m_encryptFile.occupied())
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("The File Encryption application is occupied. "
+		    "Are you sure that you wish to exit %1?").
+		 arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Question").
+			arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return true;
+    }
+
+  if(!m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
+    if(m_ui.pid->text().toLongLong() > 0)
+      {
+	QMessageBox mb(this);
+
+	mb.setIcon(QMessageBox::Question);
+	mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	mb.setText(tr("The kernel appears to be active. Closing %1 "
+		      "will not deactivate the kernel. Are you "
+		      "sure that you wish to exit %1?").
+		   arg(SPOTON_APPLICATION_NAME));
+	mb.setWindowIcon(windowIcon());
+	mb.setWindowModality(Qt::WindowModal);
+	mb.setWindowTitle(tr("%1: Question").
+			  arg(SPOTON_APPLICATION_NAME));
+
+	if(mb.exec() != QMessageBox::Yes)
+	  return true;
+      }
+
+  m_quit = true;
+  return false;
 }
 
 void spoton::applyGoldBugToAttachments(const QString &folderOid,
@@ -235,6 +324,23 @@ void spoton::generateHalfGeminis(void)
   gemini.second = spoton_crypt::strongRandomBytes
     (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
   saveGemini(gemini, item->text());
+}
+
+void spoton::joinDefaultBuzzChannel(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Joining a default Buzz channel. "
+			  "Please be patient."));
+  m_sb.status->repaint();
+
+  int index = m_ui.commonBuzzChannels->findData
+    ("Spot-On_Developer_Channel_Key", Qt::UserRole, Qt::MatchContains);
+
+  if(index >= 0)
+    slotCommonBuzzChannelsActivated(index);
+
+  m_sb.status->clear();
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::populateAETokens(void)
@@ -1671,23 +1777,6 @@ void spoton::slotSetAETokenInformation(void)
     }
 }
 
-void spoton::joinDefaultBuzzChannel(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText(tr("Joining a default Buzz channel. "
-			  "Please be patient."));
-  m_sb.status->repaint();
-
-  int index = m_ui.commonBuzzChannels->findData
-    ("Spot-On_Developer_Channel_Key", Qt::UserRole, Qt::MatchContains);
-
-  if(index >= 0)
-    slotCommonBuzzChannelsActivated(index);
-
-  m_sb.status->clear();
-  QApplication::restoreOverrideCursor();
-}
-
 void spoton::slotSaveBuzzAutoJoin(bool state)
 {
   m_settings["gui/buzzAutoJoin"] = state;
@@ -1715,51 +1804,6 @@ void spoton::slotLimitConnections(int value)
   settings.setValue("gui/limitConnections", value);
 }
 
-QString spoton::mapIconToEmoticon(const QString &content)
-{
-  QList<QString> list;
-  QMap<QString, QString> map;
-  QString str(content);
-
-  map[":-)"] = map[":)"] = map[":O)"] = map[":]"] = map[":}"] =
-    "<img src=\":/emoticons/smile.png\"></img>";
-  map[":-D"] = map[":D"] = "<img src=\":/emoticons/laugh.png\"></img>";
-  map[":-))"] = "<img src=\":/emoticons/happy.png\"></img>";
-  map[":-("] = map[":("] =
-    map[":-["] = map[":["] =
-    map[":{"] = "<img src=\":/emoticons/sad.png\"></img>";
-  map[";)"] = "<img src=\":/emoticons/wink.png\"></img>";
-  map[":-||"] = "<img src=\":/emoticons/angry.png\"></img>";
-  map[":'-("] = map[":'("] = "<img src=\":/emoticons/crying.png\"></img>";
-  map[":-O"] = map[":O"] =
-    "<img src=\":/emoticons/shocked.png\"></img>";
-  map[":*"] = map[":^*"] = map[":-)(-:"] =
-    "<img src=\":/emoticons/kiss.png\"></img>";
-  map[":-P"] = map[":P"] =
-    "<img src=\":/emoticons/tongue.png\"></img>";
-  map[":-/"] = map[":\\"] =
-    "<img src=\":/emoticons/confused.png\"></img>";
-  map[":|"] = map[":-|"] = "<img src=\":/emoticons/neutral.png\"></img>";
-  map["O:-)"] =
-    "<img src=\":/emoticons/angel.png\"></img>";
-  map["}:)"] = map["}:-)"] = "<img src=\":/emoticons/devil.png\"></img>";
-  map["O-)"] = "<img src=\":/emoticons/cyclops.png\"></img>";
-  map["(T)"] = "<img src=\":/emoticons/phone.png\"></img>";
-  map["C:-)"] = map["C:)"] = "<img src=\":/emoticons/skywalker.png\"></img>";
-  map["8-)"] = map["B-)"] = map["|;-)"] =
-    "<img src=\":/emoticons/glasses-cool.png\"></img>";
-  map["@>-->--"] = map["@}-;-'---"] =
-    "<img src=\":/emoticons/rose.png\"></img>";
-
-  list = map.keys();
-  std::sort(list.begin(), list.end(), lengthGreaterThan);
-
-  for(int i = 0; i < list.size(); i++)
-    str.replace(list.at(i), map[list.at(i)], Qt::CaseInsensitive);
-
-  return str;
-}
-
 void spoton::slotAutoAddSharedSBMagnets(bool state)
 {
   m_settings["gui/autoAddSharedSBMagnets"] = state;
@@ -1767,50 +1811,6 @@ void spoton::slotAutoAddSharedSBMagnets(bool state)
   QSettings settings;
 
   settings.setValue("gui/autoAddSharedSBMagnets", state);
-}
-
-bool spoton::promptBeforeExit(void)
-{
-  if(m_encryptFile.occupied())
-    {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("The File Encryption application is occupied. "
-		    "Are you sure that you wish to exit %1?").
-		 arg(SPOTON_APPLICATION_NAME));
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Question").
-			arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return true;
-    }
-
-  if(!m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
-    if(m_ui.pid->text().toLongLong() > 0)
-      {
-	QMessageBox mb(this);
-
-	mb.setIcon(QMessageBox::Question);
-	mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	mb.setText(tr("The kernel appears to be active. Closing %1 "
-		      "will not deactivate the kernel. Are you "
-		      "sure that you wish to exit %1?").
-		   arg(SPOTON_APPLICATION_NAME));
-	mb.setWindowIcon(windowIcon());
-	mb.setWindowModality(Qt::WindowModal);
-	mb.setWindowTitle(tr("%1: Question").
-			  arg(SPOTON_APPLICATION_NAME));
-
-	if(mb.exec() != QMessageBox::Yes)
-	  return true;
-      }
-
-  m_quit = true;
-  return false;
 }
 
 void spoton::slotSignatureKeyTypeChanged(int index)
