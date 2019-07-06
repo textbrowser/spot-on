@@ -622,6 +622,309 @@ void spoton::refreshInstitutions(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotAddInstitution(const QString &text)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QString name("");
+  QString nameType("");
+  QString postalAddress("");
+  QString postalAddressType("");
+
+  if(m_ui.addInstitutionCheckBox->isChecked() || !text.isEmpty())
+    {
+      QStringList list;
+
+      if(text.isEmpty())
+	list = m_ui.addInstitutionLineEdit->text().
+	  remove("magnet:?").split("&");
+      else
+	list = text.mid(0).remove("magnet:?").split("&");
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  QString str(list.at(i));
+
+	  if(str.startsWith("in="))
+	    {
+	      str.remove(0, 3);
+	      name = str;
+	    }
+	  else if(str.startsWith("ct="))
+	    {
+	      str.remove(0, 3);
+	      nameType = str;
+	    }
+	  else if(str.startsWith("pa="))
+	    {
+	      str.remove(0, 3);
+	      postalAddress = str;
+	    }
+	  else if(str.startsWith("ht="))
+	    {
+	      str.remove(0, 3);
+	      postalAddressType = str;
+	    }
+	}
+    }
+  else
+    {
+      name = m_ui.institutionName->text();
+      nameType = m_ui.institutionNameType->currentText();
+      postalAddress = m_ui.institutionPostalAddress->text();
+      postalAddressType = m_ui.institutionPostalAddressType->currentText();
+    }
+
+  if(name.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please provide an institution name."));
+      return;
+    }
+
+  if(postalAddress.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please provide an institution "
+			       "postal address."));
+      return;
+    }
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO institutions "
+	   "(cipher_type, hash_type, hash, name, postal_address) "
+	   "VALUES (?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(nameType.toLatin1(),
+					 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->
+	     encryptedThenHashed(postalAddressType.toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->keyedHash(name.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->encryptedThenHashed(name.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->
+	     encryptedThenHashed(postalAddress.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    {
+      if(text.isEmpty())
+	{
+	  m_ui.addInstitutionLineEdit->clear();
+	  m_ui.institutionName->clear();
+	  m_ui.institutionNameType->setCurrentIndex(0);
+	  m_ui.institutionPostalAddress->clear();
+	  m_ui.institutionPostalAddressType->setCurrentIndex(0);
+	}
+
+      refreshInstitutions();
+    }
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to record the institution."));
+}
+
+void spoton::slotAssignNewIPToNeighbor(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  int row = m_ui.neighbors->currentRow();
+
+  if(row < 0)
+    return;
+
+  QString ip("");
+  QString oid("");
+  QString protocol("");
+  QString proxyHostName("");
+  QString proxyPort("");
+  QString remoteIP("");
+  QString remotePort("");
+  QString scopeId("");
+  QString transport("");
+
+  for(int i = 0; i < m_ui.neighbors->columnCount(); i++)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item(row, i);
+
+      if(!item)
+	continue;
+
+      if(i == 10)
+	remoteIP = item->text();
+      else if(i == 11)
+	remotePort = item->text();
+      else if(i == 12)
+	scopeId = item->text();
+      else if(i == 13)
+	protocol = item->text();
+      else if(i == 14)
+	proxyHostName = item->text();
+      else if(i == 15)
+	proxyPort = item->text();
+      else if(i == 27)
+	transport = item->text();
+      else if(i == m_ui.neighbors->columnCount() - 1)
+	oid = item->text();
+    }
+
+  QDialog dialog(this);
+  Ui_spoton_ipinformation ui;
+
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: Neighbor Remote IP Information").
+     arg(SPOTON_APPLICATION_NAME));
+
+  if(protocol == "IPv4" || protocol.isEmpty())
+    {
+      ui.ip->setInputMask("");
+      ui.scope->setEnabled(false);
+    }
+
+  ui.ip->setText(remoteIP);
+  ui.port->setValue(remotePort.toInt());
+  ui.scope->setText(scopeId);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      ip = ui.ip->text().trimmed();
+
+      if(!ip.isEmpty())
+	ip = spoton_misc::massageIpForUi(ip, protocol);
+
+      remotePort = QString::number(ui.port->value());
+      scopeId = ui.scope->text();
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+	QString country
+	  (spoton_misc::countryNameFromIPAddress(ip));
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "neighbors.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+	    bool ok = true;
+
+	    query.prepare("UPDATE neighbors SET "
+			  "country = ?, "
+			  "hash = ?, "
+			  "qt_country_hash = ?, "
+			  "remote_ip_address = ?, "
+			  "remote_ip_address_hash = ?, "
+			  "remote_port = ?, "
+			  "scope_id = ?, "
+			  "status_control = 'disconnected' "
+			  "WHERE OID = ? AND status_control <> 'deleted' AND "
+			  "user_defined = 1");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(country.toLatin1(), &ok).
+	       toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->
+		 keyedHash((proxyHostName + proxyPort + ip + remotePort +
+			    scopeId +
+			    transport).toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(2, crypt->keyedHash(country.remove(" ").toLatin1(),
+				     &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
+		 toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(4, crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(5, crypt->encryptedThenHashed(remotePort.toLatin1(),
+					       &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(6, crypt->encryptedThenHashed(scopeId.toLatin1(), &ok).
+		 toBase64());
+
+	    query.bindValue(7, oid);
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
 void spoton::slotDemagnetizeMissingLinks(void)
 {
   QStringList list
@@ -780,159 +1083,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::slotAddInstitution(const QString &text)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QString name("");
-  QString nameType("");
-  QString postalAddress("");
-  QString postalAddressType("");
-
-  if(m_ui.addInstitutionCheckBox->isChecked() || !text.isEmpty())
-    {
-      QStringList list;
-
-      if(text.isEmpty())
-	list = m_ui.addInstitutionLineEdit->text().
-	  remove("magnet:?").split("&");
-      else
-	list = text.mid(0).remove("magnet:?").split("&");
-
-      for(int i = 0; i < list.size(); i++)
-	{
-	  QString str(list.at(i));
-
-	  if(str.startsWith("in="))
-	    {
-	      str.remove(0, 3);
-	      name = str;
-	    }
-	  else if(str.startsWith("ct="))
-	    {
-	      str.remove(0, 3);
-	      nameType = str;
-	    }
-	  else if(str.startsWith("pa="))
-	    {
-	      str.remove(0, 3);
-	      postalAddress = str;
-	    }
-	  else if(str.startsWith("ht="))
-	    {
-	      str.remove(0, 3);
-	      postalAddressType = str;
-	    }
-	}
-    }
-  else
-    {
-      name = m_ui.institutionName->text();
-      nameType = m_ui.institutionNameType->currentText();
-      postalAddress = m_ui.institutionPostalAddress->text();
-      postalAddressType = m_ui.institutionPostalAddressType->currentText();
-    }
-
-  if(name.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please provide an institution name."));
-      return;
-    }
-
-  if(postalAddress.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please provide an institution "
-			       "postal address."));
-      return;
-    }
-
-  prepareDatabasesFromUI();
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare
-	  ("INSERT OR REPLACE INTO institutions "
-	   "(cipher_type, hash_type, hash, name, postal_address) "
-	   "VALUES (?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(nameType.toLatin1(),
-					 &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->
-	     encryptedThenHashed(postalAddressType.toLatin1(),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->keyedHash(name.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, crypt->encryptedThenHashed(name.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (4, crypt->
-	     encryptedThenHashed(postalAddress.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    {
-      if(text.isEmpty())
-	{
-	  m_ui.addInstitutionLineEdit->clear();
-	  m_ui.institutionName->clear();
-	  m_ui.institutionNameType->setCurrentIndex(0);
-	  m_ui.institutionPostalAddress->clear();
-	  m_ui.institutionPostalAddressType->setCurrentIndex(0);
-	}
-
-      refreshInstitutions();
-    }
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to record the institution."));
 }
 
 void spoton::slotDeleteInstitution(void)
@@ -2254,156 +2404,6 @@ void spoton::slotClearClipboardBuffer(void)
 #endif
       clipboard->clear();
       QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotAssignNewIPToNeighbor(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  int row = m_ui.neighbors->currentRow();
-
-  if(row < 0)
-    return;
-
-  QString ip("");
-  QString oid("");
-  QString protocol("");
-  QString proxyHostName("");
-  QString proxyPort("");
-  QString remoteIP("");
-  QString remotePort("");
-  QString scopeId("");
-  QString transport("");
-
-  for(int i = 0; i < m_ui.neighbors->columnCount(); i++)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, i);
-
-      if(!item)
-	continue;
-
-      if(i == 10)
-	remoteIP = item->text();
-      else if(i == 11)
-	remotePort = item->text();
-      else if(i == 12)
-	scopeId = item->text();
-      else if(i == 13)
-	protocol = item->text();
-      else if(i == 14)
-	proxyHostName = item->text();
-      else if(i == 15)
-	proxyPort = item->text();
-      else if(i == 27)
-	transport = item->text();
-      else if(i == m_ui.neighbors->columnCount() - 1)
-	oid = item->text();
-    }
-
-  QDialog dialog(this);
-  Ui_spoton_ipinformation ui;
-
-  ui.setupUi(&dialog);
-  dialog.setWindowTitle
-    (tr("%1: Neighbor Remote IP Information").
-     arg(SPOTON_APPLICATION_NAME));
-
-  if(protocol == "IPv4" || protocol.isEmpty())
-    {
-      ui.ip->setInputMask("");
-      ui.scope->setEnabled(false);
-    }
-
-  ui.ip->setText(remoteIP);
-  ui.port->setValue(remotePort.toInt());
-  ui.scope->setText(scopeId);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      ip = ui.ip->text().trimmed();
-
-      if(!ip.isEmpty())
-	ip = spoton_misc::massageIpForUi(ip, protocol);
-
-      remotePort = QString::number(ui.port->value());
-      scopeId = ui.scope->text();
-
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-	QString country
-	  (spoton_misc::countryNameFromIPAddress(ip));
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "neighbors.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.prepare("UPDATE neighbors SET "
-			  "country = ?, "
-			  "hash = ?, "
-			  "qt_country_hash = ?, "
-			  "remote_ip_address = ?, "
-			  "remote_ip_address_hash = ?, "
-			  "remote_port = ?, "
-			  "scope_id = ?, "
-			  "status_control = 'disconnected' "
-			  "WHERE OID = ? AND status_control <> 'deleted' AND "
-			  "user_defined = 1");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(country.toLatin1(), &ok).
-	       toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->
-		 keyedHash((proxyHostName + proxyPort + ip + remotePort +
-			    scopeId +
-			    transport).toLatin1(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2, crypt->keyedHash(country.remove(" ").toLatin1(),
-				     &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(5, crypt->encryptedThenHashed(remotePort.toLatin1(),
-					       &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(6, crypt->encryptedThenHashed(scopeId.toLatin1(), &ok).
-		 toBase64());
-
-	    query.bindValue(7, oid);
-
-	    if(ok)
-	      query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
     }
 }
 
