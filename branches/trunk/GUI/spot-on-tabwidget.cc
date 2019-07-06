@@ -28,8 +28,8 @@
 #include <QFileInfo>
 
 #include "Common/spot-on-misc.h"
-#include "spot-on.h"
 #include "spot-on-tabwidget.h"
+#include "spot-on.h"
 
 spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
 {

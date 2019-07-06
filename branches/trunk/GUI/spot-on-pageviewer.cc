@@ -35,10 +35,10 @@
 #endif
 
 #include "../Common/spot-on-crypt.h"
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
 #include "spot-on-textbrowser.h"
+#include "spot-on.h"
 
 spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
 				     const QString &urlHash,
