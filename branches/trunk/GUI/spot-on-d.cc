@@ -622,6 +622,30 @@ void spoton::refreshInstitutions(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotDemagnetizeMissingLinks(void)
+{
+  QStringList list
+    (m_ui.missingLinks->text().remove("magnet:?").split("&"));
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str.startsWith("fn="))
+	{
+	  str.remove(0, 3);
+	  m_ui.transmittedFile->setText(str);
+	}
+      else if(str.startsWith("ps="))
+	{
+	  str.remove(0, 3);
+	  m_ui.pulseSize->setValue(str.toInt());
+	}
+      else
+	break;
+    }
+}
+
 void spoton::slotDiscoverMissingLinks(void)
 {
   if(!m_starbeamAnalyzer)
@@ -667,30 +691,6 @@ void spoton::slotShowStarBeamAnalyzer(void)
 {
   if(m_starbeamAnalyzer)
     m_starbeamAnalyzer->show(this);
-}
-
-void spoton::slotDemagnetizeMissingLinks(void)
-{
-  QStringList list
-    (m_ui.missingLinks->text().remove("magnet:?").split("&"));
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(str.startsWith("fn="))
-	{
-	  str.remove(0, 3);
-	  m_ui.transmittedFile->setText(str);
-	}
-      else if(str.startsWith("ps="))
-	{
-	  str.remove(0, 3);
-	  m_ui.pulseSize->setValue(str.toInt());
-	}
-      else
-	break;
-    }
 }
 
 void spoton::slotUpdateChatWindows(void)
