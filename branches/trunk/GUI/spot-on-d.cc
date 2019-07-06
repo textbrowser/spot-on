@@ -96,6 +96,169 @@ static bool lengthGreaterThan(const QString &string1, const QString &string2)
   return string1.length() > string2.length();
 }
 
+void spoton::generateHalfGeminis(void)
+{
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+  if(!item)
+    return;
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = spoton_crypt::
+    strongRandomBytes(spoton_crypt::cipherKeyLength("aes256") / 2);
+  gemini.second = spoton_crypt::strongRandomBytes
+    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
+  saveGemini(gemini, item->text());
+}
+
+void spoton::populateMOTD(const QString &listenerOid)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	m_ui.motd->clear();
+
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT motd FROM listeners "
+		      "WHERE OID = ?");
+	query.bindValue(0, listenerOid);
+
+	if(query.exec())
+	  if(query.next())
+	    m_ui.motd->setPlainText
+	      (QString::fromUtf8(query.value(0).toByteArray().constData(),
+				 query.value(0).toByteArray().length()).
+	       trimmed());
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::refreshInstitutions(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	m_ui.institutions->setRowCount(0);
+	m_ui.institutions->setSortingEnabled(false);
+
+	QSqlQuery query(db);
+	int row = 0;
+	int totalRows = 0;
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM institutions"))
+	  if(query.next())
+	    m_ui.institutions->setRowCount(query.value(0).toInt());
+
+	if(query.exec("SELECT cipher_type, hash_type, "
+		      "name, postal_address FROM institutions"))
+	  while(query.next() && totalRows < m_ui.institutions->rowCount())
+	    {
+	      totalRows += 1;
+
+	      QByteArray cipherType;
+	      QByteArray hashType;
+	      QByteArray name;
+	      QByteArray postalAddress;
+	      bool ok = true;
+
+	      cipherType = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		hashType = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		name = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		postalAddress = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		   &ok);
+
+	      QTableWidgetItem *item = 0;
+
+	      if(ok)
+		item = new QTableWidgetItem(name.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.institutions->setItem(row, 0, item);
+
+	      if(ok)
+		item = new QTableWidgetItem(cipherType.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.institutions->setItem(row, 1, item);
+
+	      if(ok)
+		item = new QTableWidgetItem(postalAddress.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.institutions->setItem(row, 2, item);
+
+	      if(ok)
+		item = new QTableWidgetItem(hashType.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.institutions->setItem(row, 3, item);
+	      row += 1;
+	    }
+
+	m_ui.institutions->setRowCount(totalRows);
+	m_ui.institutions->setSortingEnabled(true);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotDiscoverMissingLinks(void)
 {
   if(!m_starbeamAnalyzer)
@@ -254,113 +417,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::refreshInstitutions(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	m_ui.institutions->setRowCount(0);
-	m_ui.institutions->setSortingEnabled(false);
-
-	QSqlQuery query(db);
-	int row = 0;
-	int totalRows = 0;
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT COUNT(*) FROM institutions"))
-	  if(query.next())
-	    m_ui.institutions->setRowCount(query.value(0).toInt());
-
-	if(query.exec("SELECT cipher_type, hash_type, "
-		      "name, postal_address FROM institutions"))
-	  while(query.next() && totalRows < m_ui.institutions->rowCount())
-	    {
-	      totalRows += 1;
-
-	      QByteArray cipherType;
-	      QByteArray hashType;
-	      QByteArray name;
-	      QByteArray postalAddress;
-	      bool ok = true;
-
-	      cipherType = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok);
-
-	      if(ok)
-		hashType = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(1).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		name = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(2).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		postalAddress = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()),
-		   &ok);
-
-	      QTableWidgetItem *item = 0;
-
-	      if(ok)
-		item = new QTableWidgetItem(name.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem(row, 0, item);
-
-	      if(ok)
-		item = new QTableWidgetItem(cipherType.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem(row, 1, item);
-
-	      if(ok)
-		item = new QTableWidgetItem(postalAddress.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem(row, 2, item);
-
-	      if(ok)
-		item = new QTableWidgetItem(hashType.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.institutions->setItem(row, 3, item);
-	      row += 1;
-	    }
-
-	m_ui.institutions->setRowCount(totalRows);
-	m_ui.institutions->setSortingEnabled(true);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotAddInstitution(const QString &text)
@@ -739,41 +795,6 @@ void spoton::slotSaveMOTD(void)
 			  arg(SPOTON_APPLICATION_NAME), error);
   else
     m_ui.motd->selectAll();
-}
-
-void spoton::populateMOTD(const QString &listenerOid)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	m_ui.motd->clear();
-
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT motd FROM listeners "
-		      "WHERE OID = ?");
-	query.bindValue(0, listenerOid);
-
-	if(query.exec())
-	  if(query.next())
-	    m_ui.motd->setPlainText
-	      (QString::fromUtf8(query.value(0).toByteArray().constData(),
-				 query.value(0).toByteArray().length()).
-	       trimmed());
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotChatPopup(void)
@@ -2570,27 +2591,6 @@ void spoton::slotPostgreSQLDisconnect(int index)
   QSettings settings;
 
   settings.setValue("gui/sqliteSearch", index == 1);
-}
-
-void spoton::generateHalfGeminis(void)
-{
-  int row = m_ui.participants->currentRow();
-
-  if(row < 0)
-    return;
-
-  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-  if(!item)
-    return;
-
-  QPair<QByteArray, QByteArray> gemini;
-
-  gemini.first = spoton_crypt::
-    strongRandomBytes(spoton_crypt::cipherKeyLength("aes256") / 2);
-  gemini.second = spoton_crypt::strongRandomBytes
-    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
-  saveGemini(gemini, item->text());
 }
 
 void spoton::slotSetListenerSSLControlString(void)
