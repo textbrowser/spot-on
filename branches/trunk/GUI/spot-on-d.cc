@@ -117,6 +117,131 @@ void spoton::generateHalfGeminis(void)
   saveGemini(gemini, item->text());
 }
 
+void spoton::populateAETokens(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QByteArray bytes1;
+	QByteArray bytes2;
+	QByteArray bytes3;
+	QModelIndexList list;
+
+	list = m_ui.ae_tokens->selectionModel()->selectedRows(0);
+
+	if(!list.isEmpty())
+	  bytes1 = list.at(0).data().toByteArray();
+
+	list = m_ui.ae_tokens->selectionModel()->selectedRows(1);
+
+	if(!list.isEmpty())
+	  bytes2 = list.at(0).data().toByteArray();
+
+	list = m_ui.ae_tokens->selectionModel()->selectedRows(2);
+
+	if(!list.isEmpty())
+	  bytes3 = list.at(0).data().toByteArray();
+
+	m_ui.ae_tokens->setSortingEnabled(false);
+	m_ui.ae_tokens->setRowCount(0);
+
+	QSqlQuery query(db);
+	int row = 0;
+	int totalRows = 0;
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM listeners_adaptive_echo_tokens"))
+	  if(query.next())
+	    m_ui.ae_tokens->setRowCount(query.value(0).toInt());
+
+	query.prepare
+	  ("SELECT token, token_type FROM listeners_adaptive_echo_tokens");
+
+	if(query.exec())
+	  while(query.next() && totalRows < m_ui.ae_tokens->rowCount())
+	    {
+	      totalRows += 1;
+
+	      QByteArray eType;
+	      QByteArray hType;
+	      QByteArray token;
+	      QByteArray type;
+	      bool ok = true;
+
+	      token = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		type = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()),
+		   &ok);
+
+	      if(ok)
+		{
+		  eType = type.split('\n').value(0);
+		  hType = type.split('\n').value(1);
+		}
+
+	      QTableWidgetItem *item = 0;
+
+	      if(ok)
+		item = new QTableWidgetItem(token.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.ae_tokens->setItem(row, 0, item);
+
+	      if(ok)
+		item = new QTableWidgetItem(eType.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.ae_tokens->setItem(row, 1, item);
+
+	      if(ok)
+		item = new QTableWidgetItem(hType.constData());
+	      else
+		item = new QTableWidgetItem(tr("error"));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      m_ui.ae_tokens->setItem(row, 2, item);
+
+	      if(bytes1 == token && bytes2 == eType && bytes3 == hType)
+		m_ui.ae_tokens->selectRow(row);
+
+	      row += 1;
+	    }
+
+	m_ui.ae_tokens->setRowCount(totalRows);
+	m_ui.ae_tokens->setSortingEnabled(true);
+	m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::populateMOTD(const QString &listenerOid)
 {
   QString connectionName("");
@@ -150,6 +275,18 @@ void spoton::populateMOTD(const QString &listenerOid)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::prepareUrlContainers(void)
+{
+  spoton_crypt *crypt = spoton_misc::retrieveUrlCommonCredentials
+    (m_crypts.value("chat", 0));
+
+  if(!crypt)
+    return;
+
+  delete m_urlCommonCrypt;
+  m_urlCommonCrypt = crypt;
 }
 
 void spoton::refreshInstitutions(void)
@@ -1234,131 +1371,6 @@ void spoton::slotDeleteAEToken(void)
 			     "token."));
   else
     populateAETokens();
-}
-
-void spoton::populateAETokens(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QByteArray bytes1;
-	QByteArray bytes2;
-	QByteArray bytes3;
-	QModelIndexList list;
-
-	list = m_ui.ae_tokens->selectionModel()->selectedRows(0);
-
-	if(!list.isEmpty())
-	  bytes1 = list.at(0).data().toByteArray();
-
-	list = m_ui.ae_tokens->selectionModel()->selectedRows(1);
-
-	if(!list.isEmpty())
-	  bytes2 = list.at(0).data().toByteArray();
-
-	list = m_ui.ae_tokens->selectionModel()->selectedRows(2);
-
-	if(!list.isEmpty())
-	  bytes3 = list.at(0).data().toByteArray();
-
-	m_ui.ae_tokens->setSortingEnabled(false);
-	m_ui.ae_tokens->setRowCount(0);
-
-	QSqlQuery query(db);
-	int row = 0;
-	int totalRows = 0;
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT COUNT(*) FROM listeners_adaptive_echo_tokens"))
-	  if(query.next())
-	    m_ui.ae_tokens->setRowCount(query.value(0).toInt());
-
-	query.prepare
-	  ("SELECT token, token_type FROM listeners_adaptive_echo_tokens");
-
-	if(query.exec())
-	  while(query.next() && totalRows < m_ui.ae_tokens->rowCount())
-	    {
-	      totalRows += 1;
-
-	      QByteArray eType;
-	      QByteArray hType;
-	      QByteArray token;
-	      QByteArray type;
-	      bool ok = true;
-
-	      token = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok);
-
-	      if(ok)
-		type = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(1).toByteArray()),
-		   &ok);
-
-	      if(ok)
-		{
-		  eType = type.split('\n').value(0);
-		  hType = type.split('\n').value(1);
-		}
-
-	      QTableWidgetItem *item = 0;
-
-	      if(ok)
-		item = new QTableWidgetItem(token.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem(row, 0, item);
-
-	      if(ok)
-		item = new QTableWidgetItem(eType.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem(row, 1, item);
-
-	      if(ok)
-		item = new QTableWidgetItem(hType.constData());
-	      else
-		item = new QTableWidgetItem(tr("error"));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      m_ui.ae_tokens->setItem(row, 2, item);
-
-	      if(bytes1 == token && bytes2 == eType && bytes3 == hType)
-		m_ui.ae_tokens->selectRow(row);
-
-	      row += 1;
-	    }
-
-	m_ui.ae_tokens->setRowCount(totalRows);
-	m_ui.ae_tokens->setSortingEnabled(true);
-	m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotResetAETokenInformation(void)
@@ -2544,18 +2556,6 @@ void spoton::slotUpdateSpinBoxChanged(double value)
       m_settings["gui/starbeamUpdateTimer"] = value;
       settings.setValue("gui/starbeamUpdateTimer", value);
     }
-}
-
-void spoton::prepareUrlContainers(void)
-{
-  spoton_crypt *crypt = spoton_misc::retrieveUrlCommonCredentials
-    (m_crypts.value("chat", 0));
-
-  if(!crypt)
-    return;
-
-  delete m_urlCommonCrypt;
-  m_urlCommonCrypt = crypt;
 }
 
 void spoton::slotPostgreSQLDisconnect(int index)
