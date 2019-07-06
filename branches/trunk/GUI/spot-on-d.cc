@@ -96,6 +96,126 @@ static bool lengthGreaterThan(const QString &string1, const QString &string2)
   return string1.length() > string2.length();
 }
 
+void spoton::applyGoldBugToAttachments(const QString &folderOid,
+				       const QSqlDatabase &db,
+				       int *count,
+				       spoton_crypt *crypt1,
+				       bool *ok1)
+{
+  if(!count || !crypt1)
+    {
+      if(ok1)
+	*ok1 = false;
+
+      return;
+    }
+
+  spoton_crypt *crypt2 = m_crypts.value("email", 0);
+
+  if(!crypt2)
+    {
+      if(ok1)
+	*ok1 = false;
+
+      return;
+    }
+
+  *count = 0;
+
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+  query.prepare("SELECT data, OID FROM folders_attachment WHERE "
+		"folders_oid = ?");
+  query.bindValue(0, folderOid);
+
+  if(query.exec())
+    {
+      if(query.next())
+	{
+	  QByteArray attachmentData
+	    (QByteArray::fromBase64(query.value(0).toByteArray()));
+	  bool ok2 = true;
+
+	  attachmentData = crypt2->decryptedAfterAuthenticated
+	    (attachmentData, &ok2);
+
+	  if(ok2)
+	    attachmentData = crypt1->decryptedAfterAuthenticated
+	      (attachmentData, &ok2);
+
+	  if(ok2)
+	    {
+	      if(!attachmentData.isEmpty())
+		attachmentData = qUncompress(attachmentData);
+
+	      if(!attachmentData.isEmpty())
+		{
+		  QDataStream stream(&attachmentData, QIODevice::ReadOnly);
+		  QList<QPair<QByteArray, QByteArray> > attachments;
+
+		  stream >> attachments;
+
+		  if(stream.status() != QDataStream::Ok)
+		    {
+		      if(ok1)
+			*ok1 = false;
+
+		      attachments.clear();
+		    }
+
+		  while(!attachments.isEmpty())
+		    {
+		      QPair<QByteArray, QByteArray> pair
+			(attachments.takeFirst());
+		      QSqlQuery query(db);
+
+		      query.prepare("INSERT INTO folders_attachment "
+				    "(data, folders_oid, name) "
+				    "VALUES (?, ?, ?)");
+		      query.bindValue
+			(0, crypt2->encryptedThenHashed(pair.first,
+							&ok2).
+			 toBase64());
+		      query.bindValue(1, folderOid);
+
+		      if(ok2)
+			query.bindValue
+			  (2, crypt2->
+			   encryptedThenHashed(pair.second,
+					       &ok2).toBase64());
+
+		      if(ok2)
+			ok2 = query.exec();
+
+		      if(ok2)
+			*count += 1;
+		      else
+			{
+			  if(ok1)
+			    *ok1 = false;
+
+			  break;
+			}
+		    }
+		}
+	    }
+	}
+    }
+  else if(ok1)
+    *ok1 = false;
+
+  query.exec("PRAGMA secure_delete = ON");
+  query.prepare("DELETE FROM folders_attachment WHERE OID = ?");
+  query.bindValue(0, folderOid);
+
+  if(!query.exec())
+    {
+      if(ok1)
+	*ok1 = false;
+    }
+}
+
 void spoton::generateHalfGeminis(void)
 {
   int row = m_ui.participants->currentRow();
@@ -1877,126 +1997,6 @@ void spoton::slotSaveAttachment(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error occurred while attempting "
 			     "to extract the attachment(s)."));
-}
-
-void spoton::applyGoldBugToAttachments(const QString &folderOid,
-				       const QSqlDatabase &db,
-				       int *count,
-				       spoton_crypt *crypt1,
-				       bool *ok1)
-{
-  if(!count || !crypt1)
-    {
-      if(ok1)
-	*ok1 = false;
-
-      return;
-    }
-
-  spoton_crypt *crypt2 = m_crypts.value("email", 0);
-
-  if(!crypt2)
-    {
-      if(ok1)
-	*ok1 = false;
-
-      return;
-    }
-
-  *count = 0;
-
-  QSqlQuery query(db);
-
-  query.setForwardOnly(true);
-  query.prepare("SELECT data, OID FROM folders_attachment WHERE "
-		"folders_oid = ?");
-  query.bindValue(0, folderOid);
-
-  if(query.exec())
-    {
-      if(query.next())
-	{
-	  QByteArray attachmentData
-	    (QByteArray::fromBase64(query.value(0).toByteArray()));
-	  bool ok2 = true;
-
-	  attachmentData = crypt2->decryptedAfterAuthenticated
-	    (attachmentData, &ok2);
-
-	  if(ok2)
-	    attachmentData = crypt1->decryptedAfterAuthenticated
-	      (attachmentData, &ok2);
-
-	  if(ok2)
-	    {
-	      if(!attachmentData.isEmpty())
-		attachmentData = qUncompress(attachmentData);
-
-	      if(!attachmentData.isEmpty())
-		{
-		  QDataStream stream(&attachmentData, QIODevice::ReadOnly);
-		  QList<QPair<QByteArray, QByteArray> > attachments;
-
-		  stream >> attachments;
-
-		  if(stream.status() != QDataStream::Ok)
-		    {
-		      if(ok1)
-			*ok1 = false;
-
-		      attachments.clear();
-		    }
-
-		  while(!attachments.isEmpty())
-		    {
-		      QPair<QByteArray, QByteArray> pair
-			(attachments.takeFirst());
-		      QSqlQuery query(db);
-
-		      query.prepare("INSERT INTO folders_attachment "
-				    "(data, folders_oid, name) "
-				    "VALUES (?, ?, ?)");
-		      query.bindValue
-			(0, crypt2->encryptedThenHashed(pair.first,
-							&ok2).
-			 toBase64());
-		      query.bindValue(1, folderOid);
-
-		      if(ok2)
-			query.bindValue
-			  (2, crypt2->
-			   encryptedThenHashed(pair.second,
-					       &ok2).toBase64());
-
-		      if(ok2)
-			ok2 = query.exec();
-
-		      if(ok2)
-			*count += 1;
-		      else
-			{
-			  if(ok1)
-			    *ok1 = false;
-
-			  break;
-			}
-		    }
-		}
-	    }
-	}
-    }
-  else if(ok1)
-    *ok1 = false;
-
-  query.exec("PRAGMA secure_delete = ON");
-  query.prepare("DELETE FROM folders_attachment WHERE OID = ?");
-  query.bindValue(0, folderOid);
-
-  if(!query.exec())
-    {
-      if(ok1)
-	*ok1 = false;
-    }
 }
 
 void spoton::slotEncryptionKeyTypeChanged(int index)
