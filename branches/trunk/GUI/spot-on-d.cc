@@ -925,6 +925,15 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 }
 
+void spoton::slotChatPopup(void)
+{
+  QList<QTableWidgetItem *> items(m_ui.participants->selectedItems());
+
+  if(!items.isEmpty() && items.at(0))
+    slotParticipantDoubleClicked
+      (m_ui.participants->item(items.at(0)->row(), 0));
+}
+
 void spoton::slotClearClipboardBuffer(void)
 {
   QClipboard *clipboard = QApplication::clipboard();
@@ -1153,6 +1162,103 @@ void spoton::slotDiscoverMissingLinks(void)
 
   m_starbeamAnalyzer->add(fileName, oid, pulseSize, totalSize);
   m_starbeamAnalyzer->show(this);
+}
+
+void spoton::slotPostgreSQLDisconnect(int index)
+{
+  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
+  m_ui.postgresqlConnect->setProperty("user_text", "connect");
+  m_ui.postgresqlConnect->setText(tr("&PostgreSQL Connect..."));
+  m_ui.url_database_connection_information->clear();
+  m_urlDatabase.close();
+  m_urlDatabase = QSqlDatabase();
+
+  if(QSqlDatabase::contains("URLDatabase"))
+    QSqlDatabase::removeDatabase("URLDatabase");
+
+  if(index == 0)
+    m_ui.postgresqlConnect->setVisible(true);
+  else
+    {
+      m_ui.postgresqlConnect->setVisible(false);
+      m_urlDatabase = QSqlDatabase::addDatabase("QSQLITE", "URLDatabase");
+      m_urlDatabase.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "urls.db");
+      m_urlDatabase.open();
+
+      if(m_urlDatabase.isOpen())
+	m_ui.url_database_connection_information->setText
+	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").
+	   arg("urls.db"));
+    }
+
+  m_settings["gui/sqliteSearch"] = index == 1;
+
+  QSettings settings;
+
+  settings.setValue("gui/sqliteSearch", index == 1);
+}
+
+void spoton::slotSaveMOTD(void)
+{
+  QString connectionName("");
+  QString error("");
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      error = tr("Invalid listener OID. Please select a listener.");
+      goto done_label;
+    }
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString str(m_ui.motd->toPlainText().trimmed());
+
+	if(str.isEmpty())
+	  str = QString("Welcome to %1.").
+	    arg(SPOTON_APPLICATION_NAME);
+
+	query.prepare("UPDATE listeners SET motd = ? WHERE OID = ?");
+	query.bindValue(0, str.toUtf8());
+	query.bindValue(1, oid);
+
+	if(!query.exec())
+	  error = tr
+	    ("Database error. Unable to save the message of the day.");
+      }
+    else
+      error = tr("Unable to open listeners.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+  else
+    m_ui.motd->selectAll();
 }
 
 void spoton::slotSharePoptasticPublicKey(void)
@@ -1426,77 +1532,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::slotSaveMOTD(void)
-{
-  QString connectionName("");
-  QString error("");
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      error = tr("Invalid listener OID. Please select a listener.");
-      goto done_label;
-    }
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QString str(m_ui.motd->toPlainText().trimmed());
-
-	if(str.isEmpty())
-	  str = QString("Welcome to %1.").
-	    arg(SPOTON_APPLICATION_NAME);
-
-	query.prepare("UPDATE listeners SET motd = ? WHERE OID = ?");
-	query.bindValue(0, str.toUtf8());
-	query.bindValue(1, oid);
-
-	if(!query.exec())
-	  error = tr
-	    ("Database error. Unable to save the message of the day.");
-      }
-    else
-      error = tr("Unable to open listeners.db.");
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-  else
-    m_ui.motd->selectAll();
-}
-
-void spoton::slotChatPopup(void)
-{
-  QList<QTableWidgetItem *> items(m_ui.participants->selectedItems());
-
-  if(!items.isEmpty() && items.at(0))
-    slotParticipantDoubleClicked
-      (m_ui.participants->item(items.at(0)->row(), 0));
 }
 
 void spoton::slotCommonBuzzChannelsActivated(int index)
@@ -2650,41 +2685,6 @@ void spoton::slotUpdateSpinBoxChanged(double value)
       m_settings["gui/starbeamUpdateTimer"] = value;
       settings.setValue("gui/starbeamUpdateTimer", value);
     }
-}
-
-void spoton::slotPostgreSQLDisconnect(int index)
-{
-  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
-  m_ui.postgresqlConnect->setProperty("user_text", "connect");
-  m_ui.postgresqlConnect->setText(tr("&PostgreSQL Connect..."));
-  m_ui.url_database_connection_information->clear();
-  m_urlDatabase.close();
-  m_urlDatabase = QSqlDatabase();
-
-  if(QSqlDatabase::contains("URLDatabase"))
-    QSqlDatabase::removeDatabase("URLDatabase");
-
-  if(index == 0)
-    m_ui.postgresqlConnect->setVisible(true);
-  else
-    {
-      m_ui.postgresqlConnect->setVisible(false);
-      m_urlDatabase = QSqlDatabase::addDatabase("QSQLITE", "URLDatabase");
-      m_urlDatabase.setDatabaseName
-	(spoton_misc::homePath() + QDir::separator() + "urls.db");
-      m_urlDatabase.open();
-
-      if(m_urlDatabase.isOpen())
-	m_ui.url_database_connection_information->setText
-	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").
-	   arg("urls.db"));
-    }
-
-  m_settings["gui/sqliteSearch"] = index == 1;
-
-  QSettings settings;
-
-  settings.setValue("gui/sqliteSearch", index == 1);
 }
 
 void spoton::slotSetListenerSSLControlString(void)
