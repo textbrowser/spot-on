@@ -925,6 +925,102 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 }
 
+void spoton::slotClearClipboardBuffer(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      menuBar()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotCopyInstitution(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  int row = -1;
+
+  if((row = m_ui.institutions->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.institutions->item(row, 0);
+      QTableWidgetItem *item2 = m_ui.institutions->item(row, 1);
+      QTableWidgetItem *item3 = m_ui.institutions->item(row, 2);
+      QTableWidgetItem *item4 = m_ui.institutions->item(row, 3);
+
+      if(item1 && item2 && item3 && item4)
+	{
+	  QString magnet(QString("magnet:?"
+				 "in=%1&"
+				 "ct=%2&"
+				 "pa=%3&"
+				 "ht=%4&"
+				 "xt=urn:institution").
+			 arg(item1->text()).
+			 arg(item2->text()).
+			 arg(item3->text()).
+			 arg(item4->text()));
+
+	  clipboard->setText(magnet);
+	}
+    }
+}
+
+void spoton::slotDeleteInstitution(void)
+{
+  QModelIndexList list
+    (m_ui.institutions->selectionModel()->selectedRows(0)); // Name
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM institutions WHERE hash = ?");
+
+	if(m_crypts.value("email", 0))
+	  query.bindValue
+	    (0, m_crypts.value("email")->
+	     keyedHash(list.value(0).data().toString().toLatin1(), &ok).
+	     toBase64());
+	else
+	  ok = false;
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  refreshInstitutions();
+}
+
 void spoton::slotDemagnetizeMissingLinks(void)
 {
   QStringList list
@@ -988,6 +1084,100 @@ void spoton::slotDiscoverMissingLinks(void)
 
   m_starbeamAnalyzer->add(fileName, oid, pulseSize, totalSize);
   m_starbeamAnalyzer->show(this);
+}
+
+void spoton::slotSharePoptasticPublicKey(void)
+{
+  if(!m_crypts.value("poptastic", 0) ||
+     !m_crypts.value("poptastic-signature", 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value("poptastic")->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value("poptastic")->digitalSignature
+      (publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("poptastic-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name(poptasticName());
+
+      if(name.isEmpty())
+	name = "unknown@unknown.org";
+
+      message.append("sharepublickey_");
+      message.append(oid);
+      message.append("_");
+      message.append(QByteArray("poptastic").toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(publicKey.toBase64());
+      message.append("_");
+      message.append(qCompress(signature).toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotSharePoptasticPublicKey(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotShowStarBeamAnalyzer(void)
@@ -1081,85 +1271,6 @@ void spoton::slotUpdateChatWindows(void)
 	    it.value()->deleteLater();
 
 	  it.remove();
-	}
-    }
-}
-
-void spoton::slotDeleteInstitution(void)
-{
-  QModelIndexList list
-    (m_ui.institutions->selectionModel()->selectedRows(0)); // Name
-
-  if(list.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM institutions WHERE hash = ?");
-
-	if(m_crypts.value("email", 0))
-	  query.bindValue
-	    (0, m_crypts.value("email")->
-	     keyedHash(list.value(0).data().toString().toLatin1(), &ok).
-	     toBase64());
-	else
-	  ok = false;
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  refreshInstitutions();
-}
-
-void spoton::slotCopyInstitution(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->clear();
-
-  int row = -1;
-
-  if((row = m_ui.institutions->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item1 = m_ui.institutions->item(row, 0);
-      QTableWidgetItem *item2 = m_ui.institutions->item(row, 1);
-      QTableWidgetItem *item3 = m_ui.institutions->item(row, 2);
-      QTableWidgetItem *item4 = m_ui.institutions->item(row, 3);
-
-      if(item1 && item2 && item3 && item4)
-	{
-	  QString magnet(QString("magnet:?"
-				 "in=%1&"
-				 "ct=%2&"
-				 "pa=%3&"
-				 "ht=%4&"
-				 "xt=urn:institution").
-			 arg(item1->text()).
-			 arg(item2->text()).
-			 arg(item3->text()).
-			 arg(item4->text()));
-
-	  clipboard->setText(magnet);
 	}
     }
 }
@@ -2390,23 +2501,6 @@ void spoton::slotCopyAEMagnet(void)
   clipboard->setText(magnet);
 }
 
-void spoton::slotClearClipboardBuffer(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      menuBar()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-    }
-}
-
 void spoton::slotReceiversChanged(QTableWidgetItem *item)
 {
   if(!item)
@@ -2759,98 +2853,4 @@ void spoton::slotSetNeighborSSLControlString(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSharePoptasticPublicKey(void)
-{
-  if(!m_crypts.value("poptastic", 0) ||
-     !m_crypts.value("poptastic-signature", 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  if(m_ui.neighborsActionMenu->menu())
-    m_ui.neighborsActionMenu->menu()->repaint();
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value("poptastic")->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value("poptastic")->digitalSignature
-      (publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("poptastic-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name(poptasticName());
-
-      if(name.isEmpty())
-	name = "unknown@unknown.org";
-
-      message.append("sharepublickey_");
-      message.append(oid);
-      message.append("_");
-      message.append(QByteArray("poptastic").toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(publicKey.toBase64());
-      message.append("_");
-      message.append(qCompress(signature).toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotSharePoptasticPublicKey(): write() failure "
-		   "for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
 }
