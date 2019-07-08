@@ -942,6 +942,75 @@ void spoton::slotClearClipboardBuffer(void)
     }
 }
 
+void spoton::slotCopyAEMagnet(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  int row = -1;
+
+  if(action->property("from") == "listeners")
+    row = m_ui.ae_tokens->currentRow();
+  else
+    row = m_ui.neighbors->currentRow();
+
+  if(row < 0)
+    return;
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  QString magnet("");
+  QTableWidgetItem *item1 = 0;
+  QTableWidgetItem *item2 = 0;
+  QTableWidgetItem *item3 = 0;
+
+  if(action->property("from") == "listeners")
+    {
+      item1 = m_ui.ae_tokens->item
+	(row, 0); // Adaptive Echo Token
+      item2 = m_ui.ae_tokens->item
+	(row, 1); // Adaptive Echo Token Encryption Type
+      item3 = m_ui.ae_tokens->item
+	(row, 2); // Adaptive Echo Token Hash Type
+
+      if(item1 && item2 && item3)
+	magnet = QString("magnet:?"
+			 "ct=%1&"
+			 "ht=%2&"
+			 "to=%3&"
+			 "xt=urn:adaptive-echo").
+	  arg(item2->text()).
+	  arg(item3->text()).
+	  arg(item1->text());
+    }
+  else
+    {
+      item1 = m_ui.neighbors->item
+	(row, 32); // Adaptive Echo Token
+      item2 = m_ui.neighbors->item
+	(row, 33); // Adaptive Echo Token Type
+
+      if(item1 && item2)
+	magnet = QString("magnet:?"
+			 "ct=%1&"
+			 "ht=%2&"
+			 "to=%3&"
+			 "xt=urn:adaptive-echo").
+	  arg(item2->text().split("\n").value(0).trimmed()).
+	  arg(item2->text().split("\n").value(1)).
+	  arg(item1->text());
+    }
+
+  clipboard->setText(magnet);
+}
+
 void spoton::slotCopyInstitution(void)
 {
   QClipboard *clipboard = QApplication::clipboard();
@@ -1180,6 +1249,90 @@ void spoton::slotSharePoptasticPublicKey(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotShowMinimalDisplay(bool state)
+{
+#if SPOTON_GOLDBUG == 1
+  foreach(QObject *object, m_ui.kernelBox->children())
+    if(qobject_cast<QWidget *> (object))
+      qobject_cast<QWidget *> (object)->setVisible(!state);
+
+  m_optionsUi.saveCopy->setVisible(!state);
+  m_ui.activateKernel->setVisible(true);
+  m_ui.addException->setVisible(!state);
+  m_ui.aeBox->setVisible(!state);
+  m_ui.approvedIPs->setVisible(!state);
+  m_ui.buildInformation->setVisible(!state);
+  m_ui.buzzHashType->setVisible(!state);
+  m_ui.buzzIterationCount->setVisible(!state);
+  m_ui.buzzName->setVisible(!state);
+  m_ui.channelType->setVisible(!state);
+  m_ui.cipherType->setVisible(!state);
+  m_ui.commonUrlCipher->setVisible(!state);
+  m_ui.commonUrlHash->setVisible(!state);
+  m_ui.commonUrlIterationCount->setVisible(!state);
+  m_ui.days->setVisible(!state);
+  m_ui.days_valid->setVisible(!state);
+  m_ui.deactivateKernel->setVisible(true);
+  m_ui.dynamicdns->setVisible(!state);
+  m_ui.hashType->setVisible(!state);
+  m_ui.ipv4Neighbor->setVisible(!state);
+  m_ui.ipv6Neighbor->setVisible(!state);
+  m_ui.iterationCount->setVisible(!state);
+  m_ui.kernelPath->setVisible(true);
+  m_ui.kernelPathLabel->setVisible(true);
+  m_ui.label->setVisible(!state);
+  m_ui.label_104->setVisible(!state);
+  m_ui.label_117->setVisible(!state);
+  m_ui.label_122->setVisible(!state);
+  m_ui.label_138->setVisible(!state);
+  m_ui.label_139->setVisible(!state);
+  m_ui.label_14->setVisible(!state);
+  m_ui.label_140->setVisible(!state);
+  m_ui.label_15->setVisible(!state);
+  m_ui.label_16->setVisible(!state);
+  m_ui.label_21->setVisible(!state);
+  m_ui.label_23->setVisible(!state);
+  m_ui.label_27->setVisible(!state);
+  m_ui.label_28->setVisible(!state);
+  m_ui.label_32->setVisible(!state);
+  m_ui.label_36->setVisible(!state);
+  m_ui.label_39->setVisible(!state);
+  m_ui.label_44->setVisible(!state);
+  m_ui.label_54->setVisible(!state);
+  m_ui.label_62->setVisible(!state);
+  m_ui.label_64->setVisible(!state);
+  m_ui.label_66->setVisible(!state);
+  m_ui.label_70->setVisible(!state);
+  m_ui.label_71->setVisible(!state);
+  m_ui.label_78->setVisible(!state);
+  m_ui.listenerOrientation->setVisible(!state);
+  m_ui.listenersSslControlString->setVisible(!state);
+  m_ui.motdBox->setVisible(!state);
+  m_ui.neighborKeySize->setVisible(!state);
+  m_ui.neighborOrientation->setVisible(!state);
+  m_ui.neighborScopeId->setVisible(!state);
+  m_ui.neighborScopeIdLabel->setVisible(!state);
+  m_ui.neighborTransport->setVisible(!state);
+  m_ui.neighborsEchoMode->setVisible(!state);
+  m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.neighborsSslControlString->setVisible(!state);
+  m_ui.postgresql_recommendation_label->setVisible(!state);
+  m_ui.proxy->setVisible(!state);
+  m_ui.publicKeysBox->setVisible(!state);
+  m_ui.pulseSize->setVisible(!state);
+  m_ui.requireSsl->setVisible(!state);
+  m_ui.saltLength->setVisible(!state);
+  m_ui.saveBuzzName->setVisible(!state);
+  m_ui.searchfor->setVisible(!state);
+  m_ui.selectKernelPath->setVisible(true);
+  m_ui.settings_frame->setVisible(!state);
+  m_ui.shareBuzzMagnet->setVisible(!state);
+  m_ui.sslKeySizeLabel->setVisible(!state);
+  m_ui.urlDistributionModel->setVisible(!state);
+#endif
+  m_sb.errorlog->setHidden(state);
+}
+
 void spoton::slotShowStarBeamAnalyzer(void)
 {
   if(m_starbeamAnalyzer)
@@ -1273,90 +1426,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::slotShowMinimalDisplay(bool state)
-{
-#if SPOTON_GOLDBUG == 1
-  foreach(QObject *object, m_ui.kernelBox->children())
-    if(qobject_cast<QWidget *> (object))
-      qobject_cast<QWidget *> (object)->setVisible(!state);
-
-  m_optionsUi.saveCopy->setVisible(!state);
-  m_ui.activateKernel->setVisible(true);
-  m_ui.addException->setVisible(!state);
-  m_ui.aeBox->setVisible(!state);
-  m_ui.approvedIPs->setVisible(!state);
-  m_ui.buildInformation->setVisible(!state);
-  m_ui.buzzHashType->setVisible(!state);
-  m_ui.buzzIterationCount->setVisible(!state);
-  m_ui.buzzName->setVisible(!state);
-  m_ui.channelType->setVisible(!state);
-  m_ui.cipherType->setVisible(!state);
-  m_ui.commonUrlCipher->setVisible(!state);
-  m_ui.commonUrlHash->setVisible(!state);
-  m_ui.commonUrlIterationCount->setVisible(!state);
-  m_ui.days->setVisible(!state);
-  m_ui.days_valid->setVisible(!state);
-  m_ui.deactivateKernel->setVisible(true);
-  m_ui.dynamicdns->setVisible(!state);
-  m_ui.hashType->setVisible(!state);
-  m_ui.ipv4Neighbor->setVisible(!state);
-  m_ui.ipv6Neighbor->setVisible(!state);
-  m_ui.iterationCount->setVisible(!state);
-  m_ui.kernelPath->setVisible(true);
-  m_ui.kernelPathLabel->setVisible(true);
-  m_ui.label->setVisible(!state);
-  m_ui.label_104->setVisible(!state);
-  m_ui.label_117->setVisible(!state);
-  m_ui.label_122->setVisible(!state);
-  m_ui.label_138->setVisible(!state);
-  m_ui.label_139->setVisible(!state);
-  m_ui.label_14->setVisible(!state);
-  m_ui.label_140->setVisible(!state);
-  m_ui.label_15->setVisible(!state);
-  m_ui.label_16->setVisible(!state);
-  m_ui.label_21->setVisible(!state);
-  m_ui.label_23->setVisible(!state);
-  m_ui.label_27->setVisible(!state);
-  m_ui.label_28->setVisible(!state);
-  m_ui.label_32->setVisible(!state);
-  m_ui.label_36->setVisible(!state);
-  m_ui.label_39->setVisible(!state);
-  m_ui.label_44->setVisible(!state);
-  m_ui.label_54->setVisible(!state);
-  m_ui.label_62->setVisible(!state);
-  m_ui.label_64->setVisible(!state);
-  m_ui.label_66->setVisible(!state);
-  m_ui.label_70->setVisible(!state);
-  m_ui.label_71->setVisible(!state);
-  m_ui.label_78->setVisible(!state);
-  m_ui.listenerOrientation->setVisible(!state);
-  m_ui.listenersSslControlString->setVisible(!state);
-  m_ui.motdBox->setVisible(!state);
-  m_ui.neighborKeySize->setVisible(!state);
-  m_ui.neighborOrientation->setVisible(!state);
-  m_ui.neighborScopeId->setVisible(!state);
-  m_ui.neighborScopeIdLabel->setVisible(!state);
-  m_ui.neighborTransport->setVisible(!state);
-  m_ui.neighborsEchoMode->setVisible(!state);
-  m_ui.neighborsSslControlString->setVisible(!state);
-  m_ui.neighborsSslControlString->setVisible(!state);
-  m_ui.postgresql_recommendation_label->setVisible(!state);
-  m_ui.proxy->setVisible(!state);
-  m_ui.publicKeysBox->setVisible(!state);
-  m_ui.pulseSize->setVisible(!state);
-  m_ui.requireSsl->setVisible(!state);
-  m_ui.saltLength->setVisible(!state);
-  m_ui.saveBuzzName->setVisible(!state);
-  m_ui.searchfor->setVisible(!state);
-  m_ui.selectKernelPath->setVisible(true);
-  m_ui.settings_frame->setVisible(!state);
-  m_ui.shareBuzzMagnet->setVisible(!state);
-  m_ui.sslKeySizeLabel->setVisible(!state);
-  m_ui.urlDistributionModel->setVisible(!state);
-#endif
-  m_sb.errorlog->setHidden(state);
 }
 
 void spoton::slotSaveMOTD(void)
@@ -2430,75 +2499,6 @@ void spoton::slotResendMail(void)
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
   slotRefreshMail();
-}
-
-void spoton::slotCopyAEMagnet(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  int row = -1;
-
-  if(action->property("from") == "listeners")
-    row = m_ui.ae_tokens->currentRow();
-  else
-    row = m_ui.neighbors->currentRow();
-
-  if(row < 0)
-    return;
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->clear();
-
-  QString magnet("");
-  QTableWidgetItem *item1 = 0;
-  QTableWidgetItem *item2 = 0;
-  QTableWidgetItem *item3 = 0;
-
-  if(action->property("from") == "listeners")
-    {
-      item1 = m_ui.ae_tokens->item
-	(row, 0); // Adaptive Echo Token
-      item2 = m_ui.ae_tokens->item
-	(row, 1); // Adaptive Echo Token Encryption Type
-      item3 = m_ui.ae_tokens->item
-	(row, 2); // Adaptive Echo Token Hash Type
-
-      if(item1 && item2 && item3)
-	magnet = QString("magnet:?"
-			 "ct=%1&"
-			 "ht=%2&"
-			 "to=%3&"
-			 "xt=urn:adaptive-echo").
-	  arg(item2->text()).
-	  arg(item3->text()).
-	  arg(item1->text());
-    }
-  else
-    {
-      item1 = m_ui.neighbors->item
-	(row, 32); // Adaptive Echo Token
-      item2 = m_ui.neighbors->item
-	(row, 33); // Adaptive Echo Token Type
-
-      if(item1 && item2)
-	magnet = QString("magnet:?"
-			 "ct=%1&"
-			 "ht=%2&"
-			 "to=%3&"
-			 "xt=urn:adaptive-echo").
-	  arg(item2->text().split("\n").value(0).trimmed()).
-	  arg(item2->text().split("\n").value(1)).
-	  arg(item1->text());
-    }
-
-  clipboard->setText(magnet);
 }
 
 void spoton::slotReceiversChanged(QTableWidgetItem *item)
