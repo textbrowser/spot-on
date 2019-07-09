@@ -951,6 +951,55 @@ void spoton::slotClearClipboardBuffer(void)
     }
 }
 
+void spoton::slotConnectAllNeighbors(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("UPDATE neighbors SET status_control = 'connected' "
+	   "WHERE status_control <> 'deleted' AND "
+	   "user_defined = 1");
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotCommonBuzzChannelsActivated(int index)
+{
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  m_ui.demagnetize->setText
+    (m_ui.commonBuzzChannels->itemData(index).toString());
+  demagnetize();
+  m_ui.demagnetize->clear();
+  m_ui.buzzActions->setCurrentIndex(0);
+  disconnect(m_ui.commonBuzzChannels,
+	     SIGNAL(activated(int)),
+	     this,
+	     SLOT(slotCommonBuzzChannelsActivated(int)));
+  m_ui.commonBuzzChannels->setCurrentIndex(0);
+  connect(m_ui.commonBuzzChannels,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotCommonBuzzChannelsActivated(int)));
+}
+
 void spoton::slotCopyAEMagnet(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());
@@ -1532,55 +1581,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::slotCommonBuzzChannelsActivated(int index)
-{
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  m_ui.demagnetize->setText
-    (m_ui.commonBuzzChannels->itemData(index).toString());
-  demagnetize();
-  m_ui.demagnetize->clear();
-  m_ui.buzzActions->setCurrentIndex(0);
-  disconnect(m_ui.commonBuzzChannels,
-	     SIGNAL(activated(int)),
-	     this,
-	     SLOT(slotCommonBuzzChannelsActivated(int)));
-  m_ui.commonBuzzChannels->setCurrentIndex(0);
-  connect(m_ui.commonBuzzChannels,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotCommonBuzzChannelsActivated(int)));
-}
-
-void spoton::slotConnectAllNeighbors(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare
-	  ("UPDATE neighbors SET status_control = 'connected' "
-	   "WHERE status_control <> 'deleted' AND "
-	   "user_defined = 1");
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotDisconnectAllNeighbors(void)
