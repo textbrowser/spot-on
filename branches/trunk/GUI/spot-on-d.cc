@@ -727,6 +727,40 @@ void spoton::slotAddAEToken(void)
     }
 }
 
+void spoton::slotAddAttachment(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select Attachment").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFiles);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QStringList list(dialog.selectedFiles());
+
+      std::sort(list.begin(), list.end());
+
+      while(!list.isEmpty())
+	{
+	  QFileInfo fileInfo(list.takeFirst());
+
+	  m_ui.attachment->append
+	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
+	}
+
+      QApplication::restoreOverrideCursor();
+    }
+}
+
 void spoton::slotAddInstitution(const QString &text)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -878,6 +912,19 @@ void spoton::slotAddInstitution(const QString &text)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("Unable to record the institution."));
+}
+
+void spoton::slotAddInstitutionCheckBoxToggled(bool state)
+{
+  if(state)
+    {
+      m_ui.institutionName->clear();
+      m_ui.institutionNameType->setCurrentIndex(0);
+      m_ui.institutionPostalAddress->clear();
+      m_ui.institutionPostalAddressType->setCurrentIndex(0);
+    }
+  else
+    m_ui.addInstitutionLineEdit->clear();
 }
 
 void spoton::slotAddMagnet(void)
@@ -1184,6 +1231,15 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 }
 
+void spoton::slotAutoAddSharedSBMagnets(bool state)
+{
+  m_settings["gui/autoAddSharedSBMagnets"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/autoAddSharedSBMagnets", state);
+}
+
 void spoton::slotChatPopup(void)
 {
   QList<QTableWidgetItem *> items(m_ui.participants->selectedItems());
@@ -1364,6 +1420,73 @@ void spoton::slotCopyInstitution(void)
     }
 }
 
+void spoton::slotDeleteAEToken(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QList<QTableWidgetItem *> list(m_ui.ae_tokens->selectedItems());
+
+  if(list.size() != 3 || !list.at(0) || !list.at(1) || !list.at(2))
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please select a token to delete."));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM listeners_adaptive_echo_tokens WHERE "
+		      "token_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash((list.at(0)->text() +
+				list.at(1)->text() +
+				"\n" +
+				list.at(2)->text()).toLatin1(), &ok).
+	   toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified adaptive echo "
+			     "token."));
+  else
+    populateAETokens();
+}
+
 void spoton::slotDeleteInstitution(void)
 {
   QModelIndexList list
@@ -1498,6 +1621,92 @@ void spoton::slotDiscoverMissingLinks(void)
   m_starbeamAnalyzer->show(this);
 }
 
+void spoton::slotDisplayPopups(bool state)
+{
+  m_settings["gui/displayPopupsAutomatically"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/displayPopupsAutomatically", state);
+}
+
+void spoton::slotEnableChatEmoticons(bool state)
+{
+  m_settings["gui/enableChatEmoticons"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/enableChatEmoticons", state);
+}
+
+void spoton::slotEncryptionKeyTypeChanged(int index)
+{
+  QStringList list;
+
+  if(index == 0)
+    list << s_publicKeySizes["elgamal"];
+  else if(index == 1)
+    list << s_publicKeySizes["mceliece"];
+  else if(index == 2)
+    list << s_publicKeySizes["ntru"];
+  else
+    list << s_publicKeySizes["rsa"];
+
+  m_ui.encryptionKeySize->clear();
+  m_ui.encryptionKeySize->addItems(list);
+  m_ui.encryptionKeySize->setCurrentIndex(0);
+
+  /*
+  ** Let's disable some values.
+  */
+
+  for(int i = 0; i < m_ui.encryptionKeySize->count(); i++)
+    m_ui.encryptionKeySize->model()->setData
+      (m_ui.encryptionKeySize->model()->index(i, 0),
+       1 | 32,
+       Qt::UserRole - 1);
+
+  if(index == 1 && !spoton_crypt::hasShake())
+    {
+      QStringList list;
+
+      list << "m11t51-fujisaki-okamoto-b" << "m12t68-fujisaki-okamoto-b";
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
+
+	  if(index >= 0)
+	    m_ui.encryptionKeySize->model()->setData
+	      (m_ui.encryptionKeySize->model()->index(index, 0),
+	       0,
+	       Qt::UserRole - 1);
+	}
+    }
+}
+
+void spoton::slotLimitConnections(int value)
+{
+  m_settings["gui/limitConnections"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/limitConnections", value);
+}
+
+void spoton::slotMagnetRadioToggled(bool state)
+{
+  if(state)
+    {
+      m_ui.etpCipherType->setCurrentIndex(0);
+      m_ui.etpEncryptionKey->clear();
+      m_ui.etpHashType->setCurrentIndex(0);
+      m_ui.etpMacKey->clear();
+    }
+  else
+    m_ui.etpMagnet->clear();
+}
+
 void spoton::slotMessagesAnchorClicked(const QUrl &link)
 {
   QString type("");
@@ -1525,6 +1734,16 @@ void spoton::slotMessagesAnchorClicked(const QUrl &link)
   action->setProperty("type", type);
   action->setProperty("url", link);
   menu.exec(QCursor::pos());
+}
+
+void spoton::slotNewKeys(bool state)
+{
+  Q_UNUSED(state);
+  m_ui.encryptionKeySize->setCurrentIndex(0);
+  m_ui.encryptionKeyType->setCurrentIndex(3);
+  m_ui.keys->setCurrentIndex(0);
+  m_ui.signatureKeySize->setCurrentIndex(0);
+  m_ui.signatureKeyType->setCurrentIndex(4);
 }
 
 void spoton::slotPassphraseAuthenticateRadioToggled(bool state)
@@ -1741,6 +1960,169 @@ void spoton::slotResendMail(void)
   slotRefreshMail();
 }
 
+void spoton::slotResetAETokenInformation(void)
+{
+  QModelIndexList list;
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "ae_token = NULL, "
+		      "ae_token_type = NULL "
+		      "WHERE OID = ? AND user_defined = 1");
+	query.bindValue(0, list.at(0).data());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotSaveAttachment(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QModelIndexList list;
+
+  list = m_ui.mail->selectionModel()->selectedRows(4); // Attachment(s)
+
+  if(list.isEmpty() || list.value(0).data(Qt::UserRole).toInt() <= 0)
+    return;
+
+  list = m_ui.mail->selectionModel()->selectedRows
+    (m_ui.mail->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QFileDialog dialog(this);
+
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::Directory);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle(tr("%1: Save Attachment(s)").
+                        arg(SPOTON_APPLICATION_NAME));
+
+  if(dialog.exec() != QDialog::Accepted)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  bool ok = false;
+
+  {
+    QString connectionName("");
+
+    {
+      QSqlDatabase db = spoton_misc::database(connectionName);
+
+      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			 "email.db");
+
+      if(db.open())
+	{
+	  QSqlQuery query(db);
+
+	  query.setForwardOnly(true);
+	  query.prepare("SELECT data, name FROM folders_attachment "
+			"WHERE folders_oid = ?");
+	  query.bindValue(0, list.value(0).data().toString());
+
+	  if(query.exec())
+	    while(query.next())
+	      {
+		QByteArray attachment;
+		QString attachmentName("");
+
+		attachment = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).
+					  toByteArray()),
+		   &ok);
+
+		if(ok)
+		  {
+		    QByteArray bytes
+		      (crypt->
+		       decryptedAfterAuthenticated(QByteArray::
+						   fromBase64(query.value(1).
+							      toByteArray()),
+						   &ok));
+
+		    if(ok)
+		      attachmentName = QString::fromUtf8(bytes.constData(),
+							 bytes.length());
+
+		    if(ok)
+		      {
+			attachmentName.replace(" ", "-");
+
+                        QFile file(dialog.selectedFiles().value(0) +
+                                   QDir::separator() + attachmentName);
+
+			if(file.open(QIODevice::WriteOnly))
+			  file.write(attachment, attachment.length());
+
+			file.close();
+		      }
+		  }
+
+		if(!ok)
+		  break;
+	      }
+	}
+
+      db.close();
+    }
+
+    QSqlDatabase::removeDatabase(connectionName);
+  }
+
+  QApplication::restoreOverrideCursor();
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to extract the attachment(s)."));
+}
+
+void spoton::slotSaveBuzzAutoJoin(bool state)
+{
+  m_settings["gui/buzzAutoJoin"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/buzzAutoJoin", state);
+}
+
 void spoton::slotSaveMOTD(void)
 {
   QString connectionName("");
@@ -1801,6 +2183,148 @@ void spoton::slotSaveMOTD(void)
 			  arg(SPOTON_APPLICATION_NAME), error);
   else
     m_ui.motd->selectAll();
+}
+
+void spoton::slotSetAETokenInformation(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QModelIndexList list;
+  QString oid("");
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid neighbor OID. "
+			       "Please select a neighbor."));
+      return;
+    }
+  else
+    oid = list.at(0).data().toString();
+
+  QStringList etypes(spoton_crypt::cipherTypes());
+
+  if(etypes.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("The method spoton_crypt::cipherTypes() has "
+			       "failed. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QStringList htypes(spoton_crypt::hashTypes());
+
+  if(htypes.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("The method spoton_crypt::hashTypes() has "
+			       "failed. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QDialog dialog(this);
+  Ui_spoton_adaptiveechoprompt ui;
+
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: Adaptive Echo Information").
+     arg(SPOTON_APPLICATION_NAME));
+  ui.token_e_type->addItems(etypes);
+  ui.token_h_type->addItems(htypes);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QString token(ui.token->text());
+      QString tokenType(ui.token_e_type->currentText() + "\n" +
+			ui.token_h_type->currentText());
+      QStringList list;
+
+      if(ui.magnet->isChecked())
+	{
+	  list = parseAEMagnet(token);
+
+	  if(list.isEmpty())
+	    {
+	      token.clear();
+	      tokenType.clear();
+	    }
+	  else
+	    {
+	      token = list.value(2);
+	      tokenType = list.value(0) + "\n" + list.value(1);
+	    }
+	}
+
+      if(token.length() >= 96)
+	{
+	  QString connectionName("");
+	  bool ok = true;
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			       "neighbors.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+
+		query.prepare("UPDATE neighbors SET "
+			      "ae_token = ?, "
+			      "ae_token_type = ? "
+			      "WHERE OID = ? AND user_defined = 1");
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(token.toLatin1(),
+						 &ok).toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->encryptedThenHashed(tokenType.toLatin1(),
+						   &ok).toBase64());
+
+		query.bindValue(2, oid);
+
+		if(ok)
+		  ok = query.exec();
+	      }
+	    else
+	      ok = false;
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+
+	  if(!ok)
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting "
+				     "to set an adaptive echo token."));
+	}
+      else
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("The token must contain "
+				 "at least ninety-six characters."));
+    }
 }
 
 void spoton::slotSetListenerSSLControlString(void)
@@ -2065,6 +2589,11 @@ void spoton::slotSharePoptasticPublicKey(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotShowEncryptFile(void)
+{
+  m_encryptFile.show(this);
+}
+
 void spoton::slotShowMinimalDisplay(bool state)
 {
 #if SPOTON_GOLDBUG == 1
@@ -2155,6 +2684,26 @@ void spoton::slotShowStarBeamAnalyzer(void)
     m_starbeamAnalyzer->show(this);
 }
 
+void spoton::slotSignatureKeyTypeChanged(int index)
+{
+  QStringList list;
+
+  if(index == 0)
+    list << s_publicKeySizes["dsa"];
+  else if(index == 1)
+    list << s_publicKeySizes["ecdsa"];
+  else if(index == 2)
+    list << s_publicKeySizes["eddsa"];
+  else if(index == 3)
+    list << s_publicKeySizes["elgamal"];
+  else
+    list << s_publicKeySizes["rsa"];
+
+  m_ui.signatureKeySize->clear();
+  m_ui.signatureKeySize->addItems(list);
+  m_ui.signatureKeySize->setCurrentIndex(0);
+}
+
 void spoton::slotUpdateChatWindows(void)
 {
   /*
@@ -2242,555 +2791,6 @@ void spoton::slotUpdateChatWindows(void)
 	  it.remove();
 	}
     }
-}
-
-void spoton::slotDeleteAEToken(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QList<QTableWidgetItem *> list(m_ui.ae_tokens->selectedItems());
-
-  if(list.size() != 3 || !list.at(0) || !list.at(1) || !list.at(2))
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please select a token to delete."));
-      return;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM listeners_adaptive_echo_tokens WHERE "
-		      "token_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash((list.at(0)->text() +
-				list.at(1)->text() +
-				"\n" +
-				list.at(2)->text()).toLatin1(), &ok).
-	   toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified adaptive echo "
-			     "token."));
-  else
-    populateAETokens();
-}
-
-void spoton::slotResetAETokenInformation(void)
-{
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "ae_token = NULL, "
-		      "ae_token_type = NULL "
-		      "WHERE OID = ? AND user_defined = 1");
-	query.bindValue(0, list.at(0).data());
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSetAETokenInformation(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QModelIndexList list;
-  QString oid("");
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid neighbor OID. "
-			       "Please select a neighbor."));
-      return;
-    }
-  else
-    oid = list.at(0).data().toString();
-
-  QStringList etypes(spoton_crypt::cipherTypes());
-
-  if(etypes.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("The method spoton_crypt::cipherTypes() has "
-			       "failed. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QStringList htypes(spoton_crypt::hashTypes());
-
-  if(htypes.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("The method spoton_crypt::hashTypes() has "
-			       "failed. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QDialog dialog(this);
-  Ui_spoton_adaptiveechoprompt ui;
-
-  ui.setupUi(&dialog);
-  dialog.setWindowTitle
-    (tr("%1: Adaptive Echo Information").
-     arg(SPOTON_APPLICATION_NAME));
-  ui.token_e_type->addItems(etypes);
-  ui.token_h_type->addItems(htypes);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QString token(ui.token->text());
-      QString tokenType(ui.token_e_type->currentText() + "\n" +
-			ui.token_h_type->currentText());
-      QStringList list;
-
-      if(ui.magnet->isChecked())
-	{
-	  list = parseAEMagnet(token);
-
-	  if(list.isEmpty())
-	    {
-	      token.clear();
-	      tokenType.clear();
-	    }
-	  else
-	    {
-	      token = list.value(2);
-	      tokenType = list.value(0) + "\n" + list.value(1);
-	    }
-	}
-
-      if(token.length() >= 96)
-	{
-	  QString connectionName("");
-	  bool ok = true;
-
-	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
-
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "neighbors.db");
-
-	    if(db.open())
-	      {
-		QSqlQuery query(db);
-
-		query.prepare("UPDATE neighbors SET "
-			      "ae_token = ?, "
-			      "ae_token_type = ? "
-			      "WHERE OID = ? AND user_defined = 1");
-		query.bindValue
-		  (0, crypt->encryptedThenHashed(token.toLatin1(),
-						 &ok).toBase64());
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->encryptedThenHashed(tokenType.toLatin1(),
-						   &ok).toBase64());
-
-		query.bindValue(2, oid);
-
-		if(ok)
-		  ok = query.exec();
-	      }
-	    else
-	      ok = false;
-
-	    db.close();
-	  }
-
-	  QSqlDatabase::removeDatabase(connectionName);
-
-	  if(!ok)
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("An error occurred while attempting "
-				     "to set an adaptive echo token."));
-	}
-      else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("The token must contain "
-				 "at least ninety-six characters."));
-    }
-}
-
-void spoton::slotSaveBuzzAutoJoin(bool state)
-{
-  m_settings["gui/buzzAutoJoin"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/buzzAutoJoin", state);
-}
-
-void spoton::slotEnableChatEmoticons(bool state)
-{
-  m_settings["gui/enableChatEmoticons"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/enableChatEmoticons", state);
-}
-
-void spoton::slotLimitConnections(int value)
-{
-  m_settings["gui/limitConnections"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/limitConnections", value);
-}
-
-void spoton::slotAutoAddSharedSBMagnets(bool state)
-{
-  m_settings["gui/autoAddSharedSBMagnets"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/autoAddSharedSBMagnets", state);
-}
-
-void spoton::slotSignatureKeyTypeChanged(int index)
-{
-  QStringList list;
-
-  if(index == 0)
-    list << s_publicKeySizes["dsa"];
-  else if(index == 1)
-    list << s_publicKeySizes["ecdsa"];
-  else if(index == 2)
-    list << s_publicKeySizes["eddsa"];
-  else if(index == 3)
-    list << s_publicKeySizes["elgamal"];
-  else
-    list << s_publicKeySizes["rsa"];
-
-  m_ui.signatureKeySize->clear();
-  m_ui.signatureKeySize->addItems(list);
-  m_ui.signatureKeySize->setCurrentIndex(0);
-}
-
-void spoton::slotShowEncryptFile(void)
-{
-  m_encryptFile.show(this);
-}
-
-void spoton::slotDisplayPopups(bool state)
-{
-  m_settings["gui/displayPopupsAutomatically"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/displayPopupsAutomatically", state);
-}
-
-void spoton::slotAddAttachment(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select Attachment").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFiles);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-      QStringList list(dialog.selectedFiles());
-
-      std::sort(list.begin(), list.end());
-
-      while(!list.isEmpty())
-	{
-	  QFileInfo fileInfo(list.takeFirst());
-
-	  m_ui.attachment->append
-	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
-	     arg(fileInfo.absoluteFilePath()).
-	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
-	}
-
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotSaveAttachment(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QModelIndexList list;
-
-  list = m_ui.mail->selectionModel()->selectedRows(4); // Attachment(s)
-
-  if(list.isEmpty() || list.value(0).data(Qt::UserRole).toInt() <= 0)
-    return;
-
-  list = m_ui.mail->selectionModel()->selectedRows
-    (m_ui.mail->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QFileDialog dialog(this);
-
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setFileMode(QFileDialog::Directory);
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setWindowTitle(tr("%1: Save Attachment(s)").
-                        arg(SPOTON_APPLICATION_NAME));
-
-  if(dialog.exec() != QDialog::Accepted)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  bool ok = false;
-
-  {
-    QString connectionName("");
-
-    {
-      QSqlDatabase db = spoton_misc::database(connectionName);
-
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "email.db");
-
-      if(db.open())
-	{
-	  QSqlQuery query(db);
-
-	  query.setForwardOnly(true);
-	  query.prepare("SELECT data, name FROM folders_attachment "
-			"WHERE folders_oid = ?");
-	  query.bindValue(0, list.value(0).data().toString());
-
-	  if(query.exec())
-	    while(query.next())
-	      {
-		QByteArray attachment;
-		QString attachmentName("");
-
-		attachment = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(0).
-					  toByteArray()),
-		   &ok);
-
-		if(ok)
-		  {
-		    QByteArray bytes
-		      (crypt->
-		       decryptedAfterAuthenticated(QByteArray::
-						   fromBase64(query.value(1).
-							      toByteArray()),
-						   &ok));
-
-		    if(ok)
-		      attachmentName = QString::fromUtf8(bytes.constData(),
-							 bytes.length());
-
-		    if(ok)
-		      {
-			attachmentName.replace(" ", "-");
-
-                        QFile file(dialog.selectedFiles().value(0) +
-                                   QDir::separator() + attachmentName);
-
-			if(file.open(QIODevice::WriteOnly))
-			  file.write(attachment, attachment.length());
-
-			file.close();
-		      }
-		  }
-
-		if(!ok)
-		  break;
-	      }
-	}
-
-      db.close();
-    }
-
-    QSqlDatabase::removeDatabase(connectionName);
-  }
-
-  QApplication::restoreOverrideCursor();
-
-  if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to extract the attachment(s)."));
-}
-
-void spoton::slotEncryptionKeyTypeChanged(int index)
-{
-  QStringList list;
-
-  if(index == 0)
-    list << s_publicKeySizes["elgamal"];
-  else if(index == 1)
-    list << s_publicKeySizes["mceliece"];
-  else if(index == 2)
-    list << s_publicKeySizes["ntru"];
-  else
-    list << s_publicKeySizes["rsa"];
-
-  m_ui.encryptionKeySize->clear();
-  m_ui.encryptionKeySize->addItems(list);
-  m_ui.encryptionKeySize->setCurrentIndex(0);
-
-  /*
-  ** Let's disable some values.
-  */
-
-  for(int i = 0; i < m_ui.encryptionKeySize->count(); i++)
-    m_ui.encryptionKeySize->model()->setData
-      (m_ui.encryptionKeySize->model()->index(i, 0),
-       1 | 32,
-       Qt::UserRole - 1);
-
-  if(index == 1 && !spoton_crypt::hasShake())
-    {
-      QStringList list;
-
-      list << "m11t51-fujisaki-okamoto-b" << "m12t68-fujisaki-okamoto-b";
-
-      for(int i = 0; i < list.size(); i++)
-	{
-	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
-
-	  if(index >= 0)
-	    m_ui.encryptionKeySize->model()->setData
-	      (m_ui.encryptionKeySize->model()->index(index, 0),
-	       0,
-	       Qt::UserRole - 1);
-	}
-    }
-}
-
-void spoton::slotAddInstitutionCheckBoxToggled(bool state)
-{
-  if(state)
-    {
-      m_ui.institutionName->clear();
-      m_ui.institutionNameType->setCurrentIndex(0);
-      m_ui.institutionPostalAddress->clear();
-      m_ui.institutionPostalAddressType->setCurrentIndex(0);
-    }
-  else
-    m_ui.addInstitutionLineEdit->clear();
-}
-
-void spoton::slotNewKeys(bool state)
-{
-  Q_UNUSED(state);
-  m_ui.encryptionKeySize->setCurrentIndex(0);
-  m_ui.encryptionKeyType->setCurrentIndex(3);
-  m_ui.keys->setCurrentIndex(0);
-  m_ui.signatureKeySize->setCurrentIndex(0);
-  m_ui.signatureKeyType->setCurrentIndex(4);
-}
-
-void spoton::slotMagnetRadioToggled(bool state)
-{
-  if(state)
-    {
-      m_ui.etpCipherType->setCurrentIndex(0);
-      m_ui.etpEncryptionKey->clear();
-      m_ui.etpHashType->setCurrentIndex(0);
-      m_ui.etpMacKey->clear();
-    }
-  else
-    m_ui.etpMagnet->clear();
 }
 
 void spoton::slotUpdateSpinBoxChanged(double value)
