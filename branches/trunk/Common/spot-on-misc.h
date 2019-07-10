@@ -267,7 +267,8 @@ class spoton_misc
       return value;
     }
   template<typename T>
-    static void setSharedResource(T *resource, const T &value,
+    static void setSharedResource(T *resource,
+				  const T &value,
 				  QReadWriteLock &mutex)
     {
       QWriteLocker locker(&mutex);

@@ -25,8 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
+#include "spot-on.h"
 
 #include <QCheckBox>
 #if QT_VERSION < 0x050000

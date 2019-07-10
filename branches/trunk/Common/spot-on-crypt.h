@@ -159,7 +159,9 @@ class spoton_crypt
   static void memcmp_test(void);
   static void purgeDatabases(void);
   static void reencodePrivatePublicKeys
-    (spoton_crypt *newCrypt, spoton_crypt *oldCrypt, const QString &id,
+    (spoton_crypt *newCrypt,
+     spoton_crypt *oldCrypt,
+     const QString &id,
      QString &error);
   static void removeFlawedEntries(spoton_crypt *crypt);
   static void setSslCiphers(const QList<QSslCipher> &ciphers,
