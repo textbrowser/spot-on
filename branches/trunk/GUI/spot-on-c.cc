@@ -103,59 +103,7 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
   return list;
 }
 
-void spoton::slotGenerateEtpKeys(int index)
-{
-  /*
-  ** StarBeam!
-  */
-
-  if(m_ui.pairRadio->isChecked())
-    {
-      if(index == 0)
-	{
-	  m_ui.etpCipherType->setCurrentIndex(0);
-	  m_ui.etpEncryptionKey->clear();
-	  m_ui.etpHashType->setCurrentIndex(0);
-	  m_ui.etpMacKey->clear();
-	}
-      else if(index == 1)
-	{
-	  m_ui.etpEncryptionKey->setText
-	    (spoton_crypt::
-	     strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
-						    maxLength())).
-	     toBase64());
-	  m_ui.etpMacKey->setText
-	    (spoton_crypt::
-	     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-	     toBase64());
-	}
-      else if(index == 2)
-	m_ui.etpEncryptionKey->setText
-	  (spoton_crypt::
-	   strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
-						  maxLength())).
-	   toBase64());
-      else if(index == 3)
-	m_ui.etpMacKey->setText
-	  (spoton_crypt::
-	   strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-	   toBase64());
-
-      disconnect(m_ui.generate,
-		 SIGNAL(activated(int)),
-		 this,
-		 SLOT(slotGenerateEtpKeys(int)));
-      m_ui.generate->setCurrentIndex(0);
-      connect(m_ui.generate,
-	      SIGNAL(activated(int)),
-	      this,
-	      SLOT(slotGenerateEtpKeys(int)));
-    }
-}
-
-void spoton::slotAddEtpMagnet(const QString &text,
-			      const bool displayError)
+void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 {
   QString connectionName("");
   QString error("");
@@ -256,6 +204,57 @@ void spoton::slotAddEtpMagnet(const QString &text,
     }
   else
     askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotGenerateEtpKeys(int index)
+{
+  /*
+  ** StarBeam!
+  */
+
+  if(m_ui.pairRadio->isChecked())
+    {
+      if(index == 0)
+	{
+	  m_ui.etpCipherType->setCurrentIndex(0);
+	  m_ui.etpEncryptionKey->clear();
+	  m_ui.etpHashType->setCurrentIndex(0);
+	  m_ui.etpMacKey->clear();
+	}
+      else if(index == 1)
+	{
+	  m_ui.etpEncryptionKey->setText
+	    (spoton_crypt::
+	     strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
+						    maxLength())).
+	     toBase64());
+	  m_ui.etpMacKey->setText
+	    (spoton_crypt::
+	     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+	     toBase64());
+	}
+      else if(index == 2)
+	m_ui.etpEncryptionKey->setText
+	  (spoton_crypt::
+	   strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
+						  maxLength())).
+	   toBase64());
+      else if(index == 3)
+	m_ui.etpMacKey->setText
+	  (spoton_crypt::
+	   strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+	   toBase64());
+
+      disconnect(m_ui.generate,
+		 SIGNAL(activated(int)),
+		 this,
+		 SLOT(slotGenerateEtpKeys(int)));
+      m_ui.generate->setCurrentIndex(0);
+      connect(m_ui.generate,
+	      SIGNAL(activated(int)),
+	      this,
+	      SLOT(slotGenerateEtpKeys(int)));
+    }
 }
 
 void spoton::slotPopulateEtpMagnets(void)
