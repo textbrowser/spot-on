@@ -43,6 +43,66 @@
 #endif
 #include <QtCore>
 
+QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
+{
+  QList<QPair<QString, QVariant> > list;
+
+  if(isKernelActive())
+    {
+      QFileInfo fileInfo
+	(spoton_misc::homePath() + QDir::separator() + "kernel.db");
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(fileInfo.absoluteFilePath());
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+
+	    if(query.exec("SELECT statistic, value FROM kernel_statistics "
+			  "ORDER BY statistic"))
+	      while(query.next())
+		list << QPair<QString, QVariant> (query.value(0).toString(),
+						  query.value(1));
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  return list;
+}
+
+QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
+					    const QString &text,
+					    const int column)
+{
+  if(column < 0 || !table || column >= table->columnCount())
+    return QList<QTableWidgetItem *> ();
+
+  QList<QTableWidgetItem *> list;
+
+  for(int i = 0; i < table->rowCount(); i++)
+    {
+      QTableWidgetItem *item = table->item(i, column);
+
+      if(!item)
+	continue;
+
+      if(item->text() == text)
+	list.append(item);
+    }
+
+  return list;
+}
+
 void spoton::slotGenerateEtpKeys(int index)
 {
   /*
@@ -775,43 +835,6 @@ void spoton::slotGatherStatistics(void)
 
   m_statisticsFuture = QtConcurrent::run(this, &spoton::gatherStatistics);
   m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
-}
-
-QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
-{
-  QList<QPair<QString, QVariant> > list;
-
-  if(isKernelActive())
-    {
-      QFileInfo fileInfo
-	(spoton_misc::homePath() + QDir::separator() + "kernel.db");
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(fileInfo.absoluteFilePath());
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.setForwardOnly(true);
-
-	    if(query.exec("SELECT statistic, value FROM kernel_statistics "
-			  "ORDER BY statistic"))
-	      while(query.next())
-		list << QPair<QString, QVariant> (query.value(0).toString(),
-						  query.value(1));
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  return list;
 }
 
 void spoton::slotStatisticsGathered(void)
@@ -4813,27 +4836,4 @@ void spoton::slotRenameParticipant(void)
 	      }
 	  }
       }
-}
-
-QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
-					    const QString &text,
-					    const int column)
-{
-  if(column < 0 || !table || column >= table->columnCount())
-    return QList<QTableWidgetItem *> ();
-
-  QList<QTableWidgetItem *> list;
-
-  for(int i = 0; i < table->rowCount(); i++)
-    {
-      QTableWidgetItem *item = table->item(i, column);
-
-      if(!item)
-	continue;
-
-      if(item->text() == text)
-	list.append(item);
-    }
-
-  return list;
 }
