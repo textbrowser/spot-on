@@ -356,6 +356,15 @@ void spoton::slotGenerateEtpKeys(int index)
     }
 }
 
+void spoton::slotMaxMosaicSize(int value)
+{
+  m_settings["gui/maxMosaicSize"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/maxMosaicSize", value);
+}
+
 void spoton::slotPopulateEtpMagnets(void)
 {
   if(currentTabName() != "starbeam")
@@ -543,15 +552,6 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
 		     this, SLOT(slotDeleteEtpAllMagnets(void)));
       menu.exec(m_ui.etpMagnets->mapToGlobal(point));
     }
-}
-
-void spoton::slotMaxMosaicSize(int value)
-{
-  m_settings["gui/maxMosaicSize"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/maxMosaicSize", value);
 }
 
 void spoton::slotBuzzActionsActivated(int index)
