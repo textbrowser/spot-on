@@ -115,6 +115,33 @@ void spoton::saveDestination(const QString &path)
   m_ui.destination->selectAll();
 }
 
+void spoton::slotAcceptChatKeys(bool state)
+{
+  m_settings["gui/acceptChatKeys"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptChatKeys", state);
+}
+
+void spoton::slotAcceptEmailKeys(bool state)
+{
+  m_settings["gui/acceptEmailKeys"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptEmailKeys", state);
+}
+
+void spoton::slotAcceptUrlKeys(bool state)
+{
+  m_settings["gui/acceptUrlKeys"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptUrlKeys", state);
+}
+
 void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 {
   QString connectionName("");
@@ -216,6 +243,56 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
     }
   else
     askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotAutoRetrieveEmail(bool state)
+{
+  m_settings["gui/automaticallyRetrieveEmail"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/automaticallyRetrieveEmail", state);
+
+  if(state)
+    m_emailRetrievalTimer.start();
+  else
+    m_emailRetrievalTimer.stop();
+}
+
+void spoton::slotBuzzActionsActivated(int index)
+{
+  if(index == 0)
+    {
+      m_ui.channel->clear();
+      m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
+      m_ui.channelSalt->clear();
+      m_ui.channelType->setCurrentIndex(0);
+      m_ui.buzzHashKey->clear();
+      m_ui.buzzHashType->setCurrentIndex(0);
+    }
+  else if(index == 1)
+    {
+      m_ui.channel->setText
+	(spoton_crypt::strongRandomBytes(static_cast<size_t> (m_ui.channel->
+							      maxLength())).
+	 toBase64());
+      m_ui.channelSalt->setText
+	(spoton_crypt::strongRandomBytes(512).toBase64());
+      m_ui.buzzHashKey->setText
+	(spoton_crypt::
+	 strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+	 toBase64());
+    }
+
+  disconnect(m_ui.buzzActions,
+	     SIGNAL(activated(int)),
+	     this,
+	     SLOT(slotBuzzActionsActivated(int)));
+  m_ui.buzzActions->setCurrentIndex(0);
+  connect(m_ui.buzzActions,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotBuzzActionsActivated(int)));
 }
 
 void spoton::slotCopyEtpMagnet(void)
@@ -552,83 +629,6 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
 		     this, SLOT(slotDeleteEtpAllMagnets(void)));
       menu.exec(m_ui.etpMagnets->mapToGlobal(point));
     }
-}
-
-void spoton::slotBuzzActionsActivated(int index)
-{
-  if(index == 0)
-    {
-      m_ui.channel->clear();
-      m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
-      m_ui.channelSalt->clear();
-      m_ui.channelType->setCurrentIndex(0);
-      m_ui.buzzHashKey->clear();
-      m_ui.buzzHashType->setCurrentIndex(0);
-    }
-  else if(index == 1)
-    {
-      m_ui.channel->setText
-	(spoton_crypt::strongRandomBytes(static_cast<size_t> (m_ui.channel->
-							      maxLength())).
-	 toBase64());
-      m_ui.channelSalt->setText
-	(spoton_crypt::strongRandomBytes(512).toBase64());
-      m_ui.buzzHashKey->setText
-	(spoton_crypt::
-	 strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-	 toBase64());
-    }
-
-  disconnect(m_ui.buzzActions,
-	     SIGNAL(activated(int)),
-	     this,
-	     SLOT(slotBuzzActionsActivated(int)));
-  m_ui.buzzActions->setCurrentIndex(0);
-  connect(m_ui.buzzActions,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotBuzzActionsActivated(int)));
-}
-
-void spoton::slotAcceptChatKeys(bool state)
-{
-  m_settings["gui/acceptChatKeys"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptChatKeys", state);
-}
-
-void spoton::slotAcceptEmailKeys(bool state)
-{
-  m_settings["gui/acceptEmailKeys"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptEmailKeys", state);
-}
-
-void spoton::slotAcceptUrlKeys(bool state)
-{
-  m_settings["gui/acceptUrlKeys"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptUrlKeys", state);
-}
-
-void spoton::slotAutoRetrieveEmail(bool state)
-{
-  m_settings["gui/automaticallyRetrieveEmail"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/automaticallyRetrieveEmail", state);
-
-  if(state)
-    m_emailRetrievalTimer.start();
-  else
-    m_emailRetrievalTimer.stop();
 }
 
 void spoton::slotMailRetrievalIntervalChanged(int value)
