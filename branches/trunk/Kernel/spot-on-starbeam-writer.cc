@@ -296,8 +296,14 @@ void spoton_starbeam_writer::processData
   if(!(list.value(0) == "0060" || list.value(0) == "0061"))
     return;
 
-  QDateTime dateTime
-    (QDateTime::fromString(list.value(8).constData(), "MMddyyyyhhmmss"));
+  QDateTime dateTime;
+
+  if(list.value(0) == "0060")
+    dateTime = QDateTime::fromString
+      (list.value(8).constData(), "MMddyyyyhhmmss");
+  else
+    dateTime = QDateTime::fromString
+      (list.value(2).constData(), "MMddyyyyhhmmss");
 
   dateTime.setTimeSpec(Qt::UTC);
 
