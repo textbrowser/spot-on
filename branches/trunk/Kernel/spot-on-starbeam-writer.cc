@@ -311,6 +311,11 @@ void spoton_starbeam_writer::processData
      acceptableTimeSeconds(dateTime, spoton_common::STARBEAM_TIME_DELTA))
     return;
 
+  if(list.value(0) == "0061")
+    {
+      return;
+    }
+
   QString connectionName("");
   QString fileName
     (spoton_kernel::setting("gui/etpDestinationPath", QDir::homePath()).
@@ -678,5 +683,4 @@ void spoton_starbeam_writer::stop(void)
 
   m_magnets.clear();
   m_novas.clear();
-  locker.unlock();
 }
