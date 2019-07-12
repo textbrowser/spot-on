@@ -103,6 +103,18 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
   return list;
 }
 
+void spoton::saveDestination(const QString &path)
+{
+  m_settings["gui/etpDestinationPath"] = path;
+
+  QSettings settings;
+
+  settings.setValue("gui/etpDestinationPath", path);
+  m_ui.destination->setText(path);
+  m_ui.destination->setToolTip(path);
+  m_ui.destination->selectAll();
+}
+
 void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 {
   QString connectionName("");
@@ -483,41 +495,18 @@ void spoton::slotPopulateEtpMagnets(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
+void spoton::slotReceiversClicked(bool state)
 {
-  if(m_ui.etpMagnets == sender())
-    {
-      QMenu menu(this);
+  m_settings["gui/etpReceivers"] = state;
 
-      menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyEtpMagnet(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"),
-		     this, SLOT(slotDeleteEtpMagnet(void)));
-      menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteEtpAllMagnets(void)));
-      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
-    }
+  QSettings settings;
+
+  settings.setValue("gui/etpReceivers", state);
 }
 
 void spoton::slotSaveDestination(void)
 {
   saveDestination(m_ui.destination->text());
-}
-
-void spoton::saveDestination(const QString &path)
-{
-  m_settings["gui/etpDestinationPath"] = path;
-
-  QSettings settings;
-
-  settings.setValue("gui/etpDestinationPath", path);
-  m_ui.destination->setText(path);
-  m_ui.destination->setToolTip(path);
-  m_ui.destination->selectAll();
 }
 
 void spoton::slotSelectDestination(void)
@@ -536,13 +525,24 @@ void spoton::slotSelectDestination(void)
     saveDestination(dialog.selectedFiles().value(0));
 }
 
-void spoton::slotReceiversClicked(bool state)
+void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
 {
-  m_settings["gui/etpReceivers"] = state;
+  if(m_ui.etpMagnets == sender())
+    {
+      QMenu menu(this);
 
-  QSettings settings;
-
-  settings.setValue("gui/etpReceivers", state);
+      menu.addAction(tr("Copy &Magnet"),
+		     this, SLOT(slotCopyEtpMagnet(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"),
+		     this, SLOT(slotDeleteEtpMagnet(void)));
+      menu.addAction(tr("Delete &All"),
+		     this, SLOT(slotDeleteEtpAllMagnets(void)));
+      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
+    }
 }
 
 void spoton::slotMaxMosaicSize(int value)
