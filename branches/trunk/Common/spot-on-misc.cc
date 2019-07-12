@@ -3240,7 +3240,8 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 }
 
 bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
-			     const QString &oid, spoton_crypt *crypt)
+			     const QString &oid,
+			     spoton_crypt *crypt)
 {
   QString connectionName("");
   bool ok = true;

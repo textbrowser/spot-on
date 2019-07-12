@@ -1899,20 +1899,17 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
   return hash.result();
 }
 
-QByteArray spoton_crypt::sha1Hash(const QByteArray &data,
-				  bool *ok)
+QByteArray spoton_crypt::sha1Hash(const QByteArray &data, bool *ok)
 {
   return shaXHash(GCRY_MD_SHA1, data, ok);
 }
 
-QByteArray spoton_crypt::sha256Hash(const QByteArray &data,
-				    bool *ok)
+QByteArray spoton_crypt::sha256Hash(const QByteArray &data, bool *ok)
 {
   return shaXHash(GCRY_MD_SHA256, data, ok);
 }
 
-QByteArray spoton_crypt::sha512Hash(const QByteArray &data,
-				    bool *ok)
+QByteArray spoton_crypt::sha512Hash(const QByteArray &data, bool *ok)
 {
   return shaXHash(GCRY_MD_SHA512, data, ok);
 }
@@ -3278,8 +3275,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
   return ok;
 }
 
-bool spoton_crypt::memcmp(const QByteArray &bytes1,
-			  const QByteArray &bytes2)
+bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
 {
   QByteArray a;
   QByteArray b;
