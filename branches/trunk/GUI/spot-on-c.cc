@@ -433,6 +433,19 @@ void spoton::slotGenerateEtpKeys(int index)
     }
 }
 
+void spoton::slotMailRetrievalIntervalChanged(int value)
+{
+  if(value < 5)
+    value = 5;
+
+  m_settings["gui/emailRetrievalInterval"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/emailRetrievalInterval", value);
+  m_emailRetrievalTimer.setInterval(60 * 1000 * value);
+}
+
 void spoton::slotMaxMosaicSize(int value)
 {
   m_settings["gui/maxMosaicSize"] = value;
@@ -590,60 +603,6 @@ void spoton::slotReceiversClicked(bool state)
   settings.setValue("gui/etpReceivers", state);
 }
 
-void spoton::slotSaveDestination(void)
-{
-  saveDestination(m_ui.destination->text());
-}
-
-void spoton::slotSelectDestination(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select StarBeam Destination Directory").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::Directory);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    saveDestination(dialog.selectedFiles().value(0));
-}
-
-void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
-{
-  if(m_ui.etpMagnets == sender())
-    {
-      QMenu menu(this);
-
-      menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyEtpMagnet(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"),
-		     this, SLOT(slotDeleteEtpMagnet(void)));
-      menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteEtpAllMagnets(void)));
-      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
-    }
-}
-
-void spoton::slotMailRetrievalIntervalChanged(int value)
-{
-  if(value < 5)
-    value = 5;
-
-  m_settings["gui/emailRetrievalInterval"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/emailRetrievalInterval", value);
-  m_emailRetrievalTimer.setInterval(60 * 1000 * value);
-}
-
 void spoton::slotResetCertificate(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -688,6 +647,47 @@ void spoton::slotResetCertificate(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotSaveDestination(void)
+{
+  saveDestination(m_ui.destination->text());
+}
+
+void spoton::slotSelectDestination(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select StarBeam Destination Directory").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::Directory);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    saveDestination(dialog.selectedFiles().value(0));
+}
+
+void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
+{
+  if(m_ui.etpMagnets == sender())
+    {
+      QMenu menu(this);
+
+      menu.addAction(tr("Copy &Magnet"),
+		     this, SLOT(slotCopyEtpMagnet(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"),
+		     this, SLOT(slotDeleteEtpMagnet(void)));
+      menu.addAction(tr("Delete &All"),
+		     this, SLOT(slotDeleteEtpAllMagnets(void)));
+      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
+    }
 }
 
 void spoton::slotTransportChanged(int index)
