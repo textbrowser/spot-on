@@ -206,6 +206,93 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
     askKernelToReadStarBeamKeys();
 }
 
+void spoton::slotCopyEtpMagnet(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  int row = -1;
+
+  if((row = m_ui.etpMagnets->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.etpMagnets->item(row, 1); // Magnet
+
+      if(item)
+	clipboard->setText(item->text());
+    }
+}
+
+void spoton::slotDeleteEtpAllMagnets(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM magnets");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotDeleteEtpMagnet(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.etpMagnets->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.etpMagnets->item
+	(row, m_ui.etpMagnets->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM magnets WHERE OID = ?");
+	query.bindValue(0, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  askKernelToReadStarBeamKeys();
+}
+
 void spoton::slotGenerateEtpKeys(int index)
 {
   /*
@@ -413,93 +500,6 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
       menu.addAction(tr("Delete &All"),
 		     this, SLOT(slotDeleteEtpAllMagnets(void)));
       menu.exec(m_ui.etpMagnets->mapToGlobal(point));
-    }
-}
-
-void spoton::slotDeleteEtpAllMagnets(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM magnets");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  askKernelToReadStarBeamKeys();
-}
-
-void spoton::slotDeleteEtpMagnet(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.etpMagnets->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.etpMagnets->item
-	(row, m_ui.etpMagnets->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM magnets WHERE OID = ?");
-	query.bindValue(0, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  askKernelToReadStarBeamKeys();
-}
-
-void spoton::slotCopyEtpMagnet(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->clear();
-
-  int row = -1;
-
-  if((row = m_ui.etpMagnets->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.etpMagnets->item(row, 1); // Magnet
-
-      if(item)
-	clipboard->setText(item->text());
     }
 }
 
