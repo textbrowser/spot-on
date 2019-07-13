@@ -1830,6 +1830,13 @@ void spoton_kernel::connectSignalsToNeighbor
 				   const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
+	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
+					    const qint64)),
+	  this,
+	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
+					    const qint64)),
+	  Qt::UniqueConnection);
+  connect(neighbor,
 	  SIGNAL(receivedMessage(const QByteArray &,
 				 const qint64,
 				 const QPairByteArrayByteArray &)),
@@ -1848,26 +1855,12 @@ void spoton_kernel::connectSignalsToNeighbor
 	  this,
 	  SLOT(slotRequestScramble(void)),
 	  Qt::UniqueConnection);
-  connect(neighbor,
-	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
-					    const qint64)),
-	  this,
-	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
-					    const qint64)),
-	  Qt::UniqueConnection);
   connect(this,
 	  SIGNAL(callParticipant(const QByteArray &,
 				 const QString &)),
 	  neighbor,
 	  SLOT(slotCallParticipant(const QByteArray &,
 				   const QString &)),
-	  Qt::UniqueConnection);
-  connect(this,
-	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
-					    const qint64)),
-	  neighbor,
-	  SLOT(slotPublicizeListenerPlaintext(const QByteArray &,
-					      const qint64)),
 	  Qt::UniqueConnection);
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   connect(this,
@@ -1880,6 +1873,13 @@ void spoton_kernel::connectSignalsToNeighbor
 					      const QString &)),
 	  Qt::UniqueConnection);
 #endif
+  connect(this,
+	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
+					    const qint64)),
+	  neighbor,
+	  SLOT(slotPublicizeListenerPlaintext(const QByteArray &,
+					      const qint64)),
+	  Qt::UniqueConnection);
   connect(this,
 	  SIGNAL(publicizeListenerPlaintext(const QHostAddress &,
 					    const quint16,
