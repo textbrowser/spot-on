@@ -474,22 +474,18 @@ spoton_neighbor::spoton_neighbor
 	      SLOT(slotReadyRead(void)));
     }
 
-  connect(m_externalAddress,
-	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
-	  this,
-	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
   connect(&m_accountTimer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotSendAuthenticationRequest(void)));
-  connect(&m_externalAddressDiscovererTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotDiscoverExternalAddress(void)));
   connect(&m_authenticationTimer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotAuthenticationTimerTimeout(void)));
+  connect(&m_externalAddressDiscovererTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotDiscoverExternalAddress(void)));
   connect(&m_keepAliveTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -502,6 +498,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  connect(m_externalAddress,
+	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
+	  this,
+	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
 
   if(m_useSsl)
     {
@@ -941,10 +941,6 @@ spoton_neighbor::spoton_neighbor
 	      SLOT(slotReadyRead(void)));
     }
 
-  connect(m_externalAddress,
-	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
-	  this,
-	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
   connect(&m_accountTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -969,6 +965,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  connect(m_externalAddress,
+	  SIGNAL(ipAddressDiscovered(const QHostAddress &)),
+	  this,
+	  SLOT(slotExternalAddressDiscovered(const QHostAddress &)));
   m_accountTimer.setInterval(2500);
   m_authenticationTimer.setInterval
     (spoton_kernel::
