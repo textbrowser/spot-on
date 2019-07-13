@@ -237,6 +237,15 @@ void spoton::saveDestination(const QString &path)
   m_ui.destination->selectAll();
 }
 
+void spoton::slotAcceptBuzzMagnets(bool state)
+{
+  m_settings["gui/acceptBuzzMagnets"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptBuzzMagnets", state);
+}
+
 void spoton::slotAcceptChatKeys(bool state)
 {
   m_settings["gui/acceptChatKeys"] = state;
@@ -776,6 +785,186 @@ void spoton::slotReceiversClicked(bool state)
   settings.setValue("gui/etpReceivers", state);
 }
 
+void spoton::slotRemoveUrlParticipants(void)
+{
+  if(!m_ui.urlParticipants->selectionModel()->hasSelection())
+    return;
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected "
+		"URLs participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QModelIndexList list
+	  (m_ui.urlParticipants->selectionModel()->
+	   selectedRows(1)); // OID
+	QSqlQuery query(db);
+
+	while(!list.isEmpty())
+	  {
+	    QVariant data(list.takeFirst().data());
+
+	    if(!data.isNull() && data.isValid())
+	      {
+		query.exec("PRAGMA secure_delete = ON");
+		query.prepare("DELETE FROM friends_public_keys WHERE "
+			      "OID = ?");
+		query.bindValue(0, data.toString());
+		query.exec();
+	      }
+	  }
+
+	spoton_misc::purgeSignatureRelationships
+	  (db, m_crypts.value("chat", 0));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotRenameParticipant(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString().toLower());
+
+  if(!(type == "chat" || type == "email" ||
+       type == "poptastic" || type == "url"))
+    return;
+
+  QModelIndexList list;
+
+  if(currentTabName() == "chat")
+    if(type == "chat" || type == "poptastic")
+      list = m_ui.participants->selectionModel()->selectedRows(1); // OID
+
+  if(currentTabName() == "email")
+    if(type == "email" || type == "poptastic")
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
+
+  if(type == "url")
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QVariant data(list.value(0).data());
+
+  if(currentTabName() == "chat")
+    if(type == "chat" || type == "poptastic")
+      list = m_ui.participants->selectionModel()->selectedRows(0); // Name
+
+  if(currentTabName() == "email")
+    if(type == "email" || type == "poptastic")
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
+
+  if(type == "url")
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(0); // Name
+
+  QString name("");
+  bool ok = true;
+
+  name = QInputDialog::getText
+    (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
+     QLineEdit::Normal, list.value(0).data().toString(), &ok);
+  name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
+
+  if(name.isEmpty() || !ok)
+    return;
+
+  ok = false;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!data.isNull() && data.isValid())
+	  {
+	    query.prepare("UPDATE friends_public_keys "
+			  "SET name = ?, "
+			  "name_changed_by_user = 1 "
+			  "WHERE OID = ?");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).
+	       toBase64());
+	    query.bindValue(1, data.toString());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    if(currentTabName() == "chat")
+      {
+	QTableWidgetItem *item = m_ui.participants->item
+	  (list.value(0).row(), 3); // public_key_hash
+
+	if(item)
+	  {
+	    QString publicKeyHash(item->text());
+
+	    if(m_chatWindows.contains(publicKeyHash))
+	      {
+		QPointer<spoton_chatwindow> chat =
+		  m_chatWindows.value(publicKeyHash, 0);
+
+		if(chat)
+		  chat->setName(name);
+	      }
+	  }
+      }
+}
+
 void spoton::slotResetCertificate(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -861,6 +1050,11 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
 		     this, SLOT(slotDeleteEtpAllMagnets(void)));
       menu.exec(m_ui.etpMagnets->mapToGlobal(point));
     }
+}
+
+void spoton::slotShowStatistics(void)
+{
+  m_ui.statisticsBox->setVisible(!m_ui.statisticsBox->isVisible());
 }
 
 void spoton::slotStarOTMCheckChange(bool state)
@@ -1251,15 +1445,6 @@ void spoton::slotTransmit(void)
       m_ui.transmitNova->clear();
       m_ui.transmittedFile->clear();
     }
-}
-
-void spoton::slotAcceptBuzzMagnets(bool state)
-{
-  m_settings["gui/acceptBuzzMagnets"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptBuzzMagnets", state);
 }
 
 void spoton::slotShareBuzzMagnet(void)
@@ -4650,189 +4835,4 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 
   clipboard->setText(text);
   QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotRemoveUrlParticipants(void)
-{
-  if(!m_ui.urlParticipants->selectionModel()->hasSelection())
-    return;
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected "
-		"URLs participant(s)?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QModelIndexList list
-	  (m_ui.urlParticipants->selectionModel()->
-	   selectedRows(1)); // OID
-	QSqlQuery query(db);
-
-	while(!list.isEmpty())
-	  {
-	    QVariant data(list.takeFirst().data());
-
-	    if(!data.isNull() && data.isValid())
-	      {
-		query.exec("PRAGMA secure_delete = ON");
-		query.prepare("DELETE FROM friends_public_keys WHERE "
-			      "OID = ?");
-		query.bindValue(0, data.toString());
-		query.exec();
-	      }
-	  }
-
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotShowStatistics(void)
-{
-  m_ui.statisticsBox->setVisible(!m_ui.statisticsBox->isVisible());
-}
-
-void spoton::slotRenameParticipant(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QString type(action->property("type").toString().toLower());
-
-  if(!(type == "chat" || type == "email" ||
-       type == "poptastic" || type == "url"))
-    return;
-
-  QModelIndexList list;
-
-  if(currentTabName() == "chat")
-    if(type == "chat" || type == "poptastic")
-      list = m_ui.participants->selectionModel()->selectedRows(1); // OID
-
-  if(currentTabName() == "email")
-    if(type == "email" || type == "poptastic")
-      list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
-
-  if(type == "url")
-    list = m_ui.urlParticipants->selectionModel()->selectedRows(1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QVariant data(list.value(0).data());
-
-  if(currentTabName() == "chat")
-    if(type == "chat" || type == "poptastic")
-      list = m_ui.participants->selectionModel()->selectedRows(0); // Name
-
-  if(currentTabName() == "email")
-    if(type == "email" || type == "poptastic")
-      list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
-
-  if(type == "url")
-    list = m_ui.urlParticipants->selectionModel()->selectedRows(0); // Name
-
-  QString name("");
-  bool ok = true;
-
-  name = QInputDialog::getText
-    (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, list.value(0).data().toString(), &ok);
-  name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
-
-  if(name.isEmpty() || !ok)
-    return;
-
-  ok = false;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!data.isNull() && data.isValid())
-	  {
-	    query.prepare("UPDATE friends_public_keys "
-			  "SET name = ?, "
-			  "name_changed_by_user = 1 "
-			  "WHERE OID = ?");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).
-	       toBase64());
-	    query.bindValue(1, data.toString());
-
-	    if(ok)
-	      ok = query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    if(currentTabName() == "chat")
-      {
-	QTableWidgetItem *item = m_ui.participants->item
-	  (list.value(0).row(), 3); // public_key_hash
-
-	if(item)
-	  {
-	    QString publicKeyHash(item->text());
-
-	    if(m_chatWindows.contains(publicKeyHash))
-	      {
-		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(publicKeyHash, 0);
-
-		if(chat)
-		  chat->setName(name);
-	      }
-	  }
-      }
 }
