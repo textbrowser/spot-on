@@ -504,6 +504,48 @@ void spoton::slotDeleteEtpMagnet(void)
   askKernelToReadStarBeamKeys();
 }
 
+void spoton::slotExternalIp(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(!comboBox)
+    return;
+
+  QString str("");
+  int v = 30;
+
+  if(comboBox == m_optionsUi.guiExternalIpFetch)
+    str = "gui";
+  else
+    str = "kernel";
+
+  if(index == 0)
+    v = 30;
+  else if(index == 1)
+    v = 60;
+  else
+    v = -1;
+
+  m_settings[QString("gui/%1ExternalIpInterval").arg(str)] = v;
+
+  QSettings settings;
+
+  settings.setValue(QString("gui/%1ExternalIpInterval").arg(str), v);
+
+  if(str == "gui")
+    {
+      if(index == 0)
+	m_externalAddressDiscovererTimer.start(30000);
+      else if(index == 1)
+	m_externalAddressDiscovererTimer.start(60000);
+      else
+	{
+	  m_externalAddress.clear();
+	  m_externalAddressDiscovererTimer.stop();
+	}
+    }
+}
+
 void spoton::slotGatherStatistics(void)
 {
   if(!m_statisticsFuture.isFinished())
@@ -854,6 +896,11 @@ void spoton::slotStarOTMCheckChange(bool state)
     }
 }
 
+void spoton::slotStatisticsGathered(void)
+{
+  populateStatistics(m_statisticsFuture.result());
+}
+
 void spoton::slotTransportChanged(int index)
 {
   /*
@@ -955,53 +1002,6 @@ void spoton::slotTransportChanged(int index)
       m_ui.requireSsl->setEnabled(index == 2);
       m_ui.sslKeySizeLabel->setEnabled(index == 2);
 #endif
-    }
-}
-
-void spoton::slotStatisticsGathered(void)
-{
-  populateStatistics(m_statisticsFuture.result());
-}
-
-void spoton::slotExternalIp(int index)
-{
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
-
-  if(!comboBox)
-    return;
-
-  QString str("");
-  int v = 30;
-
-  if(comboBox == m_optionsUi.guiExternalIpFetch)
-    str = "gui";
-  else
-    str = "kernel";
-
-  if(index == 0)
-    v = 30;
-  else if(index == 1)
-    v = 60;
-  else
-    v = -1;
-
-  m_settings[QString("gui/%1ExternalIpInterval").arg(str)] = v;
-
-  QSettings settings;
-
-  settings.setValue(QString("gui/%1ExternalIpInterval").arg(str), v);
-
-  if(str == "gui")
-    {
-      if(index == 0)
-	m_externalAddressDiscovererTimer.start(30000);
-      else if(index == 1)
-	m_externalAddressDiscovererTimer.start(60000);
-      else
-	{
-	  m_externalAddress.clear();
-	  m_externalAddressDiscovererTimer.stop();
-	}
     }
 }
 
