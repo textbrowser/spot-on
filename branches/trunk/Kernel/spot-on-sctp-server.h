@@ -62,11 +62,12 @@ class spoton_sctp_server: public QObject
 #else
   QTimer m_timer;
 #endif
+#ifdef Q_OS_WIN
+  SOCKET m_socketDescriptor;
+#endif
   bool m_isListening;
   int m_backlog;
-#if defined(Q_OS_WIN)
-  SOCKET m_socketDescriptor;
-#else
+#ifndef Q_OS_WIN
   int m_socketDescriptor;
 #endif
   qint64 m_id;

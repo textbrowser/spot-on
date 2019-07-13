@@ -80,9 +80,9 @@ class spoton_starbeam_reader: public QObject
 	       const qint64 rc,
 	       spoton_crypt *crypt);
   void savePositionAndStatus(const QString &status);
-  void setAcknowledgedPosition(const qint64 position);
 
  private slots:
+  void slotAcknowledgePosition(const qint64 id, const qint64 position);
   void slotTimeout(void);
 };
 

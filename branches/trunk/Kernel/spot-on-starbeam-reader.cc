@@ -390,8 +390,21 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
+void spoton_starbeam_reader::setReadInterval(const double readInterval)
 {
+  m_readInterval = qBound(0.100, readInterval, 60.000);
+
+  if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
+    if(m_timer.isActive())
+      m_timer.start(static_cast<int> (1000 * m_readInterval));
+}
+
+void spoton_starbeam_reader::slotAcknowledgePosition(const qint64 id,
+						     const qint64 position)
+{
+  if(id != m_id)
+    return;
+
   if(m_position == position)
     {
       m_lastResponse = QDateTime::currentMSecsSinceEpoch();
@@ -415,15 +428,6 @@ void spoton_starbeam_reader::setAcknowledgedPosition(const qint64 position)
 
       savePositionAndStatus(status);
     }
-}
-
-void spoton_starbeam_reader::setReadInterval(const double readInterval)
-{
-  m_readInterval = qBound(0.100, readInterval, 60.000);
-
-  if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
-    if(m_timer.isActive())
-      m_timer.start(static_cast<int> (1000 * m_readInterval));
 }
 
 void spoton_starbeam_reader::slotTimeout(void)

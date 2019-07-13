@@ -2852,7 +2852,15 @@ void spoton_kernel::prepareStarbeamReaders(void)
 			}
 
 		      if(Q_LIKELY(starbeam))
-			m_starbeamReaders.insert(id, starbeam);
+			{
+			  connect(m_starbeamWriter,
+				  SIGNAL(notifyStarBeamReader(const qint64,
+							      const qint64)),
+				  starbeam,
+				  SLOT(slotAcknowledgePosition(const qint64,
+							       const qint64)));
+			  m_starbeamReaders.insert(id, starbeam);
+			}
 		      else
 			{
 			  m_starbeamReaders.remove(id);
