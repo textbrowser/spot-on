@@ -103,6 +103,128 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
   return list;
 }
 
+void spoton::populateStatistics
+(const QList<QPair<QString, QVariant> > &list)
+{
+  QWidget *focusWidget = QApplication::focusWidget();
+  int activeListeners = 0;
+  int activeNeighbors = 0;
+  int row = 0;
+  int totalRows = list.size();
+
+  m_statisticsUi.view->setSortingEnabled(false);
+  m_ui.statistics->setSortingEnabled(false);
+  m_statisticsModel->removeRows(0, m_statisticsModel->rowCount());
+  m_statisticsModel->setRowCount(totalRows);
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QStandardItem *item = new QStandardItem(list.at(i).first);
+
+      item->setEditable(false);
+      m_statisticsModel->setItem(row, 0, item);
+      item = new QStandardItem(list.at(i).second.toString());
+      item->setEditable(false);
+      item->setToolTip(item->text());
+      m_statisticsModel->setItem(row, 1, item);
+
+      if(list.at(i).first.toLower().contains("percent consumed"))
+	{
+	  double percent = list.at(i).second.toString().remove('%').toDouble();
+
+	  if(percent <= 50.0)
+	    item->setBackground(QBrush(QColor("lightgreen")));
+	  else if(percent > 50.0 && percent <= 80.0)
+	    item->setBackground(QBrush(QColor(232, 120, 0)));
+	  else
+	    item->setBackground(QBrush(QColor(240, 128, 128)));
+	}
+      else if(list.at(i).first.toLower().contains("live listeners"))
+	activeListeners = list.at(i).second.toInt();
+      else if(list.at(i).first.toLower().contains("live neighbors"))
+	activeNeighbors = list.at(i).second.toInt();
+
+      row += 1;
+    }
+
+  totalRows += 3; // Display statistics!
+  m_statisticsModel->setRowCount(totalRows);
+
+  QLocale locale;
+  QStandardItem *item = new QStandardItem("Display Open Database Connections");
+
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem
+    (locale.toString(QSqlDatabase::connectionNames().size()));
+  item->setEditable(false);
+  item->setToolTip(item->text());
+  m_statisticsModel->setItem(row, 1, item);
+  row += 1;
+  item = new QStandardItem("Display PID");
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem(QString::number(QApplication::applicationPid()));
+  item->setEditable(false);
+  item->setToolTip(item->text());
+  m_statisticsModel->setItem(row, 1, item);
+  row += 1;
+  item = new QStandardItem("Display PostgreSQL Connection Faulty Counter");
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem
+    (locale.toString(m_pqUrlFaultyCounter.fetchAndAddOrdered(0)));
+  item->setEditable(false);
+  item->setToolTip(item->text());
+  m_statisticsModel->setItem(row, 1, item);
+  m_statisticsUi.view->resizeColumnToContents(0);
+  m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
+  m_statisticsUi.view->sortByColumn(0, Qt::AscendingOrder);
+  m_ui.statistics->resizeColumnToContents(0);
+  m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
+  m_ui.statistics->sortByColumn(0, Qt::AscendingOrder);
+
+  if(focusWidget)
+    focusWidget->setFocus();
+
+  if(activeListeners > 0 && isKernelActive())
+    {
+      m_sb.listeners->setIcon
+	(QIcon(QString(":/%1/status-online.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())));
+      m_sb.listeners->setToolTip
+	(tr("There is (are) %1 active listener(s).").arg(activeListeners));
+    }
+  else
+    {
+      m_sb.listeners->setIcon
+	(QIcon(QString(":/%1/status-offline.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())));
+      m_sb.listeners->setToolTip(tr("Listeners are offline."));
+    }
+
+  if(activeNeighbors > 0 && isKernelActive())
+    {
+      m_sb.neighbors->setIcon
+	(QIcon(QString(":/%1/status-online.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())));
+      m_sb.neighbors->setToolTip
+	(tr("There is (are) %1 connected neighbor(s).").
+	 arg(activeNeighbors));
+    }
+  else
+    {
+      m_sb.neighbors->setIcon
+	(QIcon(QString(":/%1/status-offline.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())));
+      m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
+    }
+}
+
 void spoton::saveDestination(const QString &path)
 {
   m_settings["gui/etpDestinationPath"] = path;
@@ -380,6 +502,15 @@ void spoton::slotDeleteEtpMagnet(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotGatherStatistics(void)
+{
+  if(!m_statisticsFuture.isFinished())
+    return;
+
+  m_statisticsFuture = QtConcurrent::run(this, &spoton::gatherStatistics);
+  m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
 }
 
 void spoton::slotGenerateEtpKeys(int index)
@@ -690,6 +821,39 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
     }
 }
 
+void spoton::slotStarOTMCheckChange(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(checkBox)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "starbeam.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE magnets SET "
+			  "one_time_magnet = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, state ? 1 : 0);
+	    query.bindValue(1, checkBox->property("oid"));
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
 void spoton::slotTransportChanged(int index)
 {
   /*
@@ -794,173 +958,9 @@ void spoton::slotTransportChanged(int index)
     }
 }
 
-void spoton::slotStarOTMCheckChange(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(checkBox)
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare("UPDATE magnets SET "
-			  "one_time_magnet = ? "
-			  "WHERE OID = ?");
-	    query.bindValue(0, state ? 1 : 0);
-	    query.bindValue(1, checkBox->property("oid"));
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::slotGatherStatistics(void)
-{
-  if(!m_statisticsFuture.isFinished())
-    return;
-
-  m_statisticsFuture = QtConcurrent::run(this, &spoton::gatherStatistics);
-  m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
-}
-
 void spoton::slotStatisticsGathered(void)
 {
   populateStatistics(m_statisticsFuture.result());
-}
-
-void spoton::populateStatistics
-(const QList<QPair<QString, QVariant> > &list)
-{
-  QWidget *focusWidget = QApplication::focusWidget();
-  int activeListeners = 0;
-  int activeNeighbors = 0;
-  int row = 0;
-  int totalRows = list.size();
-
-  m_statisticsUi.view->setSortingEnabled(false);
-  m_ui.statistics->setSortingEnabled(false);
-  m_statisticsModel->removeRows(0, m_statisticsModel->rowCount());
-  m_statisticsModel->setRowCount(totalRows);
-
-  for(int i = 0; i < list.size(); i++)
-    {
-      QStandardItem *item = new QStandardItem(list.at(i).first);
-
-      item->setEditable(false);
-      m_statisticsModel->setItem(row, 0, item);
-      item = new QStandardItem(list.at(i).second.toString());
-      item->setEditable(false);
-      item->setToolTip(item->text());
-      m_statisticsModel->setItem(row, 1, item);
-
-      if(list.at(i).first.toLower().contains("percent consumed"))
-	{
-	  double percent = list.at(i).second.toString().remove('%').toDouble();
-
-	  if(percent <= 50.0)
-	    item->setBackground(QBrush(QColor("lightgreen")));
-	  else if(percent > 50.0 && percent <= 80.0)
-	    item->setBackground(QBrush(QColor(232, 120, 0)));
-	  else
-	    item->setBackground(QBrush(QColor(240, 128, 128)));
-	}
-      else if(list.at(i).first.toLower().contains("live listeners"))
-	activeListeners = list.at(i).second.toInt();
-      else if(list.at(i).first.toLower().contains("live neighbors"))
-	activeNeighbors = list.at(i).second.toInt();
-
-      row += 1;
-    }
-
-  totalRows += 3; // Display statistics!
-  m_statisticsModel->setRowCount(totalRows);
-
-  QLocale locale;
-  QStandardItem *item = new QStandardItem("Display Open Database Connections");
-
-  item->setEditable(false);
-  m_statisticsModel->setItem(row, 0, item);
-  item = new QStandardItem
-    (locale.toString(QSqlDatabase::connectionNames().size()));
-  item->setEditable(false);
-  item->setToolTip(item->text());
-  m_statisticsModel->setItem(row, 1, item);
-  row += 1;
-  item = new QStandardItem("Display PID");
-  item->setEditable(false);
-  m_statisticsModel->setItem(row, 0, item);
-  item = new QStandardItem(QString::number(QApplication::applicationPid()));
-  item->setEditable(false);
-  item->setToolTip(item->text());
-  m_statisticsModel->setItem(row, 1, item);
-  row += 1;
-  item = new QStandardItem("Display PostgreSQL Connection Faulty Counter");
-  item->setEditable(false);
-  m_statisticsModel->setItem(row, 0, item);
-  item = new QStandardItem
-    (locale.toString(m_pqUrlFaultyCounter.fetchAndAddOrdered(0)));
-  item->setEditable(false);
-  item->setToolTip(item->text());
-  m_statisticsModel->setItem(row, 1, item);
-  m_statisticsUi.view->resizeColumnToContents(0);
-  m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
-  m_statisticsUi.view->sortByColumn(0, Qt::AscendingOrder);
-  m_ui.statistics->resizeColumnToContents(0);
-  m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
-  m_ui.statistics->sortByColumn(0, Qt::AscendingOrder);
-
-  if(focusWidget)
-    focusWidget->setFocus();
-
-  if(activeListeners > 0 && isKernelActive())
-    {
-      m_sb.listeners->setIcon
-	(QIcon(QString(":/%1/status-online.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-      m_sb.listeners->setToolTip
-	(tr("There is (are) %1 active listener(s).").arg(activeListeners));
-    }
-  else
-    {
-      m_sb.listeners->setIcon
-	(QIcon(QString(":/%1/status-offline.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-      m_sb.listeners->setToolTip(tr("Listeners are offline."));
-    }
-
-  if(activeNeighbors > 0 && isKernelActive())
-    {
-      m_sb.neighbors->setIcon
-	(QIcon(QString(":/%1/status-online.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-      m_sb.neighbors->setToolTip
-	(tr("There is (are) %1 connected neighbor(s).").
-	 arg(activeNeighbors));
-    }
-  else
-    {
-      m_sb.neighbors->setIcon
-	(QIcon(QString(":/%1/status-offline.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())));
-      m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
-    }
 }
 
 void spoton::slotExternalIp(int index)
