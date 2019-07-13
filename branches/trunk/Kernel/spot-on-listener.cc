@@ -375,15 +375,15 @@ spoton_listener::spoton_listener
   else if(m_udpServer)
     m_udpServer->setMaxPendingConnections(m_maximumClients);
 
+  connect(&m_externalAddressDiscovererTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotDiscoverExternalAddress(void)));
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
   m_timer.start(2500);
-  connect(&m_externalAddressDiscovererTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotDiscoverExternalAddress(void)));
 }
 
 spoton_listener::~spoton_listener()
