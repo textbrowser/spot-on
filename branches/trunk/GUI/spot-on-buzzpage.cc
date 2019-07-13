@@ -117,16 +117,16 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSave(void)));
+  connect(ui.message,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSendMessage(void)));
   connect(ui.remove,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRemove(void)));
   connect(ui.sendMessage,
 	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSendMessage(void)));
-  connect(ui.message,
-	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSendMessage(void)));
   connect(ui.unify,

@@ -70,14 +70,14 @@ spoton_emailwindow::spoton_emailwindow
 	  SIGNAL(clicked(void)),
 	  m_ui.emailSecrets,
 	  SLOT(showMenu(void)));
-  connect(m_ui.email_fs_gb,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotEmailFsGb(int)));
   connect(m_ui.emailSecrets->menu(),
 	  SIGNAL(aboutToShow(void)),
 	  this,
 	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
+  connect(m_ui.email_fs_gb,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEmailFsGb(int)));
   connect(m_ui.reloadEmailNames,
 	  SIGNAL(clicked(void)),
 	  this,
