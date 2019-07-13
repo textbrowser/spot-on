@@ -483,8 +483,7 @@ class spoton_neighbor: public QThread
 				const QByteArray &name,
 				const QByteArray &password);
   void slotAuthenticationTimerTimeout(void);
-  void slotCallParticipant(const QByteArray &data,
-			   const QString &messageType);
+  void slotCallParticipant(const QByteArray &data, const QString &messageType);
   void slotConnected(void);
   void slotDisconnected(void);
   void slotDiscoverExternalAddress(void);
@@ -497,11 +496,7 @@ class spoton_neighbor: public QThread
   void slotError(const QString &method,
 		 const spoton_sctp_socket::SocketError error);
   void slotExternalAddressDiscovered(const QHostAddress &address);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
   void slotHandshakeTimeout(void);
-#else
-  void slotHandshakeTimeout(void);
-#endif
   void slotHostFound(const QHostInfo &hostInfo);
   void slotLifetimeExpired(void);
   void slotModeChanged(QSslSocket::SslMode mode);
@@ -537,8 +532,7 @@ class spoton_neighbor: public QThread
   void slotSendMail(const QPairByteArrayInt64List &list,
 		    const QString &messageType);
   void slotSendMailFromPostOffice
-    (const QByteArray &data,
-     const QPairByteArrayByteArray &adaptiveEchoPair);
+    (const QByteArray &data, const QPairByteArrayByteArray &adaptiveEchoPair);
   void slotSendMessage(const QByteArray &data,
 		       const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
