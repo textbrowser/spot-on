@@ -48,22 +48,6 @@ spoton_starbeamanalyzer::spoton_starbeamanalyzer(QWidget *parent):
     (ui.tableWidget->columnCount() - 1, true); // OID
   ui.tableWidget->setColumnHidden
     (ui.tableWidget->columnCount() - 2, true); // Results
-  connect(ui.action_Close,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotClose(void)));
-  connect(ui.clear,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDelete(void)));
-  connect(ui.copy,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotCopy(void)));
-  connect(ui.tableWidget,
-	  SIGNAL(itemSelectionChanged(void)),
-	  this,
-	  SLOT(slotItemSelected(void)));
   connect(this,
 	  SIGNAL(excessiveProblems(const QString &)),
 	  this,
@@ -80,6 +64,22 @@ spoton_starbeamanalyzer::spoton_starbeamanalyzer(QWidget *parent):
 	  this,
 	  SLOT(slotUpdatePercent(const QString &,
 				 const int)));
+  connect(ui.action_Close,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotClose(void)));
+  connect(ui.clear,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDelete(void)));
+  connect(ui.copy,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCopy(void)));
+  connect(ui.tableWidget,
+	  SIGNAL(itemSelectionChanged(void)),
+	  this,
+	  SLOT(slotItemSelected(void)));
   slotSetIcons();
 }
 
