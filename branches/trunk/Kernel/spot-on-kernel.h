@@ -78,16 +78,16 @@ class spoton_kernel: public QObject
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
+  static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
+  static QPair<quint64, quint64> s_totalUiBytesReadWritten;
+  static QReadWriteLock s_totalNeighborsBytesReadWrittenMutex;
+  static QReadWriteLock s_totalUiBytesReadWrittenMutex;
   static QList<QByteArray> findBuzzKey(const QByteArray &data,
 				       const QByteArray &hash);
   static QList<QByteArray> findInstitutionKey(const QByteArray &data,
 					      const QByteArray &hash);
   static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
-  static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
-  static QPair<quint64, quint64> s_totalUiBytesReadWritten;
   static QPointer<spoton_kernel> instance(void);
-  static QReadWriteLock s_totalNeighborsBytesReadWrittenMutex;
-  static QReadWriteLock s_totalUiBytesReadWrittenMutex;
   static QVariant setting(const QString &name,
 			  const QVariant &defaultValue);
   static bool duplicateEmailRequests(const QByteArray &data);
