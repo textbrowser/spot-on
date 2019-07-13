@@ -313,6 +313,13 @@ void spoton_starbeam_writer::processData
 
   if(list.value(0) == "0061")
     {
+      /*
+      ** The StarBeam reader having the identity ID should now read
+      ** the next bundle of data.
+      */
+
+      emit notifyStarBeamReader
+	(list.value(3).toLongLong(), list.value(1).toLongLong());
       return;
     }
 
