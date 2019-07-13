@@ -40,6 +40,10 @@ spoton_logviewer::spoton_logviewer(void):QMainWindow()
   setWindowTitle
     (tr("%1: Log Viewer").
      arg(SPOTON_APPLICATION_NAME));
+  connect(&m_timer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotTimeout(void)));
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -48,24 +52,20 @@ spoton_logviewer::spoton_logviewer(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClear(void)));
+  connect(ui.action_Enable_Log,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotEnableLog(bool)));
   connect(ui.clear,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotClear(void)));
-  connect(ui.actionEnable_Log,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotEnableLog(bool)));
-  connect(&m_timer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotTimeout(void)));
 
   QSettings settings;
 
-  ui.actionEnable_Log->setChecked(settings.value("gui/guiLogEvents",
-						 false).toBool());
-  spoton_misc::enableLog(ui.actionEnable_Log->isChecked());
+  ui.action_Enable_Log->setChecked
+    (settings.value("gui/guiLogEvents", false).toBool());
+  spoton_misc::enableLog(ui.action_Enable_Log->isChecked());
   m_timer.setInterval(2500);
   slotSetIcons();
   m_lastModificationTime = QDateTime();

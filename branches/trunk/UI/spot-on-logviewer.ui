@@ -89,7 +89,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="action_Empty_Log"/>
-    <addaction name="actionEnable_Log"/>
+    <addaction name="action_Enable_Log"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -108,7 +108,7 @@
     <string>&amp;Clear</string>
    </property>
   </action>
-  <action name="actionEnable_Log">
+  <action name="action_Enable_Log">
    <property name="checkable">
     <bool>true</bool>
    </property>
