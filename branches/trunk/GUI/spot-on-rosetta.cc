@@ -67,10 +67,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotClear(void)));
-  connect(ui.clearContact,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotClear(void)));
   connect(ui.clearInput,
 	  SIGNAL(clicked(void)),
 	  this,
