@@ -103,6 +103,27 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
   return list;
 }
 
+void spoton::askKernelToReadStarBeamKeys(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QByteArray message;
+
+  message.append("populate_starbeam_keys\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::askKernelToReadStarBeamKeys(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+}
+
 void spoton::importNeighbors(const QString &filePath)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -478,6 +499,63 @@ void spoton::importNeighbors(const QString &filePath)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::populateNovas(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	m_ui.novas->clear();
+
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT nova FROM received_novas");
+
+	if(query.exec())
+	  {
+	    QStringList novas;
+
+	    while(query.next())
+	      {
+		QString nova("");
+		bool ok = true;
+
+		nova = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(0).
+							 toByteArray()),
+					      &ok).constData();
+
+		if(!nova.isEmpty())
+		  novas.append(nova);
+	      }
+
+	    std::sort(novas.begin(), novas.end());
+
+	    if(!novas.isEmpty())
+	      m_ui.novas->addItems(novas);
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
@@ -1230,6 +1308,173 @@ void spoton::saveDestination(const QString &path)
   m_ui.destination->selectAll();
 }
 
+void spoton::sharePublicKeyWithParticipant(const QString &keyType)
+{
+  if(!m_crypts.value(keyType, 0) ||
+     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString oid("");
+  QString publicKeyHash("");
+  QTableWidget *table = 0;
+  int row = -1;
+
+  if(keyType == "chat" || keyType == "poptastic")
+    if(currentTabName() == "chat")
+      table = m_ui.participants;
+
+  if(keyType == "email" || keyType == "poptastic")
+    if(currentTabName() == "email")
+      table = m_ui.emailParticipants;
+
+  if(keyType == "url")
+    table = m_ui.urlParticipants;
+
+  if(!table)
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  if((row = table->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = table->item(row, 2); // neighbor_oid
+
+      if(item)
+	oid = item->text();
+
+      if((item = table->item(row, 3))) // public_key_hash
+	publicKeyHash = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+  else if(oid == "0")
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "public_key_hash = ? AND "
+			  "neighbor_oid = 0");
+	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.exec();
+	    query.prepare("UPDATE friends_public_keys SET "
+			  "neighbor_oid = -1 WHERE "
+			  "public_key_hash IN "
+			  "(SELECT signature_public_key_hash FROM "
+			  "relationships_with_signatures WHERE "
+			  "public_key_hash = ?) "
+			  "AND neighbor_oid = 0");
+	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value(keyType)->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value(keyType)->digitalSignature(publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value(QString("%1-signature").arg(keyType))->
+      publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value(QString("%1-signature").arg(keyType))->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name;
+
+      if(keyType == "chat")
+	name = m_settings.value("gui/nodeName", "unknown").
+	  toByteArray();
+      else if(keyType == "email")
+	name = m_settings.value("gui/emailName", "unknown").
+	  toByteArray();
+      else if(keyType == "poptastic")
+	name = poptasticName();
+      else if(keyType == "url")
+	name = name = m_settings.value("gui/urlName", "unknown").
+	  toByteArray();
+
+      if(name.isEmpty())
+	{
+	  if(keyType == "poptastic")
+	    name = "unknown@unknown.org";
+	  else
+	    name = "unknown";
+	}
+
+      message.append("befriendparticipant_");
+      message.append(oid);
+      message.append("_");
+      message.append(keyType.toLatin1().toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(qCompress(publicKey).toBase64());
+      message.append("_");
+      message.append(signature.toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::sharePublicKeyWithParticipant(): "
+		   "write() failure for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotAcceptBuzzMagnets(bool state)
 {
   m_settings["gui/acceptBuzzMagnets"] = state;
@@ -1369,6 +1614,80 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
     askKernelToReadStarBeamKeys();
 }
 
+void spoton::slotAddReceiveNova(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QString nova(m_ui.receiveNova->text());
+
+  if(nova.length() < 48)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Please provide a nova that contains at least "
+	    "forty-eight characters. Reach for the "
+	    "stars!"));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if((ok = db.open()))
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO received_novas "
+	   "(nova, nova_hash) VALUES (?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(nova.toLatin1(),
+					 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->keyedHash(nova.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    {
+      m_ui.receiveNova->clear();
+      populateNovas();
+      askKernelToReadStarBeamKeys();
+    }
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to store the nova."));
+}
+
 void spoton::slotAutoRetrieveEmail(bool state)
 {
   m_settings["gui/automaticallyRetrieveEmail"] = state;
@@ -1417,6 +1736,108 @@ void spoton::slotBuzzActionsActivated(int index)
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotBuzzActionsActivated(int)));
+}
+
+void spoton::slotComputeFileHash(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QTableWidget *table = 0;
+
+  if(action->property("widget_of").toString().toLower() == "received")
+    table = m_ui.received;
+  else if(action->property("widget_of").toString().toLower() == "transmitted")
+    table = m_ui.transmitted;
+
+  if(!table)
+    return;
+
+  QString oid("");
+  int row = -1;
+
+  if((row = table->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = table->item
+	(row, table->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QTableWidgetItem *item = 0;
+
+  if(m_ui.received == table)
+    item = table->item(table->currentRow(), 4); // File
+  else
+    item = table->item(table->currentRow(), 5); // File
+
+  if(!item)
+    return;
+
+  QFile file;
+  QString fileName(item->text());
+
+  file.setFileName(fileName);
+
+  if(!file.open(QIODevice::ReadOnly))
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QByteArray hash(spoton_crypt::sha1FileHash(fileName));
+
+  QApplication::restoreOverrideCursor();
+
+  file.close();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	if(m_ui.received == table)
+	  query.prepare
+	    ("UPDATE received SET hash = ? WHERE OID = ?");
+	else
+	  query.prepare
+	    ("UPDATE transmitted SET hash = ? WHERE OID = ?");
+
+	if(hash.isEmpty())
+	  query.bindValue(0, QVariant::String);
+	else
+	  query.bindValue
+	    (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
+	     toBase64());
+
+	query.bindValue(1, oid);
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotCopyEmailKeys(void)
@@ -1549,6 +1970,68 @@ void spoton::slotCopyEtpMagnet(void)
     }
 }
 
+void spoton::slotCopyFileHash(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    {
+      clipboard->clear();
+      return;
+    }
+
+  QTableWidget *table = 0;
+
+  if(action->property("widget_of").toString().toLower() == "received")
+    table = m_ui.received;
+  else if(action->property("widget_of").toString().toLower() == "transmitted")
+    table = m_ui.transmitted;
+
+  if(!table)
+    {
+      clipboard->clear();
+      return;
+    }
+
+  QString oid("");
+  int row = -1;
+
+  if((row = table->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = table->item
+	(row, table->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      clipboard->clear();
+      return;
+    }
+
+  QTableWidgetItem *item = 0;
+
+  if(m_ui.received == table)
+    item = table->item(table->currentRow(), 5); // Hash
+  else
+    item = table->item(table->currentRow(), 7); // Hash
+
+  if(!item)
+    {
+      clipboard->clear();
+      return;
+    }
+
+  clipboard->setText(item->text());
+}
+
 void spoton::slotCopyOrPaste(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());
@@ -1589,6 +2072,21 @@ void spoton::slotCopyOrPaste(void)
       else
 	qobject_cast<QTextEdit *> (widget)->paste();
     }
+}
+
+void spoton::slotCopyTransmittedMagnet(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+  else
+    clipboard->clear();
+
+  QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
+
+  if(item)
+    clipboard->setText(item->text());
 }
 
 void spoton::slotCopyUrlFriendshipBundle(void)
@@ -1789,6 +2287,63 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotDeleteAllReceived(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM received");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotDeleteAllTransmitted(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!isKernelActive())
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM transmitted");
+	    query.exec("DELETE FROM transmitted_magnets");
+	    query.exec("DELETE FROM transmitted_scheduled_pulses");
+	  }
+	else
+	  query.exec("UPDATE transmitted SET "
+		     "status_control = 'deleted' WHERE "
+		     "status_control <> 'deleted'");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotDeleteEtpAllMagnets(void)
 {
   QString connectionName("");
@@ -1854,6 +2409,173 @@ void spoton::slotDeleteEtpMagnet(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   askKernelToReadStarBeamKeys();
+}
+
+void spoton::slotDeleteNova(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QList<QListWidgetItem *> list(m_ui.novas->selectedItems());
+
+  if(list.isEmpty() || !list.at(0))
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please select a nova to delete."));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM received_novas WHERE "
+		      "nova_hash = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
+	   toBase64());
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the speficied nova."));
+  else
+    {
+      populateNovas();
+      askKernelToReadStarBeamKeys();
+    }
+}
+
+void spoton::slotDeleteReceived(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.received->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.received->item
+	(row, m_ui.received->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM received WHERE "
+		      "OID = ?");
+	query.bindValue(0, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotDeleteTransmitted(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!isKernelActive())
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM transmitted WHERE "
+			  "OID = ?");
+	    query.bindValue(0, oid);
+	    query.exec();
+	    query.exec("DELETE FROM transmitted_magnets WHERE "
+		       "transmitted_oid NOT IN "
+		       "(SELECT OID FROM transmitted)");
+	    query.exec("DELETE FROM transmitted_scheduled_pulses WHERE "
+		       "transmitted_oid NOT IN "
+		       "(SELECT OID FROM transmitted)");
+	  }
+	else
+	  {
+	    query.prepare
+	      ("UPDATE transmitted SET status_control = 'deleted' "
+	       "WHERE OID = ? AND status_control <> 'deleted'");
+	    query.bindValue(0, oid);
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotExportListeners(void)
@@ -2113,6 +2835,17 @@ void spoton::slotGenerateEtpKeys(int index)
 	      this,
 	      SLOT(slotGenerateEtpKeys(int)));
     }
+}
+
+void spoton::slotGenerateNova(void)
+{
+  QByteArray nova
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")) +
+     spoton_crypt::
+     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+
+  m_ui.transmitNova->setText(nova.toBase64());
 }
 
 void spoton::slotImpersonate(bool state)
@@ -2427,743 +3160,6 @@ void spoton::slotPopulateEtpMagnets(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotReceiversClicked(bool state)
-{
-  m_settings["gui/etpReceivers"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/etpReceivers", state);
-}
-
-void spoton::slotRemoveUrlParticipants(void)
-{
-  if(!m_ui.urlParticipants->selectionModel()->hasSelection())
-    return;
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected "
-		"URLs participant(s)?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QModelIndexList list
-	  (m_ui.urlParticipants->selectionModel()->
-	   selectedRows(1)); // OID
-	QSqlQuery query(db);
-
-	while(!list.isEmpty())
-	  {
-	    QVariant data(list.takeFirst().data());
-
-	    if(!data.isNull() && data.isValid())
-	      {
-		query.exec("PRAGMA secure_delete = ON");
-		query.prepare("DELETE FROM friends_public_keys WHERE "
-			      "OID = ?");
-		query.bindValue(0, data.toString());
-		query.exec();
-	      }
-	  }
-
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotRenameParticipant(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QString type(action->property("type").toString().toLower());
-
-  if(!(type == "chat" || type == "email" ||
-       type == "poptastic" || type == "url"))
-    return;
-
-  QModelIndexList list;
-
-  if(currentTabName() == "chat")
-    if(type == "chat" || type == "poptastic")
-      list = m_ui.participants->selectionModel()->selectedRows(1); // OID
-
-  if(currentTabName() == "email")
-    if(type == "email" || type == "poptastic")
-      list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
-
-  if(type == "url")
-    list = m_ui.urlParticipants->selectionModel()->selectedRows(1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QVariant data(list.value(0).data());
-
-  if(currentTabName() == "chat")
-    if(type == "chat" || type == "poptastic")
-      list = m_ui.participants->selectionModel()->selectedRows(0); // Name
-
-  if(currentTabName() == "email")
-    if(type == "email" || type == "poptastic")
-      list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
-
-  if(type == "url")
-    list = m_ui.urlParticipants->selectionModel()->selectedRows(0); // Name
-
-  QString name("");
-  bool ok = true;
-
-  name = QInputDialog::getText
-    (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, list.value(0).data().toString(), &ok);
-  name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
-
-  if(name.isEmpty() || !ok)
-    return;
-
-  ok = false;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!data.isNull() && data.isValid())
-	  {
-	    query.prepare("UPDATE friends_public_keys "
-			  "SET name = ?, "
-			  "name_changed_by_user = 1 "
-			  "WHERE OID = ?");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).
-	       toBase64());
-	    query.bindValue(1, data.toString());
-
-	    if(ok)
-	      ok = query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    if(currentTabName() == "chat")
-      {
-	QTableWidgetItem *item = m_ui.participants->item
-	  (list.value(0).row(), 3); // public_key_hash
-
-	if(item)
-	  {
-	    QString publicKeyHash(item->text());
-
-	    if(m_chatWindows.contains(publicKeyHash))
-	      {
-		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(publicKeyHash, 0);
-
-		if(chat)
-		  chat->setName(name);
-	      }
-	  }
-      }
-}
-
-void spoton::slotResetCertificate(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare("UPDATE neighbors SET "
-		      "certificate = ? "
-		      "WHERE OID = ? AND "
-		      "user_defined = 1");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-	query.bindValue(1, list.at(0).data());
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSaveDestination(void)
-{
-  saveDestination(m_ui.destination->text());
-}
-
-void spoton::slotSaveUrlName(void)
-{
-  QString str(m_ui.urlName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.urlName->setText(str);
-    }
-  else
-    m_ui.urlName->setText(str.trimmed());
-
-  m_settings["gui/urlName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/urlName", str.toUtf8());
-  m_ui.urlName->selectAll();
-}
-
-void spoton::slotSelectDestination(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select StarBeam Destination Directory").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::Directory);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    saveDestination(dialog.selectedFiles().value(0));
-}
-
-void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
-{
-  if(m_ui.etpMagnets == sender())
-    {
-      QMenu menu(this);
-
-      menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyEtpMagnet(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"),
-		     this, SLOT(slotDeleteEtpMagnet(void)));
-      menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteEtpAllMagnets(void)));
-      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
-    }
-}
-
-void spoton::slotShowStatistics(void)
-{
-  m_ui.statisticsBox->setVisible(!m_ui.statisticsBox->isVisible());
-}
-
-void spoton::slotStarOTMCheckChange(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-
-  if(checkBox)
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare("UPDATE magnets SET "
-			  "one_time_magnet = ? "
-			  "WHERE OID = ?");
-	    query.bindValue(0, state ? 1 : 0);
-	    query.bindValue(1, checkBox->property("oid"));
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::slotStatisticsGathered(void)
-{
-  populateStatistics(m_statisticsFuture.result());
-}
-
-void spoton::slotTransportChanged(int index)
-{
-  /*
-  ** 0 - Bluetooth
-  ** 1 - SCTP
-  ** 2 - TCP
-  ** 3 - UDP
-  */
-
-  if(m_ui.listenerTransport == sender())
-    {
-      if(index == 0)
-	m_ui.ipv4Listener->setChecked(true);
-
-      prepareListenerIPCombo();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.days_valid->setEnabled(index == 2 || // TCP
-				  index == 3);  // UDP
-#else
-      m_ui.days_valid->setEnabled(index == 2);
-#endif
-      m_ui.ipv4Listener->setEnabled(index != 0);
-      m_ui.ipv6Listener->setEnabled(index != 0);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.listenerKeySize->setEnabled(index == 2 || // TCP
-				       index == 3);  // UDP
-#else
-      m_ui.listenerKeySize->setEnabled(index == 2);
-#endif
-#if defined(Q_OS_WIN)
-      m_ui.listenerShareAddress->setEnabled(false);
-#else
-      m_ui.listenerShareAddress->setEnabled(index == 3);
-#endif
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.listenersSslControlString->setEnabled(index == 2 || // TCP
-						 index == 3);  // UDP
-      m_ui.permanentCertificate->setEnabled(index == 2 || // TCP
-					    index == 3);  // UDP
-      m_ui.recordIPAddress->setEnabled(index == 2 || // TCP
-				       index == 3);  // UDP
-#else
-      m_ui.listenersSslControlString->setEnabled(index == 2);
-      m_ui.permanentCertificate->setEnabled(index == 2);
-      m_ui.recordIPAddress->setEnabled(index == 2);
-#endif
-
-      if(m_ui.ipv6Listener->isChecked())
-	m_ui.listenerScopeId->setEnabled(index != 0);
-      else
-	m_ui.listenerScopeId->setEnabled(false);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.sslListener->setEnabled(index == 2 || // TCP
-				   index == 3);  // UDP
-#else
-      m_ui.sslListener->setEnabled(index == 2);
-#endif
-    }
-  else if(m_ui.neighborTransport == sender())
-    {
-      if(index == 0)
-	m_ui.ipv4Neighbor->setChecked(true);
-
-      m_ui.addException->setEnabled(index == 2);
-      m_ui.dynamicdns->setEnabled(index != 0);
-      m_ui.ipv4Neighbor->setEnabled(index != 0);
-      m_ui.ipv6Neighbor->setEnabled(index != 0);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.neighborKeySize->setEnabled(index == 2 || // TCP
-				       index == 3);  // UDP
-#else
-      m_ui.neighborKeySize->setEnabled(index == 2);
-#endif
-
-      if(m_ui.ipv6Neighbor->isChecked())
-	m_ui.neighborScopeId->setEnabled(index != 0);
-      else
-	m_ui.neighborScopeId->setEnabled(false);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.neighborsSslControlString->setEnabled(index == 2 || // TCP
-						 index == 3);  // UDP
-#else
-      m_ui.neighborsSslControlString->setEnabled(index == 2);
-#endif
-
-      if(index == 0 || index == 1)
-	m_ui.proxy->setEnabled(false);
-      else
-	m_ui.proxy->setEnabled(true);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      m_ui.requireSsl->setEnabled(index == 2 || // TCP
-				  index == 3);  // UDP
-      m_ui.sslKeySizeLabel->setEnabled(index == 2 || // TCP
-				       index == 3);  // UDP
-#else
-      m_ui.requireSsl->setEnabled(index == 2);
-      m_ui.sslKeySizeLabel->setEnabled(index == 2);
-#endif
-    }
-}
-
-void spoton::slotSelectTransmitFile(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select StarBeam Transmit File").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    m_ui.transmittedFile->setText
-      (dialog.selectedFiles().value(0));
-}
-
-void spoton::slotTransmit(void)
-{
-  /*
-  ** We must have at least one magnet selected.
-  */
-
-  QByteArray encryptedMosaic;
-  QFileInfo fileInfo;
-  QList<QByteArray> magnets;
-  QString connectionName("");
-  QString error("");
-  bool ok = true;
-  bool zero = true;
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
-
-  if(!m_ui.transmitNova->text().isEmpty())
-    if(m_ui.transmitNova->text().length() < 48)
-      {
-	error = tr("Please provide a nova that contains at least "
-		   "forty-eight characters.");
-	goto done_label;
-      }
-
-  if(m_ui.transmittedFile->text().isEmpty())
-    {
-      error = tr("Please select a file to transfer.");
-      goto done_label;
-    }
-
-  fileInfo.setFile(m_ui.transmittedFile->text());
-
-  if(!fileInfo.exists() || !fileInfo.isReadable())
-    {
-      error = tr("The provided file cannot be accessed.");
-      goto done_label;
-    }
-
-  for(int i = 0; i < m_ui.addTransmittedMagnets->rowCount(); i++)
-    {
-      QCheckBox *checkBox = qobject_cast<QCheckBox *>
-	(m_ui.addTransmittedMagnets->cellWidget(i, 0));
-
-      if(checkBox)
-	if(checkBox->isChecked())
-	  {
-	    zero = false;
-	    magnets << checkBox->text().replace("&&", "&").toLatin1();
-	  }
-    }
-
-  if(zero)
-    {
-      error = tr("Please select at least one magnet.");
-      goto done_label;
-    }
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	QByteArray mosaic
-	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
-	   toBase64());
-	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO transmitted "
-		      "(file, fragmented, "
-		      "hash, missing_links, mosaic, nova, "
-		      "position, pulse_size, "
-		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->
-	   encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
-			       &ok).toBase64());
-	query.bindValue
-	  (1, m_ui.fragment_starbeam->isChecked() ? 1 : 0);
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed
-	     (spoton_crypt::
-	      sha1FileHash(m_ui.transmittedFile->text()).toHex(),
-	      &ok).toBase64());
-
-	if(ok)
-	  {
-	    QString missingLinks;
-	    QStringList list(m_ui.missingLinks->text().
-			     remove("magnet:?").split("&"));
-
-	    while(!list.isEmpty())
-	      {
-		QString str(list.takeFirst());
-
-		if(str.startsWith("ml="))
-		  {
-		    str.remove(0, 3);
-		    missingLinks = str;
-		    break;
-		  }
-	      }
-
-	    query.bindValue
-	      (3, crypt->
-	       encryptedThenHashed(missingLinks.
-				   toLatin1(), &ok).toBase64());
-	  }
-
-	if(ok)
-	  {
-	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
-
-	    if(ok)
-	      query.bindValue(4, encryptedMosaic.toBase64());
-	  }
-
-	if(ok)
-	  query.bindValue
-	    (5, crypt->encryptedThenHashed
-	     (m_ui.transmitNova->text().
-	      toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (6, crypt->encryptedThenHashed("0", &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (7, crypt->
-	     encryptedThenHashed(QByteArray::number(m_ui.pulseSize->value()),
-				 &ok).toBase64());
-
-	query.bindValue(8, "paused");
-
-	if(ok)
-	  query.bindValue
-	    (9, crypt->
-	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.exec();
-
-	for(int i = 0; i < magnets.size(); i++)
-	  {
-	    query.prepare("INSERT INTO transmitted_magnets "
-			  "(magnet, magnet_hash, transmitted_oid) "
-			  "VALUES (?, ?, (SELECT OID FROM transmitted WHERE "
-			  "mosaic = ?))");
-
-	    if(ok)
-	      query.bindValue
-		(0, crypt->
-		 encryptedThenHashed(magnets.at(i), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash(magnets.at(i), &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue(2, encryptedMosaic.toBase64());
-
-	    if(ok)
-	      query.exec();
-	    else
-	      break;
-
-	    if(query.lastError().isValid())
-	      {
-		error = query.lastError().text();
-		break;
-	      }
-
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM magnets WHERE "
-			  "magnet_hash = ? and one_time_magnet = 1");
-	    query.bindValue(0, crypt->keyedHash(magnets.at(i), &ok).
-			    toBase64());
-
-	    if(ok)
-	      query.exec();
-	  }
-
-	QApplication::restoreOverrideCursor();
-      }
-
-    if(db.lastError().isValid())
-      error = tr("A database error (%1) occurred.").
-	arg(db.lastError().text());
-    else if(!error.isEmpty())
-      error = tr("A database error (%1) occurred.").
-	arg(error);
-    else if(!ok)
-      error = tr("An error occurred within spoton_crypt.");
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-  else
-    {
-      m_ui.fragment_starbeam->setChecked(false);
-      m_ui.missingLinks->clear();
-      m_ui.missingLinksCheckBox->setChecked(false);
-      m_ui.pulseSize->setValue(15000);
-      m_ui.transmitNova->clear();
-      m_ui.transmittedFile->clear();
-    }
-}
-
-void spoton::slotShareBuzzMagnet(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QByteArray data(action->data().toByteArray());
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QByteArray message;
-
-  message.append("sharebuzzmagnet_");
-  message.append(oid);
-  message.append("_");
-  message.append(data.toBase64());
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotShareBuzzMagnet(): write() failure "
-	       "for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::slotPopulateStars(void)
@@ -3706,920 +3702,13 @@ void spoton::slotPopulateStars(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::slotTransmittedPaused(bool state)
+void spoton::slotReceiversClicked(bool state)
 {
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  m_settings["gui/etpReceivers"] = state;
 
-  if(checkBox)
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare("UPDATE transmitted SET "
-			  "status_control = ? "
-			  "WHERE OID = ? AND status_control <> 'deleted'");
-	    query.bindValue(0, state ? "paused" : "transmitting");
-	    query.bindValue(1, checkBox->property("oid"));
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::slotDeleteAllTransmitted(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!isKernelActive())
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM transmitted");
-	    query.exec("DELETE FROM transmitted_magnets");
-	    query.exec("DELETE FROM transmitted_scheduled_pulses");
-	  }
-	else
-	  query.exec("UPDATE transmitted SET "
-		     "status_control = 'deleted' WHERE "
-		     "status_control <> 'deleted'");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDeleteTransmitted(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.transmitted->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.transmitted->item
-	(row, m_ui.transmitted->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!isKernelActive())
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM transmitted WHERE "
-			  "OID = ?");
-	    query.bindValue(0, oid);
-	    query.exec();
-	    query.exec("DELETE FROM transmitted_magnets WHERE "
-		       "transmitted_oid NOT IN "
-		       "(SELECT OID FROM transmitted)");
-	    query.exec("DELETE FROM transmitted_scheduled_pulses WHERE "
-		       "transmitted_oid NOT IN "
-		       "(SELECT OID FROM transmitted)");
-	  }
-	else
-	  {
-	    query.prepare
-	      ("UPDATE transmitted SET status_control = 'deleted' "
-	       "WHERE OID = ? AND status_control <> 'deleted'");
-	    query.bindValue(0, oid);
-	    query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSecureMemoryPoolChanged(int value)
-{
   QSettings settings;
 
-  if(m_optionsUi.guiSecureMemoryPool == sender())
-    {
-      m_settings["gui/gcryctl_init_secmem"] = value;
-      settings.setValue("gui/gcryctl_init_secmem", value);
-    }
-  else
-    {
-      m_settings["kernel/gcryctl_init_secmem"] = value;
-      settings.setValue("kernel/gcryctl_init_secmem", value);
-    }
-}
-
-void spoton::slotAddReceiveNova(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QString nova(m_ui.receiveNova->text());
-
-  if(nova.length() < 48)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Please provide a nova that contains at least "
-	    "forty-eight characters. Reach for the "
-	    "stars!"));
-      return;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if((ok = db.open()))
-      {
-	QSqlQuery query(db);
-
-	query.prepare
-	  ("INSERT OR REPLACE INTO received_novas "
-	   "(nova, nova_hash) VALUES (?, ?)");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(nova.toLatin1(),
-					 &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->keyedHash(nova.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    {
-      m_ui.receiveNova->clear();
-      populateNovas();
-      askKernelToReadStarBeamKeys();
-    }
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to store the nova."));
-}
-
-void spoton::populateNovas(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	m_ui.novas->clear();
-
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT nova FROM received_novas");
-
-	if(query.exec())
-	  {
-	    QStringList novas;
-
-	    while(query.next())
-	      {
-		QString nova("");
-		bool ok = true;
-
-		nova = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(0).
-							 toByteArray()),
-					      &ok).constData();
-
-		if(!nova.isEmpty())
-		  novas.append(nova);
-	      }
-
-	    std::sort(novas.begin(), novas.end());
-
-	    if(!novas.isEmpty())
-	      m_ui.novas->addItems(novas);
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDeleteNova(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QList<QListWidgetItem *> list(m_ui.novas->selectedItems());
-
-  if(list.isEmpty() || !list.at(0))
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please select a nova to delete."));
-      return;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM received_novas WHERE "
-		      "nova_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
-	   toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the speficied nova."));
-  else
-    {
-      populateNovas();
-      askKernelToReadStarBeamKeys();
-    }
-}
-
-void spoton::slotGenerateNova(void)
-{
-  QByteArray nova
-    (spoton_crypt::
-     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")) +
-     spoton_crypt::
-     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-
-  m_ui.transmitNova->setText(nova.toBase64());
-}
-
-void spoton::slotTransmittedSelected(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.transmitted->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.transmitted->item
-	(row, m_ui.transmitted->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	m_ui.transmittedMagnets->clear();
-
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT magnet FROM transmitted_magnets "
-		      "WHERE transmitted_oid = ? "
-		      "AND transmitted_oid IN (SELECT OID FROM "
-		      "transmitted WHERE status_control <> 'deleted' AND "
-		      "OID = ?)");
-	query.bindValue(0, oid);
-	query.bindValue(1, oid);
-
-	if(query.exec())
-	  {
-	    QStringList magnets;
-
-	    while(query.next())
-	      {
-		QString magnet("");
-		bool ok = true;
-
-		magnet = crypt->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(0).
-							 toByteArray()),
-					      &ok).constData();
-
-		if(!magnet.isEmpty())
-		  magnets.append(magnet);
-	      }
-
-	    std::sort(magnets.begin(), magnets.end());
-
-	    if(!magnets.isEmpty())
-	      m_ui.transmittedMagnets->addItems(magnets);
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotCopyTransmittedMagnet(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-  else
-    clipboard->clear();
-
-  QListWidgetItem *item = m_ui.transmittedMagnets->currentItem();
-
-  if(item)
-    clipboard->setText(item->text());
-}
-
-void spoton::slotDeleteAllReceived(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM received");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDeleteReceived(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.received->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.received->item
-	(row, m_ui.received->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM received WHERE "
-		      "OID = ?");
-	query.bindValue(0, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::askKernelToReadStarBeamKeys(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QByteArray message;
-
-  message.append("populate_starbeam_keys\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::askKernelToReadStarBeamKeys(): "
-	       "write() failure for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::slotRewindFile(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.transmitted->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.transmitted->item
-	(row, m_ui.transmitted->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare
-	  ("UPDATE transmitted SET position = ?, "
-	   "status_control = 'paused' "
-	   "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray::number(0), &ok).
-	   toBase64());
-	query.bindValue(1, oid);
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotComputeFileHash(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QTableWidget *table = 0;
-
-  if(action->property("widget_of").toString().toLower() == "received")
-    table = m_ui.received;
-  else if(action->property("widget_of").toString().toLower() == "transmitted")
-    table = m_ui.transmitted;
-
-  if(!table)
-    return;
-
-  QString oid("");
-  int row = -1;
-
-  if((row = table->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = table->item
-	(row, table->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QTableWidgetItem *item = 0;
-
-  if(m_ui.received == table)
-    item = table->item(table->currentRow(), 4); // File
-  else
-    item = table->item(table->currentRow(), 5); // File
-
-  if(!item)
-    return;
-
-  QFile file;
-  QString fileName(item->text());
-
-  file.setFileName(fileName);
-
-  if(!file.open(QIODevice::ReadOnly))
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QByteArray hash(spoton_crypt::sha1FileHash(fileName));
-
-  QApplication::restoreOverrideCursor();
-
-  file.close();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	if(m_ui.received == table)
-	  query.prepare
-	    ("UPDATE received SET hash = ? WHERE OID = ?");
-	else
-	  query.prepare
-	    ("UPDATE transmitted SET hash = ? WHERE OID = ?");
-
-	if(hash.isEmpty())
-	  query.bindValue(0, QVariant::String);
-	else
-	  query.bindValue
-	    (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
-	     toBase64());
-
-	query.bindValue(1, oid);
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotCopyFileHash(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    {
-      clipboard->clear();
-      return;
-    }
-
-  QTableWidget *table = 0;
-
-  if(action->property("widget_of").toString().toLower() == "received")
-    table = m_ui.received;
-  else if(action->property("widget_of").toString().toLower() == "transmitted")
-    table = m_ui.transmitted;
-
-  if(!table)
-    {
-      clipboard->clear();
-      return;
-    }
-
-  QString oid("");
-  int row = -1;
-
-  if((row = table->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = table->item
-	(row, table->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      clipboard->clear();
-      return;
-    }
-
-  QTableWidgetItem *item = 0;
-
-  if(m_ui.received == table)
-    item = table->item(table->currentRow(), 5); // Hash
-  else
-    item = table->item(table->currentRow(), 7); // Hash
-
-  if(!item)
-    {
-      clipboard->clear();
-      return;
-    }
-
-  clipboard->setText(item->text());
-}
-
-void spoton::slotViewRosetta(void)
-{
-  m_rosetta.show(this);
-}
-
-void spoton::sharePublicKeyWithParticipant(const QString &keyType)
-{
-  if(!m_crypts.value(keyType, 0) ||
-     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString oid("");
-  QString publicKeyHash("");
-  QTableWidget *table = 0;
-  int row = -1;
-
-  if(keyType == "chat" || keyType == "poptastic")
-    if(currentTabName() == "chat")
-      table = m_ui.participants;
-
-  if(keyType == "email" || keyType == "poptastic")
-    if(currentTabName() == "email")
-      table = m_ui.emailParticipants;
-
-  if(keyType == "url")
-    table = m_ui.urlParticipants;
-
-  if(!table)
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  if((row = table->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = table->item(row, 2); // neighbor_oid
-
-      if(item)
-	oid = item->text();
-
-      if((item = table->item(row, 3))) // public_key_hash
-	publicKeyHash = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-  else if(oid == "0")
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare("UPDATE friends_public_keys SET "
-			  "neighbor_oid = -1 WHERE "
-			  "public_key_hash = ? AND "
-			  "neighbor_oid = 0");
-	    query.bindValue(0, publicKeyHash.toLatin1());
-	    query.exec();
-	    query.prepare("UPDATE friends_public_keys SET "
-			  "neighbor_oid = -1 WHERE "
-			  "public_key_hash IN "
-			  "(SELECT signature_public_key_hash FROM "
-			  "relationships_with_signatures WHERE "
-			  "public_key_hash = ?) "
-			  "AND neighbor_oid = 0");
-	    query.bindValue(0, publicKeyHash.toLatin1());
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value(keyType)->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value(keyType)->digitalSignature(publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value(QString("%1-signature").arg(keyType))->
-      publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value(QString("%1-signature").arg(keyType))->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name;
-
-      if(keyType == "chat")
-	name = m_settings.value("gui/nodeName", "unknown").
-	  toByteArray();
-      else if(keyType == "email")
-	name = m_settings.value("gui/emailName", "unknown").
-	  toByteArray();
-      else if(keyType == "poptastic")
-	name = poptasticName();
-      else if(keyType == "url")
-	name = name = m_settings.value("gui/urlName", "unknown").
-	  toByteArray();
-
-      if(name.isEmpty())
-	{
-	  if(keyType == "poptastic")
-	    name = "unknown@unknown.org";
-	  else
-	    name = "unknown";
-	}
-
-      message.append("befriendparticipant_");
-      message.append(oid);
-      message.append("_");
-      message.append(keyType.toLatin1().toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(qCompress(publicKey).toBase64());
-      message.append("_");
-      message.append(signature.toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::sharePublicKeyWithParticipant(): "
-		   "write() failure for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
+  settings.setValue("gui/etpReceivers", state);
 }
 
 void spoton::slotRegenerateKey(void)
@@ -4772,6 +3861,917 @@ void spoton::slotRegenerateKey(void)
 			     "spoton_crypt::"
 			     "generatePrivatePublicKeys().").
 			  arg(error.trimmed()));
+}
+
+void spoton::slotRemoveUrlParticipants(void)
+{
+  if(!m_ui.urlParticipants->selectionModel()->hasSelection())
+    return;
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected "
+		"URLs participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QModelIndexList list
+	  (m_ui.urlParticipants->selectionModel()->
+	   selectedRows(1)); // OID
+	QSqlQuery query(db);
+
+	while(!list.isEmpty())
+	  {
+	    QVariant data(list.takeFirst().data());
+
+	    if(!data.isNull() && data.isValid())
+	      {
+		query.exec("PRAGMA secure_delete = ON");
+		query.prepare("DELETE FROM friends_public_keys WHERE "
+			      "OID = ?");
+		query.bindValue(0, data.toString());
+		query.exec();
+	      }
+	  }
+
+	spoton_misc::purgeSignatureRelationships
+	  (db, m_crypts.value("chat", 0));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotRenameParticipant(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QString type(action->property("type").toString().toLower());
+
+  if(!(type == "chat" || type == "email" ||
+       type == "poptastic" || type == "url"))
+    return;
+
+  QModelIndexList list;
+
+  if(currentTabName() == "chat")
+    if(type == "chat" || type == "poptastic")
+      list = m_ui.participants->selectionModel()->selectedRows(1); // OID
+
+  if(currentTabName() == "email")
+    if(type == "email" || type == "poptastic")
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
+
+  if(type == "url")
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QVariant data(list.value(0).data());
+
+  if(currentTabName() == "chat")
+    if(type == "chat" || type == "poptastic")
+      list = m_ui.participants->selectionModel()->selectedRows(0); // Name
+
+  if(currentTabName() == "email")
+    if(type == "email" || type == "poptastic")
+      list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
+
+  if(type == "url")
+    list = m_ui.urlParticipants->selectionModel()->selectedRows(0); // Name
+
+  QString name("");
+  bool ok = true;
+
+  name = QInputDialog::getText
+    (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
+     QLineEdit::Normal, list.value(0).data().toString(), &ok);
+  name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
+
+  if(name.isEmpty() || !ok)
+    return;
+
+  ok = false;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!data.isNull() && data.isValid())
+	  {
+	    query.prepare("UPDATE friends_public_keys "
+			  "SET name = ?, "
+			  "name_changed_by_user = 1 "
+			  "WHERE OID = ?");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).
+	       toBase64());
+	    query.bindValue(1, data.toString());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    if(currentTabName() == "chat")
+      {
+	QTableWidgetItem *item = m_ui.participants->item
+	  (list.value(0).row(), 3); // public_key_hash
+
+	if(item)
+	  {
+	    QString publicKeyHash(item->text());
+
+	    if(m_chatWindows.contains(publicKeyHash))
+	      {
+		QPointer<spoton_chatwindow> chat =
+		  m_chatWindows.value(publicKeyHash, 0);
+
+		if(chat)
+		  chat->setName(name);
+	      }
+	  }
+      }
+}
+
+void spoton::slotResetCertificate(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QModelIndexList list;
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare("UPDATE neighbors SET "
+		      "certificate = ? "
+		      "WHERE OID = ? AND "
+		      "user_defined = 1");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	query.bindValue(1, list.at(0).data());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotRewindFile(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.prepare
+	  ("UPDATE transmitted SET position = ?, "
+	   "status_control = 'paused' "
+	   "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(QByteArray::number(0), &ok).
+	   toBase64());
+	query.bindValue(1, oid);
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotSaveDestination(void)
+{
+  saveDestination(m_ui.destination->text());
+}
+
+void spoton::slotSaveUrlName(void)
+{
+  QString str(m_ui.urlName->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.urlName->setText(str);
+    }
+  else
+    m_ui.urlName->setText(str.trimmed());
+
+  m_settings["gui/urlName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/urlName", str.toUtf8());
+  m_ui.urlName->selectAll();
+}
+
+void spoton::slotSecureMemoryPoolChanged(int value)
+{
+  QSettings settings;
+
+  if(m_optionsUi.guiSecureMemoryPool == sender())
+    {
+      m_settings["gui/gcryctl_init_secmem"] = value;
+      settings.setValue("gui/gcryctl_init_secmem", value);
+    }
+  else
+    {
+      m_settings["kernel/gcryctl_init_secmem"] = value;
+      settings.setValue("kernel/gcryctl_init_secmem", value);
+    }
+}
+
+void spoton::slotSelectDestination(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select StarBeam Destination Directory").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::Directory);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    saveDestination(dialog.selectedFiles().value(0));
+}
+
+void spoton::slotSelectTransmitFile(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select StarBeam Transmit File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    m_ui.transmittedFile->setText
+      (dialog.selectedFiles().value(0));
+}
+
+void spoton::slotShareBuzzMagnet(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QByteArray data(action->data().toByteArray());
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QByteArray message;
+
+  message.append("sharebuzzmagnet_");
+  message.append(oid);
+  message.append("_");
+  message.append(data.toBase64());
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotShareBuzzMagnet(): write() failure "
+	       "for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+}
+
+void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
+{
+  if(m_ui.etpMagnets == sender())
+    {
+      QMenu menu(this);
+
+      menu.addAction(tr("Copy &Magnet"),
+		     this, SLOT(slotCopyEtpMagnet(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"),
+		     this, SLOT(slotDeleteEtpMagnet(void)));
+      menu.addAction(tr("Delete &All"),
+		     this, SLOT(slotDeleteEtpAllMagnets(void)));
+      menu.exec(m_ui.etpMagnets->mapToGlobal(point));
+    }
+}
+
+void spoton::slotShowStatistics(void)
+{
+  m_ui.statisticsBox->setVisible(!m_ui.statisticsBox->isVisible());
+}
+
+void spoton::slotStarOTMCheckChange(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(checkBox)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "starbeam.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE magnets SET "
+			  "one_time_magnet = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, state ? 1 : 0);
+	    query.bindValue(1, checkBox->property("oid"));
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
+void spoton::slotStatisticsGathered(void)
+{
+  populateStatistics(m_statisticsFuture.result());
+}
+
+void spoton::slotTransmit(void)
+{
+  /*
+  ** We must have at least one magnet selected.
+  */
+
+  QByteArray encryptedMosaic;
+  QFileInfo fileInfo;
+  QList<QByteArray> magnets;
+  QString connectionName("");
+  QString error("");
+  bool ok = true;
+  bool zero = true;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  if(!m_ui.transmitNova->text().isEmpty())
+    if(m_ui.transmitNova->text().length() < 48)
+      {
+	error = tr("Please provide a nova that contains at least "
+		   "forty-eight characters.");
+	goto done_label;
+      }
+
+  if(m_ui.transmittedFile->text().isEmpty())
+    {
+      error = tr("Please select a file to transfer.");
+      goto done_label;
+    }
+
+  fileInfo.setFile(m_ui.transmittedFile->text());
+
+  if(!fileInfo.exists() || !fileInfo.isReadable())
+    {
+      error = tr("The provided file cannot be accessed.");
+      goto done_label;
+    }
+
+  for(int i = 0; i < m_ui.addTransmittedMagnets->rowCount(); i++)
+    {
+      QCheckBox *checkBox = qobject_cast<QCheckBox *>
+	(m_ui.addTransmittedMagnets->cellWidget(i, 0));
+
+      if(checkBox)
+	if(checkBox->isChecked())
+	  {
+	    zero = false;
+	    magnets << checkBox->text().replace("&&", "&").toLatin1();
+	  }
+    }
+
+  if(zero)
+    {
+      error = tr("Please select at least one magnet.");
+      goto done_label;
+    }
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	QByteArray mosaic
+	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
+	   toBase64());
+	QSqlQuery query(db);
+
+	query.prepare("INSERT INTO transmitted "
+		      "(file, fragmented, "
+		      "hash, missing_links, mosaic, nova, "
+		      "position, pulse_size, "
+		      "status_control, total_size) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->
+	   encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
+			       &ok).toBase64());
+	query.bindValue
+	  (1, m_ui.fragment_starbeam->isChecked() ? 1 : 0);
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed
+	     (spoton_crypt::
+	      sha1FileHash(m_ui.transmittedFile->text()).toHex(),
+	      &ok).toBase64());
+
+	if(ok)
+	  {
+	    QString missingLinks;
+	    QStringList list(m_ui.missingLinks->text().
+			     remove("magnet:?").split("&"));
+
+	    while(!list.isEmpty())
+	      {
+		QString str(list.takeFirst());
+
+		if(str.startsWith("ml="))
+		  {
+		    str.remove(0, 3);
+		    missingLinks = str;
+		    break;
+		  }
+	      }
+
+	    query.bindValue
+	      (3, crypt->
+	       encryptedThenHashed(missingLinks.
+				   toLatin1(), &ok).toBase64());
+	  }
+
+	if(ok)
+	  {
+	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
+
+	    if(ok)
+	      query.bindValue(4, encryptedMosaic.toBase64());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (5, crypt->encryptedThenHashed
+	     (m_ui.transmitNova->text().
+	      toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->encryptedThenHashed("0", &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, crypt->
+	     encryptedThenHashed(QByteArray::number(m_ui.pulseSize->value()),
+				 &ok).toBase64());
+
+	query.bindValue(8, "paused");
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->
+	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+
+	for(int i = 0; i < magnets.size(); i++)
+	  {
+	    query.prepare("INSERT INTO transmitted_magnets "
+			  "(magnet, magnet_hash, transmitted_oid) "
+			  "VALUES (?, ?, (SELECT OID FROM transmitted WHERE "
+			  "mosaic = ?))");
+
+	    if(ok)
+	      query.bindValue
+		(0, crypt->
+		 encryptedThenHashed(magnets.at(i), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(magnets.at(i), &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue(2, encryptedMosaic.toBase64());
+
+	    if(ok)
+	      query.exec();
+	    else
+	      break;
+
+	    if(query.lastError().isValid())
+	      {
+		error = query.lastError().text();
+		break;
+	      }
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM magnets WHERE "
+			  "magnet_hash = ? and one_time_magnet = 1");
+	    query.bindValue(0, crypt->keyedHash(magnets.at(i), &ok).
+			    toBase64());
+
+	    if(ok)
+	      query.exec();
+	  }
+
+	QApplication::restoreOverrideCursor();
+      }
+
+    if(db.lastError().isValid())
+      error = tr("A database error (%1) occurred.").
+	arg(db.lastError().text());
+    else if(!error.isEmpty())
+      error = tr("A database error (%1) occurred.").
+	arg(error);
+    else if(!ok)
+      error = tr("An error occurred within spoton_crypt.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+  else
+    {
+      m_ui.fragment_starbeam->setChecked(false);
+      m_ui.missingLinks->clear();
+      m_ui.missingLinksCheckBox->setChecked(false);
+      m_ui.pulseSize->setValue(15000);
+      m_ui.transmitNova->clear();
+      m_ui.transmittedFile->clear();
+    }
+}
+
+void spoton::slotTransmittedPaused(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+
+  if(checkBox)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "starbeam.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE transmitted SET "
+			  "status_control = ? "
+			  "WHERE OID = ? AND status_control <> 'deleted'");
+	    query.bindValue(0, state ? "paused" : "transmitting");
+	    query.bindValue(1, checkBox->property("oid"));
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
+void spoton::slotTransmittedSelected(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.transmitted->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.transmitted->item
+	(row, m_ui.transmitted->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	m_ui.transmittedMagnets->clear();
+
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT magnet FROM transmitted_magnets "
+		      "WHERE transmitted_oid = ? "
+		      "AND transmitted_oid IN (SELECT OID FROM "
+		      "transmitted WHERE status_control <> 'deleted' AND "
+		      "OID = ?)");
+	query.bindValue(0, oid);
+	query.bindValue(1, oid);
+
+	if(query.exec())
+	  {
+	    QStringList magnets;
+
+	    while(query.next())
+	      {
+		QString magnet("");
+		bool ok = true;
+
+		magnet = crypt->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(0).
+							 toByteArray()),
+					      &ok).constData();
+
+		if(!magnet.isEmpty())
+		  magnets.append(magnet);
+	      }
+
+	    std::sort(magnets.begin(), magnets.end());
+
+	    if(!magnets.isEmpty())
+	      m_ui.transmittedMagnets->addItems(magnets);
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotTransportChanged(int index)
+{
+  /*
+  ** 0 - Bluetooth
+  ** 1 - SCTP
+  ** 2 - TCP
+  ** 3 - UDP
+  */
+
+  if(m_ui.listenerTransport == sender())
+    {
+      if(index == 0)
+	m_ui.ipv4Listener->setChecked(true);
+
+      prepareListenerIPCombo();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.days_valid->setEnabled(index == 2 || // TCP
+				  index == 3);  // UDP
+#else
+      m_ui.days_valid->setEnabled(index == 2);
+#endif
+      m_ui.ipv4Listener->setEnabled(index != 0);
+      m_ui.ipv6Listener->setEnabled(index != 0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.listenerKeySize->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
+      m_ui.listenerKeySize->setEnabled(index == 2);
+#endif
+#if defined(Q_OS_WIN)
+      m_ui.listenerShareAddress->setEnabled(false);
+#else
+      m_ui.listenerShareAddress->setEnabled(index == 3);
+#endif
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.listenersSslControlString->setEnabled(index == 2 || // TCP
+						 index == 3);  // UDP
+      m_ui.permanentCertificate->setEnabled(index == 2 || // TCP
+					    index == 3);  // UDP
+      m_ui.recordIPAddress->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
+      m_ui.listenersSslControlString->setEnabled(index == 2);
+      m_ui.permanentCertificate->setEnabled(index == 2);
+      m_ui.recordIPAddress->setEnabled(index == 2);
+#endif
+
+      if(m_ui.ipv6Listener->isChecked())
+	m_ui.listenerScopeId->setEnabled(index != 0);
+      else
+	m_ui.listenerScopeId->setEnabled(false);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.sslListener->setEnabled(index == 2 || // TCP
+				   index == 3);  // UDP
+#else
+      m_ui.sslListener->setEnabled(index == 2);
+#endif
+    }
+  else if(m_ui.neighborTransport == sender())
+    {
+      if(index == 0)
+	m_ui.ipv4Neighbor->setChecked(true);
+
+      m_ui.addException->setEnabled(index == 2);
+      m_ui.dynamicdns->setEnabled(index != 0);
+      m_ui.ipv4Neighbor->setEnabled(index != 0);
+      m_ui.ipv6Neighbor->setEnabled(index != 0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.neighborKeySize->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
+      m_ui.neighborKeySize->setEnabled(index == 2);
+#endif
+
+      if(m_ui.ipv6Neighbor->isChecked())
+	m_ui.neighborScopeId->setEnabled(index != 0);
+      else
+	m_ui.neighborScopeId->setEnabled(false);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.neighborsSslControlString->setEnabled(index == 2 || // TCP
+						 index == 3);  // UDP
+#else
+      m_ui.neighborsSslControlString->setEnabled(index == 2);
+#endif
+
+      if(index == 0 || index == 1)
+	m_ui.proxy->setEnabled(false);
+      else
+	m_ui.proxy->setEnabled(true);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.requireSsl->setEnabled(index == 2 || // TCP
+				  index == 3);  // UDP
+      m_ui.sslKeySizeLabel->setEnabled(index == 2 || // TCP
+				       index == 3);  // UDP
+#else
+      m_ui.requireSsl->setEnabled(index == 2);
+      m_ui.sslKeySizeLabel->setEnabled(index == 2);
+#endif
+    }
+}
+
+void spoton::slotViewRosetta(void)
+{
+  m_rosetta.show(this);
 }
 
 void spoton::updatePublicKeysLabel(void)
