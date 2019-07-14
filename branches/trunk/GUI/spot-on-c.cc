@@ -802,6 +802,116 @@ void spoton::slotBuzzActionsActivated(int index)
 	  SLOT(slotBuzzActionsActivated(int)));
 }
 
+void spoton::slotCopyEmailKeys(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QByteArray name;
+  QByteArray publicKeyHash;
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.emailParticipants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.emailParticipants->
+	item(row, 0); // Name
+
+      if(item)
+	name.append(item->text());
+
+      item = m_ui.emailParticipants->item(row, 1); // OID
+
+      if(item)
+	oid = item->text();
+
+      item = m_ui.emailParticipants->item(row, 3); // public_key_hash
+
+      if(item)
+	publicKeyHash.append(item->text());
+    }
+
+  if(oid.isEmpty() || publicKeyHash.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  if(name.isEmpty())
+    name = "unknown";
+
+  QByteArray publicKey;
+  QByteArray signatureKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).
+				      toByteArray()),
+	       &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  signatureKey = spoton_misc::signaturePublicKeyFromPublicKeyHash
+    (QByteArray::fromBase64(publicKeyHash), crypt);
+
+  if(!publicKey.isEmpty() && !signatureKey.isEmpty())
+    {
+      QString text
+	("K" + QByteArray("email").toBase64() + "@" +
+	 name.toBase64() + "@" +
+	 publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
+	 signatureKey.toBase64() + "@" + QByteArray().toBase64());
+
+      if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+	{
+	  QApplication::restoreOverrideCursor();
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("The e-mail keys are too long (%1 bytes).").
+	     arg(QLocale().toString(text.length())));
+	  return;
+	}
+
+      clipboard->setText(text);
+    }
+  else
+    clipboard->clear();
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotCopyEtpMagnet(void)
 {
   QClipboard *clipboard = QApplication::clipboard();
@@ -819,6 +929,48 @@ void spoton::slotCopyEtpMagnet(void)
 
       if(item)
 	clipboard->setText(item->text());
+    }
+}
+
+void spoton::slotCopyOrPaste(void)
+{
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QWidget *widget = QApplication::focusWidget();
+
+  if(!widget)
+    return;
+
+  QString a("");
+
+  if(action == m_ui.action_Copy)
+    a = "copy";
+  else
+    a = "paste";
+
+  if(qobject_cast<QLineEdit *> (widget))
+    {
+      if(a == "copy")
+	qobject_cast<QLineEdit *> (widget)->copy();
+      else
+	qobject_cast<QLineEdit *> (widget)->paste();
+    }
+  else if(qobject_cast<QPlainTextEdit *> (widget))
+    {
+      if(a == "copy")
+	qobject_cast<QPlainTextEdit *> (widget)->copy();
+      else
+	qobject_cast<QPlainTextEdit *> (widget)->paste();
+    }
+  else if(qobject_cast<QTextEdit *> (widget))
+    {
+      if(a == "copy")
+	qobject_cast<QTextEdit *> (widget)->copy();
+      else
+	qobject_cast<QTextEdit *> (widget)->paste();
     }
 }
 
@@ -1167,6 +1319,74 @@ void spoton::slotExportListeners(void)
     }
 }
 
+void spoton::slotExportPublicKeys(void)
+{
+  QApplication::restoreOverrideCursor();
+
+  QFileDialog dialog(this);
+
+  dialog.setConfirmOverwrite(true);
+  dialog.setWindowTitle
+    (tr("%1: Select Public Keys Export File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::AnyFile);
+#if QT_VERSION < 0x050000
+  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
+							DesktopLocation));
+#else
+  dialog.setDirectory(QStandardPaths::
+		      standardLocations(QStandardPaths::DesktopLocation).
+		      value(0));
+#endif
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+  dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
+		    arg(QDateTime::currentDateTime().
+			toString("MM-dd-yyyy-hh-mm-ss")));
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QFile file;
+
+      file.setFileName(dialog.selectedFiles().value(0));
+
+      if(file.open(QIODevice::Text |
+		   QIODevice::Truncate |
+		   QIODevice::WriteOnly))
+	{
+	  for(int i = 1;; i++)
+	    {
+	      QByteArray bytes;
+
+	      if(i == 1)
+		bytes = copyMyChatPublicKey();
+	      else if(i == 2)
+		bytes = copyMyEmailPublicKey();
+	      else if(i == 3)
+		bytes = copyMyOpenLibraryPublicKey();
+	      else if(i == 4)
+		bytes = copyMyPoptasticPublicKey();
+	      else if(i == 5)
+		bytes = copyMyRosettaPublicKey();
+	      else if(i == 6)
+		bytes = copyMyUrlPublicKey();
+	      else
+		break;
+
+	      if(!bytes.isEmpty())
+		file.write(bytes + "\n");
+	    }
+
+	  file.flush();
+	}
+
+      file.close();
+      QApplication::restoreOverrideCursor();
+    }
+}
+
 void spoton::slotExternalIp(int index)
 {
   QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
@@ -1278,6 +1498,15 @@ void spoton::slotGenerateEtpKeys(int index)
     }
 }
 
+void spoton::slotImpersonate(bool state)
+{
+  m_settings["gui/impersonate"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/impersonate", state);
+}
+
 void spoton::slotImportNeighbors(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -1337,6 +1566,88 @@ void spoton::slotImportNeighbors(void)
 	}
 
       importNeighbors(fileInfo.filePath());
+    }
+}
+
+void spoton::slotImportPublicKeys(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select Public Keys Import File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+#if QT_VERSION < 0x050000
+  dialog.setDirectory
+    (QDesktopServices::storageLocation(QDesktopServices::
+				       DesktopLocation));
+#else
+  dialog.setDirectory
+    (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
+     value(0));
+#endif
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  int imported = 0;
+  int notimported = 0;
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QFileInfo fileInfo;
+
+      fileInfo.setFile(dialog.directory(),
+		       dialog.selectedFiles().value(0));
+
+      if(fileInfo.size() >= 32768)
+	{
+	  QMessageBox mb(this);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText
+	    (tr("The import file %1 contains a lot (%2) of data. Are you "
+		"sure that you wish to process it?").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(fileInfo.size()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return;
+	}
+
+      QByteArray bytes;
+      QFile file;
+
+      file.setFileName(fileInfo.filePath());
+
+      if(file.open(QIODevice::Text | QIODevice::ReadOnly))
+	bytes = file.readAll();
+
+      file.close();
+
+      QList<QByteArray> list(bytes.split('\n'));
+
+      while(!list.isEmpty())
+	{
+	  QByteArray bytes(list.takeFirst().trimmed());
+
+	  if(bytes.isEmpty())
+	    continue;
+
+	  if(addFriendsKey(bytes, "K", this))
+	    imported += 1;
+	  else
+	    notimported += 1;
+	}
+
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
+	    "were not imported.").arg(imported).arg(notimported));
     }
 }
 
@@ -4463,167 +4774,6 @@ void spoton::prepareContextMenuMirrors(void)
     }
 }
 
-void spoton::slotCopyEmailKeys(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QByteArray name;
-  QByteArray publicKeyHash;
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.emailParticipants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.emailParticipants->
-	item(row, 0); // Name
-
-      if(item)
-	name.append(item->text());
-
-      item = m_ui.emailParticipants->item(row, 1); // OID
-
-      if(item)
-	oid = item->text();
-
-      item = m_ui.emailParticipants->item(row, 3); // public_key_hash
-
-      if(item)
-	publicKeyHash.append(item->text());
-    }
-
-  if(oid.isEmpty() || publicKeyHash.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  if(name.isEmpty())
-    name = "unknown";
-
-  QByteArray publicKey;
-  QByteArray signatureKey;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "OID = ?");
-	query.bindValue(0, oid);
-
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  signatureKey = spoton_misc::signaturePublicKeyFromPublicKeyHash
-    (QByteArray::fromBase64(publicKeyHash), crypt);
-
-  if(!publicKey.isEmpty() && !signatureKey.isEmpty())
-    {
-      QString text
-	("K" + QByteArray("email").toBase64() + "@" +
-	 name.toBase64() + "@" +
-	 publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
-	 signatureKey.toBase64() + "@" + QByteArray().toBase64());
-
-      if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-	{
-	  QApplication::restoreOverrideCursor();
-	  QMessageBox::critical
-	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	     tr("The e-mail keys are too long (%1 bytes).").
-	     arg(QLocale().toString(text.length())));
-	  return;
-	}
-
-      clipboard->setText(text);
-    }
-  else
-    clipboard->clear();
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotImpersonate(bool state)
-{
-  m_settings["gui/impersonate"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/impersonate", state);
-}
-
-void spoton::slotCopyOrPaste(void)
-{
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QWidget *widget = QApplication::focusWidget();
-
-  if(!widget)
-    return;
-
-  QString a("");
-
-  if(action == m_ui.action_Copy)
-    a = "copy";
-  else
-    a = "paste";
-
-  if(qobject_cast<QLineEdit *> (widget))
-    {
-      if(a == "copy")
-	qobject_cast<QLineEdit *> (widget)->copy();
-      else
-	qobject_cast<QLineEdit *> (widget)->paste();
-    }
-  else if(qobject_cast<QPlainTextEdit *> (widget))
-    {
-      if(a == "copy")
-	qobject_cast<QPlainTextEdit *> (widget)->copy();
-      else
-	qobject_cast<QPlainTextEdit *> (widget)->paste();
-    }
-  else if(qobject_cast<QTextEdit *> (widget))
-    {
-      if(a == "copy")
-	qobject_cast<QTextEdit *> (widget)->copy();
-      else
-	qobject_cast<QTextEdit *> (widget)->paste();
-    }
-}
-
 void spoton::updatePublicKeysLabel(void)
 {
   m_ui.personal_public_keys->setRowCount(0);
@@ -4684,154 +4834,4 @@ void spoton::updatePublicKeysLabel(void)
     }
 
   m_ui.personal_public_keys->resizeColumnToContents(0);
-}
-
-void spoton::slotExportPublicKeys(void)
-{
-  QApplication::restoreOverrideCursor();
-
-  QFileDialog dialog(this);
-
-  dialog.setConfirmOverwrite(true);
-  dialog.setWindowTitle
-    (tr("%1: Select Public Keys Export File").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::AnyFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
-							DesktopLocation));
-#else
-  dialog.setDirectory(QStandardPaths::
-		      standardLocations(QStandardPaths::DesktopLocation).
-		      value(0));
-#endif
-  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
-  dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
-		    arg(QDateTime::currentDateTime().
-			toString("MM-dd-yyyy-hh-mm-ss")));
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-      QFile file;
-
-      file.setFileName(dialog.selectedFiles().value(0));
-
-      if(file.open(QIODevice::Text |
-		   QIODevice::Truncate |
-		   QIODevice::WriteOnly))
-	{
-	  for(int i = 1;; i++)
-	    {
-	      QByteArray bytes;
-
-	      if(i == 1)
-		bytes = copyMyChatPublicKey();
-	      else if(i == 2)
-		bytes = copyMyEmailPublicKey();
-	      else if(i == 3)
-		bytes = copyMyOpenLibraryPublicKey();
-	      else if(i == 4)
-		bytes = copyMyPoptasticPublicKey();
-	      else if(i == 5)
-		bytes = copyMyRosettaPublicKey();
-	      else if(i == 6)
-		bytes = copyMyUrlPublicKey();
-	      else
-		break;
-
-	      if(!bytes.isEmpty())
-		file.write(bytes + "\n");
-	    }
-
-	  file.flush();
-	}
-
-      file.close();
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotImportPublicKeys(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select Public Keys Import File").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory
-    (QDesktopServices::storageLocation(QDesktopServices::
-				       DesktopLocation));
-#else
-  dialog.setDirectory
-    (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
-     value(0));
-#endif
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  int imported = 0;
-  int notimported = 0;
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QFileInfo fileInfo;
-
-      fileInfo.setFile(dialog.directory(),
-		       dialog.selectedFiles().value(0));
-
-      if(fileInfo.size() >= 32768)
-	{
-	  QMessageBox mb(this);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText
-	    (tr("The import file %1 contains a lot (%2) of data. Are you "
-		"sure that you wish to process it?").
-	     arg(fileInfo.absoluteFilePath()).
-	     arg(fileInfo.size()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return;
-	}
-
-      QByteArray bytes;
-      QFile file;
-
-      file.setFileName(fileInfo.filePath());
-
-      if(file.open(QIODevice::Text | QIODevice::ReadOnly))
-	bytes = file.readAll();
-
-      file.close();
-
-      QList<QByteArray> list(bytes.split('\n'));
-
-      while(!list.isEmpty())
-	{
-	  QByteArray bytes(list.takeFirst().trimmed());
-
-	  if(bytes.isEmpty())
-	    continue;
-
-	  if(addFriendsKey(bytes, "K", this))
-	    imported += 1;
-	  else
-	    notimported += 1;
-	}
-
-      QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
-	    "were not imported.").arg(imported).arg(notimported));
-    }
 }
