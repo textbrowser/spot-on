@@ -926,11 +926,6 @@ void spoton::slotConfigurePoptastic(void)
 	  this,
 	  SLOT(slotDeletePoptasticAccount(void)),
 	  Qt::UniqueConnection);
-  connect(m_poptasticRetroPhoneSettingsUi.selectcapath,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectCAPath(void)),
-	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.proxy,
 	  SIGNAL(clicked(bool)),
 	  this,
@@ -940,6 +935,11 @@ void spoton::slotConfigurePoptastic(void)
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSavePoptasticAccount(void)),
+	  Qt::UniqueConnection);
+  connect(m_poptasticRetroPhoneSettingsUi.selectcapath,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectCAPath(void)),
 	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.testpop3,
 	  SIGNAL(clicked(void)),

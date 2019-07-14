@@ -917,7 +917,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   QString type(action->property("type").toString());
 
-  if(!(type == "email" || type == "chat"))
+  if(!(type == "chat" || type == "email"))
     return;
 
   QModelIndexList names;
@@ -1608,7 +1608,7 @@ void spoton::slotPurgeEphemeralKeyPair(void)
 
   QString type(action->property("type").toString());
 
-  if(!(type == "email" || type == "chat"))
+  if(!(type == "chat" || type == "email"))
     return;
 
   QModelIndexList publicKeyHashes;
@@ -1733,7 +1733,7 @@ void spoton::slotResetForwardSecrecyInformation(void)
 
   QString type(action->property("type").toString());
 
-  if(!(type == "email" || type == "chat"))
+  if(!(type == "chat" || type == "email"))
     return;
 
   QModelIndexList publicKeyHashes;
