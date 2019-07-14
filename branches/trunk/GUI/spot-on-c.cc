@@ -446,6 +446,204 @@ void spoton::slotCopyEtpMagnet(void)
     }
 }
 
+void spoton::slotCopyUrlFriendshipBundle(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  if(!m_crypts.value("url", 0) ||
+     !m_crypts.value("url-signature", 0))
+    {
+      clipboard->clear();
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.urlParticipants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.urlParticipants->item
+	(row, 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  /*
+  ** 1. Generate some symmetric information, S.
+  ** 2. Encrypt S with the participant's public key.
+  ** 3. Encrypt our information (name, public keys, signatures) with the
+  **    symmetric key. Call our information T.
+  ** 4. Compute a keyed hash of T.
+  */
+
+  QString neighborOid("");
+  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
+					 "aes256").toString().
+			toLatin1());
+  QByteArray hashKey;
+  QByteArray keyInformation;
+  QByteArray publicKey;
+  QByteArray startsWith;
+  QByteArray symmetricKey;
+  QPair<QByteArray, QByteArray> gemini;
+  QString receiverName("");
+  bool ok = true;
+
+  if(cipherType.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  spoton_misc::retrieveSymmetricData(gemini,
+				     publicKey,
+				     symmetricKey,
+				     hashKey,
+				     startsWith,
+				     neighborOid,
+				     receiverName,
+				     cipherType,
+				     oid,
+				     m_crypts.value("url", 0),
+				     &ok);
+
+  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (symmetricKey.toBase64() + "@" +
+     cipherType.toBase64() + "@" +
+     hashKey.toBase64(),
+     publicKey,
+     startsWith,
+     &ok);
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySPublicKey(m_crypts.value("url-signature")->publicKey(&ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySSignature
+    (m_crypts.value("url-signature")->digitalSignature(mySPublicKey, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray myPublicKey(m_crypts.value("url")->publicKey(&ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySignature(m_crypts.value("url")->
+			 digitalSignature(myPublicKey, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray myName
+    (m_settings.value("gui/urlName", "unknown").toByteArray());
+
+  if(myName.isEmpty())
+    myName = "unknown";
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     "sha512",
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     "");
+
+  data = crypt.encrypted(QByteArray("url").toBase64() + "@" +
+			 myName.toBase64() + "@" +
+			 myPublicKey.toBase64() + "@" +
+			 mySignature.toBase64() + "@" +
+			 mySPublicKey.toBase64() + "@" +
+			 mySSignature.toBase64(), &ok);
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray hash(crypt.keyedHash(data, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QString text("R" +
+	       keyInformation.toBase64() + "@" +
+	       data.toBase64() + "@" +
+	       hash.toBase64());
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QApplication::restoreOverrideCursor();
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The URL bundle is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  clipboard->setText(text);
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotDeleteEtpAllMagnets(void)
 {
   QString connectionName("");
@@ -4637,202 +4835,4 @@ void spoton::slotSaveUrlName(void)
 
   settings.setValue("gui/urlName", str.toUtf8());
   m_ui.urlName->selectAll();
-}
-
-void spoton::slotCopyUrlFriendshipBundle(void)
-{
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
-    {
-      clipboard->clear();
-      return;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.urlParticipants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.urlParticipants->item
-	(row, 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  /*
-  ** 1. Generate some symmetric information, S.
-  ** 2. Encrypt S with the participant's public key.
-  ** 3. Encrypt our information (name, public keys, signatures) with the
-  **    symmetric key. Call our information T.
-  ** 4. Compute a keyed hash of T.
-  */
-
-  QString neighborOid("");
-  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").toString().
-			toLatin1());
-  QByteArray hashKey;
-  QByteArray keyInformation;
-  QByteArray publicKey;
-  QByteArray startsWith;
-  QByteArray symmetricKey;
-  QPair<QByteArray, QByteArray> gemini;
-  QString receiverName("");
-  bool ok = true;
-
-  if(cipherType.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  spoton_misc::retrieveSymmetricData(gemini,
-				     publicKey,
-				     symmetricKey,
-				     hashKey,
-				     startsWith,
-				     neighborOid,
-				     receiverName,
-				     cipherType,
-				     oid,
-				     m_crypts.value("url", 0),
-				     &ok);
-
-  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  keyInformation = spoton_crypt::publicKeyEncrypt
-    (symmetricKey.toBase64() + "@" +
-     cipherType.toBase64() + "@" +
-     hashKey.toBase64(),
-     publicKey,
-     startsWith,
-     &ok);
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySPublicKey(m_crypts.value("url-signature")->publicKey(&ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySSignature
-    (m_crypts.value("url-signature")->digitalSignature(mySPublicKey, &ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray myPublicKey(m_crypts.value("url")->publicKey(&ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySignature(m_crypts.value("url")->
-			 digitalSignature(myPublicKey, &ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray myName
-    (m_settings.value("gui/urlName", "unknown").toByteArray());
-
-  if(myName.isEmpty())
-    myName = "unknown";
-
-  QByteArray data;
-  spoton_crypt crypt(cipherType,
-		     "sha512",
-		     QByteArray(),
-		     symmetricKey,
-		     hashKey,
-		     0,
-		     0,
-		     "");
-
-  data = crypt.encrypted(QByteArray("url").toBase64() + "@" +
-			 myName.toBase64() + "@" +
-			 myPublicKey.toBase64() + "@" +
-			 mySignature.toBase64() + "@" +
-			 mySPublicKey.toBase64() + "@" +
-			 mySSignature.toBase64(), &ok);
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray hash(crypt.keyedHash(data, &ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QString text("R" +
-	       keyInformation.toBase64() + "@" +
-	       data.toBase64() + "@" +
-	       hash.toBase64());
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QApplication::restoreOverrideCursor();
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The URL bundle is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  clipboard->setText(text);
-  QApplication::restoreOverrideCursor();
 }
