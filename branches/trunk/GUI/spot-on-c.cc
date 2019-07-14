@@ -1087,6 +1087,86 @@ void spoton::slotDeleteEtpMagnet(void)
   askKernelToReadStarBeamKeys();
 }
 
+void spoton::slotExportListeners(void)
+{
+  if(m_ui.listeners->rowCount() == 0)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Unable to export an empty listeners table."));
+      return;
+    }
+
+  QFileDialog dialog(this);
+
+  dialog.setConfirmOverwrite(true);
+  dialog.setWindowTitle
+    (tr("%1: Select Listeners Export File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::AnyFile);
+#if QT_VERSION < 0x050000
+  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
+							DesktopLocation));
+#else
+  dialog.setDirectory(QStandardPaths::
+		      standardLocations(QStandardPaths::DesktopLocation).
+		      value(0));
+#endif
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+  dialog.selectFile(QString("spot-on-listeners-export-%1.txt").
+		    arg(QDateTime::currentDateTime().
+			toString("MM-dd-yyyy-hh-mm-ss")));
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QFile file;
+
+      file.setFileName(dialog.selectedFiles().value(0));
+
+      if(file.open(QIODevice::Text |
+		   QIODevice::Truncate |
+		   QIODevice::WriteOnly))
+	for(int i = 0; i < m_ui.listeners->rowCount(); i++)
+	  {
+	    QByteArray bytes;
+
+	    bytes.append("echo_mode=");
+	    bytes.append(m_ui.listeners->item(i, 11)->text());
+	    bytes.append("&");
+	    bytes.append("ip_address=");
+	    bytes.append(m_ui.listeners->item(i, 7)->text());
+	    bytes.append("&");
+	    bytes.append("orientation=");
+	    bytes.append(m_ui.listeners->item(i, 18)->text());
+	    bytes.append("&");
+	    bytes.append("port=");
+	    bytes.append(m_ui.listeners->item(i, 4)->text());
+	    bytes.append("&");
+	    bytes.append("protocol=");
+	    bytes.append(m_ui.listeners->item(i, 6)->text());
+	    bytes.append("&");
+	    bytes.append("scope_id=");
+	    bytes.append(m_ui.listeners->item(i, 5)->text().remove("&"));
+	    bytes.append("&");
+	    bytes.append("ssl_key_size=");
+	    bytes.append(m_ui.listeners->item(i, 2)->text());
+	    bytes.append("&");
+	    bytes.append("transport=");
+	    bytes.append(m_ui.listeners->item(i, 15)->text());
+	    bytes.append("\n");
+	    file.write(bytes);
+	    file.flush();
+	  }
+
+      file.close();
+      QApplication::restoreOverrideCursor();
+    }
+}
+
 void spoton::slotExternalIp(int index)
 {
   QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
@@ -1127,6 +1207,15 @@ void spoton::slotExternalIp(int index)
 	  m_externalAddressDiscovererTimer.stop();
 	}
     }
+}
+
+void spoton::slotForceKernelRegistration(bool state)
+{
+  m_settings["gui/forceKernelRegistration"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/forceKernelRegistration", state);
 }
 
 void spoton::slotGatherStatistics(void)
@@ -4745,93 +4834,4 @@ void spoton::slotImportPublicKeys(void)
 	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
 	    "were not imported.").arg(imported).arg(notimported));
     }
-}
-
-void spoton::slotExportListeners(void)
-{
-  if(m_ui.listeners->rowCount() == 0)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Unable to export an empty listeners table."));
-      return;
-    }
-
-  QFileDialog dialog(this);
-
-  dialog.setConfirmOverwrite(true);
-  dialog.setWindowTitle
-    (tr("%1: Select Listeners Export File").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::AnyFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
-							DesktopLocation));
-#else
-  dialog.setDirectory(QStandardPaths::
-		      standardLocations(QStandardPaths::DesktopLocation).
-		      value(0));
-#endif
-  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
-  dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.selectFile(QString("spot-on-listeners-export-%1.txt").
-		    arg(QDateTime::currentDateTime().
-			toString("MM-dd-yyyy-hh-mm-ss")));
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-      QFile file;
-
-      file.setFileName(dialog.selectedFiles().value(0));
-
-      if(file.open(QIODevice::Text |
-		   QIODevice::Truncate |
-		   QIODevice::WriteOnly))
-	for(int i = 0; i < m_ui.listeners->rowCount(); i++)
-	  {
-	    QByteArray bytes;
-
-	    bytes.append("echo_mode=");
-	    bytes.append(m_ui.listeners->item(i, 11)->text());
-	    bytes.append("&");
-	    bytes.append("ip_address=");
-	    bytes.append(m_ui.listeners->item(i, 7)->text());
-	    bytes.append("&");
-	    bytes.append("orientation=");
-	    bytes.append(m_ui.listeners->item(i, 18)->text());
-	    bytes.append("&");
-	    bytes.append("port=");
-	    bytes.append(m_ui.listeners->item(i, 4)->text());
-	    bytes.append("&");
-	    bytes.append("protocol=");
-	    bytes.append(m_ui.listeners->item(i, 6)->text());
-	    bytes.append("&");
-	    bytes.append("scope_id=");
-	    bytes.append(m_ui.listeners->item(i, 5)->text().remove("&"));
-	    bytes.append("&");
-	    bytes.append("ssl_key_size=");
-	    bytes.append(m_ui.listeners->item(i, 2)->text());
-	    bytes.append("&");
-	    bytes.append("transport=");
-	    bytes.append(m_ui.listeners->item(i, 15)->text());
-	    bytes.append("\n");
-	    file.write(bytes);
-	    file.flush();
-	  }
-
-      file.close();
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotForceKernelRegistration(bool state)
-{
-  m_settings["gui/forceKernelRegistration"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/forceKernelRegistration", state);
 }
