@@ -103,8 +103,384 @@ QList<QTableWidgetItem *> spoton::findItems(QTableWidget *table,
   return list;
 }
 
-void spoton::populateStatistics
-(const QList<QPair<QString, QVariant> > &list)
+void spoton::importNeighbors(const QString &filePath)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QFile file;
+
+	file.setFileName(filePath);
+
+	if(file.open(QIODevice::Text | QIODevice::ReadOnly))
+	  {
+	    QByteArray bytes(2048, 0);
+	    qint64 rc = 0;
+
+	    while((rc = file.readLine(bytes.data(),
+				      bytes.length())) > -1)
+	      {
+		bytes = bytes.trimmed();
+
+		if(bytes.isEmpty() || bytes.startsWith("#"))
+		  /*
+		  ** Comment, or an empty line, ignore!
+		  */
+
+		  continue;
+
+		QHash<QString, QByteArray> hash;
+		QList<QByteArray> list
+		  (bytes.mid(0, static_cast<int> (rc)).trimmed().
+		   split('&'));
+		bool fine = true;
+
+		while(!list.isEmpty())
+		  {
+		    QByteArray token(list.takeFirst().trimmed());
+
+		    if(token.startsWith("connect="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("connect=")));
+			token = token.toLower().trimmed();
+
+			if(!(token == "false" || token == "true"))
+			  fine = false;
+			else
+			  hash["connect"] = token;
+		      }
+		    else if(token.startsWith("echo_mode="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("echo_mode=")));
+			token = token.toLower().trimmed();
+
+			if(!(token == "full" || token == "half"))
+			  fine = false;
+			else
+			  hash["echo_mode"] = token;
+		      }
+		    else if(token.startsWith("ip_address="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("ip_address=")));
+			token = token.toLower().trimmed();
+
+			if(QHostAddress(token.constData()).isNull())
+			  {
+			    if(token.isEmpty())
+			      fine = false;
+			    else
+			      hash["ip_address"] = token;
+			  }
+			else
+			  hash["ip_address"] = token;
+		      }
+		    else if(token.startsWith("orientation="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("orientation=")));
+			token = token.toLower().trimmed();
+
+			if(!(token == "packet" || token == "stream"))
+			  fine = false;
+			else
+			  hash["orientation"] = token;
+		      }
+		    else if(token.startsWith("port="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("port=")));
+			token = token.trimmed();
+
+			if(!(token.toInt() > 0 &&
+			     token.toInt() <= 65535))
+			  fine = false;
+			else
+			  hash["port"] = token;
+		      }
+		    else if(token.startsWith("protocol="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("protocol=")));
+			token = token.toLower().trimmed();
+
+			if(token == "dynamic dns")
+			  hash["protocol"] = "Dynamic DNS";
+			else if(token == "ipv4")
+			  hash["protocol"] = "IPv4";
+			else if(token == "ipv6")
+			  hash["protocol"] = "IPv6";
+			else if(token.isEmpty())
+			  hash["protocol"] = "";
+			else
+			  fine = false;
+		      }
+		    else if(token.startsWith("scope_id="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("scope_id=")));
+			token = token.trimmed();
+			hash["scope_id"] = token;
+		      }
+		    else if(token.startsWith("ssl_key_size="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("ssl_key_size=")));
+			token = token.trimmed();
+
+			if(!(token == "0" ||
+			     token == "2048" || token == "3072" ||
+			     token == "4096"))
+			  fine = false;
+			else
+			  hash["ssl_key_size"] = token;
+		      }
+		    else if(token.startsWith("transport="))
+		      {
+			token.remove
+			  (0, static_cast<int> (qstrlen("transport=")));
+			token = token.toLower().trimmed();
+
+			if(!(token == "bluetooth" ||
+			     token == "sctp" ||
+			     token == "tcp" ||
+			     token == "udp"))
+			  fine = false;
+			else
+			  hash["transport"] = token;
+		      }
+
+		    if(!fine)
+		      break;
+		  }
+
+		if(hash.count() != 9)
+		  fine = false;
+
+		if(fine)
+		  {
+		    QSqlQuery query(db);
+		    bool ok = true;
+
+		    query.prepare
+		      ("INSERT INTO neighbors "
+		       "(local_ip_address, "
+		       "local_port, "
+		       "protocol, "
+		       "remote_ip_address, "
+		       "remote_port, "
+		       "sticky, "
+		       "scope_id, "
+		       "hash, "
+		       "status_control, "
+		       "country, "
+		       "remote_ip_address_hash, "
+		       "qt_country_hash, "
+		       "proxy_hostname, "
+		       "proxy_password, "
+		       "proxy_port, "
+		       "proxy_type, "
+		       "proxy_username, "
+		       "uuid, "
+		       "echo_mode, "
+		       "ssl_key_size, "
+		       "allow_exceptions, "
+		       "certificate, "
+		       "ssl_required, "
+		       "account_name, "
+		       "account_password, "
+		       "transport, "
+		       "orientation) "
+		       "VALUES "
+		       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+		       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		    query.bindValue(0, QVariant(QVariant::String));
+		    query.bindValue(1, QVariant(QVariant::String));
+		    query.bindValue
+		      (2, crypt->
+		       encryptedThenHashed
+		       (hash.value("protocol"), &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(3, crypt->
+			 encryptedThenHashed
+			 (hash.value("ip_address"), &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(4, crypt->
+			 encryptedThenHashed
+			 (hash.value("port"), &ok).toBase64());
+
+		    query.bindValue(5, 1); // Sticky.
+
+		    if(ok)
+		      query.bindValue
+			(6, crypt->
+			 encryptedThenHashed
+			 (hash.value("scope_id"), &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(7, crypt->
+			 keyedHash(QByteArray() + // Proxy HostName
+				   QByteArray() + // Proxy Port
+				   hash.value("ip_address") +
+				   hash.value("port") +
+				   hash.value("scope_id") +
+				   hash.value("transport"), &ok).
+			 toBase64());
+
+		    if(hash.value("connect") == "true")
+		      query.bindValue(8, "connected");
+		    else
+		      query.bindValue(8, "disconnected");
+
+		    QString country
+		      (spoton_misc::
+		       countryNameFromIPAddress(hash.value("ip_address").
+						constData()));
+
+		    if(ok)
+		      query.bindValue
+			(9, crypt->
+			 encryptedThenHashed
+			 (country.toLatin1(), &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(10, crypt->
+			 keyedHash(hash.value("ip_address"), &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(11, crypt->
+			 keyedHash(country.remove(" ").toLatin1(), &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(12, crypt->
+			 encryptedThenHashed(QByteArray(), &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(13, crypt->
+			 encryptedThenHashed(QByteArray(), &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(14, crypt->encryptedThenHashed
+			 (QByteArray(),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(15, crypt->encryptedThenHashed
+			 (QByteArray("NoProxy"),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(16, crypt->encryptedThenHashed
+			 (QByteArray(), &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(17, crypt->
+			 encryptedThenHashed
+			 ("{00000000-0000-0000-0000-"
+			  "000000000000}", &ok).
+			 toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(18, crypt->
+			 encryptedThenHashed
+			 (hash.value("echo_mode"), &ok).toBase64());
+
+		    if(hash.value("transport") == "tcp")
+		      query.bindValue
+			(19, hash.value("ssl_key_size").toInt());
+		    else
+		      query.bindValue(19, 0);
+
+		    query.bindValue(20, 0);
+
+		    if(ok)
+		      query.bindValue
+			(21, crypt->encryptedThenHashed
+			 (QByteArray(),
+			  &ok).toBase64());
+
+		    if(hash.value("transport") == "tcp")
+		      query.bindValue(22, 1);
+		    else
+		      query.bindValue(22, 0);
+
+		    if(ok)
+		      query.bindValue
+			(23, crypt->encryptedThenHashed
+			 (QByteArray(),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(24, crypt->encryptedThenHashed
+			 (QByteArray(),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(25,
+			 crypt->encryptedThenHashed
+			 (hash.value("transport"),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.bindValue
+			(26, crypt->encryptedThenHashed
+			 (hash.value("orientation"),
+			  &ok).toBase64());
+
+		    if(ok)
+		      query.exec();
+		  }
+	      }
+	  }
+
+	file.close();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 {
   QWidget *focusWidget = QApplication::focusWidget();
   int activeListeners = 0;
@@ -813,6 +1189,68 @@ void spoton::slotGenerateEtpKeys(int index)
     }
 }
 
+void spoton::slotImportNeighbors(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select Neighbors Import File").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+#if QT_VERSION < 0x050000
+  dialog.setDirectory
+    (QDesktopServices::storageLocation(QDesktopServices::
+				       DesktopLocation));
+#else
+  dialog.setDirectory
+    (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
+     value(0));
+#endif
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QFileInfo fileInfo;
+
+      fileInfo.setFile(dialog.directory(),
+		       dialog.selectedFiles().value(0));
+
+      if(fileInfo.size() >= 32768)
+	{
+	  QMessageBox mb(this);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText
+	    (tr("The import file %1 contains a lot (%2) of data. Are you "
+		"sure that you wish to process it?").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(fileInfo.size()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return;
+	}
+
+      importNeighbors(fileInfo.filePath());
+    }
+}
+
 void spoton::slotMailRetrievalIntervalChanged(int value)
 {
   if(value < 5)
@@ -1212,6 +1650,26 @@ void spoton::slotResetCertificate(void)
 void spoton::slotSaveDestination(void)
 {
   saveDestination(m_ui.destination->text());
+}
+
+void spoton::slotSaveUrlName(void)
+{
+  QString str(m_ui.urlName->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.urlName->setText(str);
+    }
+  else
+    m_ui.urlName->setText(str.trimmed());
+
+  m_settings["gui/urlName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/urlName", str.toUtf8());
+  m_ui.urlName->selectAll();
 }
 
 void spoton::slotSelectDestination(void)
@@ -4376,463 +4834,4 @@ void spoton::slotForceKernelRegistration(bool state)
   QSettings settings;
 
   settings.setValue("gui/forceKernelRegistration", state);
-}
-
-void spoton::slotImportNeighbors(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select Neighbors Import File").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory
-    (QDesktopServices::storageLocation(QDesktopServices::
-				       DesktopLocation));
-#else
-  dialog.setDirectory
-    (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
-     value(0));
-#endif
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QFileInfo fileInfo;
-
-      fileInfo.setFile(dialog.directory(),
-		       dialog.selectedFiles().value(0));
-
-      if(fileInfo.size() >= 32768)
-	{
-	  QMessageBox mb(this);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText
-	    (tr("The import file %1 contains a lot (%2) of data. Are you "
-		"sure that you wish to process it?").
-	     arg(fileInfo.absoluteFilePath()).
-	     arg(fileInfo.size()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return;
-	}
-
-      importNeighbors(fileInfo.filePath());
-    }
-}
-
-void spoton::importNeighbors(const QString &filePath)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QFile file;
-
-	file.setFileName(filePath);
-
-	if(file.open(QIODevice::Text | QIODevice::ReadOnly))
-	  {
-	    QByteArray bytes(2048, 0);
-	    qint64 rc = 0;
-
-	    while((rc = file.readLine(bytes.data(),
-				      bytes.length())) > -1)
-	      {
-		bytes = bytes.trimmed();
-
-		if(bytes.isEmpty() || bytes.startsWith("#"))
-		  /*
-		  ** Comment, or an empty line, ignore!
-		  */
-
-		  continue;
-
-		QHash<QString, QByteArray> hash;
-		QList<QByteArray> list
-		  (bytes.mid(0, static_cast<int> (rc)).trimmed().
-		   split('&'));
-		bool fine = true;
-
-		while(!list.isEmpty())
-		  {
-		    QByteArray token(list.takeFirst().trimmed());
-
-		    if(token.startsWith("connect="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("connect=")));
-			token = token.toLower().trimmed();
-
-			if(!(token == "false" || token == "true"))
-			  fine = false;
-			else
-			  hash["connect"] = token;
-		      }
-		    else if(token.startsWith("echo_mode="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("echo_mode=")));
-			token = token.toLower().trimmed();
-
-			if(!(token == "full" || token == "half"))
-			  fine = false;
-			else
-			  hash["echo_mode"] = token;
-		      }
-		    else if(token.startsWith("ip_address="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("ip_address=")));
-			token = token.toLower().trimmed();
-
-			if(QHostAddress(token.constData()).isNull())
-			  {
-			    if(token.isEmpty())
-			      fine = false;
-			    else
-			      hash["ip_address"] = token;
-			  }
-			else
-			  hash["ip_address"] = token;
-		      }
-		    else if(token.startsWith("orientation="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("orientation=")));
-			token = token.toLower().trimmed();
-
-			if(!(token == "packet" || token == "stream"))
-			  fine = false;
-			else
-			  hash["orientation"] = token;
-		      }
-		    else if(token.startsWith("port="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("port=")));
-			token = token.trimmed();
-
-			if(!(token.toInt() > 0 &&
-			     token.toInt() <= 65535))
-			  fine = false;
-			else
-			  hash["port"] = token;
-		      }
-		    else if(token.startsWith("protocol="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("protocol=")));
-			token = token.toLower().trimmed();
-
-			if(token == "dynamic dns")
-			  hash["protocol"] = "Dynamic DNS";
-			else if(token == "ipv4")
-			  hash["protocol"] = "IPv4";
-			else if(token == "ipv6")
-			  hash["protocol"] = "IPv6";
-			else if(token.isEmpty())
-			  hash["protocol"] = "";
-			else
-			  fine = false;
-		      }
-		    else if(token.startsWith("scope_id="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("scope_id=")));
-			token = token.trimmed();
-			hash["scope_id"] = token;
-		      }
-		    else if(token.startsWith("ssl_key_size="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("ssl_key_size=")));
-			token = token.trimmed();
-
-			if(!(token == "0" ||
-			     token == "2048" || token == "3072" ||
-			     token == "4096"))
-			  fine = false;
-			else
-			  hash["ssl_key_size"] = token;
-		      }
-		    else if(token.startsWith("transport="))
-		      {
-			token.remove
-			  (0, static_cast<int> (qstrlen("transport=")));
-			token = token.toLower().trimmed();
-
-			if(!(token == "bluetooth" ||
-			     token == "sctp" ||
-			     token == "tcp" ||
-			     token == "udp"))
-			  fine = false;
-			else
-			  hash["transport"] = token;
-		      }
-
-		    if(!fine)
-		      break;
-		  }
-
-		if(hash.count() != 9)
-		  fine = false;
-
-		if(fine)
-		  {
-		    QSqlQuery query(db);
-		    bool ok = true;
-
-		    query.prepare
-		      ("INSERT INTO neighbors "
-		       "(local_ip_address, "
-		       "local_port, "
-		       "protocol, "
-		       "remote_ip_address, "
-		       "remote_port, "
-		       "sticky, "
-		       "scope_id, "
-		       "hash, "
-		       "status_control, "
-		       "country, "
-		       "remote_ip_address_hash, "
-		       "qt_country_hash, "
-		       "proxy_hostname, "
-		       "proxy_password, "
-		       "proxy_port, "
-		       "proxy_type, "
-		       "proxy_username, "
-		       "uuid, "
-		       "echo_mode, "
-		       "ssl_key_size, "
-		       "allow_exceptions, "
-		       "certificate, "
-		       "ssl_required, "
-		       "account_name, "
-		       "account_password, "
-		       "transport, "
-		       "orientation) "
-		       "VALUES "
-		       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-		       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		    query.bindValue(0, QVariant(QVariant::String));
-		    query.bindValue(1, QVariant(QVariant::String));
-		    query.bindValue
-		      (2, crypt->
-		       encryptedThenHashed
-		       (hash.value("protocol"), &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(3, crypt->
-			 encryptedThenHashed
-			 (hash.value("ip_address"), &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(4, crypt->
-			 encryptedThenHashed
-			 (hash.value("port"), &ok).toBase64());
-
-		    query.bindValue(5, 1); // Sticky.
-
-		    if(ok)
-		      query.bindValue
-			(6, crypt->
-			 encryptedThenHashed
-			 (hash.value("scope_id"), &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(7, crypt->
-			 keyedHash(QByteArray() + // Proxy HostName
-				   QByteArray() + // Proxy Port
-				   hash.value("ip_address") +
-				   hash.value("port") +
-				   hash.value("scope_id") +
-				   hash.value("transport"), &ok).
-			 toBase64());
-
-		    if(hash.value("connect") == "true")
-		      query.bindValue(8, "connected");
-		    else
-		      query.bindValue(8, "disconnected");
-
-		    QString country
-		      (spoton_misc::
-		       countryNameFromIPAddress(hash.value("ip_address").
-						constData()));
-
-		    if(ok)
-		      query.bindValue
-			(9, crypt->
-			 encryptedThenHashed
-			 (country.toLatin1(), &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(10, crypt->
-			 keyedHash(hash.value("ip_address"), &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(11, crypt->
-			 keyedHash(country.remove(" ").toLatin1(), &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(12, crypt->
-			 encryptedThenHashed(QByteArray(), &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(13, crypt->
-			 encryptedThenHashed(QByteArray(), &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(14, crypt->encryptedThenHashed
-			 (QByteArray(),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(15, crypt->encryptedThenHashed
-			 (QByteArray("NoProxy"),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(16, crypt->encryptedThenHashed
-			 (QByteArray(), &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(17, crypt->
-			 encryptedThenHashed
-			 ("{00000000-0000-0000-0000-"
-			  "000000000000}", &ok).
-			 toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(18, crypt->
-			 encryptedThenHashed
-			 (hash.value("echo_mode"), &ok).toBase64());
-
-		    if(hash.value("transport") == "tcp")
-		      query.bindValue
-			(19, hash.value("ssl_key_size").toInt());
-		    else
-		      query.bindValue(19, 0);
-
-		    query.bindValue(20, 0);
-
-		    if(ok)
-		      query.bindValue
-			(21, crypt->encryptedThenHashed
-			 (QByteArray(),
-			  &ok).toBase64());
-
-		    if(hash.value("transport") == "tcp")
-		      query.bindValue(22, 1);
-		    else
-		      query.bindValue(22, 0);
-
-		    if(ok)
-		      query.bindValue
-			(23, crypt->encryptedThenHashed
-			 (QByteArray(),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(24, crypt->encryptedThenHashed
-			 (QByteArray(),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(25,
-			 crypt->encryptedThenHashed
-			 (hash.value("transport"),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.bindValue
-			(26, crypt->encryptedThenHashed
-			 (hash.value("orientation"),
-			  &ok).toBase64());
-
-		    if(ok)
-		      query.exec();
-		  }
-	      }
-	  }
-
-	file.close();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotSaveUrlName(void)
-{
-  QString str(m_ui.urlName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.urlName->setText(str);
-    }
-  else
-    m_ui.urlName->setText(str.trimmed());
-
-  m_settings["gui/urlName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/urlName", str.toUtf8());
-  m_ui.urlName->selectAll();
 }
