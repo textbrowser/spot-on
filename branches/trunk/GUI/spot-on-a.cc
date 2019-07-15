@@ -794,6 +794,58 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.position->model()->setData
     (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
+  connect(m_sb.authentication_request,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAuthenticationRequestButtonClicked(void)));
+  connect(m_sb.buzz,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.chat,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.email,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.errorlog,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotViewLog(void)));
+  connect(m_sb.forward_secrecy_request,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRespondToForwardSecrecy(void)));
+  connect(m_sb.kernelstatus,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotKernelStatus(void)));
+  connect(m_sb.listeners,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.lock,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotLock(void)));
+  connect(m_sb.neighbors,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.status,
+	  SIGNAL(linkActivated(const QString &)),
+	  this,
+	  SLOT(slotShareKeysWithKernel(const QString &)));
+  connect(m_sb.warning,
+	  SIGNAL(clicked(void)),
+	  m_sb.warning,
+	  SLOT(hide(void)));
+  connect(m_sb.warning,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotShowNotificationsWindow(void)));
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_encryptFile,
@@ -836,58 +888,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(smpMessageReceivedFromKernel(const QByteArrayList &)),
 	  &m_smpWindow,
 	  SLOT(slotSMPMessageReceivedFromKernel(const QByteArrayList &)));
-  connect(m_sb.authentication_request,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAuthenticationRequestButtonClicked(void)));
-  connect(m_sb.buzz,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotStatusButtonClicked(void)));
-  connect(m_sb.chat,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotStatusButtonClicked(void)));
-  connect(m_sb.email,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotStatusButtonClicked(void)));
-  connect(m_sb.forward_secrecy_request,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRespondToForwardSecrecy(void)));
-  connect(m_sb.listeners,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotStatusButtonClicked(void)));
-  connect(m_sb.neighbors,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotStatusButtonClicked(void)));
-  connect(m_sb.errorlog,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotViewLog(void)));
-  connect(m_sb.kernelstatus,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotKernelStatus(void)));
-  connect(m_sb.lock,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotLock(void)));
-  connect(m_sb.status,
-	  SIGNAL(linkActivated(const QString &)),
-	  this,
-	  SLOT(slotShareKeysWithKernel(const QString &)));
-  connect(m_sb.warning,
-	  SIGNAL(clicked(void)),
-	  m_sb.warning,
-	  SLOT(hide(void)));
-  connect(m_sb.warning,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotShowNotificationsWindow(void)));
   m_optionsUi.guiSecureMemoryPool->setProperty
     ("original_stylesheet", m_optionsUi.guiSecureMemoryPool->styleSheet());
   m_ui.kernelSecureMemoryPool->setProperty
@@ -911,22 +911,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.chatSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
-  connect(m_ui.chatSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.chatSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.chatSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowChatSecretsMenu(void)));
-  connect(m_ui.emailSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.emailSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.emailSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -937,10 +921,6 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotShowAddParticipant(void)));
 #endif
-  connect(m_ui.activeUrlDistribution,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotActiveUrlDistribution(bool)));
   connect(m_ui.actionClear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -969,22 +949,42 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotPurgeEphemeralKeys(void)));
-  connect(m_ui.action_Release_Notes,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowReleaseNotes(void)));
-  connect(m_ui.copyInstitution,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotCopyInstitution(void)));
   connect(m_ui.action_Quit,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotQuit(void)));
+  connect(m_ui.action_Release_Notes,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowReleaseNotes(void)));
   connect(m_ui.action_Vacuum_Databases,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotVacuumDatabases(void)));
+  connect(m_ui.activeUrlDistribution,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotActiveUrlDistribution(bool)));
+  connect(m_ui.chatSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.chatSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.chatSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowChatSecretsMenu(void)));
+  connect(m_ui.copyInstitution,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCopyInstitution(void)));
+  connect(m_ui.emailSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.emailSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.emailSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
   connect(m_notificationsUi.action_Clear,
 	  SIGNAL(triggered(void)),
 	  m_notificationsUi.textBrowser,
