@@ -714,7 +714,6 @@ class spoton: public QMainWindow
   void slotAddAcceptedIP(void);
   void slotAddAccount(void);
   void slotAddAttachment(void);
-  void slotAddBootstrapper(void);
   void slotAddDistiller(void);
   void slotAddEtpMagnet(const QString &text = "",
 			const bool displayError = true);
@@ -833,8 +832,6 @@ class spoton: public QMainWindow
   void slotExportPublicKeys(void);
   void slotExternalIp(int index);
   void slotFavoritesActivated(int index);
-  void slotFetchMoreAlgo(void);
-  void slotFetchMoreButton(void);
   void slotForceKernelRegistration(bool state);
   void slotForwardSecrecyEncryptionKeyChanged(int index);
   void slotGatherStatistics(void);

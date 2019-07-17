@@ -38,14 +38,1330 @@ extern "C"
 }
 #endif
 
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-smp.h"
+#include "spot-on.h"
 #include "ui_spot-on-goldbug.h"
 
-void spoton::slotSendMessage(void)
+QByteArray spoton::copyMyChatPublicKey(void) const
 {
-  sendMessage(0);
+  if(!m_crypts.value("chat", 0) ||
+     !m_crypts.value("chat-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/nodeName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("chat")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("chat")->digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("chat-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("chat").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+QByteArray spoton::copyMyPoptasticPublicKey(void) const
+{
+  if(!m_crypts.value("poptastic", 0) ||
+     !m_crypts.value("poptastic-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = poptasticName();
+
+  if(name.isEmpty())
+    name = "unknown@unknown.org";
+
+  mPublicKey = m_crypts.value("poptastic")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("poptastic")->digitalSignature
+      (mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("poptastic-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("poptastic").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+QPixmap spoton::pixmapForCountry(const QString &country) const
+{
+  if(country == "Afghanistan")
+    return QPixmap(":/Flags/af.png");
+  else if(country == "Albania")
+    return QPixmap(":/Flags/al.png");
+  else if(country == "Algeria")
+    return QPixmap(":/Flags/dz.png");
+  else if(country == "AmericanSamoa")
+    return QPixmap(":/Flags/as.png");
+  else if(country == "Angola")
+    return QPixmap(":/Flags/ao.png");
+  else if(country == "Argentina")
+    return QPixmap(":/Flags/ar.png");
+  else if(country == "Armenia")
+    return QPixmap(":/Flags/am.png");
+  else if(country == "Aruba")
+    return QPixmap(":/Flags/aw.png");
+  else if(country == "Australia")
+    return QPixmap(":/Flags/au.png");
+  else if(country == "Austria")
+    return QPixmap(":/Flags/at.png");
+  else if(country == "Azerbaijan")
+    return QPixmap(":/Flags/az.png");
+  else if(country == "Bahrain")
+    return QPixmap(":/Flags/bh.png");
+  else if(country == "Bangladesh")
+    return QPixmap(":/Flags/bd.png");
+  else if(country == "Barbados")
+    return QPixmap(":/Flags/bb.png");
+  else if(country == "Belarus")
+    return QPixmap(":/Flags/by.png");
+  else if(country == "Belgium")
+    return QPixmap(":/Flags/be.png");
+  else if(country == "Belize")
+    return QPixmap(":/Flags/bz.png");
+  else if(country == "Benin")
+    return QPixmap(":/Flags/bj.png");
+  else if(country == "Bermuda")
+    return QPixmap(":/Flags/bm.png");
+  else if(country == "Bhutan")
+    return QPixmap(":/Flags/bt.png");
+  else if(country == "Bolivia")
+    return QPixmap(":/Flags/bo.png");
+  else if(country == "BosniaAndHerzegowina")
+    return QPixmap(":/Flags/ba.png");
+  else if(country == "Botswana")
+    return QPixmap(":/Flags/bw.png");
+  else if(country == "Brazil")
+    return QPixmap(":/Flags/br.png");
+  else if(country == "BruneiDarussalam")
+    return QPixmap(":/Flags/bn.png");
+  else if(country == "Bulgaria")
+    return QPixmap(":/Flags/bg.png");
+  else if(country == "BurkinaFaso")
+    return QPixmap(":/Flags/bf.png");
+  else if(country == "Burundi")
+    return QPixmap(":/Flags/bi.png");
+  else if(country == "Cambodia")
+    return QPixmap(":/Flags/kh.png");
+  else if(country == "Cameroon")
+    return QPixmap(":/Flags/cm.png");
+  else if(country == "Canada")
+    return QPixmap(":/Flags/ca.png");
+  else if(country == "CapeVerde")
+    return QPixmap(":/Flags/cv.png");
+  else if(country == "CentralAfricanRepublic")
+    return QPixmap(":/Flags/cf.png");
+  else if(country == "Chad")
+    return QPixmap(":/Flags/td.png");
+  else if(country == "Chile")
+    return QPixmap(":/Flags/cl.png");
+  else if(country == "China")
+    return QPixmap(":/Flags/cn.png");
+  else if(country == "Colombia")
+    return QPixmap(":/Flags/co.png");
+  else if(country == "Comoros")
+    return QPixmap(":/Flags/km.png");
+  else if(country == "CostaRica")
+    return QPixmap(":/Flags/cr.png");
+  else if(country == "Croatia")
+    return QPixmap(":/Flags/hr.png");
+  else if(country == "Cyprus")
+    return QPixmap(":/Flags/cy.png");
+  else if(country == "CzechRepublic")
+    return QPixmap(":/Flags/cz.png");
+  else if(country == "Default")
+    return QPixmap(":/Flags/us.png");
+  else if(country == "DemocraticRepublicOfCongo")
+    return QPixmap(":/Flags/cd.png");
+  else if(country == "Denmark")
+    return QPixmap(":/Flags/dk.png");
+  else if(country == "Djibouti")
+    return QPixmap(":/Flags/dj.png");
+  else if(country == "DominicanRepublic")
+    return QPixmap(":/Flags/do.png");
+  else if(country == "Ecuador")
+    return QPixmap(":/Flags/ec.png");
+  else if(country == "Egypt")
+    return QPixmap(":/Flags/eg.png");
+  else if(country == "ElSalvador")
+    return QPixmap(":/Flags/sv.png");
+  else if(country == "EquatorialGuinea")
+    return QPixmap(":/Flags/gq.png");
+  else if(country == "Eritrea")
+    return QPixmap(":/Flags/er.png");
+  else if(country == "Estonia")
+    return QPixmap(":/Flags/ee.png");
+  else if(country == "Ethiopia")
+    return QPixmap(":/Flags/et.png");
+  else if(country == "FaroeIslands")
+    return QPixmap(":/Flags/fo.png");
+  else if(country == "Finland")
+    return QPixmap(":/Flags/fi.png");
+  else if(country == "France")
+    return QPixmap(":/Flags/fr.png");
+  else if(country == "FrenchGuiana")
+    return QPixmap(":/Flags/gy.png");
+  else if(country == "Gabon")
+    return QPixmap(":/Flags/ga.png");
+  else if(country == "Georgia")
+    return QPixmap(":/Flags/ge.png");
+  else if(country == "Germany")
+    return QPixmap(":/Flags/de.png");
+  else if(country == "Ghana")
+    return QPixmap(":/Flags/gh.png");
+  else if(country == "Greece")
+    return QPixmap(":/Flags/gr.png");
+  else if(country == "Greenland")
+    return QPixmap(":/Flags/gl.png");
+  else if(country == "Guadeloupe")
+    return QPixmap(":/Flags/fr.png");
+  else if(country == "Guam")
+    return QPixmap(":/Flags/gu.png");
+  else if(country == "Guatemala")
+    return QPixmap(":/Flags/gt.png");
+  else if(country == "Guinea")
+    return QPixmap(":/Flags/gn.png");
+  else if(country == "GuineaBissau")
+    return QPixmap(":/Flags/gw.png");
+  else if(country == "Guyana")
+    return QPixmap(":/Flags/gy.png");
+  else if(country == "Honduras")
+    return QPixmap(":/Flags/hn.png");
+  else if(country == "HongKong")
+    return QPixmap(":/Flags/hk.png");
+  else if(country == "Hungary")
+    return QPixmap(":/Flags/hu.png");
+  else if(country == "Iceland")
+    return QPixmap(":/Flags/is.png");
+  else if(country == "India")
+    return QPixmap(":/Flags/in.png");
+  else if(country == "Indonesia")
+    return QPixmap(":/Flags/id.png");
+  else if(country == "Iran")
+    return QPixmap(":/Flags/ir.png");
+  else if(country == "Iraq")
+    return QPixmap(":/Flags/iq.png");
+  else if(country == "Ireland")
+    return QPixmap(":/Flags/ie.png");
+  else if(country == "Israel")
+    return QPixmap(":/Flags/il.png");
+  else if(country == "Italy")
+    return QPixmap(":/Flags/it.png");
+  else if(country == "IvoryCoast")
+    return QPixmap(":/Flags/ci.png");
+  else if(country == "Jamaica")
+    return QPixmap(":/Flags/jm.png");
+  else if(country == "Japan")
+    return QPixmap(":/Flags/jp.png");
+  else if(country == "Jordan")
+    return QPixmap(":/Flags/jo.png");
+  else if(country == "Kazakhstan")
+    return QPixmap(":/Flags/kz.png");
+  else if(country == "Kenya")
+    return QPixmap(":/Flags/ke.png");
+  else if(country == "Kuwait")
+    return QPixmap(":/Flags/kw.png");
+  else if(country == "Kyrgyzstan")
+    return QPixmap(":/Flags/kg.png");
+  else if(country == "Lao")
+    return QPixmap(":/Flags/la.png");
+  else if(country == "LatinAmericaAndTheCaribbean")
+    return QPixmap(":/Flags/mx.png");
+  else if(country == "Latvia")
+    return QPixmap(":/Flags/lv.png");
+  else if(country == "Lebanon")
+    return QPixmap(":/Flags/lb.png");
+  else if(country == "Lesotho")
+    return QPixmap(":/Flags/ls.png");
+  else if(country == "Liberia")
+    return QPixmap(":/Flags/lr.png");
+  else if(country == "LibyanArabJamahiriya")
+    return QPixmap(":/Flags/ly.png");
+  else if(country == "Liechtenstein")
+    return QPixmap(":/Flags/li.png");
+  else if(country == "Lithuania")
+    return QPixmap(":/Flags/lt.png");
+  else if(country == "Luxembourg")
+    return QPixmap(":/Flags/lu.png");
+  else if(country == "Macau")
+    return QPixmap(":/Flags/mo.png");
+  else if(country == "Macedonia")
+    return QPixmap(":/Flags/mk.png");
+  else if(country == "Madagascar")
+    return QPixmap(":/Flags/mg.png");
+  else if(country == "Malaysia")
+    return QPixmap(":/Flags/my.png");
+  else if(country == "Mali")
+    return QPixmap(":/Flags/ml.png");
+  else if(country == "Malta")
+    return QPixmap(":/Flags/mt.png");
+  else if(country == "MarshallIslands")
+    return QPixmap(":/Flags/mh.png");
+  else if(country == "Martinique")
+    return QPixmap(":/Flags/fr.png");
+  else if(country == "Mauritius")
+    return QPixmap(":/Flags/mu.png");
+  else if(country == "Mayotte")
+    return QPixmap(":/Flags/yt.png");
+  else if(country == "Mexico")
+    return QPixmap(":/Flags/mx.png");
+  else if(country == "Moldova")
+    return QPixmap(":/Flags/md.png");
+  else if(country == "Monaco")
+    return QPixmap(":/Flags/mc.png");
+  else if(country == "Mongolia")
+    return QPixmap(":/Flags/mn.png");
+  else if(country == "Montenegro")
+    return QPixmap(":/Flags/me.png");
+  else if(country == "Morocco")
+    return QPixmap(":/Flags/ma.png");
+  else if(country == "Mozambique")
+    return QPixmap(":/Flags/mz.png");
+  else if(country == "Myanmar")
+    return QPixmap(":/Flags/mm.png");
+  else if(country == "Namibia")
+    return QPixmap(":/Flags/na.png");
+  else if(country == "Nepal")
+    return QPixmap(":/Flags/np.png");
+  else if(country == "Netherlands")
+    return QPixmap(":/Flags/nl.png");
+  else if(country == "NewZealand")
+    return QPixmap(":/Flags/nz.png");
+  else if(country == "Nicaragua")
+    return QPixmap(":/Flags/ni.png");
+  else if(country == "Niger")
+    return QPixmap(":/Flags/ne.png");
+  else if(country == "Nigeria")
+    return QPixmap(":/Flags/ng.png");
+  else if(country == "NorthernMarianaIslands")
+    return QPixmap(":/Flags/mp.png");
+  else if(country == "Norway")
+    return QPixmap(":/Flags/no.png");
+  else if(country == "Oman")
+    return QPixmap(":/Flags/om.png");
+  else if(country == "Pakistan")
+    return QPixmap(":/Flags/pk.png");
+  else if(country == "Panama")
+    return QPixmap(":/Flags/pa.png");
+  else if(country == "Paraguay")
+    return QPixmap(":/Flags/py.png");
+  else if(country == "PeoplesRepublicOfCongo")
+    return QPixmap(":/Flags/cg.png");
+  else if(country == "Peru")
+    return QPixmap(":/Flags/pe.png");
+  else if(country == "Philippines")
+    return QPixmap(":/Flags/ph.png");
+  else if(country == "Poland")
+    return QPixmap(":/Flags/pl.png");
+  else if(country == "Portugal")
+    return QPixmap(":/Flags/pt.png");
+  else if(country == "PuertoRico")
+    return QPixmap(":/Flags/pr.png");
+  else if(country == "Qatar")
+    return QPixmap(":/Flags/qa.png");
+  else if(country == "RepublicOfKorea")
+    return QPixmap(":/Flags/kr.png");
+  else if(country == "Reunion")
+    return QPixmap(":/Flags/fr.png");
+  else if(country == "Romania")
+    return QPixmap(":/Flags/ro.png");
+  else if(country == "RussianFederation")
+    return QPixmap(":/Flags/ru.png");
+  else if(country == "Rwanda")
+    return QPixmap(":/Flags/rw.png");
+  else if(country == "Saint Barthelemy")
+    return QPixmap(":/Flags/bl.png");
+  else if(country == "Saint Martin")
+    return QPixmap(":/Flags/fr.png");
+  else if(country == "SaoTomeAndPrincipe")
+    return QPixmap(":/Flags/st.png");
+  else if(country == "SaudiArabia")
+    return QPixmap(":/Flags/sa.png");
+  else if(country == "Senegal")
+    return QPixmap(":/Flags/sn.png");
+  else if(country == "Serbia")
+    return QPixmap(":/Flags/rs.png");
+  else if(country == "SerbiaAndMontenegro")
+    return QPixmap(":/Flags/rs.png");
+  else if(country == "Singapore")
+    return QPixmap(":/Flags/sg.png");
+  else if(country == "Slovakia")
+    return QPixmap(":/Flags/sk.png");
+  else if(country == "Slovenia")
+    return QPixmap(":/Flags/si.png");
+  else if(country == "Somalia")
+    return QPixmap(":/Flags/so.png");
+  else if(country == "SouthAfrica")
+    return QPixmap(":/Flags/za.png");
+  else if(country == "Spain")
+    return QPixmap(":/Flags/es.png");
+  else if(country == "SriLanka")
+    return QPixmap(":/Flags/lk.png");
+  else if(country == "Sudan")
+    return QPixmap(":/Flags/sd.png");
+  else if(country == "Swaziland")
+    return QPixmap(":/Flags/sz.png");
+  else if(country == "Sweden")
+    return QPixmap(":/Flags/se.png");
+  else if(country == "Switzerland")
+    return QPixmap(":/Flags/ch.png");
+  else if(country == "SyrianArabRepublic")
+    return QPixmap(":/Flags/sy.png");
+  else if(country == "Taiwan")
+    return QPixmap(":/Flags/tw.png");
+  else if(country == "Tajikistan")
+    return QPixmap(":/Flags/tj.png");
+  else if(country == "Tanzania")
+    return QPixmap(":/Flags/tz.png");
+  else if(country == "Thailand")
+    return QPixmap(":/Flags/th.png");
+  else if(country == "Togo")
+    return QPixmap(":/Flags/tg.png");
+  else if(country == "Tonga")
+    return QPixmap(":/Flags/to.png");
+  else if(country == "TrinidadAndTobago")
+    return QPixmap(":/Flags/tt.png");
+  else if(country == "Tunisia")
+    return QPixmap(":/Flags/tn.png");
+  else if(country == "Turkey")
+    return QPixmap(":/Flags/tr.png");
+  else if(country == "USVirginIslands")
+    return QPixmap(":/Flags/vi.png");
+  else if(country == "Uganda")
+    return QPixmap(":/Flags/ug.png");
+  else if(country == "Ukraine")
+    return QPixmap(":/Flags/ua.png");
+  else if(country == "UnitedArabEmirates")
+    return QPixmap(":/Flags/ae.png");
+  else if(country == "UnitedKingdom")
+    return QPixmap(":/Flags/gb.png");
+  else if(country == "UnitedStates")
+    return QPixmap(":/Flags/us.png");
+  else if(country == "UnitedStatesMinorOutlyingIslands")
+    return QPixmap(":/Flags/us.png");
+  else if(country == "Uruguay")
+    return QPixmap(":/Flags/uy.png");
+  else if(country == "Uzbekistan")
+    return QPixmap(":/Flags/uz.png");
+  else if(country == "Venezuela")
+    return QPixmap(":/Flags/ve.png");
+  else if(country == "VietNam")
+    return QPixmap(":/Flags/vn.png");
+  else if(country == "Yemen")
+    return QPixmap(":/Flags/ye.png");
+  else if(country == "Yugoslavia")
+    return QPixmap(":/Flags/yu.png");
+  else if(country == "Zambia")
+    return QPixmap(":/Flags/zm.png");
+  else if(country == "Zimbabwe")
+    return QPixmap(":/Flags/zw.png");
+  else
+    return QPixmap(":/Flags/unknown.png");
+}
+
+bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
+			   QWidget *parent)
+{
+  QByteArray key(k.trimmed());
+
+  if(!parent)
+    parent = this;
+
+  if(type == "E")
+    {
+      if(!m_crypts.value("chat", 0))
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Invalid spoton_crypt object. This is "
+				   "a fatal flaw."));
+	  return false;
+	}
+      else if(!key.contains("@"))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Please provide a normal e-mail address."));
+	  return false;
+	}
+      else if(key.isEmpty())
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Empty e-mail address. Really?"));
+	  return false;
+	}
+
+      QByteArray keyType("poptastic");
+      QByteArray name(key.trimmed());
+      QString connectionName("");
+      bool ok = true;
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(keyType,
+				     name,
+				     name + "-poptastic",
+				     QByteArray(),
+				     -1,
+				     db,
+				     m_crypts.value("chat", 0))))
+	      m_ui.friendInformation->selectAll();
+	  }
+	else
+	  ok = false;
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("An error occurred while attempting "
+				   "to save the friendship bundle."));
+	  return false;
+	}
+    }
+  else if(type == "K")
+    {
+      if(!m_crypts.value("chat", 0) ||
+	 !m_crypts.value("email", 0) ||
+	 !m_crypts.value("open-library", 0) ||
+	 !m_crypts.value("poptastic", 0) ||
+	 !m_crypts.value("rosetta", 0) ||
+	 !m_crypts.value("url", 0))
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Invalid spoton_crypt object(s). This is "
+				   "a fatal flaw."));
+	  return false;
+	}
+      else if(key.isEmpty())
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Empty key(s). Really?"));
+	  return false;
+	}
+
+      if(!(key.startsWith("K") || key.startsWith("k")))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid key(s). The provided text must start with either "
+		"the letter K or the letter k."));
+	  return false;
+	}
+
+      QList<QByteArray> list(key.mid(1).split('@'));
+
+      if(list.size() != 6)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Irregular data. Expecting 6 entries, received %1.").
+	     arg(list.size()));
+	  return false;
+	}
+
+      QByteArray keyType(list.value(0));
+
+      keyType = QByteArray::fromBase64(keyType);
+
+      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid key type. Expecting 'chat', 'email', "
+		"'open-library', "
+		"'poptastic', 'rosetta', or 'url'."));
+	  return false;
+	}
+
+      QByteArray mPublicKey(list.value(2));
+      QByteArray mSignature(list.value(3));
+      QByteArray myPublicKey;
+      QByteArray mySPublicKey;
+      bool ok = true;
+
+      mPublicKey = QByteArray::fromBase64(mPublicKey);
+      myPublicKey = m_crypts.value(keyType)->publicKey(&ok);
+
+      if(!ok)
+	{
+	  QMessageBox mb(parent);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Unable to retrieve your %1 "
+			"public key for comparison. Are you sure "
+			"that you wish to accept the foreign key pair?").
+		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle
+		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return false;
+	}
+
+      mySPublicKey = m_crypts.value
+	(QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
+
+      if(!ok)
+	{
+	  QMessageBox mb(parent);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Unable to retrieve your %1 signature "
+			"public key for comparison. Are you sure "
+			"that you wish to accept the foreign key pair?").
+		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return false;
+	}
+
+      if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
+	 (mSignature == mySPublicKey && !mySPublicKey.isEmpty()))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("You're attempting to add your own '%1' keys. "
+		"Please do not do this!").arg(keyType.constData()));
+	  return false;
+	}
+
+      mSignature = QByteArray::fromBase64(mSignature);
+
+      if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey,
+					 mSignature))
+	{
+	  QMessageBox mb(parent);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Invalid %1 "
+			"public key signature. Accept?").
+		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return false;
+	}
+
+      QByteArray sPublicKey(list.value(4));
+      QByteArray sSignature(list.value(5));
+
+      sPublicKey = QByteArray::fromBase64(sPublicKey);
+      sSignature = QByteArray::fromBase64(sSignature);
+
+      if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey,
+					 sSignature))
+	{
+	  QMessageBox mb(parent);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText(tr("Invalid %1 "
+			"signature public key signature. Accept?").
+		     arg(keyType.constData()));
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowTitle(tr("%1: Confirmation").
+			    arg(SPOTON_APPLICATION_NAME));
+
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    return false;
+	}
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QByteArray name(list.value(1));
+
+	    name = QByteArray::fromBase64(name);
+
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(keyType,
+				     name,
+				     mPublicKey,
+				     sPublicKey,
+				     -1,
+				     db,
+				     m_crypts.value("chat", 0))))
+	      if((ok = spoton_misc::
+		  saveFriendshipBundle(keyType + "-signature",
+				       name,
+				       sPublicKey,
+				       QByteArray(),
+				       -1,
+				       db,
+				       m_crypts.value("chat", 0))))
+		m_ui.friendInformation->selectAll();
+	  }
+	else
+	  ok = false;
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("An error occurred while attempting "
+				   "to save the friendship bundle."));
+	  return false;
+	}
+    }
+  else if(type == "R")
+    {
+      /*
+      ** Now we have to perform the inverse of slotCopyFriendshipBundle().
+      ** Have fun!
+      */
+
+      if(!m_crypts.value("chat", 0) ||
+	 !m_crypts.value("email", 0) ||
+	 !m_crypts.value("open-library", 0) ||
+	 !m_crypts.value("poptastic", 0) ||
+	 !m_crypts.value("rosetta", 0) ||
+	 !m_crypts.value("url", 0))
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Invalid spoton_crypt object(s). This is "
+				   "a fatal flaw."));
+	  return false;
+	}
+      else if(key.isEmpty())
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Empty key(s). Really?"));
+	  return false;
+	}
+
+      if(!(key.startsWith("R") || key.startsWith("r")))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid repleo(s). The provided text must start with "
+		"either the letter R or the letter r."));
+	  return false;
+	}
+
+      QList<QByteArray> list(key.mid(1).split('@'));
+
+      if(list.size() != 3)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Irregular data. Expecting 3 entries, received %1.").
+	     arg(list.size()));
+	  return false;
+	}
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      QByteArray data(list.value(1));
+      QByteArray hash(list.value(2));
+      QByteArray keyInformation(list.value(0));
+      bool ok = true;
+
+      keyInformation = m_crypts.value("chat")->
+	publicKeyDecrypt(list.value(0), &ok);
+
+      if(!ok)
+	{
+	  keyInformation = m_crypts.value("email")->
+	    publicKeyDecrypt(list.value(0), &ok);
+
+	  if(!ok)
+	    {
+	      keyInformation = m_crypts.value("open-library")->
+		publicKeyDecrypt(list.value(0), &ok);
+
+	      if(!ok)
+		{
+		  keyInformation = m_crypts.value("poptastic")->
+		    publicKeyDecrypt(list.value(0), &ok);
+
+		  if(!ok)
+		    {
+		      keyInformation = m_crypts.value("rosetta")->
+			publicKeyDecrypt(list.value(0), &ok);
+
+		      if(!ok)
+			{
+			  keyInformation = m_crypts.value("url")->
+			    publicKeyDecrypt(list.value(0), &ok);
+
+			  if(!ok)
+			    {
+			      QMessageBox::critical
+				(parent, tr("%1: Error").
+				 arg(SPOTON_APPLICATION_NAME),
+				 tr("Asymmetric decryption failure. "
+				    "Are you attempting "
+				    "to add a repleo that you gathered?"));
+			      return false;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+
+      list = keyInformation.split('@');
+
+      if(list.size() != 3)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Irregular data. Expecting 3 entries, received %1.").
+	     arg(list.size()));
+	  return false;
+	}
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      QByteArray computedHash;
+      spoton_crypt crypt(list.value(1), // Cipher Type
+			 "sha512",
+			 QByteArray(),
+			 list.value(0), // Symmetric Key
+			 list.value(2), // Hash Key
+			 0,
+			 0,
+			 "");
+
+      computedHash = crypt.keyedHash(data, &ok);
+
+      if(!ok)
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("Unable to compute a keyed hash."));
+	  return false;
+	}
+
+      if(computedHash.isEmpty() || hash.isEmpty() ||
+	 !spoton_crypt::memcmp(computedHash, hash))
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("The computed hash does not match "
+				   "the provided hash."));
+	  return false;
+	}
+
+      data = crypt.decrypted(data, &ok);
+
+      if(!ok)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Symmetric decryption failure. Serious!"));
+	  return false;
+	}
+
+      list = data.split('@');
+
+      if(list.size() != 6)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Irregular data. Expecting 6 entries, received %1.").
+	     arg(list.size()));
+	  return false;
+	}
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(list.value(0)))
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid key type. Expecting 'chat', 'email', "
+		"'open-library', 'poptastic', "
+		"'rosetta', or 'url'."));
+	  return false;
+	}
+
+      QByteArray myPublicKey;
+      QByteArray mySPublicKey;
+
+      if(list.value(0) == "chat")
+	{
+	  myPublicKey = m_crypts.value("chat")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("chat-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "email")
+	{
+	  myPublicKey = m_crypts.value("email")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("email-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "open-library")
+	{
+	  myPublicKey = m_crypts.value("open-library")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("open-library-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "poptastic")
+	{
+	  myPublicKey = m_crypts.value("poptastic")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("poptastic-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "rosetta")
+	{
+	  myPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("rosetta-signature")->
+	      publicKey(&ok);
+	}
+      else if(list.value(0) == "url")
+	{
+	  myPublicKey = m_crypts.value("url")->publicKey(&ok);
+
+	  if(ok)
+	    mySPublicKey = m_crypts.value("url-signature")->
+	      publicKey(&ok);
+	}
+
+      if(ok)
+	if((list.value(2) == myPublicKey && !myPublicKey.isEmpty()) ||
+	   (list.value(4) == mySPublicKey && !mySPublicKey.isEmpty()))
+	  ok = false;
+
+      if(!ok)
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("You're attempting to add your own keys or "
+		"%1 was not able to retrieve your keys for "
+		"comparison.").
+	     arg(SPOTON_APPLICATION_NAME));
+	  return false;
+	}
+
+      if(!spoton_crypt::isValidSignature(list.value(2),  // Data
+					 list.value(2),  // Public Key
+					 list.value(3))) // Signature
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
+		"'rosetta', or 'url' "
+		"public key signature."));
+	  return false;
+	}
+
+      if(!spoton_crypt::
+	 isValidSignature(list.value(4),  // Data
+			  list.value(4),  // Signature Public Key
+			  list.value(5))) // Signature
+	{
+	  QMessageBox::critical
+	    (parent, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
+		"'rosetta', or 'url' "
+		"signature public key signature."));
+	  return false;
+	}
+
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() +
+	   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    if((ok = spoton_misc::
+		saveFriendshipBundle(list.value(0), // Key Type
+				     list.value(1), // Name
+				     list.value(2), // Public Key
+				     list.value(4), // Signature
+				                    // Public Key
+				     -1,            // Neighbor OID
+				     db,
+				     m_crypts.value("chat", 0))))
+	      if((ok = spoton_misc::
+		  saveFriendshipBundle(list.value(0) + "-signature",
+				       list.value(1), // Name
+				       list.value(4), // Signature Public Key
+				       QByteArray(),  // Signature Public Key
+				       -1,            // Neighbor OID
+				       db,
+				       m_crypts.value("chat", 0))))
+		m_ui.friendInformation->selectAll();
+	  }
+	else
+	  ok = false;
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      if(!ok)
+	{
+	  QMessageBox::critical(parent, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				tr("An error occurred while attempting "
+				   "to save the friendship bundle."));
+	  return false;
+	}
+    }
+
+  return true;
+}
+
+bool spoton::isKernelActive(void) const
+{
+  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
+  libspoton_handle_t libspotonHandle;
+  pid_t pid = 0;
+
+  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     &libspotonHandle,
+			     0)) ==
+     LIBSPOTON_ERROR_NONE || err == LIBSPOTON_ERROR_GCRY_CHECK_VERSION)
+    pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
+
+  libspoton_close(&libspotonHandle);
+
+  if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED)
+    /*
+    ** Let's try next time.
+    */
+
+    return true;
+  else if(pid > 0)
+    {
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+      return kill(pid, 0) == 0;
+#elif defined(Q_OS_WIN)
+      DWORD PID = (DWORD) pid;
+      HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, PID);
+
+      if(handle)
+	{
+	  DWORD exitCode;
+
+	  if(!GetExitCodeProcess(handle, &exitCode))
+	    {
+	      CloseHandle(handle);
+	      return false;
+	    }
+
+	  CloseHandle(handle);
+	  return exitCode == STILL_ACTIVE;
+	}
+      else
+	return false;
+#else
+      return true;
+#endif
+    }
+  else
+    return false;
+}
+
+void spoton::authenticationRequested(const QByteArray &data)
+{
+  if(!data.isEmpty())
+    if(!m_sb.authentication_request->isVisible())
+      {
+	m_sb.authentication_request->setProperty
+	  ("data", data);
+	m_sb.authentication_request->
+	  setToolTip(tr("Remote peer %1 is requesting authentication "
+			"credentials.").arg(data.constData()));
+	m_sb.authentication_request->setVisible(true);
+	QTimer::singleShot(7500, m_sb.authentication_request,
+			   SLOT(hide(void)));
+      }
+}
+
+void spoton::highlightPaths(void)
+{
+  QColor color;
+  QFileInfo fileInfo;
+  QPalette palette;
+
+  fileInfo.setFile(m_poptasticRetroPhoneSettingsUi.capath->text());
+
+  if(fileInfo.isReadable())
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+
+  palette.setColor(m_poptasticRetroPhoneSettingsUi.
+		   capath->backgroundRole(), color);
+  m_poptasticRetroPhoneSettingsUi.capath->setPalette(palette);
+  fileInfo.setFile(m_ui.destination->text());
+
+  if(fileInfo.isReadable() && fileInfo.isWritable())
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+
+  palette.setColor(m_ui.destination->backgroundRole(), color);
+  m_ui.destination->setPalette(palette);
+#ifdef SPOTON_LINKED_WITH_LIBGEOIP
+  fileInfo.setFile(m_optionsUi.geoipPath4->text());
+
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+#else
+  color = QColor(240, 128, 128); // Light coral!
+#endif
+
+  palette.setColor(m_optionsUi.geoipPath4->backgroundRole(), color);
+  m_optionsUi.geoipPath4->setPalette(palette);
+#ifdef SPOTON_LINKED_WITH_LIBGEOIP
+  fileInfo.setFile(m_optionsUi.geoipPath6->text());
+
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+#else
+  color = QColor(240, 128, 128); // Light coral!
+#endif
+  palette.setColor(m_optionsUi.geoipPath6->backgroundRole(), color);
+  m_optionsUi.geoipPath6->setPalette(palette);
+  fileInfo.setFile(m_ui.kernelPath->text());
+
+#if defined(Q_OS_MAC)
+  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
+#elif defined(Q_OS_WIN)
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+#else
+  if(fileInfo.isExecutable() && fileInfo.size() > 0)
+#endif
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+
+  palette.setColor(m_ui.kernelPath->backgroundRole(), color);
+  m_ui.kernelPath->setPalette(palette);
+  fileInfo.setFile(m_ui.urlIniPath->text());
+
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+    color = QColor(144, 238, 144);
+  else
+    color = QColor(240, 128, 128); // Light coral!
+
+  palette.setColor(m_ui.urlIniPath->backgroundRole(), color);
+  m_ui.urlIniPath->setPalette(palette);
+}
+
+void spoton::prepareListenerIPCombo(void)
+{
+  m_ui.listenerIPCombo->clear();
+  m_ui.listenerTransport->repaint();
+  repaint();
+
+  QHash<QString, char> hash;
+  QStringList list;
+
+  if(m_ui.listenerTransport->currentIndex() == 0)
+    {
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
+
+      while(!devices.isEmpty())
+	{
+	  QBluetoothHostInfo hostInfo = devices.takeFirst();
+	  QString string(hostInfo.address().toString());
+
+	  if(hash.contains(string))
+	    continue;
+	  else
+	    hash[string] = 0;
+
+	  list.append(string);
+	}
+
+      QApplication::restoreOverrideCursor();
+#endif
+    }
+  else
+    {
+      QHash<QString, char> hash;
+      QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+
+      while(!interfaces.isEmpty())
+	{
+	  QNetworkInterface interface(interfaces.takeFirst());
+
+	  if(!interface.isValid() || !(interface.flags() &
+				       QNetworkInterface::IsUp))
+	    continue;
+
+	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+
+	  while(!addresses.isEmpty())
+	    {
+	      QHostAddress address;
+	      QNetworkAddressEntry entry;
+
+	      entry = addresses.takeFirst();
+	      address = entry.ip();
+
+	      if(m_ui.ipv4Listener->isChecked())
+		{
+		  if(address.protocol() == QAbstractSocket::IPv4Protocol)
+		    {
+		      QString string(address.toString());
+
+		      if(!hash.contains(string))
+			{
+			  hash[string] = 0;
+			  list.append(address.toString());
+			}
+		    }
+		}
+	      else
+		{
+		  if(address.protocol() == QAbstractSocket::IPv6Protocol)
+		    {
+		      QString string
+			(QHostAddress(address.toIPv6Address()).toString());
+
+		      if(!hash.contains(string))
+			{
+			  hash[string] = 0;
+			  list.append(string);
+			}
+		    }
+		}
+	    }
+	}
+    }
+
+  if(!list.isEmpty())
+    {
+      std::sort(list.begin(), list.end());
+      m_ui.listenerIPCombo->addItem(tr("Custom"));
+      m_ui.listenerIPCombo->insertSeparator(1);
+      m_ui.listenerIPCombo->addItems(list);
+    }
+  else
+    m_ui.listenerIPCombo->addItem(tr("Custom"));
 }
 
 void spoton::sendMessage(bool *ok)
@@ -189,6 +1505,11 @@ void spoton::sendMessage(bool *ok)
 	QMessageBox::critical(this, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME), error);
     }
+}
+
+void spoton::slotSendMessage(void)
+{
+  sendMessage(0);
 }
 
 void spoton::slotReceivedKernelMessage(void)
@@ -1284,82 +2605,6 @@ void spoton::slotSaveNodeName(void)
   m_ui.nodeName->selectAll();
 }
 
-void spoton::highlightPaths(void)
-{
-  QColor color;
-  QFileInfo fileInfo;
-  QPalette palette;
-
-  fileInfo.setFile(m_poptasticRetroPhoneSettingsUi.capath->text());
-
-  if(fileInfo.isReadable())
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_poptasticRetroPhoneSettingsUi.
-		   capath->backgroundRole(), color);
-  m_poptasticRetroPhoneSettingsUi.capath->setPalette(palette);
-  fileInfo.setFile(m_ui.destination->text());
-
-  if(fileInfo.isReadable() && fileInfo.isWritable())
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_ui.destination->backgroundRole(), color);
-  m_ui.destination->setPalette(palette);
-#ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_optionsUi.geoipPath4->text());
-
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-#else
-  color = QColor(240, 128, 128); // Light coral!
-#endif
-
-  palette.setColor(m_optionsUi.geoipPath4->backgroundRole(), color);
-  m_optionsUi.geoipPath4->setPalette(palette);
-#ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_optionsUi.geoipPath6->text());
-
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-#else
-  color = QColor(240, 128, 128); // Light coral!
-#endif
-  palette.setColor(m_optionsUi.geoipPath6->backgroundRole(), color);
-  m_optionsUi.geoipPath6->setPalette(palette);
-  fileInfo.setFile(m_ui.kernelPath->text());
-
-#if defined(Q_OS_MAC)
-  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
-#elif defined(Q_OS_WIN)
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-#else
-  if(fileInfo.isExecutable() && fileInfo.size() > 0)
-#endif
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_ui.kernelPath->backgroundRole(), color);
-  m_ui.kernelPath->setPalette(palette);
-  fileInfo.setFile(m_ui.urlIniPath->text());
-
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_ui.urlIniPath->backgroundRole(), color);
-  m_ui.urlIniPath->setPalette(palette);
-}
-
 void spoton::slotAcceptPublicizedListeners(void)
 {
   QRadioButton *radioButton = qobject_cast<QRadioButton *> (sender());
@@ -1413,103 +2658,6 @@ void spoton::slotPublishPeriodicallyToggled(bool state)
   QSettings settings;
 
   settings.setValue("gui/publishPeriodically", state);
-}
-
-void spoton::prepareListenerIPCombo(void)
-{
-  m_ui.listenerIPCombo->clear();
-  m_ui.listenerTransport->repaint();
-  repaint();
-
-  QHash<QString, char> hash;
-  QStringList list;
-
-  if(m_ui.listenerTransport->currentIndex() == 0)
-    {
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-      QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
-
-      while(!devices.isEmpty())
-	{
-	  QBluetoothHostInfo hostInfo = devices.takeFirst();
-	  QString string(hostInfo.address().toString());
-
-	  if(hash.contains(string))
-	    continue;
-	  else
-	    hash[string] = 0;
-
-	  list.append(string);
-	}
-
-      QApplication::restoreOverrideCursor();
-#endif
-    }
-  else
-    {
-      QHash<QString, char> hash;
-      QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
-
-      while(!interfaces.isEmpty())
-	{
-	  QNetworkInterface interface(interfaces.takeFirst());
-
-	  if(!interface.isValid() || !(interface.flags() &
-				       QNetworkInterface::IsUp))
-	    continue;
-
-	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
-
-	  while(!addresses.isEmpty())
-	    {
-	      QHostAddress address;
-	      QNetworkAddressEntry entry;
-
-	      entry = addresses.takeFirst();
-	      address = entry.ip();
-
-	      if(m_ui.ipv4Listener->isChecked())
-		{
-		  if(address.protocol() == QAbstractSocket::IPv4Protocol)
-		    {
-		      QString string(address.toString());
-
-		      if(!hash.contains(string))
-			{
-			  hash[string] = 0;
-			  list.append(address.toString());
-			}
-		    }
-		}
-	      else
-		{
-		  if(address.protocol() == QAbstractSocket::IPv6Protocol)
-		    {
-		      QString string
-			(QHostAddress(address.toIPv6Address()).toString());
-
-		      if(!hash.contains(string))
-			{
-			  hash[string] = 0;
-			  list.append(string);
-			}
-		    }
-		}
-	    }
-	}
-    }
-
-  if(!list.isEmpty())
-    {
-      std::sort(list.begin(), list.end());
-      m_ui.listenerIPCombo->addItem(tr("Custom"));
-      m_ui.listenerIPCombo->insertSeparator(1);
-      m_ui.listenerIPCombo->addItems(list);
-    }
-  else
-    m_ui.listenerIPCombo->addItem(tr("Custom"));
 }
 
 void spoton::slotListenerIPComboChanged(int index)
@@ -1622,65 +2770,6 @@ void spoton::slotKernelHashTypeChanged(int index)
     ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
 }
 
-bool spoton::isKernelActive(void) const
-{
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-  libspoton_handle_t libspotonHandle;
-  pid_t pid = 0;
-
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     0)) ==
-     LIBSPOTON_ERROR_NONE || err == LIBSPOTON_ERROR_GCRY_CHECK_VERSION)
-    pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
-
-  libspoton_close(&libspotonHandle);
-
-  if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED)
-    /*
-    ** Let's try next time.
-    */
-
-    return true;
-  else if(pid > 0)
-    {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-      return kill(pid, 0) == 0;
-#elif defined(Q_OS_WIN)
-      DWORD PID = (DWORD) pid;
-      HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, PID);
-
-      if(handle)
-	{
-	  DWORD exitCode;
-
-	  if(!GetExitCodeProcess(handle, &exitCode))
-	    {
-	      CloseHandle(handle);
-	      return false;
-	    }
-
-	  CloseHandle(handle);
-	  return exitCode == STILL_ACTIVE;
-	}
-      else
-	return false;
-#else
-      return true;
-#endif
-    }
-  else
-    return false;
-}
-
 void spoton::slotCopyMyChatPublicKey(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1713,469 +2802,6 @@ void spoton::slotCopyMyChatPublicKey(void)
     }
 }
 
-QByteArray spoton::copyMyChatPublicKey(void) const
-{
-  if(!m_crypts.value("chat", 0) ||
-     !m_crypts.value("chat-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = m_settings.value("gui/nodeName", "unknown").toByteArray();
-  mPublicKey = m_crypts.value("chat")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("chat")->digitalSignature(mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("chat-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("chat").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
-}
-
-QByteArray spoton::copyMyPoptasticPublicKey(void) const
-{
-  if(!m_crypts.value("poptastic", 0) ||
-     !m_crypts.value("poptastic-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = poptasticName();
-
-  if(name.isEmpty())
-    name = "unknown@unknown.org";
-
-  mPublicKey = m_crypts.value("poptastic")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("poptastic")->digitalSignature
-      (mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("poptastic-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("poptastic").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
-}
-
-QPixmap spoton::pixmapForCountry(const QString &country) const
-{
-  if(country == "Afghanistan")
-    return QPixmap(":/Flags/af.png");
-  else if(country == "Albania")
-    return QPixmap(":/Flags/al.png");
-  else if(country == "Algeria")
-    return QPixmap(":/Flags/dz.png");
-  else if(country == "AmericanSamoa")
-    return QPixmap(":/Flags/as.png");
-  else if(country == "Angola")
-    return QPixmap(":/Flags/ao.png");
-  else if(country == "Argentina")
-    return QPixmap(":/Flags/ar.png");
-  else if(country == "Armenia")
-    return QPixmap(":/Flags/am.png");
-  else if(country == "Aruba")
-    return QPixmap(":/Flags/aw.png");
-  else if(country == "Australia")
-    return QPixmap(":/Flags/au.png");
-  else if(country == "Austria")
-    return QPixmap(":/Flags/at.png");
-  else if(country == "Azerbaijan")
-    return QPixmap(":/Flags/az.png");
-  else if(country == "Bahrain")
-    return QPixmap(":/Flags/bh.png");
-  else if(country == "Bangladesh")
-    return QPixmap(":/Flags/bd.png");
-  else if(country == "Barbados")
-    return QPixmap(":/Flags/bb.png");
-  else if(country == "Belarus")
-    return QPixmap(":/Flags/by.png");
-  else if(country == "Belgium")
-    return QPixmap(":/Flags/be.png");
-  else if(country == "Belize")
-    return QPixmap(":/Flags/bz.png");
-  else if(country == "Benin")
-    return QPixmap(":/Flags/bj.png");
-  else if(country == "Bermuda")
-    return QPixmap(":/Flags/bm.png");
-  else if(country == "Bhutan")
-    return QPixmap(":/Flags/bt.png");
-  else if(country == "Bolivia")
-    return QPixmap(":/Flags/bo.png");
-  else if(country == "BosniaAndHerzegowina")
-    return QPixmap(":/Flags/ba.png");
-  else if(country == "Botswana")
-    return QPixmap(":/Flags/bw.png");
-  else if(country == "Brazil")
-    return QPixmap(":/Flags/br.png");
-  else if(country == "BruneiDarussalam")
-    return QPixmap(":/Flags/bn.png");
-  else if(country == "Bulgaria")
-    return QPixmap(":/Flags/bg.png");
-  else if(country == "BurkinaFaso")
-    return QPixmap(":/Flags/bf.png");
-  else if(country == "Burundi")
-    return QPixmap(":/Flags/bi.png");
-  else if(country == "Cambodia")
-    return QPixmap(":/Flags/kh.png");
-  else if(country == "Cameroon")
-    return QPixmap(":/Flags/cm.png");
-  else if(country == "Canada")
-    return QPixmap(":/Flags/ca.png");
-  else if(country == "CapeVerde")
-    return QPixmap(":/Flags/cv.png");
-  else if(country == "CentralAfricanRepublic")
-    return QPixmap(":/Flags/cf.png");
-  else if(country == "Chad")
-    return QPixmap(":/Flags/td.png");
-  else if(country == "Chile")
-    return QPixmap(":/Flags/cl.png");
-  else if(country == "China")
-    return QPixmap(":/Flags/cn.png");
-  else if(country == "Colombia")
-    return QPixmap(":/Flags/co.png");
-  else if(country == "Comoros")
-    return QPixmap(":/Flags/km.png");
-  else if(country == "CostaRica")
-    return QPixmap(":/Flags/cr.png");
-  else if(country == "Croatia")
-    return QPixmap(":/Flags/hr.png");
-  else if(country == "Cyprus")
-    return QPixmap(":/Flags/cy.png");
-  else if(country == "CzechRepublic")
-    return QPixmap(":/Flags/cz.png");
-  else if(country == "Default")
-    return QPixmap(":/Flags/us.png");
-  else if(country == "DemocraticRepublicOfCongo")
-    return QPixmap(":/Flags/cd.png");
-  else if(country == "Denmark")
-    return QPixmap(":/Flags/dk.png");
-  else if(country == "Djibouti")
-    return QPixmap(":/Flags/dj.png");
-  else if(country == "DominicanRepublic")
-    return QPixmap(":/Flags/do.png");
-  else if(country == "Ecuador")
-    return QPixmap(":/Flags/ec.png");
-  else if(country == "Egypt")
-    return QPixmap(":/Flags/eg.png");
-  else if(country == "ElSalvador")
-    return QPixmap(":/Flags/sv.png");
-  else if(country == "EquatorialGuinea")
-    return QPixmap(":/Flags/gq.png");
-  else if(country == "Eritrea")
-    return QPixmap(":/Flags/er.png");
-  else if(country == "Estonia")
-    return QPixmap(":/Flags/ee.png");
-  else if(country == "Ethiopia")
-    return QPixmap(":/Flags/et.png");
-  else if(country == "FaroeIslands")
-    return QPixmap(":/Flags/fo.png");
-  else if(country == "Finland")
-    return QPixmap(":/Flags/fi.png");
-  else if(country == "France")
-    return QPixmap(":/Flags/fr.png");
-  else if(country == "FrenchGuiana")
-    return QPixmap(":/Flags/gy.png");
-  else if(country == "Gabon")
-    return QPixmap(":/Flags/ga.png");
-  else if(country == "Georgia")
-    return QPixmap(":/Flags/ge.png");
-  else if(country == "Germany")
-    return QPixmap(":/Flags/de.png");
-  else if(country == "Ghana")
-    return QPixmap(":/Flags/gh.png");
-  else if(country == "Greece")
-    return QPixmap(":/Flags/gr.png");
-  else if(country == "Greenland")
-    return QPixmap(":/Flags/gl.png");
-  else if(country == "Guadeloupe")
-    return QPixmap(":/Flags/fr.png");
-  else if(country == "Guam")
-    return QPixmap(":/Flags/gu.png");
-  else if(country == "Guatemala")
-    return QPixmap(":/Flags/gt.png");
-  else if(country == "Guinea")
-    return QPixmap(":/Flags/gn.png");
-  else if(country == "GuineaBissau")
-    return QPixmap(":/Flags/gw.png");
-  else if(country == "Guyana")
-    return QPixmap(":/Flags/gy.png");
-  else if(country == "Honduras")
-    return QPixmap(":/Flags/hn.png");
-  else if(country == "HongKong")
-    return QPixmap(":/Flags/hk.png");
-  else if(country == "Hungary")
-    return QPixmap(":/Flags/hu.png");
-  else if(country == "Iceland")
-    return QPixmap(":/Flags/is.png");
-  else if(country == "India")
-    return QPixmap(":/Flags/in.png");
-  else if(country == "Indonesia")
-    return QPixmap(":/Flags/id.png");
-  else if(country == "Iran")
-    return QPixmap(":/Flags/ir.png");
-  else if(country == "Iraq")
-    return QPixmap(":/Flags/iq.png");
-  else if(country == "Ireland")
-    return QPixmap(":/Flags/ie.png");
-  else if(country == "Israel")
-    return QPixmap(":/Flags/il.png");
-  else if(country == "Italy")
-    return QPixmap(":/Flags/it.png");
-  else if(country == "IvoryCoast")
-    return QPixmap(":/Flags/ci.png");
-  else if(country == "Jamaica")
-    return QPixmap(":/Flags/jm.png");
-  else if(country == "Japan")
-    return QPixmap(":/Flags/jp.png");
-  else if(country == "Jordan")
-    return QPixmap(":/Flags/jo.png");
-  else if(country == "Kazakhstan")
-    return QPixmap(":/Flags/kz.png");
-  else if(country == "Kenya")
-    return QPixmap(":/Flags/ke.png");
-  else if(country == "Kuwait")
-    return QPixmap(":/Flags/kw.png");
-  else if(country == "Kyrgyzstan")
-    return QPixmap(":/Flags/kg.png");
-  else if(country == "Lao")
-    return QPixmap(":/Flags/la.png");
-  else if(country == "LatinAmericaAndTheCaribbean")
-    return QPixmap(":/Flags/mx.png");
-  else if(country == "Latvia")
-    return QPixmap(":/Flags/lv.png");
-  else if(country == "Lebanon")
-    return QPixmap(":/Flags/lb.png");
-  else if(country == "Lesotho")
-    return QPixmap(":/Flags/ls.png");
-  else if(country == "Liberia")
-    return QPixmap(":/Flags/lr.png");
-  else if(country == "LibyanArabJamahiriya")
-    return QPixmap(":/Flags/ly.png");
-  else if(country == "Liechtenstein")
-    return QPixmap(":/Flags/li.png");
-  else if(country == "Lithuania")
-    return QPixmap(":/Flags/lt.png");
-  else if(country == "Luxembourg")
-    return QPixmap(":/Flags/lu.png");
-  else if(country == "Macau")
-    return QPixmap(":/Flags/mo.png");
-  else if(country == "Macedonia")
-    return QPixmap(":/Flags/mk.png");
-  else if(country == "Madagascar")
-    return QPixmap(":/Flags/mg.png");
-  else if(country == "Malaysia")
-    return QPixmap(":/Flags/my.png");
-  else if(country == "Mali")
-    return QPixmap(":/Flags/ml.png");
-  else if(country == "Malta")
-    return QPixmap(":/Flags/mt.png");
-  else if(country == "MarshallIslands")
-    return QPixmap(":/Flags/mh.png");
-  else if(country == "Martinique")
-    return QPixmap(":/Flags/fr.png");
-  else if(country == "Mauritius")
-    return QPixmap(":/Flags/mu.png");
-  else if(country == "Mayotte")
-    return QPixmap(":/Flags/yt.png");
-  else if(country == "Mexico")
-    return QPixmap(":/Flags/mx.png");
-  else if(country == "Moldova")
-    return QPixmap(":/Flags/md.png");
-  else if(country == "Monaco")
-    return QPixmap(":/Flags/mc.png");
-  else if(country == "Mongolia")
-    return QPixmap(":/Flags/mn.png");
-  else if(country == "Montenegro")
-    return QPixmap(":/Flags/me.png");
-  else if(country == "Morocco")
-    return QPixmap(":/Flags/ma.png");
-  else if(country == "Mozambique")
-    return QPixmap(":/Flags/mz.png");
-  else if(country == "Myanmar")
-    return QPixmap(":/Flags/mm.png");
-  else if(country == "Namibia")
-    return QPixmap(":/Flags/na.png");
-  else if(country == "Nepal")
-    return QPixmap(":/Flags/np.png");
-  else if(country == "Netherlands")
-    return QPixmap(":/Flags/nl.png");
-  else if(country == "NewZealand")
-    return QPixmap(":/Flags/nz.png");
-  else if(country == "Nicaragua")
-    return QPixmap(":/Flags/ni.png");
-  else if(country == "Niger")
-    return QPixmap(":/Flags/ne.png");
-  else if(country == "Nigeria")
-    return QPixmap(":/Flags/ng.png");
-  else if(country == "NorthernMarianaIslands")
-    return QPixmap(":/Flags/mp.png");
-  else if(country == "Norway")
-    return QPixmap(":/Flags/no.png");
-  else if(country == "Oman")
-    return QPixmap(":/Flags/om.png");
-  else if(country == "Pakistan")
-    return QPixmap(":/Flags/pk.png");
-  else if(country == "Panama")
-    return QPixmap(":/Flags/pa.png");
-  else if(country == "Paraguay")
-    return QPixmap(":/Flags/py.png");
-  else if(country == "PeoplesRepublicOfCongo")
-    return QPixmap(":/Flags/cg.png");
-  else if(country == "Peru")
-    return QPixmap(":/Flags/pe.png");
-  else if(country == "Philippines")
-    return QPixmap(":/Flags/ph.png");
-  else if(country == "Poland")
-    return QPixmap(":/Flags/pl.png");
-  else if(country == "Portugal")
-    return QPixmap(":/Flags/pt.png");
-  else if(country == "PuertoRico")
-    return QPixmap(":/Flags/pr.png");
-  else if(country == "Qatar")
-    return QPixmap(":/Flags/qa.png");
-  else if(country == "RepublicOfKorea")
-    return QPixmap(":/Flags/kr.png");
-  else if(country == "Reunion")
-    return QPixmap(":/Flags/fr.png");
-  else if(country == "Romania")
-    return QPixmap(":/Flags/ro.png");
-  else if(country == "RussianFederation")
-    return QPixmap(":/Flags/ru.png");
-  else if(country == "Rwanda")
-    return QPixmap(":/Flags/rw.png");
-  else if(country == "Saint Barthelemy")
-    return QPixmap(":/Flags/bl.png");
-  else if(country == "Saint Martin")
-    return QPixmap(":/Flags/fr.png");
-  else if(country == "SaoTomeAndPrincipe")
-    return QPixmap(":/Flags/st.png");
-  else if(country == "SaudiArabia")
-    return QPixmap(":/Flags/sa.png");
-  else if(country == "Senegal")
-    return QPixmap(":/Flags/sn.png");
-  else if(country == "Serbia")
-    return QPixmap(":/Flags/rs.png");
-  else if(country == "SerbiaAndMontenegro")
-    return QPixmap(":/Flags/rs.png");
-  else if(country == "Singapore")
-    return QPixmap(":/Flags/sg.png");
-  else if(country == "Slovakia")
-    return QPixmap(":/Flags/sk.png");
-  else if(country == "Slovenia")
-    return QPixmap(":/Flags/si.png");
-  else if(country == "Somalia")
-    return QPixmap(":/Flags/so.png");
-  else if(country == "SouthAfrica")
-    return QPixmap(":/Flags/za.png");
-  else if(country == "Spain")
-    return QPixmap(":/Flags/es.png");
-  else if(country == "SriLanka")
-    return QPixmap(":/Flags/lk.png");
-  else if(country == "Sudan")
-    return QPixmap(":/Flags/sd.png");
-  else if(country == "Swaziland")
-    return QPixmap(":/Flags/sz.png");
-  else if(country == "Sweden")
-    return QPixmap(":/Flags/se.png");
-  else if(country == "Switzerland")
-    return QPixmap(":/Flags/ch.png");
-  else if(country == "SyrianArabRepublic")
-    return QPixmap(":/Flags/sy.png");
-  else if(country == "Taiwan")
-    return QPixmap(":/Flags/tw.png");
-  else if(country == "Tajikistan")
-    return QPixmap(":/Flags/tj.png");
-  else if(country == "Tanzania")
-    return QPixmap(":/Flags/tz.png");
-  else if(country == "Thailand")
-    return QPixmap(":/Flags/th.png");
-  else if(country == "Togo")
-    return QPixmap(":/Flags/tg.png");
-  else if(country == "Tonga")
-    return QPixmap(":/Flags/to.png");
-  else if(country == "TrinidadAndTobago")
-    return QPixmap(":/Flags/tt.png");
-  else if(country == "Tunisia")
-    return QPixmap(":/Flags/tn.png");
-  else if(country == "Turkey")
-    return QPixmap(":/Flags/tr.png");
-  else if(country == "USVirginIslands")
-    return QPixmap(":/Flags/vi.png");
-  else if(country == "Uganda")
-    return QPixmap(":/Flags/ug.png");
-  else if(country == "Ukraine")
-    return QPixmap(":/Flags/ua.png");
-  else if(country == "UnitedArabEmirates")
-    return QPixmap(":/Flags/ae.png");
-  else if(country == "UnitedKingdom")
-    return QPixmap(":/Flags/gb.png");
-  else if(country == "UnitedStates")
-    return QPixmap(":/Flags/us.png");
-  else if(country == "UnitedStatesMinorOutlyingIslands")
-    return QPixmap(":/Flags/us.png");
-  else if(country == "Uruguay")
-    return QPixmap(":/Flags/uy.png");
-  else if(country == "Uzbekistan")
-    return QPixmap(":/Flags/uz.png");
-  else if(country == "Venezuela")
-    return QPixmap(":/Flags/ve.png");
-  else if(country == "VietNam")
-    return QPixmap(":/Flags/vn.png");
-  else if(country == "Yemen")
-    return QPixmap(":/Flags/ye.png");
-  else if(country == "Yugoslavia")
-    return QPixmap(":/Flags/yu.png");
-  else if(country == "Zambia")
-    return QPixmap(":/Flags/zm.png");
-  else if(country == "Zimbabwe")
-    return QPixmap(":/Flags/zw.png");
-  else
-    return QPixmap(":/Flags/unknown.png");
-}
-
-void spoton::slotAddBootstrapper(void)
-{
-}
-
-void spoton::slotFetchMoreAlgo(void)
-{
-}
-
-void spoton::slotFetchMoreButton(void)
-{
-}
-
 void spoton::slotAddFriendsKey(void)
 {
   QByteArray key
@@ -2203,628 +2829,6 @@ void spoton::slotAddFriendsKey(void)
     }
   else
     addFriendsKey(key, "R", parent);
-}
-
-bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
-			   QWidget *parent)
-{
-  QByteArray key(k.trimmed());
-
-  if(!parent)
-    parent = this;
-
-  if(type == "E")
-    {
-      if(!m_crypts.value("chat", 0))
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Invalid spoton_crypt object. This is "
-				   "a fatal flaw."));
-	  return false;
-	}
-      else if(!key.contains("@"))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Please provide a normal e-mail address."));
-	  return false;
-	}
-      else if(key.isEmpty())
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Empty e-mail address. Really?"));
-	  return false;
-	}
-
-      QByteArray keyType("poptastic");
-      QByteArray name(key.trimmed());
-      QString connectionName("");
-      bool ok = true;
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    if((ok = spoton_misc::
-		saveFriendshipBundle(keyType,
-				     name,
-				     name + "-poptastic",
-				     QByteArray(),
-				     -1,
-				     db,
-				     m_crypts.value("chat", 0))))
-	      m_ui.friendInformation->selectAll();
-	  }
-	else
-	  ok = false;
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      if(!ok)
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("An error occurred while attempting "
-				   "to save the friendship bundle."));
-	  return false;
-	}
-    }
-  else if(type == "K")
-    {
-      if(!m_crypts.value("chat", 0) ||
-	 !m_crypts.value("email", 0) ||
-	 !m_crypts.value("open-library", 0) ||
-	 !m_crypts.value("poptastic", 0) ||
-	 !m_crypts.value("rosetta", 0) ||
-	 !m_crypts.value("url", 0))
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Invalid spoton_crypt object(s). This is "
-				   "a fatal flaw."));
-	  return false;
-	}
-      else if(key.isEmpty())
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Empty key(s). Really?"));
-	  return false;
-	}
-
-      if(!(key.startsWith("K") || key.startsWith("k")))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid key(s). The provided text must start with either "
-		"the letter K or the letter k."));
-	  return false;
-	}
-
-      QList<QByteArray> list(key.mid(1).split('@'));
-
-      if(list.size() != 6)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Irregular data. Expecting 6 entries, received %1.").
-	     arg(list.size()));
-	  return false;
-	}
-
-      QByteArray keyType(list.value(0));
-
-      keyType = QByteArray::fromBase64(keyType);
-
-      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(keyType))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid key type. Expecting 'chat', 'email', "
-		"'open-library', "
-		"'poptastic', 'rosetta', or 'url'."));
-	  return false;
-	}
-
-      QByteArray mPublicKey(list.value(2));
-      QByteArray mSignature(list.value(3));
-      QByteArray myPublicKey;
-      QByteArray mySPublicKey;
-      bool ok = true;
-
-      mPublicKey = QByteArray::fromBase64(mPublicKey);
-      myPublicKey = m_crypts.value(keyType)->publicKey(&ok);
-
-      if(!ok)
-	{
-	  QMessageBox mb(parent);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Unable to retrieve your %1 "
-			"public key for comparison. Are you sure "
-			"that you wish to accept the foreign key pair?").
-		     arg(keyType.constData()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle
-		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
-	}
-
-      mySPublicKey = m_crypts.value
-	(QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
-
-      if(!ok)
-	{
-	  QMessageBox mb(parent);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Unable to retrieve your %1 signature "
-			"public key for comparison. Are you sure "
-			"that you wish to accept the foreign key pair?").
-		     arg(keyType.constData()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
-	}
-
-      if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
-	 (mSignature == mySPublicKey && !mySPublicKey.isEmpty()))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("You're attempting to add your own '%1' keys. "
-		"Please do not do this!").arg(keyType.constData()));
-	  return false;
-	}
-
-      mSignature = QByteArray::fromBase64(mSignature);
-
-      if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey,
-					 mSignature))
-	{
-	  QMessageBox mb(parent);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Invalid %1 "
-			"public key signature. Accept?").
-		     arg(keyType.constData()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
-	}
-
-      QByteArray sPublicKey(list.value(4));
-      QByteArray sSignature(list.value(5));
-
-      sPublicKey = QByteArray::fromBase64(sPublicKey);
-      sSignature = QByteArray::fromBase64(sSignature);
-
-      if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey,
-					 sSignature))
-	{
-	  QMessageBox mb(parent);
-
-	  mb.setIcon(QMessageBox::Question);
-	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Invalid %1 "
-			"signature public key signature. Accept?").
-		     arg(keyType.constData()));
-	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
-
-
-	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
-	}
-
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QByteArray name(list.value(1));
-
-	    name = QByteArray::fromBase64(name);
-
-	    if((ok = spoton_misc::
-		saveFriendshipBundle(keyType,
-				     name,
-				     mPublicKey,
-				     sPublicKey,
-				     -1,
-				     db,
-				     m_crypts.value("chat", 0))))
-	      if((ok = spoton_misc::
-		  saveFriendshipBundle(keyType + "-signature",
-				       name,
-				       sPublicKey,
-				       QByteArray(),
-				       -1,
-				       db,
-				       m_crypts.value("chat", 0))))
-		m_ui.friendInformation->selectAll();
-	  }
-	else
-	  ok = false;
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      if(!ok)
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("An error occurred while attempting "
-				   "to save the friendship bundle."));
-	  return false;
-	}
-    }
-  else if(type == "R")
-    {
-      /*
-      ** Now we have to perform the inverse of slotCopyFriendshipBundle().
-      ** Have fun!
-      */
-
-      if(!m_crypts.value("chat", 0) ||
-	 !m_crypts.value("email", 0) ||
-	 !m_crypts.value("open-library", 0) ||
-	 !m_crypts.value("poptastic", 0) ||
-	 !m_crypts.value("rosetta", 0) ||
-	 !m_crypts.value("url", 0))
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Invalid spoton_crypt object(s). This is "
-				   "a fatal flaw."));
-	  return false;
-	}
-      else if(key.isEmpty())
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Empty key(s). Really?"));
-	  return false;
-	}
-
-      if(!(key.startsWith("R") || key.startsWith("r")))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid repleo(s). The provided text must start with "
-		"either the letter R or the letter r."));
-	  return false;
-	}
-
-      QList<QByteArray> list(key.mid(1).split('@'));
-
-      if(list.size() != 3)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Irregular data. Expecting 3 entries, received %1.").
-	     arg(list.size()));
-	  return false;
-	}
-
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-      QByteArray data(list.value(1));
-      QByteArray hash(list.value(2));
-      QByteArray keyInformation(list.value(0));
-      bool ok = true;
-
-      keyInformation = m_crypts.value("chat")->
-	publicKeyDecrypt(list.value(0), &ok);
-
-      if(!ok)
-	{
-	  keyInformation = m_crypts.value("email")->
-	    publicKeyDecrypt(list.value(0), &ok);
-
-	  if(!ok)
-	    {
-	      keyInformation = m_crypts.value("open-library")->
-		publicKeyDecrypt(list.value(0), &ok);
-
-	      if(!ok)
-		{
-		  keyInformation = m_crypts.value("poptastic")->
-		    publicKeyDecrypt(list.value(0), &ok);
-
-		  if(!ok)
-		    {
-		      keyInformation = m_crypts.value("rosetta")->
-			publicKeyDecrypt(list.value(0), &ok);
-
-		      if(!ok)
-			{
-			  keyInformation = m_crypts.value("url")->
-			    publicKeyDecrypt(list.value(0), &ok);
-
-			  if(!ok)
-			    {
-			      QMessageBox::critical
-				(parent, tr("%1: Error").
-				 arg(SPOTON_APPLICATION_NAME),
-				 tr("Asymmetric decryption failure. "
-				    "Are you attempting "
-				    "to add a repleo that you gathered?"));
-			      return false;
-			    }
-			}
-		    }
-		}
-	    }
-	}
-
-      list = keyInformation.split('@');
-
-      if(list.size() != 3)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Irregular data. Expecting 3 entries, received %1.").
-	     arg(list.size()));
-	  return false;
-	}
-
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-      QByteArray computedHash;
-      spoton_crypt crypt(list.value(1), // Cipher Type
-			 "sha512",
-			 QByteArray(),
-			 list.value(0), // Symmetric Key
-			 list.value(2), // Hash Key
-			 0,
-			 0,
-			 "");
-
-      computedHash = crypt.keyedHash(data, &ok);
-
-      if(!ok)
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("Unable to compute a keyed hash."));
-	  return false;
-	}
-
-      if(computedHash.isEmpty() || hash.isEmpty() ||
-	 !spoton_crypt::memcmp(computedHash, hash))
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("The computed hash does not match "
-				   "the provided hash."));
-	  return false;
-	}
-
-      data = crypt.decrypted(data, &ok);
-
-      if(!ok)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Symmetric decryption failure. Serious!"));
-	  return false;
-	}
-
-      list = data.split('@');
-
-      if(list.size() != 6)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Irregular data. Expecting 6 entries, received %1.").
-	     arg(list.size()));
-	  return false;
-	}
-
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-      if(!spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.contains(list.value(0)))
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid key type. Expecting 'chat', 'email', "
-		"'open-library', 'poptastic', "
-		"'rosetta', or 'url'."));
-	  return false;
-	}
-
-      QByteArray myPublicKey;
-      QByteArray mySPublicKey;
-
-      if(list.value(0) == "chat")
-	{
-	  myPublicKey = m_crypts.value("chat")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("chat-signature")->
-	      publicKey(&ok);
-	}
-      else if(list.value(0) == "email")
-	{
-	  myPublicKey = m_crypts.value("email")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("email-signature")->
-	      publicKey(&ok);
-	}
-      else if(list.value(0) == "open-library")
-	{
-	  myPublicKey = m_crypts.value("open-library")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("open-library-signature")->
-	      publicKey(&ok);
-	}
-      else if(list.value(0) == "poptastic")
-	{
-	  myPublicKey = m_crypts.value("poptastic")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("poptastic-signature")->
-	      publicKey(&ok);
-	}
-      else if(list.value(0) == "rosetta")
-	{
-	  myPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("rosetta-signature")->
-	      publicKey(&ok);
-	}
-      else if(list.value(0) == "url")
-	{
-	  myPublicKey = m_crypts.value("url")->publicKey(&ok);
-
-	  if(ok)
-	    mySPublicKey = m_crypts.value("url-signature")->
-	      publicKey(&ok);
-	}
-
-      if(ok)
-	if((list.value(2) == myPublicKey && !myPublicKey.isEmpty()) ||
-	   (list.value(4) == mySPublicKey && !mySPublicKey.isEmpty()))
-	  ok = false;
-
-      if(!ok)
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("You're attempting to add your own keys or "
-		"%1 was not able to retrieve your keys for "
-		"comparison.").
-	     arg(SPOTON_APPLICATION_NAME));
-	  return false;
-	}
-
-      if(!spoton_crypt::isValidSignature(list.value(2),  // Data
-					 list.value(2),  // Public Key
-					 list.value(3))) // Signature
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
-		"'rosetta', or 'url' "
-		"public key signature."));
-	  return false;
-	}
-
-      if(!spoton_crypt::
-	 isValidSignature(list.value(4),  // Data
-			  list.value(4),  // Signature Public Key
-			  list.value(5))) // Signature
-	{
-	  QMessageBox::critical
-	    (parent, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
-	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
-		"'rosetta', or 'url' "
-		"signature public key signature."));
-	  return false;
-	}
-
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    if((ok = spoton_misc::
-		saveFriendshipBundle(list.value(0), // Key Type
-				     list.value(1), // Name
-				     list.value(2), // Public Key
-				     list.value(4), // Signature
-				                    // Public Key
-				     -1,            // Neighbor OID
-				     db,
-				     m_crypts.value("chat", 0))))
-	      if((ok = spoton_misc::
-		  saveFriendshipBundle(list.value(0) + "-signature",
-				       list.value(1), // Name
-				       list.value(4), // Signature Public Key
-				       QByteArray(),  // Signature Public Key
-				       -1,            // Neighbor OID
-				       db,
-				       m_crypts.value("chat", 0))))
-		m_ui.friendInformation->selectAll();
-	  }
-	else
-	  ok = false;
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      if(!ok)
-	{
-	  QMessageBox::critical(parent, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
-				tr("An error occurred while attempting "
-				   "to save the friendship bundle."));
-	  return false;
-	}
-    }
-
-  return true;
 }
 
 void spoton::slotDoSearch(void)
@@ -6971,22 +6975,6 @@ void spoton::slotChatWindowDestroyed(void)
 void spoton::slotChatWindowMessageSent(void)
 {
   m_chatInactivityTimer.start();
-}
-
-void spoton::authenticationRequested(const QByteArray &data)
-{
-  if(!data.isEmpty())
-    if(!m_sb.authentication_request->isVisible())
-      {
-	m_sb.authentication_request->setProperty
-	  ("data", data);
-	m_sb.authentication_request->
-	  setToolTip(tr("Remote peer %1 is requesting authentication "
-			"credentials.").arg(data.constData()));
-	m_sb.authentication_request->setVisible(true);
-	QTimer::singleShot(7500, m_sb.authentication_request,
-			   SLOT(hide(void)));
-      }
 }
 
 void spoton::slotAuthenticationRequestButtonClicked(void)
