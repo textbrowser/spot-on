@@ -564,70 +564,6 @@ void spoton_mceliece_public_key::reset(const bool ok)
   m_t = 0;
 }
 
-spoton_mceliece::spoton_mceliece(const char *privateKey,
-				 const size_t privateKeyLength,
-				 const QByteArray &publicKey)
-{
-  m_privateKey = new (std::nothrow) spoton_mceliece_private_key
-    (privateKey, privateKeyLength);
-  m_publicKey = 0;
-
-  if(m_privateKey && m_privateKey->ok())
-    {
-      m_conversion = m_privateKey->conversion();
-      m_k = m_privateKey->k();
-      m_m = m_privateKey->m();
-      m_n = m_privateKey->n();
-      m_t = m_privateKey->t();
-    }
-  else
-    {
-      delete m_privateKey;
-      m_privateKey = 0;
-    }
-
-  size_t offset = static_cast<size_t>
-    (qstrlen("mceliece-public-key-000-m00t00"));
-
-  if(publicKey.length() > static_cast<int> (offset))
-    {
-      NTL::mat_GF2 Gcar;
-
-      try
-	{
-	  size_t t = 0;
-	  std::stringstream s;
-
-	  s << publicKey.mid(static_cast<int> (offset)).constData();
-	  s >> Gcar; // ~500 ms.
-	  s >> t;
-	  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
-	}
-      catch(...)
-	{
-	  NTL::clear(Gcar);
-	  delete m_publicKey;
-	  m_publicKey = 0;
-	}
-    }
-
-  if(!(m_privateKey && m_privateKey->ok() && m_publicKey && m_publicKey->ok()))
-    {
-      delete m_privateKey;
-      m_privateKey = 0;
-      delete m_publicKey;
-      m_publicKey = 0;
-    }
-
-  if(!m_privateKey)
-    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
-			  "m_privateKey is zero!");
-
-  if(!m_publicKey)
-    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
-			  "m_publicKey is zero!");
-}
-
 spoton_mceliece::spoton_mceliece(const QByteArray &pk)
 {
   m_conversion = "000";
@@ -708,6 +644,70 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
   catch(...)
     {
     }
+}
+
+spoton_mceliece::spoton_mceliece(const char *privateKey,
+				 const size_t privateKeyLength,
+				 const QByteArray &publicKey)
+{
+  m_privateKey = new (std::nothrow) spoton_mceliece_private_key
+    (privateKey, privateKeyLength);
+  m_publicKey = 0;
+
+  if(m_privateKey && m_privateKey->ok())
+    {
+      m_conversion = m_privateKey->conversion();
+      m_k = m_privateKey->k();
+      m_m = m_privateKey->m();
+      m_n = m_privateKey->n();
+      m_t = m_privateKey->t();
+    }
+  else
+    {
+      delete m_privateKey;
+      m_privateKey = 0;
+    }
+
+  size_t offset = static_cast<size_t>
+    (qstrlen("mceliece-public-key-000-m00t00"));
+
+  if(publicKey.length() > static_cast<int> (offset))
+    {
+      NTL::mat_GF2 Gcar;
+
+      try
+	{
+	  size_t t = 0;
+	  std::stringstream s;
+
+	  s << publicKey.mid(static_cast<int> (offset)).constData();
+	  s >> Gcar; // ~500 ms.
+	  s >> t;
+	  m_publicKey = new (std::nothrow) spoton_mceliece_public_key(t, Gcar);
+	}
+      catch(...)
+	{
+	  NTL::clear(Gcar);
+	  delete m_publicKey;
+	  m_publicKey = 0;
+	}
+    }
+
+  if(!(m_privateKey && m_privateKey->ok() && m_publicKey && m_publicKey->ok()))
+    {
+      delete m_privateKey;
+      m_privateKey = 0;
+      delete m_publicKey;
+      m_publicKey = 0;
+    }
+
+  if(!m_privateKey)
+    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
+			  "m_privateKey is zero!");
+
+  if(!m_publicKey)
+    spoton_misc::logError("spoton_mceliece::spoton_mceliece(): "
+			  "m_publicKey is zero!");
 }
 
 spoton_mceliece::~spoton_mceliece()

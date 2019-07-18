@@ -1286,6 +1286,304 @@ bool spoton::isKernelActive(void) const
     return false;
 }
 
+int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
+				 const int row)
+{
+  if(!m_crypts.value("email", 0))
+    return APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY;
+
+  QTableWidgetItem *item = m_ui.mail->item
+    (row, m_ui.mail->columnCount() - 1); // OID
+
+  if(!item)
+    return APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY;
+
+  QString connectionName("");
+  QString oid(item->text());
+  bool ok = true;
+  int rc = 0;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if((ok = db.open()))
+      {
+	QList<QByteArray> list;
+	QSqlQuery query(db);
+	int attachmentsCount = 0;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT date, "          // 0
+		      "message, "              // 1
+		      "message_code, "         // 2
+		      "receiver_sender, "      // 3
+		      "receiver_sender_hash, " // 4
+		      "subject, "              // 5
+		      "(SELECT COUNT(*) FROM folders_attachment WHERE "
+		      "folders_oid = ?), "     // 6
+		      "signature "             // 7
+		      "FROM folders "
+		      "WHERE OID = ?");
+	query.bindValue(0, oid);
+	query.bindValue(1, oid);
+
+	if((ok = query.exec()))
+	  if((ok = query.next()))
+	    for(int i = 0; i < query.record().count(); i++)
+	      {
+		if(i == 2 || i == 4)
+		  list.append
+		    (QByteArray::fromBase64(query.value(i).
+					    toByteArray()));
+		else if(i == 6) // attachment(s)
+		  list.append(query.value(i).toString().toLatin1());
+		else
+		  list.append
+		    (m_crypts.value("email")->
+		     decryptedAfterAuthenticated
+		     (QByteArray::fromBase64(query.value(i).
+					     toByteArray()),
+		      &ok));
+
+		if(!ok)
+		  {
+		    if(rc == 0)
+		      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
+
+		    break;
+		  }
+	      }
+
+	if(!ok)
+	  if(rc == 0)
+	    rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
+
+	if(ok)
+	  {
+	    spoton_crypt *crypt =
+	      spoton_misc::cryptFromForwardSecrecyMagnet(goldbug);
+
+	    if(!crypt)
+	      ok = false;
+	    else
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(i == 2 || i == 4 || i == 6)
+		    /*
+		    ** Ignore the message_code,
+		    ** receiver_sender_hash, and attachment(s) count columns.
+		    */
+
+		    continue;
+
+		  list.replace
+		    (i, crypt->decryptedAfterAuthenticated(list.at(i), &ok));
+
+		  if(!ok)
+		    {
+		      if(rc == 0)
+			rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
+
+		      break;
+		    }
+		}
+
+	    if(ok)
+	      {
+		/*
+		** Let's prepare the attachments.
+		*/
+
+		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+		applyGoldBugToAttachments
+		  (oid, db, &attachmentsCount, crypt, &ok);
+		QApplication::restoreOverrideCursor();
+
+		if(!ok)
+		  if(rc == 0)
+		    rc = APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS;
+	      }
+
+	    delete crypt;
+	  }
+
+	if(ok)
+	  {
+	    /*
+	    ** list[0]: date
+	    ** list[1]: message
+	    ** list[2]: message_code
+	    ** list[3]: receiver_sender
+	    ** list[4]: receiver_sender_hash
+	    ** list[5]: subject
+	    ** list[6]: attachment(s) count
+	    ** list[7]: signature
+	    */
+
+	    QSqlQuery updateQuery(db);
+
+	    updateQuery.prepare("UPDATE folders SET "
+				"date = ?, "
+				"goldbug = ?, "
+				"hash = ?, "
+				"message = ?, "
+				"message_code = ?, "
+				"receiver_sender = ?, "
+				"signature = ?, "
+				"subject = ? "
+				"WHERE OID = ?");
+	    updateQuery.bindValue
+	      (0, m_crypts.value("email")->
+	       encryptedThenHashed(list.value(0), &ok).toBase64());
+
+	    if(ok)
+	      updateQuery.bindValue
+		(1, m_crypts.value("email")->
+		 encryptedThenHashed(QByteArray::number(0), &ok).
+		 toBase64());
+
+	    if(ok)
+	      updateQuery.bindValue
+		(2, m_crypts.value("email")->
+		 keyedHash(list.value(0) + list.value(1) + list.value(5), &ok).
+		 toBase64());
+
+	    if(!list.value(1).isEmpty())
+	      if(ok)
+		updateQuery.bindValue
+		  (3, m_crypts.value("email")->
+		   encryptedThenHashed(list.value(1), &ok).toBase64());
+
+	    if(!list.value(2).isEmpty())
+	      if(ok)
+		updateQuery.bindValue
+		  (4, m_crypts.value("email")->
+		   encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	    if(!list.value(3).isEmpty())
+	      if(ok)
+		updateQuery.bindValue
+		  (5, m_crypts.value("email")->
+		   encryptedThenHashed(list.value(3), &ok).toBase64());
+
+	    if(ok)
+	      updateQuery.bindValue
+		(6, m_crypts.value("email")->
+		 encryptedThenHashed(list.value(7), &ok).toBase64());
+
+	    if(ok)
+	      updateQuery.bindValue
+		(7, m_crypts.value("email")->
+		 encryptedThenHashed(list.value(5), &ok).toBase64());
+
+	    updateQuery.bindValue(8, oid);
+
+	    if(ok)
+	      {
+		ok = updateQuery.exec();
+
+		if(!ok)
+		  {
+		    if(updateQuery.lastError().text().
+		       toLower().contains("unique"))
+		      ok = true;
+
+		    if(!ok)
+		      if(rc == 0)
+			rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
+		  }
+	      }
+	    else if(rc == 0)
+	      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
+	  }
+
+	if(ok)
+	  {
+	    m_ui.mail->setSortingEnabled(false);
+
+	    QTableWidgetItem *item = m_ui.mail->item(row, 0); // Date
+
+	    if(item)
+	      item->setText(list.value(0).constData());
+
+	    item = m_ui.mail->item(row, 1); // From / To
+
+	    if(item)
+	      {
+		QList<QTableWidgetItem *> items
+		  (findItems(m_ui.emailParticipants,
+			     list.value(4).toBase64(),
+			     3));
+
+		if(!items.isEmpty() && items.at(0))
+		  {
+		    QTableWidgetItem *it =
+		      m_ui.emailParticipants->
+		      item(items.at(0)->row(), 0);
+
+		    if(it)
+		      item->setText(it->text());
+		  }
+		else
+		  item->setText(list.value(3).constData());
+	      }
+
+	    item = m_ui.mail->item(row, 3); // Subject
+
+	    if(item)
+	      item->setText(list.value(5).constData());
+
+	    item = m_ui.mail->item(row, 4); // Attachment(s)
+
+	    if(item)
+	      {
+		if(attachmentsCount > 0)
+		  {
+		    item->setData(Qt::UserRole, 1);
+		    item->setIcon(QIcon(":/generic/attach.png"));
+		  }
+		else
+		  item->setData(Qt::UserRole, 0);
+
+		item->setText(QString::number(attachmentsCount));
+	      }
+
+	    item = m_ui.mail->item(row, 5); // Gold Bug
+
+	    if(item)
+	      item->setText("0");
+
+	    item = m_ui.mail->item(row, 6); // Message
+
+	    if(item)
+	      item->setText(list.value(1).constData());
+
+	    item = m_ui.mail->item(row, 10); // Signature
+
+	    if(item)
+	      item->setText(list.value(7).constData());
+
+	    m_ui.mail->setSortingEnabled(true);
+	  }
+      }
+    else if(rc == 0)
+      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    if(rc == 0)
+      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
+
+  return rc;
+}
+
 void spoton::authenticationRequested(const QByteArray &data)
 {
   if(!data.isEmpty())
@@ -5608,304 +5906,6 @@ void spoton::slotSetIcons(int index)
     (2, QIcon(QString(":/%1/up.png").arg(iconSet)));
   prepareContextMenuMirrors();
   emit iconsChanged();
-}
-
-int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
-				 const int row)
-{
-  if(!m_crypts.value("email", 0))
-    return APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY;
-
-  QTableWidgetItem *item = m_ui.mail->item
-    (row, m_ui.mail->columnCount() - 1); // OID
-
-  if(!item)
-    return APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY;
-
-  QString connectionName("");
-  QString oid(item->text());
-  bool ok = true;
-  int rc = 0;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if((ok = db.open()))
-      {
-	QList<QByteArray> list;
-	QSqlQuery query(db);
-	int attachmentsCount = 0;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT date, "          // 0
-		      "message, "              // 1
-		      "message_code, "         // 2
-		      "receiver_sender, "      // 3
-		      "receiver_sender_hash, " // 4
-		      "subject, "              // 5
-		      "(SELECT COUNT(*) FROM folders_attachment WHERE "
-		      "folders_oid = ?), "     // 6
-		      "signature "             // 7
-		      "FROM folders "
-		      "WHERE OID = ?");
-	query.bindValue(0, oid);
-	query.bindValue(1, oid);
-
-	if((ok = query.exec()))
-	  if((ok = query.next()))
-	    for(int i = 0; i < query.record().count(); i++)
-	      {
-		if(i == 2 || i == 4)
-		  list.append
-		    (QByteArray::fromBase64(query.value(i).
-					    toByteArray()));
-		else if(i == 6) // attachment(s)
-		  list.append(query.value(i).toString().toLatin1());
-		else
-		  list.append
-		    (m_crypts.value("email")->
-		     decryptedAfterAuthenticated
-		     (QByteArray::fromBase64(query.value(i).
-					     toByteArray()),
-		      &ok));
-
-		if(!ok)
-		  {
-		    if(rc == 0)
-		      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
-
-		    break;
-		  }
-	      }
-
-	if(!ok)
-	  if(rc == 0)
-	    rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
-
-	if(ok)
-	  {
-	    spoton_crypt *crypt =
-	      spoton_misc::cryptFromForwardSecrecyMagnet(goldbug);
-
-	    if(!crypt)
-	      ok = false;
-	    else
-	      for(int i = 0; i < list.size(); i++)
-		{
-		  if(i == 2 || i == 4 || i == 6)
-		    /*
-		    ** Ignore the message_code,
-		    ** receiver_sender_hash, and attachment(s) count columns.
-		    */
-
-		    continue;
-
-		  list.replace
-		    (i, crypt->decryptedAfterAuthenticated(list.at(i), &ok));
-
-		  if(!ok)
-		    {
-		      if(rc == 0)
-			rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
-
-		      break;
-		    }
-		}
-
-	    if(ok)
-	      {
-		/*
-		** Let's prepare the attachments.
-		*/
-
-		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-		applyGoldBugToAttachments
-		  (oid, db, &attachmentsCount, crypt, &ok);
-		QApplication::restoreOverrideCursor();
-
-		if(!ok)
-		  if(rc == 0)
-		    rc = APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS;
-	      }
-
-	    delete crypt;
-	  }
-
-	if(ok)
-	  {
-	    /*
-	    ** list[0]: date
-	    ** list[1]: message
-	    ** list[2]: message_code
-	    ** list[3]: receiver_sender
-	    ** list[4]: receiver_sender_hash
-	    ** list[5]: subject
-	    ** list[6]: attachment(s) count
-	    ** list[7]: signature
-	    */
-
-	    QSqlQuery updateQuery(db);
-
-	    updateQuery.prepare("UPDATE folders SET "
-				"date = ?, "
-				"goldbug = ?, "
-				"hash = ?, "
-				"message = ?, "
-				"message_code = ?, "
-				"receiver_sender = ?, "
-				"signature = ?, "
-				"subject = ? "
-				"WHERE OID = ?");
-	    updateQuery.bindValue
-	      (0, m_crypts.value("email")->
-	       encryptedThenHashed(list.value(0), &ok).toBase64());
-
-	    if(ok)
-	      updateQuery.bindValue
-		(1, m_crypts.value("email")->
-		 encryptedThenHashed(QByteArray::number(0), &ok).
-		 toBase64());
-
-	    if(ok)
-	      updateQuery.bindValue
-		(2, m_crypts.value("email")->
-		 keyedHash(list.value(0) + list.value(1) + list.value(5), &ok).
-		 toBase64());
-
-	    if(!list.value(1).isEmpty())
-	      if(ok)
-		updateQuery.bindValue
-		  (3, m_crypts.value("email")->
-		   encryptedThenHashed(list.value(1), &ok).toBase64());
-
-	    if(!list.value(2).isEmpty())
-	      if(ok)
-		updateQuery.bindValue
-		  (4, m_crypts.value("email")->
-		   encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	    if(!list.value(3).isEmpty())
-	      if(ok)
-		updateQuery.bindValue
-		  (5, m_crypts.value("email")->
-		   encryptedThenHashed(list.value(3), &ok).toBase64());
-
-	    if(ok)
-	      updateQuery.bindValue
-		(6, m_crypts.value("email")->
-		 encryptedThenHashed(list.value(7), &ok).toBase64());
-
-	    if(ok)
-	      updateQuery.bindValue
-		(7, m_crypts.value("email")->
-		 encryptedThenHashed(list.value(5), &ok).toBase64());
-
-	    updateQuery.bindValue(8, oid);
-
-	    if(ok)
-	      {
-		ok = updateQuery.exec();
-
-		if(!ok)
-		  {
-		    if(updateQuery.lastError().text().
-		       toLower().contains("unique"))
-		      ok = true;
-
-		    if(!ok)
-		      if(rc == 0)
-			rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
-		  }
-	      }
-	    else if(rc == 0)
-	      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
-	  }
-
-	if(ok)
-	  {
-	    m_ui.mail->setSortingEnabled(false);
-
-	    QTableWidgetItem *item = m_ui.mail->item(row, 0); // Date
-
-	    if(item)
-	      item->setText(list.value(0).constData());
-
-	    item = m_ui.mail->item(row, 1); // From / To
-
-	    if(item)
-	      {
-		QList<QTableWidgetItem *> items
-		  (findItems(m_ui.emailParticipants,
-			     list.value(4).toBase64(),
-			     3));
-
-		if(!items.isEmpty() && items.at(0))
-		  {
-		    QTableWidgetItem *it =
-		      m_ui.emailParticipants->
-		      item(items.at(0)->row(), 0);
-
-		    if(it)
-		      item->setText(it->text());
-		  }
-		else
-		  item->setText(list.value(3).constData());
-	      }
-
-	    item = m_ui.mail->item(row, 3); // Subject
-
-	    if(item)
-	      item->setText(list.value(5).constData());
-
-	    item = m_ui.mail->item(row, 4); // Attachment(s)
-
-	    if(item)
-	      {
-		if(attachmentsCount > 0)
-		  {
-		    item->setData(Qt::UserRole, 1);
-		    item->setIcon(QIcon(":/generic/attach.png"));
-		  }
-		else
-		  item->setData(Qt::UserRole, 0);
-
-		item->setText(QString::number(attachmentsCount));
-	      }
-
-	    item = m_ui.mail->item(row, 5); // Gold Bug
-
-	    if(item)
-	      item->setText("0");
-
-	    item = m_ui.mail->item(row, 6); // Message
-
-	    if(item)
-	      item->setText(list.value(1).constData());
-
-	    item = m_ui.mail->item(row, 10); // Signature
-
-	    if(item)
-	      item->setText(list.value(7).constData());
-
-	    m_ui.mail->setSortingEnabled(true);
-	  }
-      }
-    else if(rc == 0)
-      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    if(rc == 0)
-      rc = APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL;
-
-  return rc;
 }
 
 void spoton::slotCostChanged(int value)
