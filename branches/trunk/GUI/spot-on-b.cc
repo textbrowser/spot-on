@@ -1286,6 +1286,12 @@ bool spoton::isKernelActive(void) const
     return false;
 }
 
+bool spoton::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
+			const QString &oid)
+{
+  return spoton_misc::saveGemini(gemini, oid, m_crypts.value("chat", 0));
+}
+
 bool spoton::updateMailStatus(const QString &oid, const QString &status)
 {
   if(!m_crypts.value("email", 0))
@@ -5505,12 +5511,6 @@ void spoton::slotGenerateGeminiInChat(void)
     }
 
   QApplication::restoreOverrideCursor();
-}
-
-bool spoton::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
-			const QString &oid)
-{
-  return spoton_misc::saveGemini(gemini, oid, m_crypts.value("chat", 0));
 }
 
 void spoton::slotEmptyTrash(void)
