@@ -1286,6 +1286,42 @@ bool spoton::isKernelActive(void) const
     return false;
 }
 
+bool spoton::updateMailStatus(const QString &oid, const QString &status)
+{
+  if(!m_crypts.value("email", 0))
+    return false;
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if((ok = db.open()))
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE folders SET status = ? WHERE "
+		      "OID = ?");
+	query.bindValue
+	  (0, m_crypts.value("email")->
+	   encryptedThenHashed(status.toUtf8(), &ok).toBase64());
+	query.bindValue(1, oid);
+
+	if(ok)
+	  ok = query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
 int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 				 const int row)
 {
@@ -5633,42 +5669,6 @@ void spoton::slotStatusButtonClicked(void)
     m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
   else if(toolButton == m_sb.neighbors)
     m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
-}
-
-bool spoton::updateMailStatus(const QString &oid, const QString &status)
-{
-  if(!m_crypts.value("email", 0))
-    return false;
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if((ok = db.open()))
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE folders SET status = ? WHERE "
-		      "OID = ?");
-	query.bindValue
-	  (0, m_crypts.value("email")->
-	   encryptedThenHashed(status.toUtf8(), &ok).toBase64());
-	query.bindValue(1, oid);
-
-	if(ok)
-	  ok = query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  return ok;
 }
 
 void spoton::slotKeepCopy(bool state)
