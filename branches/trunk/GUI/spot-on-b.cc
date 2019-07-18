@@ -78,6 +78,41 @@ QByteArray spoton::copyMyChatPublicKey(void) const
     return QByteArray();
 }
 
+QByteArray spoton::copyMyEmailPublicKey(void) const
+{
+  if(!m_crypts.value("email", 0) ||
+     !m_crypts.value("email-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/emailName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("email")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("email")->digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("email-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("email").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
 QByteArray spoton::copyMyPoptasticPublicKey(void) const
 {
   if(!m_crypts.value("poptastic", 0) ||
@@ -111,6 +146,76 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
 
   if(ok)
     return "K" + QByteArray("poptastic").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+QByteArray spoton::copyMyRosettaPublicKey(void) const
+{
+  if(!m_crypts.value("rosetta", 0) ||
+     !m_crypts.value("rosetta-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/rosettaName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("rosetta")->digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("rosetta-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("rosetta-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("rosetta").toBase64() + "@" +
+      name.toBase64() + "@" +
+      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+  else
+    return QByteArray();
+}
+
+QByteArray spoton::copyMyUrlPublicKey(void) const
+{
+  if(!m_crypts.value("url", 0) ||
+     !m_crypts.value("url-signature", 0))
+    return QByteArray();
+
+  QByteArray name;
+  QByteArray mPublicKey;
+  QByteArray mSignature;
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+  bool ok = true;
+
+  name = m_settings.value("gui/urlName", "unknown").toByteArray();
+  mPublicKey = m_crypts.value("url")->publicKey(&ok);
+
+  if(ok)
+    mSignature = m_crypts.value("url")->digitalSignature(mPublicKey, &ok);
+
+  if(ok)
+    sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("url-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    return "K" + QByteArray("url").toBase64() + "@" +
       name.toBase64() + "@" +
       mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
@@ -494,7 +599,13 @@ QPixmap spoton::pixmapForCountry(const QString &country) const
     return QPixmap(":/Flags/unknown.png");
 }
 
-bool spoton::addFriendsKey(const QByteArray &k, const QString &type,
+Ui_spoton_mainwindow spoton::ui(void) const
+{
+  return m_ui;
+}
+
+bool spoton::addFriendsKey(const QByteArray &k,
+			   const QString &type,
 			   QWidget *parent)
 {
   QByteArray key(k.trimmed());
@@ -1267,6 +1378,72 @@ void spoton::highlightPaths(void)
   m_ui.urlIniPath->setPalette(palette);
 }
 
+void spoton::initializeKernelSocket(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::UnconnectedState)
+    return;
+
+  if(m_ui.kernelKeySize->currentText().toInt() > 0)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_sb.status->setText
+	(tr("Generating SSL/TLS %1-bit kernel socket credentials.").
+	 arg(m_ui.kernelKeySize->currentText()));
+      m_sb.status->repaint();
+
+      QByteArray certificate;
+      QByteArray privateKey;
+      QByteArray publicKey;
+      QString error("");
+
+      spoton_crypt::generateSslKeys
+	(m_ui.kernelKeySize->currentText().toInt(),
+	 certificate,
+	 privateKey,
+	 publicKey,
+	 m_kernelSocket.peerAddress(),
+	 0,
+	 error);
+      m_sb.status->clear();
+      QApplication::restoreOverrideCursor();
+
+      if(error.isEmpty())
+	{
+	  QSslConfiguration configuration;
+	  QString sslCS
+	    (m_settings.value("gui/sslControlString",
+			      spoton_common::SSL_CONTROL_STRING).toString());
+
+	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+#if QT_VERSION >= 0x040806
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableCompression, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableEmptyFragments, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+#endif
+#if QT_VERSION >= 0x050501
+	  spoton_crypt::setSslCiphers
+	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
+#else
+	  spoton_crypt::setSslCiphers
+	    (m_kernelSocket.supportedCiphers(), sslCS, configuration);
+#endif
+	  m_kernelSocket.ignoreSslErrors();
+	  m_kernelSocket.setSslConfiguration(configuration);
+	}
+      else
+	spoton_misc::logError
+	  (QString("spoton::"
+		   "initializeKernelSocket(): "
+		   "generateSslKeys() failure (%1).").arg(error));
+    }
+  else
+    m_kernelSocket.ignoreSslErrors();
+}
+
 void spoton::populateAccounts(const QString &listenerOid)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -1405,6 +1582,300 @@ void spoton::populateListenerIps(const QString &listenerOid)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::populateMail(void)
+{
+  if(!m_crypts.value("email", 0))
+    return;
+
+  if(m_ui.folder->currentIndex() == 0 || m_ui.folder->currentIndex() == 2)
+    m_ui.reply->setEnabled(true);
+  else
+    m_ui.reply->setEnabled(false);
+
+  m_ui.resend->setEnabled(m_ui.folder->currentIndex() == 1);
+
+  if(m_ui.folder->currentIndex() == 0) // Inbox
+    {
+      if(currentTabName() == "email")
+	if(m_ui.mailTab->currentIndex() == 0)
+	  m_sb.email->setVisible(false);
+
+      m_ui.mail->horizontalHeaderItem(1)->setText(tr("From"));
+    }
+  else if(m_ui.folder->currentIndex() == 1) // Sent
+    m_ui.mail->horizontalHeaderItem(1)->setText(tr("To"));
+  else
+    m_ui.mail->horizontalHeaderItem(1)->setText(tr("From/To")); // Trash
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  slotPopulateParticipants();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QHash<QString, bool> cRow; // OID, bool.
+	QList<int> rows;
+	QModelIndexList list
+	  (m_ui.mail->selectionModel()->
+	   selectedRows(m_ui.mail->columnCount() - 1)); // OID
+	QSqlQuery query(db);
+	QString html(m_ui.mailMessage->toHtml());
+	QStringList oids;
+	int vValue = m_ui.mail->verticalScrollBar()->value();
+	int totalRows = 0;
+
+	while(!list.isEmpty())
+	  {
+	    if(list.first().row() == m_ui.mail->currentRow())
+	      cRow[list.first().data().toString()] = false;
+
+	    QVariant data(list.takeFirst().data());
+
+	    if(!data.isNull() && data.isValid())
+	      oids.append(data.toString());
+	  }
+
+	disconnect(m_ui.mail,
+		   SIGNAL(itemSelectionChanged(void)),
+		   this,
+		   SLOT(slotMailSelected(void)));
+	m_ui.mail->setRowCount(0);
+	m_ui.mail->setSortingEnabled(false);
+	m_ui.mailMessage->clear();
+	query.setForwardOnly(true);
+
+	if(query.exec(QString("SELECT COUNT(*) FROM folders WHERE "
+			      "folder_index = %1").
+		      arg(m_ui.folder->currentIndex())))
+	  if(query.next())
+	    m_ui.mail->setRowCount(query.value(0).toInt());
+
+	if(query.exec(QString("SELECT f.date, "          // 0
+			      "f.receiver_sender, "      // 1
+			      "f.status, "               // 2
+			      "f.subject, "              // 3
+			      "COUNT(a.OID), "           // 4
+			      "f.goldbug, "              // 5
+			      "f.message, "              // 6
+			      "f.message_code, "         // 7
+			      "f.receiver_sender_hash, " // 8
+			      "f.hash, "                 // 9
+			      "f.signature, "            // 10
+			      "f.OID "                   // 11
+			      "FROM folders f "
+			      "LEFT JOIN folders_attachment a "
+			      "ON a.folders_oid = f.OID "
+			      "WHERE f.folder_index = %1 "
+			      "GROUP BY f.OID").
+		      arg(m_ui.folder->currentIndex())))
+	  {
+	    int row = 0;
+
+	    while(query.next() && totalRows < m_ui.mail->rowCount())
+	      {
+		totalRows += 1;
+
+		QByteArray goldbug;
+		bool ok = true;
+
+		goldbug = m_crypts.value("email")->
+		  decryptedAfterAuthenticated(QByteArray::
+					      fromBase64(query.
+							 value(5).
+							 toByteArray()),
+					      &ok);
+
+		if(goldbug.isEmpty())
+		  goldbug = "0";
+
+		for(int i = 0; i < query.record().count(); i++)
+		  {
+		    QTableWidgetItem *item = 0;
+
+		    if(i == 0)
+		      row += 1;
+
+		    if(i == 0 || i == 1 || i == 2 ||
+		       i == 3 || i == 6 || i == 7 || i == 10)
+		      {
+			if(i == 1 || i == 2 || i == 3 || i == 6 || i == 10)
+			  {
+			    if(goldbug == "0")
+			      {
+				if(i == 3) // subject
+				  {
+				    QByteArray bytes
+				      (m_crypts.value("email")->
+				       decryptedAfterAuthenticated
+				       (QByteArray::fromBase64
+					(query.value(i).toByteArray()),
+					&ok));
+
+				    item = new QTableWidgetItem
+				      (QString::fromUtf8(bytes.constData(),
+							 bytes.length()).
+				       trimmed());
+				  }
+				else
+				  {
+				    QByteArray bytes
+				      (m_crypts.value("email")->
+				       decryptedAfterAuthenticated
+				       (QByteArray::
+					fromBase64
+					(query.value(i).toByteArray()),
+					&ok));
+
+				    item = new QTableWidgetItem
+				      (QString::fromUtf8(bytes.constData(),
+							 bytes.length()).
+				       trimmed());
+				  }
+
+				if(!ok)
+				  item->setText(tr("error"));
+				else if(i == 1) // receiver_sender
+				  {
+				    QList<QTableWidgetItem *> items
+				      (findItems(m_ui.emailParticipants,
+						 query.value(8).
+						 toByteArray(),
+						 3));
+
+				    if(!items.isEmpty() && items.at(0))
+				      {
+					QTableWidgetItem *it =
+					  m_ui.emailParticipants->
+					  item(items.at(0)->row(), 0);
+
+					if(it)
+					  {
+					    item->setBackground
+					      (QBrush(QColor("lightgreen")));
+					    item->setText(it->text());
+					  }
+				      }
+				  }
+			      }
+			    else
+			      item = new QTableWidgetItem("#####");
+			  }
+			else
+			  {
+			    if(goldbug == "0")
+			      {
+				item = new QTableWidgetItem
+				  (m_crypts.value("email")->
+				   decryptedAfterAuthenticated
+				   (QByteArray::
+				    fromBase64(query.value(i).toByteArray()),
+				    &ok).constData());
+
+				if(!ok)
+				  item->setText(tr("error"));
+				else if(i == 0) // date
+				  {
+#if QT_VERSION >= 0x050000
+				    if(QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
+							     Qt::ISODate).
+				       date() ||
+				       QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
+							     Qt::RFC2822Date).
+				       date())
+				      item->setBackground
+					(QBrush(QColor("lightgreen")));
+#else
+				    if(QDateTime::currentDateTime().date() ==
+				       QDateTime::fromString(item->text(),
+							     Qt::ISODate).
+				       date())
+				      item->setBackground
+					(QBrush(QColor("lightgreen")));
+#endif
+				  }
+			      }
+			    else
+			      item = new QTableWidgetItem("#####");
+			  }
+		      }
+		    else if(i == 4) // attachment(s) count
+		      {
+			if(goldbug == "0")
+			  {
+			    if(query.value(i).toLongLong() > 0)
+			      {
+				item = new spoton_integer_table_widget_item
+				  (QString::
+				   number(query.value(i).toLongLong()));
+				item->setData(Qt::UserRole, 1);
+				item->setIcon(QIcon(":/generic/attach.png"));
+			      }
+			    else
+			      {
+				item = new QTableWidgetItem("0");
+				item->setData(Qt::UserRole, 0);
+			      }
+			  }
+			else
+			  {
+			    item = new QTableWidgetItem("#####");
+			    item->setData(Qt::UserRole, 0);
+			  }
+		      }
+		    else if(i == 5) // goldbug
+		      item = new QTableWidgetItem(goldbug.constData());
+		    else
+		      item = new QTableWidgetItem(query.value(i).toString());
+
+		    item->setFlags
+		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		    m_ui.mail->setItem(row - 1, i, item);
+		  }
+
+		if(cRow.contains(query.value(11).toString()))
+		  cRow[query.value(11).toString()] = true;
+
+		if(oids.contains(query.value(11).toString()))
+		  rows.append(row - 1);
+	      }
+	  }
+
+	m_ui.mail->setRowCount(totalRows);
+	m_ui.mail->setSelectionMode
+	  (QAbstractItemView::MultiSelection);
+
+	if(cRow.values().value(0))
+	  m_ui.mailMessage->setHtml(html);
+
+	while(!rows.isEmpty())
+	  m_ui.mail->selectRow(rows.takeFirst());
+
+	m_ui.mail->setSelectionMode
+	  (QAbstractItemView::ExtendedSelection);
+	m_ui.mail->setSortingEnabled(true);
+	m_ui.mail->verticalScrollBar()->setValue(vValue);
+	connect(m_ui.mail,
+		SIGNAL(itemSelectionChanged(void)),
+		this,
+		SLOT(slotMailSelected(void)));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::prepareListenerIPCombo(void)
@@ -2971,14 +3442,6 @@ void spoton::slotAddFriendsKey(void)
     addFriendsKey(key, "R", parent);
 }
 
-void spoton::slotDoSearch(void)
-{
-}
-
-void spoton::slotDisplayLocalSearchResults(void)
-{
-}
-
 void spoton::slotClearOutgoingMessage(void)
 {
   m_ui.attachment->clear();
@@ -3283,11 +3746,6 @@ void spoton::slotCopyFriendshipBundle(void)
 
   clipboard->setText(text);
   QApplication::restoreOverrideCursor();
-}
-
-Ui_spoton_mainwindow spoton::ui(void) const
-{
-  return m_ui;
 }
 
 void spoton::slotSendMail(void)
@@ -3966,111 +4424,6 @@ void spoton::slotCopyMyRosettaPublicKey(void)
     }
 }
 
-QByteArray spoton::copyMyEmailPublicKey(void) const
-{
-  if(!m_crypts.value("email", 0) ||
-     !m_crypts.value("email-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = m_settings.value("gui/emailName", "unknown").toByteArray();
-  mPublicKey = m_crypts.value("email")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("email")->digitalSignature(mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("email-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("email").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
-}
-
-QByteArray spoton::copyMyRosettaPublicKey(void) const
-{
-  if(!m_crypts.value("rosetta", 0) ||
-     !m_crypts.value("rosetta-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = m_settings.value("gui/rosettaName", "unknown").toByteArray();
-  mPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("rosetta")->digitalSignature(mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("rosetta-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("rosetta-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("rosetta").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
-}
-
-QByteArray spoton::copyMyUrlPublicKey(void) const
-{
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
-    return QByteArray();
-
-  QByteArray name;
-  QByteArray mPublicKey;
-  QByteArray mSignature;
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-  bool ok = true;
-
-  name = m_settings.value("gui/urlName", "unknown").toByteArray();
-  mPublicKey = m_crypts.value("url")->publicKey(&ok);
-
-  if(ok)
-    mSignature = m_crypts.value("url")->digitalSignature(mPublicKey, &ok);
-
-  if(ok)
-    sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("url-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    return "K" + QByteArray("url").toBase64() + "@" +
-      name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
-  else
-    return QByteArray();
-}
-
 void spoton::slotCopyMyURLPublicKey(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -4275,300 +4628,6 @@ void spoton::slotRefreshMail(void)
     }
 
   populateMail();
-}
-
-void spoton::populateMail(void)
-{
-  if(!m_crypts.value("email", 0))
-    return;
-
-  if(m_ui.folder->currentIndex() == 0 || m_ui.folder->currentIndex() == 2)
-    m_ui.reply->setEnabled(true);
-  else
-    m_ui.reply->setEnabled(false);
-
-  m_ui.resend->setEnabled(m_ui.folder->currentIndex() == 1);
-
-  if(m_ui.folder->currentIndex() == 0) // Inbox
-    {
-      if(currentTabName() == "email")
-	if(m_ui.mailTab->currentIndex() == 0)
-	  m_sb.email->setVisible(false);
-
-      m_ui.mail->horizontalHeaderItem(1)->setText(tr("From"));
-    }
-  else if(m_ui.folder->currentIndex() == 1) // Sent
-    m_ui.mail->horizontalHeaderItem(1)->setText(tr("To"));
-  else
-    m_ui.mail->horizontalHeaderItem(1)->setText(tr("From/To")); // Trash
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  slotPopulateParticipants();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QHash<QString, bool> cRow; // OID, bool.
-	QList<int> rows;
-	QModelIndexList list
-	  (m_ui.mail->selectionModel()->
-	   selectedRows(m_ui.mail->columnCount() - 1)); // OID
-	QSqlQuery query(db);
-	QString html(m_ui.mailMessage->toHtml());
-	QStringList oids;
-	int vValue = m_ui.mail->verticalScrollBar()->value();
-	int totalRows = 0;
-
-	while(!list.isEmpty())
-	  {
-	    if(list.first().row() == m_ui.mail->currentRow())
-	      cRow[list.first().data().toString()] = false;
-
-	    QVariant data(list.takeFirst().data());
-
-	    if(!data.isNull() && data.isValid())
-	      oids.append(data.toString());
-	  }
-
-	disconnect(m_ui.mail,
-		   SIGNAL(itemSelectionChanged(void)),
-		   this,
-		   SLOT(slotMailSelected(void)));
-	m_ui.mail->setRowCount(0);
-	m_ui.mail->setSortingEnabled(false);
-	m_ui.mailMessage->clear();
-	query.setForwardOnly(true);
-
-	if(query.exec(QString("SELECT COUNT(*) FROM folders WHERE "
-			      "folder_index = %1").
-		      arg(m_ui.folder->currentIndex())))
-	  if(query.next())
-	    m_ui.mail->setRowCount(query.value(0).toInt());
-
-	if(query.exec(QString("SELECT f.date, "          // 0
-			      "f.receiver_sender, "      // 1
-			      "f.status, "               // 2
-			      "f.subject, "              // 3
-			      "COUNT(a.OID), "           // 4
-			      "f.goldbug, "              // 5
-			      "f.message, "              // 6
-			      "f.message_code, "         // 7
-			      "f.receiver_sender_hash, " // 8
-			      "f.hash, "                 // 9
-			      "f.signature, "            // 10
-			      "f.OID "                   // 11
-			      "FROM folders f "
-			      "LEFT JOIN folders_attachment a "
-			      "ON a.folders_oid = f.OID "
-			      "WHERE f.folder_index = %1 "
-			      "GROUP BY f.OID").
-		      arg(m_ui.folder->currentIndex())))
-	  {
-	    int row = 0;
-
-	    while(query.next() && totalRows < m_ui.mail->rowCount())
-	      {
-		totalRows += 1;
-
-		QByteArray goldbug;
-		bool ok = true;
-
-		goldbug = m_crypts.value("email")->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(5).
-							 toByteArray()),
-					      &ok);
-
-		if(goldbug.isEmpty())
-		  goldbug = "0";
-
-		for(int i = 0; i < query.record().count(); i++)
-		  {
-		    QTableWidgetItem *item = 0;
-
-		    if(i == 0)
-		      row += 1;
-
-		    if(i == 0 || i == 1 || i == 2 ||
-		       i == 3 || i == 6 || i == 7 || i == 10)
-		      {
-			if(i == 1 || i == 2 || i == 3 || i == 6 || i == 10)
-			  {
-			    if(goldbug == "0")
-			      {
-				if(i == 3) // subject
-				  {
-				    QByteArray bytes
-				      (m_crypts.value("email")->
-				       decryptedAfterAuthenticated
-				       (QByteArray::fromBase64
-					(query.value(i).toByteArray()),
-					&ok));
-
-				    item = new QTableWidgetItem
-				      (QString::fromUtf8(bytes.constData(),
-							 bytes.length()).
-				       trimmed());
-				  }
-				else
-				  {
-				    QByteArray bytes
-				      (m_crypts.value("email")->
-				       decryptedAfterAuthenticated
-				       (QByteArray::
-					fromBase64
-					(query.value(i).toByteArray()),
-					&ok));
-
-				    item = new QTableWidgetItem
-				      (QString::fromUtf8(bytes.constData(),
-							 bytes.length()).
-				       trimmed());
-				  }
-
-				if(!ok)
-				  item->setText(tr("error"));
-				else if(i == 1) // receiver_sender
-				  {
-				    QList<QTableWidgetItem *> items
-				      (findItems(m_ui.emailParticipants,
-						 query.value(8).
-						 toByteArray(),
-						 3));
-
-				    if(!items.isEmpty() && items.at(0))
-				      {
-					QTableWidgetItem *it =
-					  m_ui.emailParticipants->
-					  item(items.at(0)->row(), 0);
-
-					if(it)
-					  {
-					    item->setBackground
-					      (QBrush(QColor("lightgreen")));
-					    item->setText(it->text());
-					  }
-				      }
-				  }
-			      }
-			    else
-			      item = new QTableWidgetItem("#####");
-			  }
-			else
-			  {
-			    if(goldbug == "0")
-			      {
-				item = new QTableWidgetItem
-				  (m_crypts.value("email")->
-				   decryptedAfterAuthenticated
-				   (QByteArray::
-				    fromBase64(query.value(i).toByteArray()),
-				    &ok).constData());
-
-				if(!ok)
-				  item->setText(tr("error"));
-				else if(i == 0) // date
-				  {
-#if QT_VERSION >= 0x050000
-				    if(QDateTime::currentDateTime().date() ==
-				       QDateTime::fromString(item->text(),
-							     Qt::ISODate).
-				       date() ||
-				       QDateTime::currentDateTime().date() ==
-				       QDateTime::fromString(item->text(),
-							     Qt::RFC2822Date).
-				       date())
-				      item->setBackground
-					(QBrush(QColor("lightgreen")));
-#else
-				    if(QDateTime::currentDateTime().date() ==
-				       QDateTime::fromString(item->text(),
-							     Qt::ISODate).
-				       date())
-				      item->setBackground
-					(QBrush(QColor("lightgreen")));
-#endif
-				  }
-			      }
-			    else
-			      item = new QTableWidgetItem("#####");
-			  }
-		      }
-		    else if(i == 4) // attachment(s) count
-		      {
-			if(goldbug == "0")
-			  {
-			    if(query.value(i).toLongLong() > 0)
-			      {
-				item = new spoton_integer_table_widget_item
-				  (QString::
-				   number(query.value(i).toLongLong()));
-				item->setData(Qt::UserRole, 1);
-				item->setIcon(QIcon(":/generic/attach.png"));
-			      }
-			    else
-			      {
-				item = new QTableWidgetItem("0");
-				item->setData(Qt::UserRole, 0);
-			      }
-			  }
-			else
-			  {
-			    item = new QTableWidgetItem("#####");
-			    item->setData(Qt::UserRole, 0);
-			  }
-		      }
-		    else if(i == 5) // goldbug
-		      item = new QTableWidgetItem(goldbug.constData());
-		    else
-		      item = new QTableWidgetItem(query.value(i).toString());
-
-		    item->setFlags
-		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		    m_ui.mail->setItem(row - 1, i, item);
-		  }
-
-		if(cRow.contains(query.value(11).toString()))
-		  cRow[query.value(11).toString()] = true;
-
-		if(oids.contains(query.value(11).toString()))
-		  rows.append(row - 1);
-	      }
-	  }
-
-	m_ui.mail->setRowCount(totalRows);
-	m_ui.mail->setSelectionMode
-	  (QAbstractItemView::MultiSelection);
-
-	if(cRow.values().value(0))
-	  m_ui.mailMessage->setHtml(html);
-
-	while(!rows.isEmpty())
-	  m_ui.mail->selectRow(rows.takeFirst());
-
-	m_ui.mail->setSelectionMode
-	  (QAbstractItemView::ExtendedSelection);
-	m_ui.mail->setSortingEnabled(true);
-	m_ui.mail->verticalScrollBar()->setValue(vValue);
-	connect(m_ui.mail,
-		SIGNAL(itemSelectionChanged(void)),
-		this,
-		SLOT(slotMailSelected(void)));
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotRefreshPostOffice(void)
@@ -6198,72 +6257,6 @@ void spoton::slotCloseBuzzTab(int index)
 
   if(m_buzzPages.isEmpty())
     m_buzzStatusTimer.stop();
-}
-
-void spoton::initializeKernelSocket(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::UnconnectedState)
-    return;
-
-  if(m_ui.kernelKeySize->currentText().toInt() > 0)
-    {
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      m_sb.status->setText
-	(tr("Generating SSL/TLS %1-bit kernel socket credentials.").
-	 arg(m_ui.kernelKeySize->currentText()));
-      m_sb.status->repaint();
-
-      QByteArray certificate;
-      QByteArray privateKey;
-      QByteArray publicKey;
-      QString error("");
-
-      spoton_crypt::generateSslKeys
-	(m_ui.kernelKeySize->currentText().toInt(),
-	 certificate,
-	 privateKey,
-	 publicKey,
-	 m_kernelSocket.peerAddress(),
-	 0,
-	 error);
-      m_sb.status->clear();
-      QApplication::restoreOverrideCursor();
-
-      if(error.isEmpty())
-	{
-	  QSslConfiguration configuration;
-	  QString sslCS
-	    (m_settings.value("gui/sslControlString",
-			      spoton_common::SSL_CONTROL_STRING).toString());
-
-	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040806
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableCompression, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableEmptyFragments, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
-#endif
-#if QT_VERSION >= 0x050501
-	  spoton_crypt::setSslCiphers
-	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
-#else
-	  spoton_crypt::setSslCiphers
-	    (m_kernelSocket.supportedCiphers(), sslCS, configuration);
-#endif
-	  m_kernelSocket.ignoreSslErrors();
-	  m_kernelSocket.setSslConfiguration(configuration);
-	}
-      else
-	spoton_misc::logError
-	  (QString("spoton::"
-		   "initializeKernelSocket(): "
-		   "generateSslKeys() failure (%1).").arg(error));
-    }
-  else
-    m_kernelSocket.ignoreSslErrors();
 }
 
 void spoton::slotBuzzChanged(void)
