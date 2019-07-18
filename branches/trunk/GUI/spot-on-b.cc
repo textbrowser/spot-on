@@ -2432,7 +2432,7 @@ void spoton::sendMessage(bool *ok)
 	  if(m_kernelSocket.write(message.constData(), message.length()) !=
 	     message.length())
 	    spoton_misc::logError
-	      (QString("spoton::slotSendMessage(): write() failure for "
+	      (QString("spoton::sendMessage(): write() failure for "
 		       "%1:%2.").
 	       arg(m_kernelSocket.peerAddress().toString()).
 	       arg(m_kernelSocket.peerPort()));
@@ -2458,9 +2458,168 @@ void spoton::sendMessage(bool *ok)
     }
 }
 
-void spoton::slotSendMessage(void)
+void spoton::slotAuthenticationRequestButtonClicked(void)
 {
-  sendMessage(0);
+  m_sb.authentication_request->setVisible(false);
+  m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors")); // Neighbors
+
+  if(m_neighborToOidMap.contains(m_sb.authentication_request->
+				 property("data").toByteArray()))
+    authenticate(m_crypts.value("chat", 0),
+		 m_neighborToOidMap.
+		 value(m_sb.authentication_request->
+		       property("data").toByteArray()),
+		 m_sb.authentication_request->toolTip());
+
+  m_sb.authentication_request->setProperty("data", QVariant());
+}
+
+void spoton::slotChatWindowDestroyed(void)
+{
+  QMutableHashIterator<QString, QPointer<spoton_chatwindow> > it
+    (m_chatWindows);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(!it.value())
+	it.remove();
+    }
+}
+
+void spoton::slotChatWindowMessageSent(void)
+{
+  m_chatInactivityTimer.start();
+}
+
+void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+
+  if(item->data(Qt::UserRole).toBool()) // Temporary friend?
+    return;
+  else if(item->column() == 6 ||
+	  item->column() == 7) // Gemini Encryption Key, Gemini Hash Key
+    return;
+
+  QIcon icon;
+  QString keyType("");
+  QString oid("");
+  QString participant("");
+  QString publicKeyHash("");
+  QString status("");
+  int row = item->row();
+
+  item = m_ui.participants->item(row, 0); // Participant
+
+  if(!item)
+    return;
+
+  icon = item->icon();
+  participant = item->text();
+  item = m_ui.participants->item(row, 1); // OID
+
+  if(!item)
+    return;
+
+  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString();
+  oid = item->text();
+  item = m_ui.participants->item(row, 3); // public_key_hash
+
+  if(!item)
+    return;
+
+  publicKeyHash = item->text();
+  item = m_ui.participants->item(row, 4); // Status
+
+  if(item)
+    status = item->text();
+
+  spoton_smp *smp = m_smps.value(publicKeyHash, 0);
+
+  if(m_chatWindows.contains(publicKeyHash))
+    {
+      QPointer<spoton_chatwindow> chat = m_chatWindows.value
+	(publicKeyHash);
+
+      if(chat)
+	{
+	  m_starsLastModificationTime = QDateTime();
+
+	  if(smp)
+	    chat->setSMPVerified(smp->passed());
+
+	  chat->showNormal();
+	  chat->activateWindow();
+	  chat->raise();
+	  return;
+	}
+      else
+	m_chatWindows.remove(publicKeyHash);
+    }
+
+  QPointer<spoton_chatwindow> chat = new spoton_chatwindow
+    (icon, oid, keyType, participant, publicKeyHash, status, &m_kernelSocket,
+     0);
+
+  connect(chat,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotMessagesAnchorClicked(const QUrl &)));
+  connect(chat,
+	  SIGNAL(deriveGeminiPairViaSMP(const QString &, const QString &)),
+	  this,
+	  SLOT(slotDeriveGeminiPairViaSMP(const QString &,
+					  const QString &)));
+  connect(chat,
+	  SIGNAL(destroyed(void)),
+	  this,
+	  SLOT(slotChatWindowDestroyed(void)));
+  connect(chat,
+	  SIGNAL(initializeSMP(const QString &)),
+	  this,
+	  SLOT(slotInitializeSMP(const QString &)));
+  connect(chat,
+	  SIGNAL(messageSent(void)),
+	  this,
+	  SLOT(slotChatWindowMessageSent(void)));
+  connect(chat,
+	  SIGNAL(prepareSMP(const QString &)),
+	  this,
+	  SLOT(slotPrepareSMP(const QString &)));
+  connect(chat,
+	  SIGNAL(verifySMPSecret(const QString &,
+				 const QString &,
+				 const QString &)),
+	  this,
+	  SLOT(slotVerifySMPSecret(const QString &,
+				   const QString &,
+				   const QString &)));
+  connect(this,
+	  SIGNAL(iconsChanged(void)),
+	  chat,
+	  SLOT(slotSetIcons(void)));
+  connect(this,
+	  SIGNAL(statusChanged(const QIcon &,
+			       const QString &,
+			       const QString &,
+			       const QString &)),
+	  chat,
+	  SLOT(slotSetStatus(const QIcon &,
+			     const QString &,
+			     const QString &,
+			     const QString &)));
+  m_chatWindows[publicKeyHash] = chat;
+  m_starsLastModificationTime = QDateTime();
+  chat->center(this);
+  chat->showNormal(); // Custom.
+  chat->activateWindow();
+  chat->raise();
+
+  if(smp)
+    chat->setSMPVerified(smp->passed());
 }
 
 void spoton::slotReceivedKernelMessage(void)
@@ -3204,6 +3363,110 @@ void spoton::slotReceivedKernelMessage(void)
     }
 }
 
+void spoton::slotRemoveParticipants(void)
+{
+  if(!m_ui.participants->selectionModel()->hasSelection())
+    return;
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected "
+		"Chat participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QModelIndexList list
+	  (m_ui.participants->selectionModel()->selectedRows(1)); // OID
+	QModelIndexList listHashes
+	  (m_ui.participants->selectionModel()->
+	   selectedRows(3)); // public_key_hash
+	QSqlQuery query(db);
+
+	while(!list.isEmpty() && !listHashes.isEmpty())
+	  {
+	    QVariant data(list.takeFirst().data());
+	    QVariant hash(listHashes.takeFirst().data());
+
+	    if(!data.isNull() && data.isValid())
+	      {
+		query.exec("PRAGMA secure_delete = ON");
+		query.prepare("DELETE FROM friends_public_keys WHERE "
+			      "OID = ?");
+		query.bindValue(0, data.toString());
+		query.exec();
+	      }
+
+	    if(m_chatSequenceNumbers.contains(data.toString()))
+	      m_chatSequenceNumbers.remove(data.toString());
+
+	    if(m_receivedChatSequenceNumbers.contains
+	       (QByteArray::fromBase64(hash.toByteArray())))
+	      m_receivedChatSequenceNumbers.
+		remove(QByteArray::fromBase64(hash.toByteArray()));
+
+	    m_chatQueues.remove(hash.toString());
+
+	    if(m_chatWindows.contains(hash.toString()))
+	      {
+		QPointer<spoton_chatwindow> chat =
+		  m_chatWindows.value(hash.toString(), 0);
+
+		m_chatWindows.remove(hash.toString());
+
+		if(chat)
+		  chat->deleteLater();
+	      }
+
+	    if(m_smps.contains(hash.toString()))
+	      {
+		spoton_smp *smp = m_smps.value(hash.toString(), 0);
+
+		m_smps.remove(hash.toString());
+
+		if(smp)
+		  delete smp;
+	      }
+	  }
+
+	spoton_misc::purgeSignatureRelationships
+	  (db, m_crypts.value("chat", 0));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotSendMessage(void)
+{
+  sendMessage(0);
+}
+
 void spoton::slotShareChatPublicKey(void)
 {
   if(!m_crypts.value("chat", 0) ||
@@ -3389,105 +3652,6 @@ void spoton::slotShareEmailPublicKey(void)
 	   arg(m_kernelSocket.peerPort()));
     }
 
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotRemoveParticipants(void)
-{
-  if(!m_ui.participants->selectionModel()->hasSelection())
-    return;
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected "
-		"Chat participant(s)?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QModelIndexList list
-	  (m_ui.participants->selectionModel()->selectedRows(1)); // OID
-	QModelIndexList listHashes
-	  (m_ui.participants->selectionModel()->
-	   selectedRows(3)); // public_key_hash
-	QSqlQuery query(db);
-
-	while(!list.isEmpty() && !listHashes.isEmpty())
-	  {
-	    QVariant data(list.takeFirst().data());
-	    QVariant hash(listHashes.takeFirst().data());
-
-	    if(!data.isNull() && data.isValid())
-	      {
-		query.exec("PRAGMA secure_delete = ON");
-		query.prepare("DELETE FROM friends_public_keys WHERE "
-			      "OID = ?");
-		query.bindValue(0, data.toString());
-		query.exec();
-	      }
-
-	    if(m_chatSequenceNumbers.contains(data.toString()))
-	      m_chatSequenceNumbers.remove(data.toString());
-
-	    if(m_receivedChatSequenceNumbers.contains
-	       (QByteArray::fromBase64(hash.toByteArray())))
-	      m_receivedChatSequenceNumbers.
-		remove(QByteArray::fromBase64(hash.toByteArray()));
-
-	    m_chatQueues.remove(hash.toString());
-
-	    if(m_chatWindows.contains(hash.toString()))
-	      {
-		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(hash.toString(), 0);
-
-		m_chatWindows.remove(hash.toString());
-
-		if(chat)
-		  chat->deleteLater();
-	      }
-
-	    if(m_smps.contains(hash.toString()))
-	      {
-		spoton_smp *smp = m_smps.value(hash.toString(), 0);
-
-		m_smps.remove(hash.toString());
-
-		if(smp)
-		  delete smp;
-	      }
-	  }
-
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
 
@@ -6604,12 +6768,6 @@ void spoton::slotTestSslControlString(void)
   mb.exec();
 }
 
-void spoton::slotChatInactivityTimeout(void)
-{
-  if(m_ui.status->currentIndex() == 4) // Online
-    m_ui.status->setCurrentIndex(0); // Away
-}
-
 void spoton::slotAddAccount(void)
 {
   QString connectionName("");
@@ -6718,6 +6876,12 @@ void spoton::slotAddAccount(void)
     }
 }
 
+void spoton::slotChatInactivityTimeout(void)
+{
+  if(m_ui.status->currentIndex() == 4) // Online
+    m_ui.status->setCurrentIndex(0); // Away
+}
+
 void spoton::slotDeleteAccount(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -6820,168 +6984,4 @@ void spoton::slotListenerSelected(void)
   populateAccounts(oid);
   populateListenerIps(oid);
   populateMOTD(oid);
-}
-
-void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
-{
-  if(!item)
-    return;
-
-  if(item->data(Qt::UserRole).toBool()) // Temporary friend?
-    return;
-  else if(item->column() == 6 ||
-	  item->column() == 7) // Gemini Encryption Key, Gemini Hash Key
-    return;
-
-  QIcon icon;
-  QString keyType("");
-  QString oid("");
-  QString participant("");
-  QString publicKeyHash("");
-  QString status("");
-  int row = item->row();
-
-  item = m_ui.participants->item(row, 0); // Participant
-
-  if(!item)
-    return;
-
-  icon = item->icon();
-  participant = item->text();
-  item = m_ui.participants->item(row, 1); // OID
-
-  if(!item)
-    return;
-
-  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString();
-  oid = item->text();
-  item = m_ui.participants->item(row, 3); // public_key_hash
-
-  if(!item)
-    return;
-
-  publicKeyHash = item->text();
-  item = m_ui.participants->item(row, 4); // Status
-
-  if(item)
-    status = item->text();
-
-  spoton_smp *smp = m_smps.value(publicKeyHash, 0);
-
-  if(m_chatWindows.contains(publicKeyHash))
-    {
-      QPointer<spoton_chatwindow> chat = m_chatWindows.value
-	(publicKeyHash);
-
-      if(chat)
-	{
-	  m_starsLastModificationTime = QDateTime();
-
-	  if(smp)
-	    chat->setSMPVerified(smp->passed());
-
-	  chat->showNormal();
-	  chat->activateWindow();
-	  chat->raise();
-	  return;
-	}
-      else
-	m_chatWindows.remove(publicKeyHash);
-    }
-
-  QPointer<spoton_chatwindow> chat = new spoton_chatwindow
-    (icon, oid, keyType, participant, publicKeyHash, status, &m_kernelSocket,
-     0);
-
-  connect(chat,
-	  SIGNAL(anchorClicked(const QUrl &)),
-	  this,
-	  SLOT(slotMessagesAnchorClicked(const QUrl &)));
-  connect(chat,
-	  SIGNAL(deriveGeminiPairViaSMP(const QString &, const QString &)),
-	  this,
-	  SLOT(slotDeriveGeminiPairViaSMP(const QString &,
-					  const QString &)));
-  connect(chat,
-	  SIGNAL(destroyed(void)),
-	  this,
-	  SLOT(slotChatWindowDestroyed(void)));
-  connect(chat,
-	  SIGNAL(initializeSMP(const QString &)),
-	  this,
-	  SLOT(slotInitializeSMP(const QString &)));
-  connect(chat,
-	  SIGNAL(messageSent(void)),
-	  this,
-	  SLOT(slotChatWindowMessageSent(void)));
-  connect(chat,
-	  SIGNAL(prepareSMP(const QString &)),
-	  this,
-	  SLOT(slotPrepareSMP(const QString &)));
-  connect(chat,
-	  SIGNAL(verifySMPSecret(const QString &,
-				 const QString &,
-				 const QString &)),
-	  this,
-	  SLOT(slotVerifySMPSecret(const QString &,
-				   const QString &,
-				   const QString &)));
-  connect(this,
-	  SIGNAL(iconsChanged(void)),
-	  chat,
-	  SLOT(slotSetIcons(void)));
-  connect(this,
-	  SIGNAL(statusChanged(const QIcon &,
-			       const QString &,
-			       const QString &,
-			       const QString &)),
-	  chat,
-	  SLOT(slotSetStatus(const QIcon &,
-			     const QString &,
-			     const QString &,
-			     const QString &)));
-  m_chatWindows[publicKeyHash] = chat;
-  m_starsLastModificationTime = QDateTime();
-  chat->center(this);
-  chat->showNormal(); // Custom.
-  chat->activateWindow();
-  chat->raise();
-
-  if(smp)
-    chat->setSMPVerified(smp->passed());
-}
-
-void spoton::slotChatWindowDestroyed(void)
-{
-  QMutableHashIterator<QString, QPointer<spoton_chatwindow> > it
-    (m_chatWindows);
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(!it.value())
-	it.remove();
-    }
-}
-
-void spoton::slotChatWindowMessageSent(void)
-{
-  m_chatInactivityTimer.start();
-}
-
-void spoton::slotAuthenticationRequestButtonClicked(void)
-{
-  m_sb.authentication_request->setVisible(false);
-  m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors")); // Neighbors
-
-  if(m_neighborToOidMap.contains(m_sb.authentication_request->
-				 property("data").toByteArray()))
-    authenticate(m_crypts.value("chat", 0),
-		 m_neighborToOidMap.
-		 value(m_sb.authentication_request->
-		       property("data").toByteArray()),
-		 m_sb.authentication_request->toolTip());
-
-  m_sb.authentication_request->setProperty("data", QVariant());
 }
