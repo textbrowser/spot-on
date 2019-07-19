@@ -2710,6 +2710,35 @@ void spoton::slotAddAccount(void)
     }
 }
 
+void spoton::slotAddFriendsKey(void)
+{
+  QByteArray key
+    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
+#if SPOTON_GOLDBUG == 0
+  QWidget *parent = m_addParticipantWindow;
+#else
+  QWidget *parent = this;
+#endif
+
+  if(m_ui.addFriendEmail->isChecked())
+    addFriendsKey(key, "E", parent);
+  else if(key.startsWith("K") || key.startsWith("k"))
+    {
+      QList<QByteArray> list(key.split('\n'));
+
+      while(!list.isEmpty())
+	{
+	  QByteArray bytes("K");
+
+	  bytes.append(list.takeFirst());
+	  bytes.remove(0, 1);
+	  addFriendsKey(bytes, "K", parent);
+	}
+    }
+  else
+    addFriendsKey(key, "R", parent);
+}
+
 void spoton::slotAuthenticationRequestButtonClicked(void)
 {
   m_sb.authentication_request->setVisible(false);
@@ -2757,6 +2786,21 @@ void spoton::slotChatWindowDestroyed(void)
 void spoton::slotChatWindowMessageSent(void)
 {
   m_chatInactivityTimer.start();
+}
+
+void spoton::slotClearOutgoingMessage(void)
+{
+  m_ui.attachment->clear();
+  m_ui.emailName->setCurrentIndex(0);
+  m_ui.emailParticipants->selectionModel()->clear();
+  m_ui.email_fs_gb->setCurrentIndex(2);
+  m_ui.goldbug->clear();
+  m_ui.outgoingMessage->clear();
+  m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
+  m_ui.outgoingSubject->clear();
+  m_ui.richtext->setChecked(true);
+  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
+  m_ui.outgoingSubject->setFocus();
 }
 
 void spoton::slotCloseBuzzTab(int index)
@@ -2989,6 +3033,38 @@ void spoton::slotCopyFriendshipBundle(void)
 
   clipboard->setText(text);
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotCopyMyChatPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyChatPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The chat public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton::slotCopyMyEmailPublicKey(void)
@@ -3887,6 +3963,30 @@ void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
 
   if(m_neighborsFuture.isFinished() && state)
     m_neighborsLastModificationTime = QDateTime();
+}
+
+void spoton::slotKernelCipherTypeChanged(int index)
+{
+  Q_UNUSED(index);
+  m_settings["gui/kernelCipherType"] =
+    m_ui.kernelCipherType->currentText().toLower();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/kernelCipherType", m_settings.value("gui/kernelCipherType"));
+}
+
+void spoton::slotKernelHashTypeChanged(int index)
+{
+  Q_UNUSED(index);
+  m_settings["gui/kernelHashType"] =
+    m_ui.kernelHashType->currentText().toLower();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
 }
 
 void spoton::slotKernelKeySizeChanged(const QString &text)
@@ -6638,6 +6738,16 @@ void spoton::slotShareEmailPublicKey(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotShareEmailPublicKeyWithParticipant(void)
+{
+  QTableWidgetItem *item = m_ui.emailParticipants->item
+    (m_ui.emailParticipants->currentRow(), 1); // OID
+
+  if(item)
+    sharePublicKeyWithParticipant
+      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+}
+
 void spoton::slotShareURLPublicKey(void)
 {
   if(!m_crypts.value("url", 0) ||
@@ -6732,6 +6842,11 @@ void spoton::slotShareURLPublicKey(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotShareUrlPublicKeyWithParticipant(void)
+{
+  sharePublicKeyWithParticipant("url");
+}
+
 void spoton::slotStatusButtonClicked(void)
 {
   QToolButton *toolButton = qobject_cast<QToolButton *> (sender());
@@ -6758,6 +6873,29 @@ void spoton::slotStatusButtonClicked(void)
     m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
   else if(toolButton == m_sb.neighbors)
     m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
+}
+
+void spoton::slotStatusChanged(int index)
+{
+  m_ui.custom->setVisible(false);
+
+  if(index == 0)
+    m_settings["gui/my_status"] = "Away";
+  else if(index == 1)
+    m_settings["gui/my_status"] = "Busy";
+  else if(index == 2)
+    {
+      m_settings["gui/my_status"] = "Custom";
+      m_ui.custom->setVisible(true);
+    }
+  else if(index == 3)
+    m_settings["gui/my_status"] = "Offline";
+  else
+    m_settings["gui/my_status"] = "Online";
+
+  QSettings settings;
+
+  settings.setValue("gui/my_status", m_settings.value("gui/my_status"));
 }
 
 void spoton::slotSuperEcho(int index)
@@ -6842,145 +6980,7 @@ void spoton::slotShareChatPublicKeyWithParticipant(void)
       (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
 }
 
-void spoton::slotShareEmailPublicKeyWithParticipant(void)
-{
-  QTableWidgetItem *item = m_ui.emailParticipants->item
-    (m_ui.emailParticipants->currentRow(), 1); // OID
-
-  if(item)
-    sharePublicKeyWithParticipant
-      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
-}
-
-void spoton::slotShareUrlPublicKeyWithParticipant(void)
-{
-  sharePublicKeyWithParticipant("url");
-}
-
 void spoton::slotViewLog(void)
 {
   m_logViewer.show(this);
-}
-
-void spoton::slotStatusChanged(int index)
-{
-  m_ui.custom->setVisible(false);
-
-  if(index == 0)
-    m_settings["gui/my_status"] = "Away";
-  else if(index == 1)
-    m_settings["gui/my_status"] = "Busy";
-  else if(index == 2)
-    {
-      m_settings["gui/my_status"] = "Custom";
-      m_ui.custom->setVisible(true);
-    }
-  else if(index == 3)
-    m_settings["gui/my_status"] = "Offline";
-  else
-    m_settings["gui/my_status"] = "Online";
-
-  QSettings settings;
-
-  settings.setValue("gui/my_status", m_settings.value("gui/my_status"));
-}
-
-void spoton::slotKernelCipherTypeChanged(int index)
-{
-  Q_UNUSED(index);
-  m_settings["gui/kernelCipherType"] =
-    m_ui.kernelCipherType->currentText().toLower();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/kernelCipherType", m_settings.value("gui/kernelCipherType"));
-}
-
-void spoton::slotKernelHashTypeChanged(int index)
-{
-  Q_UNUSED(index);
-  m_settings["gui/kernelHashType"] =
-    m_ui.kernelHashType->currentText().toLower();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
-}
-
-void spoton::slotCopyMyChatPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyChatPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The chat public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotAddFriendsKey(void)
-{
-  QByteArray key
-    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
-#if SPOTON_GOLDBUG == 0
-  QWidget *parent = m_addParticipantWindow;
-#else
-  QWidget *parent = this;
-#endif
-
-  if(m_ui.addFriendEmail->isChecked())
-    addFriendsKey(key, "E", parent);
-  else if(key.startsWith("K") || key.startsWith("k"))
-    {
-      QList<QByteArray> list(key.split('\n'));
-
-      while(!list.isEmpty())
-	{
-	  QByteArray bytes("K");
-
-	  bytes.append(list.takeFirst());
-	  bytes.remove(0, 1);
-	  addFriendsKey(bytes, "K", parent);
-	}
-    }
-  else
-    addFriendsKey(key, "R", parent);
-}
-
-void spoton::slotClearOutgoingMessage(void)
-{
-  m_ui.attachment->clear();
-  m_ui.emailName->setCurrentIndex(0);
-  m_ui.emailParticipants->selectionModel()->clear();
-  m_ui.email_fs_gb->setCurrentIndex(2);
-  m_ui.goldbug->clear();
-  m_ui.outgoingMessage->clear();
-  m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
-  m_ui.outgoingSubject->clear();
-  m_ui.richtext->setChecked(true);
-  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
-  m_ui.outgoingSubject->setFocus();
 }
