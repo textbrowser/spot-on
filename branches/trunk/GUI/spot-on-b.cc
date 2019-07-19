@@ -2492,6 +2492,114 @@ void spoton::slotAcceptPublicizedListeners(void)
 		    m_settings.value("gui/acceptPublicizedListeners"));
 }
 
+void spoton::slotAddAccount(void)
+{
+  QString connectionName("");
+  QString error("");
+  QString name(m_ui.accountName->text());
+  QString oid("");
+  QString password(m_ui.accountPassword->text());
+  bool ok = true;
+  int row = -1;
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      error = tr("Invalid listener OID. Please select a listener.");
+      goto done_label;
+    }
+
+  if(name.length() < 32)
+    {
+      error = tr("Please provide an account name that contains at "
+		 "least thirty-two characters.");
+      goto done_label;
+    }
+  else if(password.length() < 32)
+    {
+      error = tr("Please provide an account password that contains at "
+		 "least thirty-two characters.");
+      goto done_label;
+    }
+
+  prepareDatabasesFromUI();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("INSERT OR REPLACE INTO listeners_accounts "
+		      "(account_name, "
+		      "account_name_hash, "
+		      "account_password, "
+		      "listener_oid, "
+		      "one_time_account) "
+		      "VALUES (?, ?, ?, ?, ?)");
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->keyedHash(name.toLatin1(),
+				 &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->encryptedThenHashed(password.toLatin1(),
+					   &ok).toBase64());
+
+	query.bindValue(3, oid);
+	query.bindValue(4, m_ui.ota->isChecked() ? 1 : 0);
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    error = tr("A database error has occurred.");
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+  else
+    {
+      m_ui.accountName->clear();
+      m_ui.accountPassword->clear();
+      m_ui.ota->setChecked(false);
+      populateAccounts(oid);
+    }
+}
+
 void spoton::slotAuthenticationRequestButtonClicked(void)
 {
   m_sb.authentication_request->setVisible(false);
@@ -2506,6 +2614,12 @@ void spoton::slotAuthenticationRequestButtonClicked(void)
 		 m_sb.authentication_request->toolTip());
 
   m_sb.authentication_request->setProperty("data", QVariant());
+}
+
+void spoton::slotChatInactivityTimeout(void)
+{
+  if(m_ui.status->currentIndex() == 4) // Online
+    m_ui.status->setCurrentIndex(0); // Away
 }
 
 void spoton::slotChatWindowDestroyed(void)
@@ -2525,6 +2639,138 @@ void spoton::slotChatWindowDestroyed(void)
 void spoton::slotChatWindowMessageSent(void)
 {
   m_chatInactivityTimer.start();
+}
+
+void spoton::slotDeleteAcceptedIP(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid listener OID. "
+			       "Please select a listener."));
+      return;
+    }
+
+  QString ip("");
+
+  if((row = m_ui.acceptedIPList->currentRow()) >= 0)
+    {
+      QListWidgetItem *item = m_ui.acceptedIPList->item(row);
+
+      if(item)
+	ip = item->text();
+    }
+
+  if(ip.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please select an address to delete."));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM listeners_allowed_ips WHERE "
+		      "ip_address_hash = ? AND listener_oid = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(ip.toLatin1(),
+			       &ok).toBase64());
+	query.bindValue(1, oid);
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(ip == "Any")
+	  query.exec
+	    ("UPDATE neighbors SET status_control = 'disconnected' "
+	     "WHERE status_control <> 'deleted' AND user_defined = 0");
+	else
+	  {
+	    query.prepare("UPDATE neighbors SET "
+			  "status_control = 'disconnected' "
+			  "WHERE remote_ip_address_hash = ? AND "
+			  "status_control <> 'deleted' AND "
+			  "user_defined = 0");
+
+	    if(ok)
+	      query.bindValue
+		(0,
+		 crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    delete m_ui.acceptedIPList->takeItem(row);
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified IP."));
 }
 
 void spoton::slotDeleteAccount(void)
@@ -3868,6 +4114,36 @@ void spoton::slotShareEmailPublicKey(void)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotTestSslControlString(void)
+{
+  QList<QSslCipher> ciphers
+    (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
+  QMessageBox mb(m_optionsWindow);
+  QString str("");
+
+  for(int i = 0; i < ciphers.size(); i++)
+    str.append(QString("%1-%2").arg(ciphers.at(i).name()).
+	       arg(ciphers.at(i).protocolString()) + "\n");
+
+  if(!str.isEmpty())
+    {
+      mb.setDetailedText(str);
+      mb.setText
+	(tr("The following ciphers are supported by your OpenSSL library. "
+	    "Please note that %1 may neglect discovered ciphers "
+	    "if the ciphers are not also understood by Qt.").
+	 arg(SPOTON_APPLICATION_NAME));
+    }
+  else
+    mb.setText(tr("Empty cipher list."));
+
+  mb.setStandardButtons(QMessageBox::Ok);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowTitle(tr("%1: Information").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.exec();
 }
 
 void spoton::slotPublishPeriodicallyToggled(bool state)
@@ -6708,280 +6984,4 @@ void spoton::slotAddAcceptedIP(void)
     QMessageBox::critical(this, tr("%1: Error").
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("Unable to record the IP address."));
-}
-
-void spoton::slotDeleteAcceptedIP(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid listener OID. "
-			       "Please select a listener."));
-      return;
-    }
-
-  QString ip("");
-
-  if((row = m_ui.acceptedIPList->currentRow()) >= 0)
-    {
-      QListWidgetItem *item = m_ui.acceptedIPList->item(row);
-
-      if(item)
-	ip = item->text();
-    }
-
-  if(ip.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please select an address to delete."));
-      return;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM listeners_allowed_ips WHERE "
-		      "ip_address_hash = ? AND listener_oid = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(ip.toLatin1(),
-			       &ok).toBase64());
-	query.bindValue(1, oid);
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(ip == "Any")
-	  query.exec
-	    ("UPDATE neighbors SET status_control = 'disconnected' "
-	     "WHERE status_control <> 'deleted' AND user_defined = 0");
-	else
-	  {
-	    query.prepare("UPDATE neighbors SET "
-			  "status_control = 'disconnected' "
-			  "WHERE remote_ip_address_hash = ? AND "
-			  "status_control <> 'deleted' AND "
-			  "user_defined = 0");
-
-	    if(ok)
-	      query.bindValue
-		(0,
-		 crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
-
-	    if(ok)
-	      ok = query.exec();
-	  }
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    delete m_ui.acceptedIPList->takeItem(row);
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified IP."));
-}
-
-void spoton::slotTestSslControlString(void)
-{
-  QList<QSslCipher> ciphers
-    (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
-  QMessageBox mb(m_optionsWindow);
-  QString str("");
-
-  for(int i = 0; i < ciphers.size(); i++)
-    str.append(QString("%1-%2").arg(ciphers.at(i).name()).
-	       arg(ciphers.at(i).protocolString()) + "\n");
-
-  if(!str.isEmpty())
-    {
-      mb.setDetailedText(str);
-      mb.setText
-	(tr("The following ciphers are supported by your OpenSSL library. "
-	    "Please note that %1 may neglect discovered ciphers "
-	    "if the ciphers are not also understood by Qt.").
-	 arg(SPOTON_APPLICATION_NAME));
-    }
-  else
-    mb.setText(tr("Empty cipher list."));
-
-  mb.setStandardButtons(QMessageBox::Ok);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowTitle(tr("%1: Information").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.exec();
-}
-
-void spoton::slotAddAccount(void)
-{
-  QString connectionName("");
-  QString error("");
-  QString name(m_ui.accountName->text());
-  QString oid("");
-  QString password(m_ui.accountPassword->text());
-  bool ok = true;
-  int row = -1;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      error = tr("Invalid listener OID. Please select a listener.");
-      goto done_label;
-    }
-
-  if(name.length() < 32)
-    {
-      error = tr("Please provide an account name that contains at "
-		 "least thirty-two characters.");
-      goto done_label;
-    }
-  else if(password.length() < 32)
-    {
-      error = tr("Please provide an account password that contains at "
-		 "least thirty-two characters.");
-      goto done_label;
-    }
-
-  prepareDatabasesFromUI();
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("INSERT OR REPLACE INTO listeners_accounts "
-		      "(account_name, "
-		      "account_name_hash, "
-		      "account_password, "
-		      "listener_oid, "
-		      "one_time_account) "
-		      "VALUES (?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->keyedHash(name.toLatin1(),
-				 &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->encryptedThenHashed(password.toLatin1(),
-					   &ok).toBase64());
-
-	query.bindValue(3, oid);
-	query.bindValue(4, m_ui.ota->isChecked() ? 1 : 0);
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    error = tr("A database error has occurred.");
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-  else
-    {
-      m_ui.accountName->clear();
-      m_ui.accountPassword->clear();
-      m_ui.ota->setChecked(false);
-      populateAccounts(oid);
-    }
-}
-
-void spoton::slotChatInactivityTimeout(void)
-{
-  if(m_ui.status->currentIndex() == 4) // Online
-    m_ui.status->setCurrentIndex(0); // Away
 }
