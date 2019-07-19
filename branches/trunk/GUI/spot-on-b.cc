@@ -2492,6 +2492,116 @@ void spoton::slotAcceptPublicizedListeners(void)
 		    m_settings.value("gui/acceptPublicizedListeners"));
 }
 
+void spoton::slotAddAcceptedIP(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid listener OID. Please select a listener."));
+      return;
+    }
+
+  QHostAddress ip(m_ui.acceptedIP->text().trimmed());
+
+  if(m_ui.acceptedIP->text().trimmed() != "Any")
+    if(ip.isNull())
+      {
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME),
+			      tr("Please provide an IP address or "
+				 "the keyword Any."));
+	return;
+      }
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("INSERT OR REPLACE INTO listeners_allowed_ips "
+	   "(ip_address, ip_address_hash, "
+	   "listener_oid) "
+	   "VALUES (?, ?, ?)");
+
+	if(m_ui.acceptedIP->text().trimmed() == "Any")
+	  {
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed("Any", &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash("Any", &ok).
+		 toBase64());
+	  }
+	else
+	  {
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(ip.toString().toLatin1(),
+					     &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash(ip.toString().
+				     toLatin1(), &ok).
+		 toBase64());
+	  }
+
+	query.bindValue(2, oid);
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    m_ui.acceptedIP->clear();
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to record the IP address."));
+}
+
 void spoton::slotAddAccount(void)
 {
   QString connectionName("");
@@ -2616,6 +2726,14 @@ void spoton::slotAuthenticationRequestButtonClicked(void)
   m_sb.authentication_request->setProperty("data", QVariant());
 }
 
+void spoton::slotBuzzChanged(void)
+{
+  if(currentTabName() != "buzz")
+    m_sb.buzz->setVisible(true);
+
+  playSound("buzz.wav");
+}
+
 void spoton::slotChatInactivityTimeout(void)
 {
   if(m_ui.status->currentIndex() == 4) // Online
@@ -2639,6 +2757,23 @@ void spoton::slotChatWindowDestroyed(void)
 void spoton::slotChatWindowMessageSent(void)
 {
   m_chatInactivityTimer.start();
+}
+
+void spoton::slotCloseBuzzTab(int index)
+{
+  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
+    (m_ui.buzzTab->widget(index));
+
+  if(page)
+    {
+      m_buzzPages.remove(page->key());
+      page->deleteLater();
+    }
+
+  m_ui.buzzTab->removeTab(index);
+
+  if(m_buzzPages.isEmpty())
+    m_buzzStatusTimer.stop();
 }
 
 void spoton::slotDeleteAcceptedIP(void)
@@ -2858,6 +2993,141 @@ void spoton::slotDeleteAccount(void)
     populateAccounts(oid);
 }
 
+void spoton::slotJoinBuzzChannel(void)
+{
+  QByteArray channel(m_ui.channel->text().toLatin1());
+  QByteArray channelSalt(m_ui.channelSalt->text().toLatin1());
+  QByteArray channelType(m_ui.channelType->currentText().toLatin1());
+  QByteArray hashKey(m_ui.buzzHashKey->text().toLatin1());
+  QByteArray hashType(m_ui.buzzHashType->currentText().toLatin1());
+  QByteArray id;
+  QPair<QByteArray, QByteArray> keys;
+  QPointer<spoton_buzzpage> page;
+  QString error("");
+  unsigned long int iterationCount =
+    static_cast<unsigned long int> (m_ui.buzzIterationCount->value());
+
+  if(channel.isEmpty())
+    {
+      error = tr("Please provide a channel key.");
+      goto done_label;
+    }
+
+  if(channelSalt.isEmpty())
+    {
+      error = tr("Please provide a channel salt.");
+      goto done_label;
+    }
+
+  if(hashKey.isEmpty())
+    {
+      error = tr("Please provide a hash key.");
+      goto done_label;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  keys = spoton_crypt::derivedKeys(channelType,
+				   "sha1", // PBKDF2.
+				   iterationCount,
+				   channel + channelType + hashType,
+				   channelSalt,
+				   true,
+				   error);
+  QApplication::restoreOverrideCursor();
+
+  if(!error.isEmpty())
+    goto done_label;
+
+  if((page = m_buzzPages.value(keys.first, 0)))
+    {
+      if(m_ui.buzzTab->indexOf(page) != -1)
+	m_ui.buzzTab->setCurrentWidget(page);
+
+      goto done_label;
+    }
+
+  if(m_buzzIds.contains(keys.first))
+    id = m_buzzIds[keys.first];
+  else
+    {
+      id = spoton_crypt::
+	strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
+      m_buzzIds[keys.first] = id;
+    }
+
+  m_ui.channel->clear();
+  m_ui.channelSalt->clear();
+  m_ui.channelType->setCurrentIndex(0);
+  m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
+  m_ui.buzzHashKey->clear();
+  m_ui.buzzHashType->setCurrentIndex(0);
+  page = new spoton_buzzpage
+    (&m_kernelSocket, channel, channelSalt, channelType,
+     id, iterationCount, hashKey, hashType, keys.first, this);
+  m_buzzPages[page->key()] = page;
+  connect(&m_buzzStatusTimer,
+	  SIGNAL(timeout(void)),
+	  page,
+	  SLOT(slotSendStatus(void)));
+  connect(page,
+	  SIGNAL(changed(void)),
+	  this,
+	  SLOT(slotBuzzChanged(void)));
+  connect(page,
+	  SIGNAL(channelSaved(void)),
+	  this,
+	  SLOT(slotPopulateBuzzFavorites(void)));
+  connect(page,
+	  SIGNAL(destroyed(QObject *)),
+	  this,
+	  SLOT(slotBuzzPageDestroyed(QObject *)));
+  connect(page,
+	  SIGNAL(unify(void)),
+	  this,
+	  SLOT(slotUnifyBuzz(void)));
+  connect(this,
+	  SIGNAL(buzzNameChanged(const QByteArray &)),
+	  page,
+	  SLOT(slotBuzzNameChanged(const QByteArray &)));
+  connect(this,
+	  SIGNAL(iconsChanged(void)),
+	  page,
+	  SLOT(slotSetIcons(void)));
+  m_ui.buzzTab->addTab(page, QString::fromUtf8(channel.constData(),
+					       channel.length()));
+  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
+
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
+      {
+	QByteArray message("addbuzz_");
+
+	message.append(page->key().toBase64());
+	message.append("_");
+	message.append(page->channelType().toBase64());
+	message.append("_");
+	message.append(page->hashKey().toBase64());
+	message.append("_");
+	message.append(page->hashType().toBase64());
+	message.append("\n");
+
+	if(m_kernelSocket.write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton::slotJoinBuzzChannel(): "
+		     "write() failure for %1:%2.").
+	     arg(m_kernelSocket.peerAddress().toString()).
+	     arg(m_kernelSocket.peerPort()));
+      }
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+}
+
 void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
 {
   m_settings["gui/keepOnlyUserDefinedNeighbors"] = state;
@@ -3016,6 +3286,26 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
   if(smp)
     chat->setSMPVerified(smp->passed());
+}
+
+void spoton::slotPublishPeriodicallyToggled(bool state)
+{
+  m_settings["gui/publishPeriodically"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/publishPeriodically", state);
+}
+
+void spoton::slotPublishedKeySizeChanged(const QString &text)
+{
+  m_settings["gui/publishedKeySize"] = text.toInt();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/publishedKeySize",
+     m_settings.value("gui/publishedKeySize"));
 }
 
 void spoton::slotReceivedKernelMessage(void)
@@ -3759,6 +4049,71 @@ void spoton::slotReceivedKernelMessage(void)
     }
 }
 
+void spoton::slotRemoveEmailParticipants(void)
+{
+  if(!m_ui.emailParticipants->selectionModel()->hasSelection())
+    return;
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove the selected "
+		"E-Mail participant(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QModelIndexList list
+	  (m_ui.emailParticipants->selectionModel()->
+	   selectedRows(1)); // OID
+	QSqlQuery query(db);
+
+	while(!list.isEmpty())
+	  {
+	    QVariant data(list.takeFirst().data());
+
+	    if(!data.isNull() && data.isValid())
+	      {
+		query.exec("PRAGMA secure_delete = ON");
+		query.prepare("DELETE FROM friends_public_keys WHERE "
+			      "OID = ?");
+		query.bindValue(0, data.toString());
+		query.exec();
+	      }
+	  }
+
+	spoton_misc::purgeSignatureRelationships
+	  (db, m_crypts.value("chat", 0));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotRemoveParticipants(void)
 {
   if(!m_ui.participants->selectionModel()->hasSelection())
@@ -4144,15 +4499,6 @@ void spoton::slotTestSslControlString(void)
   mb.setWindowTitle(tr("%1: Information").
 		    arg(SPOTON_APPLICATION_NAME));
   mb.exec();
-}
-
-void spoton::slotPublishPeriodicallyToggled(bool state)
-{
-  m_settings["gui/publishPeriodically"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/publishPeriodically", state);
 }
 
 void spoton::slotListenerIPComboChanged(int index)
@@ -6638,350 +6984,4 @@ void spoton::slotKernelKeySizeChanged(const QString &text)
   settings.setValue
     ("gui/kernelKeySize",
      m_settings.value("gui/kernelKeySize"));
-}
-
-void spoton::slotPublishedKeySizeChanged(const QString &text)
-{
-  m_settings["gui/publishedKeySize"] = text.toInt();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/publishedKeySize",
-     m_settings.value("gui/publishedKeySize"));
-}
-
-void spoton::slotJoinBuzzChannel(void)
-{
-  QByteArray channel(m_ui.channel->text().toLatin1());
-  QByteArray channelSalt(m_ui.channelSalt->text().toLatin1());
-  QByteArray channelType(m_ui.channelType->currentText().toLatin1());
-  QByteArray hashKey(m_ui.buzzHashKey->text().toLatin1());
-  QByteArray hashType(m_ui.buzzHashType->currentText().toLatin1());
-  QByteArray id;
-  QPair<QByteArray, QByteArray> keys;
-  QPointer<spoton_buzzpage> page;
-  QString error("");
-  unsigned long int iterationCount =
-    static_cast<unsigned long int> (m_ui.buzzIterationCount->value());
-
-  if(channel.isEmpty())
-    {
-      error = tr("Please provide a channel key.");
-      goto done_label;
-    }
-
-  if(channelSalt.isEmpty())
-    {
-      error = tr("Please provide a channel salt.");
-      goto done_label;
-    }
-
-  if(hashKey.isEmpty())
-    {
-      error = tr("Please provide a hash key.");
-      goto done_label;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  keys = spoton_crypt::derivedKeys(channelType,
-				   "sha1", // PBKDF2.
-				   iterationCount,
-				   channel + channelType + hashType,
-				   channelSalt,
-				   true,
-				   error);
-  QApplication::restoreOverrideCursor();
-
-  if(!error.isEmpty())
-    goto done_label;
-
-  if((page = m_buzzPages.value(keys.first, 0)))
-    {
-      if(m_ui.buzzTab->indexOf(page) != -1)
-	m_ui.buzzTab->setCurrentWidget(page);
-
-      goto done_label;
-    }
-
-  if(m_buzzIds.contains(keys.first))
-    id = m_buzzIds[keys.first];
-  else
-    {
-      id = spoton_crypt::
-	strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
-      m_buzzIds[keys.first] = id;
-    }
-
-  m_ui.channel->clear();
-  m_ui.channelSalt->clear();
-  m_ui.channelType->setCurrentIndex(0);
-  m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
-  m_ui.buzzHashKey->clear();
-  m_ui.buzzHashType->setCurrentIndex(0);
-  page = new spoton_buzzpage
-    (&m_kernelSocket, channel, channelSalt, channelType,
-     id, iterationCount, hashKey, hashType, keys.first, this);
-  m_buzzPages[page->key()] = page;
-  connect(&m_buzzStatusTimer,
-	  SIGNAL(timeout(void)),
-	  page,
-	  SLOT(slotSendStatus(void)));
-  connect(page,
-	  SIGNAL(changed(void)),
-	  this,
-	  SLOT(slotBuzzChanged(void)));
-  connect(page,
-	  SIGNAL(channelSaved(void)),
-	  this,
-	  SLOT(slotPopulateBuzzFavorites(void)));
-  connect(page,
-	  SIGNAL(destroyed(QObject *)),
-	  this,
-	  SLOT(slotBuzzPageDestroyed(QObject *)));
-  connect(page,
-	  SIGNAL(unify(void)),
-	  this,
-	  SLOT(slotUnifyBuzz(void)));
-  connect(this,
-	  SIGNAL(buzzNameChanged(const QByteArray &)),
-	  page,
-	  SLOT(slotBuzzNameChanged(const QByteArray &)));
-  connect(this,
-	  SIGNAL(iconsChanged(void)),
-	  page,
-	  SLOT(slotSetIcons(void)));
-  m_ui.buzzTab->addTab(page, QString::fromUtf8(channel.constData(),
-					       channel.length()));
-  m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
-
-  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted() ||
-       m_ui.kernelKeySize->currentText().toInt() == 0)
-      {
-	QByteArray message("addbuzz_");
-
-	message.append(page->key().toBase64());
-	message.append("_");
-	message.append(page->channelType().toBase64());
-	message.append("_");
-	message.append(page->hashKey().toBase64());
-	message.append("_");
-	message.append(page->hashType().toBase64());
-	message.append("\n");
-
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton::slotJoinBuzzChannel(): "
-		     "write() failure for %1:%2.").
-	     arg(m_kernelSocket.peerAddress().toString()).
-	     arg(m_kernelSocket.peerPort()));
-      }
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::slotCloseBuzzTab(int index)
-{
-  spoton_buzzpage *page = qobject_cast<spoton_buzzpage *>
-    (m_ui.buzzTab->widget(index));
-
-  if(page)
-    {
-      m_buzzPages.remove(page->key());
-      page->deleteLater();
-    }
-
-  m_ui.buzzTab->removeTab(index);
-
-  if(m_buzzPages.isEmpty())
-    m_buzzStatusTimer.stop();
-}
-
-void spoton::slotBuzzChanged(void)
-{
-  if(currentTabName() != "buzz")
-    m_sb.buzz->setVisible(true);
-
-  playSound("buzz.wav");
-}
-
-void spoton::slotRemoveEmailParticipants(void)
-{
-  if(!m_ui.emailParticipants->selectionModel()->hasSelection())
-    return;
-
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected "
-		"E-Mail participant(s)?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
-
-    if(db.open())
-      {
-	QModelIndexList list
-	  (m_ui.emailParticipants->selectionModel()->
-	   selectedRows(1)); // OID
-	QSqlQuery query(db);
-
-	while(!list.isEmpty())
-	  {
-	    QVariant data(list.takeFirst().data());
-
-	    if(!data.isNull() && data.isValid())
-	      {
-		query.exec("PRAGMA secure_delete = ON");
-		query.prepare("DELETE FROM friends_public_keys WHERE "
-			      "OID = ?");
-		query.bindValue(0, data.toString());
-		query.exec();
-	      }
-	  }
-
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotAddAcceptedIP(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid listener OID. Please select a listener."));
-      return;
-    }
-
-  QHostAddress ip(m_ui.acceptedIP->text().trimmed());
-
-  if(m_ui.acceptedIP->text().trimmed() != "Any")
-    if(ip.isNull())
-      {
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      tr("Please provide an IP address or "
-				 "the keyword Any."));
-	return;
-      }
-
-  prepareDatabasesFromUI();
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare
-	  ("INSERT OR REPLACE INTO listeners_allowed_ips "
-	   "(ip_address, ip_address_hash, "
-	   "listener_oid) "
-	   "VALUES (?, ?, ?)");
-
-	if(m_ui.acceptedIP->text().trimmed() == "Any")
-	  {
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed("Any", &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash("Any", &ok).
-		 toBase64());
-	  }
-	else
-	  {
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(ip.toString().toLatin1(),
-					     &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash(ip.toString().
-				     toLatin1(), &ok).
-		 toBase64());
-	  }
-
-	query.bindValue(2, oid);
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    m_ui.acceptedIP->clear();
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to record the IP address."));
 }
