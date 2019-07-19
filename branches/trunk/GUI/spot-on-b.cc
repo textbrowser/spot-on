@@ -4040,6 +4040,25 @@ void spoton::slotKernelStatus(void)
     }
 }
 
+void spoton::slotListenerIPComboChanged(int index)
+{
+  /*
+  ** Method will be called because of activity in prepareListenerIPCombo().
+  */
+
+  if(index == 0)
+    {
+      m_ui.listenerIP->clear();
+      m_ui.listenerScopeId->clear();
+      m_ui.listenerIP->setEnabled(true);
+    }
+  else
+    {
+      m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
+      m_ui.listenerIP->setEnabled(false);
+    }
+}
+
 void spoton::slotListenerSelected(void)
 {
   QString oid("");
@@ -6959,25 +6978,6 @@ void spoton::slotTestSslControlString(void)
   mb.setWindowTitle(tr("%1: Information").
 		    arg(SPOTON_APPLICATION_NAME));
   mb.exec();
-}
-
-void spoton::slotListenerIPComboChanged(int index)
-{
-  /*
-  ** Method will be called because of activity in prepareListenerIPCombo().
-  */
-
-  if(index == 0)
-    {
-      m_ui.listenerIP->clear();
-      m_ui.listenerScopeId->clear();
-      m_ui.listenerIP->setEnabled(true);
-    }
-  else
-    {
-      m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
-      m_ui.listenerIP->setEnabled(false);
-    }
 }
 
 void spoton::slotViewLog(void)
