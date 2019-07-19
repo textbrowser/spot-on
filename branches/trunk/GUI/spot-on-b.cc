@@ -2769,6 +2769,20 @@ void spoton::slotChatInactivityTimeout(void)
     m_ui.status->setCurrentIndex(0); // Away
 }
 
+void spoton::slotChatSendMethodChanged(int index)
+{
+  if(index == 0)
+    m_settings["gui/chatSendMethod"] = "Normal_POST";
+  else
+    m_settings["gui/chatSendMethod"] = "Artificial_GET";
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/chatSendMethod",
+     m_settings.value("gui/chatSendMethod").toString());
+}
+
 void spoton::slotChatWindowDestroyed(void)
 {
   QMutableHashIterator<QString, QPointer<spoton_chatwindow> > it
@@ -6644,6 +6658,16 @@ void spoton::slotShareChatPublicKey(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotShareChatPublicKeyWithParticipant(void)
+{
+  QTableWidgetItem *item = m_ui.participants->item
+    (m_ui.participants->currentRow(), 1); // OID
+
+  if(item)
+    sharePublicKeyWithParticipant
+      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+}
+
 void spoton::slotShareEmailPublicKey(void)
 {
   if(!m_crypts.value("email", 0) ||
@@ -6954,30 +6978,6 @@ void spoton::slotListenerIPComboChanged(int index)
       m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
       m_ui.listenerIP->setEnabled(false);
     }
-}
-
-void spoton::slotChatSendMethodChanged(int index)
-{
-  if(index == 0)
-    m_settings["gui/chatSendMethod"] = "Normal_POST";
-  else
-    m_settings["gui/chatSendMethod"] = "Artificial_GET";
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/chatSendMethod",
-     m_settings.value("gui/chatSendMethod").toString());
-}
-
-void spoton::slotShareChatPublicKeyWithParticipant(void)
-{
-  QTableWidgetItem *item = m_ui.participants->item
-    (m_ui.participants->currentRow(), 1); // OID
-
-  if(item)
-    sharePublicKeyWithParticipant
-      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
 }
 
 void spoton::slotViewLog(void)
