@@ -2776,6 +2776,349 @@ void spoton::slotCloseBuzzTab(int index)
     m_buzzStatusTimer.stop();
 }
 
+void spoton::slotCopyFriendshipBundle(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString keyType("");
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item
+	(row, 1); // OID
+
+      if(item)
+	{
+	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+	    toString();
+	  oid = item->text();
+	}
+    }
+
+  if(oid.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  if(!m_crypts.value(keyType, 0) ||
+     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  /*
+  ** 1. Generate some symmetric information, S.
+  ** 2. Encrypt S with the participant's public key.
+  ** 3. Encrypt our information (name, public keys, signatures) with the
+  **    symmetric key. Call our information T.
+  ** 4. Compute a keyed hash of T.
+  */
+
+  QString neighborOid("");
+  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
+					 "aes256").
+			toString().toLatin1());
+  QByteArray hashKey;
+  QByteArray keyInformation;
+  QByteArray publicKey;
+  QByteArray startsWith;
+  QByteArray symmetricKey;
+  QPair<QByteArray, QByteArray> gemini;
+  QString receiverName("");
+  bool ok = true;
+
+  if(cipherType.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  spoton_misc::retrieveSymmetricData(gemini,
+				     publicKey,
+				     symmetricKey,
+				     hashKey,
+				     startsWith,
+				     neighborOid,
+				     receiverName,
+				     cipherType,
+				     oid,
+				     m_crypts.value(keyType, 0),
+				     &ok);
+
+  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  keyInformation = spoton_crypt::publicKeyEncrypt
+    (symmetricKey.toBase64() + "@" +
+     cipherType.toBase64() + "@" +
+     hashKey.toBase64(),
+     publicKey,
+     startsWith,
+     &ok);
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySPublicKey
+    (m_crypts.value(QString("%1-signature").arg(keyType))->publicKey(&ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySSignature
+    (m_crypts.value(QString("%1-signature").arg(keyType))->
+     digitalSignature(mySPublicKey, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray myPublicKey(m_crypts.value(keyType)->publicKey(&ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray mySignature(m_crypts.value(keyType)->
+			 digitalSignature(myPublicKey, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray myName;
+
+  if(keyType == "chat")
+    myName = m_settings.value("gui/nodeName", "unknown").toByteArray();
+  else
+    myName = poptasticName();
+
+  if(myName.isEmpty())
+    {
+      if(keyType == "chat")
+	myName = "unknown";
+      else
+	myName = "unknown@unknown.org";
+    }
+
+  QByteArray data;
+  spoton_crypt crypt(cipherType,
+		     "sha512",
+		     QByteArray(),
+		     symmetricKey,
+		     hashKey,
+		     0,
+		     0,
+		     "");
+
+  data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
+			 myName.toBase64() + "@" +
+			 myPublicKey.toBase64() + "@" +
+			 mySignature.toBase64() + "@" +
+			 mySPublicKey.toBase64() + "@" +
+			 mySSignature.toBase64(), &ok);
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray hash(crypt.keyedHash(data, &ok));
+
+  if(!ok)
+    {
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QString text("R" +
+	       keyInformation.toBase64() + "@" +
+	       data.toBase64() + "@" +
+	       hash.toBase64());
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QApplication::restoreOverrideCursor();
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The chat bundle is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  clipboard->setText(text);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotCopyMyEmailPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyEmailPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The e-mail public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotCopyMyPoptasticPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyPoptasticPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The poptastic public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotCopyMyRosettaPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyRosettaPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The rosetta public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotCopyMyURLPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyUrlPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The URL public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
 void spoton::slotCostChanged(int value)
 {
   m_settings["gui/congestionCost"] = value;
@@ -3011,6 +3354,385 @@ void spoton::slotDeleteAccount(void)
     populateAccounts(oid);
 }
 
+void spoton::slotDeleteAllBlockedNeighbors(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  /*
+  ** Delete all non-unique blocked neighbors.
+  ** Do remember that remote_ip_address contains encrypted data.
+  */
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QMultiHash<QByteArray, qint64> hash;
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT remote_ip_address, OID FROM neighbors "
+		      "WHERE status_control = 'blocked' ORDER BY OID"))
+	  while(query.next())
+	    {
+	      QByteArray ip;
+	      bool ok = true;
+
+	      ip = crypt->
+		decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).
+					toByteArray()),
+		 &ok);
+
+	      if(ok)
+		hash.insert(ip, query.value(1).toLongLong());
+	    }
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM neighbors WHERE OID = ?");
+
+	for(int i = 0; i < hash.keys().size(); i++)
+	  {
+	    QList<qint64> list(hash.values(hash.keys().at(i)));
+
+	    std::sort(list.begin(), list.end());
+
+	    for(int j = 1; j < list.size(); j++) // Delete all but one.
+	      {
+		query.bindValue(0, list.at(j));
+		query.exec();
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotDeleteAllUuids(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  /*
+  ** Delete all non-unique uuids.
+  ** Do remember that uuid contains encrypted data.
+  */
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QMultiHash<QByteArray, qint64> hash;
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT uuid, OID FROM neighbors ORDER BY OID"))
+	  while(query.next())
+	    {
+	      QByteArray uuid;
+	      bool ok = true;
+
+	      uuid = crypt->
+		decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).
+					toByteArray()),
+		 &ok);
+
+	      if(ok)
+		hash.insert(uuid, query.value(1).toLongLong());
+	    }
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM neighbors WHERE OID = ?");
+
+	for(int i = 0; i < hash.keys().size(); i++)
+	  {
+	    QList<qint64> list(hash.values(hash.keys().at(i)));
+
+	    std::sort(list.begin(), list.end());
+
+	    for(int j = 1; j < list.size(); j++) // Delete all but one.
+	      {
+		query.bindValue(0, list.at(j));
+		query.exec();
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotDeleteMail(void)
+{
+  QModelIndexList list
+    (m_ui.mail->selectionModel()->
+     selectedRows(m_ui.mail->columnCount() - 1)); // OID
+
+  if(list.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	while(!list.isEmpty())
+	  {
+	    QString oid(list.takeFirst().data().toString());
+	    bool ok = true;
+
+	    if(m_ui.folder->currentIndex() == 2) // Trash
+	      {
+		query.exec("PRAGMA secure_delete = ON");
+		query.prepare("DELETE FROM folders WHERE OID = ?");
+		query.bindValue(0, oid);
+	      }
+	    else
+	      {
+		query.prepare("UPDATE folders SET folder_index = 2, "
+			      "status = ? WHERE "
+			      "OID = ?");
+
+		if(m_crypts.value("email", 0))
+		  query.bindValue
+		    (0, m_crypts.value("email")->
+		     encryptedThenHashed(QByteArray("Deleted"), &ok).
+		     toBase64());
+		else
+		  ok = false;
+
+		query.bindValue(1, oid);
+	      }
+
+	    if(ok)
+	      {
+		if(!query.exec())
+		  {
+		    /*
+		    ** We may be attempting to delete a letter from the
+		    ** inbox that also exists in the trash. This can occur
+		    ** whenever we request e-mail from other offices that was
+		    ** also delivered to us.
+		    ** The letter's date in the trash folder will be stale.
+		    */
+
+		    if(query.lastError().text().toLower().contains("unique"))
+		      {
+			QSqlQuery query(db);
+
+			query.exec("PRAGMA secure_delete = ON");
+			query.prepare("DELETE FROM folders WHERE OID = ?");
+			query.bindValue(0, oid);
+			query.exec();
+			query.prepare("DELETE FROM folders_attachment "
+				      "WHERE folders_oid = ?");
+			query.bindValue(0, oid);
+			query.exec();
+		      }
+		  }
+		else if(m_ui.folder->currentIndex() == 2) // Trash
+		  {
+		    QSqlQuery query(db);
+
+		    query.exec("PRAGMA secure_delete = ON");
+		    query.prepare("DELETE FROM folders_attachment "
+				  "WHERE folders_oid = ?");
+		    query.bindValue(0, oid);
+		    query.exec();
+		  }
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+  slotRefreshMail();
+}
+
+void spoton::slotEmptyTrash(void)
+{
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").
+		    arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM folders WHERE folder_index = 2");
+	query.exec("DELETE FROM folders_attachment WHERE folders_oid "
+		   "NOT IN (SELECT OID FROM folders)");
+	query.exec("VACUUM");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+  if(m_ui.folder->currentIndex() == 2)
+    {
+      m_ui.mail->setRowCount(0);
+      m_ui.mailMessage->clear();
+    }
+}
+
+void spoton::slotEnableRetrieveMail(void)
+{
+  m_ui.retrieveMail->setEnabled(true);
+}
+
+void spoton::slotEnabledPostOffice(bool state)
+{
+  m_settings["gui/postoffice_enabled"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/postoffice_enabled", state);
+}
+
+void spoton::slotGeminiChanged(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+  else if(!(item->column() == 6 ||
+	    item->column() == 7)) // Gemini Encryption Key, Gemini Hash Key
+    return;
+  else if(!m_ui.participants->item(item->row(), 1)) // OID
+    return;
+
+  QTableWidgetItem *item1 = 0;
+  QTableWidgetItem *item2 = 0;
+
+  if(item->column() == 6)
+    {
+      item1 = item;
+      item2 = m_ui.participants->item(item->row(), 7);
+    }
+  else
+    {
+      item1 = m_ui.participants->item(item->row(), 6);
+      item2 = item;
+    }
+
+  if(!item1 || !item2)
+    return;
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = item1->text().toLatin1();
+  gemini.second = item2->text().toLatin1();
+  saveGemini(gemini, m_ui.participants->item(item->row(), 1)->text()); // OID
+}
+
+void spoton::slotGenerateGeminiInChat(void)
+{
+  int row = m_ui.participants->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item2 = m_ui.participants->item
+    (row, 6); // Gemini Encryption Key
+  QTableWidgetItem *item3 = m_ui.participants->item
+    (row, 7); // Gemini Hash Key
+
+  if(!item1 || !item2 || !item3)
+    return;
+  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
+    return; // Temporary!
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = spoton_crypt::
+    strongRandomBytes(spoton_crypt::cipherKeyLength("aes256"));
+  gemini.second = spoton_crypt::strongRandomBytes
+    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+
+  if(saveGemini(gemini, item1->text()))
+    {
+      disconnect(m_ui.participants,
+		 SIGNAL(itemChanged(QTableWidgetItem *)),
+		 this,
+		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+      item2->setText(gemini.first.toBase64());
+      item3->setText(gemini.second.toBase64());
+      connect(m_ui.participants,
+	      SIGNAL(itemChanged(QTableWidgetItem *)),
+	      this,
+	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotJoinBuzzChannel(void)
 {
   QByteArray channel(m_ui.channel->text().toLatin1());
@@ -3146,6 +3868,15 @@ void spoton::slotJoinBuzzChannel(void)
 			  arg(SPOTON_APPLICATION_NAME), error);
 }
 
+void spoton::slotKeepCopy(bool state)
+{
+  m_settings["gui/saveCopy"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/saveCopy", state);
+}
+
 void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
 {
   m_settings["gui/keepOnlyUserDefinedNeighbors"] = state;
@@ -3170,6 +3901,31 @@ void spoton::slotKernelKeySizeChanged(const QString &text)
      m_settings.value("gui/kernelKeySize"));
 }
 
+void spoton::slotKernelStatus(void)
+{
+  if(isKernelActive() && m_sb.kernelstatus == sender())
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+
+      slotDeactivateKernel();
+    }
+  else
+    {
+      slotDeactivateKernel();
+      slotActivateKernel();
+    }
+}
+
 void spoton::slotListenerSelected(void)
 {
   QString oid("");
@@ -3187,6 +3943,288 @@ void spoton::slotListenerSelected(void)
   populateAccounts(oid);
   populateListenerIps(oid);
   populateMOTD(oid);
+}
+
+void spoton::slotMailSelected(QTableWidgetItem *item)
+{
+  if(!item)
+    {
+      m_ui.mailMessage->clear();
+      return;
+    }
+
+  int row = item->row();
+
+  if(row < 0)
+    {
+      m_ui.mailMessage->clear();
+      return;
+    }
+
+  {
+    QString goldbug("");
+    QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
+
+    if(item)
+      goldbug = item->text();
+
+    if(goldbug == "1")
+      {
+	QDialog dialog(this);
+	Ui_spoton_goldbug ui;
+
+	ui.setupUi(&dialog);
+	ui.secrets->setMenu(new QMenu(this));
+	ui.secrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
+	connect(ui.secrets,
+		SIGNAL(clicked(void)),
+		ui.secrets,
+		SLOT(showMenu(void)));
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	QMapIterator<QString, QByteArray> it
+	  (m_smpWindow.streams(QStringList() << "e-mail"
+			                     << "poptastic"));
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    QAction *action = ui.secrets->menu()->addAction
+	      (it.key(),
+	       this,
+	       SLOT(slotGoldBugDialogActionSelected(void)));
+
+	    action->setProperty
+	      ("pointer", QVariant::fromValue<QWidget *> (ui.goldbug));
+	    action->setProperty("stream", it.value());
+	  }
+
+	if(ui.secrets->menu()->actions().isEmpty())
+	  {
+	    /*
+	    ** Please do not translate Empty.
+	    */
+
+	    QAction *action = ui.secrets->menu()->addAction("Empty");
+
+	    action->setEnabled(false);
+	  }
+
+	QApplication::restoreOverrideCursor();
+	dialog.setWindowTitle(tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME));
+
+	if(dialog.exec() != QDialog::Accepted)
+	  return;
+	else
+	  goldbug = ui.goldbug->text().trimmed();
+
+	if(goldbug.isEmpty())
+	  return;
+
+	QByteArray bytes(goldbug.toUtf8());
+	QByteArray magnet;
+	int size = static_cast<int>
+	  (spoton_crypt::cipherKeyLength("aes256"));
+
+	magnet.append("magnet:?aa=sha512&ak=");
+	magnet.append
+	  (bytes.mid(size, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+	magnet.append("&ea=aes256");
+	magnet.append("&ek=");
+	magnet.append(bytes.mid(0, size));
+	magnet.append("&xt=urn:forward-secrecy");
+
+	int rc = applyGoldBugToLetter(magnet, row);
+
+	if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS)
+	  {
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while processing "
+				     "the attachment(s)."));
+	    return;
+	  }
+	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE)
+	  {
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("A database error occurred."));
+	    return;
+	  }
+	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL)
+	  {
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("The provided Gold Bug may be "
+				     "incorrect."));
+	    return;
+	  }
+	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY)
+	  {
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("A severe memory issue occurred."));
+	    return;
+	  }
+	else if(item)
+	  row = item->row(); // Sorting.
+      }
+  }
+
+  QString date("");
+  QString fromTo("");
+  QString message("");
+  QString signature("");
+  QString status("");
+  QString subject("");
+  QString text("");
+
+  {
+    QTableWidgetItem *item = m_ui.mail->item(row, 0); // Date
+
+    if(item)
+      date = item->text();
+
+    item = m_ui.mail->item(row, 1); // From / To
+
+    if(item)
+      fromTo = item->text();
+
+    item = m_ui.mail->item(row, 2); // Status
+
+    if(item)
+      status = item->text();
+
+    item = m_ui.mail->item(row, 3); // Subject
+
+    if(item)
+      subject = item->text();
+
+    item = m_ui.mail->item(row, 6); // Message
+
+    if(item)
+      message = item->text();
+
+    item = m_ui.mail->item(row, 10); // Signature
+
+    if(item)
+      signature = item->text();
+  }
+
+  if(m_ui.folder->currentIndex() == 0) // Inbox
+    {
+      if(signature.isEmpty())
+	{
+	  text.append(tr("<font color=#9F6000><b>"
+			 "The message was not digitally signed "
+			 "or digital signatures are not supported."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+      else
+	{
+	  text.append(tr("<font color=#4F8A10><b>"
+			 "The message appears to have been digitally signed."
+			 "</b></font>"));
+	  text.append("<br><br>");
+	}
+
+      text.append(tr("<b>From:</b> "));
+      text.append(fromTo);
+      text.append("<br>");
+      text.append(tr("<b>To:</b> me"));
+      text.append("<br>");
+      text.append(tr("<b>Subject:</b> "));
+      text.append(subject);
+      text.append("<br>");
+      text.append(tr("<b>Sent: </b> "));
+      text.append(date);
+      text.append("<hr>");
+      text.append("<span style=\"font-size:large;\">");
+      text.append(message);
+      text.append("</span>");
+
+      if(status != "Read")
+	{
+	  QTableWidgetItem *item = 0;
+
+	  if((item = m_ui.mail->
+	      item(row, m_ui.mail->columnCount() - 1))) // OID
+	    if(updateMailStatus(item->text(), "Read"))
+	      if((item = m_ui.mail->item(row, 2))) // Status
+		item->setText("Read");
+	}
+    }
+  else if(m_ui.folder->currentIndex() == 1) // Sent
+    {
+      text.append(tr("<b>From:</b> me"));
+      text.append("<br>");
+      text.append(tr("<b>To:</b> "));
+      text.append(fromTo);
+      text.append("<br>");
+      text.append(tr("<b>Subject:</b> "));
+      text.append(subject);
+      text.append("<br>");
+      text.append(tr("<b>Sent: </b> "));
+      text.append(date);
+      text.append("<hr>");
+      text.append(message);
+    }
+  else // Trash
+    {
+      text.append(tr("<b>From/To:</b> "));
+      text.append(fromTo);
+      text.append("<br>");
+      text.append(tr("<b>From/To:</b> "));
+      text.append(fromTo);
+      text.append("<br>");
+      text.append(tr("<b>Subject:</b> "));
+      text.append(subject);
+      text.append("<br>");
+      text.append(tr("<b>Sent: </b> "));
+      text.append(date);
+      text.append("<hr>");
+      text.append(message);
+
+      if(status != "Deleted")
+	{
+	  QTableWidgetItem *item = 0;
+
+	  if((item = m_ui.mail->
+	      item(row, m_ui.mail->columnCount() - 1))) // OID
+	    if(updateMailStatus(item->text(), "Deleted"))
+	      if((item = m_ui.mail->item(row, 2))) // Status
+		item->setText("Deleted");
+	}
+    }
+
+  m_ui.mailMessage->clear();
+  m_ui.mailMessage->append(text);
+  m_ui.mailMessage->horizontalScrollBar()->setValue(0);
+  m_ui.mailMessage->verticalScrollBar()->setValue(0);
+}
+
+void spoton::slotMailSelected(void)
+{
+  if(m_ui.mail->selectedItems().isEmpty())
+    m_ui.mailMessage->clear();
+  else
+    slotMailSelected(m_ui.mail->currentItem());
+}
+
+void spoton::slotMailTabChanged(int index)
+{
+  Q_UNUSED(index);
+}
+
+void spoton::slotMaximumEmailFileSizeChanged(int value)
+{
+  m_settings["gui/maximumEmailFileSize"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/maximumEmailFileSize", value);
 }
 
 void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
@@ -4138,6 +5176,114 @@ void spoton::slotReceivedKernelMessage(void)
     }
 }
 
+void spoton::slotRefreshMail(void)
+{
+  if(m_ui.mailTab->currentIndex() == 1)
+    {
+      refreshInstitutions();
+      return;
+    }
+
+  populateMail();
+}
+
+void spoton::slotRefreshPostOffice(void)
+{
+  if(!m_crypts.value("email", 0))
+    return;
+  else if(m_ui.mailTab->currentIndex() != 1)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "email.db");
+
+    if(db.open())
+      {
+	m_ui.postoffice->setRowCount(0);
+	m_ui.postoffice->setSortingEnabled(false);
+
+	QSqlQuery query(db);
+	int totalRows = 0;
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM post_office"))
+	  if(query.next())
+	    m_ui.postoffice->setRowCount(query.value(0).toInt());
+
+	if(query.exec("SELECT date_received, "
+		      "message_bundle, recipient_hash "
+		      "FROM post_office"))
+	  {
+	    int row = 0;
+
+	    while(query.next() && totalRows < m_ui.postoffice->rowCount())
+	      {
+		totalRows += 1;
+
+		for(int i = 0; i < query.record().count(); i++)
+		  {
+		    QTableWidgetItem *item = 0;
+		    bool ok = true;
+
+		    if(i == 0)
+		      row += 1;
+
+		    if(i == 0)
+		      {
+			item = new QTableWidgetItem
+			  (m_crypts.value("email")->
+			   decryptedAfterAuthenticated
+			   (QByteArray::fromBase64(query.value(i).
+						   toByteArray()),
+			    &ok).constData());
+
+			if(!ok)
+			  item->setText(tr("error"));
+		      }
+		    else if(i == 1)
+		      {
+			QByteArray bytes
+			  (m_crypts.value("email")->
+			   decryptedAfterAuthenticated
+			   (QByteArray::fromBase64(query.value(i).
+						   toByteArray()),
+			    &ok));
+
+			if(ok)
+			  item = new QTableWidgetItem
+			    (QString::number(bytes.length()));
+			else
+			  item = new QTableWidgetItem(tr("error"));
+		      }
+		    else
+		      item = new QTableWidgetItem(query.value(i).toString());
+
+		    item->setFlags
+		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		    m_ui.postoffice->setItem(row - 1, i, item);
+		  }
+	      }
+	  }
+
+	m_ui.postoffice->setRowCount(totalRows);
+	m_ui.postoffice->setSortingEnabled(true);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotRemoveEmailParticipants(void)
 {
   if(!m_ui.emailParticipants->selectionModel()->hasSelection())
@@ -4383,489 +5529,6 @@ void spoton::slotReply(void)
   m_ui.outgoingMessage->setFocus();
 }
 
-void spoton::slotSaveBuzzName(void)
-{
-  QString str(m_ui.buzzName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.buzzName->setText(str);
-    }
-  else
-    m_ui.buzzName->setText(str.trimmed());
-
-  m_settings["gui/buzzName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/buzzName", str.toUtf8());
-  m_ui.buzzName->selectAll();
-  emit buzzNameChanged(str.toUtf8());
-}
-
-void spoton::slotSaveEmailName(void)
-{
-  QString str(m_ui.emailNameEditable->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.emailName->setItemText(0, str);
-      m_ui.emailNameEditable->setText(str);
-    }
-  else
-    {
-      m_ui.emailName->setItemText(0, str.trimmed());
-      m_ui.emailNameEditable->setText(str.trimmed());
-    }
-
-  m_settings["gui/emailName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/emailName", str.toUtf8());
-  m_ui.emailNameEditable->selectAll();
-}
-
-void spoton::slotSaveNodeName(void)
-{
-  QString str(m_ui.nodeName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.nodeName->setText(str);
-    }
-  else
-    m_ui.nodeName->setText(str.trimmed());
-
-  m_settings["gui/nodeName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/nodeName", str.toUtf8());
-  m_ui.nodeName->selectAll();
-}
-
-void spoton::slotSendMessage(void)
-{
-  sendMessage(0);
-}
-
-void spoton::slotShareChatPublicKey(void)
-{
-  if(!m_crypts.value("chat", 0) ||
-     !m_crypts.value("chat-signature", 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  if(m_ui.neighborsActionMenu->menu())
-    m_ui.neighborsActionMenu->menu()->repaint();
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value("chat")->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value("chat")->digitalSignature(publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("chat-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name(m_settings.value("gui/nodeName", "unknown").
-		      toByteArray());
-
-      if(name.isEmpty())
-	name = "unknown";
-
-      message.append("sharepublickey_");
-      message.append(oid);
-      message.append("_");
-      message.append(QByteArray("chat").toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(qCompress(publicKey).toBase64());
-      message.append("_");
-      message.append(signature.toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotShareChatPublicKey(): write() failure "
-		   "for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotShareEmailPublicKey(void)
-{
-  if(!m_crypts.value("email", 0) ||
-     !m_crypts.value("email-signature", 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  if(m_ui.neighborsActionMenu->menu())
-    m_ui.neighborsActionMenu->menu()->repaint();
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value("email")->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value("email")->digitalSignature(publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("email-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name(m_settings.value("gui/emailName", "unknown").
-		      toByteArray());
-
-      if(name.isEmpty())
-	name = "unknown";
-
-      message.append("sharepublickey_");
-      message.append(oid);
-      message.append("_");
-      message.append(QByteArray("email").toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(qCompress(publicKey).toBase64());
-      message.append("_");
-      message.append(signature.toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotShareEmailPublicKey(): write() failure "
-		   "for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotSuperEcho(int index)
-{
-  m_settings["gui/superEcho"] = index;
-
-  QSettings settings;
-
-  settings.setValue("gui/superEcho", index);
-}
-
-void spoton::slotTestSslControlString(void)
-{
-  QList<QSslCipher> ciphers
-    (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
-  QMessageBox mb(m_optionsWindow);
-  QString str("");
-
-  for(int i = 0; i < ciphers.size(); i++)
-    str.append(QString("%1-%2").arg(ciphers.at(i).name()).
-	       arg(ciphers.at(i).protocolString()) + "\n");
-
-  if(!str.isEmpty())
-    {
-      mb.setDetailedText(str);
-      mb.setText
-	(tr("The following ciphers are supported by your OpenSSL library. "
-	    "Please note that %1 may neglect discovered ciphers "
-	    "if the ciphers are not also understood by Qt.").
-	 arg(SPOTON_APPLICATION_NAME));
-    }
-  else
-    mb.setText(tr("Empty cipher list."));
-
-  mb.setStandardButtons(QMessageBox::Ok);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowTitle(tr("%1: Information").
-		    arg(SPOTON_APPLICATION_NAME));
-  mb.exec();
-}
-
-void spoton::slotListenerIPComboChanged(int index)
-{
-  /*
-  ** Method will be called because of activity in prepareListenerIPCombo().
-  */
-
-  if(index == 0)
-    {
-      m_ui.listenerIP->clear();
-      m_ui.listenerScopeId->clear();
-      m_ui.listenerIP->setEnabled(true);
-    }
-  else
-    {
-      m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
-      m_ui.listenerIP->setEnabled(false);
-    }
-}
-
-void spoton::slotChatSendMethodChanged(int index)
-{
-  if(index == 0)
-    m_settings["gui/chatSendMethod"] = "Normal_POST";
-  else
-    m_settings["gui/chatSendMethod"] = "Artificial_GET";
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/chatSendMethod",
-     m_settings.value("gui/chatSendMethod").toString());
-}
-
-void spoton::slotShareChatPublicKeyWithParticipant(void)
-{
-  QTableWidgetItem *item = m_ui.participants->item
-    (m_ui.participants->currentRow(), 1); // OID
-
-  if(item)
-    sharePublicKeyWithParticipant
-      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
-}
-
-void spoton::slotShareEmailPublicKeyWithParticipant(void)
-{
-  QTableWidgetItem *item = m_ui.emailParticipants->item
-    (m_ui.emailParticipants->currentRow(), 1); // OID
-
-  if(item)
-    sharePublicKeyWithParticipant
-      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
-}
-
-void spoton::slotShareUrlPublicKeyWithParticipant(void)
-{
-  sharePublicKeyWithParticipant("url");
-}
-
-void spoton::slotViewLog(void)
-{
-  m_logViewer.show(this);
-}
-
-void spoton::slotStatusChanged(int index)
-{
-  m_ui.custom->setVisible(false);
-
-  if(index == 0)
-    m_settings["gui/my_status"] = "Away";
-  else if(index == 1)
-    m_settings["gui/my_status"] = "Busy";
-  else if(index == 2)
-    {
-      m_settings["gui/my_status"] = "Custom";
-      m_ui.custom->setVisible(true);
-    }
-  else if(index == 3)
-    m_settings["gui/my_status"] = "Offline";
-  else
-    m_settings["gui/my_status"] = "Online";
-
-  QSettings settings;
-
-  settings.setValue("gui/my_status", m_settings.value("gui/my_status"));
-}
-
-void spoton::slotKernelCipherTypeChanged(int index)
-{
-  Q_UNUSED(index);
-  m_settings["gui/kernelCipherType"] =
-    m_ui.kernelCipherType->currentText().toLower();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/kernelCipherType", m_settings.value("gui/kernelCipherType"));
-}
-
-void spoton::slotKernelHashTypeChanged(int index)
-{
-  Q_UNUSED(index);
-  m_settings["gui/kernelHashType"] =
-    m_ui.kernelHashType->currentText().toLower();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
-}
-
-void spoton::slotCopyMyChatPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyChatPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The chat public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotAddFriendsKey(void)
-{
-  QByteArray key
-    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
-#if SPOTON_GOLDBUG == 0
-  QWidget *parent = m_addParticipantWindow;
-#else
-  QWidget *parent = this;
-#endif
-
-  if(m_ui.addFriendEmail->isChecked())
-    addFriendsKey(key, "E", parent);
-  else if(key.startsWith("K") || key.startsWith("k"))
-    {
-      QList<QByteArray> list(key.split('\n'));
-
-      while(!list.isEmpty())
-	{
-	  QByteArray bytes("K");
-
-	  bytes.append(list.takeFirst());
-	  bytes.remove(0, 1);
-	  addFriendsKey(bytes, "K", parent);
-	}
-    }
-  else
-    addFriendsKey(key, "R", parent);
-}
-
-void spoton::slotClearOutgoingMessage(void)
-{
-  m_ui.attachment->clear();
-  m_ui.emailName->setCurrentIndex(0);
-  m_ui.emailParticipants->selectionModel()->clear();
-  m_ui.email_fs_gb->setCurrentIndex(2);
-  m_ui.goldbug->clear();
-  m_ui.outgoingMessage->clear();
-  m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
-  m_ui.outgoingSubject->clear();
-  m_ui.richtext->setChecked(true);
-  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
-  m_ui.outgoingSubject->setFocus();
-}
-
 void spoton::slotResetAll(void)
 {
   QMessageBox mb(this);
@@ -4942,219 +5605,106 @@ void spoton::slotResetAll(void)
 #endif
 }
 
-void spoton::slotCopyFriendshipBundle(void)
+void spoton::slotRetrieveMail(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  QString error("");
 
-  if(!clipboard)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString keyType("");
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.participants->currentRow()) >= 0)
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     {
-      QTableWidgetItem *item = m_ui.participants->item
-	(row, 1); // OID
-
-      if(item)
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
 	{
-	  keyType = item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
-	    toString();
-	  oid = item->text();
+	  QByteArray message("retrievemail\n");
+
+	  if(m_kernelSocket.write(message.constData(), message.length()) !=
+	     message.length())
+	    spoton_misc::logError
+	      (QString("spoton::slotRetrieveMail(): write() failure "
+		       "for %1:%2.").
+	       arg(m_kernelSocket.peerAddress().toString()).
+	       arg(m_kernelSocket.peerPort()));
+	  else
+	    {
+	      m_ui.retrieveMail->setEnabled(false);
+	      QTimer::singleShot
+		(5000, this, SLOT(slotEnableRetrieveMail(void)));
+	    }
 	}
+      else if(m_ui.kernelKeySize->currentText().toInt() > 0)
+	error = tr("The connection to the kernel is not encrypted.");
     }
-
-  if(oid.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  if(!m_crypts.value(keyType, 0) ||
-     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  /*
-  ** 1. Generate some symmetric information, S.
-  ** 2. Encrypt S with the participant's public key.
-  ** 3. Encrypt our information (name, public keys, signatures) with the
-  **    symmetric key. Call our information T.
-  ** 4. Compute a keyed hash of T.
-  */
-
-  QString neighborOid("");
-  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").
-			toString().toLatin1());
-  QByteArray hashKey;
-  QByteArray keyInformation;
-  QByteArray publicKey;
-  QByteArray startsWith;
-  QByteArray symmetricKey;
-  QPair<QByteArray, QByteArray> gemini;
-  QString receiverName("");
-  bool ok = true;
-
-  if(cipherType.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  spoton_misc::retrieveSymmetricData(gemini,
-				     publicKey,
-				     symmetricKey,
-				     hashKey,
-				     startsWith,
-				     neighborOid,
-				     receiverName,
-				     cipherType,
-				     oid,
-				     m_crypts.value(keyType, 0),
-				     &ok);
-
-  if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  keyInformation = spoton_crypt::publicKeyEncrypt
-    (symmetricKey.toBase64() + "@" +
-     cipherType.toBase64() + "@" +
-     hashKey.toBase64(),
-     publicKey,
-     startsWith,
-     &ok);
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySPublicKey
-    (m_crypts.value(QString("%1-signature").arg(keyType))->publicKey(&ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySSignature
-    (m_crypts.value(QString("%1-signature").arg(keyType))->
-     digitalSignature(mySPublicKey, &ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray myPublicKey(m_crypts.value(keyType)->publicKey(&ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray mySignature(m_crypts.value(keyType)->
-			 digitalSignature(myPublicKey, &ok));
-
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray myName;
-
-  if(keyType == "chat")
-    myName = m_settings.value("gui/nodeName", "unknown").toByteArray();
   else
-    myName = poptasticName();
+    error = tr("The interface is not connected to the kernel.");
 
-  if(myName.isEmpty())
+  if(m_ui.retrieveMail == sender())
+    if(!error.isEmpty())
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+}
+
+void spoton::slotSaveBuzzName(void)
+{
+  QString str(m_ui.buzzName->text());
+
+  if(str.trimmed().isEmpty())
     {
-      if(keyType == "chat")
-	myName = "unknown";
-      else
-	myName = "unknown@unknown.org";
+      str = "unknown";
+      m_ui.buzzName->setText(str);
+    }
+  else
+    m_ui.buzzName->setText(str.trimmed());
+
+  m_settings["gui/buzzName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/buzzName", str.toUtf8());
+  m_ui.buzzName->selectAll();
+  emit buzzNameChanged(str.toUtf8());
+}
+
+void spoton::slotSaveEmailName(void)
+{
+  QString str(m_ui.emailNameEditable->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.emailName->setItemText(0, str);
+      m_ui.emailNameEditable->setText(str);
+    }
+  else
+    {
+      m_ui.emailName->setItemText(0, str.trimmed());
+      m_ui.emailNameEditable->setText(str.trimmed());
     }
 
-  QByteArray data;
-  spoton_crypt crypt(cipherType,
-		     "sha512",
-		     QByteArray(),
-		     symmetricKey,
-		     hashKey,
-		     0,
-		     0,
-		     "");
+  m_settings["gui/emailName"] = str.toUtf8();
 
-  data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
-			 myName.toBase64() + "@" +
-			 myPublicKey.toBase64() + "@" +
-			 mySignature.toBase64() + "@" +
-			 mySPublicKey.toBase64() + "@" +
-			 mySSignature.toBase64(), &ok);
+  QSettings settings;
 
-  if(!ok)
+  settings.setValue("gui/emailName", str.toUtf8());
+  m_ui.emailNameEditable->selectAll();
+}
+
+void spoton::slotSaveNodeName(void)
+{
+  QString str(m_ui.nodeName->text());
+
+  if(str.trimmed().isEmpty())
     {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
+      str = "unknown";
+      m_ui.nodeName->setText(str);
     }
+  else
+    m_ui.nodeName->setText(str.trimmed());
 
-  QByteArray hash(crypt.keyedHash(data, &ok));
+  m_settings["gui/nodeName"] = str.toUtf8();
 
-  if(!ok)
-    {
-      clipboard->clear();
-      QApplication::restoreOverrideCursor();
-      return;
-    }
+  QSettings settings;
 
-  QString text("R" +
-	       keyInformation.toBase64() + "@" +
-	       data.toBase64() + "@" +
-	       hash.toBase64());
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QApplication::restoreOverrideCursor();
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The chat bundle is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  clipboard->setText(text);
-  QApplication::restoreOverrideCursor();
+  settings.setValue("gui/nodeName", str.toUtf8());
+  m_ui.nodeName->selectAll();
 }
 
 void spoton::slotSendMail(void)
@@ -5667,1086 +6217,9 @@ void spoton::slotSendMail(void)
   m_ui.outgoingSubject->setFocus();
 }
 
-void spoton::slotDeleteAllBlockedNeighbors(void)
+void spoton::slotSendMessage(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  /*
-  ** Delete all non-unique blocked neighbors.
-  ** Do remember that remote_ip_address contains encrypted data.
-  */
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QMultiHash<QByteArray, qint64> hash;
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT remote_ip_address, OID FROM neighbors "
-		      "WHERE status_control = 'blocked' ORDER BY OID"))
-	  while(query.next())
-	    {
-	      QByteArray ip;
-	      bool ok = true;
-
-	      ip = crypt->
-		decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).
-					toByteArray()),
-		 &ok);
-
-	      if(ok)
-		hash.insert(ip, query.value(1).toLongLong());
-	    }
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM neighbors WHERE OID = ?");
-
-	for(int i = 0; i < hash.keys().size(); i++)
-	  {
-	    QList<qint64> list(hash.values(hash.keys().at(i)));
-
-	    std::sort(list.begin(), list.end());
-
-	    for(int j = 1; j < list.size(); j++) // Delete all but one.
-	      {
-		query.bindValue(0, list.at(j));
-		query.exec();
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotCopyMyEmailPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyEmailPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The e-mail public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotCopyMyPoptasticPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyPoptasticPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The poptastic public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotCopyMyRosettaPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyRosettaPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The rosetta public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotCopyMyURLPublicKey(void)
-{
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString text(copyMyUrlPublicKey());
-
-  QApplication::restoreOverrideCursor();
-
-  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("The URL public key is too long (%1 bytes).").
-	 arg(QLocale().toString(text.length())));
-      return;
-    }
-
-  QClipboard *clipboard = QApplication::clipboard();
-
-  if(clipboard)
-    {
-      m_ui.toolButtonCopyToClipboard->menu()->repaint();
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
-      QApplication::restoreOverrideCursor();
-    }
-}
-
-void spoton::slotShareURLPublicKey(void)
-{
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  if(m_ui.neighborsActionMenu->menu())
-    m_ui.neighborsActionMenu->menu()->repaint();
-
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  QByteArray publicKey;
-  QByteArray signature;
-  bool ok = true;
-
-  publicKey = m_crypts.value("url")->publicKey(&ok);
-
-  if(ok)
-    signature = m_crypts.value("url")->digitalSignature(publicKey, &ok);
-
-  QByteArray sPublicKey;
-  QByteArray sSignature;
-
-  if(ok)
-    sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
-
-  if(ok)
-    sSignature = m_crypts.value("url-signature")->
-      digitalSignature(sPublicKey, &ok);
-
-  if(ok)
-    {
-      QByteArray message;
-      QByteArray name(m_settings.value("gui/urlName", "unknown").
-		      toByteArray());
-
-      if(name.isEmpty())
-	name = "unknown";
-
-      message.append("sharepublickey_");
-      message.append(oid);
-      message.append("_");
-      message.append(QByteArray("url").toBase64());
-      message.append("_");
-      message.append(name.toBase64());
-      message.append("_");
-      message.append(qCompress(publicKey).toBase64());
-      message.append("_");
-      message.append(signature.toBase64());
-      message.append("_");
-      message.append(sPublicKey.toBase64());
-      message.append("_");
-      message.append(sSignature.toBase64());
-      message.append("\n");
-
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
-	spoton_misc::logError
-	  (QString("spoton::slotShareURLPublicKey(): write() failure "
-		   "for %1:%2.").
-	   arg(m_kernelSocket.peerAddress().toString()).
-	   arg(m_kernelSocket.peerPort()));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotDeleteAllUuids(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  /*
-  ** Delete all non-unique uuids.
-  ** Do remember that uuid contains encrypted data.
-  */
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QMultiHash<QByteArray, qint64> hash;
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT uuid, OID FROM neighbors ORDER BY OID"))
-	  while(query.next())
-	    {
-	      QByteArray uuid;
-	      bool ok = true;
-
-	      uuid = crypt->
-		decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).
-					toByteArray()),
-		 &ok);
-
-	      if(ok)
-		hash.insert(uuid, query.value(1).toLongLong());
-	    }
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM neighbors WHERE OID = ?");
-
-	for(int i = 0; i < hash.keys().size(); i++)
-	  {
-	    QList<qint64> list(hash.values(hash.keys().at(i)));
-
-	    std::sort(list.begin(), list.end());
-
-	    for(int j = 1; j < list.size(); j++) // Delete all but one.
-	      {
-		query.bindValue(0, list.at(j));
-		query.exec();
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotRefreshMail(void)
-{
-  if(m_ui.mailTab->currentIndex() == 1)
-    {
-      refreshInstitutions();
-      return;
-    }
-
-  populateMail();
-}
-
-void spoton::slotRefreshPostOffice(void)
-{
-  if(!m_crypts.value("email", 0))
-    return;
-  else if(m_ui.mailTab->currentIndex() != 1)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	m_ui.postoffice->setRowCount(0);
-	m_ui.postoffice->setSortingEnabled(false);
-
-	QSqlQuery query(db);
-	int totalRows = 0;
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT COUNT(*) FROM post_office"))
-	  if(query.next())
-	    m_ui.postoffice->setRowCount(query.value(0).toInt());
-
-	if(query.exec("SELECT date_received, "
-		      "message_bundle, recipient_hash "
-		      "FROM post_office"))
-	  {
-	    int row = 0;
-
-	    while(query.next() && totalRows < m_ui.postoffice->rowCount())
-	      {
-		totalRows += 1;
-
-		for(int i = 0; i < query.record().count(); i++)
-		  {
-		    QTableWidgetItem *item = 0;
-		    bool ok = true;
-
-		    if(i == 0)
-		      row += 1;
-
-		    if(i == 0)
-		      {
-			item = new QTableWidgetItem
-			  (m_crypts.value("email")->
-			   decryptedAfterAuthenticated
-			   (QByteArray::fromBase64(query.value(i).
-						   toByteArray()),
-			    &ok).constData());
-
-			if(!ok)
-			  item->setText(tr("error"));
-		      }
-		    else if(i == 1)
-		      {
-			QByteArray bytes
-			  (m_crypts.value("email")->
-			   decryptedAfterAuthenticated
-			   (QByteArray::fromBase64(query.value(i).
-						   toByteArray()),
-			    &ok));
-
-			if(ok)
-			  item = new QTableWidgetItem
-			    (QString::number(bytes.length()));
-			else
-			  item = new QTableWidgetItem(tr("error"));
-		      }
-		    else
-		      item = new QTableWidgetItem(query.value(i).toString());
-
-		    item->setFlags
-		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		    m_ui.postoffice->setItem(row - 1, i, item);
-		  }
-	      }
-	  }
-
-	m_ui.postoffice->setRowCount(totalRows);
-	m_ui.postoffice->setSortingEnabled(true);
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotMailSelected(void)
-{
-  if(m_ui.mail->selectedItems().isEmpty())
-    m_ui.mailMessage->clear();
-  else
-    slotMailSelected(m_ui.mail->currentItem());
-}
-
-void spoton::slotMailSelected(QTableWidgetItem *item)
-{
-  if(!item)
-    {
-      m_ui.mailMessage->clear();
-      return;
-    }
-
-  int row = item->row();
-
-  if(row < 0)
-    {
-      m_ui.mailMessage->clear();
-      return;
-    }
-
-  {
-    QString goldbug("");
-    QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
-
-    if(item)
-      goldbug = item->text();
-
-    if(goldbug == "1")
-      {
-	QDialog dialog(this);
-	Ui_spoton_goldbug ui;
-
-	ui.setupUi(&dialog);
-	ui.secrets->setMenu(new QMenu(this));
-	ui.secrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
-	connect(ui.secrets,
-		SIGNAL(clicked(void)),
-		ui.secrets,
-		SLOT(showMenu(void)));
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	QMapIterator<QString, QByteArray> it
-	  (m_smpWindow.streams(QStringList() << "e-mail"
-			                     << "poptastic"));
-
-	while(it.hasNext())
-	  {
-	    it.next();
-
-	    QAction *action = ui.secrets->menu()->addAction
-	      (it.key(),
-	       this,
-	       SLOT(slotGoldBugDialogActionSelected(void)));
-
-	    action->setProperty
-	      ("pointer", QVariant::fromValue<QWidget *> (ui.goldbug));
-	    action->setProperty("stream", it.value());
-	  }
-
-	if(ui.secrets->menu()->actions().isEmpty())
-	  {
-	    /*
-	    ** Please do not translate Empty.
-	    */
-
-	    QAction *action = ui.secrets->menu()->addAction("Empty");
-
-	    action->setEnabled(false);
-	  }
-
-	QApplication::restoreOverrideCursor();
-	dialog.setWindowTitle(tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME));
-
-	if(dialog.exec() != QDialog::Accepted)
-	  return;
-	else
-	  goldbug = ui.goldbug->text().trimmed();
-
-	if(goldbug.isEmpty())
-	  return;
-
-	QByteArray bytes(goldbug.toUtf8());
-	QByteArray magnet;
-	int size = static_cast<int>
-	  (spoton_crypt::cipherKeyLength("aes256"));
-
-	magnet.append("magnet:?aa=sha512&ak=");
-	magnet.append
-	  (bytes.mid(size, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-	magnet.append("&ea=aes256");
-	magnet.append("&ek=");
-	magnet.append(bytes.mid(0, size));
-	magnet.append("&xt=urn:forward-secrecy");
-
-	int rc = applyGoldBugToLetter(magnet, row);
-
-	if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS)
-	  {
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("An error occurred while processing "
-				     "the attachment(s)."));
-	    return;
-	  }
-	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE)
-	  {
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("A database error occurred."));
-	    return;
-	  }
-	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL)
-	  {
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("The provided Gold Bug may be "
-				     "incorrect."));
-	    return;
-	  }
-	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY)
-	  {
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("A severe memory issue occurred."));
-	    return;
-	  }
-	else if(item)
-	  row = item->row(); // Sorting.
-      }
-  }
-
-  QString date("");
-  QString fromTo("");
-  QString message("");
-  QString signature("");
-  QString status("");
-  QString subject("");
-  QString text("");
-
-  {
-    QTableWidgetItem *item = m_ui.mail->item(row, 0); // Date
-
-    if(item)
-      date = item->text();
-
-    item = m_ui.mail->item(row, 1); // From / To
-
-    if(item)
-      fromTo = item->text();
-
-    item = m_ui.mail->item(row, 2); // Status
-
-    if(item)
-      status = item->text();
-
-    item = m_ui.mail->item(row, 3); // Subject
-
-    if(item)
-      subject = item->text();
-
-    item = m_ui.mail->item(row, 6); // Message
-
-    if(item)
-      message = item->text();
-
-    item = m_ui.mail->item(row, 10); // Signature
-
-    if(item)
-      signature = item->text();
-  }
-
-  if(m_ui.folder->currentIndex() == 0) // Inbox
-    {
-      if(signature.isEmpty())
-	{
-	  text.append(tr("<font color=#9F6000><b>"
-			 "The message was not digitally signed "
-			 "or digital signatures are not supported."
-			 "</b></font>"));
-	  text.append("<br><br>");
-	}
-      else
-	{
-	  text.append(tr("<font color=#4F8A10><b>"
-			 "The message appears to have been digitally signed."
-			 "</b></font>"));
-	  text.append("<br><br>");
-	}
-
-      text.append(tr("<b>From:</b> "));
-      text.append(fromTo);
-      text.append("<br>");
-      text.append(tr("<b>To:</b> me"));
-      text.append("<br>");
-      text.append(tr("<b>Subject:</b> "));
-      text.append(subject);
-      text.append("<br>");
-      text.append(tr("<b>Sent: </b> "));
-      text.append(date);
-      text.append("<hr>");
-      text.append("<span style=\"font-size:large;\">");
-      text.append(message);
-      text.append("</span>");
-
-      if(status != "Read")
-	{
-	  QTableWidgetItem *item = 0;
-
-	  if((item = m_ui.mail->
-	      item(row, m_ui.mail->columnCount() - 1))) // OID
-	    if(updateMailStatus(item->text(), "Read"))
-	      if((item = m_ui.mail->item(row, 2))) // Status
-		item->setText("Read");
-	}
-    }
-  else if(m_ui.folder->currentIndex() == 1) // Sent
-    {
-      text.append(tr("<b>From:</b> me"));
-      text.append("<br>");
-      text.append(tr("<b>To:</b> "));
-      text.append(fromTo);
-      text.append("<br>");
-      text.append(tr("<b>Subject:</b> "));
-      text.append(subject);
-      text.append("<br>");
-      text.append(tr("<b>Sent: </b> "));
-      text.append(date);
-      text.append("<hr>");
-      text.append(message);
-    }
-  else // Trash
-    {
-      text.append(tr("<b>From/To:</b> "));
-      text.append(fromTo);
-      text.append("<br>");
-      text.append(tr("<b>From/To:</b> "));
-      text.append(fromTo);
-      text.append("<br>");
-      text.append(tr("<b>Subject:</b> "));
-      text.append(subject);
-      text.append("<br>");
-      text.append(tr("<b>Sent: </b> "));
-      text.append(date);
-      text.append("<hr>");
-      text.append(message);
-
-      if(status != "Deleted")
-	{
-	  QTableWidgetItem *item = 0;
-
-	  if((item = m_ui.mail->
-	      item(row, m_ui.mail->columnCount() - 1))) // OID
-	    if(updateMailStatus(item->text(), "Deleted"))
-	      if((item = m_ui.mail->item(row, 2))) // Status
-		item->setText("Deleted");
-	}
-    }
-
-  m_ui.mailMessage->clear();
-  m_ui.mailMessage->append(text);
-  m_ui.mailMessage->horizontalScrollBar()->setValue(0);
-  m_ui.mailMessage->verticalScrollBar()->setValue(0);
-}
-
-void spoton::slotDeleteMail(void)
-{
-  QModelIndexList list
-    (m_ui.mail->selectionModel()->
-     selectedRows(m_ui.mail->columnCount() - 1)); // OID
-
-  if(list.isEmpty())
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	while(!list.isEmpty())
-	  {
-	    QString oid(list.takeFirst().data().toString());
-	    bool ok = true;
-
-	    if(m_ui.folder->currentIndex() == 2) // Trash
-	      {
-		query.exec("PRAGMA secure_delete = ON");
-		query.prepare("DELETE FROM folders WHERE OID = ?");
-		query.bindValue(0, oid);
-	      }
-	    else
-	      {
-		query.prepare("UPDATE folders SET folder_index = 2, "
-			      "status = ? WHERE "
-			      "OID = ?");
-
-		if(m_crypts.value("email", 0))
-		  query.bindValue
-		    (0, m_crypts.value("email")->
-		     encryptedThenHashed(QByteArray("Deleted"), &ok).
-		     toBase64());
-		else
-		  ok = false;
-
-		query.bindValue(1, oid);
-	      }
-
-	    if(ok)
-	      {
-		if(!query.exec())
-		  {
-		    /*
-		    ** We may be attempting to delete a letter from the
-		    ** inbox that also exists in the trash. This can occur
-		    ** whenever we request e-mail from other offices that was
-		    ** also delivered to us.
-		    ** The letter's date in the trash folder will be stale.
-		    */
-
-		    if(query.lastError().text().toLower().contains("unique"))
-		      {
-			QSqlQuery query(db);
-
-			query.exec("PRAGMA secure_delete = ON");
-			query.prepare("DELETE FROM folders WHERE OID = ?");
-			query.bindValue(0, oid);
-			query.exec();
-			query.prepare("DELETE FROM folders_attachment "
-				      "WHERE folders_oid = ?");
-			query.bindValue(0, oid);
-			query.exec();
-		      }
-		  }
-		else if(m_ui.folder->currentIndex() == 2) // Trash
-		  {
-		    QSqlQuery query(db);
-
-		    query.exec("PRAGMA secure_delete = ON");
-		    query.prepare("DELETE FROM folders_attachment "
-				  "WHERE folders_oid = ?");
-		    query.bindValue(0, oid);
-		    query.exec();
-		  }
-	      }
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-  slotRefreshMail();
-}
-
-void spoton::slotGeminiChanged(QTableWidgetItem *item)
-{
-  if(!item)
-    return;
-  else if(!(item->column() == 6 ||
-	    item->column() == 7)) // Gemini Encryption Key, Gemini Hash Key
-    return;
-  else if(!m_ui.participants->item(item->row(), 1)) // OID
-    return;
-
-  QTableWidgetItem *item1 = 0;
-  QTableWidgetItem *item2 = 0;
-
-  if(item->column() == 6)
-    {
-      item1 = item;
-      item2 = m_ui.participants->item(item->row(), 7);
-    }
-  else
-    {
-      item1 = m_ui.participants->item(item->row(), 6);
-      item2 = item;
-    }
-
-  if(!item1 || !item2)
-    return;
-
-  QPair<QByteArray, QByteArray> gemini;
-
-  gemini.first = item1->text().toLatin1();
-  gemini.second = item2->text().toLatin1();
-  saveGemini(gemini,
-	     m_ui.participants->item(item->row(), 1)->text()); // OID
-}
-
-void spoton::slotGenerateGeminiInChat(void)
-{
-  int row = m_ui.participants->currentRow();
-
-  if(row < 0)
-    return;
-
-  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
-  QTableWidgetItem *item2 = m_ui.participants->item
-    (row, 6); // Gemini Encryption Key
-  QTableWidgetItem *item3 = m_ui.participants->item
-    (row, 7); // Gemini Hash Key
-
-  if(!item1 || !item2 || !item3)
-    return;
-  else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
-    return; // Temporary!
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QPair<QByteArray, QByteArray> gemini;
-
-  gemini.first = spoton_crypt::
-    strongRandomBytes(spoton_crypt::cipherKeyLength("aes256"));
-  gemini.second = spoton_crypt::strongRandomBytes
-    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-
-  if(saveGemini(gemini, item1->text()))
-    {
-      disconnect(m_ui.participants,
-		 SIGNAL(itemChanged(QTableWidgetItem *)),
-		 this,
-		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
-      item2->setText(gemini.first.toBase64());
-      item3->setText(gemini.second.toBase64());
-      connect(m_ui.participants,
-	      SIGNAL(itemChanged(QTableWidgetItem *)),
-	      this,
-	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
-    }
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotEmptyTrash(void)
-{
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").
-		    arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM folders WHERE folder_index = 2");
-	query.exec("DELETE FROM folders_attachment WHERE folders_oid "
-		   "NOT IN (SELECT OID FROM folders)");
-	query.exec("VACUUM");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-
-  if(m_ui.folder->currentIndex() == 2)
-    {
-      m_ui.mail->setRowCount(0);
-      m_ui.mailMessage->clear();
-    }
-}
-
-void spoton::slotEnableRetrieveMail(void)
-{
-  m_ui.retrieveMail->setEnabled(true);
-}
-
-void spoton::slotRetrieveMail(void)
-{
-  QString error("");
-
-  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    {
-      if(m_kernelSocket.isEncrypted() ||
-	 m_ui.kernelKeySize->currentText().toInt() == 0)
-	{
-	  QByteArray message("retrievemail\n");
-
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
-	    spoton_misc::logError
-	      (QString("spoton::slotRetrieveMail(): write() failure "
-		       "for %1:%2.").
-	       arg(m_kernelSocket.peerAddress().toString()).
-	       arg(m_kernelSocket.peerPort()));
-	  else
-	    {
-	      m_ui.retrieveMail->setEnabled(false);
-	      QTimer::singleShot
-		(5000, this, SLOT(slotEnableRetrieveMail(void)));
-	    }
-	}
-      else if(m_ui.kernelKeySize->currentText().toInt() > 0)
-	error = tr("The connection to the kernel is not encrypted.");
-    }
-  else
-    error = tr("The interface is not connected to the kernel.");
-
-  if(m_ui.retrieveMail == sender())
-    if(!error.isEmpty())
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::slotKernelStatus(void)
-{
-  if(isKernelActive() && m_sb.kernelstatus == sender())
-    {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
-
-      slotDeactivateKernel();
-    }
-  else
-    {
-      slotDeactivateKernel();
-      slotActivateKernel();
-    }
-}
-
-void spoton::slotMailTabChanged(int index)
-{
-  Q_UNUSED(index);
-}
-
-void spoton::slotEnabledPostOffice(bool state)
-{
-  m_settings["gui/postoffice_enabled"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/postoffice_enabled", state);
-}
-
-void spoton::slotStatusButtonClicked(void)
-{
-  QToolButton *toolButton = qobject_cast<QToolButton *> (sender());
-
-  if(toolButton == m_sb.buzz)
-    {
-      m_sb.buzz->setVisible(false);
-      m_ui.tab->setCurrentIndex(tabIndexFromName("buzz"));
-    }
-  else if(toolButton == m_sb.chat)
-    {
-      m_sb.chat->setVisible(false);
-      m_ui.tab->setCurrentIndex(tabIndexFromName("chat"));
-    }
-  else if(toolButton == m_sb.email)
-    {
-      m_sb.email->setVisible(false);
-      m_ui.folder->setCurrentIndex(0);
-      m_ui.mailTab->setCurrentIndex(0);
-      m_ui.tab->setCurrentIndex(tabIndexFromName("email"));
-      slotRefreshMail();
-    }
-  else if(toolButton == m_sb.listeners)
-    m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
-  else if(toolButton == m_sb.neighbors)
-    m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
-}
-
-void spoton::slotKeepCopy(bool state)
-{
-  m_settings["gui/saveCopy"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/saveCopy", state);
+  sendMessage(0);
 }
 
 void spoton::slotSetIcons(int index)
@@ -6977,11 +6450,537 @@ void spoton::slotSetIcons(int index)
   emit iconsChanged();
 }
 
-void spoton::slotMaximumEmailFileSizeChanged(int value)
+void spoton::slotShareChatPublicKey(void)
 {
-  m_settings["gui/maximumEmailFileSize"] = value;
+  if(!m_crypts.value("chat", 0) ||
+     !m_crypts.value("chat-signature", 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value("chat")->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value("chat")->digitalSignature(publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("chat-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name(m_settings.value("gui/nodeName", "unknown").
+		      toByteArray());
+
+      if(name.isEmpty())
+	name = "unknown";
+
+      message.append("sharepublickey_");
+      message.append(oid);
+      message.append("_");
+      message.append(QByteArray("chat").toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(qCompress(publicKey).toBase64());
+      message.append("_");
+      message.append(signature.toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotShareChatPublicKey(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotShareEmailPublicKey(void)
+{
+  if(!m_crypts.value("email", 0) ||
+     !m_crypts.value("email-signature", 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value("email")->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value("email")->digitalSignature(publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("email-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name(m_settings.value("gui/emailName", "unknown").
+		      toByteArray());
+
+      if(name.isEmpty())
+	name = "unknown";
+
+      message.append("sharepublickey_");
+      message.append(oid);
+      message.append("_");
+      message.append(QByteArray("email").toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(qCompress(publicKey).toBase64());
+      message.append("_");
+      message.append(signature.toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotShareEmailPublicKey(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotShareURLPublicKey(void)
+{
+  if(!m_crypts.value("url", 0) ||
+     !m_crypts.value("url-signature", 0))
+    return;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray publicKey;
+  QByteArray signature;
+  bool ok = true;
+
+  publicKey = m_crypts.value("url")->publicKey(&ok);
+
+  if(ok)
+    signature = m_crypts.value("url")->digitalSignature(publicKey, &ok);
+
+  QByteArray sPublicKey;
+  QByteArray sSignature;
+
+  if(ok)
+    sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
+
+  if(ok)
+    sSignature = m_crypts.value("url-signature")->
+      digitalSignature(sPublicKey, &ok);
+
+  if(ok)
+    {
+      QByteArray message;
+      QByteArray name(m_settings.value("gui/urlName", "unknown").
+		      toByteArray());
+
+      if(name.isEmpty())
+	name = "unknown";
+
+      message.append("sharepublickey_");
+      message.append(oid);
+      message.append("_");
+      message.append(QByteArray("url").toBase64());
+      message.append("_");
+      message.append(name.toBase64());
+      message.append("_");
+      message.append(qCompress(publicKey).toBase64());
+      message.append("_");
+      message.append(signature.toBase64());
+      message.append("_");
+      message.append(sPublicKey.toBase64());
+      message.append("_");
+      message.append(sSignature.toBase64());
+      message.append("\n");
+
+      if(m_kernelSocket.write(message.constData(), message.length()) !=
+	 message.length())
+	spoton_misc::logError
+	  (QString("spoton::slotShareURLPublicKey(): write() failure "
+		   "for %1:%2.").
+	   arg(m_kernelSocket.peerAddress().toString()).
+	   arg(m_kernelSocket.peerPort()));
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotStatusButtonClicked(void)
+{
+  QToolButton *toolButton = qobject_cast<QToolButton *> (sender());
+
+  if(toolButton == m_sb.buzz)
+    {
+      m_sb.buzz->setVisible(false);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("buzz"));
+    }
+  else if(toolButton == m_sb.chat)
+    {
+      m_sb.chat->setVisible(false);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("chat"));
+    }
+  else if(toolButton == m_sb.email)
+    {
+      m_sb.email->setVisible(false);
+      m_ui.folder->setCurrentIndex(0);
+      m_ui.mailTab->setCurrentIndex(0);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("email"));
+      slotRefreshMail();
+    }
+  else if(toolButton == m_sb.listeners)
+    m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
+  else if(toolButton == m_sb.neighbors)
+    m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
+}
+
+void spoton::slotSuperEcho(int index)
+{
+  m_settings["gui/superEcho"] = index;
 
   QSettings settings;
 
-  settings.setValue("gui/maximumEmailFileSize", value);
+  settings.setValue("gui/superEcho", index);
+}
+
+void spoton::slotTestSslControlString(void)
+{
+  QList<QSslCipher> ciphers
+    (spoton_crypt::defaultSslCiphers(m_optionsUi.sslControlString->text()));
+  QMessageBox mb(m_optionsWindow);
+  QString str("");
+
+  for(int i = 0; i < ciphers.size(); i++)
+    str.append(QString("%1-%2").arg(ciphers.at(i).name()).
+	       arg(ciphers.at(i).protocolString()) + "\n");
+
+  if(!str.isEmpty())
+    {
+      mb.setDetailedText(str);
+      mb.setText
+	(tr("The following ciphers are supported by your OpenSSL library. "
+	    "Please note that %1 may neglect discovered ciphers "
+	    "if the ciphers are not also understood by Qt.").
+	 arg(SPOTON_APPLICATION_NAME));
+    }
+  else
+    mb.setText(tr("Empty cipher list."));
+
+  mb.setStandardButtons(QMessageBox::Ok);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowTitle(tr("%1: Information").
+		    arg(SPOTON_APPLICATION_NAME));
+  mb.exec();
+}
+
+void spoton::slotListenerIPComboChanged(int index)
+{
+  /*
+  ** Method will be called because of activity in prepareListenerIPCombo().
+  */
+
+  if(index == 0)
+    {
+      m_ui.listenerIP->clear();
+      m_ui.listenerScopeId->clear();
+      m_ui.listenerIP->setEnabled(true);
+    }
+  else
+    {
+      m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
+      m_ui.listenerIP->setEnabled(false);
+    }
+}
+
+void spoton::slotChatSendMethodChanged(int index)
+{
+  if(index == 0)
+    m_settings["gui/chatSendMethod"] = "Normal_POST";
+  else
+    m_settings["gui/chatSendMethod"] = "Artificial_GET";
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/chatSendMethod",
+     m_settings.value("gui/chatSendMethod").toString());
+}
+
+void spoton::slotShareChatPublicKeyWithParticipant(void)
+{
+  QTableWidgetItem *item = m_ui.participants->item
+    (m_ui.participants->currentRow(), 1); // OID
+
+  if(item)
+    sharePublicKeyWithParticipant
+      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+}
+
+void spoton::slotShareEmailPublicKeyWithParticipant(void)
+{
+  QTableWidgetItem *item = m_ui.emailParticipants->item
+    (m_ui.emailParticipants->currentRow(), 1); // OID
+
+  if(item)
+    sharePublicKeyWithParticipant
+      (item->data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
+}
+
+void spoton::slotShareUrlPublicKeyWithParticipant(void)
+{
+  sharePublicKeyWithParticipant("url");
+}
+
+void spoton::slotViewLog(void)
+{
+  m_logViewer.show(this);
+}
+
+void spoton::slotStatusChanged(int index)
+{
+  m_ui.custom->setVisible(false);
+
+  if(index == 0)
+    m_settings["gui/my_status"] = "Away";
+  else if(index == 1)
+    m_settings["gui/my_status"] = "Busy";
+  else if(index == 2)
+    {
+      m_settings["gui/my_status"] = "Custom";
+      m_ui.custom->setVisible(true);
+    }
+  else if(index == 3)
+    m_settings["gui/my_status"] = "Offline";
+  else
+    m_settings["gui/my_status"] = "Online";
+
+  QSettings settings;
+
+  settings.setValue("gui/my_status", m_settings.value("gui/my_status"));
+}
+
+void spoton::slotKernelCipherTypeChanged(int index)
+{
+  Q_UNUSED(index);
+  m_settings["gui/kernelCipherType"] =
+    m_ui.kernelCipherType->currentText().toLower();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/kernelCipherType", m_settings.value("gui/kernelCipherType"));
+}
+
+void spoton::slotKernelHashTypeChanged(int index)
+{
+  Q_UNUSED(index);
+  m_settings["gui/kernelHashType"] =
+    m_ui.kernelHashType->currentText().toLower();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
+}
+
+void spoton::slotCopyMyChatPublicKey(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString text(copyMyChatPublicKey());
+
+  QApplication::restoreOverrideCursor();
+
+  if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The chat public key is too long (%1 bytes).").
+	 arg(QLocale().toString(text.length())));
+      return;
+    }
+
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      m_ui.toolButtonCopyToClipboard->menu()->repaint();
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      clipboard->setText(text);
+      QApplication::restoreOverrideCursor();
+    }
+}
+
+void spoton::slotAddFriendsKey(void)
+{
+  QByteArray key
+    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
+#if SPOTON_GOLDBUG == 0
+  QWidget *parent = m_addParticipantWindow;
+#else
+  QWidget *parent = this;
+#endif
+
+  if(m_ui.addFriendEmail->isChecked())
+    addFriendsKey(key, "E", parent);
+  else if(key.startsWith("K") || key.startsWith("k"))
+    {
+      QList<QByteArray> list(key.split('\n'));
+
+      while(!list.isEmpty())
+	{
+	  QByteArray bytes("K");
+
+	  bytes.append(list.takeFirst());
+	  bytes.remove(0, 1);
+	  addFriendsKey(bytes, "K", parent);
+	}
+    }
+  else
+    addFriendsKey(key, "R", parent);
+}
+
+void spoton::slotClearOutgoingMessage(void)
+{
+  m_ui.attachment->clear();
+  m_ui.emailName->setCurrentIndex(0);
+  m_ui.emailParticipants->selectionModel()->clear();
+  m_ui.email_fs_gb->setCurrentIndex(2);
+  m_ui.goldbug->clear();
+  m_ui.outgoingMessage->clear();
+  m_ui.outgoingMessage->setCurrentCharFormat(QTextCharFormat());
+  m_ui.outgoingSubject->clear();
+  m_ui.richtext->setChecked(true);
+  m_ui.sign_this_email->setChecked(m_optionsUi.emailSignMessages->isChecked());
+  m_ui.outgoingSubject->setFocus();
 }
