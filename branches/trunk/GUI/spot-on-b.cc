@@ -2776,6 +2776,24 @@ void spoton::slotCloseBuzzTab(int index)
     m_buzzStatusTimer.stop();
 }
 
+void spoton::slotCostChanged(int value)
+{
+  m_settings["gui/congestionCost"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/congestionCost", value);
+}
+
+void spoton::slotDaysChanged(int value)
+{
+  m_settings["gui/postofficeDays"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/postofficeDays", value);
+}
+
 void spoton::slotDeleteAcceptedIP(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -3140,6 +3158,18 @@ void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
     m_neighborsLastModificationTime = QDateTime();
 }
 
+void spoton::slotKernelKeySizeChanged(const QString &text)
+{
+  m_kernelSocket.setProperty("key_size", text.toInt());
+  m_settings["gui/kernelKeySize"] = text.toInt();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/kernelKeySize",
+     m_settings.value("gui/kernelKeySize"));
+}
+
 void spoton::slotListenerSelected(void)
 {
   QString oid("");
@@ -3286,6 +3316,65 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
   if(smp)
     chat->setSMPVerified(smp->passed());
+}
+
+void spoton::slotPublicizeAllListenersPlaintext(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QByteArray message;
+
+  message.append("publicizealllistenersplaintext\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPublicizeAllListenersPlaintext(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+}
+
+void spoton::slotPublicizeListenerPlaintext(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QByteArray message;
+
+  message.append("publicizelistenerplaintext_");
+  message.append(oid);
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotPublicizeListenerPlaintext(): "
+	       "write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::slotPublishPeriodicallyToggled(bool state)
@@ -4213,6 +4302,87 @@ void spoton::slotRemoveParticipants(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotReply(void)
+{
+  int row = m_ui.mail->currentRow();
+
+  if(row < 0)
+    return;
+
+  QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
+
+  if(!item)
+    return;
+
+  if(item->text() != "0")
+    /*
+    ** How can we reply to an encrypted message?
+    */
+
+    return;
+
+  item = m_ui.mail->item(row, 6); // Message
+
+  if(!item)
+    return;
+
+  QString message(item->text());
+
+  item = m_ui.mail->item(row, 8); // receiver_sender_hash
+
+  if(!item)
+    return;
+
+  QString receiverSenderHash(item->text());
+
+  item = m_ui.mail->item(row, 3); // Subject
+
+  if(!item)
+    return;
+
+  if(m_ui.emailSplitter->sizes().at(1) == 0)
+    m_ui.emailSplitter->setSizes(QList<int> () << width() / 2 << width() / 2);
+
+#if SPOTON_GOLDBUG == 1
+  m_ui.mailTab->setCurrentIndex(2); // Write panel.
+#endif
+
+  QString subject(item->text());
+
+  if(m_ui.richtext->isChecked())
+    {
+      message = "<br><span style=\"font-size:large;\">" +
+	message + "</span>";
+      m_ui.outgoingMessage->setHtml(message);
+    }
+  else
+    m_ui.outgoingMessage->setPlainText("\n\n" + message);
+
+  m_ui.outgoingSubject->setText(tr("Re: ") + subject);
+
+  /*
+  ** The original author may have vanished.
+  */
+
+  m_ui.emailParticipants->selectionModel()->clear();
+
+  for(int i = 0; i < m_ui.emailParticipants->rowCount(); i++)
+    {
+      QTableWidgetItem *item = m_ui.emailParticipants->
+	item(i, 3); // public_key_hash
+
+      if(item)
+	if(item->text() == receiverSenderHash)
+	  {
+	    m_ui.emailParticipants->selectRow(i);
+	    break;
+	  }
+    }
+
+  m_ui.outgoingMessage->moveCursor(QTextCursor::Start);
+  m_ui.outgoingMessage->setFocus();
+}
+
 void spoton::slotSaveBuzzName(void)
 {
   QString str(m_ui.buzzName->text());
@@ -4469,6 +4639,15 @@ void spoton::slotShareEmailPublicKey(void)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotSuperEcho(int index)
+{
+  m_settings["gui/superEcho"] = index;
+
+  QSettings settings;
+
+  settings.setValue("gui/superEcho", index);
 }
 
 void spoton::slotTestSslControlString(void)
@@ -6798,24 +6977,6 @@ void spoton::slotSetIcons(int index)
   emit iconsChanged();
 }
 
-void spoton::slotCostChanged(int value)
-{
-  m_settings["gui/congestionCost"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/congestionCost", value);
-}
-
-void spoton::slotDaysChanged(int value)
-{
-  m_settings["gui/postofficeDays"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/postofficeDays", value);
-}
-
 void spoton::slotMaximumEmailFileSizeChanged(int value)
 {
   m_settings["gui/maximumEmailFileSize"] = value;
@@ -6823,165 +6984,4 @@ void spoton::slotMaximumEmailFileSizeChanged(int value)
   QSettings settings;
 
   settings.setValue("gui/maximumEmailFileSize", value);
-}
-
-void spoton::slotReply(void)
-{
-  int row = m_ui.mail->currentRow();
-
-  if(row < 0)
-    return;
-
-  QTableWidgetItem *item = m_ui.mail->item(row, 5); // Gold Bug
-
-  if(!item)
-    return;
-
-  if(item->text() != "0")
-    /*
-    ** How can we reply to an encrypted message?
-    */
-
-    return;
-
-  item = m_ui.mail->item(row, 6); // Message
-
-  if(!item)
-    return;
-
-  QString message(item->text());
-
-  item = m_ui.mail->item(row, 8); // receiver_sender_hash
-
-  if(!item)
-    return;
-
-  QString receiverSenderHash(item->text());
-
-  item = m_ui.mail->item(row, 3); // Subject
-
-  if(!item)
-    return;
-
-  if(m_ui.emailSplitter->sizes().at(1) == 0)
-    m_ui.emailSplitter->setSizes(QList<int> () << width() / 2 << width() / 2);
-
-#if SPOTON_GOLDBUG == 1
-  m_ui.mailTab->setCurrentIndex(2); // Write panel.
-#endif
-
-  QString subject(item->text());
-
-  if(m_ui.richtext->isChecked())
-    {
-      message = "<br><span style=\"font-size:large;\">" +
-	message + "</span>";
-      m_ui.outgoingMessage->setHtml(message);
-    }
-  else
-    m_ui.outgoingMessage->setPlainText("\n\n" + message);
-
-  m_ui.outgoingSubject->setText(tr("Re: ") + subject);
-
-  /*
-  ** The original author may have vanished.
-  */
-
-  m_ui.emailParticipants->selectionModel()->clear();
-
-  for(int i = 0; i < m_ui.emailParticipants->rowCount(); i++)
-    {
-      QTableWidgetItem *item = m_ui.emailParticipants->
-	item(i, 3); // public_key_hash
-
-      if(item)
-	if(item->text() == receiverSenderHash)
-	  {
-	    m_ui.emailParticipants->selectRow(i);
-	    break;
-	  }
-    }
-
-  m_ui.outgoingMessage->moveCursor(QTextCursor::Start);
-  m_ui.outgoingMessage->setFocus();
-}
-
-void spoton::slotPublicizeAllListenersPlaintext(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QByteArray message;
-
-  message.append("publicizealllistenersplaintext\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotPublicizeAllListenersPlaintext(): "
-	       "write() failure for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::slotPublicizeListenerPlaintext(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QByteArray message;
-
-  message.append("publicizelistenerplaintext_");
-  message.append(oid);
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotPublicizeListenerPlaintext(): "
-	       "write() failure for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::slotSuperEcho(int index)
-{
-  m_settings["gui/superEcho"] = index;
-
-  QSettings settings;
-
-  settings.setValue("gui/superEcho", index);
-}
-
-void spoton::slotKernelKeySizeChanged(const QString &text)
-{
-  m_kernelSocket.setProperty("key_size", text.toInt());
-  m_settings["gui/kernelKeySize"] = text.toInt();
-
-  QSettings settings;
-
-  settings.setValue
-    ("gui/kernelKeySize",
-     m_settings.value("gui/kernelKeySize"));
 }
