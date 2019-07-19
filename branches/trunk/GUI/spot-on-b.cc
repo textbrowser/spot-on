@@ -2458,6 +2458,40 @@ void spoton::sendMessage(bool *ok)
     }
 }
 
+void spoton::slotAcceptPublicizedListeners(void)
+{
+  QRadioButton *radioButton = qobject_cast<QRadioButton *> (sender());
+
+  if(!radioButton)
+    return;
+
+  if(m_optionsUi.acceptPublishedLocalConnected == radioButton)
+    {
+      m_settings["gui/acceptPublicizedListeners"] = "localConnected";
+      m_optionsUi.publishedKeySize->setEnabled(true);
+    }
+  else if(m_optionsUi.acceptPublishedConnected == radioButton)
+    {
+      m_settings["gui/acceptPublicizedListeners"] = "connected";
+      m_optionsUi.publishedKeySize->setEnabled(true);
+    }
+  else if(m_optionsUi.acceptPublishedDisconnected == radioButton)
+    {
+      m_settings["gui/acceptPublicizedListeners"] = "disconnected";
+      m_optionsUi.publishedKeySize->setEnabled(true);
+    }
+  else
+    {
+      m_settings["gui/acceptPublicizedListeners"] = "ignored";
+      m_optionsUi.publishedKeySize->setEnabled(false);
+    }
+
+  QSettings settings;
+
+  settings.setValue("gui/acceptPublicizedListeners",
+		    m_settings.value("gui/acceptPublicizedListeners"));
+}
+
 void spoton::slotAuthenticationRequestButtonClicked(void)
 {
   m_sb.authentication_request->setVisible(false);
@@ -2491,6 +2525,122 @@ void spoton::slotChatWindowDestroyed(void)
 void spoton::slotChatWindowMessageSent(void)
 {
   m_chatInactivityTimer.start();
+}
+
+void spoton::slotDeleteAccount(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      return;
+    }
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid listener OID. "
+			       "Please select a listener."));
+      return;
+    }
+
+  QList<QListWidgetItem *> list(m_ui.accounts->selectedItems());
+
+  if(list.isEmpty() || !list.at(0))
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Please select an account to delete."));
+      return;
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM listeners_accounts WHERE "
+		      "account_name_hash = ? AND listener_oid = ?");
+	query.bindValue
+	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
+	   toBase64());
+	query.bindValue(1, oid);
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error occurred while attempting "
+			     "to delete the specified account."));
+  else
+    populateAccounts(oid);
+}
+
+void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
+{
+  m_settings["gui/keepOnlyUserDefinedNeighbors"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/keepOnlyUserDefinedNeighbors", state);
+
+  if(m_neighborsFuture.isFinished() && state)
+    m_neighborsLastModificationTime = QDateTime();
+}
+
+void spoton::slotListenerSelected(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  populateAccounts(oid);
+  populateListenerIps(oid);
+  populateMOTD(oid);
 }
 
 void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
@@ -3462,6 +3612,71 @@ void spoton::slotRemoveParticipants(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotSaveBuzzName(void)
+{
+  QString str(m_ui.buzzName->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.buzzName->setText(str);
+    }
+  else
+    m_ui.buzzName->setText(str.trimmed());
+
+  m_settings["gui/buzzName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/buzzName", str.toUtf8());
+  m_ui.buzzName->selectAll();
+  emit buzzNameChanged(str.toUtf8());
+}
+
+void spoton::slotSaveEmailName(void)
+{
+  QString str(m_ui.emailNameEditable->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.emailName->setItemText(0, str);
+      m_ui.emailNameEditable->setText(str);
+    }
+  else
+    {
+      m_ui.emailName->setItemText(0, str.trimmed());
+      m_ui.emailNameEditable->setText(str.trimmed());
+    }
+
+  m_settings["gui/emailName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/emailName", str.toUtf8());
+  m_ui.emailNameEditable->selectAll();
+}
+
+void spoton::slotSaveNodeName(void)
+{
+  QString str(m_ui.nodeName->text());
+
+  if(str.trimmed().isEmpty())
+    {
+      str = "unknown";
+      m_ui.nodeName->setText(str);
+    }
+  else
+    m_ui.nodeName->setText(str.trimmed());
+
+  m_settings["gui/nodeName"] = str.toUtf8();
+
+  QSettings settings;
+
+  settings.setValue("gui/nodeName", str.toUtf8());
+  m_ui.nodeName->selectAll();
+}
+
 void spoton::slotSendMessage(void)
 {
   sendMessage(0);
@@ -3653,117 +3868,6 @@ void spoton::slotShareEmailPublicKey(void)
     }
 
   QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotSaveBuzzName(void)
-{
-  QString str(m_ui.buzzName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.buzzName->setText(str);
-    }
-  else
-    m_ui.buzzName->setText(str.trimmed());
-
-  m_settings["gui/buzzName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/buzzName", str.toUtf8());
-  m_ui.buzzName->selectAll();
-  emit buzzNameChanged(str.toUtf8());
-}
-
-void spoton::slotSaveEmailName(void)
-{
-  QString str(m_ui.emailNameEditable->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.emailName->setItemText(0, str);
-      m_ui.emailNameEditable->setText(str);
-    }
-  else
-    {
-      m_ui.emailName->setItemText(0, str.trimmed());
-      m_ui.emailNameEditable->setText(str.trimmed());
-    }
-
-  m_settings["gui/emailName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/emailName", str.toUtf8());
-  m_ui.emailNameEditable->selectAll();
-}
-
-void spoton::slotSaveNodeName(void)
-{
-  QString str(m_ui.nodeName->text());
-
-  if(str.trimmed().isEmpty())
-    {
-      str = "unknown";
-      m_ui.nodeName->setText(str);
-    }
-  else
-    m_ui.nodeName->setText(str.trimmed());
-
-  m_settings["gui/nodeName"] = str.toUtf8();
-
-  QSettings settings;
-
-  settings.setValue("gui/nodeName", str.toUtf8());
-  m_ui.nodeName->selectAll();
-}
-
-void spoton::slotAcceptPublicizedListeners(void)
-{
-  QRadioButton *radioButton = qobject_cast<QRadioButton *> (sender());
-
-  if(!radioButton)
-    return;
-
-  if(m_optionsUi.acceptPublishedLocalConnected == radioButton)
-    {
-      m_settings["gui/acceptPublicizedListeners"] = "localConnected";
-      m_optionsUi.publishedKeySize->setEnabled(true);
-    }
-  else if(m_optionsUi.acceptPublishedConnected == radioButton)
-    {
-      m_settings["gui/acceptPublicizedListeners"] = "connected";
-      m_optionsUi.publishedKeySize->setEnabled(true);
-    }
-  else if(m_optionsUi.acceptPublishedDisconnected == radioButton)
-    {
-      m_settings["gui/acceptPublicizedListeners"] = "disconnected";
-      m_optionsUi.publishedKeySize->setEnabled(true);
-    }
-  else
-    {
-      m_settings["gui/acceptPublicizedListeners"] = "ignored";
-      m_optionsUi.publishedKeySize->setEnabled(false);
-    }
-
-  QSettings settings;
-
-  settings.setValue("gui/acceptPublicizedListeners",
-		    m_settings.value("gui/acceptPublicizedListeners"));
-}
-
-void spoton::slotKeepOnlyUserDefinedNeighbors(bool state)
-{
-  m_settings["gui/keepOnlyUserDefinedNeighbors"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/keepOnlyUserDefinedNeighbors", state);
-
-  if(m_neighborsFuture.isFinished() && state)
-    m_neighborsLastModificationTime = QDateTime();
 }
 
 void spoton::slotPublishPeriodicallyToggled(bool state)
@@ -6880,108 +6984,4 @@ void spoton::slotChatInactivityTimeout(void)
 {
   if(m_ui.status->currentIndex() == 4) // Online
     m_ui.status->setCurrentIndex(0); // Away
-}
-
-void spoton::slotDeleteAccount(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      return;
-    }
-
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid listener OID. "
-			       "Please select a listener."));
-      return;
-    }
-
-  QList<QListWidgetItem *> list(m_ui.accounts->selectedItems());
-
-  if(list.isEmpty() || !list.at(0))
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Please select an account to delete."));
-      return;
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM listeners_accounts WHERE "
-		      "account_name_hash = ? AND listener_oid = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
-	   toBase64());
-	query.bindValue(1, oid);
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified account."));
-  else
-    populateAccounts(oid);
-}
-
-void spoton::slotListenerSelected(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  populateAccounts(oid);
-  populateListenerIps(oid);
-  populateMOTD(oid);
 }
