@@ -911,6 +911,46 @@ spoton::spoton(void):QMainWindow()
   m_ui.chatSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
+  connect(m_notificationsUi.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_notificationsUi.textBrowser,
+	  SLOT(clear(void)));
+  connect(m_notificationsUi.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_sb.warning,
+	  SLOT(hide(void)));
+  connect(m_notificationsUi.activate,
+	  SIGNAL(toggled(bool)),
+	  m_optionsUi.notifications,
+	  SLOT(setChecked(bool)));
+  connect(m_notificationsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  m_optionsUi.monitor,
+	  SLOT(setChecked(bool)));
+  connect(m_notificationsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotMonitorEvents(bool)));
+  connect(m_optionsUi.action_Close,
+	  SIGNAL(triggered(void)),
+	  m_optionsWindow,
+	  SLOT(close(void)));
+  connect(m_optionsUi.monitor,
+	  SIGNAL(toggled(bool)),
+	  m_notificationsUi.monitor,
+	  SLOT(setChecked(bool)));
+  connect(m_optionsUi.notifications,
+	  SIGNAL(toggled(bool)),
+	  m_notificationsUi.activate,
+	  SLOT(setChecked(bool)));
+  connect(m_optionsUi.notifications,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotNotificationsEnabled(bool)));
+  connect(m_optionsUi.play_sounds,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotPlaySounds(bool)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -985,46 +1025,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(aboutToShow(void)),
 	  this,
 	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
-  connect(m_notificationsUi.action_Clear,
-	  SIGNAL(triggered(void)),
-	  m_notificationsUi.textBrowser,
-	  SLOT(clear(void)));
-  connect(m_notificationsUi.action_Clear,
-	  SIGNAL(triggered(void)),
-	  m_sb.warning,
-	  SLOT(hide(void)));
-  connect(m_optionsUi.monitor,
-	  SIGNAL(toggled(bool)),
-	  m_notificationsUi.monitor,
-	  SLOT(setChecked(bool)));
-  connect(m_optionsUi.notifications,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotNotificationsEnabled(bool)));
-  connect(m_optionsUi.notifications,
-	  SIGNAL(toggled(bool)),
-	  m_notificationsUi.activate,
-	  SLOT(setChecked(bool)));
-  connect(m_notificationsUi.monitor,
-	  SIGNAL(toggled(bool)),
-	  m_optionsUi.monitor,
-	  SLOT(setChecked(bool)));
-  connect(m_notificationsUi.activate,
-	  SIGNAL(toggled(bool)),
-	  m_optionsUi.notifications,
-	  SLOT(setChecked(bool)));
-  connect(m_notificationsUi.monitor,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotMonitorEvents(bool)));
-  connect(m_optionsUi.play_sounds,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotPlaySounds(bool)));
-  connect(m_optionsUi.action_Close,
-	  SIGNAL(triggered(void)),
-	  m_optionsWindow,
-	  SLOT(close(void)));
   connect(m_ui.action_Options,
 	  SIGNAL(triggered(void)),
 	  this,
