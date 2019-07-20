@@ -935,6 +935,22 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
 	  SLOT(close(void)));
+  connect(m_optionsUi.autoAddSharedSBMagnets,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAutoAddSharedSBMagnets(bool)));
+  connect(m_optionsUi.buzzAutoJoin,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveBuzzAutoJoin(bool)));
+  connect(m_optionsUi.launchKernel,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotLaunchKernelAfterAuthentication(bool)));
+  connect(m_optionsUi.limitConnections,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotLimitConnections(int)));
   connect(m_optionsUi.monitor,
 	  SIGNAL(toggled(bool)),
 	  m_notificationsUi.monitor,
@@ -951,6 +967,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotPlaySounds(bool)));
+  connect(m_optionsUi.refreshEmail,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveRefreshEmail(bool)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -973,14 +993,30 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowDocumentation(void)));
+  connect(m_ui.action_Echo_Key_Share,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotViewEchoKeyShare(void)));
   connect(m_ui.action_File_Encryption,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowEncryptFile(void)));
+  connect(m_ui.action_Log_Viewer,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotViewLog(void)));
+  connect(m_ui.action_Minimal_Display,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowMinimalDisplay(bool)));
   connect(m_ui.action_New_Global_Name,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotNewGlobalName(void)));
+  connect(m_ui.action_Options,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowOptions(void)));
   connect(m_ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -993,10 +1029,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotQuit(void)));
+  connect(m_ui.action_RSS,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowRss(void)));
   connect(m_ui.action_Release_Notes,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowReleaseNotes(void)));
+  connect(m_ui.action_Rosetta,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotViewRosetta(void)));
   connect(m_ui.action_Vacuum_Databases,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1005,50 +1049,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotActiveUrlDistribution(bool)));
-  connect(m_ui.chatSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.chatSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.chatSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowChatSecretsMenu(void)));
-  connect(m_ui.copyInstitution,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotCopyInstitution(void)));
-  connect(m_ui.emailSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.emailSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.emailSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
-  connect(m_ui.action_Options,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowOptions(void)));
-  connect(m_ui.action_RSS,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowRss(void)));
-  connect(m_ui.action_Echo_Key_Share,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotViewEchoKeyShare(void)));
-  connect(m_ui.action_Log_Viewer,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotViewLog(void)));
-  connect(m_ui.action_Rosetta,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotViewRosetta(void)));
-  connect(m_ui.action_Minimal_Display,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowMinimalDisplay(bool)));
   connect(m_ui.addInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1065,26 +1065,30 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotRemoveAttachment(const QUrl &)));
-  connect(m_optionsUi.autoAddSharedSBMagnets,
-	  SIGNAL(toggled(bool)),
+  connect(m_ui.chatSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.chatSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.chatSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
 	  this,
-	  SLOT(slotAutoAddSharedSBMagnets(bool)));
-  connect(m_optionsUi.buzzAutoJoin,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveBuzzAutoJoin(bool)));
-  connect(m_optionsUi.refreshEmail,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveRefreshEmail(bool)));
-  connect(m_ui.saveAttachment,
+	  SLOT(slotAboutToShowChatSecretsMenu(void)));
+  connect(m_ui.copyInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotSaveAttachment(void)));
+	  SLOT(slotCopyInstitution(void)));
   connect(m_ui.dynamicdns,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.emailSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.emailSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.emailSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
   connect(m_ui.ipv4Listener,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1097,14 +1101,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_optionsUi.launchKernel,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotLaunchKernelAfterAuthentication(bool)));
-  connect(m_optionsUi.limitConnections,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotLimitConnections(int)));
   connect(m_ui.ipv6Neighbor,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1129,6 +1125,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
+  connect(m_ui.saveAttachment,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveAttachment(void)));
   connect(m_ui.selectKernelPath,
 	  SIGNAL(clicked(void)),
 	  this,
