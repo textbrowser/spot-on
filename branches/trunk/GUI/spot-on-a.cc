@@ -1019,6 +1019,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotOpenChatUrlChecked(bool)));
+  connect(m_optionsUi.chatSendMethod,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotChatSendMethodChanged(int)));
   connect(m_optionsUi.chatTimestamps,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1055,6 +1059,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
+  connect(m_optionsUi.guiExternalIpFetch,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotExternalIp(int)));
+  connect(m_optionsUi.impersonate,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotImpersonate(bool)));
   connect(m_optionsUi.kernel_url_batch_size,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1107,6 +1119,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotRemoveOtmOnExit(bool)));
+  connect(m_optionsUi.scrambler,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotScramble(bool)));
   connect(m_optionsUi.searchResultsPerPage,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1373,10 +1389,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveBuzzName(void)));
-  connect(m_optionsUi.guiExternalIpFetch,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotExternalIp(int)));
   connect(m_ui.kernelExternalIpFetch,
 	  SIGNAL(activated(int)),
 	  this,
@@ -1409,14 +1421,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveUrlName(void)));
-  connect(m_optionsUi.scrambler,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotScramble(bool)));
-  connect(m_optionsUi.impersonate,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotImpersonate(bool)));
   connect(m_ui.listenerIP,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -1445,10 +1449,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotRefreshMail(void)));
-  connect(m_optionsUi.chatSendMethod,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotChatSendMethodChanged(int)));
   connect(m_ui.status,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
