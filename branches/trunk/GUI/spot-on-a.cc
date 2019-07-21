@@ -971,6 +971,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveRefreshEmail(bool)));
+  connect(m_optionsUi.selectGeoIP4,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectGeoIPPath(void)));
+  connect(m_optionsUi.selectGeoIP6,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectGeoIPPath(void)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -981,7 +989,7 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotShowAddParticipant(void)));
 #endif
-  connect(m_ui.actionClear_Clipboard_Buffer,
+  connect(m_ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClearClipboardBuffer(void)));
@@ -1045,6 +1053,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotVacuumDatabases(void)));
+  connect(m_ui.activateKernel,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotActivateKernel(void)));
   connect(m_ui.activeUrlDistribution,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1077,6 +1089,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCopyInstitution(void)));
+  connect(m_ui.deactivateKernel,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeactivateKernel(void)));
   connect(m_ui.dynamicdns,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1089,6 +1105,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(aboutToShow(void)),
 	  this,
 	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
+  connect(m_ui.etpSelectDestination,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectDestination(void)));
   connect(m_ui.ipv4Listener,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1105,26 +1125,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.activateKernel,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotActivateKernel(void)));
-  connect(m_ui.deactivateKernel,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeactivateKernel(void)));
-  connect(m_ui.etpSelectDestination,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectDestination(void)));
-  connect(m_optionsUi.selectGeoIP4,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectGeoIPPath(void)));
-  connect(m_optionsUi.selectGeoIP6,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectGeoIPPath(void)));
   connect(m_ui.saveAttachment,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2993,6 +2993,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.etpMagnets,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotShowEtpMagnetsMenu(const QPoint &)));
   connect(m_ui.mail,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -3001,10 +3005,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-  connect(m_ui.etpMagnets,
-	  SIGNAL(customContextMenuRequested(const QPoint &)),
-	  this,
-	  SLOT(slotShowEtpMagnetsMenu(const QPoint &)));
   connect(m_ui.listeners,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,

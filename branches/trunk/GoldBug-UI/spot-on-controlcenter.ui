@@ -10657,7 +10657,7 @@ border-style: inset;
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="actionClear_Clipboard_Buffer"/>
+    <addaction name="action_Clear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
     <addaction name="separator"/>
@@ -10751,7 +10751,7 @@ border-style: inset;
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="actionClear_Clipboard_Buffer">
+  <action name="action_Clear_Clipboard_Buffer">
    <property name="text">
     <string>Clear Clipboard &amp;Buffer</string>
    </property>
