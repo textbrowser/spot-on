@@ -3284,6 +3284,252 @@ spoton::~spoton()
 {
 }
 
+QPointer<spoton> spoton::instance(void)
+{
+  return s_gui;
+}
+
+void spoton::demagnetize(void)
+{
+  QStringList list
+    (m_ui.demagnetize->text().remove("magnet:?").split("&"));
+
+  while(!list.isEmpty())
+    {
+      QString str(list.takeFirst());
+
+      if(str.startsWith("rn="))
+	{
+	  str.remove(0, 3);
+	  m_ui.channel->setText(str);
+	}
+      else if(str.startsWith("xf="))
+	{
+	  str.remove(0, 3);
+	  m_ui.buzzIterationCount->setValue(qAbs(str.toInt()));
+	}
+      else if(str.startsWith("xs="))
+	{
+	  str.remove(0, 3);
+	  m_ui.channelSalt->setText(str);
+	}
+      else if(str.startsWith("ct="))
+	{
+	  str.remove(0, 3);
+
+	  if(m_ui.channelType->findText(str) > -1)
+	    m_ui.channelType->setCurrentIndex
+	      (m_ui.channelType->findText(str));
+	}
+      else if(str.startsWith("hk="))
+	{
+	  str.remove(0, 3);
+	  m_ui.buzzHashKey->setText(str);
+	}
+      else if(str.startsWith("ht="))
+	{
+	  str.remove(0, 3);
+
+	  if(m_ui.buzzHashType->findText(str) > -1)
+	    m_ui.buzzHashType->setCurrentIndex
+	      (m_ui.buzzHashType->findText(str));
+	}
+      else if(str.startsWith("xt="))
+	{
+	}
+    }
+
+  slotJoinBuzzChannel();
+}
+
+void spoton::magnetize(void)
+{
+  if(m_ui.favorites->currentText() == "Empty") /*
+                                               ** Please do not translate
+                                               ** Empty.
+                                               */
+    return;
+
+  QByteArray data;
+  QList<QByteArray> list;
+  QClipboard *clipboard = QApplication::clipboard();
+  QString error("");
+
+  if(!clipboard)
+    {
+      error = tr("Invalid clipboard object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  list = m_ui.favorites->itemData
+    (m_ui.favorites->currentIndex()).toByteArray().split('\n');
+
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+  data.append("magnet:?");
+  data.append(QString("rn=%1&").arg(list.value(0).constData()));
+  data.append(QString("xf=%1&").arg(list.value(1).constData()));
+  data.append(QString("xs=%1&").arg(list.value(2).constData()));
+  data.append(QString("ct=%1&").arg(list.value(3).constData()));
+  data.append(QString("hk=%1&").arg(list.value(4).constData()));
+  data.append(QString("ht=%1&").arg(list.value(5).constData()));
+  data.append("xt=urn:buzz");
+  clipboard->setText(data);
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+}
+
+void spoton::removeFavorite(const bool removeAll)
+{
+  QString connectionName("");
+  QString error("");
+  bool ok = true;
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      goto done_label;
+    }
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "buzz_channels.db");
+
+    if(db.open())
+      {
+	QByteArray data;
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+
+	if(removeAll)
+	  query.prepare("DELETE FROM buzz_channels");
+	else
+	  {
+	    query.prepare("DELETE FROM buzz_channels WHERE "
+			  "data_hash = ?");
+	    query.bindValue
+	      (0, crypt->keyedHash(m_ui.favorites->
+				   itemData(m_ui.favorites->currentIndex()).
+				   toByteArray(), &ok).toBase64());
+	  }
+
+	if(ok)
+	  ok = query.exec();
+      }
+    else
+      ok = false;
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    error = tr("A database error occurred.");
+
+ done_label:
+
+  if(!error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME), error);
+  else
+    {
+      slotPopulateBuzzFavorites();
+      m_ui.buzzHashKey->clear();
+      m_ui.buzzHashType->setCurrentIndex(0);
+      m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
+      m_ui.channel->clear();
+      m_ui.channelSalt->clear();
+      m_ui.channelType->setCurrentIndex(0);
+    }
+}
+
+void spoton::slotAbout(void)
+{
+  QMessageBox mb(this);
+  QString str("");
+
+#if SPOTON_GOLDBUG == 0
+  QPixmap pixmap(":/Logo/spot-on-logo.png");
+
+  pixmap = pixmap.scaled
+    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  str = "<html>Please visit <a href=\"http://spot-on.sourceforge.net\">"
+    "spot-on.sourceforge.net</a> for more information.";
+  mb.setIconPixmap(pixmap);
+#else
+  str = "<html>GoldBug is an open source application published under "
+    "the Revised BSD License.<br>"
+    "Please visit <a href=\"http://goldbug.sourceforge.net\">"
+    "goldbug.sourceforge.net</a> for more information.";
+  mb.setIconPixmap(*m_ui.logo->pixmap());
+#endif
+  str.append("<br><br>");
+  str.append(m_ui.buildInformation->text());
+  str.append("</html>");
+  mb.setStandardButtons(QMessageBox::Ok);
+  mb.setText(str);
+  mb.setTextFormat(Qt::RichText);
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowTitle(SPOTON_APPLICATION_NAME);
+  mb.exec();
+}
+
+void spoton::slotBuzzTools(int index)
+{
+  if(index == 0)
+    m_ui.demagnetize->clear();
+  else if(index == 1)
+    demagnetize();
+  else if(index == 2)
+    magnetize();
+  else if(index == 3)
+    removeFavorite(false);
+  else if(index == 4)
+    removeFavorite(true);
+
+  m_ui.buzzTools->blockSignals(true);
+  m_ui.buzzTools->setCurrentIndex(0);
+  m_ui.buzzTools->blockSignals(false);
+}
+
+void spoton::slotFavoritesActivated(int index)
+{
+  QByteArray data(m_ui.favorites->itemData(index).toByteArray());
+  QList<QByteArray> list(data.split('\n'));
+
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+  m_ui.channel->setText(list.value(0));
+  m_ui.buzzIterationCount->setValue
+    (static_cast<int> (list.value(1).toULong()));
+  m_ui.channelSalt->setText(list.value(2));
+
+  if(m_ui.channelType->findText(list.value(3)) > -1)
+    m_ui.channelType->setCurrentIndex
+      (m_ui.channelType->findText(list.value(3)));
+  else
+    m_ui.channelType->setCurrentIndex(0);
+
+  m_ui.buzzHashKey->setText(list.value(4));
+
+  if(m_ui.buzzHashType->findText(list.value(5)) > -1)
+    m_ui.buzzHashType->setCurrentIndex
+      (m_ui.buzzHashType->findText(list.value(5)));
+  else
+    m_ui.buzzHashType->setCurrentIndex(0);
+}
+
 void spoton::slotQuit(void)
 {
   /*
@@ -10288,250 +10534,4 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   m_ui.favorites->setMinimumContentsLength
     (m_ui.favorites->itemText(0).length());
-}
-
-void spoton::slotFavoritesActivated(int index)
-{
-  QByteArray data(m_ui.favorites->itemData(index).toByteArray());
-  QList<QByteArray> list(data.split('\n'));
-
-  for(int i = 0; i < list.size(); i++)
-    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-  m_ui.channel->setText(list.value(0));
-  m_ui.buzzIterationCount->setValue
-    (static_cast<int> (list.value(1).toULong()));
-  m_ui.channelSalt->setText(list.value(2));
-
-  if(m_ui.channelType->findText(list.value(3)) > -1)
-    m_ui.channelType->setCurrentIndex
-      (m_ui.channelType->findText(list.value(3)));
-  else
-    m_ui.channelType->setCurrentIndex(0);
-
-  m_ui.buzzHashKey->setText(list.value(4));
-
-  if(m_ui.buzzHashType->findText(list.value(5)) > -1)
-    m_ui.buzzHashType->setCurrentIndex
-      (m_ui.buzzHashType->findText(list.value(5)));
-  else
-    m_ui.buzzHashType->setCurrentIndex(0);
-}
-
-void spoton::removeFavorite(const bool removeAll)
-{
-  QString connectionName("");
-  QString error("");
-  bool ok = true;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
-      goto done_label;
-    }
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
-
-    if(db.open())
-      {
-	QByteArray data;
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-
-	if(removeAll)
-	  query.prepare("DELETE FROM buzz_channels");
-	else
-	  {
-	    query.prepare("DELETE FROM buzz_channels WHERE "
-			  "data_hash = ?");
-	    query.bindValue
-	      (0, crypt->keyedHash(m_ui.favorites->
-				   itemData(m_ui.favorites->currentIndex()).
-				   toByteArray(), &ok).toBase64());
-	  }
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!ok)
-    error = tr("A database error occurred.");
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-  else
-    {
-      slotPopulateBuzzFavorites();
-      m_ui.buzzHashKey->clear();
-      m_ui.buzzHashType->setCurrentIndex(0);
-      m_ui.buzzIterationCount->setValue(m_ui.buzzIterationCount->minimum());
-      m_ui.channel->clear();
-      m_ui.channelSalt->clear();
-      m_ui.channelType->setCurrentIndex(0);
-    }
-}
-
-void spoton::magnetize(void)
-{
-  if(m_ui.favorites->currentText() == "Empty") /*
-                                               ** Please do not translate
-                                               ** Empty.
-                                               */
-    return;
-
-  QByteArray data;
-  QList<QByteArray> list;
-  QClipboard *clipboard = QApplication::clipboard();
-  QString error("");
-
-  if(!clipboard)
-    {
-      error = tr("Invalid clipboard object. This is a fatal flaw.");
-      goto done_label;
-    }
-
-  list = m_ui.favorites->itemData
-    (m_ui.favorites->currentIndex()).toByteArray().split('\n');
-
-  for(int i = 0; i < list.size(); i++)
-    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-  data.append("magnet:?");
-  data.append(QString("rn=%1&").arg(list.value(0).constData()));
-  data.append(QString("xf=%1&").arg(list.value(1).constData()));
-  data.append(QString("xs=%1&").arg(list.value(2).constData()));
-  data.append(QString("ct=%1&").arg(list.value(3).constData()));
-  data.append(QString("hk=%1&").arg(list.value(4).constData()));
-  data.append(QString("ht=%1&").arg(list.value(5).constData()));
-  data.append("xt=urn:buzz");
-  clipboard->setText(data);
-
- done_label:
-
-  if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
-}
-
-void spoton::demagnetize(void)
-{
-  QStringList list
-    (m_ui.demagnetize->text().remove("magnet:?").split("&"));
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(str.startsWith("rn="))
-	{
-	  str.remove(0, 3);
-	  m_ui.channel->setText(str);
-	}
-      else if(str.startsWith("xf="))
-	{
-	  str.remove(0, 3);
-	  m_ui.buzzIterationCount->setValue(qAbs(str.toInt()));
-	}
-      else if(str.startsWith("xs="))
-	{
-	  str.remove(0, 3);
-	  m_ui.channelSalt->setText(str);
-	}
-      else if(str.startsWith("ct="))
-	{
-	  str.remove(0, 3);
-
-	  if(m_ui.channelType->findText(str) > -1)
-	    m_ui.channelType->setCurrentIndex
-	      (m_ui.channelType->findText(str));
-	}
-      else if(str.startsWith("hk="))
-	{
-	  str.remove(0, 3);
-	  m_ui.buzzHashKey->setText(str);
-	}
-      else if(str.startsWith("ht="))
-	{
-	  str.remove(0, 3);
-
-	  if(m_ui.buzzHashType->findText(str) > -1)
-	    m_ui.buzzHashType->setCurrentIndex
-	      (m_ui.buzzHashType->findText(str));
-	}
-      else if(str.startsWith("xt="))
-	{
-	}
-    }
-
-  slotJoinBuzzChannel();
-}
-
-void spoton::slotBuzzTools(int index)
-{
-  if(index == 0)
-    m_ui.demagnetize->clear();
-  else if(index == 1)
-    demagnetize();
-  else if(index == 2)
-    magnetize();
-  else if(index == 3)
-    removeFavorite(false);
-  else if(index == 4)
-    removeFavorite(true);
-
-  m_ui.buzzTools->blockSignals(true);
-  m_ui.buzzTools->setCurrentIndex(0);
-  m_ui.buzzTools->blockSignals(false);
-}
-
-void spoton::slotAbout(void)
-{
-  QMessageBox mb(this);
-  QString str("");
-
-#if SPOTON_GOLDBUG == 0
-  QPixmap pixmap(":/Logo/spot-on-logo.png");
-
-  pixmap = pixmap.scaled
-    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = "<html>Please visit <a href=\"http://spot-on.sourceforge.net\">"
-    "spot-on.sourceforge.net</a> for more information.";
-  mb.setIconPixmap(pixmap);
-#else
-  str = "<html>GoldBug is an open source application published under "
-    "the Revised BSD License.<br>"
-    "Please visit <a href=\"http://goldbug.sourceforge.net\">"
-    "goldbug.sourceforge.net</a> for more information.";
-  mb.setIconPixmap(*m_ui.logo->pixmap());
-#endif
-  str.append("<br><br>");
-  str.append(m_ui.buildInformation->text());
-  str.append("</html>");
-  mb.setStandardButtons(QMessageBox::Ok);
-  mb.setText(str);
-  mb.setTextFormat(Qt::RichText);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowTitle(SPOTON_APPLICATION_NAME);
-  mb.exec();
-}
-
-QPointer<spoton> spoton::instance(void)
-{
-  return s_gui;
 }
