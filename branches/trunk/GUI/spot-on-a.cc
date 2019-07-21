@@ -911,6 +911,74 @@ spoton::spoton(void):QMainWindow()
   m_ui.chatSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
+  connect(&m_chatInactivityTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotChatInactivityTimeout(void)));
+  connect(&m_emailRetrievalTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotRetrieveMail(void)));
+  connect(&m_generalTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotGeneralTimerTimeout(void)));
+  connect(&m_kernelSocket,
+	  SIGNAL(connected(void)),
+	  this,
+	  SLOT(slotKernelSocketState(void)));
+  connect(&m_kernelSocket,
+	  SIGNAL(disconnected(void)),
+	  this,
+	  SLOT(slotKernelSocketState(void)));
+  connect(&m_kernelSocket,
+	  SIGNAL(error(QAbstractSocket::SocketError)),
+	  this,
+	  SLOT(slotKernelSocketError(QAbstractSocket::SocketError)));
+  connect(&m_kernelSocket,
+	  SIGNAL(modeChanged(QSslSocket::SslMode)),
+	  this,
+	  SLOT(slotModeChanged(QSslSocket::SslMode)));
+  connect(&m_kernelSocket,
+	  SIGNAL(readyRead(void)),
+	  this,
+	  SLOT(slotReceivedKernelMessage(void)));
+  connect(&m_kernelSocket,
+	  SIGNAL(sslErrors(const QList<QSslError> &)),
+	  this,
+	  SLOT(slotKernelSocketSslErrors(const QList<QSslError> &)));
+  connect(&m_kernelUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotGatherStatistics(void)));
+  connect(&m_listenersUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateListeners(void)));
+  connect(&m_neighborsUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateNeighbors(void)));
+  connect(&m_participantsUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateParticipants(void)));
+  connect(&m_starbeamUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateEtpMagnets(void)));
+  connect(&m_starbeamUpdateTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateStars(void)));
+  connect(&m_tableTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPopulateBuzzFavorites(void)));
+  connect(&m_updateChatWindowsTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotUpdateChatWindows(void)));
   connect(m_notificationsUi.action_Clear,
 	  SIGNAL(triggered(void)),
 	  m_notificationsUi.textBrowser,
@@ -2077,74 +2145,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotTerminateKernelOnUIExit(bool)));
-  connect(&m_chatInactivityTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotChatInactivityTimeout(void)));
-  connect(&m_generalTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotGeneralTimerTimeout(void)));
-  connect(&m_updateChatWindowsTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotUpdateChatWindows(void)));
-  connect(&m_tableTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateBuzzFavorites(void)));
-  connect(&m_starbeamUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateEtpMagnets(void)));
-  connect(&m_kernelUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotGatherStatistics(void)));
-  connect(&m_listenersUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateListeners(void)));
-  connect(&m_neighborsUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateNeighbors(void)));
-  connect(&m_participantsUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateParticipants(void)));
-  connect(&m_starbeamUpdateTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotPopulateStars(void)));
-  connect(&m_emailRetrievalTimer,
-	  SIGNAL(timeout(void)),
-	  this,
-	  SLOT(slotRetrieveMail(void)));
-  connect(&m_kernelSocket,
-	  SIGNAL(connected(void)),
-	  this,
-	  SLOT(slotKernelSocketState(void)));
-  connect(&m_kernelSocket,
-	  SIGNAL(disconnected(void)),
-	  this,
-	  SLOT(slotKernelSocketState(void)));
-  connect(&m_kernelSocket,
-	  SIGNAL(error(QAbstractSocket::SocketError)),
-	  this,
-	  SLOT(slotKernelSocketError(QAbstractSocket::SocketError)));
-  connect(&m_kernelSocket,
-	  SIGNAL(modeChanged(QSslSocket::SslMode)),
-	  this,
-	  SLOT(slotModeChanged(QSslSocket::SslMode)));
-  connect(&m_kernelSocket,
-	  SIGNAL(readyRead(void)),
-	  this,
-	  SLOT(slotReceivedKernelMessage(void)));
-  connect(&m_kernelSocket,
-	  SIGNAL(sslErrors(const QList<QSslError> &)),
-	  this,
-	  SLOT(slotKernelSocketSslErrors(const QList<QSslError> &)));
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);
@@ -2673,8 +2673,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/coAcceptSignedMessagesOnly", true).toBool());
   m_optionsUi.urlAcceptSigned->setChecked
     (m_settings.value("gui/urlAcceptSignedMessagesOnly", true).toBool());
-  m_ui.receivers->setChecked(m_settings.value("gui/etpReceivers",
-					      false).toBool());
+  m_ui.receivers->setChecked
+    (m_settings.value("gui/etpReceivers", false).toBool());
   m_optionsUi.autoEmailRetrieve->setChecked
     (m_settings.value("gui/automaticallyRetrieveEmail", false).toBool());
   m_optionsUi.acceptBuzzMagnets->setChecked
@@ -3005,10 +3005,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowEtpMagnetsMenu(const QPoint &)));
-  connect(m_ui.regenerate,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRegenerateKey(void)));
   connect(m_ui.listeners,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -3033,6 +3029,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.regenerate,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRegenerateKey(void)));
   connect(m_ui.tab->tabBar(),
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
