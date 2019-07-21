@@ -3530,6 +3530,181 @@ void spoton::slotFavoritesActivated(int index)
     m_ui.buzzHashType->setCurrentIndex(0);
 }
 
+void spoton::slotPopulateBuzzFavorites(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+		     "buzz_channels.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_buzzFavoritesLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_buzzFavoritesLastModificationTime)
+	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_buzzFavoritesLastModificationTime = QDateTime();
+
+  QMap<QByteArray, QByteArray> map;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QWidget *focusWidget = QApplication::focusWidget();
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT data FROM buzz_channels"))
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      bool ok = true;
+
+	      data = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(ok)
+		{
+		  QByteArray channelName;
+		  QByteArray channelSalt;
+		  QByteArray channelType;
+		  QByteArray hashKey;
+		  QByteArray hashType;
+		  QList<QByteArray> list(data.split('\n'));
+
+		  channelName = QByteArray::fromBase64(list.value(0));
+		  channelType = QByteArray::fromBase64(list.value(3));
+		  hashKey = QByteArray::fromBase64(list.value(4));
+		  hashType = QByteArray::fromBase64(list.value(5));
+
+		  if(!channelName.isEmpty() && !channelType.isEmpty() &&
+		     !hashKey.isEmpty() && !hashType.isEmpty())
+		    {
+		      QByteArray label;
+		      unsigned long int iterationCount = 0;
+
+		      channelSalt = QByteArray::fromBase64
+			(list.value(2));
+		      iterationCount = qMax
+			(QByteArray::fromBase64(list.value(1)).
+			 toULong(), static_cast<unsigned long int> (10000));
+
+		      if(channelName.length() > 16)
+			{
+			  label.append(channelName.mid(0, 8));
+			  label.append("...");
+			  label.append
+			    (channelName.mid(channelName.length() - 8));
+			}
+		      else
+			label.append(channelName);
+
+		      label.append(":");
+		      label.append(QString::number(iterationCount));
+		      label.append(":");
+
+		      if(channelSalt.length() > 16)
+			{
+			  label.append(channelSalt.mid(0, 8));
+			  label.append("...");
+			  label.append
+			    (channelSalt.mid(channelSalt.length() - 8));
+			}
+		      else
+			label.append(channelSalt);
+
+		      label.append(":");
+		      label.append(channelType);
+		      label.append(":");
+
+		      if(hashKey.length() > 16)
+			{
+			  label.append(hashKey.mid(0, 8));
+			  label.append("...");
+			  label.append
+			    (hashKey.mid(hashKey.length() - 8));
+			}
+		      else
+			label.append(hashKey);
+
+		      label.append(":");
+		      label.append(hashType);
+		      map.insert(label, data);
+		    }
+		}
+	    }
+
+	if(focusWidget)
+	  focusWidget->setFocus();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(!map.isEmpty())
+    {
+      m_ui.favorites->clear();
+
+      while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
+	{
+	  QAction *action = m_ui.shareBuzzMagnet->menu()->actions().first();
+
+	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
+	  action->deleteLater();
+	}
+
+      for(int i = 0; i < map.keys().size(); i++)
+	{
+	  m_ui.favorites->addItem(map.keys().at(i));
+	  m_ui.favorites->setItemData(i, map.value(map.keys().at(i)));
+
+	  QAction *action = new QAction(map.keys().at(i), this);
+
+	  action->setData(map.value(map.keys().at(i)));
+	  connect(action,
+		  SIGNAL(triggered(void)),
+		  this,
+		  SLOT(slotShareBuzzMagnet(void)));
+	  m_ui.shareBuzzMagnet->menu()->addAction(action);
+	}
+    }
+  else
+    {
+      m_ui.favorites->clear();
+      m_ui.favorites->addItem("Empty"); // Please do not translate Empty.
+
+      while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
+	{
+	  QAction *action = m_ui.shareBuzzMagnet->menu()->actions().first();
+
+	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
+	  action->deleteLater();
+	}
+    }
+
+  m_ui.favorites->setMinimumContentsLength
+    (m_ui.favorites->itemText(0).length());
+}
+
 void spoton::slotQuit(void)
 {
   /*
@@ -10359,179 +10534,4 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 	      "must contain at least thirty-two characters "
 	      "each."));
     }
-}
-
-void spoton::slotPopulateBuzzFavorites(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "buzz_channels.db");
-
-  if(fileInfo.exists())
-    {
-      if(fileInfo.lastModified() >= m_buzzFavoritesLastModificationTime)
-	{
-	  if(fileInfo.lastModified() == m_buzzFavoritesLastModificationTime)
-	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified().
-	      addMSecs(1);
-	  else
-	    m_buzzFavoritesLastModificationTime = fileInfo.lastModified();
-	}
-      else
-	return;
-    }
-  else
-    m_buzzFavoritesLastModificationTime = QDateTime();
-
-  QMap<QByteArray, QByteArray> map;
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(fileInfo.absoluteFilePath());
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QWidget *focusWidget = QApplication::focusWidget();
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT data FROM buzz_channels"))
-	  while(query.next())
-	    {
-	      QByteArray data;
-	      bool ok = true;
-
-	      data = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-
-	      if(ok)
-		{
-		  QByteArray channelName;
-		  QByteArray channelSalt;
-		  QByteArray channelType;
-		  QByteArray hashKey;
-		  QByteArray hashType;
-		  QList<QByteArray> list(data.split('\n'));
-
-		  channelName = QByteArray::fromBase64(list.value(0));
-		  channelType = QByteArray::fromBase64(list.value(3));
-		  hashKey = QByteArray::fromBase64(list.value(4));
-		  hashType = QByteArray::fromBase64(list.value(5));
-
-		  if(!channelName.isEmpty() && !channelType.isEmpty() &&
-		     !hashKey.isEmpty() && !hashType.isEmpty())
-		    {
-		      QByteArray label;
-		      unsigned long int iterationCount = 0;
-
-		      channelSalt = QByteArray::fromBase64
-			(list.value(2));
-		      iterationCount = qMax
-			(QByteArray::fromBase64(list.value(1)).
-			 toULong(), static_cast<unsigned long int> (10000));
-
-		      if(channelName.length() > 16)
-			{
-			  label.append(channelName.mid(0, 8));
-			  label.append("...");
-			  label.append
-			    (channelName.mid(channelName.length() - 8));
-			}
-		      else
-			label.append(channelName);
-
-		      label.append(":");
-		      label.append(QString::number(iterationCount));
-		      label.append(":");
-
-		      if(channelSalt.length() > 16)
-			{
-			  label.append(channelSalt.mid(0, 8));
-			  label.append("...");
-			  label.append
-			    (channelSalt.mid(channelSalt.length() - 8));
-			}
-		      else
-			label.append(channelSalt);
-
-		      label.append(":");
-		      label.append(channelType);
-		      label.append(":");
-
-		      if(hashKey.length() > 16)
-			{
-			  label.append(hashKey.mid(0, 8));
-			  label.append("...");
-			  label.append
-			    (hashKey.mid(hashKey.length() - 8));
-			}
-		      else
-			label.append(hashKey);
-
-		      label.append(":");
-		      label.append(hashType);
-		      map.insert(label, data);
-		    }
-		}
-	    }
-
-	if(focusWidget)
-	  focusWidget->setFocus();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(!map.isEmpty())
-    {
-      m_ui.favorites->clear();
-
-      while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
-	{
-	  QAction *action = m_ui.shareBuzzMagnet->menu()->actions().first();
-
-	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
-	  action->deleteLater();
-	}
-
-      for(int i = 0; i < map.keys().size(); i++)
-	{
-	  m_ui.favorites->addItem(map.keys().at(i));
-	  m_ui.favorites->setItemData(i, map.value(map.keys().at(i)));
-
-	  QAction *action = new QAction(map.keys().at(i), this);
-
-	  action->setData(map.value(map.keys().at(i)));
-	  connect(action,
-		  SIGNAL(triggered(void)),
-		  this,
-		  SLOT(slotShareBuzzMagnet(void)));
-	  m_ui.shareBuzzMagnet->menu()->addAction(action);
-	}
-    }
-  else
-    {
-      m_ui.favorites->clear();
-      m_ui.favorites->addItem("Empty"); // Please do not translate Empty.
-
-      while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
-	{
-	  QAction *action = m_ui.shareBuzzMagnet->menu()->actions().first();
-
-	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
-	  action->deleteLater();
-	}
-    }
-
-  m_ui.favorites->setMinimumContentsLength
-    (m_ui.favorites->itemText(0).length());
 }
