@@ -2989,6 +2989,14 @@ spoton::spoton(void):QMainWindow()
     (m_optionsUi.chatAlternatingRowColors->isChecked());
   m_ui.urlParticipants->setAlternatingRowColors
     (m_optionsUi.urlsAlternatingRowColors->isChecked());
+  connect(m_ui.buzzTab->tabBar(),
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotShowBuzzTabContextMenu(const QPoint &)));
+  connect(m_ui.delete_key,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteKey(void)));
   connect(m_ui.emailParticipants,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -2997,18 +3005,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowEtpMagnetsMenu(const QPoint &)));
-  connect(m_ui.mail,
-	  SIGNAL(customContextMenuRequested(const QPoint &)),
+  connect(m_ui.regenerate,
+	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotMailContextMenu(const QPoint &)));
-  connect(m_ui.urlParticipants,
-	  SIGNAL(customContextMenuRequested(const QPoint &)),
-	  this,
-	  SLOT(slotShowContextMenu(const QPoint &)));
+	  SLOT(slotRegenerateKey(void)));
   connect(m_ui.listeners,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  connect(m_ui.mail,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
+	  this,
+	  SLOT(slotMailContextMenu(const QPoint &)));
   connect(m_ui.messages,
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
@@ -3025,10 +3033,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-  connect(m_ui.buzzTab->tabBar(),
-	  SIGNAL(customContextMenuRequested(const QPoint &)),
-	  this,
-	  SLOT(slotShowBuzzTabContextMenu(const QPoint &)));
   connect(m_ui.tab->tabBar(),
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -3041,14 +3045,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-  connect(m_ui.delete_key,
-	  SIGNAL(clicked(void)),
+  connect(m_ui.urlParticipants,
+	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
-	  SLOT(slotDeleteKey(void)));
-  connect(m_ui.regenerate,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRegenerateKey(void)));
+	  SLOT(slotShowContextMenu(const QPoint &)));
   m_ui.ae_tokens->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
