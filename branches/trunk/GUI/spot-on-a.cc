@@ -1047,6 +1047,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.geoipPath4,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveGeoIPPath(void)));
+  connect(m_optionsUi.geoipPath6,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveGeoIPPath(void)));
   connect(m_optionsUi.kernel_url_batch_size,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1313,14 +1321,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveDestination(void)));
-  connect(m_optionsUi.geoipPath4,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveGeoIPPath(void)));
-  connect(m_optionsUi.geoipPath6,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveGeoIPPath(void)));
   connect(m_ui.kernelPath,
 	  SIGNAL(returnPressed(void)),
 	  this,
