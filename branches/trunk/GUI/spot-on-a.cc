@@ -28,10 +28,6 @@
 extern "C"
 {
 #include <curl/curl.h>
-}
-
-extern "C"
-{
 #include <libpq-fe.h>
 }
 
@@ -63,7 +59,6 @@ extern "C"
 
 #include "Common/spot-on-architecture.h"
 #include "Common/spot-on-threefish.h"
-#include "spot-on.h"
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
 #include "spot-on-echo-key-share.h"
@@ -71,6 +66,7 @@ extern "C"
 #include "spot-on-rss.h"
 #include "spot-on-smp.h"
 #include "spot-on-starbeamanalyzer.h"
+#include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
 #ifdef SPOTON_MCELIECE_ENABLED
