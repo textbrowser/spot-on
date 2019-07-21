@@ -1011,6 +1011,46 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveBuzzAutoJoin(bool)));
+  connect(m_optionsUi.chatAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.chatOpenLinks,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotOpenChatUrlChecked(bool)));
+  connect(m_optionsUi.chatTimestamps,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotChatTimestamps(bool)));
+  connect(m_optionsUi.chat_fs_request,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.defaults,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotTimeSliderDefaults(void)));
+  connect(m_optionsUi.disable_kernel_synchronous_download,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotDisableSynchronousUrlImport(bool)));
+  connect(m_optionsUi.disable_ui_synchronous_import,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotDisableSynchronousUrlImport(bool)));
+  connect(m_optionsUi.emailAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.email_fs_request,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.kernel_url_batch_size,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotKernelUrlBatchSizeChanged(int)));
   connect(m_optionsUi.launchKernel,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1019,6 +1059,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotLimitConnections(int)));
+  connect(m_optionsUi.maximum_url_keywords_interface,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumUrlKeywordsChanged(int)));
+  connect(m_optionsUi.maximum_url_keywords_kernel,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumUrlKeywordsChanged(int)));
   connect(m_optionsUi.monitor,
 	  SIGNAL(toggled(bool)),
 	  m_notificationsUi.monitor,
@@ -1031,14 +1079,30 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotNotificationsEnabled(bool)));
+  connect(m_optionsUi.ontopChatDialogs,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotOntopChatDialogs(bool)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotPlaySounds(bool)));
+  connect(m_optionsUi.postgresql_kernel_url_distribution_timeout,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
   connect(m_optionsUi.refreshEmail,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveRefreshEmail(bool)));
+  connect(m_optionsUi.remove_otm,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotRemoveOtmOnExit(bool)));
+  connect(m_optionsUi.searchResultsPerPage,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSearchResultsPerPage(int)));
   connect(m_optionsUi.selectGeoIP4,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1047,6 +1111,22 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
+  connect(m_optionsUi.sharePrivateKeys,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveSharePrivateKeys(bool)));
+  connect(m_optionsUi.starbeamAutoVerify,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveStarBeamAutoVerify(bool)));
+  connect(m_optionsUi.terminate_kernel_on_ui_exit,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTerminateKernelOnUIExit(bool)));
+  connect(m_optionsUi.urlsAlternatingRowColors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveAlternatingColors(bool)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2065,86 +2145,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCorrectUrlDatabases(void)));
-  connect(m_optionsUi.sharePrivateKeys,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveSharePrivateKeys(bool)));
-  connect(m_optionsUi.starbeamAutoVerify,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveStarBeamAutoVerify(bool)));
-  connect(m_optionsUi.chatAlternatingRowColors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveAlternatingColors(bool)));
-  connect(m_optionsUi.emailAlternatingRowColors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveAlternatingColors(bool)));
-  connect(m_optionsUi.urlsAlternatingRowColors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveAlternatingColors(bool)));
-  connect(m_optionsUi.ontopChatDialogs,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotOntopChatDialogs(bool)));
-  connect(m_optionsUi.remove_otm,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotRemoveOtmOnExit(bool)));
-  connect(m_optionsUi.searchResultsPerPage,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotSearchResultsPerPage(int)));
-  connect(m_optionsUi.chat_fs_request,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAllowFSRequest(bool)));
-  connect(m_optionsUi.email_fs_request,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAllowFSRequest(bool)));
-  connect(m_optionsUi.defaults,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotTimeSliderDefaults(void)));
-  connect(m_optionsUi.disable_kernel_synchronous_download,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotDisableSynchronousUrlImport(bool)));
-  connect(m_optionsUi.disable_ui_synchronous_import,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotDisableSynchronousUrlImport(bool)));
-  connect(m_optionsUi.chatOpenLinks,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotOpenChatUrlChecked(bool)));
-  connect(m_optionsUi.chatTimestamps,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotChatTimestamps(bool)));
-  connect(m_optionsUi.maximum_url_keywords_interface,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotMaximumUrlKeywordsChanged(int)));
-  connect(m_optionsUi.maximum_url_keywords_kernel,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotMaximumUrlKeywordsChanged(int)));
-  connect(m_optionsUi.kernel_url_batch_size,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotKernelUrlBatchSizeChanged(int)));
-  connect(m_optionsUi.postgresql_kernel_url_distribution_timeout,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
-  connect(m_optionsUi.terminate_kernel_on_ui_exit,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotTerminateKernelOnUIExit(bool)));
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);
