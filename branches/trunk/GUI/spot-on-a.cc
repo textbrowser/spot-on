@@ -4190,6 +4190,136 @@ void spoton::slotFavoritesActivated(int index)
     m_ui.buzzHashType->setCurrentIndex(0);
 }
 
+void spoton::slotKernelLogEvents(bool state)
+{
+  m_settings["gui/kernelLogEvents"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/kernelLogEvents", state);
+}
+
+void spoton::slotListenerFullEcho(void)
+{
+  changeEchoMode("full", m_ui.listeners);
+}
+
+void spoton::slotListenerHalfEcho(void)
+{
+  changeEchoMode("half", m_ui.listeners);
+}
+
+void spoton::slotListenerMaximumChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString name(spinBox->property("field_name").toString().toLower());
+
+	if(name == "maximum_buffer_size")
+	  query.prepare("UPDATE listeners SET "
+			"maximum_buffer_size = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE listeners SET "
+			"maximum_content_length = ? "
+			"WHERE OID = ?");
+
+	query.bindValue(0, value);
+	query.bindValue(1, spinBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotModeChanged(QSslSocket::SslMode mode)
+{
+  spoton_misc::logError(QString("spoton::slotModeChanged(): "
+				"the connection mode has changed to %1 "
+				"for %2:%3.").
+			arg(mode).
+			arg(m_kernelSocket.peerAddress().toString()).
+			arg(m_kernelSocket.peerPort()));
+
+  if(mode == QSslSocket::UnencryptedMode)
+    {
+      spoton_misc::logError
+	(QString("spoton::slotModeChanged(): "
+		 "plaintext mode. Disconnecting kernel socket for "
+		 "%1:%2.").
+	 arg(m_kernelSocket.peerAddress().toString()).
+	 arg(m_kernelSocket.peerPort()));
+      m_kernelSocket.close();
+    }
+}
+
+void spoton::slotNeighborFullEcho(void)
+{
+  changeEchoMode("full", m_ui.neighbors);
+}
+
+void spoton::slotNeighborHalfEcho(void)
+{
+  changeEchoMode("half", m_ui.neighbors);
+}
+
+void spoton::slotNeighborMaximumChanged(int value)
+{
+  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
+
+  if(!spinBox)
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString name(spinBox->property("field_name").toString().toLower());
+
+	if(name == "maximum_buffer_size")
+	  query.prepare("UPDATE neighbors SET "
+			"maximum_buffer_size = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"maximum_content_length = ? "
+			"WHERE OID = ?");
+
+	query.bindValue(0, value);
+	query.bindValue(1, spinBox->property("oid"));
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotPopulateBuzzFavorites(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -10404,134 +10534,4 @@ void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
       if(m_neighborsFuture.isFinished())
 	m_neighborsLastModificationTime = QDateTime();
     }
-}
-
-void spoton::slotListenerFullEcho(void)
-{
-  changeEchoMode("full", m_ui.listeners);
-}
-
-void spoton::slotListenerHalfEcho(void)
-{
-  changeEchoMode("half", m_ui.listeners);
-}
-
-void spoton::slotNeighborFullEcho(void)
-{
-  changeEchoMode("full", m_ui.neighbors);
-}
-
-void spoton::slotNeighborHalfEcho(void)
-{
-  changeEchoMode("half", m_ui.neighbors);
-}
-
-void spoton::slotKernelLogEvents(bool state)
-{
-  m_settings["gui/kernelLogEvents"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/kernelLogEvents", state);
-}
-
-void spoton::slotModeChanged(QSslSocket::SslMode mode)
-{
-  spoton_misc::logError(QString("spoton::slotModeChanged(): "
-				"the connection mode has changed to %1 "
-				"for %2:%3.").
-			arg(mode).
-			arg(m_kernelSocket.peerAddress().toString()).
-			arg(m_kernelSocket.peerPort()));
-
-  if(mode == QSslSocket::UnencryptedMode)
-    {
-      spoton_misc::logError
-	(QString("spoton::slotModeChanged(): "
-		 "plaintext mode. Disconnecting kernel socket for "
-		 "%1:%2.").
-	 arg(m_kernelSocket.peerAddress().toString()).
-	 arg(m_kernelSocket.peerPort()));
-      m_kernelSocket.close();
-    }
-}
-
-void spoton::slotListenerMaximumChanged(int value)
-{
-  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
-
-  if(!spinBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QString name(spinBox->property("field_name").toString().toLower());
-
-	if(name == "maximum_buffer_size")
-	  query.prepare("UPDATE listeners SET "
-			"maximum_buffer_size = ? "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE listeners SET "
-			"maximum_content_length = ? "
-			"WHERE OID = ?");
-
-	query.bindValue(0, value);
-	query.bindValue(1, spinBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotNeighborMaximumChanged(int value)
-{
-  QSpinBox *spinBox = qobject_cast<QSpinBox *> (sender());
-
-  if(!spinBox)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QString name(spinBox->property("field_name").toString().toLower());
-
-	if(name == "maximum_buffer_size")
-	  query.prepare("UPDATE neighbors SET "
-			"maximum_buffer_size = ? "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE neighbors SET "
-			"maximum_content_length = ? "
-			"WHERE OID = ?");
-
-	query.bindValue(0, value);
-	query.bindValue(1, spinBox->property("oid"));
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
 }
