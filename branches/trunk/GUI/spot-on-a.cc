@@ -3704,6 +3704,93 @@ void spoton::slotBuzzTools(int index)
   m_ui.buzzTools->blockSignals(false);
 }
 
+void spoton::slotCallParticipant(void)
+{
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+  else if(!m_kernelSocket.isEncrypted() &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return;
+
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  menuBar()->repaint();
+  repaint();
+#ifndef Q_OS_MAC
+  QApplication::processEvents();
+#endif
+
+  QString keyType("");
+  QString oid("");
+  QString type(action->property("type").toString().toLower());
+  bool temporary = true;
+  int row = -1;
+
+  if((row = m_ui.participants->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+
+      if(item)
+	{
+	  keyType = item->data
+	    (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
+	  oid = item->text();
+	  temporary = item->data(Qt::UserRole).toBool();
+	}
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+  else if(keyType == "poptastic" && type == "calling_two_way")
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
+  else if(temporary) // Temporary friend?
+    {
+      QApplication::restoreOverrideCursor();
+      return; // Not allowed!
+    }
+
+  if(type == "calling")
+    slotGenerateGeminiInChat();
+  else if(type == "calling_two_way")
+    generateHalfGeminis();
+  else if(type == "calling_using_gemini")
+    {
+    }
+  else
+    saveGemini(QPair<QByteArray, QByteArray> (), oid);
+
+  QByteArray message;
+
+  if(type == "calling_using_gemini")
+    message.append("call_participant_using_gemini_");
+  else
+    message.append("call_participant_using_public_key_");
+
+  message.append(keyType);
+  message.append("_");
+  message.append(oid);
+  message.append("\n");
+
+  if(m_kernelSocket.write(message.constData(), message.length()) !=
+     message.length())
+    spoton_misc::logError
+      (QString("spoton::slotCallParticipant(): write() failure for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotChangeTabPosition(int index)
 {
   if(index == 0)
@@ -4318,6 +4405,36 @@ void spoton::slotSaveSslControlString(void)
   QSettings settings;
 
   settings.setValue("gui/sslControlString", str);
+}
+
+void spoton::slotSignatureCheckBoxToggled(bool state)
+{
+  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  QString str("");
+
+  if(checkBox == m_optionsUi.chatAcceptSigned)
+    str = "chatAcceptSignedMessagesOnly";
+  else if(checkBox == m_optionsUi.chatSignMessages)
+    str = "chatSignMessages";
+  else if(checkBox == m_optionsUi.coAcceptSigned)
+    str = "coAcceptSignedMessagesOnly";
+  else if(checkBox == m_optionsUi.emailAcceptSigned)
+    str = "emailAcceptSignedMessagesOnly";
+  else if(checkBox == m_optionsUi.emailSignMessages)
+    str = "emailSignMessages";
+  else if(checkBox == m_optionsUi.urlAcceptSigned)
+    str = "urlAcceptSignedMessagesOnly";
+  else if(checkBox == m_optionsUi.urlSignMessages)
+    str = "urlSignMessages";
+
+  if(!str.isEmpty())
+    {
+      m_settings[QString("gui/%1").arg(str)] = state;
+
+      QSettings settings;
+
+      settings.setValue(QString("gui/%1").arg(str), state);
+    }
 }
 
 void spoton::slotAddListener(void)
@@ -10417,121 +10534,4 @@ void spoton::slotDisconnectListenerNeighbors(void)
 	     arg(m_kernelSocket.peerAddress().toString()).
 	     arg(m_kernelSocket.peerPort()));
       }
-}
-
-void spoton::slotCallParticipant(void)
-{
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-
-  QAction *action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  menuBar()->repaint();
-  repaint();
-#ifndef Q_OS_MAC
-  QApplication::processEvents();
-#endif
-
-  QString keyType("");
-  QString oid("");
-  QString type(action->property("type").toString().toLower());
-  bool temporary = true;
-  int row = -1;
-
-  if((row = m_ui.participants->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
-
-      if(item)
-	{
-	  keyType = item->data
-	    (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
-	  oid = item->text();
-	  temporary = item->data(Qt::UserRole).toBool();
-	}
-    }
-
-  if(oid.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-  else if(keyType == "poptastic" && type == "calling_two_way")
-    {
-      QApplication::restoreOverrideCursor();
-      return; // Not allowed!
-    }
-  else if(temporary) // Temporary friend?
-    {
-      QApplication::restoreOverrideCursor();
-      return; // Not allowed!
-    }
-
-  if(type == "calling")
-    slotGenerateGeminiInChat();
-  else if(type == "calling_two_way")
-    generateHalfGeminis();
-  else if(type == "calling_using_gemini")
-    {
-    }
-  else
-    saveGemini(QPair<QByteArray, QByteArray> (), oid);
-
-  QByteArray message;
-
-  if(type == "calling_using_gemini")
-    message.append("call_participant_using_gemini_");
-  else
-    message.append("call_participant_using_public_key_");
-
-  message.append(keyType);
-  message.append("_");
-  message.append(oid);
-  message.append("\n");
-
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
-    spoton_misc::logError
-      (QString("spoton::slotCallParticipant(): write() failure for %1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotSignatureCheckBoxToggled(bool state)
-{
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
-  QString str("");
-
-  if(checkBox == m_optionsUi.chatAcceptSigned)
-    str = "chatAcceptSignedMessagesOnly";
-  else if(checkBox == m_optionsUi.chatSignMessages)
-    str = "chatSignMessages";
-  else if(checkBox == m_optionsUi.coAcceptSigned)
-    str = "coAcceptSignedMessagesOnly";
-  else if(checkBox == m_optionsUi.emailAcceptSigned)
-    str = "emailAcceptSignedMessagesOnly";
-  else if(checkBox == m_optionsUi.emailSignMessages)
-    str = "emailSignMessages";
-  else if(checkBox == m_optionsUi.urlAcceptSigned)
-    str = "urlAcceptSignedMessagesOnly";
-  else if(checkBox == m_optionsUi.urlSignMessages)
-    str = "urlSignMessages";
-
-  if(!str.isEmpty())
-    {
-      m_settings[QString("gui/%1").arg(str)] = state;
-
-      QSettings settings;
-
-      settings.setValue(QString("gui/%1").arg(str), state);
-    }
 }
