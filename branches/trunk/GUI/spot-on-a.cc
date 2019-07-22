@@ -4083,6 +4083,80 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotDetachListenerNeighbors(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
+      {
+	QByteArray message;
+
+	message.append("detach_listener_neighbors_");
+	message.append(oid);
+	message.append("\n");
+
+	if(m_kernelSocket.write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton::slotDetachListenerNeighbors(): write() "
+		     "failure for %1:%2.").
+	     arg(m_kernelSocket.peerAddress().toString()).
+	     arg(m_kernelSocket.peerPort()));
+      }
+}
+
+void spoton::slotDisconnectListenerNeighbors(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
+    if(m_kernelSocket.isEncrypted() ||
+       m_ui.kernelKeySize->currentText().toInt() == 0)
+      {
+	QByteArray message;
+
+	message.append("disconnect_listener_neighbors_");
+	message.append(oid);
+	message.append("\n");
+
+	if(m_kernelSocket.write(message.constData(), message.length()) !=
+	   message.length())
+	  spoton_misc::logError
+	    (QString("spoton::slotDisconnectListenerNeighbors(): "
+		     "write() failure for %1:%2.").
+	     arg(m_kernelSocket.peerAddress().toString()).
+	     arg(m_kernelSocket.peerPort()));
+      }
+}
+
 void spoton::slotDiscoverExternalAddress(void)
 {
   m_externalAddress.discover();
@@ -10460,78 +10534,4 @@ void spoton::slotNeighborMaximumChanged(int value)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDetachListenerNeighbors(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted() ||
-       m_ui.kernelKeySize->currentText().toInt() == 0)
-      {
-	QByteArray message;
-
-	message.append("detach_listener_neighbors_");
-	message.append(oid);
-	message.append("\n");
-
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton::slotDetachListenerNeighbors(): write() "
-		     "failure for %1:%2.").
-	     arg(m_kernelSocket.peerAddress().toString()).
-	     arg(m_kernelSocket.peerPort()));
-      }
-}
-
-void spoton::slotDisconnectListenerNeighbors(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-    if(m_kernelSocket.isEncrypted() ||
-       m_ui.kernelKeySize->currentText().toInt() == 0)
-      {
-	QByteArray message;
-
-	message.append("disconnect_listener_neighbors_");
-	message.append(oid);
-	message.append("\n");
-
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
-	  spoton_misc::logError
-	    (QString("spoton::slotDisconnectListenerNeighbors(): "
-		     "write() failure for %1:%2.").
-	     arg(m_kernelSocket.peerAddress().toString()).
-	     arg(m_kernelSocket.peerPort()));
-      }
 }
