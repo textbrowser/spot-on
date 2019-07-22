@@ -3289,6 +3289,89 @@ QPointer<spoton> spoton::instance(void)
   return s_gui;
 }
 
+void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
+			  const QString &message)
+{
+  if(!crypt)
+    return;
+  else if(oid.isEmpty())
+    return;
+
+  QDialog dialog(this);
+  Ui_spoton_passwordprompt ui;
+
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: Authenticate Neighbor Account").
+     arg(SPOTON_APPLICATION_NAME));
+
+  if(!message.isEmpty())
+    ui.message->setText(message);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QString name(ui.name->text().trimmed());
+      QString password(ui.password->text());
+
+      if(name.length() >= 32 && password.length() >= 32)
+	{
+	  QString connectionName("");
+	  bool ok = true;
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			       "neighbors.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+
+		query.prepare("UPDATE neighbors SET "
+			      "account_authenticated = NULL, "
+			      "account_name = ?, "
+			      "account_password = ? "
+			      "WHERE OID = ? AND user_defined = 1");
+		query.bindValue
+		  (0, crypt->encryptedThenHashed(name.toLatin1(),
+						 &ok).toBase64());
+
+		if(ok)
+		  query.bindValue
+		    (1, crypt->encryptedThenHashed(password.toLatin1(),
+						   &ok).toBase64());
+
+		query.bindValue(2, oid);
+
+		if(ok)
+		  ok = query.exec();
+	      }
+	    else
+	      ok = false;
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+
+	  if(!ok)
+	    QMessageBox::critical(this, tr("%1: Error").
+				  arg(SPOTON_APPLICATION_NAME),
+				  tr("An error occurred while attempting "
+				     "to record authentication "
+				     "information."));
+	}
+      else
+	QMessageBox::critical
+	  (this, tr("%1: Error").
+	   arg(SPOTON_APPLICATION_NAME),
+	   tr("The account name and the account password "
+	      "must contain at least thirty-two characters "
+	      "each."));
+    }
+}
+
 void spoton::demagnetize(void)
 {
   QStringList list
@@ -3482,6 +3565,36 @@ void spoton::slotAbout(void)
   mb.setWindowIcon(windowIcon());
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
+}
+
+void spoton::slotAuthenticate(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+  QModelIndexList list;
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (m_ui.neighbors->columnCount() - 1); // OID
+
+  if(list.isEmpty())
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid neighbor OID. "
+			       "Please select a neighbor."));
+      return;
+    }
+
+  authenticate(crypt, list.at(0).data().toString());
 }
 
 void spoton::slotBuzzTools(int index)
@@ -10421,117 +10534,4 @@ void spoton::slotResetAccountInformation(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotAuthenticate(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
-    }
-
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
-
-  if(list.isEmpty())
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid neighbor OID. "
-			       "Please select a neighbor."));
-      return;
-    }
-
-  authenticate(crypt, list.at(0).data().toString());
-}
-
-void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
-			  const QString &message)
-{
-  if(!crypt)
-    return;
-  else if(oid.isEmpty())
-    return;
-
-  QDialog dialog(this);
-  Ui_spoton_passwordprompt ui;
-
-  ui.setupUi(&dialog);
-  dialog.setWindowTitle
-    (tr("%1: Authenticate Neighbor Account").
-     arg(SPOTON_APPLICATION_NAME));
-
-  if(!message.isEmpty())
-    ui.message->setText(message);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QString name(ui.name->text().trimmed());
-      QString password(ui.password->text());
-
-      if(name.length() >= 32 && password.length() >= 32)
-	{
-	  QString connectionName("");
-	  bool ok = true;
-
-	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
-
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "neighbors.db");
-
-	    if(db.open())
-	      {
-		QSqlQuery query(db);
-
-		query.prepare("UPDATE neighbors SET "
-			      "account_authenticated = NULL, "
-			      "account_name = ?, "
-			      "account_password = ? "
-			      "WHERE OID = ? AND user_defined = 1");
-		query.bindValue
-		  (0, crypt->encryptedThenHashed(name.toLatin1(),
-						 &ok).toBase64());
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->encryptedThenHashed(password.toLatin1(),
-						   &ok).toBase64());
-
-		query.bindValue(2, oid);
-
-		if(ok)
-		  ok = query.exec();
-	      }
-	    else
-	      ok = false;
-
-	    db.close();
-	  }
-
-	  QSqlDatabase::removeDatabase(connectionName);
-
-	  if(!ok)
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
-				  tr("An error occurred while attempting "
-				     "to record authentication "
-				     "information."));
-	}
-      else
-	QMessageBox::critical
-	  (this, tr("%1: Error").
-	   arg(SPOTON_APPLICATION_NAME),
-	   tr("The account name and the account password "
-	      "must contain at least thirty-two characters "
-	      "each."));
-    }
 }
