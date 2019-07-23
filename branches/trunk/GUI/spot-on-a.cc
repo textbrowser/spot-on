@@ -790,6 +790,11 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.position->model()->setData
     (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
+
+  /*
+  ** Connect m_sb's items.
+  */
+
   connect(m_sb.authentication_request,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -842,6 +847,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotShowNotificationsWindow(void)));
+
+  /*
+  ** Connect the object's items.
+  */
+
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_encryptFile,
@@ -907,6 +917,11 @@ spoton::spoton(void):QMainWindow()
   m_ui.chatSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
+
+  /*
+  ** Connect the object's items.
+  */
+
   connect(&m_chatInactivityTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -975,6 +990,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotUpdateChatWindows(void)));
+
+  /*
+  ** Connect m_notificationsUi's items.
+  */
+
   connect(m_notificationsUi.action_Clear,
 	  SIGNAL(triggered(void)),
 	  m_notificationsUi.textBrowser,
@@ -995,6 +1015,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotMonitorEvents(bool)));
+
+  /*
+  ** Connect m_optionsUi's items.
+  */
+
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
@@ -1147,6 +1172,11 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveAlternatingColors(bool)));
+
+  /*
+  ** Connect m_ui's items.
+  */
+
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
