@@ -433,6 +433,8 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
 
       if(messageType == "0060")
 	message = spoton_send::message0060(data, ae);
+      else
+	message = spoton_send::message0061(data, ae);
 
       if(write(message.constData(), message.length()) != message.length())
 	{
