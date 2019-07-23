@@ -3715,6 +3715,34 @@ void spoton::removeFavorite(const bool removeAll)
     }
 }
 
+void spoton::saveGeoIPPath(const int version, const QString &path)
+{
+  if(version == 4)
+    m_settings["gui/geoipPath4"] = path;
+  else
+    m_settings["gui/geoipPath6"] = path;
+
+  QSettings settings;
+
+  if(version == 4)
+    settings.setValue("gui/geoipPath4", path);
+  else
+    settings.setValue("gui/geoipPath6", path);
+
+  if(version == 4)
+    {
+      m_optionsUi.geoipPath4->setText(path);
+      m_optionsUi.geoipPath4->setToolTip(path);
+      m_optionsUi.geoipPath4->selectAll();
+    }
+  else
+    {
+      m_optionsUi.geoipPath6->setText(path);
+      m_optionsUi.geoipPath6->setToolTip(path);
+      m_optionsUi.geoipPath6->selectAll();
+    }
+}
+
 void spoton::saveKernelPath(const QString &path)
 {
   m_settings["gui/kernelPath"] = path;
@@ -3894,6 +3922,110 @@ void spoton::slotAbout(void)
   mb.setWindowIcon(windowIcon());
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
+}
+
+void spoton::slotActivateKernel(void)
+{
+  if(m_ui.pid->text().toLongLong() < 0) // Error.
+    return;
+  else if(!m_optionsUi.forceRegistration->isChecked())
+    {
+      if(m_ui.pid->text().toLongLong() > 0)
+	return;
+    }
+
+  QFileInfo fileInfo(m_ui.kernelPath->text());
+
+#if defined(Q_OS_MAC)
+  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
+#elif defined(Q_OS_WIN)
+  if(fileInfo.isReadable() && fileInfo.size() > 0)
+#else
+  if(fileInfo.isExecutable() && fileInfo.size() > 0)
+#endif
+    {
+    }
+  else
+    return; // Incorrect executable!
+
+  m_ui.pid->setText("0");
+
+  QColor color(240, 128, 128); // Light coral!
+  QPalette palette(m_ui.pid->palette());
+
+  palette.setColor(m_ui.pid->backgroundRole(), color);
+  m_ui.pid->setPalette(palette);
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Launching the kernel. Please be patient."));
+  m_sb.status->repaint();
+
+  QString program(m_ui.kernelPath->text());
+  bool status = false;
+
+#ifdef Q_OS_MAC
+  if(QFileInfo(program).isBundle())
+    {
+      QStringList list;
+
+      list << "-a" << program << "-g";
+      status = QProcess::startDetached("open", list);
+    }
+  else
+    status = QProcess::startDetached(program);
+#elif defined(Q_OS_WIN)
+  status = QProcess::startDetached(QString("\"%1\"").arg(program));
+#else
+  status = QProcess::startDetached(program);
+#endif
+
+  QElapsedTimer time;
+
+  time.start();
+
+  do
+    {
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      if(m_ui.pid->text().toLongLong() > 0)
+	break;
+      else if(time.hasExpired(10000))
+	break;
+    }
+  while(true);
+
+  m_sb.status->clear();
+  m_sb.status->repaint();
+  QApplication::restoreOverrideCursor();
+
+  if(status)
+#if SPOTON_GOLDBUG == 1
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/status-online.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/activate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+#endif
+  else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/deactivate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+
+  if(status)
+    {
+      if(m_settings.value("gui/buzzAutoJoin", true).toBool())
+	joinDefaultBuzzChannel();
+    }
+  else if(m_ui.activateKernel == sender())
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+       tr("The kernel process could not be started. Good luck."));
 }
 
 void spoton::slotAddListener(void)
@@ -5254,6 +5386,84 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotDeactivateKernel(void)
+{
+  if(isKernelActive() && m_ui.deactivateKernel == sender())
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
+  libspoton_handle_t libspotonHandle;
+  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
+
+  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     0,
+			     &libspotonHandle,
+			     m_settings.
+			     value("gui/gcryctl_init_secmem",
+				   spoton_common::
+				   MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt())) ==
+     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
+    libspoton_deregister_kernel
+      (libspoton_registered_kernel_pid(&libspotonHandle, 0),
+       &libspotonHandle);
+
+  libspoton_close(&libspotonHandle);
+  m_kernelSocket.close();
+#if SPOTON_GOLDBUG == 1
+  m_ui.activateKernel->setStyleSheet("background-color: #ff717e;"
+				     "color: white;"
+				     "border-style: outset;"
+				     "border-width: 2px;"
+				     "border-radius: 10px;"
+				     "border-color: black;"
+				     "min-width: 5em;"
+				     "padding: 6px");
+#endif
+  m_forwardSecrecyRequests.clear();
+  m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
+  m_sb.forward_secrecy_request->setToolTip("");
+  m_sb.forward_secrecy_request->setVisible(false);
+
+  QElapsedTimer time;
+
+  time.start();
+
+  do
+    {
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      if(m_ui.pid->text().toLongLong() <= 0)
+	break;
+      else if(time.hasExpired(10000))
+	break;
+    }
+  while(!m_quit);
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotDeleteAllListeners(void)
 {
   QString connectionName("");
@@ -5586,6 +5796,239 @@ void spoton::slotFavoritesActivated(int index)
       (m_ui.buzzHashType->findText(list.value(5)));
   else
     m_ui.buzzHashType->setCurrentIndex(0);
+}
+
+void spoton::slotGeneralTimerTimeout(void)
+{
+  QColor color(240, 128, 128); // Light coral!
+  QList<QStandardItem *> list(m_statisticsModel->findItems("Kernel PID"));
+  QPalette pidPalette(m_ui.pid->palette());
+  QStandardItem *item = 0;
+  QString text(m_ui.pid->text());
+
+  pidPalette.setColor(m_ui.pid->backgroundRole(), color);
+
+  if(!list.isEmpty())
+    {
+      item = list.at(0);
+
+      if(item)
+	item = m_statisticsModel->item(item->row(), 1);
+    }
+
+  if(!item)
+    {
+      m_ui.pid->setPalette(pidPalette);
+      m_ui.pid->setText("0");
+    }
+  else
+    {
+      QColor color(144, 238, 144); // Light green!
+      QPalette palette(m_ui.pid->palette());
+
+      palette.setColor(m_ui.pid->backgroundRole(), color);
+      m_ui.pid->setPalette(palette);
+      m_ui.pid->setText(item->text());
+#if SPOTON_GOLDBUG == 1
+      m_ui.activateKernel->setStyleSheet("background-color: lightgreen;"
+					 "border-style: outset;"
+					 "border-width: 2px;"
+					 "border-radius: 10px;"
+					 "border-color: black;"
+					 "min-width: 5em;"
+					 "padding: 6px");
+#endif
+    }
+
+  highlightPaths();
+
+  if(text != m_ui.pid->text())
+    {
+      m_buzzFavoritesLastModificationTime = QDateTime();
+      m_listenersLastModificationTime = QDateTime();
+      m_magnetsLastModificationTime = QDateTime();
+
+      if(m_neighborsFuture.isFinished())
+	m_neighborsLastModificationTime = QDateTime();
+
+      if(m_participantsFuture.isFinished())
+	m_participantsLastModificationTime = QDateTime();
+    }
+
+  if(isKernelActive())
+    if(m_kernelSocket.state() == QAbstractSocket::UnconnectedState)
+      {
+	QString connectionName("");
+	quint16 port = 0;
+
+	{
+	  QSqlDatabase db = spoton_misc::database(connectionName);
+
+	  db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			     "kernel.db");
+
+	  if(db.open())
+	    {
+	      QSqlQuery query(db);
+
+	      query.setForwardOnly(true);
+
+	      if(query.exec("SELECT port FROM kernel_gui_server"))
+		if(query.next())
+		  port = query.value(0).toByteArray().toUShort();
+	    }
+
+	  db.close();
+	}
+
+	QSqlDatabase::removeDatabase(connectionName);
+
+	if(port > 0)
+	  {
+	    initializeKernelSocket();
+
+	    if(m_ui.kernelKeySize->currentText().toInt() == 0)
+	      m_kernelSocket.connectToHost("127.0.0.1", port);
+	    else
+	      m_kernelSocket.connectToHostEncrypted("127.0.0.1", port);
+	  }
+      }
+
+  slotKernelSocketState();
+
+  if(isKernelActive())
+    {
+      if(!m_buzzPages.isEmpty())
+	{
+	  if(!m_buzzStatusTimer.isActive())
+	    m_buzzStatusTimer.start();
+	}
+      else
+	m_buzzStatusTimer.stop();
+    }
+  else
+    {
+      m_buzzStatusTimer.stop();
+
+      if(m_ui.kernelSecureMemoryPool->value() == 0)
+	m_ui.kernelSecureMemoryPool->setStyleSheet
+	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+      else
+	{
+	  m_ui.kernelSecureMemoryPool->setStyleSheet
+	    (m_ui.kernelSecureMemoryPool->
+	     property("original_stylesheet").toString());
+
+	  if(m_ui.kernelSecureMemoryPool->value() <
+	     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
+	    m_ui.kernelSecureMemoryPool->setValue
+	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
+	}
+    }
+
+  if(isKernelActive())
+    {
+      if(m_kernelSocket.isEncrypted())
+	{
+#if SPOTON_GOLDBUG == 1
+	  m_sb.kernelstatus->setIcon
+	    (QIcon(QString(":/%1/status-online.png").
+		   arg(m_settings.value("gui/iconSet", "nouve").toString().
+		       toLower())));
+#else
+	  m_sb.kernelstatus->setIcon
+	    (QIcon(QString(":/%1/activate.png").
+		   arg(m_settings.value("gui/iconSet", "nouve").toString().
+		       toLower())));
+#endif
+	}
+      else
+	m_sb.kernelstatus->setIcon(QIcon(":/generic/kernel-warning.png"));
+    }
+  else
+    m_sb.kernelstatus->setIcon
+      (QIcon(QString(":/%1/deactivate.png").
+	     arg(m_settings.value("gui/iconSet", "nouve").toString().
+		 toLower())));
+
+  if(m_optionsUi.guiSecureMemoryPool->value() == 0)
+    m_optionsUi.guiSecureMemoryPool->setStyleSheet
+      ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+  else
+    {
+      m_optionsUi.guiSecureMemoryPool->setStyleSheet
+	(m_optionsUi.guiSecureMemoryPool->
+	 property("original_stylesheet").toString());
+
+      if(m_optionsUi.guiSecureMemoryPool->value() <
+	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
+	m_optionsUi.guiSecureMemoryPool->setValue
+	  (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
+    }
+
+  if(!isKernelActive() ||
+     m_sb.status->text() != tr("<html><a href=\"authenticate\">"
+			       "The kernel requires your authentication "
+			       "and encryption keys.</a></html>"))
+    {
+      m_sb.status->setText
+	(tr("External IP: %1.").
+	 arg(m_externalAddress.address().isNull() ?
+	     "unknown" : m_externalAddress.address().toString()));
+      m_sb.status->repaint();
+    }
+
+  for(int i = m_starbeamDigestFutures.size() - 1; i >= 0; i--)
+    if(m_starbeamDigestFutures.at(i).isFinished())
+      m_starbeamDigestFutures.removeAt(i);
+
+  if(isKernelActive())
+    if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
+       m_kernelSocket.write("\n", 1) != 1)
+      if(m_crypts.size() > 0)
+	{
+	  /*
+	  ** We'll need something here.
+	  */
+	}
+
+  if(m_generalFuture.isFinished())
+    {
+      QHash<QString, QVariant> settings;
+
+      settings["is_kernel_active"] = isKernelActive();
+      settings["keep_only_user_defined_neighbors"] = m_optionsUi.
+	keepOnlyUserDefinedNeighbors->isChecked();
+      m_generalFuture = QtConcurrent::run
+	(this, &spoton::generalConcurrentMethod, settings);
+    }
+
+  /*
+  ** Is the PostgreSQL URLs database healthy?
+  */
+
+  if(!m_ui.url_database_connection_information->text().isEmpty())
+    if(m_urlDatabase.driverName() == "QPSQL")
+      if(m_pqUrlDatabaseFuture.isFinished())
+	{
+	  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+	  if(crypt)
+	    {
+	      QByteArray password;
+	      bool ok = true;
+
+	      password = crypt->decryptedAfterAuthenticated
+		(QByteArray::
+		 fromBase64(m_settings.
+			    value("gui/postgresql_password", "").
+			    toByteArray()), &ok);
+
+	      if(ok)
+		m_pqUrlDatabaseFuture = QtConcurrent::run
+		  (this, &spoton::inspectPQUrlDatabase, password);
+	    }
+	}
 }
 
 void spoton::slotHideOfflineParticipants(bool state)
@@ -6157,6 +6600,1523 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   m_ui.favorites->setMinimumContentsLength
     (m_ui.favorites->itemText(0).length());
+}
+
+void spoton::slotPopulateListeners(void)
+{
+#if SPOTON_GOLDBUG == 0
+  if(m_ui.listenersTemporarilyPause->isChecked())
+    return;
+#endif
+
+  if(currentTabName() != "listeners")
+    return;
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+		     "listeners.db");
+
+  if(fileInfo.exists())
+    {
+      if(fileInfo.lastModified() >= m_listenersLastModificationTime)
+	{
+	  if(fileInfo.lastModified() == m_listenersLastModificationTime)
+	    m_listenersLastModificationTime = fileInfo.lastModified().
+	      addMSecs(1);
+	  else
+	    m_listenersLastModificationTime = fileInfo.lastModified();
+	}
+      else
+	return;
+    }
+  else
+    m_listenersLastModificationTime = QDateTime();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(fileInfo.absoluteFilePath());
+
+    if(db.open())
+      {
+	disconnect(m_ui.listeners,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotListenerChanged(QTableWidgetItem *)));
+
+	QModelIndexList list;
+	QString ip("");
+	QString port("");
+	QString scopeId("");
+	QString transportS("");
+	QWidget *focusWidget = QApplication::focusWidget();
+	int columnIP = 3;
+	int columnPORT = 4;
+	int columnSCOPE_ID = 5;
+	int columnTRANSPORT = 15;
+	int hval = m_ui.listeners->horizontalScrollBar()->value();
+	int row = -1;
+	int vval = m_ui.listeners->verticalScrollBar()->value();
+
+	list = m_ui.listeners->selectionModel()->selectedRows
+	  (columnIP);
+
+	if(!list.isEmpty())
+	  ip = list.at(0).data().toString();
+
+	list = m_ui.listeners->selectionModel()->selectedRows
+	  (columnPORT);
+
+	if(!list.isEmpty())
+	  port = list.at(0).data().toString();
+
+	list = m_ui.listeners->selectionModel()->selectedRows
+	  (columnSCOPE_ID);
+
+	if(!list.isEmpty())
+	  scopeId = list.at(0).data().toString();
+
+	list = m_ui.listeners->selectionModel()->selectedRows
+	  (columnTRANSPORT);
+
+	if(!list.isEmpty())
+	  transportS = list.at(0).data().toString();
+
+	m_ui.listeners->setUpdatesEnabled(false);
+	m_ui.listeners->setSortingEnabled(false);
+	m_ui.listeners->setRowCount(0);
+
+	QSqlQuery query(db);
+	int totalRows = 0;
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT COUNT(*) FROM listeners "
+		      "WHERE status_control <> 'deleted'"))
+	  if(query.next())
+	    m_ui.listeners->setRowCount(query.value(0).toInt());
+
+	if(query.exec("SELECT "
+		      "status_control, "
+		      "status, "
+		      "ssl_key_size, "
+		      "ip_address, "
+		      "port, "
+		      "scope_id, "
+		      "protocol, "
+		      "external_ip_address, "
+		      "external_port, "
+		      "connections, "
+		      "maximum_clients, "
+		      "echo_mode, "
+		      "use_accounts, "
+		      "maximum_buffer_size, "
+		      "maximum_content_length, "
+		      "transport, "
+		      "share_udp_address, "
+		      "certificate, "
+		      "orientation, "
+		      "ssl_control_string, "
+		      "lane_width, "
+		      "passthrough, "
+		      "source_of_randomness, "
+		      "private_application_credentials, "
+		      "socket_options, "
+		      "OID "
+		      "FROM listeners WHERE status_control <> 'deleted'"))
+	  {
+	    QLocale locale;
+
+	    row = 0;
+
+	    while(query.next() && totalRows < m_ui.listeners->rowCount())
+	      {
+		totalRows += 1;
+
+		QByteArray certificateDigest;
+		QString tooltip("");
+		QString transport("");
+		bool ok = true;
+
+		certificateDigest = crypt->
+		  decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(17).toByteArray()),
+		   &ok);
+
+		if(!ok)
+		  {
+		    certificateDigest.clear();
+		    certificateDigest.append(tr("error"));
+		  }
+
+		if(ok)
+		  if(!certificateDigest.isEmpty())
+		    {
+		      certificateDigest = spoton_crypt::
+			sha512Hash(certificateDigest, &ok).toHex();
+
+		      if(!ok)
+			certificateDigest.clear();
+		    }
+
+		if(ok)
+		  transport = QString(crypt->
+				      decryptedAfterAuthenticated
+				      (QByteArray::
+				       fromBase64(query.
+						  value(15).
+						  toByteArray()),
+				       &ok).
+				      constData()).toUpper();
+
+		tooltip = QString
+		  (tr("Status: %1\n"
+		      "Bluetooth Flags / SSL Key Size: %2\n"
+		      "Local IP: %3 Local Port: %4 Scope ID: %5\n"
+		      "External IP: %6\n"
+		      "Connections: %7\n"
+		      "Echo Mode: %8\n"
+		      "Use Accounts: %9\n"
+		      "Transport: %10\n"
+		      "Share Address: %11\n"
+		      "Orientation: %12\n"
+		      "SSL Control String: %13\n"
+		      "Lane Width: %14\n"
+		      "Passthrough: %15\n"
+		      "Source of Randomness: %16\n"
+		      "Socket Options: %17")).
+		  arg(query.value(1).toString().toLower()).
+		  arg(query.value(2).toString()).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(3).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(4).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(5).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(7).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(query.value(9).toString()).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(11).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(query.value(12).toLongLong() ? tr("Yes") : tr("No")).
+		  arg(transport).
+		  arg(query.value(16).toLongLong() ? tr("Yes") : tr("No")).
+		  arg(crypt->
+		      decryptedAfterAuthenticated(QByteArray::
+						  fromBase64(query.
+							     value(18).
+							     toByteArray()),
+						  &ok).
+		      constData()).
+		  arg(query.value(19).toString()).
+		  arg(locale.toString(query.value(20).toInt())).
+		  arg(query.value(21).toInt() ? tr("Yes") : tr("No")).
+		  arg(locale.toString(query.value(22).toInt())).
+		  arg(query.value(24).toString().trimmed());
+
+		for(int i = 0; i < query.record().count(); i++)
+		  {
+		    QTableWidgetItem *item = 0;
+
+		    if(i == 0 || i == 12)
+		      {
+			item = new QTableWidgetItem();
+			item->setFlags(Qt::ItemIsEnabled |
+				       Qt::ItemIsSelectable |
+				       Qt::ItemIsUserCheckable);
+
+			if(i == 0)
+			  {
+			    if(query.value(0).toString().
+			       toLower() == "online")
+			      item->setCheckState(Qt::Checked);
+			    else
+			      item->setCheckState(Qt::Unchecked);
+			  }
+			else
+			  {
+			    if(query.value(i).toBool())
+			      item->setCheckState(Qt::Checked);
+			    else
+			      item->setCheckState(Qt::Unchecked);
+			  }
+		      }
+		    else if(i == 2)
+		      {
+			if(transport.toLower() == "bluetooth")
+			  {
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+			    QComboBox *box = new QComboBox();
+			    QList<QBluetooth::Security> items;
+			    QMap<QBluetooth::Security, QString> map;
+			    QMap<QBluetooth::SecurityFlags,
+				 QString> possibilities;
+			    QMap<QString, char> values;
+
+			    items << QBluetooth::Authentication
+				  << QBluetooth::Authorization
+				  << QBluetooth::Encryption
+				  << QBluetooth::Secure;
+			    map[QBluetooth::Authentication] = "Authentication";
+			    map[QBluetooth::Authorization] = "Authorization";
+			    map[QBluetooth::Encryption] = "Encryption";
+			    map[QBluetooth::Secure] = "Secure";
+
+			    for(int ii = 0; ii < items.size(); ii++)
+			      {
+				possibilities.insert
+				  (items.at(ii), map[items.at(ii)]);
+
+				for(int jj = 0; jj < items.size(); jj++)
+				  {
+				    if(ii == jj)
+				      continue;
+
+				    if(!possibilities.
+				       contains((items.at(ii) | items.at(jj))))
+				      possibilities.insert
+					((items.at(ii) |
+					  items.at(jj)),
+					 map[items.at(ii)] + ", " +
+					 map[items.at(jj)]);
+
+				    for(int kk = 0; kk < items.size(); kk++)
+				      {
+					if(ii == kk ||
+					   jj == kk)
+					  continue;
+
+					if(!possibilities.
+					   contains((items.at(ii) |
+						     items.at(jj) |
+						     items.at(kk))))
+					  possibilities.insert
+					    ((items.at(ii) |
+					      items.at(jj) |
+					      items.at(kk)),
+					     map[items.at(ii)] + ", " +
+					     map[items.at(jj)] + ", " +
+					     map[items.at(kk)]);
+
+					for(int ll = 0; ll < items.size();
+					    ll++)
+					  {
+					    if(ii == ll ||
+					       jj == ll ||
+					       kk == ll)
+					      continue;
+
+					    if(!possibilities.
+					       contains((items.at(ii) |
+							 items.at(jj) |
+							 items.at(kk) |
+							 items.at(ll))))
+					      possibilities.insert
+						((items.at(ii) |
+						  items.at(jj) |
+						  items.at(kk) |
+						  items.at(ll)),
+						 map[items.at(ii)] + ", " +
+						 map[items.at(jj)] + ", " +
+						 map[items.at(kk)] + ", " +
+						 map[items.at(ll)]);
+					  }
+				      }
+				  }
+			      }
+
+			    values.insert(" 0", 0);
+
+			    for(int ii = 0; ii < possibilities.size(); ii++)
+			      values.insert
+				(QString::
+				 number(possibilities.keys().at(ii)).
+				 rightJustified(2, ' ') + " " +
+				 possibilities.values().at(ii), 0);
+
+			    box->addItems(values.keys());
+			    box->setCurrentIndex
+			      (query.value(i).toInt());
+
+			    if(box->currentIndex() < 0)
+			      box->setCurrentIndex(0);
+
+			    box->setProperty
+			      ("oid", query.value(query.record().count() - 1));
+			    connect(box,
+				    SIGNAL(currentIndexChanged(int)),
+				    this,
+				    SLOT(slotBluetoothSecurityChanged(int)));
+			    m_ui.listeners->setCellWidget(row, i, box);
+#else
+			    item = new QTableWidgetItem
+			      (query.value(i).toString());
+
+			    if(item->text().toInt() == 0)
+			      item->setBackground
+				(QBrush(QColor(240, 128, 128)));
+			    else
+			      item->setBackground(QBrush());
+#endif
+			  }
+			else
+			  {
+			    if(query.value(i).toLongLong() == 0)
+			      {
+				item = new QTableWidgetItem("0");
+				item->setBackground
+				  (QBrush(QColor(240, 128, 128)));
+			      }
+			    else
+			      {
+				item = new QTableWidgetItem
+				  (query.value(i).toString());
+				item->setBackground(QBrush());
+			      }
+			  }
+		      }
+		    else if(i == 10)
+		      {
+			QComboBox *box = new QComboBox();
+
+			if(transport != "UDP")
+			  {
+			    box->setProperty
+			      ("oid", query.value(query.record().count() - 1));
+			    box->addItem("1");
+
+			    for(int j = 1; j <= 10; j++)
+			      box->addItem(QString::number(5 * j));
+
+			    box->addItem(tr("Unlimited"));
+			    box->setMaximumWidth
+			      (box->fontMetrics().width(tr("Unlimited")) + 50);
+			    m_ui.listeners->setCellWidget(row, i, box);
+
+			    if(query.value(i).toLongLong() <= 0)
+			      box->setCurrentIndex(box->count() - 1);
+			    else if(box->findText(QString::
+						  number(query.
+							 value(i).
+							 toLongLong())) >= 0)
+			      box->setCurrentIndex
+				(box->findText(QString::number(query.
+							       value(i).
+							       toLongLong())));
+			    else
+			      box->setCurrentIndex(1); // Default of five.
+
+			    connect(box,
+				    SIGNAL(currentIndexChanged(int)),
+				    this,
+				    SLOT(slotMaximumClientsChanged(int)));
+			  }
+			else
+			  {
+			    box->addItem(tr("Unlimited"));
+			    box->setMaximumWidth
+			      (box->fontMetrics().width(tr("Unlimited")) + 50);
+			    box->setEnabled(false);
+			    m_ui.listeners->setCellWidget(row, i, box);
+			  }
+		      }
+		    else if(i == 13 || i == 14)
+		      {
+			// maximum_buffer_size
+			// maximum_content_length
+
+			QSpinBox *box = new QSpinBox();
+
+			if(i == 13)
+			  {
+			    box->setMaximum
+			      (spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
+			    box->setMinimum
+			      (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+			  }
+			else
+			  box->setMaximum
+			    (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+
+			box->setCorrectionMode
+			  (QAbstractSpinBox::CorrectToNearestValue);
+			box->setWrapping(true);
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   width(QString::
+				 number(spoton_common::
+					MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+			box->setProperty
+			  ("field_name", query.record().fieldName(i));
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setToolTip(tooltip);
+			box->setValue
+			  (static_cast<int> (query.value(i).toLongLong()));
+			connect(box,
+				SIGNAL(valueChanged(int)),
+				this,
+				SLOT(slotListenerMaximumChanged(int)));
+			m_ui.listeners->setCellWidget(row, i, box);
+		      }
+		    else if(i == 17) // Certificate Digest
+		      item = new QTableWidgetItem
+			(certificateDigest.constData());
+		    else if(i == 20) // Lane Width
+		      {
+			QComboBox *box = new QComboBox();
+			QList<int> list;
+			QSet<int> set;
+
+			for(int j = 0;
+			    j < spoton_common::LANE_WIDTHS.size(); j++)
+			  set << spoton_common::LANE_WIDTHS.at(j);
+
+			set << spoton_common::LANE_WIDTH_MINIMUM
+			    << spoton_common::LANE_WIDTH_DEFAULT
+			    << spoton_common::LANE_WIDTH_MAXIMUM;
+			list = set.toList();
+			std::sort(list.begin(), list.end());
+
+			while(!list.isEmpty())
+			  box->addItem(QString::number(list.takeFirst()));
+
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setProperty("table", "listeners");
+			m_ui.listeners->setCellWidget(row, i, box);
+
+			if(box->findText(QString::
+					 number(query.
+						value(i).
+						toInt())) >= 0)
+			  box->setCurrentIndex
+			    (box->findText(QString::number(query.
+							   value(i).
+							   toInt())));
+			else
+			  box->setCurrentIndex(box->count() - 1); // Maximum.
+
+			connect(box,
+				SIGNAL(currentIndexChanged(int)),
+				this,
+				SLOT(slotLaneWidthChanged(int)));
+		      }
+		    else if(i == 21) // Passthrough
+		      {
+			item = new QTableWidgetItem();
+			item->setFlags(Qt::ItemIsEnabled |
+				       Qt::ItemIsSelectable |
+				       Qt::ItemIsUserCheckable);
+
+			if(query.value(i).toBool())
+			  item->setCheckState(Qt::Checked);
+			else
+			  item->setCheckState(Qt::Unchecked);
+		      }
+		    else if(i == 22) // Source of Randomness
+		      {
+			QSpinBox *box = new QSpinBox();
+
+			box->setMaximum(std::numeric_limits<unsigned short>::
+					max());
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   width(QString::
+				 number(box->maximum())) + 50);
+			box->setMinimum(0);
+			box->setProperty
+			  ("oid", query.value(query.record().count() - 1));
+			box->setToolTip(tooltip);
+			box->setValue(query.value(i).toInt());
+			connect
+			  (box,
+			   SIGNAL(valueChanged(int)),
+			   this,
+			   SLOT(slotListenerSourceOfRandomnessChanged(int)));
+			m_ui.listeners->setCellWidget(row, i, box);
+		      }
+		    else
+		      {
+			if((i >= 3 && i <= 7) ||
+			   i == 11 || i == 15 || i == 18 || i == 23)
+			  {
+			    if(query.isNull(i))
+			      item = new QTableWidgetItem();
+			    else
+			      {
+				item = new QTableWidgetItem
+				  (crypt->
+				   decryptedAfterAuthenticated
+				   (QByteArray::
+				    fromBase64(query.
+					       value(i).
+					       toByteArray()),
+				    &ok).
+				   constData());
+
+				if(!ok)
+				  item->setText(tr("error"));
+			      }
+			  }
+			else
+			  item = new QTableWidgetItem
+			    (query.value(i).toString());
+		      }
+
+		    if(item)
+		      {
+			if(!(i == 0 || i == 12 || i == 21))
+			  item->setFlags
+			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+			item->setToolTip(tooltip);
+			m_ui.listeners->setItem(row, i, item);
+
+			if(i == 1)
+			  {
+			    if(query.value(i).toString().
+			       toLower() == "online")
+			      item->setBackground
+				(QBrush(QColor("lightgreen")));
+			    else
+			      item->setBackground(QBrush());
+			  }
+		      }
+		  }
+
+		QByteArray bytes1;
+		QByteArray bytes2;
+		QByteArray bytes3;
+		QString bytes4("");
+
+		ok = true;
+		bytes1 = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(columnIP).toByteArray()),
+		   &ok);
+		bytes2 = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(columnPORT).
+					  toByteArray()),
+		   &ok);
+		bytes3 = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(columnSCOPE_ID).
+					  toByteArray()),
+		   &ok);
+		bytes4 = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(columnTRANSPORT).
+					  toByteArray()),
+		   &ok).constData();
+
+		if(ip == bytes1 && port == bytes2 && scopeId == bytes3 &&
+		   transportS == bytes4)
+		  m_ui.listeners->selectRow(row);
+
+		row += 1;
+	      }
+	  }
+
+	m_ui.listeners->setRowCount(totalRows);
+	m_ui.listeners->setSortingEnabled(true);
+
+	for(int i = 0; i < m_ui.listeners->columnCount() - 1; i++)
+	  /*
+	  ** Ignore the OID column.
+	  */
+
+	  m_ui.listeners->resizeColumnToContents(i);
+
+	m_ui.listeners->horizontalHeader()->setStretchLastSection(true);
+	m_ui.listeners->horizontalScrollBar()->setValue(hval);
+	m_ui.listeners->verticalScrollBar()->setValue(vval);
+	m_ui.listeners->setUpdatesEnabled(true);
+	connect(m_ui.listeners,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotListenerChanged(QTableWidgetItem *)));
+
+	if(focusWidget)
+	  focusWidget->setFocus();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  populateAETokens();
+}
+
+void spoton::slotPopulateNeighbors(QSqlDatabase *db,
+				   QSqlQuery *query,
+				   const QString &connectionName,
+				   const int &size)
+{
+#if SPOTON_GOLDBUG == 0
+  if(m_ui.neighborsTemporarilyPause->isChecked())
+    {
+      delete query;
+
+      if(db)
+	db->close();
+
+      delete db;
+      QSqlDatabase::removeDatabase(connectionName);
+      return;
+    }
+#endif
+
+  if(currentTabName() != "neighbors")
+    {
+      delete query;
+
+      if(db)
+	db->close();
+
+      delete db;
+      QSqlDatabase::removeDatabase(connectionName);
+      return;
+    }
+
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt || !db || !query)
+    {
+      delete query;
+
+      if(db)
+	db->close();
+
+      delete db;
+      QSqlDatabase::removeDatabase(connectionName);
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  disconnect(m_ui.neighbors,
+	     SIGNAL(itemChanged(QTableWidgetItem *)),
+	     this,
+	     SLOT(slotNeighborChanged(QTableWidgetItem *)));
+
+  QModelIndexList list;
+  QString proxyIp("");
+  QString proxyPort("1");
+  QString remoteIp("");
+  QString remotePort("");
+  QString scopeId("");
+  QString transport("");
+  QWidget *focusWidget = QApplication::focusWidget();
+  int columnCOUNTRY = 9;
+  int columnPROXY_IP = 14;
+  int columnPROXY_PORT = 15;
+  int columnREMOTE_IP = 10;
+  int columnREMOTE_PORT = 11;
+  int columnSCOPE_ID = 12;
+  int columnTRANSPORT = 27;
+  int hval = m_ui.neighbors->horizontalScrollBar()->value();
+  int vval = m_ui.neighbors->verticalScrollBar()->value();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnPROXY_IP);
+
+  if(!list.isEmpty())
+    proxyIp = list.at(0).data().toString();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnPROXY_PORT);
+
+  if(!list.isEmpty())
+    proxyPort = list.at(0).data().toString();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnREMOTE_IP);
+
+  if(!list.isEmpty())
+    remoteIp = list.at(0).data().toString();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnREMOTE_PORT);
+
+  if(!list.isEmpty())
+    remotePort = list.at(0).data().toString();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnSCOPE_ID);
+
+  if(!list.isEmpty())
+    scopeId = list.at(0).data().toString();
+
+  list = m_ui.neighbors->selectionModel()->selectedRows
+    (columnTRANSPORT);
+
+  if(!list.isEmpty())
+    transport = list.at(0).data().toString();
+
+  m_neighborToOidMap.clear();
+  m_ui.neighbors->setUpdatesEnabled(false);
+  m_ui.neighbors->setSortingEnabled(false);
+  m_ui.neighbors->setRowCount
+    (m_ui.neighbors_maximum_items_displayed->currentIndex() ==
+     m_ui.neighbors_maximum_items_displayed->count() - 1 ?
+     size :
+     qMin(m_ui.neighbors_maximum_items_displayed->currentText().toInt(), size));
+
+  QLocale locale;
+  QString localIp("");
+  QString localPort("");
+  int row = 0;
+  int totalRows = 0;
+
+  while(query->next() && totalRows < m_ui.neighbors->rowCount())
+    {
+      totalRows += 1;
+
+      QByteArray certificate;
+      QByteArray certificateDigest;
+      QByteArray sslSessionCipher;
+      QString priority("");
+      QString priorityTr("");
+      QString tooltip("");
+      QThread::Priority priorityInt = QThread::HighPriority;
+      bool isEncrypted = query->value
+	(query->record().indexOf("is_encrypted")).toBool();
+      bool ok = true;
+
+      certificate = certificateDigest = crypt->
+	decryptedAfterAuthenticated(QByteArray::
+				    fromBase64(query->
+					       value(21).
+					       toByteArray()),
+				    &ok);
+
+      if(!ok)
+	{
+	  certificate.clear();
+	  certificateDigest.clear();
+	  certificateDigest.append(tr("error"));
+	}
+
+      if(ok)
+	{
+	  if(!certificate.isEmpty())
+	    certificate = certificate.toBase64();
+
+	  if(!certificateDigest.isEmpty())
+	    {
+	      certificateDigest = spoton_crypt::
+		sha512Hash(certificateDigest, &ok).toHex();
+
+	      if(!ok)
+		certificateDigest.clear();
+	    }
+	}
+
+      if(!query->isNull(24))
+	{
+	  sslSessionCipher = crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(24).
+						   toByteArray()),
+					&ok);
+
+	  if(!ok)
+	    {
+	      sslSessionCipher.clear();
+	      sslSessionCipher.append(tr("error"));
+	    }
+	}
+
+      priority = query->value(35).toString().trimmed();
+      priorityInt = QThread::Priority(priority.toInt());
+
+      switch(priorityInt)
+	{
+	case QThread::IdlePriority:
+	  {
+	    priority = "Idle Priority";
+	    priorityTr = tr("Idle Priority");
+	    break;
+	  }
+	case QThread::LowestPriority:
+	  {
+	    priority = "Lowest Priority";
+	    priorityTr = tr("Lowest Priority");
+	    break;
+	  }
+	case QThread::LowPriority:
+	  {
+	    priority = "Low Priority";
+	    priorityTr = tr("Low Priority");
+	    break;
+	  }
+	case QThread::NormalPriority:
+	  {
+	    priority = "Normal Priority";
+	    priorityTr = tr("Normal Priority");
+	    break;
+	  }
+	case QThread::HighPriority:
+	  {
+	    priority = "High Priority";
+	    priorityTr = tr("High Priority");
+	    break;
+	  }
+	case QThread::HighestPriority:
+	  {
+	    priority = "Highest Priority";
+	    priorityTr = tr("Highest Priority");
+	    break;
+	  }
+	case QThread::TimeCriticalPriority:
+	  {
+	    priority = "Time-Critical Priority";
+	    priorityTr = tr("Time-Critical Priority");
+	    break;
+	  }
+	default:
+	  {
+	    priority = "High Priority";
+	    priorityTr = tr("High Priority");
+	    break;
+	  }
+	}
+
+      tooltip =
+	(tr("UUID: %1\n"
+	    "Status: %2\n"
+	    "SSL Key Size: %3\n"
+	    "Local IP: %4 Local Port: %5\n"
+	    "External IP: %6\n"
+	    "Country: %7 Remote IP: %8 Remote Port: %9 "
+	    "Scope ID: %10\n"
+	    "Proxy Hostname: %11 Proxy Port: %12\n"
+	    "Echo Mode: %13\n"
+	    "Communications Mode: %14\n"
+	    "Uptime: %15 Minutes\n"
+	    "Allow Certificate Exceptions: %16\n"
+	    "Bytes Read: %17\n"
+	    "Bytes Written: %18\n"
+	    "SSL Session Cipher: %19\n"
+	    "Account Name: %20\n"
+	    "Account Authenticated: %21\n"
+	    "Transport: %22\n"
+	    "Orientation: %23\n"
+	    "SSL Control String: %24\n"
+	    "Priority: %25\n"
+	    "Lane Width: %26\n"
+	    "Passthrough: %27\n"
+	    "Wait-For-Bytes-Written: %28\n"
+	    "Silence Time: %29\n"
+	    "Socket Options: %30\n"
+	    "Buffered Content: %31")).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(1).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(query->value(2).toString().toLower()).
+	arg(query->value(3).toString()).
+	arg(query->value(5).toString()).
+	arg(query->value(6).toString()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(7).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(9).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(10).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(11).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(12).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(14).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(15).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(18).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(isEncrypted ? "Secure" : "Insecure").
+	arg(QString::
+	    number(static_cast<double> (query->value(19).
+					toLongLong()) /
+		   60.00, 'f', 1)).
+	arg(query->value(21).toLongLong() ? tr("Yes") : tr("No")).
+	/*
+	** Bytes read.
+	*/
+	arg(locale.toString(query->value(22).toULongLong())).
+	/*
+	** Bytes written.
+	*/
+	arg(locale.toString(query->value(23).toULongLong())).
+	arg(sslSessionCipher.constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(25).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(crypt->
+	    decryptedAfterAuthenticated
+	    (QByteArray::
+	     fromBase64(query->
+			value(26).
+			toByteArray()),
+	     &ok).toLongLong() ? tr("Yes"): tr("No")).
+	arg(QString(crypt->
+		    decryptedAfterAuthenticated
+		    (QByteArray::
+		     fromBase64(query->
+				value(27).
+				toByteArray()),
+		     &ok).
+		    constData()).toUpper()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->
+						   value(28).
+						   toByteArray()),
+					&ok).
+	    constData()).
+	arg(query->value(34).toString()).
+	arg(priority).
+	arg(locale.toString(query->value(36).toInt())).
+	arg(query->value(37).toInt() ? tr("Yes") : tr("No")).
+	arg(locale.toString(query->value(38).toInt())).
+	arg(query->value(40).toInt()).
+	arg(query->value(41).toString()).
+	arg(query->value(42).toInt());
+
+      {
+	QTableWidgetItem *item = new QTableWidgetItem();
+
+	if(query->value(0).toBool())
+	  item->setCheckState(Qt::Checked);
+	else
+	  item->setCheckState(Qt::Unchecked);
+
+	item->setFlags(Qt::ItemIsEnabled |
+		       Qt::ItemIsSelectable |
+		       Qt::ItemIsUserCheckable);
+	item->setToolTip(tr("<html>The sticky feature enables an "
+			    "indefinite lifetime for a neighbor. If "
+			    "not checked, the neighbor will be "
+			    "terminated after some internal "
+			    "timer expires. Please note that the "
+			    "neighbor may be terminated if data "
+			    "has not been received for some time.</html>"));
+	m_ui.neighbors->setItem(row, 0, item);
+      }
+
+      for(int i = 1; i < query->record().count(); i++)
+	{
+	  QTableWidgetItem *item = 0;
+
+	  if(i == 1 || i == 3 ||
+	     i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
+					       i <= 15) ||
+	     i == 18 || i == 25 || i == 27 || i == 28 ||
+	     i == 32 || i == 33 || i == 39)
+	    {
+	      if(query->isNull(i))
+		item = new QTableWidgetItem();
+	      else
+		{
+		  QByteArray bytes;
+
+		  if(i != 3) // SSL Key Size
+		    {
+		      bytes = crypt->decryptedAfterAuthenticated
+			(QByteArray::
+			 fromBase64(query->
+				    value(i).
+				    toByteArray()),
+			 &ok);
+
+		      if(!ok)
+			{
+			  bytes.clear();
+			  bytes.append(tr("error"));
+			}
+		    }
+
+		  if(i == 1) // uuid
+		    {
+		      if(bytes.isEmpty())
+			bytes =
+			  "{00000000-0000-0000-0000-000000000000}";
+		    }
+		  else if(i == 3) // SSL Key Size
+		    {
+		      if(query->value(i).toLongLong() == 0)
+			{
+			  item = new QTableWidgetItem("0");
+			  item->setBackground
+			    (QBrush(QColor(240, 128, 128)));
+			}
+		      else
+			{
+			  item = new QTableWidgetItem
+			    (query->value(i).toString());
+			  item->setBackground(QBrush());
+			}
+		    }
+
+		  if(i != 3) // SSL Key Size
+		    item = new QTableWidgetItem(bytes.constData());
+		}
+	    }
+	  else if(i >= 16 && i <= 17)
+	    {
+	      // maximum_buffer_size
+	      // maximum_content_length
+
+	      QSpinBox *box = new QSpinBox();
+
+	      if(i == 16)
+		{
+		  box->setMaximum
+		    (spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
+		  box->setMinimum
+		    (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+		}
+	      else
+		box->setMaximum
+		  (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
+
+	      box->setCorrectionMode
+		(QAbstractSpinBox::CorrectToNearestValue);
+	      box->setWrapping(true);
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 width(QString::
+		       number(spoton_common::
+			      MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+	      box->setProperty
+		("field_name", query->record().fieldName(i));
+	      box->setProperty
+		("oid", query->value(query->record().count() - 1));
+	      box->setToolTip(tooltip);
+	      box->setValue
+		(static_cast<int> (query->value(i).toLongLong()));
+	      connect(box,
+		      SIGNAL(valueChanged(int)),
+		      this,
+		      SLOT(slotNeighborMaximumChanged(int)));
+	      m_ui.neighbors->setCellWidget(row, i, box);
+
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::number(box->value()));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setToolTip(tooltip);
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	  else if(i == 19) // uptime
+	    item = new QTableWidgetItem
+	      (locale.toString(query->value(i).toLongLong()));
+	  else if(i == 21) // Certificate Digest
+	    item = new QTableWidgetItem
+	      (certificateDigest.constData());
+	  else if(i == 22 || i == 23) // bytes_read, bytes_written
+	    item = new QTableWidgetItem
+	      (locale.toString(query->value(i).toLongLong()));
+	  else if(i == 24) // SSL Session Cipher
+	    item = new QTableWidgetItem
+	      (sslSessionCipher.constData());
+	  else if(i == 26) // Account Authenticated
+	    {
+	      if(!query->isNull(i))
+		{
+		  item = new QTableWidgetItem
+		    (crypt->decryptedAfterAuthenticated
+		     (QByteArray::
+		      fromBase64(query->
+				 value(i).
+				 toByteArray()),
+		      &ok).constData());
+
+		  if(ok)
+		    {
+		      if(item->text() != "0")
+			item->setBackground
+			  (QBrush(QColor("lightgreen")));
+		      else
+			item->setBackground
+			  (QBrush(QColor(240, 128, 128)));
+		    }
+		  else
+		    {
+		      item->setText(tr("error"));
+		      item->setBackground
+			(QBrush(QColor(240, 128, 128)));
+		    }
+		}
+	      else
+		{
+		  item = new QTableWidgetItem("0");
+		  item->setBackground
+		    (QBrush(QColor(240, 128, 128)));
+		}
+	    }
+	  else if(i == 29) // MOTD
+	    item = new QTableWidgetItem
+	      (query->value(i).toString().trimmed());
+	  else if(i == 31) // Certificate
+	    item = new QTableWidgetItem(certificate.constData());
+	  else if(i == 35) // Priority
+	    {
+	      item = new QTableWidgetItem(priorityTr);
+	      item->setData(Qt::UserRole, priorityInt);
+	    }
+	  else if(i == 36) // Lane Width
+	    {
+	      QComboBox *box = new QComboBox();
+	      QList<int> list;
+	      QSet<int> set;
+
+	      for(int j = 0;
+		  j < spoton_common::LANE_WIDTHS.size(); j++)
+		set << spoton_common::LANE_WIDTHS.at(j);
+
+	      set << spoton_common::LANE_WIDTH_MINIMUM
+		  << spoton_common::LANE_WIDTH_DEFAULT
+		  << spoton_common::LANE_WIDTH_MAXIMUM;
+	      list = set.toList();
+	      std::sort(list.begin(), list.end());
+
+	      while(!list.isEmpty())
+		box->addItem(QString::number(list.takeFirst()));
+
+	      box->setProperty
+		("oid", query->value(query->record().count() - 1));
+	      box->setProperty("table", "neighbors");
+	      box->setToolTip(tooltip);
+	      m_ui.neighbors->setCellWidget(row, i, box);
+
+	      if(box->findText(QString::
+			       number(query->
+				      value(i).
+				      toInt())) >= 0)
+		box->setCurrentIndex
+		  (box->findText(QString::number(query->
+						 value(i).
+						 toInt())));
+	      else
+		box->setCurrentIndex(box->count() - 1); // Maximum.
+
+	      connect(box,
+		      SIGNAL(currentIndexChanged(int)),
+		      this,
+		      SLOT(slotLaneWidthChanged(int)));
+
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(box->currentText());
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setToolTip(tooltip);
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	  else if(i == 37) // Passthrough
+	    {
+	      QTableWidgetItem *item = new QTableWidgetItem();
+
+	      if(query->value(i).toBool())
+		item->setCheckState(Qt::Checked);
+	      else
+		item->setCheckState(Qt::Unchecked);
+
+	      item->setFlags(Qt::ItemIsEnabled |
+			     Qt::ItemIsSelectable |
+			     Qt::ItemIsUserCheckable);
+	      item->setToolTip(tooltip);
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	  else if(i == 38) // Wait-For-Bytes-Written
+	    {
+	      QSpinBox *box = new QSpinBox();
+
+	      box->setCorrectionMode
+		(QAbstractSpinBox::CorrectToNearestValue);
+	      box->setMaximum
+		(spoton_common::
+		 WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 width(QString::
+		       number(spoton_common::
+			      WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM))
+		 + 50);
+	      box->setMinimum(0);
+	      box->setProperty
+		("oid", query->value(query->record().count() - 1));
+	      box->setToolTip
+		(tr("A positive value may pause the kernel."));
+	      box->setValue
+		(static_cast<int> (query->value(i).toInt()));
+	      box->setWrapping(true);
+	      connect
+		(box,
+		 SIGNAL(valueChanged(int)),
+		 this,
+		 SLOT(slotNeighborWaitForBytesWrittenChanged(int)));
+	      m_ui.neighbors->setCellWidget(row, i, box);
+
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::number(box->value()));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setToolTip(tooltip);
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	  else if(i == 40) // Silence Time
+	    {
+	      QSpinBox *box = new QSpinBox();
+
+	      box->setCorrectionMode
+		(QAbstractSpinBox::CorrectToNearestValue);
+	      box->setMaximum(std::numeric_limits<int>::max());
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 width(QString::number(box->maximum())) + 50);
+	      box->setMinimum(5);
+	      box->setProperty
+		("oid", query->value(query->record().count() - 1));
+	      box->setToolTip(tooltip);
+	      box->setValue
+		(static_cast<int> (query->value(i).toInt()));
+	      box->setWrapping(true);
+	      connect
+		(box,
+		 SIGNAL(valueChanged(int)),
+		 this,
+		 SLOT(slotNeighborSilenceTimeChanged(int)));
+	      m_ui.neighbors->setCellWidget(row, i, box);
+
+	      QTableWidgetItem *item = new QTableWidgetItem
+		(QString::number(box->value()));
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setToolTip(tooltip);
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	  else
+	    item = new QTableWidgetItem
+	      (query->value(i).toString());
+
+	  if(item)
+	    {
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+	      if(i == 2)
+		{
+		  QString status(query->value(i).toString().toLower());
+
+		  if(status == "bound" || status == "connected")
+		    item->setBackground(QBrush(QColor("lightgreen")));
+		  else
+		    item->setBackground(QBrush());
+
+		  if(isEncrypted)
+		    item->setIcon
+		      (QIcon(QString(":/%1/lock.png").
+			     arg(m_settings.
+				 value("gui/iconSet",
+				       "nouve").toString().
+				 toLower())));
+		}
+
+	      if(item->toolTip().isEmpty())
+		item->setToolTip(tooltip);
+
+	      m_ui.neighbors->setItem(row, i, item);
+	    }
+	}
+
+      QTableWidgetItem *item1 = m_ui.neighbors->item
+	(row, columnCOUNTRY);
+
+      if(item1)
+	{
+	  QIcon icon;
+	  QPixmap pixmap;
+	  QString str("");
+	  QTableWidgetItem *item2 = m_ui.neighbors->item
+	    (row, columnREMOTE_IP);
+
+	  if(item2)
+	    str = QString(":/Flags/%1.png").
+	      arg(spoton_misc::
+		  countryCodeFromIPAddress(item2->text()).
+		  toLower());
+	  else
+	    str = ":/Flags/unknown.png";
+
+	  pixmap = QPixmap(str);
+
+	  if(!pixmap.isNull())
+	    pixmap = pixmap.scaled(QSize(16, 16),
+				   Qt::KeepAspectRatio,
+				   Qt::SmoothTransformation);
+
+	  if(!pixmap.isNull())
+	    icon = QIcon(pixmap);
+
+	  if(!icon.isNull())
+	    item1->setIcon(icon);
+	}
+
+      QByteArray bytes1;
+      QByteArray bytes2;
+      QByteArray bytes3;
+      QByteArray bytes4;
+      QByteArray bytes5;
+      QString bytes6;
+
+      ok = true;
+      bytes1 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnREMOTE_IP).
+				toByteArray()), &ok);
+      bytes2 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnREMOTE_PORT).
+				toByteArray()), &ok);
+      bytes3 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnSCOPE_ID).
+				toByteArray()), &ok);
+      bytes4 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnPROXY_IP).
+				toByteArray()), &ok);
+      bytes5 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnPROXY_PORT).
+				toByteArray()), &ok);
+      bytes6 = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(columnTRANSPORT).
+				toByteArray()), &ok);
+
+      if(remoteIp == bytes1 && remotePort == bytes2 &&
+	 scopeId == bytes3 && proxyIp == bytes4 &&
+	 proxyPort == bytes5 && transport == bytes6)
+	m_ui.neighbors->selectRow(row);
+
+      if(bytes3.isEmpty())
+	m_neighborToOidMap.insert
+	  (bytes1 + ":" + bytes2,
+	   query->value(query->record().count() - 1).toString());
+      else
+	m_neighborToOidMap.insert
+	  (bytes1 + ":" + bytes2 + ":" + bytes3,
+	   query->value(query->record().count() - 1).toString());
+
+      row += 1;
+    }
+
+  m_ui.neighbors->setRowCount(totalRows);
+  m_ui.neighbors->setSortingEnabled(true);
+
+  for(int i = 0; i < m_ui.neighbors->columnCount() - 1; i++)
+    /*
+    ** Ignore the OID column.
+    */
+
+    m_ui.neighbors->resizeColumnToContents(i);
+
+  m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
+  m_ui.neighbors->horizontalScrollBar()->setValue(hval);
+  m_ui.neighbors->verticalScrollBar()->setValue(vval);
+  m_ui.neighbors->setUpdatesEnabled(true);
+  connect(m_ui.neighbors,
+	  SIGNAL(itemChanged(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotNeighborChanged(QTableWidgetItem *)));
+
+  if(focusWidget)
+    focusWidget->setFocus();
+
+  delete query;
+
+  if(db)
+    db->close();
+
+  delete db;
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotPopulateParticipants(QSqlDatabase *db,
@@ -6733,6 +8693,60 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotProtocolRadioToggled(bool state)
+{
+  Q_UNUSED(state);
+
+  QRadioButton *radio = qobject_cast<QRadioButton *> (sender());
+
+  if(!radio)
+    return;
+
+  if(radio == m_ui.dynamicdns)
+    {
+      m_ui.neighborIP->clear();
+      m_ui.neighborIP->setInputMask("");
+      m_ui.neighborScopeId->setEnabled(true);
+      m_ui.neighborScopeIdLabel->setEnabled(true);
+    }
+  else if(radio == m_ui.ipv4Listener || radio == m_ui.ipv4Neighbor)
+    {
+      if(radio == m_ui.ipv4Listener)
+	{
+	  m_ui.listenerIP->clear();
+	  m_ui.listenerIP->setInputMask("");
+	  m_ui.listenerScopeId->setEnabled(false);
+	  m_ui.listenerScopeIdLabel->setEnabled(false);
+	}
+      else
+	{
+	  m_ui.neighborIP->clear();
+	  m_ui.neighborIP->setInputMask("");
+	  m_ui.neighborScopeId->setEnabled(false);
+	  m_ui.neighborScopeIdLabel->setEnabled(false);
+	}
+    }
+  else
+    {
+      if(radio == m_ui.ipv6Listener)
+	{
+	  m_ui.listenerIP->clear();
+	  m_ui.listenerIP->setInputMask("");
+	  m_ui.listenerScopeId->setEnabled(true);
+	  m_ui.listenerScopeIdLabel->setEnabled(true);
+	}
+      else
+	{
+	  m_ui.neighborIP->clear();
+	  m_ui.neighborIP->setInputMask("");
+	  m_ui.neighborScopeId->setEnabled(true);
+	  m_ui.neighborScopeIdLabel->setEnabled(true);
+	}
+    }
+
+  prepareListenerIPCombo();
+}
+
 void spoton::slotProxyChecked(bool state)
 {
   m_ui.proxyHostname->clear();
@@ -6863,6 +8877,19 @@ void spoton::slotResetAccountInformation(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotSaveGeoIPPath(void)
+{
+  if(m_optionsUi.geoipPath4 == sender())
+    saveGeoIPPath(4, m_optionsUi.geoipPath4->text());
+  else
+    saveGeoIPPath(6, m_optionsUi.geoipPath6->text());
+}
+
+void spoton::slotSaveKernelPath(void)
+{
+  saveKernelPath(m_ui.kernelPath->text());
+}
+
 void spoton::slotSaveSslControlString(void)
 {
   QString str(m_optionsUi.sslControlString->text());
@@ -6879,6 +8906,52 @@ void spoton::slotSaveSslControlString(void)
   QSettings settings;
 
   settings.setValue("gui/sslControlString", str);
+}
+
+void spoton::slotScramble(bool state)
+{
+  m_settings["gui/scramblerEnabled"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/scramblerEnabled", state);
+}
+
+void spoton::slotSelectGeoIPPath(void)
+{
+  QFileDialog dialog(m_optionsWindow);
+
+  dialog.setWindowTitle
+    (tr("%1: Select GeoIP Data Path").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      if(m_optionsUi.selectGeoIP4 == sender())
+	saveGeoIPPath(4, dialog.selectedFiles().value(0));
+      else
+	saveGeoIPPath(6, dialog.selectedFiles().value(0));
+    }
+}
+
+void spoton::slotSelectKernelPath(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setWindowTitle
+    (tr("%1: Select Kernel Path").
+     arg(SPOTON_APPLICATION_NAME));
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+
+  if(dialog.exec() == QDialog::Accepted)
+    saveKernelPath(dialog.selectedFiles().value(0));
 }
 
 void spoton::slotSetPassphrase(void)
@@ -8460,2078 +10533,5 @@ void spoton::slotValidatePassphrase(void)
       playSound("login.wav");
       m_ui.passphrase->setFocus();
       updatePublicKeysLabel();
-    }
-}
-
-void spoton::slotProtocolRadioToggled(bool state)
-{
-  Q_UNUSED(state);
-
-  QRadioButton *radio = qobject_cast<QRadioButton *> (sender());
-
-  if(!radio)
-    return;
-
-  if(radio == m_ui.dynamicdns)
-    {
-      m_ui.neighborIP->clear();
-      m_ui.neighborIP->setInputMask("");
-      m_ui.neighborScopeId->setEnabled(true);
-      m_ui.neighborScopeIdLabel->setEnabled(true);
-    }
-  else if(radio == m_ui.ipv4Listener || radio == m_ui.ipv4Neighbor)
-    {
-      if(radio == m_ui.ipv4Listener)
-	{
-	  m_ui.listenerIP->clear();
-	  m_ui.listenerIP->setInputMask("");
-	  m_ui.listenerScopeId->setEnabled(false);
-	  m_ui.listenerScopeIdLabel->setEnabled(false);
-	}
-      else
-	{
-	  m_ui.neighborIP->clear();
-	  m_ui.neighborIP->setInputMask("");
-	  m_ui.neighborScopeId->setEnabled(false);
-	  m_ui.neighborScopeIdLabel->setEnabled(false);
-	}
-    }
-  else
-    {
-      if(radio == m_ui.ipv6Listener)
-	{
-	  m_ui.listenerIP->clear();
-	  m_ui.listenerIP->setInputMask("");
-	  m_ui.listenerScopeId->setEnabled(true);
-	  m_ui.listenerScopeIdLabel->setEnabled(true);
-	}
-      else
-	{
-	  m_ui.neighborIP->clear();
-	  m_ui.neighborIP->setInputMask("");
-	  m_ui.neighborScopeId->setEnabled(true);
-	  m_ui.neighborScopeIdLabel->setEnabled(true);
-	}
-    }
-
-  prepareListenerIPCombo();
-}
-
-void spoton::slotScramble(bool state)
-{
-  m_settings["gui/scramblerEnabled"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/scramblerEnabled", state);
-}
-
-void spoton::slotPopulateListeners(void)
-{
-#if SPOTON_GOLDBUG == 0
-  if(m_ui.listenersTemporarilyPause->isChecked())
-    return;
-#endif
-
-  if(currentTabName() != "listeners")
-    return;
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "listeners.db");
-
-  if(fileInfo.exists())
-    {
-      if(fileInfo.lastModified() >= m_listenersLastModificationTime)
-	{
-	  if(fileInfo.lastModified() == m_listenersLastModificationTime)
-	    m_listenersLastModificationTime = fileInfo.lastModified().
-	      addMSecs(1);
-	  else
-	    m_listenersLastModificationTime = fileInfo.lastModified();
-	}
-      else
-	return;
-    }
-  else
-    m_listenersLastModificationTime = QDateTime();
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(fileInfo.absoluteFilePath());
-
-    if(db.open())
-      {
-	disconnect(m_ui.listeners,
-		   SIGNAL(itemChanged(QTableWidgetItem *)),
-		   this,
-		   SLOT(slotListenerChanged(QTableWidgetItem *)));
-
-	QModelIndexList list;
-	QString ip("");
-	QString port("");
-	QString scopeId("");
-	QString transportS("");
-	QWidget *focusWidget = QApplication::focusWidget();
-	int columnIP = 3;
-	int columnPORT = 4;
-	int columnSCOPE_ID = 5;
-	int columnTRANSPORT = 15;
-	int hval = m_ui.listeners->horizontalScrollBar()->value();
-	int row = -1;
-	int vval = m_ui.listeners->verticalScrollBar()->value();
-
-	list = m_ui.listeners->selectionModel()->selectedRows
-	  (columnIP);
-
-	if(!list.isEmpty())
-	  ip = list.at(0).data().toString();
-
-	list = m_ui.listeners->selectionModel()->selectedRows
-	  (columnPORT);
-
-	if(!list.isEmpty())
-	  port = list.at(0).data().toString();
-
-	list = m_ui.listeners->selectionModel()->selectedRows
-	  (columnSCOPE_ID);
-
-	if(!list.isEmpty())
-	  scopeId = list.at(0).data().toString();
-
-	list = m_ui.listeners->selectionModel()->selectedRows
-	  (columnTRANSPORT);
-
-	if(!list.isEmpty())
-	  transportS = list.at(0).data().toString();
-
-	m_ui.listeners->setUpdatesEnabled(false);
-	m_ui.listeners->setSortingEnabled(false);
-	m_ui.listeners->setRowCount(0);
-
-	QSqlQuery query(db);
-	int totalRows = 0;
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT COUNT(*) FROM listeners "
-		      "WHERE status_control <> 'deleted'"))
-	  if(query.next())
-	    m_ui.listeners->setRowCount(query.value(0).toInt());
-
-	if(query.exec("SELECT "
-		      "status_control, "
-		      "status, "
-		      "ssl_key_size, "
-		      "ip_address, "
-		      "port, "
-		      "scope_id, "
-		      "protocol, "
-		      "external_ip_address, "
-		      "external_port, "
-		      "connections, "
-		      "maximum_clients, "
-		      "echo_mode, "
-		      "use_accounts, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "transport, "
-		      "share_udp_address, "
-		      "certificate, "
-		      "orientation, "
-		      "ssl_control_string, "
-		      "lane_width, "
-		      "passthrough, "
-		      "source_of_randomness, "
-		      "private_application_credentials, "
-		      "socket_options, "
-		      "OID "
-		      "FROM listeners WHERE status_control <> 'deleted'"))
-	  {
-	    QLocale locale;
-
-	    row = 0;
-
-	    while(query.next() && totalRows < m_ui.listeners->rowCount())
-	      {
-		totalRows += 1;
-
-		QByteArray certificateDigest;
-		QString tooltip("");
-		QString transport("");
-		bool ok = true;
-
-		certificateDigest = crypt->
-		  decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(17).toByteArray()),
-		   &ok);
-
-		if(!ok)
-		  {
-		    certificateDigest.clear();
-		    certificateDigest.append(tr("error"));
-		  }
-
-		if(ok)
-		  if(!certificateDigest.isEmpty())
-		    {
-		      certificateDigest = spoton_crypt::
-			sha512Hash(certificateDigest, &ok).toHex();
-
-		      if(!ok)
-			certificateDigest.clear();
-		    }
-
-		if(ok)
-		  transport = QString(crypt->
-				      decryptedAfterAuthenticated
-				      (QByteArray::
-				       fromBase64(query.
-						  value(15).
-						  toByteArray()),
-				       &ok).
-				      constData()).toUpper();
-
-		tooltip = QString
-		  (tr("Status: %1\n"
-		      "Bluetooth Flags / SSL Key Size: %2\n"
-		      "Local IP: %3 Local Port: %4 Scope ID: %5\n"
-		      "External IP: %6\n"
-		      "Connections: %7\n"
-		      "Echo Mode: %8\n"
-		      "Use Accounts: %9\n"
-		      "Transport: %10\n"
-		      "Share Address: %11\n"
-		      "Orientation: %12\n"
-		      "SSL Control String: %13\n"
-		      "Lane Width: %14\n"
-		      "Passthrough: %15\n"
-		      "Source of Randomness: %16\n"
-		      "Socket Options: %17")).
-		  arg(query.value(1).toString().toLower()).
-		  arg(query.value(2).toString()).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(3).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(4).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(5).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(7).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(query.value(9).toString()).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(11).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(query.value(12).toLongLong() ? tr("Yes") : tr("No")).
-		  arg(transport).
-		  arg(query.value(16).toLongLong() ? tr("Yes") : tr("No")).
-		  arg(crypt->
-		      decryptedAfterAuthenticated(QByteArray::
-						  fromBase64(query.
-							     value(18).
-							     toByteArray()),
-						  &ok).
-		      constData()).
-		  arg(query.value(19).toString()).
-		  arg(locale.toString(query.value(20).toInt())).
-		  arg(query.value(21).toInt() ? tr("Yes") : tr("No")).
-		  arg(locale.toString(query.value(22).toInt())).
-		  arg(query.value(24).toString().trimmed());
-
-		for(int i = 0; i < query.record().count(); i++)
-		  {
-		    QTableWidgetItem *item = 0;
-
-		    if(i == 0 || i == 12)
-		      {
-			item = new QTableWidgetItem();
-			item->setFlags(Qt::ItemIsEnabled |
-				       Qt::ItemIsSelectable |
-				       Qt::ItemIsUserCheckable);
-
-			if(i == 0)
-			  {
-			    if(query.value(0).toString().
-			       toLower() == "online")
-			      item->setCheckState(Qt::Checked);
-			    else
-			      item->setCheckState(Qt::Unchecked);
-			  }
-			else
-			  {
-			    if(query.value(i).toBool())
-			      item->setCheckState(Qt::Checked);
-			    else
-			      item->setCheckState(Qt::Unchecked);
-			  }
-		      }
-		    else if(i == 2)
-		      {
-			if(transport.toLower() == "bluetooth")
-			  {
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-			    QComboBox *box = new QComboBox();
-			    QList<QBluetooth::Security> items;
-			    QMap<QBluetooth::Security, QString> map;
-			    QMap<QBluetooth::SecurityFlags,
-				 QString> possibilities;
-			    QMap<QString, char> values;
-
-			    items << QBluetooth::Authentication
-				  << QBluetooth::Authorization
-				  << QBluetooth::Encryption
-				  << QBluetooth::Secure;
-			    map[QBluetooth::Authentication] = "Authentication";
-			    map[QBluetooth::Authorization] = "Authorization";
-			    map[QBluetooth::Encryption] = "Encryption";
-			    map[QBluetooth::Secure] = "Secure";
-
-			    for(int ii = 0; ii < items.size(); ii++)
-			      {
-				possibilities.insert
-				  (items.at(ii), map[items.at(ii)]);
-
-				for(int jj = 0; jj < items.size(); jj++)
-				  {
-				    if(ii == jj)
-				      continue;
-
-				    if(!possibilities.
-				       contains((items.at(ii) | items.at(jj))))
-				      possibilities.insert
-					((items.at(ii) |
-					  items.at(jj)),
-					 map[items.at(ii)] + ", " +
-					 map[items.at(jj)]);
-
-				    for(int kk = 0; kk < items.size(); kk++)
-				      {
-					if(ii == kk ||
-					   jj == kk)
-					  continue;
-
-					if(!possibilities.
-					   contains((items.at(ii) |
-						     items.at(jj) |
-						     items.at(kk))))
-					  possibilities.insert
-					    ((items.at(ii) |
-					      items.at(jj) |
-					      items.at(kk)),
-					     map[items.at(ii)] + ", " +
-					     map[items.at(jj)] + ", " +
-					     map[items.at(kk)]);
-
-					for(int ll = 0; ll < items.size();
-					    ll++)
-					  {
-					    if(ii == ll ||
-					       jj == ll ||
-					       kk == ll)
-					      continue;
-
-					    if(!possibilities.
-					       contains((items.at(ii) |
-							 items.at(jj) |
-							 items.at(kk) |
-							 items.at(ll))))
-					      possibilities.insert
-						((items.at(ii) |
-						  items.at(jj) |
-						  items.at(kk) |
-						  items.at(ll)),
-						 map[items.at(ii)] + ", " +
-						 map[items.at(jj)] + ", " +
-						 map[items.at(kk)] + ", " +
-						 map[items.at(ll)]);
-					  }
-				      }
-				  }
-			      }
-
-			    values.insert(" 0", 0);
-
-			    for(int ii = 0; ii < possibilities.size(); ii++)
-			      values.insert
-				(QString::
-				 number(possibilities.keys().at(ii)).
-				 rightJustified(2, ' ') + " " +
-				 possibilities.values().at(ii), 0);
-
-			    box->addItems(values.keys());
-			    box->setCurrentIndex
-			      (query.value(i).toInt());
-
-			    if(box->currentIndex() < 0)
-			      box->setCurrentIndex(0);
-
-			    box->setProperty
-			      ("oid", query.value(query.record().count() - 1));
-			    connect(box,
-				    SIGNAL(currentIndexChanged(int)),
-				    this,
-				    SLOT(slotBluetoothSecurityChanged(int)));
-			    m_ui.listeners->setCellWidget(row, i, box);
-#else
-			    item = new QTableWidgetItem
-			      (query.value(i).toString());
-
-			    if(item->text().toInt() == 0)
-			      item->setBackground
-				(QBrush(QColor(240, 128, 128)));
-			    else
-			      item->setBackground(QBrush());
-#endif
-			  }
-			else
-			  {
-			    if(query.value(i).toLongLong() == 0)
-			      {
-				item = new QTableWidgetItem("0");
-				item->setBackground
-				  (QBrush(QColor(240, 128, 128)));
-			      }
-			    else
-			      {
-				item = new QTableWidgetItem
-				  (query.value(i).toString());
-				item->setBackground(QBrush());
-			      }
-			  }
-		      }
-		    else if(i == 10)
-		      {
-			QComboBox *box = new QComboBox();
-
-			if(transport != "UDP")
-			  {
-			    box->setProperty
-			      ("oid", query.value(query.record().count() - 1));
-			    box->addItem("1");
-
-			    for(int j = 1; j <= 10; j++)
-			      box->addItem(QString::number(5 * j));
-
-			    box->addItem(tr("Unlimited"));
-			    box->setMaximumWidth
-			      (box->fontMetrics().width(tr("Unlimited")) + 50);
-			    m_ui.listeners->setCellWidget(row, i, box);
-
-			    if(query.value(i).toLongLong() <= 0)
-			      box->setCurrentIndex(box->count() - 1);
-			    else if(box->findText(QString::
-						  number(query.
-							 value(i).
-							 toLongLong())) >= 0)
-			      box->setCurrentIndex
-				(box->findText(QString::number(query.
-							       value(i).
-							       toLongLong())));
-			    else
-			      box->setCurrentIndex(1); // Default of five.
-
-			    connect(box,
-				    SIGNAL(currentIndexChanged(int)),
-				    this,
-				    SLOT(slotMaximumClientsChanged(int)));
-			  }
-			else
-			  {
-			    box->addItem(tr("Unlimited"));
-			    box->setMaximumWidth
-			      (box->fontMetrics().width(tr("Unlimited")) + 50);
-			    box->setEnabled(false);
-			    m_ui.listeners->setCellWidget(row, i, box);
-			  }
-		      }
-		    else if(i == 13 || i == 14)
-		      {
-			// maximum_buffer_size
-			// maximum_content_length
-
-			QSpinBox *box = new QSpinBox();
-
-			if(i == 13)
-			  {
-			    box->setMaximum
-			      (spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
-			    box->setMinimum
-			      (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-			  }
-			else
-			  box->setMaximum
-			    (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-
-			box->setCorrectionMode
-			  (QAbstractSpinBox::CorrectToNearestValue);
-			box->setWrapping(true);
-			box->setMaximumWidth
-			  (box->fontMetrics().
-			   width(QString::
-				 number(spoton_common::
-					MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
-			box->setProperty
-			  ("field_name", query.record().fieldName(i));
-			box->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			box->setToolTip(tooltip);
-			box->setValue
-			  (static_cast<int> (query.value(i).toLongLong()));
-			connect(box,
-				SIGNAL(valueChanged(int)),
-				this,
-				SLOT(slotListenerMaximumChanged(int)));
-			m_ui.listeners->setCellWidget(row, i, box);
-		      }
-		    else if(i == 17) // Certificate Digest
-		      item = new QTableWidgetItem
-			(certificateDigest.constData());
-		    else if(i == 20) // Lane Width
-		      {
-			QComboBox *box = new QComboBox();
-			QList<int> list;
-			QSet<int> set;
-
-			for(int j = 0;
-			    j < spoton_common::LANE_WIDTHS.size(); j++)
-			  set << spoton_common::LANE_WIDTHS.at(j);
-
-			set << spoton_common::LANE_WIDTH_MINIMUM
-			    << spoton_common::LANE_WIDTH_DEFAULT
-			    << spoton_common::LANE_WIDTH_MAXIMUM;
-			list = set.toList();
-			std::sort(list.begin(), list.end());
-
-			while(!list.isEmpty())
-			  box->addItem(QString::number(list.takeFirst()));
-
-			box->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			box->setProperty("table", "listeners");
-			m_ui.listeners->setCellWidget(row, i, box);
-
-			if(box->findText(QString::
-					 number(query.
-						value(i).
-						toInt())) >= 0)
-			  box->setCurrentIndex
-			    (box->findText(QString::number(query.
-							   value(i).
-							   toInt())));
-			else
-			  box->setCurrentIndex(box->count() - 1); // Maximum.
-
-			connect(box,
-				SIGNAL(currentIndexChanged(int)),
-				this,
-				SLOT(slotLaneWidthChanged(int)));
-		      }
-		    else if(i == 21) // Passthrough
-		      {
-			item = new QTableWidgetItem();
-			item->setFlags(Qt::ItemIsEnabled |
-				       Qt::ItemIsSelectable |
-				       Qt::ItemIsUserCheckable);
-
-			if(query.value(i).toBool())
-			  item->setCheckState(Qt::Checked);
-			else
-			  item->setCheckState(Qt::Unchecked);
-		      }
-		    else if(i == 22) // Source of Randomness
-		      {
-			QSpinBox *box = new QSpinBox();
-
-			box->setMaximum(std::numeric_limits<unsigned short>::
-					max());
-			box->setMaximumWidth
-			  (box->fontMetrics().
-			   width(QString::
-				 number(box->maximum())) + 50);
-			box->setMinimum(0);
-			box->setProperty
-			  ("oid", query.value(query.record().count() - 1));
-			box->setToolTip(tooltip);
-			box->setValue(query.value(i).toInt());
-			connect
-			  (box,
-			   SIGNAL(valueChanged(int)),
-			   this,
-			   SLOT(slotListenerSourceOfRandomnessChanged(int)));
-			m_ui.listeners->setCellWidget(row, i, box);
-		      }
-		    else
-		      {
-			if((i >= 3 && i <= 7) ||
-			   i == 11 || i == 15 || i == 18 || i == 23)
-			  {
-			    if(query.isNull(i))
-			      item = new QTableWidgetItem();
-			    else
-			      {
-				item = new QTableWidgetItem
-				  (crypt->
-				   decryptedAfterAuthenticated
-				   (QByteArray::
-				    fromBase64(query.
-					       value(i).
-					       toByteArray()),
-				    &ok).
-				   constData());
-
-				if(!ok)
-				  item->setText(tr("error"));
-			      }
-			  }
-			else
-			  item = new QTableWidgetItem
-			    (query.value(i).toString());
-		      }
-
-		    if(item)
-		      {
-			if(!(i == 0 || i == 12 || i == 21))
-			  item->setFlags
-			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-			item->setToolTip(tooltip);
-			m_ui.listeners->setItem(row, i, item);
-
-			if(i == 1)
-			  {
-			    if(query.value(i).toString().
-			       toLower() == "online")
-			      item->setBackground
-				(QBrush(QColor("lightgreen")));
-			    else
-			      item->setBackground(QBrush());
-			  }
-		      }
-		  }
-
-		QByteArray bytes1;
-		QByteArray bytes2;
-		QByteArray bytes3;
-		QString bytes4("");
-
-		ok = true;
-		bytes1 = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(columnIP).toByteArray()),
-		   &ok);
-		bytes2 = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(columnPORT).
-					  toByteArray()),
-		   &ok);
-		bytes3 = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(columnSCOPE_ID).
-					  toByteArray()),
-		   &ok);
-		bytes4 = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(columnTRANSPORT).
-					  toByteArray()),
-		   &ok).constData();
-
-		if(ip == bytes1 && port == bytes2 && scopeId == bytes3 &&
-		   transportS == bytes4)
-		  m_ui.listeners->selectRow(row);
-
-		row += 1;
-	      }
-	  }
-
-	m_ui.listeners->setRowCount(totalRows);
-	m_ui.listeners->setSortingEnabled(true);
-
-	for(int i = 0; i < m_ui.listeners->columnCount() - 1; i++)
-	  /*
-	  ** Ignore the OID column.
-	  */
-
-	  m_ui.listeners->resizeColumnToContents(i);
-
-	m_ui.listeners->horizontalHeader()->setStretchLastSection(true);
-	m_ui.listeners->horizontalScrollBar()->setValue(hval);
-	m_ui.listeners->verticalScrollBar()->setValue(vval);
-	m_ui.listeners->setUpdatesEnabled(true);
-	connect(m_ui.listeners,
-		SIGNAL(itemChanged(QTableWidgetItem *)),
-		this,
-		SLOT(slotListenerChanged(QTableWidgetItem *)));
-
-	if(focusWidget)
-	  focusWidget->setFocus();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  populateAETokens();
-}
-
-void spoton::slotPopulateNeighbors(QSqlDatabase *db,
-				   QSqlQuery *query,
-				   const QString &connectionName,
-				   const int &size)
-{
-#if SPOTON_GOLDBUG == 0
-  if(m_ui.neighborsTemporarilyPause->isChecked())
-    {
-      delete query;
-
-      if(db)
-	db->close();
-
-      delete db;
-      QSqlDatabase::removeDatabase(connectionName);
-      return;
-    }
-#endif
-
-  if(currentTabName() != "neighbors")
-    {
-      delete query;
-
-      if(db)
-	db->close();
-
-      delete db;
-      QSqlDatabase::removeDatabase(connectionName);
-      return;
-    }
-
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt || !db || !query)
-    {
-      delete query;
-
-      if(db)
-	db->close();
-
-      delete db;
-      QSqlDatabase::removeDatabase(connectionName);
-      return;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  disconnect(m_ui.neighbors,
-	     SIGNAL(itemChanged(QTableWidgetItem *)),
-	     this,
-	     SLOT(slotNeighborChanged(QTableWidgetItem *)));
-
-  QModelIndexList list;
-  QString proxyIp("");
-  QString proxyPort("1");
-  QString remoteIp("");
-  QString remotePort("");
-  QString scopeId("");
-  QString transport("");
-  QWidget *focusWidget = QApplication::focusWidget();
-  int columnCOUNTRY = 9;
-  int columnPROXY_IP = 14;
-  int columnPROXY_PORT = 15;
-  int columnREMOTE_IP = 10;
-  int columnREMOTE_PORT = 11;
-  int columnSCOPE_ID = 12;
-  int columnTRANSPORT = 27;
-  int hval = m_ui.neighbors->horizontalScrollBar()->value();
-  int vval = m_ui.neighbors->verticalScrollBar()->value();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnPROXY_IP);
-
-  if(!list.isEmpty())
-    proxyIp = list.at(0).data().toString();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnPROXY_PORT);
-
-  if(!list.isEmpty())
-    proxyPort = list.at(0).data().toString();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnREMOTE_IP);
-
-  if(!list.isEmpty())
-    remoteIp = list.at(0).data().toString();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnREMOTE_PORT);
-
-  if(!list.isEmpty())
-    remotePort = list.at(0).data().toString();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnSCOPE_ID);
-
-  if(!list.isEmpty())
-    scopeId = list.at(0).data().toString();
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (columnTRANSPORT);
-
-  if(!list.isEmpty())
-    transport = list.at(0).data().toString();
-
-  m_neighborToOidMap.clear();
-  m_ui.neighbors->setUpdatesEnabled(false);
-  m_ui.neighbors->setSortingEnabled(false);
-  m_ui.neighbors->setRowCount
-    (m_ui.neighbors_maximum_items_displayed->currentIndex() ==
-     m_ui.neighbors_maximum_items_displayed->count() - 1 ?
-     size :
-     qMin(m_ui.neighbors_maximum_items_displayed->currentText().toInt(), size));
-
-  QLocale locale;
-  QString localIp("");
-  QString localPort("");
-  int row = 0;
-  int totalRows = 0;
-
-  while(query->next() && totalRows < m_ui.neighbors->rowCount())
-    {
-      totalRows += 1;
-
-      QByteArray certificate;
-      QByteArray certificateDigest;
-      QByteArray sslSessionCipher;
-      QString priority("");
-      QString priorityTr("");
-      QString tooltip("");
-      QThread::Priority priorityInt = QThread::HighPriority;
-      bool isEncrypted = query->value
-	(query->record().indexOf("is_encrypted")).toBool();
-      bool ok = true;
-
-      certificate = certificateDigest = crypt->
-	decryptedAfterAuthenticated(QByteArray::
-				    fromBase64(query->
-					       value(21).
-					       toByteArray()),
-				    &ok);
-
-      if(!ok)
-	{
-	  certificate.clear();
-	  certificateDigest.clear();
-	  certificateDigest.append(tr("error"));
-	}
-
-      if(ok)
-	{
-	  if(!certificate.isEmpty())
-	    certificate = certificate.toBase64();
-
-	  if(!certificateDigest.isEmpty())
-	    {
-	      certificateDigest = spoton_crypt::
-		sha512Hash(certificateDigest, &ok).toHex();
-
-	      if(!ok)
-		certificateDigest.clear();
-	    }
-	}
-
-      if(!query->isNull(24))
-	{
-	  sslSessionCipher = crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(24).
-						   toByteArray()),
-					&ok);
-
-	  if(!ok)
-	    {
-	      sslSessionCipher.clear();
-	      sslSessionCipher.append(tr("error"));
-	    }
-	}
-
-      priority = query->value(35).toString().trimmed();
-      priorityInt = QThread::Priority(priority.toInt());
-
-      switch(priorityInt)
-	{
-	case QThread::IdlePriority:
-	  {
-	    priority = "Idle Priority";
-	    priorityTr = tr("Idle Priority");
-	    break;
-	  }
-	case QThread::LowestPriority:
-	  {
-	    priority = "Lowest Priority";
-	    priorityTr = tr("Lowest Priority");
-	    break;
-	  }
-	case QThread::LowPriority:
-	  {
-	    priority = "Low Priority";
-	    priorityTr = tr("Low Priority");
-	    break;
-	  }
-	case QThread::NormalPriority:
-	  {
-	    priority = "Normal Priority";
-	    priorityTr = tr("Normal Priority");
-	    break;
-	  }
-	case QThread::HighPriority:
-	  {
-	    priority = "High Priority";
-	    priorityTr = tr("High Priority");
-	    break;
-	  }
-	case QThread::HighestPriority:
-	  {
-	    priority = "Highest Priority";
-	    priorityTr = tr("Highest Priority");
-	    break;
-	  }
-	case QThread::TimeCriticalPriority:
-	  {
-	    priority = "Time-Critical Priority";
-	    priorityTr = tr("Time-Critical Priority");
-	    break;
-	  }
-	default:
-	  {
-	    priority = "High Priority";
-	    priorityTr = tr("High Priority");
-	    break;
-	  }
-	}
-
-      tooltip =
-	(tr("UUID: %1\n"
-	    "Status: %2\n"
-	    "SSL Key Size: %3\n"
-	    "Local IP: %4 Local Port: %5\n"
-	    "External IP: %6\n"
-	    "Country: %7 Remote IP: %8 Remote Port: %9 "
-	    "Scope ID: %10\n"
-	    "Proxy Hostname: %11 Proxy Port: %12\n"
-	    "Echo Mode: %13\n"
-	    "Communications Mode: %14\n"
-	    "Uptime: %15 Minutes\n"
-	    "Allow Certificate Exceptions: %16\n"
-	    "Bytes Read: %17\n"
-	    "Bytes Written: %18\n"
-	    "SSL Session Cipher: %19\n"
-	    "Account Name: %20\n"
-	    "Account Authenticated: %21\n"
-	    "Transport: %22\n"
-	    "Orientation: %23\n"
-	    "SSL Control String: %24\n"
-	    "Priority: %25\n"
-	    "Lane Width: %26\n"
-	    "Passthrough: %27\n"
-	    "Wait-For-Bytes-Written: %28\n"
-	    "Silence Time: %29\n"
-	    "Socket Options: %30\n"
-	    "Buffered Content: %31")).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(1).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(query->value(2).toString().toLower()).
-	arg(query->value(3).toString()).
-	arg(query->value(5).toString()).
-	arg(query->value(6).toString()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(7).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(9).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(10).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(11).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(12).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(14).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(15).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(18).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(isEncrypted ? "Secure" : "Insecure").
-	arg(QString::
-	    number(static_cast<double> (query->value(19).
-					toLongLong()) /
-		   60.00, 'f', 1)).
-	arg(query->value(21).toLongLong() ? tr("Yes") : tr("No")).
-	/*
-	** Bytes read.
-	*/
-	arg(locale.toString(query->value(22).toULongLong())).
-	/*
-	** Bytes written.
-	*/
-	arg(locale.toString(query->value(23).toULongLong())).
-	arg(sslSessionCipher.constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(25).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(crypt->
-	    decryptedAfterAuthenticated
-	    (QByteArray::
-	     fromBase64(query->
-			value(26).
-			toByteArray()),
-	     &ok).toLongLong() ? tr("Yes"): tr("No")).
-	arg(QString(crypt->
-		    decryptedAfterAuthenticated
-		    (QByteArray::
-		     fromBase64(query->
-				value(27).
-				toByteArray()),
-		     &ok).
-		    constData()).toUpper()).
-	arg(crypt->
-	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(28).
-						   toByteArray()),
-					&ok).
-	    constData()).
-	arg(query->value(34).toString()).
-	arg(priority).
-	arg(locale.toString(query->value(36).toInt())).
-	arg(query->value(37).toInt() ? tr("Yes") : tr("No")).
-	arg(locale.toString(query->value(38).toInt())).
-	arg(query->value(40).toInt()).
-	arg(query->value(41).toString()).
-	arg(query->value(42).toInt());
-
-      {
-	QTableWidgetItem *item = new QTableWidgetItem();
-
-	if(query->value(0).toBool())
-	  item->setCheckState(Qt::Checked);
-	else
-	  item->setCheckState(Qt::Unchecked);
-
-	item->setFlags(Qt::ItemIsEnabled |
-		       Qt::ItemIsSelectable |
-		       Qt::ItemIsUserCheckable);
-	item->setToolTip(tr("<html>The sticky feature enables an "
-			    "indefinite lifetime for a neighbor. If "
-			    "not checked, the neighbor will be "
-			    "terminated after some internal "
-			    "timer expires. Please note that the "
-			    "neighbor may be terminated if data "
-			    "has not been received for some time.</html>"));
-	m_ui.neighbors->setItem(row, 0, item);
-      }
-
-      for(int i = 1; i < query->record().count(); i++)
-	{
-	  QTableWidgetItem *item = 0;
-
-	  if(i == 1 || i == 3 ||
-	     i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
-					       i <= 15) ||
-	     i == 18 || i == 25 || i == 27 || i == 28 ||
-	     i == 32 || i == 33 || i == 39)
-	    {
-	      if(query->isNull(i))
-		item = new QTableWidgetItem();
-	      else
-		{
-		  QByteArray bytes;
-
-		  if(i != 3) // SSL Key Size
-		    {
-		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::
-			 fromBase64(query->
-				    value(i).
-				    toByteArray()),
-			 &ok);
-
-		      if(!ok)
-			{
-			  bytes.clear();
-			  bytes.append(tr("error"));
-			}
-		    }
-
-		  if(i == 1) // uuid
-		    {
-		      if(bytes.isEmpty())
-			bytes =
-			  "{00000000-0000-0000-0000-000000000000}";
-		    }
-		  else if(i == 3) // SSL Key Size
-		    {
-		      if(query->value(i).toLongLong() == 0)
-			{
-			  item = new QTableWidgetItem("0");
-			  item->setBackground
-			    (QBrush(QColor(240, 128, 128)));
-			}
-		      else
-			{
-			  item = new QTableWidgetItem
-			    (query->value(i).toString());
-			  item->setBackground(QBrush());
-			}
-		    }
-
-		  if(i != 3) // SSL Key Size
-		    item = new QTableWidgetItem(bytes.constData());
-		}
-	    }
-	  else if(i >= 16 && i <= 17)
-	    {
-	      // maximum_buffer_size
-	      // maximum_content_length
-
-	      QSpinBox *box = new QSpinBox();
-
-	      if(i == 16)
-		{
-		  box->setMaximum
-		    (spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
-		  box->setMinimum
-		    (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-		}
-	      else
-		box->setMaximum
-		  (spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
-
-	      box->setCorrectionMode
-		(QAbstractSpinBox::CorrectToNearestValue);
-	      box->setWrapping(true);
-	      box->setMaximumWidth
-		(box->fontMetrics().
-		 width(QString::
-		       number(spoton_common::
-			      MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
-	      box->setProperty
-		("field_name", query->record().fieldName(i));
-	      box->setProperty
-		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip(tooltip);
-	      box->setValue
-		(static_cast<int> (query->value(i).toLongLong()));
-	      connect(box,
-		      SIGNAL(valueChanged(int)),
-		      this,
-		      SLOT(slotNeighborMaximumChanged(int)));
-	      m_ui.neighbors->setCellWidget(row, i, box);
-
-	      QTableWidgetItem *item = new QTableWidgetItem
-		(QString::number(box->value()));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      item->setToolTip(tooltip);
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	  else if(i == 19) // uptime
-	    item = new QTableWidgetItem
-	      (locale.toString(query->value(i).toLongLong()));
-	  else if(i == 21) // Certificate Digest
-	    item = new QTableWidgetItem
-	      (certificateDigest.constData());
-	  else if(i == 22 || i == 23) // bytes_read, bytes_written
-	    item = new QTableWidgetItem
-	      (locale.toString(query->value(i).toLongLong()));
-	  else if(i == 24) // SSL Session Cipher
-	    item = new QTableWidgetItem
-	      (sslSessionCipher.constData());
-	  else if(i == 26) // Account Authenticated
-	    {
-	      if(!query->isNull(i))
-		{
-		  item = new QTableWidgetItem
-		    (crypt->decryptedAfterAuthenticated
-		     (QByteArray::
-		      fromBase64(query->
-				 value(i).
-				 toByteArray()),
-		      &ok).constData());
-
-		  if(ok)
-		    {
-		      if(item->text() != "0")
-			item->setBackground
-			  (QBrush(QColor("lightgreen")));
-		      else
-			item->setBackground
-			  (QBrush(QColor(240, 128, 128)));
-		    }
-		  else
-		    {
-		      item->setText(tr("error"));
-		      item->setBackground
-			(QBrush(QColor(240, 128, 128)));
-		    }
-		}
-	      else
-		{
-		  item = new QTableWidgetItem("0");
-		  item->setBackground
-		    (QBrush(QColor(240, 128, 128)));
-		}
-	    }
-	  else if(i == 29) // MOTD
-	    item = new QTableWidgetItem
-	      (query->value(i).toString().trimmed());
-	  else if(i == 31) // Certificate
-	    item = new QTableWidgetItem(certificate.constData());
-	  else if(i == 35) // Priority
-	    {
-	      item = new QTableWidgetItem(priorityTr);
-	      item->setData(Qt::UserRole, priorityInt);
-	    }
-	  else if(i == 36) // Lane Width
-	    {
-	      QComboBox *box = new QComboBox();
-	      QList<int> list;
-	      QSet<int> set;
-
-	      for(int j = 0;
-		  j < spoton_common::LANE_WIDTHS.size(); j++)
-		set << spoton_common::LANE_WIDTHS.at(j);
-
-	      set << spoton_common::LANE_WIDTH_MINIMUM
-		  << spoton_common::LANE_WIDTH_DEFAULT
-		  << spoton_common::LANE_WIDTH_MAXIMUM;
-	      list = set.toList();
-	      std::sort(list.begin(), list.end());
-
-	      while(!list.isEmpty())
-		box->addItem(QString::number(list.takeFirst()));
-
-	      box->setProperty
-		("oid", query->value(query->record().count() - 1));
-	      box->setProperty("table", "neighbors");
-	      box->setToolTip(tooltip);
-	      m_ui.neighbors->setCellWidget(row, i, box);
-
-	      if(box->findText(QString::
-			       number(query->
-				      value(i).
-				      toInt())) >= 0)
-		box->setCurrentIndex
-		  (box->findText(QString::number(query->
-						 value(i).
-						 toInt())));
-	      else
-		box->setCurrentIndex(box->count() - 1); // Maximum.
-
-	      connect(box,
-		      SIGNAL(currentIndexChanged(int)),
-		      this,
-		      SLOT(slotLaneWidthChanged(int)));
-
-	      QTableWidgetItem *item = new QTableWidgetItem
-		(box->currentText());
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      item->setToolTip(tooltip);
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	  else if(i == 37) // Passthrough
-	    {
-	      QTableWidgetItem *item = new QTableWidgetItem();
-
-	      if(query->value(i).toBool())
-		item->setCheckState(Qt::Checked);
-	      else
-		item->setCheckState(Qt::Unchecked);
-
-	      item->setFlags(Qt::ItemIsEnabled |
-			     Qt::ItemIsSelectable |
-			     Qt::ItemIsUserCheckable);
-	      item->setToolTip(tooltip);
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	  else if(i == 38) // Wait-For-Bytes-Written
-	    {
-	      QSpinBox *box = new QSpinBox();
-
-	      box->setCorrectionMode
-		(QAbstractSpinBox::CorrectToNearestValue);
-	      box->setMaximum
-		(spoton_common::
-		 WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
-	      box->setMaximumWidth
-		(box->fontMetrics().
-		 width(QString::
-		       number(spoton_common::
-			      WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM))
-		 + 50);
-	      box->setMinimum(0);
-	      box->setProperty
-		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip
-		(tr("A positive value may pause the kernel."));
-	      box->setValue
-		(static_cast<int> (query->value(i).toInt()));
-	      box->setWrapping(true);
-	      connect
-		(box,
-		 SIGNAL(valueChanged(int)),
-		 this,
-		 SLOT(slotNeighborWaitForBytesWrittenChanged(int)));
-	      m_ui.neighbors->setCellWidget(row, i, box);
-
-	      QTableWidgetItem *item = new QTableWidgetItem
-		(QString::number(box->value()));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      item->setToolTip(tooltip);
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	  else if(i == 40) // Silence Time
-	    {
-	      QSpinBox *box = new QSpinBox();
-
-	      box->setCorrectionMode
-		(QAbstractSpinBox::CorrectToNearestValue);
-	      box->setMaximum(std::numeric_limits<int>::max());
-	      box->setMaximumWidth
-		(box->fontMetrics().
-		 width(QString::number(box->maximum())) + 50);
-	      box->setMinimum(5);
-	      box->setProperty
-		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip(tooltip);
-	      box->setValue
-		(static_cast<int> (query->value(i).toInt()));
-	      box->setWrapping(true);
-	      connect
-		(box,
-		 SIGNAL(valueChanged(int)),
-		 this,
-		 SLOT(slotNeighborSilenceTimeChanged(int)));
-	      m_ui.neighbors->setCellWidget(row, i, box);
-
-	      QTableWidgetItem *item = new QTableWidgetItem
-		(QString::number(box->value()));
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      item->setToolTip(tooltip);
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	  else
-	    item = new QTableWidgetItem
-	      (query->value(i).toString());
-
-	  if(item)
-	    {
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-	      if(i == 2)
-		{
-		  QString status(query->value(i).toString().toLower());
-
-		  if(status == "bound" || status == "connected")
-		    item->setBackground(QBrush(QColor("lightgreen")));
-		  else
-		    item->setBackground(QBrush());
-
-		  if(isEncrypted)
-		    item->setIcon
-		      (QIcon(QString(":/%1/lock.png").
-			     arg(m_settings.
-				 value("gui/iconSet",
-				       "nouve").toString().
-				 toLower())));
-		}
-
-	      if(item->toolTip().isEmpty())
-		item->setToolTip(tooltip);
-
-	      m_ui.neighbors->setItem(row, i, item);
-	    }
-	}
-
-      QTableWidgetItem *item1 = m_ui.neighbors->item
-	(row, columnCOUNTRY);
-
-      if(item1)
-	{
-	  QIcon icon;
-	  QPixmap pixmap;
-	  QString str("");
-	  QTableWidgetItem *item2 = m_ui.neighbors->item
-	    (row, columnREMOTE_IP);
-
-	  if(item2)
-	    str = QString(":/Flags/%1.png").
-	      arg(spoton_misc::
-		  countryCodeFromIPAddress(item2->text()).
-		  toLower());
-	  else
-	    str = ":/Flags/unknown.png";
-
-	  pixmap = QPixmap(str);
-
-	  if(!pixmap.isNull())
-	    pixmap = pixmap.scaled(QSize(16, 16),
-				   Qt::KeepAspectRatio,
-				   Qt::SmoothTransformation);
-
-	  if(!pixmap.isNull())
-	    icon = QIcon(pixmap);
-
-	  if(!icon.isNull())
-	    item1->setIcon(icon);
-	}
-
-      QByteArray bytes1;
-      QByteArray bytes2;
-      QByteArray bytes3;
-      QByteArray bytes4;
-      QByteArray bytes5;
-      QString bytes6;
-
-      ok = true;
-      bytes1 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnREMOTE_IP).
-				toByteArray()), &ok);
-      bytes2 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnREMOTE_PORT).
-				toByteArray()), &ok);
-      bytes3 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnSCOPE_ID).
-				toByteArray()), &ok);
-      bytes4 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnPROXY_IP).
-				toByteArray()), &ok);
-      bytes5 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnPROXY_PORT).
-				toByteArray()), &ok);
-      bytes6 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnTRANSPORT).
-				toByteArray()), &ok);
-
-      if(remoteIp == bytes1 && remotePort == bytes2 &&
-	 scopeId == bytes3 && proxyIp == bytes4 &&
-	 proxyPort == bytes5 && transport == bytes6)
-	m_ui.neighbors->selectRow(row);
-
-      if(bytes3.isEmpty())
-	m_neighborToOidMap.insert
-	  (bytes1 + ":" + bytes2,
-	   query->value(query->record().count() - 1).toString());
-      else
-	m_neighborToOidMap.insert
-	  (bytes1 + ":" + bytes2 + ":" + bytes3,
-	   query->value(query->record().count() - 1).toString());
-
-      row += 1;
-    }
-
-  m_ui.neighbors->setRowCount(totalRows);
-  m_ui.neighbors->setSortingEnabled(true);
-
-  for(int i = 0; i < m_ui.neighbors->columnCount() - 1; i++)
-    /*
-    ** Ignore the OID column.
-    */
-
-    m_ui.neighbors->resizeColumnToContents(i);
-
-  m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
-  m_ui.neighbors->horizontalScrollBar()->setValue(hval);
-  m_ui.neighbors->verticalScrollBar()->setValue(vval);
-  m_ui.neighbors->setUpdatesEnabled(true);
-  connect(m_ui.neighbors,
-	  SIGNAL(itemChanged(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotNeighborChanged(QTableWidgetItem *)));
-
-  if(focusWidget)
-    focusWidget->setFocus();
-
-  delete query;
-
-  if(db)
-    db->close();
-
-  delete db;
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotActivateKernel(void)
-{
-  if(m_ui.pid->text().toLongLong() < 0) // Error.
-    return;
-  else if(!m_optionsUi.forceRegistration->isChecked())
-    {
-      if(m_ui.pid->text().toLongLong() > 0)
-	return;
-    }
-
-  QFileInfo fileInfo(m_ui.kernelPath->text());
-
-#if defined(Q_OS_MAC)
-  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
-#elif defined(Q_OS_WIN)
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-#else
-  if(fileInfo.isExecutable() && fileInfo.size() > 0)
-#endif
-    {
-    }
-  else
-    return; // Incorrect executable!
-
-  m_ui.pid->setText("0");
-
-  QColor color(240, 128, 128); // Light coral!
-  QPalette palette(m_ui.pid->palette());
-
-  palette.setColor(m_ui.pid->backgroundRole(), color);
-  m_ui.pid->setPalette(palette);
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText(tr("Launching the kernel. Please be patient."));
-  m_sb.status->repaint();
-
-  QString program(m_ui.kernelPath->text());
-  bool status = false;
-
-#ifdef Q_OS_MAC
-  if(QFileInfo(program).isBundle())
-    {
-      QStringList list;
-
-      list << "-a" << program << "-g";
-      status = QProcess::startDetached("open", list);
-    }
-  else
-    status = QProcess::startDetached(program);
-#elif defined(Q_OS_WIN)
-  status = QProcess::startDetached(QString("\"%1\"").arg(program));
-#else
-  status = QProcess::startDetached(program);
-#endif
-
-  QElapsedTimer time;
-
-  time.start();
-
-  do
-    {
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-
-      if(m_ui.pid->text().toLongLong() > 0)
-	break;
-      else if(time.hasExpired(10000))
-	break;
-    }
-  while(true);
-
-  m_sb.status->clear();
-  m_sb.status->repaint();
-  QApplication::restoreOverrideCursor();
-
-  if(status)
-#if SPOTON_GOLDBUG == 1
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/status-online.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
-#else
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/activate.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
-#endif
-  else
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/deactivate.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
-
-  if(status)
-    {
-      if(m_settings.value("gui/buzzAutoJoin", true).toBool())
-	joinDefaultBuzzChannel();
-    }
-  else if(m_ui.activateKernel == sender())
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-       tr("The kernel process could not be started. Good luck."));
-}
-
-void spoton::slotDeactivateKernel(void)
-{
-  if(isKernelActive() && m_ui.deactivateKernel == sender())
-    {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	return;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
-  libspoton_handle_t libspotonHandle;
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     m_settings.
-			     value("gui/gcryctl_init_secmem",
-				   spoton_common::
-				   MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt())) ==
-     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
-    libspoton_deregister_kernel
-      (libspoton_registered_kernel_pid(&libspotonHandle, 0),
-       &libspotonHandle);
-
-  libspoton_close(&libspotonHandle);
-  m_kernelSocket.close();
-#if SPOTON_GOLDBUG == 1
-  m_ui.activateKernel->setStyleSheet("background-color: #ff717e;"
-				     "color: white;"
-				     "border-style: outset;"
-				     "border-width: 2px;"
-				     "border-radius: 10px;"
-				     "border-color: black;"
-				     "min-width: 5em;"
-				     "padding: 6px");
-#endif
-  m_forwardSecrecyRequests.clear();
-  m_sb.forward_secrecy_request->setProperty("public_key_hash", QVariant());
-  m_sb.forward_secrecy_request->setToolTip("");
-  m_sb.forward_secrecy_request->setVisible(false);
-
-  QElapsedTimer time;
-
-  time.start();
-
-  do
-    {
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-
-      if(m_ui.pid->text().toLongLong() <= 0)
-	break;
-      else if(time.hasExpired(10000))
-	break;
-    }
-  while(!m_quit);
-
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotGeneralTimerTimeout(void)
-{
-  QColor color(240, 128, 128); // Light coral!
-  QList<QStandardItem *> list(m_statisticsModel->findItems("Kernel PID"));
-  QPalette pidPalette(m_ui.pid->palette());
-  QStandardItem *item = 0;
-  QString text(m_ui.pid->text());
-
-  pidPalette.setColor(m_ui.pid->backgroundRole(), color);
-
-  if(!list.isEmpty())
-    {
-      item = list.at(0);
-
-      if(item)
-	item = m_statisticsModel->item(item->row(), 1);
-    }
-
-  if(!item)
-    {
-      m_ui.pid->setPalette(pidPalette);
-      m_ui.pid->setText("0");
-    }
-  else
-    {
-      QColor color(144, 238, 144); // Light green!
-      QPalette palette(m_ui.pid->palette());
-
-      palette.setColor(m_ui.pid->backgroundRole(), color);
-      m_ui.pid->setPalette(palette);
-      m_ui.pid->setText(item->text());
-#if SPOTON_GOLDBUG == 1
-      m_ui.activateKernel->setStyleSheet("background-color: lightgreen;"
-					 "border-style: outset;"
-					 "border-width: 2px;"
-					 "border-radius: 10px;"
-					 "border-color: black;"
-					 "min-width: 5em;"
-					 "padding: 6px");
-#endif
-    }
-
-  highlightPaths();
-
-  if(text != m_ui.pid->text())
-    {
-      m_buzzFavoritesLastModificationTime = QDateTime();
-      m_listenersLastModificationTime = QDateTime();
-      m_magnetsLastModificationTime = QDateTime();
-
-      if(m_neighborsFuture.isFinished())
-	m_neighborsLastModificationTime = QDateTime();
-
-      if(m_participantsFuture.isFinished())
-	m_participantsLastModificationTime = QDateTime();
-    }
-
-  if(isKernelActive())
-    if(m_kernelSocket.state() == QAbstractSocket::UnconnectedState)
-      {
-	QString connectionName("");
-	quint16 port = 0;
-
-	{
-	  QSqlDatabase db = spoton_misc::database(connectionName);
-
-	  db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			     "kernel.db");
-
-	  if(db.open())
-	    {
-	      QSqlQuery query(db);
-
-	      query.setForwardOnly(true);
-
-	      if(query.exec("SELECT port FROM kernel_gui_server"))
-		if(query.next())
-		  port = query.value(0).toByteArray().toUShort();
-	    }
-
-	  db.close();
-	}
-
-	QSqlDatabase::removeDatabase(connectionName);
-
-	if(port > 0)
-	  {
-	    initializeKernelSocket();
-
-	    if(m_ui.kernelKeySize->currentText().toInt() == 0)
-	      m_kernelSocket.connectToHost("127.0.0.1", port);
-	    else
-	      m_kernelSocket.connectToHostEncrypted("127.0.0.1", port);
-	  }
-      }
-
-  slotKernelSocketState();
-
-  if(isKernelActive())
-    {
-      if(!m_buzzPages.isEmpty())
-	{
-	  if(!m_buzzStatusTimer.isActive())
-	    m_buzzStatusTimer.start();
-	}
-      else
-	m_buzzStatusTimer.stop();
-    }
-  else
-    {
-      m_buzzStatusTimer.stop();
-
-      if(m_ui.kernelSecureMemoryPool->value() == 0)
-	m_ui.kernelSecureMemoryPool->setStyleSheet
-	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
-      else
-	{
-	  m_ui.kernelSecureMemoryPool->setStyleSheet
-	    (m_ui.kernelSecureMemoryPool->
-	     property("original_stylesheet").toString());
-
-	  if(m_ui.kernelSecureMemoryPool->value() <
-	     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
-	    m_ui.kernelSecureMemoryPool->setValue
-	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
-	}
-    }
-
-  if(isKernelActive())
-    {
-      if(m_kernelSocket.isEncrypted())
-	{
-#if SPOTON_GOLDBUG == 1
-	  m_sb.kernelstatus->setIcon
-	    (QIcon(QString(":/%1/status-online.png").
-		   arg(m_settings.value("gui/iconSet", "nouve").toString().
-		       toLower())));
-#else
-	  m_sb.kernelstatus->setIcon
-	    (QIcon(QString(":/%1/activate.png").
-		   arg(m_settings.value("gui/iconSet", "nouve").toString().
-		       toLower())));
-#endif
-	}
-      else
-	m_sb.kernelstatus->setIcon(QIcon(":/generic/kernel-warning.png"));
-    }
-  else
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/deactivate.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
-
-  if(m_optionsUi.guiSecureMemoryPool->value() == 0)
-    m_optionsUi.guiSecureMemoryPool->setStyleSheet
-      ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
-  else
-    {
-      m_optionsUi.guiSecureMemoryPool->setStyleSheet
-	(m_optionsUi.guiSecureMemoryPool->
-	 property("original_stylesheet").toString());
-
-      if(m_optionsUi.guiSecureMemoryPool->value() <
-	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
-	m_optionsUi.guiSecureMemoryPool->setValue
-	  (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
-    }
-
-  if(!isKernelActive() ||
-     m_sb.status->text() != tr("<html><a href=\"authenticate\">"
-			       "The kernel requires your authentication "
-			       "and encryption keys.</a></html>"))
-    {
-      m_sb.status->setText
-	(tr("External IP: %1.").
-	 arg(m_externalAddress.address().isNull() ?
-	     "unknown" : m_externalAddress.address().toString()));
-      m_sb.status->repaint();
-    }
-
-  for(int i = m_starbeamDigestFutures.size() - 1; i >= 0; i--)
-    if(m_starbeamDigestFutures.at(i).isFinished())
-      m_starbeamDigestFutures.removeAt(i);
-
-  if(isKernelActive())
-    if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
-       m_kernelSocket.write("\n", 1) != 1)
-      if(m_crypts.size() > 0)
-	{
-	  /*
-	  ** We'll need something here.
-	  */
-	}
-
-  if(m_generalFuture.isFinished())
-    {
-      QHash<QString, QVariant> settings;
-
-      settings["is_kernel_active"] = isKernelActive();
-      settings["keep_only_user_defined_neighbors"] = m_optionsUi.
-	keepOnlyUserDefinedNeighbors->isChecked();
-      m_generalFuture = QtConcurrent::run
-	(this, &spoton::generalConcurrentMethod, settings);
-    }
-
-  /*
-  ** Is the PostgreSQL URLs database healthy?
-  */
-
-  if(!m_ui.url_database_connection_information->text().isEmpty())
-    if(m_urlDatabase.driverName() == "QPSQL")
-      if(m_pqUrlDatabaseFuture.isFinished())
-	{
-	  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-	  if(crypt)
-	    {
-	      QByteArray password;
-	      bool ok = true;
-
-	      password = crypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(m_settings.
-			    value("gui/postgresql_password", "").
-			    toByteArray()), &ok);
-
-	      if(ok)
-		m_pqUrlDatabaseFuture = QtConcurrent::run
-		  (this, &spoton::inspectPQUrlDatabase, password);
-	    }
-	}
-}
-
-void spoton::slotSelectGeoIPPath(void)
-{
-  QFileDialog dialog(m_optionsWindow);
-
-  dialog.setWindowTitle
-    (tr("%1: Select GeoIP Data Path").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      if(m_optionsUi.selectGeoIP4 == sender())
-	saveGeoIPPath(4, dialog.selectedFiles().value(0));
-      else
-	saveGeoIPPath(6, dialog.selectedFiles().value(0));
-    }
-}
-
-void spoton::slotSelectKernelPath(void)
-{
-  QFileDialog dialog(this);
-
-  dialog.setWindowTitle
-    (tr("%1: Select Kernel Path").
-     arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
-
-  if(dialog.exec() == QDialog::Accepted)
-    saveKernelPath(dialog.selectedFiles().value(0));
-}
-
-void spoton::slotSaveGeoIPPath(void)
-{
-  if(m_optionsUi.geoipPath4 == sender())
-    saveGeoIPPath(4, m_optionsUi.geoipPath4->text());
-  else
-    saveGeoIPPath(6, m_optionsUi.geoipPath6->text());
-}
-
-void spoton::slotSaveKernelPath(void)
-{
-  saveKernelPath(m_ui.kernelPath->text());
-}
-
-void spoton::saveGeoIPPath(const int version, const QString &path)
-{
-  if(version == 4)
-    m_settings["gui/geoipPath4"] = path;
-  else
-    m_settings["gui/geoipPath6"] = path;
-
-  QSettings settings;
-
-  if(version == 4)
-    settings.setValue("gui/geoipPath4", path);
-  else
-    settings.setValue("gui/geoipPath6", path);
-
-  if(version == 4)
-    {
-      m_optionsUi.geoipPath4->setText(path);
-      m_optionsUi.geoipPath4->setToolTip(path);
-      m_optionsUi.geoipPath4->selectAll();
-    }
-  else
-    {
-      m_optionsUi.geoipPath6->setText(path);
-      m_optionsUi.geoipPath6->setToolTip(path);
-      m_optionsUi.geoipPath6->selectAll();
     }
 }
