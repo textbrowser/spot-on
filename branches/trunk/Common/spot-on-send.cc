@@ -45,8 +45,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
       QByteArray timestamp
 	(QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
 	 toLatin1());
-      int length = static_cast<int>
-	(spoton_crypt::cipherKeyLength("aes256"));
+      int length = static_cast<int> (spoton_crypt::cipherKeyLength("aes256"));
       spoton_crypt crypt(adaptiveEchoPair.second.split('\n').value(0),
 			 adaptiveEchoPair.second.split('\n').value(1),
 			 QByteArray(),

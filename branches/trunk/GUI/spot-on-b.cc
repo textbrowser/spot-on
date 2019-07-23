@@ -4157,8 +4157,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
 	QByteArray bytes(goldbug.toUtf8());
 	QByteArray magnet;
-	int size = static_cast<int>
-	  (spoton_crypt::cipherKeyLength("aes256"));
+	int size = static_cast<int> (spoton_crypt::cipherKeyLength("aes256"));
 
 	magnet.append("magnet:?aa=sha512&ak=");
 	magnet.append

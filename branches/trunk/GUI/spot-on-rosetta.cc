@@ -593,8 +593,7 @@ void spoton_rosetta::slotConvert(void)
 
       if(encryptionKeyLength == 0)
 	{
-	  error = tr("The method spoton_crypt::cipherKeyLength() "
-		     "failed.");
+	  error = tr("The method spoton_crypt::cipherKeyLength() failed.");
 	  goto done_label1;
 	}
 

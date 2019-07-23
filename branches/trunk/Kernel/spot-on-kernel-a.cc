@@ -2000,8 +2000,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	continue;
 
       QByteArray computedHash;
-      int length = static_cast<int>
-	(spoton_crypt::cipherKeyLength("aes256"));
+      int length = static_cast<int> (spoton_crypt::cipherKeyLength("aes256"));
       spoton_crypt crypt(tokenType.split('\n').value(0),
 			 tokenType.split('\n').value(1),
 			 QByteArray(),

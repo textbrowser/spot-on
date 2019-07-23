@@ -180,6 +180,7 @@ void spoton_starbeam_writer::processData
     (data.mid(0, data.length() -
 	      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
   QByteArray messageCode(data.mid(d.length()));
+  QByteArray nova;
   bool found = false;
 
   for(int i = 0; i < novas.size(); i++)
@@ -214,6 +215,7 @@ void spoton_starbeam_writer::processData
 	    {
 	      found = true;
 	      list.clear();
+	      nova = novas.at(i);
 
 	      QByteArray type;
 	      QDataStream stream(&bytes, QIODevice::ReadOnly);
@@ -543,6 +545,64 @@ void spoton_starbeam_writer::processData
   /*
   ** Produce a response.
   */
+
+  QByteArray bytes;
+  QDataStream stream(&bytes, QIODevice::WriteOnly);
+
+  stream << QByteArray("0061")
+	 << QByteArray::number(position)
+	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+            toLatin1()
+	 << QByteArray::number(id);
+
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
+  else
+    ok = true;
+
+  if(nova.isEmpty())
+    {
+      if(ok)
+	data = crypt.encrypted(bytes, &ok);
+    }
+  else
+    {
+      QPair<QByteArray, QByteArray> pair;
+
+      pair.first = nova.mid
+	(0, static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+      pair.second = nova.mid(pair.first.length());
+
+      {
+	spoton_crypt crypt("aes256",
+			   "sha512",
+			   QByteArray(),
+			   pair.first,
+			   pair.second,
+			   0,
+			   0,
+			   "");
+
+	if(ok)
+	  data = crypt.encrypted(bytes, &ok);
+
+	if(ok)
+	  data = data + crypt.keyedHash(data, &ok);
+      }
+
+      if(ok)
+	data = crypt.encrypted(data, &ok);
+    }
+
+  if(ok)
+    messageCode = crypt.keyedHash(data, &ok);
+
+  if(ok)
+    data = data.toBase64() + "\n" + messageCode.toBase64();
+
+  if(ok)
+    if(spoton_kernel::instance())
+      spoton_kernel::instance()->writeMessage006X(data, "0061", 0, &ok);
 }
 
 void spoton_starbeam_writer::run(void)

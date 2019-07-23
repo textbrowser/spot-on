@@ -585,13 +585,13 @@ void spoton_chatwindow::slotShareStarBeam(void)
   ** Create a StarBeam magnet.
   */
 
-  QByteArray eKey(spoton_crypt::strongRandomBytes(spoton_crypt::
-						  cipherKeyLength("aes256")).
-		  toBase64());
-  QByteArray mKey(spoton_crypt::
-		  strongRandomBytes(spoton_crypt::
-				    XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-		  toBase64());
+  QByteArray eKey
+    (spoton_crypt::strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")).
+     toBase64());
+  QByteArray mKey
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+     toBase64());
   QByteArray magnet;
   bool ok = true;
 

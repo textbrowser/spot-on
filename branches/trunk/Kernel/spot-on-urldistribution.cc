@@ -492,8 +492,7 @@ void spoton_urldistribution::run(void)
   QByteArray hashType
     (spoton_kernel::setting("gui/kernelHashType",
 			    "sha512").toString().toLatin1());
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
-    (cipherType);
+  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength == 0)
     {

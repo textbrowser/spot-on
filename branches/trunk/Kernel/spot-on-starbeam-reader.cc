@@ -301,8 +301,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
       QPair<QByteArray, QByteArray> pair;
 
       pair.first = nova.mid
-	(0, static_cast<int> (spoton_crypt::
-			      cipherKeyLength("aes256")));
+	(0, static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
       pair.second = nova.mid(pair.first.length());
 
       {
@@ -333,13 +332,9 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
     data = data.toBase64() + "\n" + messageCode.toBase64();
 
   if(ok)
-    {
-      if(spoton_kernel::instance())
-	spoton_kernel::instance()->writeMessage006X
-	  (data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
-      else
-	ok = false;
-    }
+    if(spoton_kernel::instance())
+      spoton_kernel::instance()->writeMessage006X
+	(data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
 }
 
 void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
