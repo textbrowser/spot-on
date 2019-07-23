@@ -3701,6 +3701,120 @@ void spoton::removeFavorite(const bool removeAll)
     }
 }
 
+void spoton::sendBuzzKeysToKernel(void)
+{
+  QString str(m_keysShared.value("buzz_channels_sent_to_kernel", "false"));
+
+  if(str == "true")
+    return;
+
+  bool sent = true;
+
+  if((sent = ((m_kernelSocket.isEncrypted() ||
+	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
+	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
+    foreach(spoton_buzzpage *page, m_buzzPages.values())
+      if(page && (sent &= (m_kernelSocket.isEncrypted() ||
+			   m_ui.kernelKeySize->currentText().toInt() == 0)))
+	{
+	  QByteArray message;
+
+	  message.append("addbuzz_");
+	  message.append(page->key().toBase64());
+	  message.append("_");
+	  message.append(page->channelType().toBase64());
+	  message.append("_");
+	  message.append(page->hashKey().toBase64());
+	  message.append("_");
+	  message.append(page->hashType().toBase64());
+	  message.append("\n");
+
+	  if(m_kernelSocket.write(message.constData(), message.length()) !=
+	     message.length())
+	    {
+	      sent = false;
+	      spoton_misc::logError
+		(QString("spoton::sendBuzzKeysToKernel(): write() failure "
+			 "for %1:%2.").
+		 arg(m_kernelSocket.peerAddress().toString()).
+		 arg(m_kernelSocket.peerPort()));
+	    }
+	}
+
+  m_keysShared["buzz_channels_sent_to_kernel"] = sent ? "true" : "false";
+}
+
+void spoton::sendKeysToKernel(void)
+{
+  QString str(m_keysShared.value("keys_sent_to_kernel", "false"));
+
+  if(str == "ignore" || str == "true")
+    {
+      if(isKernelActive())
+	if(str == "ignore")
+	  m_sb.status->setText
+	    (tr("<html><a href=\"authenticate\">"
+		"The kernel requires your authentication "
+		"and encryption keys.</a></html>"));
+
+      return;
+    }
+
+  if(m_crypts.value("chat", 0))
+    if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
+	{
+	  if(!m_optionsUi.sharePrivateKeys->isChecked())
+	    {
+	      QMessageBox mb(this);
+
+	      mb.setIcon(QMessageBox::Question);
+	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	      mb.setText
+		 (tr("The kernel process %1 requires your private "
+		     "authentication and encryption keys. "
+		     "Would you like to share "
+		     "the keys with the kernel process?").
+		  arg(m_ui.pid->text()));
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+
+	      if(mb.exec() != QMessageBox::Yes)
+		{
+		  m_keysShared["keys_sent_to_kernel"] = "ignore";
+		  return;
+		}
+	    }
+
+	  QByteArray hashKey(m_crypts.value("chat")->hashKey());
+	  QByteArray keys("keys_");
+	  QByteArray symmetricKey(m_crypts.value("chat")->symmetricKey());
+
+	  hashKey = hashKey.toBase64();
+	  symmetricKey = symmetricKey.toBase64();
+	  keys.append(symmetricKey);
+	  keys.append("_");
+	  keys.append(hashKey);
+	  keys.append("\n");
+
+	  if(m_kernelSocket.write(keys.constData(), keys.length()) !=
+	     keys.length())
+	    spoton_misc::logError
+	      (QString("spoton::sendKeysToKernel(): write() failure "
+		       "for %1:%2.").
+	       arg(m_kernelSocket.peerAddress().toString()).
+	       arg(m_kernelSocket.peerPort()));
+	  else
+	    {
+	      m_keysShared["keys_sent_to_kernel"] = "true";
+	      m_sb.status->clear();
+	    }
+	}
+}
+
 void spoton::slotAbout(void)
 {
   QMessageBox mb(this);
@@ -4142,6 +4256,403 @@ void spoton::slotAddListener(void)
 			     "to add the specified listener.").arg(error));
 }
 
+void spoton::slotAddNeighbor(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. "
+			       "This is a fatal flaw."));
+      return;
+    }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+  if(m_ui.neighborTransport->currentIndex() == 3 && // UDP
+     m_ui.requireSsl->isChecked() &&
+     spoton_misc::
+     isMulticastAddress(QHostAddress(m_ui.neighborIP->text().trimmed())))
+    {
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("DTLS is not functional over multicast!"));
+      return;
+    }
+#endif
+
+  prepareDatabasesFromUI();
+
+  QString connectionName("");
+  QString error("");
+  bool ok = true;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QString ip(m_ui.neighborIP->text().toLower().trimmed());
+	QString port(QString::number(m_ui.neighborPort->value()));
+	QString protocol("");
+	QString proxyHostName("");
+	QString proxyPassword("");
+	QString proxyPort("1");
+	QString proxyType("");
+	QString proxyUsername("");
+	QString scopeId(m_ui.neighborScopeId->text());
+	QString sslCS(m_ui.neighborsSslControlString->text().trimmed());
+	QString status("connected");
+	QString transport("tcp");
+	QSqlQuery query(db);
+
+	if(m_ui.neighborTransport->currentIndex() == 0)
+	  scopeId = "";
+	else
+	  {
+	    if(m_ui.ipv4Neighbor->isChecked())
+	      protocol = "IPv4";
+	    else if(m_ui.ipv6Neighbor->isChecked())
+	      protocol = "IPv6";
+	    else
+	      protocol = "Dynamic DNS";
+	  }
+
+	switch(m_ui.neighborTransport->currentIndex())
+	  {
+	  case 0:
+	    {
+	      transport = "bluetooth";
+	      break;
+	    }
+	  case 1:
+	    {
+	      transport = "sctp";
+	      break;
+	    }
+	  case 2:
+	    {
+	      transport = "tcp";
+	      break;
+	    }
+	  case 3:
+	    {
+	      transport = "udp";
+	      break;
+	    }
+	  default:
+	    {
+	      break;
+	    }
+	  }
+
+	query.prepare("INSERT INTO neighbors "
+		      "(local_ip_address, "
+		      "local_port, "
+		      "protocol, "
+		      "remote_ip_address, "
+		      "remote_port, "
+		      "sticky, "
+		      "scope_id, "
+		      "hash, "
+		      "status_control, "
+		      "country, "
+		      "remote_ip_address_hash, "
+		      "qt_country_hash, "
+		      "proxy_hostname, "
+		      "proxy_password, "
+		      "proxy_port, "
+		      "proxy_type, "
+		      "proxy_username, "
+		      "uuid, "
+		      "echo_mode, "
+		      "ssl_key_size, "
+		      "allow_exceptions, "
+		      "certificate, "
+		      "ssl_required, "
+		      "account_name, "
+		      "account_password, "
+		      "transport, "
+		      "orientation, "
+		      "ssl_control_string) "
+		      "VALUES "
+		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+		      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+	query.bindValue(0, QVariant(QVariant::String));
+	query.bindValue(1, QVariant(QVariant::String));
+	query.bindValue
+	  (2, crypt->
+	   encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
+
+	if(ip.isEmpty())
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(QByteArray(), &ok).toBase64());
+	else if(transport != "bluetooth")
+	  {
+	    ip = spoton_misc::massageIpForUi(ip, protocol);
+
+	    if(ok)
+	      query.bindValue
+		(3, crypt->
+		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+	  }
+	else
+	  {
+	    if(ok)
+	      query.bindValue
+		(3, crypt->
+		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (4, crypt->
+	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
+
+	query.bindValue(5, 1); // Sticky.
+
+	if(ok)
+	  query.bindValue
+	    (6, crypt->
+	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
+
+	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
+	  {
+	    proxyHostName = m_ui.proxyHostname->text().trimmed();
+	    proxyPort = QString::number(m_ui.proxyPort->value());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (7, crypt->
+	     keyedHash((proxyHostName + proxyPort + ip + port + scopeId +
+			transport).toLatin1(), &ok).
+	     toBase64());
+
+	query.bindValue(8, status);
+
+	QString country("Unknown");
+
+	if(transport != "bluetooth")
+	  country = spoton_misc::countryNameFromIPAddress(ip);
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->
+	     encryptedThenHashed(country.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->keyedHash(ip.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (11, crypt->
+	     keyedHash(country.remove(" ").toLatin1(), &ok).
+	     toBase64());
+
+	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
+	  proxyPassword = m_ui.proxyPassword->text();
+
+	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
+	  {
+	    /*
+	    ** Avoid translation mishaps.
+	    */
+
+	    if(m_ui.proxyType->currentIndex() == 0)
+	      proxyType = "HTTP";
+	    else if(m_ui.proxyType->currentIndex() == 1)
+	      proxyType = "Socks5";
+	    else
+	      proxyType = "System";
+	  }
+	else
+	  proxyType = "NoProxy";
+
+	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
+	  proxyUsername = m_ui.proxyUsername->text();
+
+	if(ok)
+	  query.bindValue
+	    (12, crypt->
+	     encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (13, crypt->
+	     encryptedThenHashed(proxyPassword.toUtf8(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (14, crypt->encryptedThenHashed(proxyPort.toLatin1(),
+					    &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (15, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (16, crypt->encryptedThenHashed(proxyUsername.toUtf8(), &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (17, crypt->
+	     encryptedThenHashed("{00000000-0000-0000-0000-000000000000}",
+				 &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(m_ui.neighborsEchoMode->currentIndex() == 0)
+	      query.bindValue
+		(18, crypt->
+		 encryptedThenHashed("full", &ok).toBase64());
+	    else
+	      query.bindValue
+		(18, crypt->
+		 encryptedThenHashed("half", &ok).toBase64());
+	  }
+
+	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
+#else
+	  )
+#endif
+	  {
+	    if(m_ui.requireSsl->isChecked())
+	      query.bindValue
+		(19, m_ui.neighborKeySize->currentText().toInt());
+	    else
+	      query.bindValue(19, 0);
+	  }
+	else
+	  query.bindValue(19, 0);
+
+	if(m_ui.addException->isChecked() &&
+	   m_ui.neighborTransport->currentIndex() == 2) // TCP
+	  query.bindValue(20, 1);
+	else
+	  query.bindValue(20, 0);
+
+	if(ok)
+	  query.bindValue
+	    (21, crypt->encryptedThenHashed(QByteArray(),
+					    &ok).toBase64());
+
+	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
+#else
+	  )
+#endif
+	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
+	else
+	  query.bindValue(22, 0);
+
+	if(ok)
+	  query.bindValue
+	    (23, crypt->encryptedThenHashed(QByteArray(),
+					    &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (24, crypt->encryptedThenHashed(QByteArray(),
+					    &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(m_ui.neighborTransport->currentIndex() == 0)
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
+	    else if(m_ui.neighborTransport->currentIndex() == 1)
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+	    else if(m_ui.neighborTransport->currentIndex() == 2)
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("tcp", &ok).toBase64());
+	    else
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("udp", &ok).toBase64());
+	  }
+
+	if(ok)
+	  {
+	    if(m_ui.neighborOrientation->currentIndex() == 0)
+	      query.bindValue
+		(26, crypt->encryptedThenHashed("packet", &ok).toBase64());
+	    else
+	      query.bindValue
+		(26, crypt->encryptedThenHashed("stream", &ok).toBase64());
+	  }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+        if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
+					    transport == "udp"))
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
+	  sslCS = "N/A";
+#else
+        if(m_ui.requireSsl->isChecked() && transport == "tcp")
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
+	  sslCS = "N/A";
+#endif
+
+	query.bindValue(27, sslCS);
+
+	if(ok)
+	  ok = query.exec();
+
+	if(query.lastError().isValid())
+	  error = query.lastError().text().trimmed();
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text().trimmed();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    m_ui.neighborIP->selectAll();
+  else if(error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to add the specified neighbor. "
+			     "Please enable logging via the Log Viewer "
+			     "and try again."));
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while attempting "
+			     "to add the specified neighbor.").arg(error));
+}
+
 void spoton::slotAuthenticate(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -4170,6 +4681,88 @@ void spoton::slotAuthenticate(void)
     }
 
   authenticate(crypt, list.at(0).data().toString());
+}
+
+void spoton::slotBlockNeighbor(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QString remoteIp("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, 10); // Remote IP Address
+
+      if(item)
+	remoteIp = item->text();
+    }
+
+  if(remoteIp.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	/*
+	** We must block all neighbors having the given remote IP
+	** address. The neighbors must be in unblocked control states.
+	** Neighbors that are marked as deleted must be left as is since
+	** they will be purged by either the interface or the kernel.
+	*/
+
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT remote_ip_address, OID "
+		      "FROM neighbors WHERE status_control NOT IN "
+		      "('blocked', 'deleted')"))
+	  while(query.next())
+	    {
+	      QString ip("");
+	      bool ok = true;
+
+	      ip = crypt->decryptedAfterAuthenticated
+		(QByteArray::
+		 fromBase64(query.
+			    value(0).
+			    toByteArray()),
+		 &ok).constData();
+
+	      if(ok)
+		if(ip == remoteIp)
+		  {
+		    QSqlQuery updateQuery(db);
+
+		    updateQuery.prepare("UPDATE neighbors SET "
+					"status_control = 'blocked' WHERE "
+					"OID = ? AND "
+					"status_control <> 'deleted'");
+		    updateQuery.bindValue(0, query.value(1));
+		    updateQuery.exec();
+		  }
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotBuzzTools(int index)
@@ -4315,6 +4908,48 @@ void spoton::slotChangeTabPosition(int index)
   QSettings settings;
 
   settings.setValue("gui/tabPosition", m_settings.value("gui/tabPosition"));
+}
+
+void spoton::slotConnectNeighbor(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "status_control = 'connected' "
+		      "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue(0, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotCopyAllMyPublicKeys(void)
@@ -4569,6 +5204,43 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotDeleteAllListeners(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!isKernelActive())
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM listeners");
+	    query.exec("DELETE FROM listeners_accounts");
+	    query.exec
+	      ("DELETE FROM listeners_accounts_consumed_authentications");
+	    query.exec("DELETE FROM listeners_allowed_ips");
+	  }
+	else
+	  query.exec("UPDATE listeners SET "
+		     "status_control = 'deleted' WHERE "
+		     "status_control <> 'deleted'");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  m_ui.accounts->clear();
+  m_ui.ae_tokens->setRowCount(0);
+}
+
 void spoton::slotDeleteAllNeighbors(void)
 {
   QString connectionName("");
@@ -4672,6 +5344,48 @@ void spoton::slotDisconnectListenerNeighbors(void)
 	     arg(m_kernelSocket.peerAddress().toString()).
 	     arg(m_kernelSocket.peerPort()));
       }
+}
+
+void spoton::slotDisconnectNeighbor(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("UPDATE neighbors SET "
+		      "status_control = 'disconnected' "
+		      "WHERE OID = ? AND status_control <> 'deleted'");
+	query.bindValue(0, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotDiscoverExternalAddress(void)
@@ -5786,37 +6500,31 @@ void spoton::slotSignatureCheckBoxToggled(bool state)
     }
 }
 
-void spoton::slotAddNeighbor(void)
+void spoton::slotUnblockNeighbor(void)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
+    return;
+
+  QString remoteIp("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
-      return;
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, 10); // Remote IP Address
+
+      if(item)
+	remoteIp = item->text();
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(m_ui.neighborTransport->currentIndex() == 3 && // UDP
-     m_ui.requireSsl->isChecked() &&
-     spoton_misc::
-     isMulticastAddress(QHostAddress(m_ui.neighborIP->text().trimmed())))
-    {
-      QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-	 tr("DTLS is not functional over multicast!"));
-      return;
-    }
-#endif
+  if(remoteIp.isEmpty())
+    return;
 
-  prepareDatabasesFromUI();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
-  QString error("");
-  bool ok = true;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -5826,361 +6534,51 @@ void spoton::slotAddNeighbor(void)
 
     if(db.open())
       {
-	QString ip(m_ui.neighborIP->text().toLower().trimmed());
-	QString port(QString::number(m_ui.neighborPort->value()));
-	QString protocol("");
-	QString proxyHostName("");
-	QString proxyPassword("");
-	QString proxyPort("1");
-	QString proxyType("");
-	QString proxyUsername("");
-	QString scopeId(m_ui.neighborScopeId->text());
-	QString sslCS(m_ui.neighborsSslControlString->text().trimmed());
-	QString status("connected");
-	QString transport("tcp");
+	/*
+	** We must unblock all neighbors having the given remote IP
+	** address. The neighbors must be in blocked control states. We shall
+	** place the unblocked neighbors in disconnected control states.
+	*/
+
 	QSqlQuery query(db);
 
-	if(m_ui.neighborTransport->currentIndex() == 0)
-	  scopeId = "";
-	else
-	  {
-	    if(m_ui.ipv4Neighbor->isChecked())
-	      protocol = "IPv4";
-	    else if(m_ui.ipv6Neighbor->isChecked())
-	      protocol = "IPv6";
-	    else
-	      protocol = "Dynamic DNS";
-	  }
+	query.setForwardOnly(true);
 
-	switch(m_ui.neighborTransport->currentIndex())
-	  {
-	  case 0:
+	if(query.exec("SELECT remote_ip_address, OID "
+		      "FROM neighbors WHERE status_control = 'blocked'"))
+	  while(query.next())
 	    {
-	      transport = "bluetooth";
-	      break;
+	      bool ok = true;
+
+	      QString ip
+		(crypt->
+		 decryptedAfterAuthenticated(QByteArray::
+					     fromBase64(query.
+							value(0).
+							toByteArray()),
+					     &ok).
+		 constData());
+
+	      if(ok)
+		if(ip == remoteIp)
+		  {
+		    QSqlQuery updateQuery(db);
+
+		    updateQuery.prepare("UPDATE neighbors SET "
+					"status_control = 'disconnected' "
+					"WHERE OID = ? AND "
+					"status_control <> 'deleted'");
+		    updateQuery.bindValue(0, query.value(1));
+		    updateQuery.exec();
+		  }
 	    }
-	  case 1:
-	    {
-	      transport = "sctp";
-	      break;
-	    }
-	  case 2:
-	    {
-	      transport = "tcp";
-	      break;
-	    }
-	  case 3:
-	    {
-	      transport = "udp";
-	      break;
-	    }
-	  default:
-	    {
-	      break;
-	    }
-	  }
-
-	query.prepare("INSERT INTO neighbors "
-		      "(local_ip_address, "
-		      "local_port, "
-		      "protocol, "
-		      "remote_ip_address, "
-		      "remote_port, "
-		      "sticky, "
-		      "scope_id, "
-		      "hash, "
-		      "status_control, "
-		      "country, "
-		      "remote_ip_address_hash, "
-		      "qt_country_hash, "
-		      "proxy_hostname, "
-		      "proxy_password, "
-		      "proxy_port, "
-		      "proxy_type, "
-		      "proxy_username, "
-		      "uuid, "
-		      "echo_mode, "
-		      "ssl_key_size, "
-		      "allow_exceptions, "
-		      "certificate, "
-		      "ssl_required, "
-		      "account_name, "
-		      "account_password, "
-		      "transport, "
-		      "orientation, "
-		      "ssl_control_string) "
-		      "VALUES "
-		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-		      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-	query.bindValue(0, QVariant(QVariant::String));
-	query.bindValue(1, QVariant(QVariant::String));
-	query.bindValue
-	  (2, crypt->
-	   encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
-
-	if(ip.isEmpty())
-	  query.bindValue
-	    (3, crypt->
-	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-	else if(transport != "bluetooth")
-	  {
-	    ip = spoton_misc::massageIpForUi(ip, protocol);
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
-	  }
-	else
-	  {
-	    if(ok)
-	      query.bindValue
-		(3, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
-	  }
-
-	if(ok)
-	  query.bindValue
-	    (4, crypt->
-	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
-
-	query.bindValue(5, 1); // Sticky.
-
-	if(ok)
-	  query.bindValue
-	    (6, crypt->
-	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
-
-	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
-	  {
-	    proxyHostName = m_ui.proxyHostname->text().trimmed();
-	    proxyPort = QString::number(m_ui.proxyPort->value());
-	  }
-
-	if(ok)
-	  query.bindValue
-	    (7, crypt->
-	     keyedHash((proxyHostName + proxyPort + ip + port + scopeId +
-			transport).toLatin1(), &ok).
-	     toBase64());
-
-	query.bindValue(8, status);
-
-	QString country("Unknown");
-
-	if(transport != "bluetooth")
-	  country = spoton_misc::countryNameFromIPAddress(ip);
-
-	if(ok)
-	  query.bindValue
-	    (9, crypt->
-	     encryptedThenHashed(country.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (10, crypt->keyedHash(ip.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (11, crypt->
-	     keyedHash(country.remove(" ").toLatin1(), &ok).
-	     toBase64());
-
-	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
-	  proxyPassword = m_ui.proxyPassword->text();
-
-	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
-	  {
-	    /*
-	    ** Avoid translation mishaps.
-	    */
-
-	    if(m_ui.proxyType->currentIndex() == 0)
-	      proxyType = "HTTP";
-	    else if(m_ui.proxyType->currentIndex() == 1)
-	      proxyType = "Socks5";
-	    else
-	      proxyType = "System";
-	  }
-	else
-	  proxyType = "NoProxy";
-
-	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
-	  proxyUsername = m_ui.proxyUsername->text();
-
-	if(ok)
-	  query.bindValue
-	    (12, crypt->
-	     encryptedThenHashed(proxyHostName.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (13, crypt->
-	     encryptedThenHashed(proxyPassword.toUtf8(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (14, crypt->encryptedThenHashed(proxyPort.toLatin1(),
-					    &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (15, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (16, crypt->encryptedThenHashed(proxyUsername.toUtf8(), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (17, crypt->
-	     encryptedThenHashed("{00000000-0000-0000-0000-000000000000}",
-				 &ok).toBase64());
-
-	if(ok)
-	  {
-	    if(m_ui.neighborsEchoMode->currentIndex() == 0)
-	      query.bindValue
-		(18, crypt->
-		 encryptedThenHashed("full", &ok).toBase64());
-	    else
-	      query.bindValue
-		(18, crypt->
-		 encryptedThenHashed("half", &ok).toBase64());
-	  }
-
-	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
-#else
-	  )
-#endif
-	  {
-	    if(m_ui.requireSsl->isChecked())
-	      query.bindValue
-		(19, m_ui.neighborKeySize->currentText().toInt());
-	    else
-	      query.bindValue(19, 0);
-	  }
-	else
-	  query.bindValue(19, 0);
-
-	if(m_ui.addException->isChecked() &&
-	   m_ui.neighborTransport->currentIndex() == 2) // TCP
-	  query.bindValue(20, 1);
-	else
-	  query.bindValue(20, 0);
-
-	if(ok)
-	  query.bindValue
-	    (21, crypt->encryptedThenHashed(QByteArray(),
-					    &ok).toBase64());
-
-	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
-#else
-	  )
-#endif
-	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
-	else
-	  query.bindValue(22, 0);
-
-	if(ok)
-	  query.bindValue
-	    (23, crypt->encryptedThenHashed(QByteArray(),
-					    &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (24, crypt->encryptedThenHashed(QByteArray(),
-					    &ok).toBase64());
-
-	if(ok)
-	  {
-	    if(m_ui.neighborTransport->currentIndex() == 0)
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
-	    else if(m_ui.neighborTransport->currentIndex() == 1)
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("sctp", &ok).toBase64());
-	    else if(m_ui.neighborTransport->currentIndex() == 2)
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	    else
-	      query.bindValue
-		(25, crypt->encryptedThenHashed("udp", &ok).toBase64());
-	  }
-
-	if(ok)
-	  {
-	    if(m_ui.neighborOrientation->currentIndex() == 0)
-	      query.bindValue
-		(26, crypt->encryptedThenHashed("packet", &ok).toBase64());
-	    else
-	      query.bindValue
-		(26, crypt->encryptedThenHashed("stream", &ok).toBase64());
-	  }
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-        if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
-					    transport == "udp"))
-	  {
-	    if(sslCS.isEmpty())
-	      sslCS = spoton_common::SSL_CONTROL_STRING;
-	  }
-	else
-	  sslCS = "N/A";
-#else
-        if(m_ui.requireSsl->isChecked() && transport == "tcp")
-	  {
-	    if(sslCS.isEmpty())
-	      sslCS = spoton_common::SSL_CONTROL_STRING;
-	  }
-	else
-	  sslCS = "N/A";
-#endif
-
-	query.bindValue(27, sslCS);
-
-	if(ok)
-	  ok = query.exec();
-
-	if(query.lastError().isValid())
-	  error = query.lastError().text().trimmed();
-      }
-    else
-      {
-	ok = false;
-
-	if(db.lastError().isValid())
-	  error = db.lastError().text().trimmed();
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    m_ui.neighborIP->selectAll();
-  else if(error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to add the specified neighbor. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again."));
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred while attempting "
-			     "to add the specified neighbor.").arg(error));
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotHideOfflineParticipants(bool state)
@@ -10136,402 +10534,4 @@ void spoton::slotKernelSocketState(void)
 	  (tr("The interface is not connected to the kernel. Is the kernel "
 	      "active?"));
     }
-}
-
-void spoton::sendBuzzKeysToKernel(void)
-{
-  QString str(m_keysShared.value("buzz_channels_sent_to_kernel", "false"));
-
-  if(str == "true")
-    return;
-
-  bool sent = true;
-
-  if((sent = ((m_kernelSocket.isEncrypted() ||
-	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
-	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
-    foreach(spoton_buzzpage *page, m_buzzPages.values())
-      if(page && (sent &= (m_kernelSocket.isEncrypted() ||
-			   m_ui.kernelKeySize->currentText().toInt() == 0)))
-	{
-	  QByteArray message;
-
-	  message.append("addbuzz_");
-	  message.append(page->key().toBase64());
-	  message.append("_");
-	  message.append(page->channelType().toBase64());
-	  message.append("_");
-	  message.append(page->hashKey().toBase64());
-	  message.append("_");
-	  message.append(page->hashType().toBase64());
-	  message.append("\n");
-
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
-	    {
-	      sent = false;
-	      spoton_misc::logError
-		(QString("spoton::sendBuzzKeysToKernel(): write() failure "
-			 "for %1:%2.").
-		 arg(m_kernelSocket.peerAddress().toString()).
-		 arg(m_kernelSocket.peerPort()));
-	    }
-	}
-
-  m_keysShared["buzz_channels_sent_to_kernel"] = sent ? "true" : "false";
-}
-
-void spoton::sendKeysToKernel(void)
-{
-  QString str(m_keysShared.value("keys_sent_to_kernel", "false"));
-
-  if(str == "ignore" || str == "true")
-    {
-      if(isKernelActive())
-	if(str == "ignore")
-	  m_sb.status->setText
-	    (tr("<html><a href=\"authenticate\">"
-		"The kernel requires your authentication "
-		"and encryption keys.</a></html>"));
-
-      return;
-    }
-
-  if(m_crypts.value("chat", 0))
-    if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
-      if(m_kernelSocket.isEncrypted() ||
-	 m_ui.kernelKeySize->currentText().toInt() == 0)
-	{
-	  if(!m_optionsUi.sharePrivateKeys->isChecked())
-	    {
-	      QMessageBox mb(this);
-
-	      mb.setIcon(QMessageBox::Question);
-	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	      mb.setText
-		 (tr("The kernel process %1 requires your private "
-		     "authentication and encryption keys. "
-		     "Would you like to share "
-		     "the keys with the kernel process?").
-		  arg(m_ui.pid->text()));
-	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
-	      mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
-
-	      if(mb.exec() != QMessageBox::Yes)
-		{
-		  m_keysShared["keys_sent_to_kernel"] = "ignore";
-		  return;
-		}
-	    }
-
-	  QByteArray hashKey(m_crypts.value("chat")->hashKey());
-	  QByteArray keys("keys_");
-	  QByteArray symmetricKey(m_crypts.value("chat")->symmetricKey());
-
-	  hashKey = hashKey.toBase64();
-	  symmetricKey = symmetricKey.toBase64();
-	  keys.append(symmetricKey);
-	  keys.append("_");
-	  keys.append(hashKey);
-	  keys.append("\n");
-
-	  if(m_kernelSocket.write(keys.constData(), keys.length()) !=
-	     keys.length())
-	    spoton_misc::logError
-	      (QString("spoton::sendKeysToKernel(): write() failure "
-		       "for %1:%2.").
-	       arg(m_kernelSocket.peerAddress().toString()).
-	       arg(m_kernelSocket.peerPort()));
-	  else
-	    {
-	      m_keysShared["keys_sent_to_kernel"] = "true";
-	      m_sb.status->clear();
-	    }
-	}
-}
-
-void spoton::slotConnectNeighbor(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "status_control = 'connected' "
-		      "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue(0, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDisconnectNeighbor(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("UPDATE neighbors SET "
-		      "status_control = 'disconnected' "
-		      "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue(0, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotBlockNeighbor(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString remoteIp("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, 10); // Remote IP Address
-
-      if(item)
-	remoteIp = item->text();
-    }
-
-  if(remoteIp.isEmpty())
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	/*
-	** We must block all neighbors having the given remote IP
-	** address. The neighbors must be in unblocked control states.
-	** Neighbors that are marked as deleted must be left as is since
-	** they will be purged by either the interface or the kernel.
-	*/
-
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT remote_ip_address, OID "
-		      "FROM neighbors WHERE status_control NOT IN "
-		      "('blocked', 'deleted')"))
-	  while(query.next())
-	    {
-	      QString ip("");
-	      bool ok = true;
-
-	      ip = crypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok).constData();
-
-	      if(ok)
-		if(ip == remoteIp)
-		  {
-		    QSqlQuery updateQuery(db);
-
-		    updateQuery.prepare("UPDATE neighbors SET "
-					"status_control = 'blocked' WHERE "
-					"OID = ? AND "
-					"status_control <> 'deleted'");
-		    updateQuery.bindValue(0, query.value(1));
-		    updateQuery.exec();
-		  }
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotUnblockNeighbor(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString remoteIp("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, 10); // Remote IP Address
-
-      if(item)
-	remoteIp = item->text();
-    }
-
-  if(remoteIp.isEmpty())
-    return;
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	/*
-	** We must unblock all neighbors having the given remote IP
-	** address. The neighbors must be in blocked control states. We shall
-	** place the unblocked neighbors in disconnected control states.
-	*/
-
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-
-	if(query.exec("SELECT remote_ip_address, OID "
-		      "FROM neighbors WHERE status_control = 'blocked'"))
-	  while(query.next())
-	    {
-	      bool ok = true;
-
-	      QString ip
-		(crypt->
-		 decryptedAfterAuthenticated(QByteArray::
-					     fromBase64(query.
-							value(0).
-							toByteArray()),
-					     &ok).
-		 constData());
-
-	      if(ok)
-		if(ip == remoteIp)
-		  {
-		    QSqlQuery updateQuery(db);
-
-		    updateQuery.prepare("UPDATE neighbors SET "
-					"status_control = 'disconnected' "
-					"WHERE OID = ? AND "
-					"status_control <> 'deleted'");
-		    updateQuery.bindValue(0, query.value(1));
-		    updateQuery.exec();
-		  }
-	    }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotDeleteAllListeners(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!isKernelActive())
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM listeners");
-	    query.exec("DELETE FROM listeners_accounts");
-	    query.exec
-	      ("DELETE FROM listeners_accounts_consumed_authentications");
-	    query.exec("DELETE FROM listeners_allowed_ips");
-	  }
-	else
-	  query.exec("UPDATE listeners SET "
-		     "status_control = 'deleted' WHERE "
-		     "status_control <> 'deleted'");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  m_ui.accounts->clear();
-  m_ui.ae_tokens->setRowCount(0);
 }
