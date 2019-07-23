@@ -415,7 +415,8 @@ bool spoton_neighbor::readyToWrite(void)
     return false;
 }
 
-bool spoton_neighbor::writeMessage0060(const QByteArray &data)
+bool spoton_neighbor::writeMessage006X(const QByteArray &data,
+				       const QString &messageType)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return false;
@@ -430,13 +431,14 @@ bool spoton_neighbor::writeMessage0060(const QByteArray &data)
 						spoton_kernel::s_crypts.
 						value("chat", 0)));
 
-      message = spoton_send::message0060(data, ae);
+      if(messageType == "0060")
+	message = spoton_send::message0060(data, ae);
 
       if(write(message.constData(), message.length()) != message.length())
 	{
 	  ok = false;
 	  spoton_misc::logError
-	    (QString("spoton_neighbor::writeMessage0060(): write() error "
+	    (QString("spoton_neighbor::writeMessage006X(): write() error "
 		     "for %1:%2.").
 	     arg(m_address).
 	     arg(m_port));

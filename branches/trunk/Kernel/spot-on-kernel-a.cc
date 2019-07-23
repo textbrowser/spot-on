@@ -6221,8 +6221,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_kernel::writeMessage0060
-(const QByteArray &data, int *neighborIndex, bool *ok)
+void spoton_kernel::writeMessage006X
+(const QByteArray &data,
+ const QString &messageType,
+ int *neighborIndex,
+ bool *ok)
 {
   /*
   ** StarBeams.
@@ -6247,7 +6250,7 @@ void spoton_kernel::writeMessage0060
 	    {
 	      if(i == *neighborIndex)
 		{
-		  if(it.value()->writeMessage0060(data))
+		  if(it.value()->writeMessage006X(data, messageType))
 		    {
 		      if(ok)
 			*ok = true;
@@ -6270,7 +6273,7 @@ void spoton_kernel::writeMessage0060
 	  it.next();
 
 	  if(it.value())
-	    if(it.value()->writeMessage0060(data))
+	    if(it.value()->writeMessage006X(data, messageType))
 	      {
 		if(ok)
 		  *ok = true;

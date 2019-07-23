@@ -335,8 +335,8 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
   if(ok)
     {
       if(spoton_kernel::instance())
-	spoton_kernel::instance()->writeMessage0060
-	  (data, m_fragmented ? &m_neighborIndex : 0, &ok);
+	spoton_kernel::instance()->writeMessage006X
+	  (data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
       else
 	ok = false;
     }

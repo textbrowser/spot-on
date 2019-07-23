@@ -263,7 +263,7 @@ class spoton_neighbor: public QThread
   QString transport(void) const;
   QUuid receivedUuid(void);
   bool isEncrypted(void) const;
-  bool writeMessage0060(const QByteArray &data);
+  bool writeMessage006X(const QByteArray &data, const QString &messageType);
   qint64 id(void) const;
   qint64 write(const char *data, qint64 size);
   quint16 peerPort(void) const;
