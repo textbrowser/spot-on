@@ -3537,6 +3537,20 @@ void spoton::cleanup(void)
   QApplication::instance()->quit();
 }
 
+void spoton::closeEvent(QCloseEvent *event)
+{
+  if(!m_quit && promptBeforeExit())
+    {
+      if(event)
+	event->ignore();
+
+      return;
+    }
+
+  m_quit = true;
+  slotQuit();
+}
+
 void spoton::demagnetize(void)
 {
   QStringList list
@@ -3699,6 +3713,42 @@ void spoton::removeFavorite(const bool removeAll)
       m_ui.channelSalt->clear();
       m_ui.channelType->setCurrentIndex(0);
     }
+}
+
+void spoton::saveKernelPath(const QString &path)
+{
+  m_settings["gui/kernelPath"] = path;
+
+  QSettings settings;
+
+  settings.setValue("gui/kernelPath", path);
+  m_ui.kernelPath->setText(path);
+  m_ui.kernelPath->setToolTip(path);
+  m_ui.kernelPath->selectAll();
+}
+
+void spoton::saveSettings(void)
+{
+  QSettings settings;
+
+  if(!isFullScreen())
+    settings.setValue("gui/geometry", saveGeometry());
+
+  settings.setValue("gui/chatHorizontalSplitter",
+		    m_ui.chatHorizontalSplitter->saveState());
+  settings.setValue("gui/currentTabIndex", m_ui.tab->currentIndex());
+  settings.setValue("gui/emailSplitter",
+		    m_ui.emailSplitter->saveState());
+  settings.setValue("gui/listenersHorizontalSplitter",
+		    m_ui.listenersHorizontalSplitter->saveState());
+  settings.setValue("gui/neighborsVerticalSplitter",
+		    m_ui.neighborsVerticalSplitter->saveState());
+  settings.setValue("gui/readVerticalSplitter",
+		    m_ui.readVerticalSplitter->saveState());
+  settings.setValue("gui/txmSplitter",
+		    m_ui.txmSplitter->saveState());
+  settings.setValue("gui/urlsVerticalSplitter",
+		    m_ui.urlsVerticalSplitter->saveState());
 }
 
 void spoton::sendBuzzKeysToKernel(void)
@@ -5272,6 +5322,123 @@ void spoton::slotDeleteAllNeighbors(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotDeleteListener(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.listeners->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.listeners->item
+	(row, m_ui.listeners->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool deleteListener = false;
+
+	if(!isKernelActive())
+	  {
+	    deleteListener = true;
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM listeners WHERE "
+			  "OID = ?");
+	  }
+	else
+	  query.prepare("UPDATE listeners SET status_control = 'deleted' "
+			"WHERE "
+			"OID = ? AND status_control <> 'deleted'");
+
+	query.bindValue(0, oid);
+	query.exec();
+
+	if(deleteListener)
+	  {
+	    query.prepare("DELETE FROM listeners_accounts WHERE "
+			  "listener_oid = ?");
+	    query.bindValue(0, oid);
+	    query.exec();
+	    query.prepare
+	      ("DELETE FROM listeners_accounts_consumed_authentications "
+	       "WHERE listener_oid = ?");
+	    query.bindValue(0, oid);
+	    query.exec();
+	    query.prepare("DELETE FROM listeners_allowed_ips WHERE "
+			  "listener_oid = ?");
+	    query.bindValue(0, oid);
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton::slotDeleteNeighbor(void)
+{
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!isKernelActive())
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.prepare("DELETE FROM neighbors WHERE OID = ?");
+	  }
+	else
+	  query.prepare("UPDATE neighbors SET status_control = 'deleted' "
+			"WHERE OID = ? AND status_control <> 'deleted'");
+
+	query.bindValue(0, oid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotDetachListenerNeighbors(void)
 {
   QString oid("");
@@ -5421,6 +5588,17 @@ void spoton::slotFavoritesActivated(int index)
     m_ui.buzzHashType->setCurrentIndex(0);
 }
 
+void spoton::slotHideOfflineParticipants(bool state)
+{
+  m_participantsLastModificationTime = QDateTime();
+  m_settings["gui/hideOfflineParticipants"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/hideOfflineParticipants", state);
+  slotPopulateParticipants();
+}
+
 void spoton::slotKernelLogEvents(bool state)
 {
   m_settings["gui/kernelLogEvents"] = state;
@@ -5450,6 +5628,147 @@ void spoton::slotKernelSocketSslErrors(const QList<QSslError> &errors)
        arg(m_kernelSocket.peerAddress().isNull() ? m_kernelSocket.peerName() :
 	   m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
+}
+
+void spoton::slotKernelSocketState(void)
+{
+  QAbstractSocket::SocketState state = m_kernelSocket.state();
+
+  if(state == QAbstractSocket::ConnectedState)
+    {
+      m_kernelSocket.setSocketOption
+	(QAbstractSocket::LowDelayOption,
+	 m_settings.value("gui/tcp_nodelay", 1).toInt()); /*
+							  ** Disable Nagle?
+							  */
+      if(m_kernelSocket.isEncrypted() ||
+	 m_ui.kernelKeySize->currentText().toInt() == 0)
+	{
+	  sendKeysToKernel();
+	  askKernelToReadStarBeamKeys();
+	  sendBuzzKeysToKernel();
+
+	  if(m_kernelSocket.isEncrypted())
+	    {
+	      QSslCipher cipher(m_kernelSocket.sessionCipher());
+	      QString str(QString("%1-%2-%3-%4-%5-%6-%7").
+			  arg(cipher.name()).
+			  arg(cipher.authenticationMethod()).
+			  arg(cipher.encryptionMethod()).
+			  arg(cipher.keyExchangeMethod()).
+			  arg(cipher.protocolString()).
+			  arg(cipher.supportedBits()).
+			  arg(cipher.usedBits()));
+
+	      m_sb.kernelstatus->setToolTip
+		(tr("Connected to the kernel on port %1 "
+		    "from local port %2 via cipher %3.").
+		 arg(m_kernelSocket.peerPort()).
+		 arg(m_kernelSocket.localPort()).
+		 arg(str));
+	    }
+	  else
+	    m_sb.kernelstatus->setToolTip
+	      (tr("Connected to the kernel on port %1 "
+		  "from local port %2.").
+	       arg(m_kernelSocket.peerPort()).
+	       arg(m_kernelSocket.localPort()));
+	}
+      else
+	m_sb.kernelstatus->setToolTip
+	  (tr("<html>Connected to the kernel on port %1 "
+	      "from local port %2. Communications between the interface and "
+	      "the kernel have been disabled.</html>").
+	   arg(m_kernelSocket.peerPort()).
+	   arg(m_kernelSocket.localPort()));
+    }
+  else if(state == QAbstractSocket::UnconnectedState)
+    {
+      m_keysShared["buzz_channels_sent_to_kernel"] = "false";
+      m_keysShared["keys_sent_to_kernel"] = "false";
+
+      if(isKernelActive())
+	m_sb.kernelstatus->setToolTip
+	  (tr("<html>The interface is not connected to the kernel. However, "
+	      "the kernel appears to be active. Perhaps the kernel's "
+	      "UI server has been disabled.</html>"));
+      else
+	m_sb.kernelstatus->setToolTip
+	  (tr("The interface is not connected to the kernel. Is the kernel "
+	      "active?"));
+    }
+}
+
+void spoton::slotListenerChanged(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+
+  if(!(item->column() == 0 ||  // Activate
+       item->column() == 12 || // Use Accounts?
+       item->column() == 21))  // Passthrough
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString oid("");
+
+	if(m_ui.listeners->item(item->row(),
+				m_ui.listeners->columnCount() - 1))
+	  oid = m_ui.listeners->item
+	    (item->row(), m_ui.listeners->columnCount() - 1)->text();
+
+	if(item->column() == 0)
+	  {
+	    query.prepare("UPDATE listeners SET "
+			  "status_control = ? "
+			  "WHERE OID = ? AND status_control <> 'deleted'");
+
+	    if(item->checkState() == Qt::Checked)
+	      query.bindValue(0, "online");
+	    else
+	      query.bindValue(0, "offline");
+
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
+	else if(item->column() == 12)
+	  {
+	    query.prepare("UPDATE listeners SET "
+			  "use_accounts = ? WHERE OID = ?");
+
+	    if(item->checkState() == Qt::Checked)
+	      query.bindValue(0, 1);
+	    else
+	      query.bindValue(0, 0);
+
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
+	else if(item->column() == 21)
+	  {
+	    query.prepare("UPDATE listeners SET "
+			  "passthrough = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotListenerFullEcho(void)
@@ -5502,6 +5821,44 @@ void spoton::slotListenerMaximumChanged(int value)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotMaximumClientsChanged(int index)
+{
+  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+
+  if(comboBox)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+			   "listeners.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare("UPDATE listeners SET "
+			  "maximum_clients = ? "
+			  "WHERE OID = ?");
+
+	    if(index != comboBox->count() - 1)
+	      query.bindValue(0, comboBox->itemText(index).toInt());
+	    else
+	      query.bindValue(0, 0);
+
+	    query.bindValue(1, comboBox->property("oid"));
+	    query.exec();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+    }
+}
+
 void spoton::slotModeChanged(QSslSocket::SslMode mode)
 {
   spoton_misc::logError(QString("spoton::slotModeChanged(): "
@@ -5521,6 +5878,60 @@ void spoton::slotModeChanged(QSslSocket::SslMode mode)
 	 arg(m_kernelSocket.peerPort()));
       m_kernelSocket.close();
     }
+}
+
+void spoton::slotNeighborChanged(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+
+  if(!(item->column() == 0 || // Sticky
+       item->column() == 37)) // Passthrough
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	QString oid("");
+
+	if(m_ui.neighbors->item(item->row(),
+				m_ui.neighbors->columnCount() - 1))
+	  oid = m_ui.neighbors->item(item->row(),
+				     m_ui.neighbors->columnCount() - 1)->
+	    text();
+
+	if(item->column() == 0)
+	  {
+	    query.prepare("UPDATE neighbors SET "
+			  "sticky = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
+	else if(item->column() == 37)
+	  {
+	    query.prepare("UPDATE neighbors SET "
+			  "passthrough = ? "
+			  "WHERE OID = ?");
+	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
+	    query.bindValue(1, oid);
+	    query.exec();
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotNeighborFullEcho(void)
@@ -6470,6 +6881,1169 @@ void spoton::slotSaveSslControlString(void)
   settings.setValue("gui/sslControlString", str);
 }
 
+void spoton::slotSetPassphrase(void)
+{
+  if(m_wizardHash.value("shown", false))
+    return;
+  else if(!verifyInitializationPassphrase(this))
+    return;
+
+  bool reencode = false;
+  bool wizardAccepted = m_wizardHash.value("accepted", false);
+  QString str1(m_ui.passphrase1->text());
+  QString str2(m_ui.passphrase2->text());
+  QString str3(m_ui.username->text());
+
+  if(spoton_crypt::passphraseSet())
+    {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+
+      if(m_ui.passphrase_rb->isChecked())
+	mb.setText(tr("Are you sure that you wish to replace the "
+		      "existing passphrase? Please note that URL data must "
+		      "be re-encoded via a separate tool. Please see "
+		      "the future Re-Encode URLs option. The RSS mechanism "
+		      "and the kernel will be deactivated."));
+      else
+	mb.setText(tr("Are you sure that you wish to replace the "
+		      "existing answer/question? Please note that URL "
+		      "data must "
+		      "be re-encoded via a separate tool. Please see "
+		      "the future Re-Encode URLs option. The RSS mechanism "
+		      "and the kernel will be deactivated."));
+
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	{
+	  m_ui.answer->clear();
+	  m_ui.passphrase1->clear();
+	  m_ui.passphrase2->clear();
+	  m_ui.question->clear();
+	  return;
+	}
+      else
+	{
+	  repaint();
+#ifndef Q_OS_MAC
+	  QApplication::processEvents();
+#endif
+	  m_rss->deactivate();
+	  slotDeactivateKernel();
+	  reencode = true;
+	}
+    }
+  else
+    {
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      /*
+      ** Deactivate machines before preparing keys.
+      */
+
+      m_rss->deactivate();
+      slotDeactivateKernel();
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText
+    (tr("Generating derived keys. Please be patient."));
+  m_sb.status->repaint();
+
+  QByteArray salt;
+  QByteArray saltedPassphraseHash;
+  QString error1("");
+  QString error2("");
+  QString error3("");
+
+  salt.resize(m_ui.saltLength->value());
+  salt = spoton_crypt::strongRandomBytes(static_cast<size_t> (salt.length()));
+
+  QPair<QByteArray, QByteArray> derivedKeys;
+
+  if(m_ui.passphrase_rb->isChecked())
+    derivedKeys = spoton_crypt::derivedKeys
+      (m_ui.cipherType->currentText(),
+       m_ui.hashType->currentText(),
+       static_cast<unsigned long int> (m_ui.iterationCount->value()),
+       str1,
+       salt,
+       false,
+       error1);
+  else
+    {
+      str1 = m_ui.question->text();
+      str2 = m_ui.answer->text();
+      derivedKeys = spoton_crypt::derivedKeys
+	(m_ui.cipherType->currentText(),
+	 m_ui.hashType->currentText(),
+	 static_cast<unsigned long int> (m_ui.iterationCount->value()),
+	 str1 + str2,
+	 salt,
+	 false,
+	 error1);
+    }
+
+  m_sb.status->clear();
+  QApplication::restoreOverrideCursor();
+
+  if(error1.isEmpty())
+    {
+      if(!m_ui.newKeys->isChecked() && reencode)
+	{
+	  if(m_crypts.value("chat", 0))
+	    {
+	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	      QScopedPointer<spoton_crypt> crypt
+		(new
+		 spoton_crypt(m_ui.cipherType->currentText(),
+			      m_ui.hashType->currentText(),
+			      QByteArray(),
+			      derivedKeys.first,
+			      derivedKeys.second,
+			      m_ui.saltLength->value(),
+			      static_cast<unsigned long int> (m_ui.
+							      iterationCount->
+							      value()),
+			      "chat"));
+	      QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			       spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+
+	      std::sort(list.begin(), list.end());
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  m_sb.status->setText
+		    (tr("Re-encoding public key pair %1 of %2. "
+			"Please be patient.").
+		     arg(i + 1).
+		     arg(list.size()));
+		  m_sb.status->repaint();
+
+		  /*
+		  ** All m_crypts values have identical symmetric keys.
+		  */
+
+		  spoton_crypt::reencodePrivatePublicKeys
+		    (crypt.data(),
+		     m_crypts.value("chat", 0), list.at(i), error2);
+		  m_sb.status->clear();
+
+		  if(!error2.isEmpty())
+		    break;
+		}
+
+	      QApplication::restoreOverrideCursor();
+	    }
+	}
+      else
+	{
+	  bool proceed = false;
+
+	  if(!wizardAccepted)
+	    {
+	      QMessageBox mb(this);
+
+	      mb.setIcon(QMessageBox::Question);
+	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	      mb.setText(tr("Would you like to generate public key pairs?"));
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+
+	      if(mb.exec() == QMessageBox::Yes)
+		proceed = true;
+	    }
+	  else
+	    proceed = m_wizardHash.value("initialize_public_keys", true);
+
+	  if(proceed)
+	    if(m_ui.encryptionKeyType->currentIndex() == 1)
+	      {
+		QMessageBox mb(this);
+
+		mb.setIcon(QMessageBox::Question);
+		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+		mb.setText
+		 (tr("McEliece key pairs require a significant amount of "
+		     "storage memory. As %1 prefers secure memory, "
+		     "the gcrypt library may fail if it's unable to "
+		     "reserve the required amount of memory. Some "
+		     "operating systems require configuration in order "
+		     "to support large amounts of locked memory. "
+		     "You may disable secure memory by setting the "
+		     "secure memory pools of the interface and the kernel "
+		     "to zero. Continue with the key-generation process?").
+		  arg(SPOTON_APPLICATION_NAME));
+		mb.setWindowIcon(windowIcon());
+		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowTitle
+		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+		if(mb.exec() != QMessageBox::Yes)
+		  proceed = false;
+	      }
+
+	  if(proceed)
+	    {
+	      repaint();
+#ifndef Q_OS_MAC
+	      QApplication::processEvents();
+#endif
+
+	      QString encryptionKeyType("");
+	      QString signatureKeyType("");
+	      QStringList list;
+
+	      if(m_ui.encryptionKeyType->currentIndex() == 0)
+		encryptionKeyType = "elg";
+	      else if(m_ui.encryptionKeyType->currentIndex() == 1)
+		encryptionKeyType = "mceliece";
+	      else if(m_ui.encryptionKeyType->currentIndex() == 2)
+		encryptionKeyType = "ntru";
+	      else
+		encryptionKeyType = "rsa";
+
+	      if(m_ui.signatureKeyType->currentIndex() == 0)
+		signatureKeyType = "dsa";
+	      else if(m_ui.signatureKeyType->currentIndex() == 1)
+		signatureKeyType = "ecdsa";
+	      else if(m_ui.signatureKeyType->currentIndex() == 2)
+		signatureKeyType = "eddsa";
+	      else if(m_ui.signatureKeyType->currentIndex() == 3)
+		signatureKeyType = "elg";
+	      else
+		signatureKeyType = "rsa";
+
+	      list << spoton_common::SPOTON_ENCRYPTION_KEY_NAMES
+		   << spoton_common::SPOTON_SIGNATURE_KEY_NAMES;
+	      std::sort(list.begin(), list.end());
+
+	      QProgressDialog progress(this);
+
+	      progress.setLabelText(tr("Generating key pairs. "
+				       "Please be patient."));
+	      progress.setMaximum(list.size());
+	      progress.setMinimum(0);
+	      progress.setModal(true);
+	      progress.setWindowTitle(tr("%1: Generating Key Pairs").
+				      arg(SPOTON_APPLICATION_NAME));
+	      progress.show();
+	      progress.repaint();
+#ifndef Q_OS_MAC
+	      QApplication::processEvents();
+#endif
+
+	      for(int i = 0; i < list.size() && !progress.wasCanceled(); i++)
+		{
+		  if(i + 1 <= progress.maximum())
+		    progress.setValue(i + 1);
+
+		  progress.repaint();
+#ifndef Q_OS_MAC
+		  QApplication::processEvents();
+#endif
+
+		  spoton_crypt crypt
+		    (m_ui.cipherType->currentText(),
+		     m_ui.hashType->currentText(),
+		     str1.toUtf8(), // Passphrase.
+		     derivedKeys.first,
+		     derivedKeys.second,
+		     m_ui.saltLength->value(),
+		     static_cast<unsigned long int> (m_ui.iterationCount->
+						     value()),
+		     list.at(i));
+
+		  if(!list.at(i).contains("signature"))
+		    crypt.generatePrivatePublicKeys
+		      (m_ui.encryptionKeySize->currentText(),
+		       encryptionKeyType,
+		       error2);
+		  else
+		    crypt.generatePrivatePublicKeys
+		      (m_ui.signatureKeySize->currentText(),
+		       signatureKeyType,
+		       error2);
+
+		  if(!error2.isEmpty())
+		    break;
+		}
+
+	      progress.close();
+	    }
+	}
+    }
+
+  if(error1.isEmpty() && error2.isEmpty())
+    {
+      if(m_ui.passphrase_rb->isChecked())
+	saltedPassphraseHash = spoton_crypt::saltedPassphraseHash
+	  (m_ui.hashType->currentText(), str1, salt, error3);
+      else
+	{
+	  bool ok = true;
+
+	  saltedPassphraseHash = spoton_crypt::keyedHash
+	    (str1.toUtf8(), str2.toUtf8(),
+	     m_ui.hashType->currentText().toLatin1(), &ok);
+
+	  if(!ok)
+	    error3 = "keyed hash failure";
+	}
+    }
+
+  if(!error1.trimmed().isEmpty())
+    {
+      spoton_crypt::purgeDatabases();
+      updatePublicKeysLabel();
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("An error (%1) occurred with spoton_crypt::"
+	    "derivedKeys().").arg(error1.trimmed()));
+    }
+  else if(!error2.trimmed().isEmpty())
+    {
+      spoton_crypt::purgeDatabases();
+      updatePublicKeysLabel();
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error (%1) occurred with "
+			       "spoton_crypt::"
+			       "generatePrivatePublicKeys() or "
+			       "spoton_crypt::"
+			       "reencodePrivatePublicKeys().").
+			    arg(error2.trimmed()));
+    }
+  else if(!error3.trimmed().isEmpty())
+    {
+      spoton_crypt::purgeDatabases();
+      updatePublicKeysLabel();
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error (%1) occurred with "
+			       "spoton_crypt::"
+			       "keyedHash() or "
+			       "spoton_crypt::"
+			       "saltedPassphraseHash().").
+			    arg(error3.trimmed()));
+    }
+  else
+    {
+      if(!m_crypts.value("chat", 0) || reencode)
+	{
+	  if(reencode)
+	    {
+	      QScopedPointer<spoton_crypt> crypt
+		(new
+		 spoton_crypt(m_ui.cipherType->currentText(),
+			      m_ui.hashType->currentText(),
+			      QByteArray(),
+			      derivedKeys.first,
+			      derivedKeys.second,
+			      m_ui.saltLength->value(),
+			      static_cast<unsigned long int> (m_ui.
+							      iterationCount->
+							      value()),
+			      "chat"));
+
+	      spoton_reencode reencode;
+
+	      QApplication::setOverrideCursor(Qt::WaitCursor);
+	      reencode.reencode
+		(m_sb, crypt.data(), m_crypts.value("chat", 0));
+	      spoton_crypt::removeFlawedEntries(crypt.data());
+	      QApplication::restoreOverrideCursor();
+	    }
+
+	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
+
+	  while(it.hasNext())
+	    {
+	      it.next();
+	      delete it.value();
+	    }
+
+	  m_crypts.clear();
+
+	  QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+
+	  std::sort(list.begin(), list.end());
+
+	  for(int i = 0; i < list.size(); i++)
+	    m_crypts.insert
+	      (list.at(i),
+	       new spoton_crypt(m_ui.cipherType->currentText(),
+				m_ui.hashType->currentText(),
+				QByteArray(),
+				derivedKeys.first,
+				derivedKeys.second,
+				m_ui.saltLength->value(),
+				static_cast<unsigned long int> (m_ui.
+								iterationCount->
+								value()),
+				list.at(i)));
+
+	  spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
+
+	  if(!reencode)
+	    {
+	      bool proceed = false;
+
+	      if(!wizardAccepted)
+		{
+		  QMessageBox mb(this);
+
+		  mb.setIcon(QMessageBox::Question);
+		  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+		  mb.setText(tr("Would you like to exercise your new "
+				"credentials as URL Common Credentials?"));
+		  mb.setWindowIcon(windowIcon());
+		  mb.setWindowTitle(tr("%1: Question").
+				    arg(SPOTON_APPLICATION_NAME));
+
+		  if(mb.exec() == QMessageBox::Yes)
+		    proceed = true;
+		}
+	      else
+		proceed = m_wizardHash.value("url_credentials", true);
+
+	      if(proceed)
+		{
+		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+		  spoton_misc::prepareUrlKeysDatabase();
+
+		  if(saveCommonUrlCredentials(derivedKeys,
+					      m_ui.cipherType->currentText(),
+					      m_ui.hashType->currentText(),
+					      m_crypts.value("chat", 0)).
+		     isEmpty())
+		    {
+		      prepareUrlContainers();
+		      prepareUrlLabels();
+		    }
+
+		  QApplication::restoreOverrideCursor();
+		}
+
+	      if(wizardAccepted)
+		m_ui.activeUrlDistribution->setChecked
+		  (m_wizardHash.value("url_distribution", false));
+	    }
+
+	  QApplication::setOverrideCursor(Qt::WaitCursor);
+	  m_smpWindow.populateSecrets();
+	  sendKeysToKernel();
+	  askKernelToReadStarBeamKeys();
+	  populateNovas();
+	  sendBuzzKeysToKernel();
+	  updatePublicKeysLabel();
+	  QApplication::restoreOverrideCursor();
+
+	  if(!reencode)
+	    {
+	      QApplication::setOverrideCursor(Qt::WaitCursor);
+	      m_echoKeyShare->createDefaultUrlCommunity();
+	      QApplication::restoreOverrideCursor();
+	    }
+	  else
+	    prepareUrlContainers();
+	}
+
+      m_sb.frame->setEnabled(true);
+      m_sb.lock->setEnabled(true);
+#if SPOTON_GOLDBUG == 0
+      m_ui.action_Add_Participant->setEnabled(true);
+#endif
+      m_ui.action_Echo_Key_Share->setEnabled(true);
+      m_ui.action_Export_Listeners->setEnabled(true);
+      m_ui.action_Export_Public_Keys->setEnabled(true);
+      m_ui.action_Import_Neighbors->setEnabled(true);
+      m_ui.action_Import_Public_Keys->setEnabled(true);
+      m_ui.action_New_Global_Name->setEnabled(true);
+      m_ui.action_Notifications_Window->setEnabled(true);
+      m_ui.action_Options->setEnabled(true);
+      m_ui.action_Poptastic_Settings->setEnabled(true);
+      m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
+      m_ui.action_RSS->setEnabled(true);
+      m_ui.action_Rosetta->setEnabled(true);
+      m_ui.action_SMP->setEnabled(true);
+      m_ui.action_Statistics_Window->setEnabled(true);
+      m_ui.action_Vacuum_Databases->setEnabled(true);
+      m_ui.answer->clear();
+      m_ui.delete_key->setEnabled(true);
+      m_ui.encryptionKeySize->setEnabled(false);
+      m_ui.encryptionKeyType->setEnabled(false);
+      m_ui.kernelBox->setEnabled(true);
+      m_ui.kernelBox->setVisible(true);
+      m_ui.keys->setEnabled(true);
+      m_ui.menu_Pages->setEnabled(true);
+      m_ui.newKeys->setChecked(false);
+      m_ui.newKeys->setEnabled(true);
+      m_ui.passphrase1->clear();
+      m_ui.passphrase2->clear();
+      m_ui.passphrase_strength_indicator->setVisible(false);
+      m_ui.publicKeysBox->setVisible(true);
+      m_ui.question->clear();
+      m_ui.regenerate->setEnabled(true);
+      m_ui.showStatistics->setVisible(true);
+      m_ui.signatureKeyType->setEnabled(false);
+      m_ui.signatureKeyType->setEnabled(false);
+      repaint();
+#ifndef Q_OS_MAC
+      QApplication::processEvents();
+#endif
+
+      for(int i = 0; i < m_ui.tab->count(); i++)
+	{
+	  m_ui.tab->setTabEnabled(i, true);
+
+	  QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+	  hash["enabled"] = true;
+	  m_tabWidgetsProperties[i] = hash;
+	}
+
+      /*
+      ** Save the various entities.
+      */
+
+      m_settings["gui/buzzName"] = str3.toUtf8();
+      m_settings["gui/cipherType"] = m_ui.cipherType->currentText();
+      m_settings["gui/emailName"] = str3.toUtf8();
+      m_settings["gui/hashType"] = m_ui.hashType->currentText();
+      m_settings["gui/iterationCount"] = m_ui.iterationCount->value();
+      m_settings["gui/kernelCipherType"] =
+	m_ui.kernelCipherType->currentText();
+      m_settings["gui/kernelHashType"] =
+	m_ui.kernelHashType->currentText();
+      m_settings["gui/nodeName"] = str3.toUtf8();
+      m_settings["gui/rosettaName"] = str3.toUtf8();
+      m_settings["gui/salt"] = salt;
+      m_settings["gui/saltLength"] = m_ui.saltLength->value();
+      m_settings["gui/saltedPassphraseHash"] = saltedPassphraseHash;
+      m_settings["gui/urlName"] = str3.toUtf8();
+
+      QSettings settings;
+
+      settings.setValue("gui/buzzName", m_settings["gui/buzzName"]);
+      settings.setValue("gui/cipherType", m_settings["gui/cipherType"]);
+      settings.setValue("gui/emailName", m_settings["gui/emailName"]);
+      settings.setValue("gui/hashType", m_settings["gui/hashType"]);
+      settings.setValue("gui/iterationCount",
+			m_settings["gui/iterationCount"]);
+      settings.setValue("gui/kernelCipherType",
+			m_settings["gui/kernelCipherType"]);
+      settings.setValue("gui/kernelHashType",
+			m_settings["gui/kernelHashType"]);
+      settings.setValue("gui/nodeName", m_settings["gui/nodeName"]);
+      settings.setValue("gui/rosettaName", m_settings["gui/rosettaName"]);
+      settings.setValue("gui/salt", m_settings["gui/salt"]);
+      settings.setValue("gui/saltLength", m_settings["gui/saltLength"]);
+      settings.setValue
+	("gui/saltedPassphraseHash", m_settings["gui/saltedPassphraseHash"]);
+      settings.setValue("gui/spot_on_neighbors_txt_processed", true);
+      settings.setValue("gui/urlName", m_settings["gui/urlName"]);
+      m_ui.buzzName->setText(m_ui.username->text());
+      m_ui.emailName->clear();
+      m_ui.emailName->addItem(m_ui.username->text());
+      m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
+      m_ui.nodeName->setText(m_ui.username->text());
+      m_ui.urlName->setText(m_ui.username->text());
+
+      if(!m_settings.value("gui/initial_url_distillers_defined",
+			   false).toBool())
+	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_sb.status->setText
+	    (tr("Initializing URL distillers. Please be patient."));
+	  m_sb.status->repaint();
+	  initializeUrlDistillers();
+
+	  QSettings settings;
+
+	  settings.setValue("gui/initial_url_distillers_defined",
+			    true);
+	  m_settings["gui/initial_url_distillers_defined"] = true;
+	  populateUrlDistillers();
+	  m_sb.status->clear();
+	  QApplication::restoreOverrideCursor();
+	}
+
+      if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
+			   false).toBool())
+	{
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_sb.status->setText
+	    (tr("Importing spot-on-neighbors.txt. Please be patient."));
+	  m_sb.status->repaint();
+	  importNeighbors("spot-on-neighbors.txt");
+
+	  QSettings settings;
+
+	  settings.setValue("gui/spot_on_neighbors_txt_processed",
+			    true);
+	  m_settings["gui/spot_on_neighbors_txt_processed"] = true;
+	  m_sb.status->clear();
+	  QApplication::restoreOverrideCursor();
+	}
+
+      QMessageBox::information
+	(this, tr("%1: Information").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("Your confidential information has been saved. Enjoy!"));
+
+      if(m_ui.pid->text() == "0")
+	if(QFileInfo(m_ui.kernelPath->text()).isExecutable())
+	  {
+	    bool proceed = false;
+
+	    if(!wizardAccepted)
+	      {
+		QMessageBox mb(this);
+
+		mb.setIcon(QMessageBox::Question);
+		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+		mb.setText(tr("Would you like the kernel to be activated?"));
+		mb.setWindowIcon(windowIcon());
+		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowTitle
+		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+
+		if(mb.exec() == QMessageBox::Yes)
+		  proceed = true;
+	      }
+	    else
+	      proceed = m_wizardHash.value("launch_kernel", true);
+
+	    if(proceed)
+	      slotActivateKernel();
+	  }
+
+#if SPOTON_GOLDBUG == 1
+      slotConnectAllNeighbors();
+#endif
+      playSound("login.wav");
+    }
+}
+
+void spoton::slotShowContextMenu(const QPoint &point)
+{
+  if(m_ui.emailParticipants == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction
+	(QIcon(QString(":/%1/add.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())),
+	 tr("&Add Participant As Friend"),
+	 this, SLOT(slotShareEmailPublicKeyWithParticipant(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/copy.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Copy Keys (Clipboard Buffer)"),
+		     this, SLOT(slotCopyEmailKeys(void)));
+      menu.addAction(QIcon(":/generic/repleo-email.png"),
+		     tr("&Copy Repleo (Clipboard Buffer)"),
+		     this, SLOT(slotCopyEmailFriendshipBundle(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Remove Participant(s)"),
+		     this, SLOT(slotRemoveEmailParticipants(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("&Rename Participant..."),
+			      this, SLOT(slotRenameParticipant(void)));
+      action->setProperty("type", "email");
+      menu.addSeparator();
+      action = menu.addAction
+	(tr("Initiate Forward &Secrecy Exchange(s)..."),
+	 this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "email");
+      action = menu.addAction
+	(tr("Purge Forward &Secrecy Key Pair"),
+	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
+      action->setProperty("type", "email");
+      action = menu.addAction
+	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "email");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.emailParticipants->mapToGlobal(point));
+    }
+  else if(m_ui.listeners == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"),
+		     this, SLOT(slotDeleteListener(void)));
+      menu.addAction(tr("Delete &All"),
+		     this, SLOT(slotDeleteAllListeners(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Detach &Neighbors"),
+		     this, SLOT(slotDetachListenerNeighbors(void)));
+      menu.addAction(tr("Disconnect &Neighbors"),
+		     this, SLOT(slotDisconnectListenerNeighbors(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Publish Information (Plaintext)"),
+		     this, SLOT(slotPublicizeListenerPlaintext(void)));
+      menu.addAction(tr("Publish &All (Plaintext)"),
+		     this, SLOT(slotPublicizeAllListenersPlaintext(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Full Echo"),
+		     this, SLOT(slotListenerFullEcho(void)));
+      menu.addAction(tr("&Half Echo"),
+		     this, SLOT(slotListenerHalfEcho(void)));
+      menu.addSeparator();
+      action = menu.addAction
+	(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      action->setProperty("type", "listeners");
+      action = menu.addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
+      action = menu.addAction
+	(tr("&Reset Private Application Information"),
+	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
+      menu.addSeparator();
+      menu.addAction(tr("&Prepare New One-Year Certificate"),
+		     this, SLOT(slotGenerateOneYearListenerCertificate(void)))->
+	setEnabled(listenerSupportsSslTls());
+      menu.addAction(tr("Set &SSL Control String..."),
+		     this, SLOT(slotSetListenerSSLControlString(void)))->
+	setEnabled(listenerSupportsSslTls());
+      menu.addSeparator();
+      action = menu.addAction(tr("Set Socket &Options..."),
+			      this, SLOT(slotSetSocketOptions(void)));
+      action->setEnabled(listenerTransport() > "bluetooth");
+      action->setProperty("type", "listeners");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.listeners->mapToGlobal(point));
+    }
+  else if(m_ui.neighbors == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction(QIcon(QString(":/%1/share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &Chat Public Key Pair"),
+		     this, SLOT(slotShareChatPublicKey(void)));
+      menu.addAction(QIcon(QString(":/%1/share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &E-Mail Public Key Pair"),
+		     this, SLOT(slotShareEmailPublicKey(void)));
+#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
+      menu.addAction(QIcon(QString(":/%1/share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &Open Library Public Key Pair"),
+		     this, SLOT(slotShareOpenLibraryPublicKey(void)));
+#endif
+      menu.addAction(QIcon(QString(":/%1/share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &Poptastic Public Key Pair"),
+		     this, SLOT(slotSharePoptasticPublicKey(void)));
+      menu.addAction(QIcon(QString(":%1//share.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("Share &URL Public Key Pair"),
+		     this, SLOT(slotShareURLPublicKey(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Assign New Remote IP Information..."),
+		     this, SLOT(slotAssignNewIPToNeighbor(void)));
+      menu.addAction(tr("&Connect"),
+		     this, SLOT(slotConnectNeighbor(void)));
+      menu.addAction(tr("&Disconnect"),
+		     this, SLOT(slotDisconnectNeighbor(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Connect All"),
+		     this, SLOT(slotConnectAllNeighbors(void)));
+      menu.addAction(tr("&Disconnect All"),
+		     this, SLOT(slotDisconnectAllNeighbors(void)));
+      menu.addSeparator();
+      menu.addAction
+	(tr("&Authenticate Account..."),
+	 this,
+	 SLOT(slotAuthenticate(void)));
+      menu.addAction(tr("&Reset Account Information"),
+		     this,
+		     SLOT(slotResetAccountInformation(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Reset Certificate"),
+		     this,
+		     SLOT(slotResetCertificate(void)))->
+	setEnabled(neighborSupportsSslTls());
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"),
+		     this, SLOT(slotDeleteNeighbor(void)));
+      menu.addAction(tr("Delete &All"),
+		     this, SLOT(slotDeleteAllNeighbors(void)));
+      menu.addAction(tr("Delete All Non-Unique &Blocked"),
+		     this, SLOT(slotDeleteAllBlockedNeighbors(void)));
+      menu.addAction(tr("Delete All Non-Unique &UUIDs"),
+		     this, SLOT(slotDeleteAllUuids(void)));
+      menu.addSeparator();
+      menu.addAction(tr("B&lock"),
+		     this, SLOT(slotBlockNeighbor(void)));
+      menu.addAction(tr("U&nblock"),
+		     this, SLOT(slotUnblockNeighbor(void)));
+      menu.addSeparator();
+      menu.addAction(tr("&Full Echo"),
+		     this, SLOT(slotNeighborFullEcho(void)));
+      menu.addAction(tr("&Half Echo"),
+		     this, SLOT(slotNeighborHalfEcho(void)));
+      menu.addSeparator();
+      action = menu.addAction
+	(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      action->setProperty("type", "neighbors");
+      action = menu.addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
+      action = menu.addAction
+	(tr("&Reset Private Application Information"),
+	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
+      menu.addSeparator();
+      action = menu.addAction(tr("&Copy Adaptive Echo Magnet"),
+			      this, SLOT(slotCopyAEMagnet(void)));
+      action->setProperty("from", "neighbors");
+      menu.addAction(tr("&Set Adaptive Echo Token Information..."),
+		     this, SLOT(slotSetAETokenInformation(void)));
+      menu.addAction(tr("&Reset Adaptive Echo Token Information"),
+		     this, SLOT(slotResetAETokenInformation(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Set &SSL Control String..."),
+		     this, SLOT(slotSetNeighborSSLControlString(void)))->
+	setEnabled(neighborSupportsSslTls());
+      menu.addSeparator();
+      action = menu.addAction(tr("Set Socket &Options..."),
+			      this, SLOT(slotSetSocketOptions(void)));
+      action->setEnabled(neighborTransport() > "bluetooth");
+      action->setProperty("type", "neighbors");
+      menu.addSeparator();
+
+      QActionGroup *actionGroup = new QActionGroup(&menu);
+      QList<QPair<QString, QThread::Priority> > list;
+      QMenu *subMenu = menu.addMenu(tr("Priority"));
+      QPair<QString, QThread::Priority> pair;
+
+      pair.first = tr("High Priority");
+      pair.second = QThread::HighPriority;
+      list << pair;
+      pair.first = tr("Highest Priority");
+      pair.second = QThread::HighestPriority;
+      list << pair;
+      pair.first = tr("Idle Priority");
+      pair.second = QThread::IdlePriority;
+      list << pair;
+      pair.first = tr("Low Priority");
+      pair.second = QThread::LowPriority;
+      list << pair;
+      pair.first = tr("Lowest Priority");
+      pair.second = QThread::LowestPriority;
+      list << pair;
+      pair.first = tr("Normal Priority");
+      pair.second = QThread::NormalPriority;
+      list << pair;
+      pair.first = tr("Time-Critical Priority");
+      pair.second = QThread::TimeCriticalPriority;
+      list << pair;
+
+      QThread::Priority priority = neighborThreadPriority();
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  action = subMenu->addAction
+	    (list.at(i).first,
+	     this,
+	     SLOT(slotSetNeighborPriority(void)));
+	  action->setCheckable(true);
+	  action->setProperty("priority", list.at(i).second);
+	  actionGroup->addAction(action);
+
+	  if(list.at(i).second == priority)
+	    action->setChecked(true);
+	}
+
+#if SPOTON_GOLDBUG == 0
+      menu.addSeparator();
+      menu.addAction("&Statistics...",
+		     this,
+		     SLOT(slotShowNeighborStatistics(void)));
+#endif
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.neighbors->mapToGlobal(point));
+    }
+  else if(m_ui.participants == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction
+	(QIcon(QString(":/%1/add.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())),
+	 tr("&Add Participant As Friend"),
+	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Chat &Popup..."), this,
+		      SLOT(slotChatPopup(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(":/generic/repleo-chat.png"),
+		     tr("&Copy Repleo (Clipboard Buffer)"),
+		     this, SLOT(slotCopyFriendshipBundle(void)));
+      menu.addSeparator();
+#if SPOTON_GOLDBUG == 1
+      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
+				    arg(m_settings.value("gui/iconSet",
+							 "nouve").
+					toString().toLower())),
+			      tr("MELODICA: &Call Friend (New Gemini Pair)"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setProperty("type", "calling");
+      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
+				    arg(m_settings.value("gui/iconSet",
+							 "nouve").
+					toString().toLower())),
+			      tr("MELODICA: &Call Friend "
+				 "(New Gemini Pair Using "
+				 "Existing Gemini Pair)"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setProperty("type", "calling_using_gemini");
+      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
+				    arg(m_settings.value("gui/iconSet",
+							 "nouve").
+					toString().toLower())),
+			      tr("MELODICA Two-Way: &Call Friend (New "
+				 "Gemini Pair)"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
+      action->setProperty("type", "calling_two_way");
+#else
+      action = menu.addAction(tr("&Call Participant"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setProperty("type", "calling");
+      action = menu.addAction
+	(tr("&Call Participant (Existing Gemini Pair)"),
+	 this, SLOT(slotCallParticipant(void)));
+      action->setProperty("type", "calling_using_gemini");
+      action = menu.addAction(tr("&Two-Way Calling"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
+      action->setProperty("type", "calling_two_way");
+#endif
+      action = menu.addAction(tr("&Terminate Call"),
+			      this, SLOT(slotCallParticipant(void)));
+      action->setProperty("type", "terminating");
+      menu.addSeparator();
+#if SPOTON_GOLDBUG == 1
+      menu.addAction
+	(tr("&Generate Random Gemini Pair "
+	    "(AES-256 Key, SHA-512 Key) (Without Call)"),
+	 this, SLOT(slotGenerateGeminiInChat(void)));
+#else
+      menu.addAction(tr("&Generate Random Gemini Pair "
+			"(AES-256 Key, SHA-512 Key)"),
+		     this, SLOT(slotGenerateGeminiInChat(void)));
+#endif
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Remove Participant(s)"),
+		     this, SLOT(slotRemoveParticipants(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("&Rename Participant..."),
+			      this, SLOT(slotRenameParticipant(void)));
+      action->setProperty("type", "chat");
+      menu.addSeparator();
+      menu.addAction(tr("&Derive Gemini Pair From SMP Secret"),
+		     this,
+		     SLOT(slotDeriveGeminiPairViaSMP(void)));
+      menu.addAction(tr("&Reset SMP Machine's Internal State (S0)"),
+		     this,
+		     SLOT(slotInitializeSMP(void)));
+      menu.addAction(tr("&Set SMP Secret..."),
+		     this,
+		     SLOT(slotPrepareSMP(void)));
+      menu.addAction(tr("&Verify SMP Secret"),
+		     this,
+		     SLOT(slotVerifySMPSecret(void)));
+      menu.addSeparator();
+      menu.addAction(tr("Replay &Last %1 Messages").
+		     arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
+		     this,
+		     SLOT(slotReplayMessages(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/starbeam.png").
+			   arg(m_settings.value("gui/iconSet",
+						"nouve").
+			       toString().toLower())),
+		     tr("Share &StarBeam With "
+			"Selected Participant(s)..."),
+		     this,
+		     SLOT(slotShareStarBeam(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
+      menu.addSeparator();
+      menu.addAction
+	(tr("Call Via Forward &Secrecy Credentials"),
+	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
+      action = menu.addAction
+	(tr("Initiate Forward &Secrecy Exchange(s)..."),
+	 this, SLOT(slotEstablishForwardSecrecy(void)));
+      action->setProperty("type", "chat");
+      action = menu.addAction
+	(tr("Purge Forward &Secrecy Key Pair"),
+	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
+      action->setProperty("type", "chat");
+      action = menu.addAction
+	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
+	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+      action->setProperty("type", "chat");
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/buzz.png").
+			   arg(m_settings.value("gui/iconSet",
+						"nouve").
+			       toString().toLower())),
+		     tr("Invite Selected Participant(s) "
+			"(Anonymous Buzz Channel)..."),
+		     this,
+		     SLOT(slotBuzzInvite(void)))->setEnabled
+	("chat" == participantKeyType(m_ui.participants));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.participants->mapToGlobal(point));
+    }
+  else if(m_ui.received == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"), this,
+		     SLOT(slotDeleteReceived(void)));
+      menu.addAction(tr("Delete &All"), this,
+		     SLOT(slotDeleteAllReceived(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
+			      SLOT(slotComputeFileHash(void)));
+      action->setProperty("widget_of", "received");
+      menu.addSeparator();
+      action = menu.addAction(tr("&Copy File Hash"), this,
+			      SLOT(slotCopyFileHash(void)));
+      action->setProperty("widget_of", "received");
+      menu.addSeparator();
+      menu.addAction(tr("Discover &Missing Links..."), this,
+		     SLOT(slotDiscoverMissingLinks(void)));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.received->mapToGlobal(point));
+    }
+  else if(m_ui.transmitted == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Delete"), this,
+		     SLOT(slotDeleteTransmitted(void)));
+      menu.addAction(tr("Delete &All"), this,
+		     SLOT(slotDeleteAllTransmitted(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
+			      SLOT(slotComputeFileHash(void)));
+      action->setProperty("widget_of", "transmitted");
+      menu.addSeparator();
+      action = menu.addAction(tr("&Copy File Hash"), this,
+			      SLOT(slotCopyFileHash(void)));
+      action->setProperty("widget_of", "transmitted");
+      menu.addSeparator();
+      menu.addAction(tr("Set &Pulse Size..."), this,
+		     SLOT(slotSetSBPulseSize(void)));
+      menu.addAction(tr("Set &Read Interval..."), this,
+		     SLOT(slotSetSBReadInterval(void)));
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.transmitted->mapToGlobal(point));
+    }
+  else if(m_ui.transmittedMagnets == sender())
+    {
+      QMenu menu(this);
+
+      menu.addAction(tr("Copy &Magnet"),
+		     this, SLOT(slotCopyTransmittedMagnet(void)));
+      menu.addAction(tr("&Duplicate Magnet"),
+		     this, SLOT(slotDuplicateTransmittedMagnet(void)));
+      menu.exec(m_ui.transmittedMagnets->mapToGlobal(point));
+    }
+  else if(m_ui.urlParticipants == sender())
+    {
+      QAction *action = 0;
+      QMenu menu(this);
+
+      menu.addAction
+	(QIcon(QString(":/%1/add.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())),
+	 tr("&Add Participant As Friend"),
+	 this, SLOT(slotShareUrlPublicKeyWithParticipant(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/copy.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Copy Keys (Clipboard Buffer)"),
+		     this, SLOT(slotCopyUrlKeys(void)));
+      menu.addAction(QIcon(":/generic/repleo-url.png"),
+		     tr("&Copy Repleo (Clipboard Buffer)"),
+		     this, SLOT(slotCopyUrlFriendshipBundle(void)));
+      menu.addSeparator();
+      menu.addAction(QIcon(QString(":/%1/clear.png").
+			   arg(m_settings.value("gui/iconSet", "nouve").
+			       toString().toLower())),
+		     tr("&Remove Participant(s)"),
+		     this, SLOT(slotRemoveUrlParticipants(void)));
+      menu.addSeparator();
+      action = menu.addAction(tr("&Rename Participant..."),
+			      this, SLOT(slotRenameParticipant(void)));
+      action->setProperty("type", "url");
+      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
+      menu.exec(m_ui.urlParticipants->mapToGlobal(point));
+    }
+}
+
 void spoton::slotSignatureCheckBoxToggled(bool state)
 {
   QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
@@ -6498,6 +8072,29 @@ void spoton::slotSignatureCheckBoxToggled(bool state)
 
       settings.setValue(QString("gui/%1").arg(str), state);
     }
+}
+
+void spoton::slotTabChanged(int index)
+{
+  Q_UNUSED(index);
+
+  if(currentTabName() == "listeners")
+    m_listenersLastModificationTime = QDateTime();
+  else if(currentTabName() == "neighbors")
+    {
+      if(m_neighborsFuture.isFinished())
+	m_neighborsLastModificationTime = QDateTime();
+    }
+  else if(currentTabName() == "starbeam")
+    {
+      m_magnetsLastModificationTime = QDateTime();
+      m_starsLastModificationTime = QDateTime();
+    }
+
+  if(currentTabName() == "buzz")
+    m_sb.buzz->setVisible(false);
+  else if(currentTabName() == "chat")
+    m_sb.chat->setVisible(false);
 }
 
 void spoton::slotUnblockNeighbor(void)
@@ -6581,15 +8178,289 @@ void spoton::slotUnblockNeighbor(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton::slotHideOfflineParticipants(bool state)
+void spoton::slotValidatePassphrase(void)
 {
-  m_participantsLastModificationTime = QDateTime();
-  m_settings["gui/hideOfflineParticipants"] = state;
+  QByteArray computedHash;
+  QByteArray salt(m_settings.value("gui/salt", "").toByteArray());
+  QByteArray saltedPassphraseHash
+    (m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
+  QString error("");
+  bool authenticated = false;
 
-  QSettings settings;
+  if(m_ui.passphrase_rb_authenticate->isChecked())
+    computedHash = spoton_crypt::saltedPassphraseHash
+      (m_ui.hashType->currentText(), m_ui.passphrase->text(), salt, error);
+  else
+    {
+      bool ok = true;
 
-  settings.setValue("gui/hideOfflineParticipants", state);
-  slotPopulateParticipants();
+      computedHash = spoton_crypt::keyedHash
+	(m_ui.question_authenticate->text().toUtf8(),
+	 m_ui.answer_authenticate->text().toUtf8(),
+	 m_ui.hashType->currentText().toLatin1(), &ok);
+
+      if(!ok)
+	error = "keyed hash failure";
+    }
+
+  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
+    if(error.isEmpty())
+      {
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	QPair<QByteArray, QByteArray> keys;
+
+	if(m_ui.passphrase_rb_authenticate->isChecked())
+	  keys = spoton_crypt::derivedKeys
+	    (m_ui.cipherType->currentText(),
+	     m_ui.hashType->currentText(),
+	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
+	     m_ui.passphrase->text(),
+	     salt,
+	     false,
+	     error);
+	else
+	  keys = spoton_crypt::derivedKeys
+	    (m_ui.cipherType->currentText(),
+	     m_ui.hashType->currentText(),
+	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
+	     m_ui.question_authenticate->text() +
+	     m_ui.answer_authenticate->text(),
+	     salt,
+	     false,
+	     error);
+
+	QApplication::restoreOverrideCursor();
+
+	if(error.isEmpty())
+	  {
+	    authenticated = true;
+
+	    QHashIterator<QString, spoton_crypt *> it(m_crypts);
+
+	    while(it.hasNext())
+	      {
+		it.next();
+		delete it.value();
+	      }
+
+	    m_crypts.clear();
+
+	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+
+	    std::sort(list.begin(), list.end());
+
+	    for(int i = 0; i < list.size(); i++)
+	      m_crypts.insert
+		(list.at(i),
+		 new spoton_crypt
+		 (m_ui.cipherType->currentText(),
+		  m_ui.hashType->currentText(),
+		  QByteArray(),
+		  keys.first,
+		  keys.second,
+		  m_ui.saltLength->value(),
+		  static_cast<unsigned long int> (m_ui.
+						  iterationCount->
+						  value()),
+		  list.at(i)));
+
+	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	    spoton_misc::alterDatabasesAfterAuthentication
+	      (m_crypts.value("chat", 0));
+	    spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
+	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", 0));
+	    QApplication::restoreOverrideCursor();
+
+	    if(m_optionsUi.launchKernel->isChecked())
+	      slotActivateKernel();
+
+	    m_sb.frame->setEnabled(true);
+	    m_sb.lock->setEnabled(true);
+#if SPOTON_GOLDBUG == 0
+	    m_ui.action_Add_Participant->setEnabled(true);
+#endif
+	    m_ui.action_Echo_Key_Share->setEnabled(true);
+	    m_ui.action_Export_Listeners->setEnabled(true);
+	    m_ui.action_Export_Public_Keys->setEnabled(true);
+	    m_ui.action_Import_Neighbors->setEnabled(true);
+	    m_ui.action_Import_Public_Keys->setEnabled(true);
+	    m_ui.action_New_Global_Name->setEnabled(true);
+	    m_ui.action_Notifications_Window->setEnabled(true);
+	    m_ui.action_Options->setEnabled(true);
+	    m_ui.action_Poptastic_Settings->setEnabled(true);
+	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
+	    m_ui.action_RSS->setEnabled(true);
+	    m_ui.action_Rosetta->setEnabled(true);
+	    m_ui.action_SMP->setEnabled(true);
+	    m_ui.action_Statistics_Window->setEnabled(true);
+	    m_ui.action_Vacuum_Databases->setEnabled(true);
+	    m_ui.answer->clear();
+	    m_ui.answer_authenticate->clear();
+	    m_ui.delete_key->setEnabled(true);
+	    m_ui.encryptionKeySize->setEnabled(false);
+	    m_ui.encryptionKeyType->setEnabled(false);
+	    m_ui.kernelBox->setEnabled(true);
+	    m_ui.kernelBox->setVisible(true);
+	    m_ui.keys->setEnabled(true);
+	    m_ui.menu_Pages->setEnabled(true);
+	    m_ui.newKeys->setEnabled(true);
+	    m_ui.passphrase->clear();
+	    m_ui.passphrase->clear();
+	    m_ui.passphrase->setEnabled(false);
+	    m_ui.passphrase1->clear();
+	    m_ui.passphrase2->clear();
+	    m_ui.passphraseButton->setEnabled(false);
+	    m_ui.passphrase_rb_authenticate->setChecked(true);
+	    m_ui.passphrase_rb_authenticate->setEnabled(false);
+	    m_ui.publicKeysBox->setVisible(true);
+	    m_ui.question->clear();
+	    m_ui.question_authenticate->clear();
+	    m_ui.question_rb_authenticate->setEnabled(false);
+	    m_ui.regenerate->setEnabled(true);
+	    m_ui.showStatistics->setVisible(true);
+	    m_ui.signatureKeySize->setEnabled(false);
+	    m_ui.signatureKeyType->setEnabled(false);
+
+	    for(int i = 0; i < m_ui.tab->count(); i++)
+	      {
+		m_ui.tab->setTabEnabled(i, true);
+
+		QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
+
+		hash["enabled"] = true;
+		m_tabWidgetsProperties[i] = hash;
+	      }
+
+	    {
+	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	      QList<QHash<QString, QVariant> > list
+		(spoton_misc::
+		 poptasticSettings("", m_crypts.value("chat", 0), 0));
+
+	      for(int i = 0; i < list.size(); i++)
+		{
+		  if(i == 0)
+		    m_ui.emailName->insertSeparator(1);
+
+		  m_ui.emailName->addItem(list.at(i).value("in_username").
+					  toString());
+		}
+
+	      QApplication::restoreOverrideCursor();
+	    }
+
+	    QApplication::setOverrideCursor(Qt::WaitCursor);
+	    sendKeysToKernel();
+	    askKernelToReadStarBeamKeys();
+	    populateNovas();
+	    populateUrlDistillers();
+	    prepareUrlContainers();
+	    prepareUrlLabels();
+	    prepareVisiblePages();
+	    sendBuzzKeysToKernel();
+	    QApplication::restoreOverrideCursor();
+	    m_rss->prepareAfterAuthentication();
+	    m_smpWindow.populateSecrets();
+	    m_ui.tab->setCurrentIndex
+	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
+	       toInt());
+
+	    QString name("");
+	    QString nameEmail("");
+
+	    if(m_crypts.value("chat", 0))
+	      {
+		QByteArray bytes;
+		QSettings settings;
+		bool ok = true;
+
+		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(settings.
+					  value("gui/poptasticName").
+					  toByteArray()), &ok).trimmed();
+
+		if(ok)
+		  name = bytes.constData();
+
+		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(settings.
+					  value("gui/poptasticNameEmail").
+					  toByteArray()), &ok).trimmed();
+
+		if(ok)
+		  nameEmail = bytes.constData();
+	      }
+
+	    if(name.isEmpty())
+	      name = "unknown@unknown.org";
+
+	    if(nameEmail.isEmpty())
+	      {
+		/*
+		** Leave gui/poptasticNameEmail empty.
+		** If Poptastic e-mail is written, the user will be required
+		** to provide Poptastic information.
+		*/
+	      }
+
+	    m_settings["gui/poptasticName"] = name.toLatin1();
+	    m_settings["gui/poptasticNameEmail"] = nameEmail.toLatin1();
+
+	    if(!m_settings.value("gui/initial_url_distillers_defined",
+				 false).toBool())
+	      {
+		initializeUrlDistillers();
+
+		QSettings settings;
+
+		settings.setValue("gui/initial_url_distillers_defined",
+				  true);
+		m_settings["gui/initial_url_distillers_defined"] = true;
+	      }
+
+	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
+				 false).toBool())
+	      {
+		importNeighbors("spot-on-neighbors.txt");
+
+		QSettings settings;
+
+		settings.setValue("gui/spot_on_neighbors_txt_processed",
+				  true);
+		m_settings["gui/spot_on_neighbors_txt_processed"] = true;
+	      }
+
+	    if(m_optionsUi.refreshEmail->isChecked())
+	      {
+		populateMail();
+		refreshInstitutions();
+	      }
+
+	    QApplication::setOverrideCursor(Qt::WaitCursor);
+	    m_echoKeyShare->createDefaultUrlCommunity();
+	    QApplication::restoreOverrideCursor();
+	  }
+      }
+
+  m_ui.answer->clear();
+  m_ui.passphrase->clear();
+  m_ui.question->clear();
+
+  if(!authenticated)
+    m_ui.passphrase->selectAll();
+  else
+    {
+#if SPOTON_GOLDBUG == 1
+      slotConnectAllNeighbors();
+#endif
+      playSound("login.wav");
+      m_ui.passphrase->setFocus();
+      updatePublicKeysLabel();
+    }
 }
 
 void spoton::slotProtocolRadioToggled(bool state)
@@ -8662,1876 +10533,5 @@ void spoton::saveGeoIPPath(const int version, const QString &path)
       m_optionsUi.geoipPath6->setText(path);
       m_optionsUi.geoipPath6->setToolTip(path);
       m_optionsUi.geoipPath6->selectAll();
-    }
-}
-
-void spoton::saveKernelPath(const QString &path)
-{
-  m_settings["gui/kernelPath"] = path;
-
-  QSettings settings;
-
-  settings.setValue("gui/kernelPath", path);
-  m_ui.kernelPath->setText(path);
-  m_ui.kernelPath->setToolTip(path);
-  m_ui.kernelPath->selectAll();
-}
-
-void spoton::saveSettings(void)
-{
-  QSettings settings;
-
-  if(!isFullScreen())
-    settings.setValue("gui/geometry", saveGeometry());
-
-  settings.setValue("gui/chatHorizontalSplitter",
-		    m_ui.chatHorizontalSplitter->saveState());
-  settings.setValue("gui/currentTabIndex", m_ui.tab->currentIndex());
-  settings.setValue("gui/emailSplitter",
-		    m_ui.emailSplitter->saveState());
-  settings.setValue("gui/listenersHorizontalSplitter",
-		    m_ui.listenersHorizontalSplitter->saveState());
-  settings.setValue("gui/neighborsVerticalSplitter",
-		    m_ui.neighborsVerticalSplitter->saveState());
-  settings.setValue("gui/readVerticalSplitter",
-		    m_ui.readVerticalSplitter->saveState());
-  settings.setValue("gui/txmSplitter",
-		    m_ui.txmSplitter->saveState());
-  settings.setValue("gui/urlsVerticalSplitter",
-		    m_ui.urlsVerticalSplitter->saveState());
-}
-
-void spoton::closeEvent(QCloseEvent *event)
-{
-  if(!m_quit && promptBeforeExit())
-    {
-      if(event)
-	event->ignore();
-
-      return;
-    }
-
-  m_quit = true;
-  slotQuit();
-}
-
-void spoton::slotDeleteListener(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.listeners->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.listeners->item
-	(row, m_ui.listeners->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool deleteListener = false;
-
-	if(!isKernelActive())
-	  {
-	    deleteListener = true;
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM listeners WHERE "
-			  "OID = ?");
-	  }
-	else
-	  query.prepare("UPDATE listeners SET status_control = 'deleted' "
-			"WHERE "
-			"OID = ? AND status_control <> 'deleted'");
-
-	query.bindValue(0, oid);
-	query.exec();
-
-	if(deleteListener)
-	  {
-	    query.prepare("DELETE FROM listeners_accounts WHERE "
-			  "listener_oid = ?");
-	    query.bindValue(0, oid);
-	    query.exec();
-	    query.prepare
-	      ("DELETE FROM listeners_accounts_consumed_authentications "
-	       "WHERE listener_oid = ?");
-	    query.bindValue(0, oid);
-	    query.exec();
-	    query.prepare("DELETE FROM listeners_allowed_ips WHERE "
-			  "listener_oid = ?");
-	    query.bindValue(0, oid);
-	    query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDeleteNeighbor(void)
-{
-  QString oid("");
-  int row = -1;
-
-  if((row = m_ui.neighbors->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = m_ui.neighbors->item
-	(row, m_ui.neighbors->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!isKernelActive())
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM neighbors WHERE OID = ?");
-	  }
-	else
-	  query.prepare("UPDATE neighbors SET status_control = 'deleted' "
-			"WHERE OID = ? AND status_control <> 'deleted'");
-
-	query.bindValue(0, oid);
-	query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotListenerChanged(QTableWidgetItem *item)
-{
-  if(!item)
-    return;
-
-  if(!(item->column() == 0 ||  // Activate
-       item->column() == 12 || // Use Accounts?
-       item->column() == 21))  // Passthrough
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QString oid("");
-
-	if(m_ui.listeners->item(item->row(),
-				m_ui.listeners->columnCount() - 1))
-	  oid = m_ui.listeners->item
-	    (item->row(), m_ui.listeners->columnCount() - 1)->text();
-
-	if(item->column() == 0)
-	  {
-	    query.prepare("UPDATE listeners SET "
-			  "status_control = ? "
-			  "WHERE OID = ? AND status_control <> 'deleted'");
-
-	    if(item->checkState() == Qt::Checked)
-	      query.bindValue(0, "online");
-	    else
-	      query.bindValue(0, "offline");
-
-	    query.bindValue(1, oid);
-	    query.exec();
-	  }
-	else if(item->column() == 12)
-	  {
-	    query.prepare("UPDATE listeners SET "
-			  "use_accounts = ? WHERE OID = ?");
-
-	    if(item->checkState() == Qt::Checked)
-	      query.bindValue(0, 1);
-	    else
-	      query.bindValue(0, 0);
-
-	    query.bindValue(1, oid);
-	    query.exec();
-	  }
-	else if(item->column() == 21)
-	  {
-	    query.prepare("UPDATE listeners SET "
-			  "passthrough = ? "
-			  "WHERE OID = ?");
-	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
-	    query.bindValue(1, oid);
-	    query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotSetPassphrase(void)
-{
-  if(m_wizardHash.value("shown", false))
-    return;
-  else if(!verifyInitializationPassphrase(this))
-    return;
-
-  bool reencode = false;
-  bool wizardAccepted = m_wizardHash.value("accepted", false);
-  QString str1(m_ui.passphrase1->text());
-  QString str2(m_ui.passphrase2->text());
-  QString str3(m_ui.username->text());
-
-  if(spoton_crypt::passphraseSet())
-    {
-      QMessageBox mb(this);
-
-      mb.setIcon(QMessageBox::Question);
-      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-
-      if(m_ui.passphrase_rb->isChecked())
-	mb.setText(tr("Are you sure that you wish to replace the "
-		      "existing passphrase? Please note that URL data must "
-		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "and the kernel will be deactivated."));
-      else
-	mb.setText(tr("Are you sure that you wish to replace the "
-		      "existing answer/question? Please note that URL "
-		      "data must "
-		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "and the kernel will be deactivated."));
-
-      mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-      if(mb.exec() != QMessageBox::Yes)
-	{
-	  m_ui.answer->clear();
-	  m_ui.passphrase1->clear();
-	  m_ui.passphrase2->clear();
-	  m_ui.question->clear();
-	  return;
-	}
-      else
-	{
-	  repaint();
-#ifndef Q_OS_MAC
-	  QApplication::processEvents();
-#endif
-	  m_rss->deactivate();
-	  slotDeactivateKernel();
-	  reencode = true;
-	}
-    }
-  else
-    {
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-
-      /*
-      ** Deactivate machines before preparing keys.
-      */
-
-      m_rss->deactivate();
-      slotDeactivateKernel();
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  m_sb.status->setText
-    (tr("Generating derived keys. Please be patient."));
-  m_sb.status->repaint();
-
-  QByteArray salt;
-  QByteArray saltedPassphraseHash;
-  QString error1("");
-  QString error2("");
-  QString error3("");
-
-  salt.resize(m_ui.saltLength->value());
-  salt = spoton_crypt::strongRandomBytes(static_cast<size_t> (salt.length()));
-
-  QPair<QByteArray, QByteArray> derivedKeys;
-
-  if(m_ui.passphrase_rb->isChecked())
-    derivedKeys = spoton_crypt::derivedKeys
-      (m_ui.cipherType->currentText(),
-       m_ui.hashType->currentText(),
-       static_cast<unsigned long int> (m_ui.iterationCount->value()),
-       str1,
-       salt,
-       false,
-       error1);
-  else
-    {
-      str1 = m_ui.question->text();
-      str2 = m_ui.answer->text();
-      derivedKeys = spoton_crypt::derivedKeys
-	(m_ui.cipherType->currentText(),
-	 m_ui.hashType->currentText(),
-	 static_cast<unsigned long int> (m_ui.iterationCount->value()),
-	 str1 + str2,
-	 salt,
-	 false,
-	 error1);
-    }
-
-  m_sb.status->clear();
-  QApplication::restoreOverrideCursor();
-
-  if(error1.isEmpty())
-    {
-      if(!m_ui.newKeys->isChecked() && reencode)
-	{
-	  if(m_crypts.value("chat", 0))
-	    {
-	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	      QScopedPointer<spoton_crypt> crypt
-		(new
-		 spoton_crypt(m_ui.cipherType->currentText(),
-			      m_ui.hashType->currentText(),
-			      QByteArray(),
-			      derivedKeys.first,
-			      derivedKeys.second,
-			      m_ui.saltLength->value(),
-			      static_cast<unsigned long int> (m_ui.
-							      iterationCount->
-							      value()),
-			      "chat"));
-	      QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
-			       spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
-
-	      std::sort(list.begin(), list.end());
-
-	      for(int i = 0; i < list.size(); i++)
-		{
-		  m_sb.status->setText
-		    (tr("Re-encoding public key pair %1 of %2. "
-			"Please be patient.").
-		     arg(i + 1).
-		     arg(list.size()));
-		  m_sb.status->repaint();
-
-		  /*
-		  ** All m_crypts values have identical symmetric keys.
-		  */
-
-		  spoton_crypt::reencodePrivatePublicKeys
-		    (crypt.data(),
-		     m_crypts.value("chat", 0), list.at(i), error2);
-		  m_sb.status->clear();
-
-		  if(!error2.isEmpty())
-		    break;
-		}
-
-	      QApplication::restoreOverrideCursor();
-	    }
-	}
-      else
-	{
-	  bool proceed = false;
-
-	  if(!wizardAccepted)
-	    {
-	      QMessageBox mb(this);
-
-	      mb.setIcon(QMessageBox::Question);
-	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	      mb.setText(tr("Would you like to generate public key pairs?"));
-	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
-	      mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
-
-	      if(mb.exec() == QMessageBox::Yes)
-		proceed = true;
-	    }
-	  else
-	    proceed = m_wizardHash.value("initialize_public_keys", true);
-
-	  if(proceed)
-	    if(m_ui.encryptionKeyType->currentIndex() == 1)
-	      {
-		QMessageBox mb(this);
-
-		mb.setIcon(QMessageBox::Question);
-		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-		mb.setText
-		 (tr("McEliece key pairs require a significant amount of "
-		     "storage memory. As %1 prefers secure memory, "
-		     "the gcrypt library may fail if it's unable to "
-		     "reserve the required amount of memory. Some "
-		     "operating systems require configuration in order "
-		     "to support large amounts of locked memory. "
-		     "You may disable secure memory by setting the "
-		     "secure memory pools of the interface and the kernel "
-		     "to zero. Continue with the key-generation process?").
-		  arg(SPOTON_APPLICATION_NAME));
-		mb.setWindowIcon(windowIcon());
-		mb.setWindowModality(Qt::WindowModal);
-		mb.setWindowTitle
-		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-		if(mb.exec() != QMessageBox::Yes)
-		  proceed = false;
-	      }
-
-	  if(proceed)
-	    {
-	      repaint();
-#ifndef Q_OS_MAC
-	      QApplication::processEvents();
-#endif
-
-	      QString encryptionKeyType("");
-	      QString signatureKeyType("");
-	      QStringList list;
-
-	      if(m_ui.encryptionKeyType->currentIndex() == 0)
-		encryptionKeyType = "elg";
-	      else if(m_ui.encryptionKeyType->currentIndex() == 1)
-		encryptionKeyType = "mceliece";
-	      else if(m_ui.encryptionKeyType->currentIndex() == 2)
-		encryptionKeyType = "ntru";
-	      else
-		encryptionKeyType = "rsa";
-
-	      if(m_ui.signatureKeyType->currentIndex() == 0)
-		signatureKeyType = "dsa";
-	      else if(m_ui.signatureKeyType->currentIndex() == 1)
-		signatureKeyType = "ecdsa";
-	      else if(m_ui.signatureKeyType->currentIndex() == 2)
-		signatureKeyType = "eddsa";
-	      else if(m_ui.signatureKeyType->currentIndex() == 3)
-		signatureKeyType = "elg";
-	      else
-		signatureKeyType = "rsa";
-
-	      list << spoton_common::SPOTON_ENCRYPTION_KEY_NAMES
-		   << spoton_common::SPOTON_SIGNATURE_KEY_NAMES;
-	      std::sort(list.begin(), list.end());
-
-	      QProgressDialog progress(this);
-
-	      progress.setLabelText(tr("Generating key pairs. "
-				       "Please be patient."));
-	      progress.setMaximum(list.size());
-	      progress.setMinimum(0);
-	      progress.setModal(true);
-	      progress.setWindowTitle(tr("%1: Generating Key Pairs").
-				      arg(SPOTON_APPLICATION_NAME));
-	      progress.show();
-	      progress.repaint();
-#ifndef Q_OS_MAC
-	      QApplication::processEvents();
-#endif
-
-	      for(int i = 0; i < list.size() && !progress.wasCanceled(); i++)
-		{
-		  if(i + 1 <= progress.maximum())
-		    progress.setValue(i + 1);
-
-		  progress.repaint();
-#ifndef Q_OS_MAC
-		  QApplication::processEvents();
-#endif
-
-		  spoton_crypt crypt
-		    (m_ui.cipherType->currentText(),
-		     m_ui.hashType->currentText(),
-		     str1.toUtf8(), // Passphrase.
-		     derivedKeys.first,
-		     derivedKeys.second,
-		     m_ui.saltLength->value(),
-		     static_cast<unsigned long int> (m_ui.iterationCount->
-						     value()),
-		     list.at(i));
-
-		  if(!list.at(i).contains("signature"))
-		    crypt.generatePrivatePublicKeys
-		      (m_ui.encryptionKeySize->currentText(),
-		       encryptionKeyType,
-		       error2);
-		  else
-		    crypt.generatePrivatePublicKeys
-		      (m_ui.signatureKeySize->currentText(),
-		       signatureKeyType,
-		       error2);
-
-		  if(!error2.isEmpty())
-		    break;
-		}
-
-	      progress.close();
-	    }
-	}
-    }
-
-  if(error1.isEmpty() && error2.isEmpty())
-    {
-      if(m_ui.passphrase_rb->isChecked())
-	saltedPassphraseHash = spoton_crypt::saltedPassphraseHash
-	  (m_ui.hashType->currentText(), str1, salt, error3);
-      else
-	{
-	  bool ok = true;
-
-	  saltedPassphraseHash = spoton_crypt::keyedHash
-	    (str1.toUtf8(), str2.toUtf8(),
-	     m_ui.hashType->currentText().toLatin1(), &ok);
-
-	  if(!ok)
-	    error3 = "keyed hash failure";
-	}
-    }
-
-  if(!error1.trimmed().isEmpty())
-    {
-      spoton_crypt::purgeDatabases();
-      updatePublicKeysLabel();
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("An error (%1) occurred with spoton_crypt::"
-	    "derivedKeys().").arg(error1.trimmed()));
-    }
-  else if(!error2.trimmed().isEmpty())
-    {
-      spoton_crypt::purgeDatabases();
-      updatePublicKeysLabel();
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("An error (%1) occurred with "
-			       "spoton_crypt::"
-			       "generatePrivatePublicKeys() or "
-			       "spoton_crypt::"
-			       "reencodePrivatePublicKeys().").
-			    arg(error2.trimmed()));
-    }
-  else if(!error3.trimmed().isEmpty())
-    {
-      spoton_crypt::purgeDatabases();
-      updatePublicKeysLabel();
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("An error (%1) occurred with "
-			       "spoton_crypt::"
-			       "keyedHash() or "
-			       "spoton_crypt::"
-			       "saltedPassphraseHash().").
-			    arg(error3.trimmed()));
-    }
-  else
-    {
-      if(!m_crypts.value("chat", 0) || reencode)
-	{
-	  if(reencode)
-	    {
-	      QScopedPointer<spoton_crypt> crypt
-		(new
-		 spoton_crypt(m_ui.cipherType->currentText(),
-			      m_ui.hashType->currentText(),
-			      QByteArray(),
-			      derivedKeys.first,
-			      derivedKeys.second,
-			      m_ui.saltLength->value(),
-			      static_cast<unsigned long int> (m_ui.
-							      iterationCount->
-							      value()),
-			      "chat"));
-
-	      spoton_reencode reencode;
-
-	      QApplication::setOverrideCursor(Qt::WaitCursor);
-	      reencode.reencode
-		(m_sb, crypt.data(), m_crypts.value("chat", 0));
-	      spoton_crypt::removeFlawedEntries(crypt.data());
-	      QApplication::restoreOverrideCursor();
-	    }
-
-	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
-
-	  while(it.hasNext())
-	    {
-	      it.next();
-	      delete it.value();
-	    }
-
-	  m_crypts.clear();
-
-	  QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
-			   spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
-
-	  std::sort(list.begin(), list.end());
-
-	  for(int i = 0; i < list.size(); i++)
-	    m_crypts.insert
-	      (list.at(i),
-	       new spoton_crypt(m_ui.cipherType->currentText(),
-				m_ui.hashType->currentText(),
-				QByteArray(),
-				derivedKeys.first,
-				derivedKeys.second,
-				m_ui.saltLength->value(),
-				static_cast<unsigned long int> (m_ui.
-								iterationCount->
-								value()),
-				list.at(i)));
-
-	  spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
-
-	  if(!reencode)
-	    {
-	      bool proceed = false;
-
-	      if(!wizardAccepted)
-		{
-		  QMessageBox mb(this);
-
-		  mb.setIcon(QMessageBox::Question);
-		  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-		  mb.setText(tr("Would you like to exercise your new "
-				"credentials as URL Common Credentials?"));
-		  mb.setWindowIcon(windowIcon());
-		  mb.setWindowTitle(tr("%1: Question").
-				    arg(SPOTON_APPLICATION_NAME));
-
-		  if(mb.exec() == QMessageBox::Yes)
-		    proceed = true;
-		}
-	      else
-		proceed = m_wizardHash.value("url_credentials", true);
-
-	      if(proceed)
-		{
-		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-		  spoton_misc::prepareUrlKeysDatabase();
-
-		  if(saveCommonUrlCredentials(derivedKeys,
-					      m_ui.cipherType->currentText(),
-					      m_ui.hashType->currentText(),
-					      m_crypts.value("chat", 0)).
-		     isEmpty())
-		    {
-		      prepareUrlContainers();
-		      prepareUrlLabels();
-		    }
-
-		  QApplication::restoreOverrideCursor();
-		}
-
-	      if(wizardAccepted)
-		m_ui.activeUrlDistribution->setChecked
-		  (m_wizardHash.value("url_distribution", false));
-	    }
-
-	  QApplication::setOverrideCursor(Qt::WaitCursor);
-	  m_smpWindow.populateSecrets();
-	  sendKeysToKernel();
-	  askKernelToReadStarBeamKeys();
-	  populateNovas();
-	  sendBuzzKeysToKernel();
-	  updatePublicKeysLabel();
-	  QApplication::restoreOverrideCursor();
-
-	  if(!reencode)
-	    {
-	      QApplication::setOverrideCursor(Qt::WaitCursor);
-	      m_echoKeyShare->createDefaultUrlCommunity();
-	      QApplication::restoreOverrideCursor();
-	    }
-	  else
-	    prepareUrlContainers();
-	}
-
-      m_sb.frame->setEnabled(true);
-      m_sb.lock->setEnabled(true);
-#if SPOTON_GOLDBUG == 0
-      m_ui.action_Add_Participant->setEnabled(true);
-#endif
-      m_ui.action_Echo_Key_Share->setEnabled(true);
-      m_ui.action_Export_Listeners->setEnabled(true);
-      m_ui.action_Export_Public_Keys->setEnabled(true);
-      m_ui.action_Import_Neighbors->setEnabled(true);
-      m_ui.action_Import_Public_Keys->setEnabled(true);
-      m_ui.action_New_Global_Name->setEnabled(true);
-      m_ui.action_Notifications_Window->setEnabled(true);
-      m_ui.action_Options->setEnabled(true);
-      m_ui.action_Poptastic_Settings->setEnabled(true);
-      m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
-      m_ui.action_RSS->setEnabled(true);
-      m_ui.action_Rosetta->setEnabled(true);
-      m_ui.action_SMP->setEnabled(true);
-      m_ui.action_Statistics_Window->setEnabled(true);
-      m_ui.action_Vacuum_Databases->setEnabled(true);
-      m_ui.answer->clear();
-      m_ui.delete_key->setEnabled(true);
-      m_ui.encryptionKeySize->setEnabled(false);
-      m_ui.encryptionKeyType->setEnabled(false);
-      m_ui.kernelBox->setEnabled(true);
-      m_ui.kernelBox->setVisible(true);
-      m_ui.keys->setEnabled(true);
-      m_ui.menu_Pages->setEnabled(true);
-      m_ui.newKeys->setChecked(false);
-      m_ui.newKeys->setEnabled(true);
-      m_ui.passphrase1->clear();
-      m_ui.passphrase2->clear();
-      m_ui.passphrase_strength_indicator->setVisible(false);
-      m_ui.publicKeysBox->setVisible(true);
-      m_ui.question->clear();
-      m_ui.regenerate->setEnabled(true);
-      m_ui.showStatistics->setVisible(true);
-      m_ui.signatureKeyType->setEnabled(false);
-      m_ui.signatureKeyType->setEnabled(false);
-      repaint();
-#ifndef Q_OS_MAC
-      QApplication::processEvents();
-#endif
-
-      for(int i = 0; i < m_ui.tab->count(); i++)
-	{
-	  m_ui.tab->setTabEnabled(i, true);
-
-	  QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
-
-	  hash["enabled"] = true;
-	  m_tabWidgetsProperties[i] = hash;
-	}
-
-      /*
-      ** Save the various entities.
-      */
-
-      m_settings["gui/buzzName"] = str3.toUtf8();
-      m_settings["gui/cipherType"] = m_ui.cipherType->currentText();
-      m_settings["gui/emailName"] = str3.toUtf8();
-      m_settings["gui/hashType"] = m_ui.hashType->currentText();
-      m_settings["gui/iterationCount"] = m_ui.iterationCount->value();
-      m_settings["gui/kernelCipherType"] =
-	m_ui.kernelCipherType->currentText();
-      m_settings["gui/kernelHashType"] =
-	m_ui.kernelHashType->currentText();
-      m_settings["gui/nodeName"] = str3.toUtf8();
-      m_settings["gui/rosettaName"] = str3.toUtf8();
-      m_settings["gui/salt"] = salt;
-      m_settings["gui/saltLength"] = m_ui.saltLength->value();
-      m_settings["gui/saltedPassphraseHash"] = saltedPassphraseHash;
-      m_settings["gui/urlName"] = str3.toUtf8();
-
-      QSettings settings;
-
-      settings.setValue("gui/buzzName", m_settings["gui/buzzName"]);
-      settings.setValue("gui/cipherType", m_settings["gui/cipherType"]);
-      settings.setValue("gui/emailName", m_settings["gui/emailName"]);
-      settings.setValue("gui/hashType", m_settings["gui/hashType"]);
-      settings.setValue("gui/iterationCount",
-			m_settings["gui/iterationCount"]);
-      settings.setValue("gui/kernelCipherType",
-			m_settings["gui/kernelCipherType"]);
-      settings.setValue("gui/kernelHashType",
-			m_settings["gui/kernelHashType"]);
-      settings.setValue("gui/nodeName", m_settings["gui/nodeName"]);
-      settings.setValue("gui/rosettaName", m_settings["gui/rosettaName"]);
-      settings.setValue("gui/salt", m_settings["gui/salt"]);
-      settings.setValue("gui/saltLength", m_settings["gui/saltLength"]);
-      settings.setValue
-	("gui/saltedPassphraseHash", m_settings["gui/saltedPassphraseHash"]);
-      settings.setValue("gui/spot_on_neighbors_txt_processed", true);
-      settings.setValue("gui/urlName", m_settings["gui/urlName"]);
-      m_ui.buzzName->setText(m_ui.username->text());
-      m_ui.emailName->clear();
-      m_ui.emailName->addItem(m_ui.username->text());
-      m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
-      m_ui.nodeName->setText(m_ui.username->text());
-      m_ui.urlName->setText(m_ui.username->text());
-
-      if(!m_settings.value("gui/initial_url_distillers_defined",
-			   false).toBool())
-	{
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	  m_sb.status->setText
-	    (tr("Initializing URL distillers. Please be patient."));
-	  m_sb.status->repaint();
-	  initializeUrlDistillers();
-
-	  QSettings settings;
-
-	  settings.setValue("gui/initial_url_distillers_defined",
-			    true);
-	  m_settings["gui/initial_url_distillers_defined"] = true;
-	  populateUrlDistillers();
-	  m_sb.status->clear();
-	  QApplication::restoreOverrideCursor();
-	}
-
-      if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
-			   false).toBool())
-	{
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	  m_sb.status->setText
-	    (tr("Importing spot-on-neighbors.txt. Please be patient."));
-	  m_sb.status->repaint();
-	  importNeighbors("spot-on-neighbors.txt");
-
-	  QSettings settings;
-
-	  settings.setValue("gui/spot_on_neighbors_txt_processed",
-			    true);
-	  m_settings["gui/spot_on_neighbors_txt_processed"] = true;
-	  m_sb.status->clear();
-	  QApplication::restoreOverrideCursor();
-	}
-
-      QMessageBox::information
-	(this, tr("%1: Information").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Your confidential information has been saved. Enjoy!"));
-
-      if(m_ui.pid->text() == "0")
-	if(QFileInfo(m_ui.kernelPath->text()).isExecutable())
-	  {
-	    bool proceed = false;
-
-	    if(!wizardAccepted)
-	      {
-		QMessageBox mb(this);
-
-		mb.setIcon(QMessageBox::Question);
-		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-		mb.setText(tr("Would you like the kernel to be activated?"));
-		mb.setWindowIcon(windowIcon());
-		mb.setWindowModality(Qt::WindowModal);
-		mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
-
-		if(mb.exec() == QMessageBox::Yes)
-		  proceed = true;
-	      }
-	    else
-	      proceed = m_wizardHash.value("launch_kernel", true);
-
-	    if(proceed)
-	      slotActivateKernel();
-	  }
-
-#if SPOTON_GOLDBUG == 1
-      slotConnectAllNeighbors();
-#endif
-      playSound("login.wav");
-    }
-}
-
-void spoton::slotValidatePassphrase(void)
-{
-  QByteArray computedHash;
-  QByteArray salt(m_settings.value("gui/salt", "").toByteArray());
-  QByteArray saltedPassphraseHash
-    (m_settings.value("gui/saltedPassphraseHash", "").toByteArray());
-  QString error("");
-  bool authenticated = false;
-
-  if(m_ui.passphrase_rb_authenticate->isChecked())
-    computedHash = spoton_crypt::saltedPassphraseHash
-      (m_ui.hashType->currentText(), m_ui.passphrase->text(), salt, error);
-  else
-    {
-      bool ok = true;
-
-      computedHash = spoton_crypt::keyedHash
-	(m_ui.question_authenticate->text().toUtf8(),
-	 m_ui.answer_authenticate->text().toUtf8(),
-	 m_ui.hashType->currentText().toLatin1(), &ok);
-
-      if(!ok)
-	error = "keyed hash failure";
-    }
-
-  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
-     spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
-    if(error.isEmpty())
-      {
-	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	QPair<QByteArray, QByteArray> keys;
-
-	if(m_ui.passphrase_rb_authenticate->isChecked())
-	  keys = spoton_crypt::derivedKeys
-	    (m_ui.cipherType->currentText(),
-	     m_ui.hashType->currentText(),
-	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
-	     m_ui.passphrase->text(),
-	     salt,
-	     false,
-	     error);
-	else
-	  keys = spoton_crypt::derivedKeys
-	    (m_ui.cipherType->currentText(),
-	     m_ui.hashType->currentText(),
-	     static_cast<unsigned long int> (m_ui.iterationCount->value()),
-	     m_ui.question_authenticate->text() +
-	     m_ui.answer_authenticate->text(),
-	     salt,
-	     false,
-	     error);
-
-	QApplication::restoreOverrideCursor();
-
-	if(error.isEmpty())
-	  {
-	    authenticated = true;
-
-	    QHashIterator<QString, spoton_crypt *> it(m_crypts);
-
-	    while(it.hasNext())
-	      {
-		it.next();
-		delete it.value();
-	      }
-
-	    m_crypts.clear();
-
-	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
-			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
-
-	    std::sort(list.begin(), list.end());
-
-	    for(int i = 0; i < list.size(); i++)
-	      m_crypts.insert
-		(list.at(i),
-		 new spoton_crypt
-		 (m_ui.cipherType->currentText(),
-		  m_ui.hashType->currentText(),
-		  QByteArray(),
-		  keys.first,
-		  keys.second,
-		  m_ui.saltLength->value(),
-		  static_cast<unsigned long int> (m_ui.
-						  iterationCount->
-						  value()),
-		  list.at(i)));
-
-	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	    spoton_misc::alterDatabasesAfterAuthentication
-	      (m_crypts.value("chat", 0));
-	    spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
-	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", 0));
-	    QApplication::restoreOverrideCursor();
-
-	    if(m_optionsUi.launchKernel->isChecked())
-	      slotActivateKernel();
-
-	    m_sb.frame->setEnabled(true);
-	    m_sb.lock->setEnabled(true);
-#if SPOTON_GOLDBUG == 0
-	    m_ui.action_Add_Participant->setEnabled(true);
-#endif
-	    m_ui.action_Echo_Key_Share->setEnabled(true);
-	    m_ui.action_Export_Listeners->setEnabled(true);
-	    m_ui.action_Export_Public_Keys->setEnabled(true);
-	    m_ui.action_Import_Neighbors->setEnabled(true);
-	    m_ui.action_Import_Public_Keys->setEnabled(true);
-	    m_ui.action_New_Global_Name->setEnabled(true);
-	    m_ui.action_Notifications_Window->setEnabled(true);
-	    m_ui.action_Options->setEnabled(true);
-	    m_ui.action_Poptastic_Settings->setEnabled(true);
-	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
-	    m_ui.action_RSS->setEnabled(true);
-	    m_ui.action_Rosetta->setEnabled(true);
-	    m_ui.action_SMP->setEnabled(true);
-	    m_ui.action_Statistics_Window->setEnabled(true);
-	    m_ui.action_Vacuum_Databases->setEnabled(true);
-	    m_ui.answer->clear();
-	    m_ui.answer_authenticate->clear();
-	    m_ui.delete_key->setEnabled(true);
-	    m_ui.encryptionKeySize->setEnabled(false);
-	    m_ui.encryptionKeyType->setEnabled(false);
-	    m_ui.kernelBox->setEnabled(true);
-	    m_ui.kernelBox->setVisible(true);
-	    m_ui.keys->setEnabled(true);
-	    m_ui.menu_Pages->setEnabled(true);
-	    m_ui.newKeys->setEnabled(true);
-	    m_ui.passphrase->clear();
-	    m_ui.passphrase->clear();
-	    m_ui.passphrase->setEnabled(false);
-	    m_ui.passphrase1->clear();
-	    m_ui.passphrase2->clear();
-	    m_ui.passphraseButton->setEnabled(false);
-	    m_ui.passphrase_rb_authenticate->setChecked(true);
-	    m_ui.passphrase_rb_authenticate->setEnabled(false);
-	    m_ui.publicKeysBox->setVisible(true);
-	    m_ui.question->clear();
-	    m_ui.question_authenticate->clear();
-	    m_ui.question_rb_authenticate->setEnabled(false);
-	    m_ui.regenerate->setEnabled(true);
-	    m_ui.showStatistics->setVisible(true);
-	    m_ui.signatureKeySize->setEnabled(false);
-	    m_ui.signatureKeyType->setEnabled(false);
-
-	    for(int i = 0; i < m_ui.tab->count(); i++)
-	      {
-		m_ui.tab->setTabEnabled(i, true);
-
-		QHash<QString, QVariant> hash(m_tabWidgetsProperties[i]);
-
-		hash["enabled"] = true;
-		m_tabWidgetsProperties[i] = hash;
-	      }
-
-	    {
-	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-	      QList<QHash<QString, QVariant> > list
-		(spoton_misc::
-		 poptasticSettings("", m_crypts.value("chat", 0), 0));
-
-	      for(int i = 0; i < list.size(); i++)
-		{
-		  if(i == 0)
-		    m_ui.emailName->insertSeparator(1);
-
-		  m_ui.emailName->addItem(list.at(i).value("in_username").
-					  toString());
-		}
-
-	      QApplication::restoreOverrideCursor();
-	    }
-
-	    QApplication::setOverrideCursor(Qt::WaitCursor);
-	    sendKeysToKernel();
-	    askKernelToReadStarBeamKeys();
-	    populateNovas();
-	    populateUrlDistillers();
-	    prepareUrlContainers();
-	    prepareUrlLabels();
-	    prepareVisiblePages();
-	    sendBuzzKeysToKernel();
-	    QApplication::restoreOverrideCursor();
-	    m_rss->prepareAfterAuthentication();
-	    m_smpWindow.populateSecrets();
-	    m_ui.tab->setCurrentIndex
-	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
-	       toInt());
-
-	    QString name("");
-	    QString nameEmail("");
-
-	    if(m_crypts.value("chat", 0))
-	      {
-		QByteArray bytes;
-		QSettings settings;
-		bool ok = true;
-
-		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(settings.
-					  value("gui/poptasticName").
-					  toByteArray()), &ok).trimmed();
-
-		if(ok)
-		  name = bytes.constData();
-
-		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(settings.
-					  value("gui/poptasticNameEmail").
-					  toByteArray()), &ok).trimmed();
-
-		if(ok)
-		  nameEmail = bytes.constData();
-	      }
-
-	    if(name.isEmpty())
-	      name = "unknown@unknown.org";
-
-	    if(nameEmail.isEmpty())
-	      {
-		/*
-		** Leave gui/poptasticNameEmail empty.
-		** If Poptastic e-mail is written, the user will be required
-		** to provide Poptastic information.
-		*/
-	      }
-
-	    m_settings["gui/poptasticName"] = name.toLatin1();
-	    m_settings["gui/poptasticNameEmail"] = nameEmail.toLatin1();
-
-	    if(!m_settings.value("gui/initial_url_distillers_defined",
-				 false).toBool())
-	      {
-		initializeUrlDistillers();
-
-		QSettings settings;
-
-		settings.setValue("gui/initial_url_distillers_defined",
-				  true);
-		m_settings["gui/initial_url_distillers_defined"] = true;
-	      }
-
-	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
-				 false).toBool())
-	      {
-		importNeighbors("spot-on-neighbors.txt");
-
-		QSettings settings;
-
-		settings.setValue("gui/spot_on_neighbors_txt_processed",
-				  true);
-		m_settings["gui/spot_on_neighbors_txt_processed"] = true;
-	      }
-
-	    if(m_optionsUi.refreshEmail->isChecked())
-	      {
-		populateMail();
-		refreshInstitutions();
-	      }
-
-	    QApplication::setOverrideCursor(Qt::WaitCursor);
-	    m_echoKeyShare->createDefaultUrlCommunity();
-	    QApplication::restoreOverrideCursor();
-	  }
-      }
-
-  m_ui.answer->clear();
-  m_ui.passphrase->clear();
-  m_ui.question->clear();
-
-  if(!authenticated)
-    m_ui.passphrase->selectAll();
-  else
-    {
-#if SPOTON_GOLDBUG == 1
-      slotConnectAllNeighbors();
-#endif
-      playSound("login.wav");
-      m_ui.passphrase->setFocus();
-      updatePublicKeysLabel();
-    }
-}
-
-void spoton::slotTabChanged(int index)
-{
-  Q_UNUSED(index);
-
-  if(currentTabName() == "listeners")
-    m_listenersLastModificationTime = QDateTime();
-  else if(currentTabName() == "neighbors")
-    {
-      if(m_neighborsFuture.isFinished())
-	m_neighborsLastModificationTime = QDateTime();
-    }
-  else if(currentTabName() == "starbeam")
-    {
-      m_magnetsLastModificationTime = QDateTime();
-      m_starsLastModificationTime = QDateTime();
-    }
-
-  if(currentTabName() == "buzz")
-    m_sb.buzz->setVisible(false);
-  else if(currentTabName() == "chat")
-    m_sb.chat->setVisible(false);
-}
-
-void spoton::slotNeighborChanged(QTableWidgetItem *item)
-{
-  if(!item)
-    return;
-
-  if(!(item->column() == 0 || // Sticky
-       item->column() == 37)) // Passthrough
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	QString oid("");
-
-	if(m_ui.neighbors->item(item->row(),
-				m_ui.neighbors->columnCount() - 1))
-	  oid = m_ui.neighbors->item(item->row(),
-				     m_ui.neighbors->columnCount() - 1)->
-	    text();
-
-	if(item->column() == 0)
-	  {
-	    query.prepare("UPDATE neighbors SET "
-			  "sticky = ? "
-			  "WHERE OID = ?");
-	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
-	    query.bindValue(1, oid);
-	    query.exec();
-	  }
-	else if(item->column() == 37)
-	  {
-	    query.prepare("UPDATE neighbors SET "
-			  "passthrough = ? "
-			  "WHERE OID = ?");
-	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
-	    query.bindValue(1, oid);
-	    query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotMaximumClientsChanged(int index)
-{
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
-
-  if(comboBox)
-    {
-      QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "listeners.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.prepare("UPDATE listeners SET "
-			  "maximum_clients = ? "
-			  "WHERE OID = ?");
-
-	    if(index != comboBox->count() - 1)
-	      query.bindValue(0, comboBox->itemText(index).toInt());
-	    else
-	      query.bindValue(0, 0);
-
-	    query.bindValue(1, comboBox->property("oid"));
-	    query.exec();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-    }
-}
-
-void spoton::slotShowContextMenu(const QPoint &point)
-{
-  if(m_ui.emailParticipants == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction
-	(QIcon(QString(":/%1/add.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())),
-	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareEmailPublicKeyWithParticipant(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/copy.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Copy Keys (Clipboard Buffer)"),
-		     this, SLOT(slotCopyEmailKeys(void)));
-      menu.addAction(QIcon(":/generic/repleo-email.png"),
-		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyEmailFriendshipBundle(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveEmailParticipants(void)));
-      menu.addSeparator();
-      action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
-      action->setProperty("type", "email");
-      menu.addSeparator();
-      action = menu.addAction
-	(tr("Initiate Forward &Secrecy Exchange(s)..."),
-	 this, SLOT(slotEstablishForwardSecrecy(void)));
-      action->setProperty("type", "email");
-      action = menu.addAction
-	(tr("Purge Forward &Secrecy Key Pair"),
-	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
-      action->setProperty("type", "email");
-      action = menu.addAction
-	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
-      action->setProperty("type", "email");
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.emailParticipants->mapToGlobal(point));
-    }
-  else if(m_ui.listeners == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"),
-		     this, SLOT(slotDeleteListener(void)));
-      menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteAllListeners(void)));
-      menu.addSeparator();
-      menu.addAction(tr("Detach &Neighbors"),
-		     this, SLOT(slotDetachListenerNeighbors(void)));
-      menu.addAction(tr("Disconnect &Neighbors"),
-		     this, SLOT(slotDisconnectListenerNeighbors(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Publish Information (Plaintext)"),
-		     this, SLOT(slotPublicizeListenerPlaintext(void)));
-      menu.addAction(tr("Publish &All (Plaintext)"),
-		     this, SLOT(slotPublicizeAllListenersPlaintext(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Full Echo"),
-		     this, SLOT(slotListenerFullEcho(void)));
-      menu.addAction(tr("&Half Echo"),
-		     this, SLOT(slotListenerHalfEcho(void)));
-      menu.addSeparator();
-      action = menu.addAction
-	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
-      action->setProperty("type", "listeners");
-      action = menu.addAction
-	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
-      action->setProperty("type", "listeners");
-      action = menu.addAction
-	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
-      action->setProperty("type", "listeners");
-      menu.addSeparator();
-      menu.addAction(tr("&Prepare New One-Year Certificate"),
-		     this, SLOT(slotGenerateOneYearListenerCertificate(void)))->
-	setEnabled(listenerSupportsSslTls());
-      menu.addAction(tr("Set &SSL Control String..."),
-		     this, SLOT(slotSetListenerSSLControlString(void)))->
-	setEnabled(listenerSupportsSslTls());
-      menu.addSeparator();
-      action = menu.addAction(tr("Set Socket &Options..."),
-			      this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled(listenerTransport() > "bluetooth");
-      action->setProperty("type", "listeners");
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.listeners->mapToGlobal(point));
-    }
-  else if(m_ui.neighbors == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction(QIcon(QString(":/%1/share.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("Share &Chat Public Key Pair"),
-		     this, SLOT(slotShareChatPublicKey(void)));
-      menu.addAction(QIcon(QString(":/%1/share.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("Share &E-Mail Public Key Pair"),
-		     this, SLOT(slotShareEmailPublicKey(void)));
-#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
-      menu.addAction(QIcon(QString(":/%1/share.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("Share &Open Library Public Key Pair"),
-		     this, SLOT(slotShareOpenLibraryPublicKey(void)));
-#endif
-      menu.addAction(QIcon(QString(":/%1/share.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("Share &Poptastic Public Key Pair"),
-		     this, SLOT(slotSharePoptasticPublicKey(void)));
-      menu.addAction(QIcon(QString(":%1//share.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("Share &URL Public Key Pair"),
-		     this, SLOT(slotShareURLPublicKey(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Assign New Remote IP Information..."),
-		     this, SLOT(slotAssignNewIPToNeighbor(void)));
-      menu.addAction(tr("&Connect"),
-		     this, SLOT(slotConnectNeighbor(void)));
-      menu.addAction(tr("&Disconnect"),
-		     this, SLOT(slotDisconnectNeighbor(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Connect All"),
-		     this, SLOT(slotConnectAllNeighbors(void)));
-      menu.addAction(tr("&Disconnect All"),
-		     this, SLOT(slotDisconnectAllNeighbors(void)));
-      menu.addSeparator();
-      menu.addAction
-	(tr("&Authenticate Account..."),
-	 this,
-	 SLOT(slotAuthenticate(void)));
-      menu.addAction(tr("&Reset Account Information"),
-		     this,
-		     SLOT(slotResetAccountInformation(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Reset Certificate"),
-		     this,
-		     SLOT(slotResetCertificate(void)))->
-	setEnabled(neighborSupportsSslTls());
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"),
-		     this, SLOT(slotDeleteNeighbor(void)));
-      menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteAllNeighbors(void)));
-      menu.addAction(tr("Delete All Non-Unique &Blocked"),
-		     this, SLOT(slotDeleteAllBlockedNeighbors(void)));
-      menu.addAction(tr("Delete All Non-Unique &UUIDs"),
-		     this, SLOT(slotDeleteAllUuids(void)));
-      menu.addSeparator();
-      menu.addAction(tr("B&lock"),
-		     this, SLOT(slotBlockNeighbor(void)));
-      menu.addAction(tr("U&nblock"),
-		     this, SLOT(slotUnblockNeighbor(void)));
-      menu.addSeparator();
-      menu.addAction(tr("&Full Echo"),
-		     this, SLOT(slotNeighborFullEcho(void)));
-      menu.addAction(tr("&Half Echo"),
-		     this, SLOT(slotNeighborHalfEcho(void)));
-      menu.addSeparator();
-      action = menu.addAction
-	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
-      action->setProperty("type", "neighbors");
-      action = menu.addAction
-	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
-      action->setProperty("type", "neighbors");
-      action = menu.addAction
-	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
-      action->setProperty("type", "neighbors");
-      menu.addSeparator();
-      action = menu.addAction(tr("&Copy Adaptive Echo Magnet"),
-			      this, SLOT(slotCopyAEMagnet(void)));
-      action->setProperty("from", "neighbors");
-      menu.addAction(tr("&Set Adaptive Echo Token Information..."),
-		     this, SLOT(slotSetAETokenInformation(void)));
-      menu.addAction(tr("&Reset Adaptive Echo Token Information"),
-		     this, SLOT(slotResetAETokenInformation(void)));
-      menu.addSeparator();
-      menu.addAction(tr("Set &SSL Control String..."),
-		     this, SLOT(slotSetNeighborSSLControlString(void)))->
-	setEnabled(neighborSupportsSslTls());
-      menu.addSeparator();
-      action = menu.addAction(tr("Set Socket &Options..."),
-			      this, SLOT(slotSetSocketOptions(void)));
-      action->setEnabled(neighborTransport() > "bluetooth");
-      action->setProperty("type", "neighbors");
-      menu.addSeparator();
-
-      QActionGroup *actionGroup = new QActionGroup(&menu);
-      QList<QPair<QString, QThread::Priority> > list;
-      QMenu *subMenu = menu.addMenu(tr("Priority"));
-      QPair<QString, QThread::Priority> pair;
-
-      pair.first = tr("High Priority");
-      pair.second = QThread::HighPriority;
-      list << pair;
-      pair.first = tr("Highest Priority");
-      pair.second = QThread::HighestPriority;
-      list << pair;
-      pair.first = tr("Idle Priority");
-      pair.second = QThread::IdlePriority;
-      list << pair;
-      pair.first = tr("Low Priority");
-      pair.second = QThread::LowPriority;
-      list << pair;
-      pair.first = tr("Lowest Priority");
-      pair.second = QThread::LowestPriority;
-      list << pair;
-      pair.first = tr("Normal Priority");
-      pair.second = QThread::NormalPriority;
-      list << pair;
-      pair.first = tr("Time-Critical Priority");
-      pair.second = QThread::TimeCriticalPriority;
-      list << pair;
-
-      QThread::Priority priority = neighborThreadPriority();
-
-      for(int i = 0; i < list.size(); i++)
-	{
-	  action = subMenu->addAction
-	    (list.at(i).first,
-	     this,
-	     SLOT(slotSetNeighborPriority(void)));
-	  action->setCheckable(true);
-	  action->setProperty("priority", list.at(i).second);
-	  actionGroup->addAction(action);
-
-	  if(list.at(i).second == priority)
-	    action->setChecked(true);
-	}
-
-#if SPOTON_GOLDBUG == 0
-      menu.addSeparator();
-      menu.addAction("&Statistics...",
-		     this,
-		     SLOT(slotShowNeighborStatistics(void)));
-#endif
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.neighbors->mapToGlobal(point));
-    }
-  else if(m_ui.participants == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction
-	(QIcon(QString(":/%1/add.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())),
-	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
-      menu.addSeparator();
-      menu.addAction(tr("Chat &Popup..."), this,
-		      SLOT(slotChatPopup(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(":/generic/repleo-chat.png"),
-		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyFriendshipBundle(void)));
-      menu.addSeparator();
-#if SPOTON_GOLDBUG == 1
-      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
-				    arg(m_settings.value("gui/iconSet",
-							 "nouve").
-					toString().toLower())),
-			      tr("MELODICA: &Call Friend (New Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setProperty("type", "calling");
-      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
-				    arg(m_settings.value("gui/iconSet",
-							 "nouve").
-					toString().toLower())),
-			      tr("MELODICA: &Call Friend "
-				 "(New Gemini Pair Using "
-				 "Existing Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setProperty("type", "calling_using_gemini");
-      action = menu.addAction(QIcon(QString(":/%1/melodica.png").
-				    arg(m_settings.value("gui/iconSet",
-							 "nouve").
-					toString().toLower())),
-			      tr("MELODICA Two-Way: &Call Friend (New "
-				 "Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
-      action->setProperty("type", "calling_two_way");
-#else
-      action = menu.addAction(tr("&Call Participant"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setProperty("type", "calling");
-      action = menu.addAction
-	(tr("&Call Participant (Existing Gemini Pair)"),
-	 this, SLOT(slotCallParticipant(void)));
-      action->setProperty("type", "calling_using_gemini");
-      action = menu.addAction(tr("&Two-Way Calling"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
-      action->setProperty("type", "calling_two_way");
-#endif
-      action = menu.addAction(tr("&Terminate Call"),
-			      this, SLOT(slotCallParticipant(void)));
-      action->setProperty("type", "terminating");
-      menu.addSeparator();
-#if SPOTON_GOLDBUG == 1
-      menu.addAction
-	(tr("&Generate Random Gemini Pair "
-	    "(AES-256 Key, SHA-512 Key) (Without Call)"),
-	 this, SLOT(slotGenerateGeminiInChat(void)));
-#else
-      menu.addAction(tr("&Generate Random Gemini Pair "
-			"(AES-256 Key, SHA-512 Key)"),
-		     this, SLOT(slotGenerateGeminiInChat(void)));
-#endif
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveParticipants(void)));
-      menu.addSeparator();
-      action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
-      action->setProperty("type", "chat");
-      menu.addSeparator();
-      menu.addAction(tr("&Derive Gemini Pair From SMP Secret"),
-		     this,
-		     SLOT(slotDeriveGeminiPairViaSMP(void)));
-      menu.addAction(tr("&Reset SMP Machine's Internal State (S0)"),
-		     this,
-		     SLOT(slotInitializeSMP(void)));
-      menu.addAction(tr("&Set SMP Secret..."),
-		     this,
-		     SLOT(slotPrepareSMP(void)));
-      menu.addAction(tr("&Verify SMP Secret"),
-		     this,
-		     SLOT(slotVerifySMPSecret(void)));
-      menu.addSeparator();
-      menu.addAction(tr("Replay &Last %1 Messages").
-		     arg(spoton_common::CHAT_MAXIMUM_REPLAY_QUEUE_SIZE),
-		     this,
-		     SLOT(slotReplayMessages(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/starbeam.png").
-			   arg(m_settings.value("gui/iconSet",
-						"nouve").
-			       toString().toLower())),
-		     tr("Share &StarBeam With "
-			"Selected Participant(s)..."),
-		     this,
-		     SLOT(slotShareStarBeam(void)))->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
-      menu.addSeparator();
-      menu.addAction
-	(tr("Call Via Forward &Secrecy Credentials"),
-	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
-      action = menu.addAction
-	(tr("Initiate Forward &Secrecy Exchange(s)..."),
-	 this, SLOT(slotEstablishForwardSecrecy(void)));
-      action->setProperty("type", "chat");
-      action = menu.addAction
-	(tr("Purge Forward &Secrecy Key Pair"),
-	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
-      action->setProperty("type", "chat");
-      action = menu.addAction
-	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
-      action->setProperty("type", "chat");
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/buzz.png").
-			   arg(m_settings.value("gui/iconSet",
-						"nouve").
-			       toString().toLower())),
-		     tr("Invite Selected Participant(s) "
-			"(Anonymous Buzz Channel)..."),
-		     this,
-		     SLOT(slotBuzzInvite(void)))->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.participants->mapToGlobal(point));
-    }
-  else if(m_ui.received == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"), this,
-		     SLOT(slotDeleteReceived(void)));
-      menu.addAction(tr("Delete &All"), this,
-		     SLOT(slotDeleteAllReceived(void)));
-      menu.addSeparator();
-      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
-			      SLOT(slotComputeFileHash(void)));
-      action->setProperty("widget_of", "received");
-      menu.addSeparator();
-      action = menu.addAction(tr("&Copy File Hash"), this,
-			      SLOT(slotCopyFileHash(void)));
-      action->setProperty("widget_of", "received");
-      menu.addSeparator();
-      menu.addAction(tr("Discover &Missing Links..."), this,
-		     SLOT(slotDiscoverMissingLinks(void)));
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.received->mapToGlobal(point));
-    }
-  else if(m_ui.transmitted == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Delete"), this,
-		     SLOT(slotDeleteTransmitted(void)));
-      menu.addAction(tr("Delete &All"), this,
-		     SLOT(slotDeleteAllTransmitted(void)));
-      menu.addSeparator();
-      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
-			      SLOT(slotComputeFileHash(void)));
-      action->setProperty("widget_of", "transmitted");
-      menu.addSeparator();
-      action = menu.addAction(tr("&Copy File Hash"), this,
-			      SLOT(slotCopyFileHash(void)));
-      action->setProperty("widget_of", "transmitted");
-      menu.addSeparator();
-      menu.addAction(tr("Set &Pulse Size..."), this,
-		     SLOT(slotSetSBPulseSize(void)));
-      menu.addAction(tr("Set &Read Interval..."), this,
-		     SLOT(slotSetSBReadInterval(void)));
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.transmitted->mapToGlobal(point));
-    }
-  else if(m_ui.transmittedMagnets == sender())
-    {
-      QMenu menu(this);
-
-      menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyTransmittedMagnet(void)));
-      menu.addAction(tr("&Duplicate Magnet"),
-		     this, SLOT(slotDuplicateTransmittedMagnet(void)));
-      menu.exec(m_ui.transmittedMagnets->mapToGlobal(point));
-    }
-  else if(m_ui.urlParticipants == sender())
-    {
-      QAction *action = 0;
-      QMenu menu(this);
-
-      menu.addAction
-	(QIcon(QString(":/%1/add.png").
-	       arg(m_settings.value("gui/iconSet", "nouve").toString().
-		   toLower())),
-	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareUrlPublicKeyWithParticipant(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/copy.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Copy Keys (Clipboard Buffer)"),
-		     this, SLOT(slotCopyUrlKeys(void)));
-      menu.addAction(QIcon(":/generic/repleo-url.png"),
-		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyUrlFriendshipBundle(void)));
-      menu.addSeparator();
-      menu.addAction(QIcon(QString(":/%1/clear.png").
-			   arg(m_settings.value("gui/iconSet", "nouve").
-			       toString().toLower())),
-		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveUrlParticipants(void)));
-      menu.addSeparator();
-      action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
-      action->setProperty("type", "url");
-      menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
-      menu.exec(m_ui.urlParticipants->mapToGlobal(point));
-    }
-}
-
-void spoton::slotKernelSocketState(void)
-{
-  QAbstractSocket::SocketState state = m_kernelSocket.state();
-
-  if(state == QAbstractSocket::ConnectedState)
-    {
-      m_kernelSocket.setSocketOption
-	(QAbstractSocket::LowDelayOption,
-	 m_settings.value("gui/tcp_nodelay", 1).toInt()); /*
-							  ** Disable Nagle?
-							  */
-      if(m_kernelSocket.isEncrypted() ||
-	 m_ui.kernelKeySize->currentText().toInt() == 0)
-	{
-	  sendKeysToKernel();
-	  askKernelToReadStarBeamKeys();
-	  sendBuzzKeysToKernel();
-
-	  if(m_kernelSocket.isEncrypted())
-	    {
-	      QSslCipher cipher(m_kernelSocket.sessionCipher());
-	      QString str(QString("%1-%2-%3-%4-%5-%6-%7").
-			  arg(cipher.name()).
-			  arg(cipher.authenticationMethod()).
-			  arg(cipher.encryptionMethod()).
-			  arg(cipher.keyExchangeMethod()).
-			  arg(cipher.protocolString()).
-			  arg(cipher.supportedBits()).
-			  arg(cipher.usedBits()));
-
-	      m_sb.kernelstatus->setToolTip
-		(tr("Connected to the kernel on port %1 "
-		    "from local port %2 via cipher %3.").
-		 arg(m_kernelSocket.peerPort()).
-		 arg(m_kernelSocket.localPort()).
-		 arg(str));
-	    }
-	  else
-	    m_sb.kernelstatus->setToolTip
-	      (tr("Connected to the kernel on port %1 "
-		  "from local port %2.").
-	       arg(m_kernelSocket.peerPort()).
-	       arg(m_kernelSocket.localPort()));
-	}
-      else
-	m_sb.kernelstatus->setToolTip
-	  (tr("<html>Connected to the kernel on port %1 "
-	      "from local port %2. Communications between the interface and "
-	      "the kernel have been disabled.</html>").
-	   arg(m_kernelSocket.peerPort()).
-	   arg(m_kernelSocket.localPort()));
-    }
-  else if(state == QAbstractSocket::UnconnectedState)
-    {
-      m_keysShared["buzz_channels_sent_to_kernel"] = "false";
-      m_keysShared["keys_sent_to_kernel"] = "false";
-
-      if(isKernelActive())
-	m_sb.kernelstatus->setToolTip
-	  (tr("<html>The interface is not connected to the kernel. However, "
-	      "the kernel appears to be active. Perhaps the kernel's "
-	      "UI server has been disabled.</html>"));
-      else
-	m_sb.kernelstatus->setToolTip
-	  (tr("The interface is not connected to the kernel. Is the kernel "
-	      "active?"));
     }
 }
