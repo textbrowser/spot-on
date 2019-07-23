@@ -3372,6 +3372,82 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
     }
 }
 
+void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return;
+  else if(!tableWidget)
+    return;
+
+  QString table("");
+
+  if(m_ui.listeners == tableWidget)
+    table = "listeners";
+  else
+    table = "neighbors";
+
+  QString oid("");
+  int row = -1;
+
+  if((row = tableWidget->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = tableWidget->item
+	(row, tableWidget->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       QString("%1.db").arg(table));
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	if(table == "listeners")
+	  query.prepare("UPDATE listeners SET "
+			"echo_mode = ? "
+			"WHERE OID = ?");
+	else
+	  query.prepare("UPDATE neighbors SET "
+			"echo_mode = ? "
+			"WHERE OID = ?");
+
+	query.bindValue
+	  (0, crypt->encryptedThenHashed(mode.toLatin1(), &ok).
+	   toBase64());
+	query.bindValue(1, oid);
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(m_ui.listeners == tableWidget)
+    m_listenersLastModificationTime = QDateTime();
+  else
+    {
+      if(m_neighborsFuture.isFinished())
+	m_neighborsLastModificationTime = QDateTime();
+    }
+}
+
 void spoton::cleanup(void)
 {
   if(m_settings.value("gui/removeOtmOnExit", false).toBool())
@@ -3654,6 +3730,416 @@ void spoton::slotAbout(void)
   mb.setWindowIcon(windowIcon());
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
+}
+
+void spoton::slotAddListener(void)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      return;
+    }
+
+  QByteArray certificate;
+  QByteArray privateKey;
+  QByteArray publicKey;
+  QString error("");
+
+  if(m_ui.listenerTransport->currentIndex() == 2 && // TCP
+     m_ui.permanentCertificate->isChecked() &&
+     m_ui.sslListener->isChecked())
+    {
+      QHostAddress address;
+
+      if(m_ui.recordIPAddress->isChecked())
+	address = m_externalAddress.address();
+
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_sb.status->setText
+	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
+	 arg(m_ui.listenerKeySize->currentText()));
+      m_sb.status->repaint();
+      spoton_crypt::generateSslKeys
+	(m_ui.listenerKeySize->currentText().toInt(),
+	 certificate,
+	 privateKey,
+	 publicKey,
+	 address,
+	 60L * 60L * 24L * static_cast<long int> (m_ui.days_valid->value()),
+	 error);
+      m_sb.status->clear();
+      QApplication::restoreOverrideCursor();
+    }
+  else if(m_ui.listenerTransport->currentIndex() == 3) // UDP
+    {
+      if(spoton_misc::isMulticastAddress(QHostAddress(m_ui.listenerIP->text().
+						      trimmed())))
+	{
+	  QMessageBox::information
+	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	     tr("You're attempting to create a UDP multicast listener. "
+		"Please create a UDP multicast neighbor instead."));
+	  return;
+	}
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(m_ui.permanentCertificate->isChecked() &&
+	 m_ui.sslListener->isChecked())
+	{
+	  QHostAddress address;
+
+	  if(m_ui.recordIPAddress->isChecked())
+	    address = m_externalAddress.address();
+
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+	  m_sb.status->setText
+	    (tr("Generating %1-bit SSL/TLS data. Please be patient.").
+	     arg(m_ui.listenerKeySize->currentText()));
+	  m_sb.status->repaint();
+	  spoton_crypt::generateSslKeys
+	    (m_ui.listenerKeySize->currentText().toInt(),
+	     certificate,
+	     privateKey,
+	     publicKey,
+	     address,
+	     60L * 60L * 24L * static_cast<long int> (m_ui.days_valid->value()),
+	     error);
+	  m_sb.status->clear();
+	  QApplication::restoreOverrideCursor();
+	}
+#endif
+    }
+
+  QString connectionName("");
+  bool ok = true;
+
+  if(!error.isEmpty())
+    {
+      ok = false;
+      spoton_misc::logError
+	(QString("spoton::"
+		 "slotAddListener(): "
+		 "generateSslKeys() failure (%1).").arg(error));
+      goto done_label;
+    }
+
+  prepareDatabasesFromUI();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "listeners.db");
+
+    if(db.open())
+      {
+	QByteArray hash;
+	QString ip("");
+
+	if(m_ui.listenerIPCombo->currentIndex() == 0)
+	  ip = m_ui.listenerIP->text().toLower().trimmed();
+	else
+	  ip = m_ui.listenerIPCombo->currentText();
+
+	QString port(QString::number(m_ui.listenerPort->value()));
+	QString protocol("");
+	QString scopeId(m_ui.listenerScopeId->text());
+	QString sslCS(m_ui.listenersSslControlString->text().trimmed());
+	QString status("online");
+	QString transport("tcp");
+	QSqlQuery query(db);
+
+	if(m_ui.listenerTransport->currentIndex() == 0) // Bluetooth
+	  scopeId = "";
+	else
+	  {
+	    if(m_ui.ipv4Listener->isChecked())
+	      protocol = "IPv4";
+	    else
+	      protocol = "IPv6";
+	  }
+
+	switch(m_ui.listenerTransport->currentIndex())
+	  {
+	  case 0:
+	    {
+	      transport = "bluetooth";
+	      break;
+	    }
+	  case 1:
+	    {
+	      transport = "sctp";
+	      break;
+	    }
+	  case 2:
+	    {
+	      transport = "tcp";
+	      break;
+	    }
+	  case 3:
+	    {
+	      transport = "udp";
+	      break;
+	    }
+	  default:
+	    {
+	      break;
+	    }
+	  }
+
+	query.prepare("INSERT INTO listeners "
+		      "(ip_address, "
+		      "port, "
+		      "protocol, "
+		      "scope_id, "
+		      "status_control, "
+		      "hash, "
+		      "echo_mode, "
+		      "ssl_key_size, "
+		      "certificate, "
+		      "private_key, "
+		      "public_key, "
+		      "transport, "
+		      "share_udp_address, "
+		      "orientation, "
+		      "ssl_control_string) "
+		      "VALUES "
+		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+	if(ip.isEmpty())
+	  query.bindValue
+	    (0, crypt->
+	     encryptedThenHashed(QByteArray(), &ok).toBase64());
+	else if(transport != "bluetooth")
+	  {
+	    QStringList digits;
+	    QStringList list;
+
+	    if(protocol == "IPv4")
+	      list = ip.split(".", QString::KeepEmptyParts);
+	    else
+	      list = ip.split(":", QString::KeepEmptyParts);
+
+	    for(int i = 0; i < list.size(); i++)
+	      digits.append(list.at(i));
+
+	    if(protocol == "IPv4")
+	      {
+		ip = QString::number(digits.value(0).toInt()) + "." +
+		  QString::number(digits.value(1).toInt()) + "." +
+		  QString::number(digits.value(2).toInt()) + "." +
+		  QString::number(digits.value(3).toInt());
+		ip.remove("...");
+	      }
+	    else
+	      {
+		if(m_ui.listenerIPCombo->currentIndex() == 0)
+		  ip = spoton_misc::massageIpForUi(ip, protocol);
+	      }
+
+	    if(ok)
+	      query.bindValue
+		(0, crypt->
+		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+	  }
+	else
+	  {
+	    if(ok)
+	      query.bindValue
+		(0, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
+		 toBase64());
+	  }
+
+	if(ok)
+	  query.bindValue
+	    (1, crypt->
+	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (2, crypt->
+	     encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (3, crypt->
+	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
+
+	query.bindValue(4, status);
+
+	if(ok)
+	  {
+	    hash = crypt->
+	      keyedHash((ip + port + scopeId + transport).toLatin1(), &ok);
+
+	    if(ok)
+	      query.bindValue(5, hash.toBase64());
+	  }
+
+	if(ok)
+	  {
+	    if(m_ui.listenersEchoMode->currentIndex() == 0)
+	      query.bindValue
+		(6, crypt->encryptedThenHashed("full", &ok).toBase64());
+	    else
+	      query.bindValue
+		(6, crypt->encryptedThenHashed("half", &ok).toBase64());
+	  }
+
+	if((m_ui.listenerTransport->currentIndex() == 2        // TCP
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	    || m_ui.listenerTransport->currentIndex() == 3) && // UDP
+#else
+	   ) &&
+#endif
+	   m_ui.sslListener->isChecked())
+	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
+	else
+	  query.bindValue(7, 0);
+
+	if(ok)
+	  query.bindValue
+	    (8, crypt->encryptedThenHashed(certificate, &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (9, crypt->encryptedThenHashed(privateKey, &ok).
+	     toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (10, crypt->encryptedThenHashed(publicKey, &ok).
+	     toBase64());
+
+	switch(m_ui.listenerTransport->currentIndex())
+	  {
+	  case 0:
+	    {
+	      query.bindValue
+		(11, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
+	      break;
+	    }
+	  case 1:
+	    {
+	      query.bindValue
+		(11, crypt->encryptedThenHashed("sctp", &ok).toBase64());
+	      break;
+	    }
+	  case 2:
+	    {
+	      query.bindValue
+		(11, crypt->encryptedThenHashed("tcp", &ok).toBase64());
+	      break;
+	    }
+	  case 3:
+	    {
+	      query.bindValue
+		(11, crypt->encryptedThenHashed("udp", &ok).toBase64());
+	      break;
+	    }
+	  default:
+	    {
+	      break;
+	    }
+	  }
+
+	if(m_ui.listenerShareAddress->isChecked())
+	  query.bindValue(12, 1);
+	else
+	  query.bindValue(12, 0);
+
+	if(m_ui.listenerOrientation->currentIndex() == 0)
+	  query.bindValue
+	    (13, crypt->encryptedThenHashed("packet", &ok).toBase64());
+	else
+	  query.bindValue
+	    (13, crypt->encryptedThenHashed("stream", &ok).toBase64());
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
+					     transport == "udp"))
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
+	  sslCS = "N/A";
+#else
+	if(m_ui.sslListener->isChecked() && transport == "tcp")
+	  {
+	    if(sslCS.isEmpty())
+	      sslCS = spoton_common::SSL_CONTROL_STRING;
+	  }
+	else
+	  sslCS = "N/A";
+#endif
+
+	query.bindValue(14, sslCS);
+
+	if(ok)
+	  ok = query.exec();
+
+	if(ok)
+	  {
+	    /*
+	    ** Add the default Any IP address.
+	    */
+
+	    QSqlQuery query(db);
+
+	    query.prepare("INSERT OR REPLACE INTO listeners_allowed_ips "
+			  "(ip_address, ip_address_hash, listener_oid) "
+			  "VALUES (?, ?, (SELECT OID FROM listeners WHERE "
+			  "hash = ?))");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed("Any", &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue
+		(1, crypt->keyedHash("Any", &ok).toBase64());
+
+	    query.bindValue(2, hash.toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      error = query.lastError().text().trimmed();
+	  }
+      }
+    else
+      {
+	ok = false;
+
+	if(db.lastError().isValid())
+	  error = db.lastError().text();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+ done_label:
+
+  if(ok)
+    m_ui.listenerIP->selectAll();
+  else if(error.isEmpty())
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("Unable to add the specified listener. "
+			     "Please enable logging via the Log Viewer "
+			     "and try again."));
+  else
+    QMessageBox::critical(this, tr("%1: Error").
+			  arg(SPOTON_APPLICATION_NAME),
+			  tr("An error (%1) occurred while attempting "
+			     "to add the specified listener.").arg(error));
 }
 
 void spoton::slotAuthenticate(void)
@@ -4083,6 +4569,37 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotDeleteAllNeighbors(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "neighbors.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(!isKernelActive())
+	  {
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM neighbors");
+	  }
+	else
+	  query.exec("UPDATE neighbors SET "
+		     "status_control = 'deleted' WHERE "
+		     "status_control <> 'deleted'");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton::slotDetachListenerNeighbors(void)
 {
   QString oid("");
@@ -4197,6 +4714,28 @@ void spoton::slotKernelLogEvents(bool state)
   QSettings settings;
 
   settings.setValue("gui/kernelLogEvents", state);
+}
+
+void spoton::slotKernelSocketError(QAbstractSocket::SocketError error)
+{
+  Q_UNUSED(error);
+  spoton_misc::logError
+    (QString("spoton::slotKernelSocketError(): socket error (%1).").
+     arg(m_kernelSocket.errorString()));
+}
+
+void spoton::slotKernelSocketSslErrors(const QList<QSslError> &errors)
+{
+  m_kernelSocket.ignoreSslErrors();
+
+  for(int i = 0; i < errors.size(); i++)
+    spoton_misc::logError
+      (QString("spoton::slotKernelSocketSslErrors(): "
+	       "error (%1) occurred for %2:%3.").
+       arg(errors.at(i).errorString()).
+       arg(m_kernelSocket.peerAddress().isNull() ? m_kernelSocket.peerName() :
+	   m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::slotListenerFullEcho(void)
@@ -4495,6 +5034,612 @@ void spoton::slotPopulateBuzzFavorites(void)
     (m_ui.favorites->itemText(0).length());
 }
 
+void spoton::slotPopulateParticipants(QSqlDatabase *db,
+				      QSqlQuery *query,
+				      const QString &connectionName)
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt || !db || !query)
+    {
+      delete query;
+
+      if(db)
+	db->close();
+
+      delete db;
+      QSqlDatabase::removeDatabase(connectionName);
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<int> rows;  // Chat
+  QList<int> rowsE; // E-Mail
+  QList<int> rowsU; // URLs
+  QModelIndexList list
+    (m_ui.participants->selectionModel()->
+     selectedRows(3)); // public_key_hash
+  QModelIndexList listE
+    (m_ui.emailParticipants->selectionModel()->
+     selectedRows(3)); // public_key_hash
+  QModelIndexList listU
+    (m_ui.urlParticipants->selectionModel()->
+     selectedRows(3)); // public_key_hash
+  QStringList hashes;
+  QStringList hashesE;
+  QStringList hashesU;
+  int hval = m_ui.participants->horizontalScrollBar()->value();
+  int hvalE = m_ui.emailParticipants->horizontalScrollBar()->value();
+  int hvalU = m_ui.urlParticipants->horizontalScrollBar()->value();
+  int row = 0;
+  int rowE = 0;
+  int rowU = 0;
+  int vval = m_ui.participants->verticalScrollBar()->value();
+  int vvalE = m_ui.emailParticipants->verticalScrollBar()->value();
+  int vvalU = m_ui.urlParticipants->verticalScrollBar()->value();
+
+  while(!list.isEmpty())
+    {
+      QVariant data(list.takeFirst().data());
+
+      if(!data.isNull() && data.isValid())
+	hashes.append(data.toString());
+    }
+
+  while(!listE.isEmpty())
+    {
+      QVariant data(listE.takeFirst().data());
+
+      if(!data.isNull() && data.isValid())
+	hashesE.append(data.toString());
+    }
+
+  while(!listU.isEmpty())
+    {
+      QVariant data(listU.takeFirst().data());
+
+      if(!data.isNull() && data.isValid())
+	hashesU.append(data.toString());
+    }
+
+  m_ui.emailParticipants->setSortingEnabled(false);
+  m_ui.emailParticipants->setRowCount(0);
+  m_ui.participants->setSortingEnabled(false);
+  m_ui.participants->setRowCount(0);
+  m_ui.urlParticipants->setSortingEnabled(false);
+  m_ui.urlParticipants->setRowCount(0);
+  disconnect(m_ui.participants,
+	     SIGNAL(itemChanged(QTableWidgetItem *)),
+	     this,
+	     SLOT(slotGeminiChanged(QTableWidgetItem *)));
+
+  QWidget *focusWidget = QApplication::focusWidget();
+
+  while(query->next())
+    {
+      QIcon icon;
+      QString keyType("");
+      QString name("");
+      QString oid(query->value(1).toString());
+      QString status(query->value(4).toString().toLower());
+      QString statusText("");
+      bool ok = true;
+      bool publicKeyContainsPoptastic = false;
+      bool temporary =
+	query->value(2).toLongLong() == -1 ? false : true;
+
+      keyType = crypt->decryptedAfterAuthenticated
+	(QByteArray::fromBase64(query->value(8).toByteArray()),
+	 &ok).constData();
+
+      if(ok)
+	{
+	  QByteArray bytes
+	    (crypt->
+	     decryptedAfterAuthenticated(QByteArray::
+					 fromBase64(query->
+						    value(0).
+						    toByteArray()),
+					 &ok));
+
+	  if(ok)
+	    name = QString::fromUtf8
+	      (bytes.constData(), bytes.length());
+	}
+
+      if(!ok)
+	name = "";
+
+      if(query->value(9).toByteArray().length() < 1024 * 1024)
+	/*
+	** Avoid McEliece keys!
+	*/
+
+	publicKeyContainsPoptastic = crypt->decryptedAfterAuthenticated
+	  (QByteArray::fromBase64(query->value(9).toByteArray()), &ok).
+	  contains("-poptastic");
+
+      if(!isKernelActive())
+	status = "offline";
+
+      for(int i = 0; i < query->record().count(); i++)
+	{
+	  if(i == query->record().count() - 1)
+	    /*
+	    ** Ignore public_key.
+	    */
+
+	    continue;
+
+	  QTableWidgetItem *item = 0;
+
+	  if(keyType == "chat" || keyType == "poptastic")
+	    {
+	      if(i == 0)
+		{
+		  /*
+		  ** Do not increase the table's row count
+		  ** if the participant is offline and the
+		  ** user wishes to hide offline participants or
+		  ** if this is a Poptastic key-less participant.
+		  */
+
+		  if(!((m_ui.hideOfflineParticipants->isChecked() &&
+			status == "offline") || publicKeyContainsPoptastic))
+		    {
+		      row += 1;
+		      m_ui.participants->setRowCount(row);
+		    }
+		}
+
+	      if(i == 0) // Name
+		{
+		  if(name.isEmpty())
+		    {
+		      if(keyType == "chat")
+			name = "unknown";
+		      else
+			name = "unknown@unknown.org";
+		    }
+
+		  item = new QTableWidgetItem(name);
+
+		  if(keyType == "poptastic")
+		    item->setBackground
+		      (QBrush(QColor(137, 207, 240)));
+		}
+	      else if(i == 4) // Status
+		{
+		  QString status(query->value(i).toString().
+				 trimmed());
+
+		  if(status.isEmpty())
+		    status = "offline";
+
+		  if(status.toLower() == "away")
+		    item = new QTableWidgetItem(tr("Away"));
+		  else if(status.toLower() == "busy")
+		    item = new QTableWidgetItem(tr("Busy"));
+		  else if(status.toLower() == "offline")
+		    item = new QTableWidgetItem(tr("Offline"));
+		  else if(status.toLower() == "online")
+		    item = new QTableWidgetItem(tr("Online"));
+		  else
+		    item = new QTableWidgetItem(status);
+
+		  item->setToolTip(item->text());
+		  statusText = item->text();
+		}
+	      else if(i == 6 ||
+		      i == 7) /*
+			      ** Gemini Encryption Key
+			      ** Gemini Hash Key
+			      */
+		{
+		  if(query->isNull(i))
+		    item = new QTableWidgetItem();
+		  else
+		    {
+		      item = new QTableWidgetItem
+			(crypt->decryptedAfterAuthenticated
+			 (QByteArray::fromBase64(query->
+						 value(i).
+						 toByteArray()),
+			  &ok).toBase64().constData());
+
+		      if(!ok)
+			item->setText(tr("error"));
+		    }
+		}
+	      else
+		item = new QTableWidgetItem
+		  (query->value(i).toString());
+
+	      item->setFlags
+		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+	      if(i == 0) // Name
+		{
+		  if(!temporary)
+		    {
+		      if(status == "away")
+			item->setIcon
+			  (QIcon(QString(":/%1/away.png").
+				 arg(m_settings.value("gui/iconSet",
+						      "nouve").
+				     toString().toLower())));
+		      else if(status == "busy")
+			item->setIcon
+			  (QIcon(QString(":/%1/busy.png").
+				 arg(m_settings.value("gui/iconSet",
+						      "nouve").
+				     toString().toLower())));
+		      else if(status == "offline")
+			item->setIcon
+			  (QIcon(QString(":/%1/offline.png").
+				 arg(m_settings.value("gui/iconSet",
+						      "nouve").
+				     toString().toLower())));
+		      else if(status == "online")
+			item->setIcon
+			  (QIcon(QString(":/%1/online.png").
+				 arg(m_settings.value("gui/iconSet",
+						      "nouve").
+				     toString().toLower())));
+		      else
+			item->setIcon
+			  (QIcon(QString(":/%1/chat.png").
+				 arg(m_settings.value("gui/iconSet",
+						      "nouve").
+				     toString().toLower())));
+
+		      item->setToolTip
+			(query->value(3).toString().mid(0, 16) +
+			 "..." +
+			 query->value(3).toString().right(16));
+		    }
+		  else
+		    {
+		      item->setIcon
+			(QIcon(QString(":/%1/add.png").
+			       arg(m_settings.value("gui/iconSet",
+						    "nouve").
+				   toString())));
+		      item->setToolTip
+			(tr("User %1 requests your friendship.").
+			 arg(item->text()));
+		    }
+
+		  icon = item->icon();
+		}
+	      else if(i == 6 ||
+		      i == 7) /*
+			      ** Gemini Encryption Key
+			      ** Gemini Hash Key
+			      */
+		{
+		  if(!temporary)
+		    item->setFlags
+		      (item->flags() | Qt::ItemIsEditable);
+		}
+	      else if(i == 8)
+		{
+		  /*
+		  ** Forward Secrecy Information
+		  */
+
+		  QList<QByteArray> list;
+		  bool ok = true;
+
+		  list = retrieveForwardSecrecyInformation
+		    (oid, &ok);
+
+		  if(ok)
+		    item->setText
+		      (spoton_misc::
+		       forwardSecrecyMagnetFromList(list).
+		       constData());
+		  else
+		    item->setText(tr("error"));
+		}
+
+	      item->setData(Qt::UserRole, temporary);
+	      item->setData
+		(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+
+	      /*
+	      ** Delete the item if the participant is offline
+	      ** and the user wishes to hide offline participants.
+	      ** Please note that the e-mail participants are cloned
+	      ** and do not adhere to this restriction.
+	      */
+
+	      if((m_ui.hideOfflineParticipants->isChecked() &&
+		  status == "offline") || publicKeyContainsPoptastic)
+		{
+		  /*
+		  ** This may be a plain Poptastic participant.
+		  ** It will only be displayed in the E-Mail tab.
+		  */
+
+		  delete item;
+		  item = 0;
+		}
+	      else
+		m_ui.participants->setItem(row - 1, i, item);
+	    }
+
+	  if(keyType == "email" || keyType == "poptastic")
+	    {
+	      if(i == 0)
+		{
+		  rowE += 1;
+		  m_ui.emailParticipants->setRowCount(rowE);
+		}
+
+	      if(i == 0)
+		{
+		  if(name.isEmpty())
+		    {
+		      if(keyType == "email")
+			name = "unknown";
+		      else
+			name = "unknown@unknown.org";
+		    }
+
+		  item = new QTableWidgetItem(name);
+
+		  if(keyType == "email")
+		    item->setIcon
+		      (QIcon(QString(":/%1/key.png").
+			     arg(m_settings.
+				 value("gui/iconSet",
+				       "nouve").toString())));
+		  else if(keyType == "poptastic")
+		    {
+		      if(publicKeyContainsPoptastic)
+			{
+			  item->setBackground
+			    (QBrush(QColor(255, 255, 224)));
+			  item->setData
+			    (Qt::ItemDataRole(Qt::UserRole + 2),
+			     "traditional e-mail");
+			}
+		      else
+			{
+			  item->setBackground
+			    (QBrush(QColor(137, 207, 240)));
+			  item->setIcon
+			    (QIcon(QString(":/%1/key.png").
+				   arg(m_settings.
+				       value("gui/iconSet",
+					     "nouve").toString())));
+			}
+		    }
+		}
+	      else if(i == 1 || i == 2 || i == 3)
+		item = new QTableWidgetItem
+		  (query->value(i).toString());
+	      else if(i == 4)
+		{
+		  if(keyType == "poptastic" && publicKeyContainsPoptastic)
+		    item = new QTableWidgetItem("");
+		  else
+		    {
+		      QList<QByteArray> list;
+		      bool ok = true;
+
+		      list = retrieveForwardSecrecyInformation
+			(oid, &ok);
+
+		      if(ok)
+			item = new QTableWidgetItem
+			  (spoton_misc::
+			   forwardSecrecyMagnetFromList(list).
+			   constData());
+		      else
+			item = new QTableWidgetItem(tr("error"));
+		    }
+		}
+
+	      if(i >= 0 && i <= 4)
+		{
+		  if(i == 0)
+		    {
+		      if(temporary)
+			{
+			  item->setIcon
+			    (QIcon(QString(":/%1/add.png").
+				   arg(m_settings.value("gui/iconSet",
+							"nouve").
+				       toString().toLower())));
+			  item->setToolTip
+			    (tr("User %1 requests your friendship.").
+			     arg(item->text()));
+			}
+		      else
+			item->setToolTip
+			  (query->value(3).toString().mid(0, 16) +
+			   "..." +
+			   query->value(3).toString().right(16));
+		    }
+
+		  item->setData(Qt::UserRole, temporary);
+		  item->setData
+		    (Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+		  item->setFlags
+		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  m_ui.emailParticipants->setItem
+		    (rowE - 1, i, item);
+		}
+	    }
+	  else if(keyType == "url")
+	    {
+	      if(i == 0)
+		{
+		  rowU += 1;
+		  m_ui.urlParticipants->setRowCount(rowU);
+		}
+
+	      if(i == 0)
+		{
+		  if(name.isEmpty())
+		    name = "unknown";
+
+		  item = new QTableWidgetItem(name);
+		}
+	      else if(i == 1 || i == 2 || i == 3)
+		item = new QTableWidgetItem
+		  (query->value(i).toString());
+
+	      if(item)
+		{
+		  if(i == 0)
+		    {
+		      if(temporary)
+			{
+			  item->setIcon
+			    (QIcon(QString(":/%1/add.png").
+				   arg(m_settings.value("gui/iconSet",
+							"nouve").
+				       toString().toLower())));
+			  item->setToolTip
+			    (tr("User %1 requests your friendship.").
+			     arg(item->text()));
+			}
+		      else
+			item->setToolTip
+			  (query->value(3).toString().mid(0, 16) +
+			   "..." +
+			   query->value(3).toString().right(16));
+		    }
+
+		  item->setData(Qt::UserRole, temporary);
+		  item->setFlags
+		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  m_ui.urlParticipants->setItem
+		    (rowU - 1, i, item);
+		}
+	    }
+
+	  if(item)
+	    if(!item->tableWidget())
+	      {
+		spoton_misc::logError
+		  ("spoton::slotPopulateParticipants(): "
+		   "QTableWidgetItem does not have a parent "
+		   "table. Deleting.");
+		delete item;
+		item = 0;
+	      }
+	}
+
+      if(keyType == "chat" || keyType == "poptastic")
+	emit statusChanged(icon, name, oid, statusText);
+
+      if(hashes.contains(query->value(3).toString()))
+	rows.append(row - 1);
+
+      if(hashesE.contains(query->value(3).toString()))
+	rowsE.append(rowE - 1);
+
+      if(hashesU.contains(query->value(3).toString()))
+	rowsU.append(rowU - 1);
+    }
+
+  connect(m_ui.participants,
+	  SIGNAL(itemChanged(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
+  m_ui.emailParticipants->setSelectionMode
+    (QAbstractItemView::MultiSelection);
+  m_ui.participants->setSelectionMode
+    (QAbstractItemView::MultiSelection);
+  m_ui.urlParticipants->setSelectionMode
+    (QAbstractItemView::MultiSelection);
+
+  while(!rows.isEmpty())
+    m_ui.participants->selectRow(rows.takeFirst());
+
+  while(!rowsE.isEmpty())
+    m_ui.emailParticipants->selectRow(rowsE.takeFirst());
+
+  while(!rowsU.isEmpty())
+    m_ui.urlParticipants->selectRow(rowsU.takeFirst());
+
+  m_ui.emailParticipants->setSelectionMode
+    (QAbstractItemView::ExtendedSelection);
+  m_ui.emailParticipants->setSortingEnabled(true);
+  m_ui.emailParticipants->resizeColumnToContents(0);
+  m_ui.emailParticipants->horizontalHeader()->
+    setStretchLastSection(true);
+  m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
+  m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
+  m_ui.participants->resizeColumnToContents
+    (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
+  m_ui.participants->resizeColumnToContents
+    (m_ui.participants->columnCount() - 2); // Gemini Hash Key.
+  m_ui.participants->setSelectionMode
+    (QAbstractItemView::ExtendedSelection);
+  m_ui.participants->setSortingEnabled(true);
+  m_ui.participants->horizontalHeader()->setStretchLastSection(true);
+  m_ui.participants->horizontalScrollBar()->setValue(hval);
+  m_ui.participants->verticalScrollBar()->setValue(vval);
+  m_ui.urlParticipants->setSelectionMode
+    (QAbstractItemView::ExtendedSelection);
+  m_ui.urlParticipants->setSortingEnabled(true);
+  m_ui.urlParticipants->resizeColumnToContents(0);
+  m_ui.urlParticipants->horizontalHeader()->
+    setStretchLastSection(true);
+  m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
+  m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
+
+  if(focusWidget)
+    focusWidget->setFocus();
+
+  delete query;
+
+  if(db)
+    db->close();
+
+  delete db;
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton::slotProxyChecked(bool state)
+{
+  m_ui.proxyHostname->clear();
+  m_ui.proxyHostname->setEnabled(state);
+  m_ui.proxyPassword->clear();
+  m_ui.proxyPort->setEnabled(state);
+  m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
+  disconnect(m_ui.proxyType,
+	     SIGNAL(currentIndexChanged(int)),
+	     this,
+	     SLOT(slotProxyTypeChanged(int)));
+  m_ui.proxyType->setCurrentIndex(0);
+  connect(m_ui.proxyType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotProxyTypeChanged(int)));
+  m_ui.proxyUsername->clear();
+#if SPOTON_GOLDBUG == 0
+  m_ui.proxy_frame->setVisible(state);
+#endif
+}
+
+void spoton::slotProxyTypeChanged(int index)
+{
+  m_ui.proxyHostname->clear();
+  m_ui.proxyHostname->setEnabled(index != 2);
+  m_ui.proxyPassword->clear();
+  m_ui.proxyPort->setEnabled(index != 2);
+  m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
+  m_ui.proxyUsername->clear();
+}
+
 void spoton::slotQuit(void)
 {
   /*
@@ -4639,416 +5784,6 @@ void spoton::slotSignatureCheckBoxToggled(bool state)
 
       settings.setValue(QString("gui/%1").arg(str), state);
     }
-}
-
-void spoton::slotAddListener(void)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
-      return;
-    }
-
-  QByteArray certificate;
-  QByteArray privateKey;
-  QByteArray publicKey;
-  QString error("");
-
-  if(m_ui.listenerTransport->currentIndex() == 2 && // TCP
-     m_ui.permanentCertificate->isChecked() &&
-     m_ui.sslListener->isChecked())
-    {
-      QHostAddress address;
-
-      if(m_ui.recordIPAddress->isChecked())
-	address = m_externalAddress.address();
-
-      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      m_sb.status->setText
-	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
-	 arg(m_ui.listenerKeySize->currentText()));
-      m_sb.status->repaint();
-      spoton_crypt::generateSslKeys
-	(m_ui.listenerKeySize->currentText().toInt(),
-	 certificate,
-	 privateKey,
-	 publicKey,
-	 address,
-	 60L * 60L * 24L * static_cast<long int> (m_ui.days_valid->value()),
-	 error);
-      m_sb.status->clear();
-      QApplication::restoreOverrideCursor();
-    }
-  else if(m_ui.listenerTransport->currentIndex() == 3) // UDP
-    {
-      if(spoton_misc::isMulticastAddress(QHostAddress(m_ui.listenerIP->text().
-						      trimmed())))
-	{
-	  QMessageBox::information
-	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-	     tr("You're attempting to create a UDP multicast listener. "
-		"Please create a UDP multicast neighbor instead."));
-	  return;
-	}
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      if(m_ui.permanentCertificate->isChecked() &&
-	 m_ui.sslListener->isChecked())
-	{
-	  QHostAddress address;
-
-	  if(m_ui.recordIPAddress->isChecked())
-	    address = m_externalAddress.address();
-
-	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-	  m_sb.status->setText
-	    (tr("Generating %1-bit SSL/TLS data. Please be patient.").
-	     arg(m_ui.listenerKeySize->currentText()));
-	  m_sb.status->repaint();
-	  spoton_crypt::generateSslKeys
-	    (m_ui.listenerKeySize->currentText().toInt(),
-	     certificate,
-	     privateKey,
-	     publicKey,
-	     address,
-	     60L * 60L * 24L * static_cast<long int> (m_ui.days_valid->value()),
-	     error);
-	  m_sb.status->clear();
-	  QApplication::restoreOverrideCursor();
-	}
-#endif
-    }
-
-  QString connectionName("");
-  bool ok = true;
-
-  if(!error.isEmpty())
-    {
-      ok = false;
-      spoton_misc::logError
-	(QString("spoton::"
-		 "slotAddListener(): "
-		 "generateSslKeys() failure (%1).").arg(error));
-      goto done_label;
-    }
-
-  prepareDatabasesFromUI();
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
-
-    if(db.open())
-      {
-	QByteArray hash;
-	QString ip("");
-
-	if(m_ui.listenerIPCombo->currentIndex() == 0)
-	  ip = m_ui.listenerIP->text().toLower().trimmed();
-	else
-	  ip = m_ui.listenerIPCombo->currentText();
-
-	QString port(QString::number(m_ui.listenerPort->value()));
-	QString protocol("");
-	QString scopeId(m_ui.listenerScopeId->text());
-	QString sslCS(m_ui.listenersSslControlString->text().trimmed());
-	QString status("online");
-	QString transport("tcp");
-	QSqlQuery query(db);
-
-	if(m_ui.listenerTransport->currentIndex() == 0) // Bluetooth
-	  scopeId = "";
-	else
-	  {
-	    if(m_ui.ipv4Listener->isChecked())
-	      protocol = "IPv4";
-	    else
-	      protocol = "IPv6";
-	  }
-
-	switch(m_ui.listenerTransport->currentIndex())
-	  {
-	  case 0:
-	    {
-	      transport = "bluetooth";
-	      break;
-	    }
-	  case 1:
-	    {
-	      transport = "sctp";
-	      break;
-	    }
-	  case 2:
-	    {
-	      transport = "tcp";
-	      break;
-	    }
-	  case 3:
-	    {
-	      transport = "udp";
-	      break;
-	    }
-	  default:
-	    {
-	      break;
-	    }
-	  }
-
-	query.prepare("INSERT INTO listeners "
-		      "(ip_address, "
-		      "port, "
-		      "protocol, "
-		      "scope_id, "
-		      "status_control, "
-		      "hash, "
-		      "echo_mode, "
-		      "ssl_key_size, "
-		      "certificate, "
-		      "private_key, "
-		      "public_key, "
-		      "transport, "
-		      "share_udp_address, "
-		      "orientation, "
-		      "ssl_control_string) "
-		      "VALUES "
-		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-	if(ip.isEmpty())
-	  query.bindValue
-	    (0, crypt->
-	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-	else if(transport != "bluetooth")
-	  {
-	    QStringList digits;
-	    QStringList list;
-
-	    if(protocol == "IPv4")
-	      list = ip.split(".", QString::KeepEmptyParts);
-	    else
-	      list = ip.split(":", QString::KeepEmptyParts);
-
-	    for(int i = 0; i < list.size(); i++)
-	      digits.append(list.at(i));
-
-	    if(protocol == "IPv4")
-	      {
-		ip = QString::number(digits.value(0).toInt()) + "." +
-		  QString::number(digits.value(1).toInt()) + "." +
-		  QString::number(digits.value(2).toInt()) + "." +
-		  QString::number(digits.value(3).toInt());
-		ip.remove("...");
-	      }
-	    else
-	      {
-		if(m_ui.listenerIPCombo->currentIndex() == 0)
-		  ip = spoton_misc::massageIpForUi(ip, protocol);
-	      }
-
-	    if(ok)
-	      query.bindValue
-		(0, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
-	  }
-	else
-	  {
-	    if(ok)
-	      query.bindValue
-		(0, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
-		 toBase64());
-	  }
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->
-	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, crypt->
-	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
-
-	query.bindValue(4, status);
-
-	if(ok)
-	  {
-	    hash = crypt->
-	      keyedHash((ip + port + scopeId + transport).toLatin1(), &ok);
-
-	    if(ok)
-	      query.bindValue(5, hash.toBase64());
-	  }
-
-	if(ok)
-	  {
-	    if(m_ui.listenersEchoMode->currentIndex() == 0)
-	      query.bindValue
-		(6, crypt->encryptedThenHashed("full", &ok).toBase64());
-	    else
-	      query.bindValue
-		(6, crypt->encryptedThenHashed("half", &ok).toBase64());
-	  }
-
-	if((m_ui.listenerTransport->currentIndex() == 2        // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	    || m_ui.listenerTransport->currentIndex() == 3) && // UDP
-#else
-	   ) &&
-#endif
-	   m_ui.sslListener->isChecked())
-	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
-	else
-	  query.bindValue(7, 0);
-
-	if(ok)
-	  query.bindValue
-	    (8, crypt->encryptedThenHashed(certificate, &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (9, crypt->encryptedThenHashed(privateKey, &ok).
-	     toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (10, crypt->encryptedThenHashed(publicKey, &ok).
-	     toBase64());
-
-	switch(m_ui.listenerTransport->currentIndex())
-	  {
-	  case 0:
-	    {
-	      query.bindValue
-		(11, crypt->encryptedThenHashed("bluetooth", &ok).toBase64());
-	      break;
-	    }
-	  case 1:
-	    {
-	      query.bindValue
-		(11, crypt->encryptedThenHashed("sctp", &ok).toBase64());
-	      break;
-	    }
-	  case 2:
-	    {
-	      query.bindValue
-		(11, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	      break;
-	    }
-	  case 3:
-	    {
-	      query.bindValue
-		(11, crypt->encryptedThenHashed("udp", &ok).toBase64());
-	      break;
-	    }
-	  default:
-	    {
-	      break;
-	    }
-	  }
-
-	if(m_ui.listenerShareAddress->isChecked())
-	  query.bindValue(12, 1);
-	else
-	  query.bindValue(12, 0);
-
-	if(m_ui.listenerOrientation->currentIndex() == 0)
-	  query.bindValue
-	    (13, crypt->encryptedThenHashed("packet", &ok).toBase64());
-	else
-	  query.bindValue
-	    (13, crypt->encryptedThenHashed("stream", &ok).toBase64());
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
-					     transport == "udp"))
-	  {
-	    if(sslCS.isEmpty())
-	      sslCS = spoton_common::SSL_CONTROL_STRING;
-	  }
-	else
-	  sslCS = "N/A";
-#else
-	if(m_ui.sslListener->isChecked() && transport == "tcp")
-	  {
-	    if(sslCS.isEmpty())
-	      sslCS = spoton_common::SSL_CONTROL_STRING;
-	  }
-	else
-	  sslCS = "N/A";
-#endif
-
-	query.bindValue(14, sslCS);
-
-	if(ok)
-	  ok = query.exec();
-
-	if(ok)
-	  {
-	    /*
-	    ** Add the default Any IP address.
-	    */
-
-	    QSqlQuery query(db);
-
-	    query.prepare("INSERT OR REPLACE INTO listeners_allowed_ips "
-			  "(ip_address, ip_address_hash, listener_oid) "
-			  "VALUES (?, ?, (SELECT OID FROM listeners WHERE "
-			  "hash = ?))");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed("Any", &ok).toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash("Any", &ok).toBase64());
-
-	    query.bindValue(2, hash.toBase64());
-
-	    if(ok)
-	      ok = query.exec();
-
-	    if(query.lastError().isValid())
-	      error = query.lastError().text().trimmed();
-	  }
-      }
-    else
-      {
-	ok = false;
-
-	if(db.lastError().isValid())
-	  error = db.lastError().text();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
- done_label:
-
-  if(ok)
-    m_ui.listenerIP->selectAll();
-  else if(error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to add the specified listener. "
-			     "Please enable logging via the Log Viewer "
-			     "and try again."));
-  else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred while attempting "
-			     "to add the specified listener.").arg(error));
 }
 
 void spoton::slotAddNeighbor(void)
@@ -9799,739 +10534,4 @@ void spoton::slotDeleteAllListeners(void)
   QSqlDatabase::removeDatabase(connectionName);
   m_ui.accounts->clear();
   m_ui.ae_tokens->setRowCount(0);
-}
-
-void spoton::slotDeleteAllNeighbors(void)
-{
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	if(!isKernelActive())
-	  {
-	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM neighbors");
-	  }
-	else
-	  query.exec("UPDATE neighbors SET "
-		     "status_control = 'deleted' WHERE "
-		     "status_control <> 'deleted'");
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotPopulateParticipants(QSqlDatabase *db,
-				      QSqlQuery *query,
-				      const QString &connectionName)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt || !db || !query)
-    {
-      delete query;
-
-      if(db)
-	db->close();
-
-      delete db;
-      QSqlDatabase::removeDatabase(connectionName);
-      return;
-    }
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QList<int> rows;  // Chat
-  QList<int> rowsE; // E-Mail
-  QList<int> rowsU; // URLs
-  QModelIndexList list
-    (m_ui.participants->selectionModel()->
-     selectedRows(3)); // public_key_hash
-  QModelIndexList listE
-    (m_ui.emailParticipants->selectionModel()->
-     selectedRows(3)); // public_key_hash
-  QModelIndexList listU
-    (m_ui.urlParticipants->selectionModel()->
-     selectedRows(3)); // public_key_hash
-  QStringList hashes;
-  QStringList hashesE;
-  QStringList hashesU;
-  int hval = m_ui.participants->horizontalScrollBar()->value();
-  int hvalE = m_ui.emailParticipants->horizontalScrollBar()->value();
-  int hvalU = m_ui.urlParticipants->horizontalScrollBar()->value();
-  int row = 0;
-  int rowE = 0;
-  int rowU = 0;
-  int vval = m_ui.participants->verticalScrollBar()->value();
-  int vvalE = m_ui.emailParticipants->verticalScrollBar()->value();
-  int vvalU = m_ui.urlParticipants->verticalScrollBar()->value();
-
-  while(!list.isEmpty())
-    {
-      QVariant data(list.takeFirst().data());
-
-      if(!data.isNull() && data.isValid())
-	hashes.append(data.toString());
-    }
-
-  while(!listE.isEmpty())
-    {
-      QVariant data(listE.takeFirst().data());
-
-      if(!data.isNull() && data.isValid())
-	hashesE.append(data.toString());
-    }
-
-  while(!listU.isEmpty())
-    {
-      QVariant data(listU.takeFirst().data());
-
-      if(!data.isNull() && data.isValid())
-	hashesU.append(data.toString());
-    }
-
-  m_ui.emailParticipants->setSortingEnabled(false);
-  m_ui.emailParticipants->setRowCount(0);
-  m_ui.participants->setSortingEnabled(false);
-  m_ui.participants->setRowCount(0);
-  m_ui.urlParticipants->setSortingEnabled(false);
-  m_ui.urlParticipants->setRowCount(0);
-  disconnect(m_ui.participants,
-	     SIGNAL(itemChanged(QTableWidgetItem *)),
-	     this,
-	     SLOT(slotGeminiChanged(QTableWidgetItem *)));
-
-  QWidget *focusWidget = QApplication::focusWidget();
-
-  while(query->next())
-    {
-      QIcon icon;
-      QString keyType("");
-      QString name("");
-      QString oid(query->value(1).toString());
-      QString status(query->value(4).toString().toLower());
-      QString statusText("");
-      bool ok = true;
-      bool publicKeyContainsPoptastic = false;
-      bool temporary =
-	query->value(2).toLongLong() == -1 ? false : true;
-
-      keyType = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(8).toByteArray()),
-	 &ok).constData();
-
-      if(ok)
-	{
-	  QByteArray bytes
-	    (crypt->
-	     decryptedAfterAuthenticated(QByteArray::
-					 fromBase64(query->
-						    value(0).
-						    toByteArray()),
-					 &ok));
-
-	  if(ok)
-	    name = QString::fromUtf8
-	      (bytes.constData(), bytes.length());
-	}
-
-      if(!ok)
-	name = "";
-
-      if(query->value(9).toByteArray().length() < 1024 * 1024)
-	/*
-	** Avoid McEliece keys!
-	*/
-
-	publicKeyContainsPoptastic = crypt->decryptedAfterAuthenticated
-	  (QByteArray::fromBase64(query->value(9).toByteArray()), &ok).
-	  contains("-poptastic");
-
-      if(!isKernelActive())
-	status = "offline";
-
-      for(int i = 0; i < query->record().count(); i++)
-	{
-	  if(i == query->record().count() - 1)
-	    /*
-	    ** Ignore public_key.
-	    */
-
-	    continue;
-
-	  QTableWidgetItem *item = 0;
-
-	  if(keyType == "chat" || keyType == "poptastic")
-	    {
-	      if(i == 0)
-		{
-		  /*
-		  ** Do not increase the table's row count
-		  ** if the participant is offline and the
-		  ** user wishes to hide offline participants or
-		  ** if this is a Poptastic key-less participant.
-		  */
-
-		  if(!((m_ui.hideOfflineParticipants->isChecked() &&
-			status == "offline") || publicKeyContainsPoptastic))
-		    {
-		      row += 1;
-		      m_ui.participants->setRowCount(row);
-		    }
-		}
-
-	      if(i == 0) // Name
-		{
-		  if(name.isEmpty())
-		    {
-		      if(keyType == "chat")
-			name = "unknown";
-		      else
-			name = "unknown@unknown.org";
-		    }
-
-		  item = new QTableWidgetItem(name);
-
-		  if(keyType == "poptastic")
-		    item->setBackground
-		      (QBrush(QColor(137, 207, 240)));
-		}
-	      else if(i == 4) // Status
-		{
-		  QString status(query->value(i).toString().
-				 trimmed());
-
-		  if(status.isEmpty())
-		    status = "offline";
-
-		  if(status.toLower() == "away")
-		    item = new QTableWidgetItem(tr("Away"));
-		  else if(status.toLower() == "busy")
-		    item = new QTableWidgetItem(tr("Busy"));
-		  else if(status.toLower() == "offline")
-		    item = new QTableWidgetItem(tr("Offline"));
-		  else if(status.toLower() == "online")
-		    item = new QTableWidgetItem(tr("Online"));
-		  else
-		    item = new QTableWidgetItem(status);
-
-		  item->setToolTip(item->text());
-		  statusText = item->text();
-		}
-	      else if(i == 6 ||
-		      i == 7) /*
-			      ** Gemini Encryption Key
-			      ** Gemini Hash Key
-			      */
-		{
-		  if(query->isNull(i))
-		    item = new QTableWidgetItem();
-		  else
-		    {
-		      item = new QTableWidgetItem
-			(crypt->decryptedAfterAuthenticated
-			 (QByteArray::fromBase64(query->
-						 value(i).
-						 toByteArray()),
-			  &ok).toBase64().constData());
-
-		      if(!ok)
-			item->setText(tr("error"));
-		    }
-		}
-	      else
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
-
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-	      if(i == 0) // Name
-		{
-		  if(!temporary)
-		    {
-		      if(status == "away")
-			item->setIcon
-			  (QIcon(QString(":/%1/away.png").
-				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
-		      else if(status == "busy")
-			item->setIcon
-			  (QIcon(QString(":/%1/busy.png").
-				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
-		      else if(status == "offline")
-			item->setIcon
-			  (QIcon(QString(":/%1/offline.png").
-				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
-		      else if(status == "online")
-			item->setIcon
-			  (QIcon(QString(":/%1/online.png").
-				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
-		      else
-			item->setIcon
-			  (QIcon(QString(":/%1/chat.png").
-				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
-
-		      item->setToolTip
-			(query->value(3).toString().mid(0, 16) +
-			 "..." +
-			 query->value(3).toString().right(16));
-		    }
-		  else
-		    {
-		      item->setIcon
-			(QIcon(QString(":/%1/add.png").
-			       arg(m_settings.value("gui/iconSet",
-						    "nouve").
-				   toString())));
-		      item->setToolTip
-			(tr("User %1 requests your friendship.").
-			 arg(item->text()));
-		    }
-
-		  icon = item->icon();
-		}
-	      else if(i == 6 ||
-		      i == 7) /*
-			      ** Gemini Encryption Key
-			      ** Gemini Hash Key
-			      */
-		{
-		  if(!temporary)
-		    item->setFlags
-		      (item->flags() | Qt::ItemIsEditable);
-		}
-	      else if(i == 8)
-		{
-		  /*
-		  ** Forward Secrecy Information
-		  */
-
-		  QList<QByteArray> list;
-		  bool ok = true;
-
-		  list = retrieveForwardSecrecyInformation
-		    (oid, &ok);
-
-		  if(ok)
-		    item->setText
-		      (spoton_misc::
-		       forwardSecrecyMagnetFromList(list).
-		       constData());
-		  else
-		    item->setText(tr("error"));
-		}
-
-	      item->setData(Qt::UserRole, temporary);
-	      item->setData
-		(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
-
-	      /*
-	      ** Delete the item if the participant is offline
-	      ** and the user wishes to hide offline participants.
-	      ** Please note that the e-mail participants are cloned
-	      ** and do not adhere to this restriction.
-	      */
-
-	      if((m_ui.hideOfflineParticipants->isChecked() &&
-		  status == "offline") || publicKeyContainsPoptastic)
-		{
-		  /*
-		  ** This may be a plain Poptastic participant.
-		  ** It will only be displayed in the E-Mail tab.
-		  */
-
-		  delete item;
-		  item = 0;
-		}
-	      else
-		m_ui.participants->setItem(row - 1, i, item);
-	    }
-
-	  if(keyType == "email" || keyType == "poptastic")
-	    {
-	      if(i == 0)
-		{
-		  rowE += 1;
-		  m_ui.emailParticipants->setRowCount(rowE);
-		}
-
-	      if(i == 0)
-		{
-		  if(name.isEmpty())
-		    {
-		      if(keyType == "email")
-			name = "unknown";
-		      else
-			name = "unknown@unknown.org";
-		    }
-
-		  item = new QTableWidgetItem(name);
-
-		  if(keyType == "email")
-		    item->setIcon
-		      (QIcon(QString(":/%1/key.png").
-			     arg(m_settings.
-				 value("gui/iconSet",
-				       "nouve").toString())));
-		  else if(keyType == "poptastic")
-		    {
-		      if(publicKeyContainsPoptastic)
-			{
-			  item->setBackground
-			    (QBrush(QColor(255, 255, 224)));
-			  item->setData
-			    (Qt::ItemDataRole(Qt::UserRole + 2),
-			     "traditional e-mail");
-			}
-		      else
-			{
-			  item->setBackground
-			    (QBrush(QColor(137, 207, 240)));
-			  item->setIcon
-			    (QIcon(QString(":/%1/key.png").
-				   arg(m_settings.
-				       value("gui/iconSet",
-					     "nouve").toString())));
-			}
-		    }
-		}
-	      else if(i == 1 || i == 2 || i == 3)
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
-	      else if(i == 4)
-		{
-		  if(keyType == "poptastic" && publicKeyContainsPoptastic)
-		    item = new QTableWidgetItem("");
-		  else
-		    {
-		      QList<QByteArray> list;
-		      bool ok = true;
-
-		      list = retrieveForwardSecrecyInformation
-			(oid, &ok);
-
-		      if(ok)
-			item = new QTableWidgetItem
-			  (spoton_misc::
-			   forwardSecrecyMagnetFromList(list).
-			   constData());
-		      else
-			item = new QTableWidgetItem(tr("error"));
-		    }
-		}
-
-	      if(i >= 0 && i <= 4)
-		{
-		  if(i == 0)
-		    {
-		      if(temporary)
-			{
-			  item->setIcon
-			    (QIcon(QString(":/%1/add.png").
-				   arg(m_settings.value("gui/iconSet",
-							"nouve").
-				       toString().toLower())));
-			  item->setToolTip
-			    (tr("User %1 requests your friendship.").
-			     arg(item->text()));
-			}
-		      else
-			item->setToolTip
-			  (query->value(3).toString().mid(0, 16) +
-			   "..." +
-			   query->value(3).toString().right(16));
-		    }
-
-		  item->setData(Qt::UserRole, temporary);
-		  item->setData
-		    (Qt::ItemDataRole(Qt::UserRole + 1), keyType);
-		  item->setFlags
-		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  m_ui.emailParticipants->setItem
-		    (rowE - 1, i, item);
-		}
-	    }
-	  else if(keyType == "url")
-	    {
-	      if(i == 0)
-		{
-		  rowU += 1;
-		  m_ui.urlParticipants->setRowCount(rowU);
-		}
-
-	      if(i == 0)
-		{
-		  if(name.isEmpty())
-		    name = "unknown";
-
-		  item = new QTableWidgetItem(name);
-		}
-	      else if(i == 1 || i == 2 || i == 3)
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
-
-	      if(item)
-		{
-		  if(i == 0)
-		    {
-		      if(temporary)
-			{
-			  item->setIcon
-			    (QIcon(QString(":/%1/add.png").
-				   arg(m_settings.value("gui/iconSet",
-							"nouve").
-				       toString().toLower())));
-			  item->setToolTip
-			    (tr("User %1 requests your friendship.").
-			     arg(item->text()));
-			}
-		      else
-			item->setToolTip
-			  (query->value(3).toString().mid(0, 16) +
-			   "..." +
-			   query->value(3).toString().right(16));
-		    }
-
-		  item->setData(Qt::UserRole, temporary);
-		  item->setFlags
-		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  m_ui.urlParticipants->setItem
-		    (rowU - 1, i, item);
-		}
-	    }
-
-	  if(item)
-	    if(!item->tableWidget())
-	      {
-		spoton_misc::logError
-		  ("spoton::slotPopulateParticipants(): "
-		   "QTableWidgetItem does not have a parent "
-		   "table. Deleting.");
-		delete item;
-		item = 0;
-	      }
-	}
-
-      if(keyType == "chat" || keyType == "poptastic")
-	emit statusChanged(icon, name, oid, statusText);
-
-      if(hashes.contains(query->value(3).toString()))
-	rows.append(row - 1);
-
-      if(hashesE.contains(query->value(3).toString()))
-	rowsE.append(rowE - 1);
-
-      if(hashesU.contains(query->value(3).toString()))
-	rowsU.append(rowU - 1);
-    }
-
-  connect(m_ui.participants,
-	  SIGNAL(itemChanged(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
-  m_ui.emailParticipants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
-  m_ui.participants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
-  m_ui.urlParticipants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
-
-  while(!rows.isEmpty())
-    m_ui.participants->selectRow(rows.takeFirst());
-
-  while(!rowsE.isEmpty())
-    m_ui.emailParticipants->selectRow(rowsE.takeFirst());
-
-  while(!rowsU.isEmpty())
-    m_ui.urlParticipants->selectRow(rowsU.takeFirst());
-
-  m_ui.emailParticipants->setSelectionMode
-    (QAbstractItemView::ExtendedSelection);
-  m_ui.emailParticipants->setSortingEnabled(true);
-  m_ui.emailParticipants->resizeColumnToContents(0);
-  m_ui.emailParticipants->horizontalHeader()->
-    setStretchLastSection(true);
-  m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
-  m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
-  m_ui.participants->resizeColumnToContents
-    (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
-  m_ui.participants->resizeColumnToContents
-    (m_ui.participants->columnCount() - 2); // Gemini Hash Key.
-  m_ui.participants->setSelectionMode
-    (QAbstractItemView::ExtendedSelection);
-  m_ui.participants->setSortingEnabled(true);
-  m_ui.participants->horizontalHeader()->setStretchLastSection(true);
-  m_ui.participants->horizontalScrollBar()->setValue(hval);
-  m_ui.participants->verticalScrollBar()->setValue(vval);
-  m_ui.urlParticipants->setSelectionMode
-    (QAbstractItemView::ExtendedSelection);
-  m_ui.urlParticipants->setSortingEnabled(true);
-  m_ui.urlParticipants->resizeColumnToContents(0);
-  m_ui.urlParticipants->horizontalHeader()->
-    setStretchLastSection(true);
-  m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
-  m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
-
-  if(focusWidget)
-    focusWidget->setFocus();
-
-  delete query;
-
-  if(db)
-    db->close();
-
-  delete db;
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotProxyTypeChanged(int index)
-{
-  m_ui.proxyHostname->clear();
-  m_ui.proxyHostname->setEnabled(index != 2);
-  m_ui.proxyPassword->clear();
-  m_ui.proxyPort->setEnabled(index != 2);
-  m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
-  m_ui.proxyUsername->clear();
-}
-
-void spoton::slotProxyChecked(bool state)
-{
-  m_ui.proxyHostname->clear();
-  m_ui.proxyHostname->setEnabled(state);
-  m_ui.proxyPassword->clear();
-  m_ui.proxyPort->setEnabled(state);
-  m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
-  disconnect(m_ui.proxyType,
-	     SIGNAL(currentIndexChanged(int)),
-	     this,
-	     SLOT(slotProxyTypeChanged(int)));
-  m_ui.proxyType->setCurrentIndex(0);
-  connect(m_ui.proxyType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotProxyTypeChanged(int)));
-  m_ui.proxyUsername->clear();
-#if SPOTON_GOLDBUG == 0
-  m_ui.proxy_frame->setVisible(state);
-#endif
-}
-
-void spoton::slotKernelSocketError(QAbstractSocket::SocketError error)
-{
-  Q_UNUSED(error);
-  spoton_misc::logError
-    (QString("spoton::slotKernelSocketError(): socket error (%1).").
-     arg(m_kernelSocket.errorString()));
-}
-
-void spoton::slotKernelSocketSslErrors(const QList<QSslError> &errors)
-{
-  m_kernelSocket.ignoreSslErrors();
-
-  for(int i = 0; i < errors.size(); i++)
-    spoton_misc::logError
-      (QString("spoton::slotKernelSocketSslErrors(): "
-	       "error (%1) occurred for %2:%3.").
-       arg(errors.at(i).errorString()).
-       arg(m_kernelSocket.peerAddress().isNull() ? m_kernelSocket.peerName() :
-	   m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
-}
-
-void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
-{
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-  else if(!tableWidget)
-    return;
-
-  QString table("");
-
-  if(m_ui.listeners == tableWidget)
-    table = "listeners";
-  else
-    table = "neighbors";
-
-  QString oid("");
-  int row = -1;
-
-  if((row = tableWidget->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = tableWidget->item
-	(row, tableWidget->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  if(oid.isEmpty())
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       QString("%1.db").arg(table));
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	if(table == "listeners")
-	  query.prepare("UPDATE listeners SET "
-			"echo_mode = ? "
-			"WHERE OID = ?");
-	else
-	  query.prepare("UPDATE neighbors SET "
-			"echo_mode = ? "
-			"WHERE OID = ?");
-
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(mode.toLatin1(), &ok).
-	   toBase64());
-	query.bindValue(1, oid);
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(m_ui.listeners == tableWidget)
-    m_listenersLastModificationTime = QDateTime();
-  else
-    {
-      if(m_neighborsFuture.isFinished())
-	m_neighborsLastModificationTime = QDateTime();
-    }
 }
