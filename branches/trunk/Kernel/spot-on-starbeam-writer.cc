@@ -539,6 +539,10 @@ void spoton_starbeam_writer::processData
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  /*
+  ** Produce a response.
+  */
 }
 
 void spoton_starbeam_writer::run(void)

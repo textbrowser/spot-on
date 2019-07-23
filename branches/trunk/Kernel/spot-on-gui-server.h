@@ -120,8 +120,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotTimeout(void);
 
  signals:
-  void buzzMagnetReceivedFromUI(const qint64 oid,
-				const QByteArray &magnet);
+  void buzzMagnetReceivedFromUI(const qint64 oid, const QByteArray &magnet);
   void buzzReceivedFromUI(const QByteArray &channel,
 			  const QByteArray &channelType,
 			  const QByteArray &name,
@@ -132,12 +131,10 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 			  const QByteArray &hashKey,
 			  const QByteArray &hashType,
 			  const QByteArray &dateTime);
-  void callParticipant(const QByteArray &keyType,
-		       const qint64 oid);
+  void callParticipant(const QByteArray &keyType, const qint64 oid);
   void callParticipantUsingForwardSecrecy(const QByteArray &keyType,
 					  const qint64 oid);
-  void callParticipantUsingGemini(const QByteArray &keyType,
-				  const qint64 oid);
+  void callParticipantUsingGemini(const QByteArray &keyType, const qint64 oid);
   void detachNeighbors(const qint64 oid);
   void disconnectNeighbors(const qint64 oid);
   void echoKeyShare(const QByteArrayList &list);

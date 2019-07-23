@@ -1020,6 +1020,10 @@ spoton::spoton(void):QMainWindow()
   ** Connect m_optionsUi's items.
   */
 
+  connect(m_optionsUi.acceptGeminis,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAcceptGeminis(bool)));
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
@@ -1088,6 +1092,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotImpersonate(bool)));
+  connect(m_optionsUi.kernelCacheInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.kernel_url_batch_size,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -2095,10 +2103,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(double)),
 	  this,
 	  SLOT(slotUpdateSpinBoxChanged(double)));
-  connect(m_optionsUi.kernelCacheInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_ui.discover,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2107,8 +2111,6 @@ spoton::spoton(void):QMainWindow()
 	  this, SLOT(slotPageClicked(const QString &)));
   connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
 	  this, SLOT(slotPostgreSQLDisconnect(int)));
-  connect(m_optionsUi.acceptGeminis, SIGNAL(toggled(bool)),
-	  this, SLOT(slotAcceptGeminis(bool)));
   connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
 	  this, SLOT(slotConfigurePoptastic(void)));
   connect(m_ui.action_Buzz,

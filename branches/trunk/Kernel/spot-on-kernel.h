@@ -88,8 +88,7 @@ class spoton_kernel: public QObject
 					      const QByteArray &hash);
   static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
   static QPointer<spoton_kernel> instance(void);
-  static QVariant setting(const QString &name,
-			  const QVariant &defaultValue);
+  static QVariant setting(const QString &name, const QVariant &defaultValue);
   static bool duplicateEmailRequests(const QByteArray &data);
   static bool duplicateGeminis(const QByteArray &data);
   static bool messagingCacheContains(const QByteArray &data,
@@ -229,8 +228,7 @@ class spoton_kernel: public QObject
 			   const QByteArray &timestamp,
 			   const QByteArray &signature,
 			   const QString &messageType);
-  void updateStatistics(const QDateTime &uptime,
-			const QVector<int> &integers);
+  void updateStatistics(const QDateTime &uptime, const QVector<int> &integers);
 
  private slots:
   void slotBuzzMagnetReceivedFromUI(const qint64 oid,
@@ -248,8 +246,7 @@ class spoton_kernel: public QObject
   void slotCallParticipant(const QByteArray &publicKeyHash,
 			   const QByteArray &gemini,
 			   const QByteArray &geminiHashKey);
-  void slotCallParticipant(const QByteArray &keyType,
-			   const qint64 oid);
+  void slotCallParticipant(const QByteArray &keyType, const qint64 oid);
   void slotCallParticipantUsingForwardSecrecy(const QByteArray &keyType,
 					      const qint64 oid);
   void slotCallParticipantUsingGemini(const QByteArray &keyType,
@@ -309,14 +306,12 @@ class spoton_kernel: public QObject
   void slotUpdateSettings(void);
 
  signals:
-  void callParticipant(const QByteArray &data,
-		       const QString &messageType);
+  void callParticipant(const QByteArray &data, const QString &messageType);
   void forwardSecrecyRequest(const QByteArrayList &list);
   void forwardSecrecyResponseReceived(const QByteArrayList &list);
   void newEMailArrived(void);
   void poppedMessage(const QByteArray &message);
-  void publicizeListenerPlaintext(const QByteArray &data,
-				  const qint64 id);
+  void publicizeListenerPlaintext(const QByteArray &data, const qint64 id);
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void publicizeListenerPlaintext(const QBluetoothAddress &address,
 				  const quint16 port,
