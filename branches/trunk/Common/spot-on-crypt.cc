@@ -909,8 +909,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
   return encrypted;
 }
 
-QByteArray spoton_crypt::encryptedThenHashed(const QByteArray &data,
-					     bool *ok)
+QByteArray spoton_crypt::encryptedThenHashed(const QByteArray &data, bool *ok)
 {
   QByteArray bytes1(encrypted(data, ok));
   QByteArray bytes2;

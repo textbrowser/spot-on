@@ -255,27 +255,28 @@ class spoton_misc
 				    spoton_crypt *crypt);
   static void setTimeVariables(const QHash<QString, QVariant> &settings);
   static void vacuumAllDatabases(void);
-  template<typename T>
-    static T readSharedResource(T *resource, QReadWriteLock &mutex)
-    {
-      QReadLocker locker(&mutex);
-      T value = T();
 
-      if(resource)
-	value = *resource;
+  template<typename T> static T readSharedResource(T *resource,
+						   QReadWriteLock &mutex)
+  {
+    QReadLocker locker(&mutex);
+    T value = T();
 
-      return value;
-    }
-  template<typename T>
-    static void setSharedResource(T *resource,
-				  const T &value,
-				  QReadWriteLock &mutex)
-    {
-      QWriteLocker locker(&mutex);
+    if(resource)
+      value = *resource;
 
-      if(resource)
-	*resource = value;
-    }
+    return value;
+  }
+
+  template<typename T> static void setSharedResource(T *resource,
+						     const T &value,
+						     QReadWriteLock &mutex)
+  {
+    QWriteLocker locker(&mutex);
+
+    if(resource)
+      *resource = value;
+  }
 
  private:
   static QAtomicInt s_enableLog;

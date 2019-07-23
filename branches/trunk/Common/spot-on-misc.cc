@@ -745,8 +745,8 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   return forwardSecrecyKeys;
 }
 
-QList<QHash<QString, QVariant> > spoton_misc::
-poptasticSettings(const QString &in_username, spoton_crypt *crypt, bool *ok)
+QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
+(const QString &in_username, spoton_crypt *crypt, bool *ok)
 {
   if(!crypt)
     {
