@@ -28,4 +28,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN-POWERPC-QT4 spot-on-debian/DEBIAN
 cp -r /usr/local/spot-on-qt4 spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2019.07.07_qt4_powerpc.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2019.08.08_qt4_powerpc.deb
