@@ -507,8 +507,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      if(ok)
 			hash = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::
-			   fromBase64(query.value(2).toByteArray()),
+			  (QByteArray::fromBase64(query.value(2).toByteArray()),
 			   &ok);
 
 		      if(ok)
@@ -562,8 +561,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      if(ok)
 			nova = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::
-			   fromBase64(query.value(4).toByteArray()),
+			  (QByteArray::fromBase64(query.value(4).toByteArray()),
 			   &ok);
 
 		      if(ok)
@@ -584,10 +582,8 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      if(ok)
 			fileSize = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::
-			   fromBase64(query.value(9).toByteArray()),
-			   &ok).
-			  constData();
+			  (QByteArray::fromBase64(query.value(9).toByteArray()),
+			   &ok).constData();
 
 		      if(ok)
 			{
