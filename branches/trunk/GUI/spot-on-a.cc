@@ -1020,6 +1020,18 @@ spoton::spoton(void):QMainWindow()
   ** Connect m_optionsUi's items.
   */
 
+  connect(m_optionsUi.acceptPublishedConnected,
+	  SIGNAL(pressed(void)),
+	  this,
+	  SLOT(slotAcceptPublicizedListeners(void)));
+  connect(m_optionsUi.acceptPublishedDisconnected,
+	  SIGNAL(pressed(void)),
+	  this,
+	  SLOT(slotAcceptPublicizedListeners(void)));
+  connect(m_optionsUi.acceptPublishedLocalConnected,
+	  SIGNAL(pressed(void)),
+	  this,
+	  SLOT(slotAcceptPublicizedListeners(void)));
   connect(m_optionsUi.acceptGeminis,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1088,10 +1100,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotExternalIp(int)));
+  connect(m_optionsUi.ignorePublished,
+	  SIGNAL(pressed(void)),
+	  this,
+	  SLOT(slotAcceptPublicizedListeners(void)));
   connect(m_optionsUi.impersonate,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotImpersonate(bool)));
+  connect(m_optionsUi.keepOnlyUserDefinedNeighbors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotKeepOnlyUserDefinedNeighbors(bool)));
   connect(m_optionsUi.kernelCacheInterval,
 	  SIGNAL(valueChanged(double)),
 	  this,
@@ -1539,26 +1559,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotCommonBuzzChannelsActivated(int)));
-  connect(m_optionsUi.acceptPublishedLocalConnected,
-	  SIGNAL(pressed(void)),
-	  this,
-	  SLOT(slotAcceptPublicizedListeners(void)));
-  connect(m_optionsUi.acceptPublishedConnected,
-	  SIGNAL(pressed(void)),
-	  this,
-	  SLOT(slotAcceptPublicizedListeners(void)));
-  connect(m_optionsUi.acceptPublishedDisconnected,
-	  SIGNAL(pressed(void)),
-	  this,
-	  SLOT(slotAcceptPublicizedListeners(void)));
-  connect(m_optionsUi.ignorePublished,
-	  SIGNAL(pressed(void)),
-	  this,
-	  SLOT(slotAcceptPublicizedListeners(void)));
-  connect(m_optionsUi.keepOnlyUserDefinedNeighbors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotKeepOnlyUserDefinedNeighbors(bool)));
   connect(m_ui.clearOutgoing,
 	  SIGNAL(clicked(void)),
 	  this,
