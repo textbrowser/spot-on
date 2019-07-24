@@ -42,8 +42,7 @@ extern "C"
 }
 #endif
 
-spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):
-  QThread(parent)
+spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QThread(parent)
 {
 }
 
@@ -156,9 +155,10 @@ void spoton_starbeam_writer::processData
 
   bool ok = true;
   spoton_crypt crypt(magnet.value("ct").constData(),
-		     "",
+		     magnet.value("ht").constData(),
 		     QByteArray(),
 		     magnet.value("ek"),
+		     magnet.value("mk"),
 		     0,
 		     0,
 		     "");
@@ -376,7 +376,6 @@ void spoton_starbeam_writer::processData
   qint64 pulseSize = qAbs(list.value(6).toLongLong());
   qint64 totalSize = qAbs(list.value(4).toLongLong());
 
-  Q_UNUSED(id);
   Q_UNUSED(ultra);
 
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data

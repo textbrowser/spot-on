@@ -113,8 +113,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>604</width>
-             <height>672</height>
+             <width>605</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1235,8 +1235,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>668</width>
-             <height>652</height>
+             <width>649</width>
+             <height>627</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2739,8 +2739,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
-             <height>1924</height>
+             <width>515</width>
+             <height>1902</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3965,8 +3965,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>646</width>
-             <height>652</height>
+             <width>629</width>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5048,8 +5048,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>614</width>
-             <height>652</height>
+             <width>611</width>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5124,9 +5124,9 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-282</y>
-                 <width>696</width>
-                 <height>624</height>
+                 <y>0</y>
+                 <width>671</width>
+                 <height>606</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6300,8 +6300,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>864</width>
-             <height>1301</height>
+             <width>831</width>
+             <height>1283</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7773,8 +7773,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
-             <height>805</height>
+             <width>585</width>
+             <height>1013</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7845,6 +7845,16 @@ color: rgb(255, 255, 255);</string>
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_129">
+                  <property name="text">
+                   <string>Please do not remove magnets until the respective StarBeam transfers have completed.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QTableWidget" name="etpMagnets">
@@ -9037,8 +9047,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>604</width>
-             <height>672</height>
+             <width>605</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10585,7 +10595,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

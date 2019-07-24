@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>826</width>
-             <height>543</height>
+             <height>546</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -448,8 +448,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>429</width>
-                <height>504</height>
+                <width>422</width>
+                <height>502</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -868,8 +868,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>880</width>
-             <height>691</height>
+             <width>866</width>
+             <height>686</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2064,8 +2064,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>709</width>
-             <height>440</height>
+             <width>690</width>
+             <height>433</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2759,8 +2759,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>278</width>
-                     <height>1466</height>
+                     <width>268</width>
+                     <height>1451</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3241,8 +3241,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>834</width>
-             <height>263</height>
+             <width>817</width>
+             <height>262</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3643,8 +3643,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>761</width>
-                  <height>496</height>
+                  <width>745</width>
+                  <height>486</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4473,8 +4473,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>704</width>
-                 <height>667</height>
+                 <width>679</width>
+                 <height>649</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5369,8 +5369,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>895</width>
-             <height>1219</height>
+             <width>861</width>
+             <height>1204</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6472,7 +6472,7 @@
              <x>0</x>
              <y>0</y>
              <width>806</width>
-             <height>601</height>
+             <height>716</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -6537,6 +6537,16 @@
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_95">
+                  <property name="text">
+                   <string>Please do not remove magnets until the respective StarBeam transfers have completed.</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QTableWidget" name="etpMagnets">
@@ -7511,8 +7521,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>696</width>
-             <height>521</height>
+             <width>679</width>
+             <height>517</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8090,8 +8100,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>278</width>
-             <height>155</height>
+             <width>265</width>
+             <height>152</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8312,7 +8322,7 @@
      <x>0</x>
      <y>0</y>
      <width>850</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
