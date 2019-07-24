@@ -505,6 +505,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.mail->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.missing_links_frame->setVisible(false);
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -651,6 +652,7 @@ spoton::spoton(void):QMainWindow()
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()).
      arg(qversion));
+  m_ui.action_StarBeam_Analyzer->setEnabled(false); // Deprecated.
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);

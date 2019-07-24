@@ -15,7 +15,7 @@
     <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QHBoxLayout" name="horizontalLayout_28">
     <property name="spacing">
      <number>5</number>
     </property>
@@ -3643,7 +3643,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>745</width>
+                  <width>777</width>
                   <height>486</height>
                  </rect>
                 </property>
@@ -7375,34 +7375,33 @@
                      </layout>
                     </item>
                     <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_74">
-                      <property name="spacing">
-                       <number>5</number>
-                      </property>
-                      <item>
-                       <widget class="QCheckBox" name="missingLinksCheckBox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="text">
-                         <string>&amp;Missing Links Magnet</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="missingLinks"/>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="demagnetizeMissingLinks">
-                        <property name="text">
-                         <string>Demagnetize</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
+                     <widget class="QFrame" name="missing_links_frame">
+                      <layout class="QHBoxLayout" name="horizontalLayout_45">
+                       <item>
+                        <widget class="QCheckBox" name="missingLinksCheckBox">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="text">
+                          <string>&amp;Missing Links Magnet</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QLineEdit" name="missingLinks"/>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="demagnetizeMissingLinks">
+                         <property name="text">
+                          <string>Demagnetize</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </widget>
                     </item>
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_44">
