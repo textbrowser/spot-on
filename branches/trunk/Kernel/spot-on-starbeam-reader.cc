@@ -41,19 +41,21 @@
 spoton_starbeam_reader::spoton_starbeam_reader
 (const qint64 id, const double readInterval, QObject *parent):QObject(parent)
 {
+  connect(&m_expiredResponse,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotExpiredResponseTimeout(void)));
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  m_expectedReponseWindow = 15000;
+  m_expiredResponse.setInterval(15000);
+  m_expiredResponse.setSingleShot(true);
   m_fragmented = false;
   m_id = id;
-  m_lastResponse = QDateTime::currentMSecsSinceEpoch();
-  m_missingLinksIterator = 0;
   m_neighborIndex = 0;
   m_position = 0;
   m_rc = 0;
-  m_read = true;
   m_readInterval = qBound(0.100, readInterval, 60.000);
   m_timer.start(static_cast<int> (1000 * m_readInterval));
   m_ultra = true;
@@ -61,6 +63,7 @@ spoton_starbeam_reader::spoton_starbeam_reader
 
 spoton_starbeam_reader::~spoton_starbeam_reader()
 {
+  m_expiredResponse.stop();
   m_readFuture.cancel();
   m_readFuture.waitForFinished();
   m_timer.stop();
@@ -94,8 +97,6 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  delete m_missingLinksIterator;
-  m_missingLinksIterator = 0;
 }
 
 QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
@@ -333,8 +334,16 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 
   if(ok)
     if(spoton_kernel::instance())
-      spoton_kernel::instance()->writeMessage006X
-	(data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
+      {
+	spoton_kernel::instance()->writeMessage006X
+	  (data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
+
+	if(ok)
+	  {
+	    m_expiredResponse.start();
+	    m_timer.stop();
+	  }
+      }
 }
 
 void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
@@ -402,27 +411,25 @@ void spoton_starbeam_reader::slotAcknowledgePosition(const qint64 id,
 
   if(m_position == position)
     {
-      m_lastResponse = QDateTime::currentMSecsSinceEpoch();
-      m_read = false;
+      m_expiredResponse.stop();
+      m_position = qAbs(m_position + m_rc); // +=
+
+      if(!m_timer.isActive())
+	m_timer.start();
 
       QString status("completed");
 
-      if(m_missingLinksIterator)
-	{
-	  if(!m_missingLinksIterator->hasNext())
-	    m_position = QFileInfo(m_fileName).size();
-	}
-      else
-	m_position = qAbs(m_position + m_rc); // +=
-
       if(m_position < QFileInfo(m_fileName).size())
-	{
-	  m_read = true;
-	  status = "transmitting";
-	}
+	status = "transmitting";
 
       savePositionAndStatus(status);
     }
+}
+
+void spoton_starbeam_reader::slotExpiredResponseTimeout(void)
+{
+  if(!m_timer.isActive())
+    m_timer.start();
 }
 
 void spoton_starbeam_reader::slotTimeout(void)
@@ -473,18 +480,14 @@ void spoton_starbeam_reader::slotTimeout(void)
 		  status = query.value(8).toString().toLower();
 
 		  if(status == "completed")
-		    m_timer.stop();
+		    {
+		      m_expiredResponse.stop();
+		      m_timer.stop();
+		    }
 		  else if(status == "deleted")
 		    shouldDelete = true;
 		  else if(m_position >= 0 && status == "transmitting")
 		    {
-		      if(!m_read)
-			{
-			  if(QDateTime::currentMSecsSinceEpoch() -
-			     m_lastResponse <= m_expectedReponseWindow)
-			    goto done_label;
-			}
-
 		      QByteArray bytes;
 		      QByteArray hash;
 		      QByteArray nova;
@@ -511,65 +514,10 @@ void spoton_starbeam_reader::slotTimeout(void)
 			   &ok);
 
 		      if(ok)
-			if(!m_missingLinksIterator)
-			  {
-			    QByteArray bytes
-			      (s_crypt->
-			       decryptedAfterAuthenticated
-			       (QByteArray::
-				fromBase64(query.value(3).toByteArray()),
-				&ok));
-
-			    if(ok)
-			      {
-				if(!bytes.isEmpty())
-				  m_missingLinks = bytes.split(',');
-
-				if(!m_missingLinks.isEmpty())
-				  {
-				    try
-				      {
-					m_missingLinksIterator = new
-					  QListIterator<QByteArray>
-					  (m_missingLinks);
-				      }
-				    catch(const std::bad_alloc &exception)
-				      {
-					m_missingLinksIterator = 0;
-				      }
-				    catch(...)
-				      {
-					delete m_missingLinksIterator;
-					m_missingLinksIterator = 0;
-					spoton_misc::logError
-					  ("spoton_starbeam_reader::"
-					   "slotTimeout(): critical "
-					   "failure.");
-				      }
-
-				    if(Q_LIKELY(m_missingLinksIterator))
-				      m_missingLinksIterator->toFront();
-				    else
-				      spoton_misc::logError
-					("spoton_starbeam_reader::"
-					 "slotTimeout(): memory "
-					 "failure.");
-				  }
-			      }
-			  }
-
-		      if(ok)
 			nova = s_crypt->
 			  decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.value(4).toByteArray()),
 			   &ok);
-
-		      if(ok)
-			if(!m_missingLinksIterator)
-			  m_position = s_crypt->decryptedAfterAuthenticated
-			    (QByteArray::
-			     fromBase64(query.value(5).toByteArray()),
-			     &ok).toLongLong();
 
 		      if(ok)
 			pulseSize = s_crypt->
@@ -605,33 +553,21 @@ void spoton_starbeam_reader::slotTimeout(void)
 				   m_magnets.value(qrand() % m_magnets.count()),
 				   nova, hash, pair.second, s_crypt);
 
-			      m_lastResponse =
-				QDateTime::currentMSecsSinceEpoch();
 			      m_rc = pair.second;
 			      m_readFuture =
 				QFuture<QPair<QByteArray, qint64> > ();
 			    }
 			  else if(m_readFuture.isFinished())
-			    {
-			      if(m_missingLinksIterator &&
-				 m_missingLinksIterator->hasNext())
-				{
-				  QByteArray bytes
-				    (m_missingLinksIterator->next());
-
-				  if(!bytes.isEmpty())
-				    m_position = qAbs(bytes.toLongLong());
-				}
-
-			      m_read = false;
-			      m_readFuture = QtConcurrent::run
-				(this, &spoton_starbeam_reader::read,
-				 fileName, pulseSize, m_position);
-			    }
+			    m_readFuture = QtConcurrent::run
+			      (this,
+			       &spoton_starbeam_reader::read,
+			       fileName,
+			       pulseSize,
+			       m_position);
 			}
 		    }
 		}
-	    }
+	  }
       }
 
     db.close();
