@@ -1058,6 +1058,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotChatTimestamps(bool)));
+  connect(m_optionsUi.chatUpdateInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.chat_fs_request,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1110,6 +1114,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(double)),
 	  this,
 	  SLOT(slotUpdateSpinBoxChanged(double)));
+  connect(m_optionsUi.kernelUpdateInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.kernel_url_batch_size,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1122,6 +1130,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotLimitConnections(int)));
+  connect(m_optionsUi.listenersUpdateInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.maximum_url_keywords_interface,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1134,6 +1146,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  m_notificationsUi.monitor,
 	  SLOT(setChecked(bool)));
+  connect(m_optionsUi.neighborsUpdateInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.notifications,
 	  SIGNAL(toggled(bool)),
 	  m_notificationsUi.activate,
@@ -1186,6 +1202,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveStarBeamAutoVerify(bool)));
+  connect(m_optionsUi.starbeamUpdateInterval,
+	  SIGNAL(valueChanged(double)),
+	  this,
+	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_optionsUi.terminate_kernel_on_ui_exit,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2057,26 +2077,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPostgreSQLConnect(void)));
-  connect(m_optionsUi.chatUpdateInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
-  connect(m_optionsUi.kernelUpdateInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
-  connect(m_optionsUi.listenersUpdateInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
-  connect(m_optionsUi.neighborsUpdateInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
-  connect(m_optionsUi.starbeamUpdateInterval,
-	  SIGNAL(valueChanged(double)),
-	  this,
-	  SLOT(slotUpdateSpinBoxChanged(double)));
   connect(m_ui.discover,
 	  SIGNAL(clicked(void)),
 	  this,
