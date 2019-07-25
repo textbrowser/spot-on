@@ -1094,6 +1094,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_optionsUi.emailRetrievalInterval,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMailRetrievalIntervalChanged(int)));
   connect(m_optionsUi.email_fs_request,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1114,6 +1118,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotExternalIp(int)));
+  connect(m_optionsUi.guiSecureMemoryPool,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSecureMemoryPoolChanged(int)));
   connect(m_optionsUi.ignorePublished,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -1150,6 +1158,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(double)),
 	  this,
 	  SLOT(slotUpdateSpinBoxChanged(double)));
+  connect(m_optionsUi.maximumEmailFileSize,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaximumEmailFileSizeChanged(int)));
   connect(m_optionsUi.maximum_url_keywords_interface,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1190,6 +1202,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
+  connect(m_optionsUi.publishPeriodically,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotPublishPeriodicallyToggled(bool)));
   connect(m_optionsUi.publishedKeySize,
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
@@ -1737,22 +1753,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotDaysChanged(int)));
-  connect(m_optionsUi.maximumEmailFileSize,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotMaximumEmailFileSizeChanged(int)));
   connect(m_ui.etpMaxMosaicSize,
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotMaxMosaicSize(int)));
-  connect(m_optionsUi.emailRetrievalInterval,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotMailRetrievalIntervalChanged(int)));
-  connect(m_optionsUi.guiSecureMemoryPool,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotSecureMemoryPoolChanged(int)));
   connect(m_ui.kernelSecureMemoryPool,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1797,10 +1801,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  m_ui.days_valid,
 	  SLOT(setEnabled(bool)));
-  connect(m_optionsUi.publishPeriodically,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotPublishPeriodicallyToggled(bool)));
   connect(m_ui.hideOfflineParticipants,
 	  SIGNAL(toggled(bool)),
 	  this,
