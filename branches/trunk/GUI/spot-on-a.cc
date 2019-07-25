@@ -1014,6 +1014,10 @@ spoton::spoton(void):QMainWindow()
   ** Connect m_optionsUi's items.
   */
 
+  connect(m_optionsUi.acceptBuzzMagnets,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAcceptBuzzMagnets(bool)));
   connect(m_optionsUi.acceptPublishedConnected,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -1038,6 +1042,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAutoAddSharedSBMagnets(bool)));
+  connect(m_optionsUi.autoEmailRetrieve,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAutoRetrieveEmail(bool)));
   connect(m_optionsUi.buzzAutoJoin,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1078,6 +1086,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotDisableSynchronousUrlImport(bool)));
+  connect(m_optionsUi.displayPopups,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotDisplayPopups(bool)));
   connect(m_optionsUi.emailAlternatingRowColors,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1086,6 +1098,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.forceRegistration,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotForceKernelRegistration(bool)));
   connect(m_optionsUi.geoipPath4,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -1162,6 +1178,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotOntopChatDialogs(bool)));
+  connect(m_optionsUi.openlinks,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSaveOpenLinks(bool)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1941,10 +1961,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  m_ui.generate,
 	  SLOT(setEnabled(bool)));
-  connect(m_optionsUi.autoEmailRetrieve,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAutoRetrieveEmail(bool)));
   connect(m_ui.generate,
 	  SIGNAL(activated(int)),
 	  this,
@@ -1969,14 +1985,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRewindFile(void)));
-  connect(m_optionsUi.acceptBuzzMagnets,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAcceptBuzzMagnets(bool)));
-  connect(m_optionsUi.forceRegistration,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotForceKernelRegistration(bool)));
   connect(m_ui.action_SMP,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2005,14 +2013,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddInstitution(void)));
-  connect(m_optionsUi.displayPopups,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotDisplayPopups(bool)));
-  connect(m_optionsUi.openlinks,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSaveOpenLinks(bool)));
   connect(m_ui.selectAttachment,
 	  SIGNAL(clicked(void)),
 	  this,
