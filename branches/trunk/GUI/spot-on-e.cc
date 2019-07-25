@@ -2178,6 +2178,33 @@ void spoton::slotShareStarBeam(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
+		       "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("INSERT OR REPLACE INTO "
+		      "magnets (magnet, magnet_hash) "
+		      "VALUES (?, ?)");
+	query.bindValue(0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(1, crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotShowOptions(void)
