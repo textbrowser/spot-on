@@ -1190,6 +1190,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotPostgreSQLKernelUrlDistributionTimeout(int)));
+  connect(m_optionsUi.publishedKeySize,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotPublishedKeySizeChanged(const QString &)));
   connect(m_optionsUi.refreshEmail,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1198,6 +1202,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotRemoveOtmOnExit(bool)));
+  connect(m_optionsUi.saveSslControlString,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveSslControlString(void)));
   connect(m_optionsUi.scrambler,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1218,6 +1226,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveSharePrivateKeys(bool)));
+  connect(m_optionsUi.sslControlString,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveSslControlString(void)));
   connect(m_optionsUi.starbeamAutoVerify,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1226,10 +1238,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(double)),
 	  this,
 	  SLOT(slotUpdateSpinBoxChanged(double)));
+  connect(m_optionsUi.superEcho,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSuperEcho(int)));
   connect(m_optionsUi.terminate_kernel_on_ui_exit,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotTerminateKernelOnUIExit(bool)));
+  connect(m_optionsUi.testSslControlString,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotTestSslControlString(void)));
   connect(m_optionsUi.urlsAlternatingRowColors,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1789,10 +1809,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotProxyTypeChanged(int)));
-  connect(m_optionsUi.publishedKeySize,
-	  SIGNAL(currentIndexChanged(const QString &)),
-	  this,
-	  SLOT(slotPublishedKeySizeChanged(const QString &)));
   connect(m_ui.congestionAlgorithm,
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
@@ -1801,10 +1817,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
 	  SLOT(slotKernelKeySizeChanged(const QString &)));
-  connect(m_optionsUi.superEcho,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotSuperEcho(int)));
   connect(m_ui.kernelLogEvents,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1829,10 +1841,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDeleteAEToken(void)));
-  connect(m_optionsUi.sslControlString,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveSslControlString(void)));
   connect(m_ui.addNova,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1861,10 +1869,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotDiscover(void)));
-  connect(m_optionsUi.saveSslControlString,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveSslControlString(void)));
   connect(m_ui.join,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1917,10 +1921,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddAcceptedIP(void)));
-  connect(m_optionsUi.testSslControlString,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotTestSslControlString(void)));
   connect(m_ui.addAccount,
 	  SIGNAL(clicked(void)),
 	  this,
