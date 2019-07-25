@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>649</width>
-             <height>627</height>
+             <height>654</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2739,8 +2739,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>515</width>
-             <height>1902</height>
+             <width>585</width>
+             <height>1884</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3966,7 +3966,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>629</width>
-             <height>582</height>
+             <height>654</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5049,7 +5049,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>611</width>
-             <height>383</height>
+             <height>654</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5606,7 +5606,7 @@ QPushButton:pressed {
                    <item>
                     <widget class="QLabel" name="label_118">
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The INI path may reference the absolute path of the Dooble.ini file. On Unix systems, this file usually resides in ~/.dooble. On Windows systems, the Dooble.ini file usually resides in the directory that also houses the Dooble.exe file. The credentials are stored in an SQLite database. Please note that both Dooble and Spot-On must reference the same shared.db database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The INI path may reference the absolute path of the Dooble.ini file. On Unix systems, this file usually resides in ~/.dooble. On Windows systems, the Dooble.ini file usually resides in the directory that also houses the Dooble.exe file. The credentials are stored in an SQLite database. Please note that both Dooble and GoldBug must reference the same shared.db database.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -7774,7 +7774,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>585</width>
-             <height>1013</height>
+             <height>1037</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7849,7 +7849,7 @@ color: rgb(255, 255, 255);</string>
                 <item>
                  <widget class="QLabel" name="label_129">
                   <property name="text">
-                   <string>Please do not remove magnets until the respective StarBeam transfers have completed.</string>
+                   <string>Please do not remove magnets until the respective StarBeam have completed.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -8157,6 +8157,16 @@ QPushButton:pressed {
                    <property name="margin">
                     <number>5</number>
                    </property>
+                   <item>
+                    <widget class="QLabel" name="label_130">
+                     <property name="text">
+                      <string>Please do not remove novas until the respective StarBeam have completed.</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
                    <item>
                     <widget class="QListWidget" name="novas">
                      <property name="tabKeyNavigation">
@@ -8475,7 +8485,7 @@ QPushButton:pressed {
                     <item>
                      <widget class="QLabel" name="label_117">
                       <property name="text">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A lock request may not be immediate because of the asynchronous nature of Spot-On. If a file is locked, its write permissions will be revoked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A lock request may not be immediate because of the asynchronous nature of GoldBug. If a file is locked, its write permissions will be revoked.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="wordWrap">
                        <bool>true</bool>
@@ -9014,8 +9024,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>463</width>
-             <height>527</height>
+             <width>605</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

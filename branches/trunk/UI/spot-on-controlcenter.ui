@@ -5369,7 +5369,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>831</width>
+             <width>861</width>
              <height>1204</height>
             </rect>
            </property>
@@ -6541,7 +6541,7 @@
                 <item>
                  <widget class="QLabel" name="label_95">
                   <property name="text">
-                   <string>Please do not remove magnets until the respective StarBeam transfers have completed.</string>
+                   <string>Please do not remove magnets until the respective StarBeam have completed.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -6849,6 +6849,16 @@
                     <property name="margin">
                      <number>5</number>
                     </property>
+                    <item>
+                     <widget class="QLabel" name="label_96">
+                      <property name="text">
+                       <string>Please do not remove novas until the respective StarBeam have completed.</string>
+                      </property>
+                      <property name="wordWrap">
+                       <bool>true</bool>
+                      </property>
+                     </widget>
+                    </item>
                     <item>
                      <widget class="QListWidget" name="novas">
                       <property name="tabKeyNavigation">
