@@ -6457,6 +6457,8 @@ void spoton::slotPopulateBuzzFavorites(void)
   else
     m_buzzFavoritesLastModificationTime = QDateTime();
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QMap<QByteArray, QByteArray> map;
   QString connectionName("");
 
@@ -6604,6 +6606,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 
   m_ui.favorites->setMinimumContentsLength
     (m_ui.favorites->itemText(0).length());
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotPopulateListeners(void)
@@ -6639,6 +6642,8 @@ void spoton::slotPopulateListeners(void)
     }
   else
     m_listenersLastModificationTime = QDateTime();
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
 
@@ -7277,6 +7282,7 @@ void spoton::slotPopulateListeners(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
   populateAETokens();
 }
 

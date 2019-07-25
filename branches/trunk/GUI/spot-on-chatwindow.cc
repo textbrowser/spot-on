@@ -631,6 +631,17 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	   toBase64());
 	QSqlQuery query(db);
 
+	query.prepare("INSERT OR REPLACE INTO "
+		      "magnets (magnet, magnet_hash) "
+		      "VALUES (?, ?)");
+	query.bindValue(0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+
+	if(ok)
+	  query.bindValue(1, crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  ok = query.exec();
+
 	query.prepare("INSERT INTO transmitted "
 		      "(file, hash, mosaic, nova, "
 		      "position, pulse_size, read_interval, "
@@ -716,35 +727,6 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	if(db.lastError().isValid())
 	  error = db.lastError().text().trimmed();
       }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("INSERT OR REPLACE INTO "
-		      "magnets (magnet, magnet_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue(1, crypt->keyedHash(magnet, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-      }
-    else
-      ok = false;
 
     db.close();
   }

@@ -508,6 +508,8 @@ void spoton::populateNovas(void)
   if(!crypt)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -556,6 +558,7 @@ void spoton::populateNovas(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
@@ -3049,6 +3052,8 @@ void spoton::slotPopulateEtpMagnets(void)
   else
     m_magnetsLastModificationTime = QDateTime();
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -3157,6 +3162,7 @@ void spoton::slotPopulateEtpMagnets(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotPopulateStars(void)
@@ -3187,6 +3193,8 @@ void spoton::slotPopulateStars(void)
     }
   else
     m_starsLastModificationTime = QDateTime();
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
 
@@ -3697,6 +3705,7 @@ void spoton::slotPopulateStars(void)
 
  done_label:
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotReceiversClicked(bool state)
@@ -4396,6 +4405,25 @@ void spoton::slotTransmit(void)
       {
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+	QByteArray nova(m_ui.transmitNova->text().toLatin1());
+
+	if(!nova.isEmpty())
+	  {
+	    QSqlQuery query(db);
+
+	    query.prepare
+	      ("INSERT OR REPLACE INTO received_novas "
+	       "(nova, nova_hash) VALUES (?, ?)");
+	    query.bindValue
+	      (0, crypt->encryptedThenHashed(nova, &ok).toBase64());
+
+	    if(ok)
+	      query.bindValue(1, crypt->keyedHash(nova, &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
+
 	QByteArray mosaic
 	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
 	   toBase64());
@@ -4430,8 +4458,7 @@ void spoton::slotTransmit(void)
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->encryptedThenHashed(m_ui.transmitNova->text().
-					toLatin1(), &ok).toBase64());
+	    (crypt->encryptedThenHashed(nova, &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -4452,7 +4479,7 @@ void spoton::slotTransmit(void)
 				 &ok).toBase64());
 
 	if(ok)
-	  query.exec();
+	  ok = query.exec();
 
 	for(int i = 0; i < magnets.size(); i++)
 	  {
@@ -4473,7 +4500,7 @@ void spoton::slotTransmit(void)
 	      query.addBindValue(encryptedMosaic.toBase64());
 
 	    if(ok)
-	      query.exec();
+	      ok = query.exec();
 	    else
 	      break;
 
@@ -4490,7 +4517,7 @@ void spoton::slotTransmit(void)
 	      (crypt->keyedHash(magnets.at(i), &ok).toBase64());
 
 	    if(ok)
-	      query.exec();
+	      ok = query.exec();
 	  }
 
 	QApplication::restoreOverrideCursor();
@@ -4521,6 +4548,7 @@ void spoton::slotTransmit(void)
       m_ui.pulseSize->setValue(15000);
       m_ui.transmitNova->clear();
       m_ui.transmittedFile->clear();
+      populateNovas();
     }
 }
 

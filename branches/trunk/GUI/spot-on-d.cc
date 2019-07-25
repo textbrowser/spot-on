@@ -349,6 +349,8 @@ void spoton::populateAETokens(void)
   if(!crypt)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -465,6 +467,7 @@ void spoton::populateAETokens(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::populateMOTD(const QString &listenerOid)
