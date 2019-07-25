@@ -65,7 +65,6 @@ extern "C"
 #include "spot-on-reencode.h"
 #include "spot-on-rss.h"
 #include "spot-on-smp.h"
-#include "spot-on-starbeamanalyzer.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
@@ -481,7 +480,6 @@ spoton::spoton(void):QMainWindow()
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(0);
-  m_starbeamAnalyzer = new spoton_starbeamanalyzer(0);
   m_starbeamDigestInterrupt = 0;
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
@@ -505,7 +503,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.mail->setContextMenuPolicy(Qt::CustomContextMenu);
-  m_ui.missing_links_frame->setVisible(false);
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -652,7 +649,6 @@ spoton::spoton(void):QMainWindow()
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()).
      arg(qversion));
-  m_ui.action_StarBeam_Analyzer->setEnabled(false); // Deprecated.
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
@@ -865,10 +861,6 @@ spoton::spoton(void):QMainWindow()
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_rosetta,
-	  SLOT(slotSetIcons(void)));
-  connect(this,
-	  SIGNAL(iconsChanged(void)),
-	  m_starbeamAnalyzer,
 	  SLOT(slotSetIcons(void)));
   connect(this,
 	  SIGNAL(neighborsQueryReady(QSqlDatabase *,
@@ -1969,10 +1961,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowSMPWindow(void)));
-  connect(m_ui.action_StarBeam_Analyzer,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowStarBeamAnalyzer(void)));
   connect(m_ui.action_Notifications_Window,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1981,22 +1969,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowStatisticsWindow(void)));
-  connect(m_ui.demagnetizeMissingLinks,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDemagnetizeMissingLinks(void)));
-  connect(m_ui.missingLinksCheckBox,
-	  SIGNAL(clicked(void)),
-	  m_ui.missingLinks,
-	  SLOT(clear(void)));
-  connect(m_ui.missingLinksCheckBox,
-	  SIGNAL(toggled(bool)),
-	  m_ui.demagnetizeMissingLinks,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.missingLinksCheckBox,
-	  SIGNAL(toggled(bool)),
-	  m_ui.missingLinks,
-	  SLOT(setEnabled(bool)));
   connect(m_ui.addInstitutionCheckBox,
 	  SIGNAL(toggled(bool)),
 	  m_ui.addInstitutionLineEdit,
@@ -2230,7 +2202,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.listenerScopeId->setEnabled(false);
   m_ui.listenerScopeIdLabel->setEnabled(false);
   m_ui.listenerShareAddress->setEnabled(false);
-  m_ui.missingLinks->setEnabled(false);
   m_ui.neighborIP->setInputMask("");
   m_ui.neighborScopeId->setEnabled(false);
   m_ui.neighborScopeIdLabel->setEnabled(false);
@@ -3566,7 +3537,6 @@ void spoton::cleanup(void)
   m_optionsWindow->deleteLater();
   m_releaseNotes->deleteLater();
   m_rss->deleteLater();
-  m_starbeamAnalyzer->deleteLater();
   m_statisticsWindow->deleteLater();
   QApplication::instance()->quit();
 }
@@ -10072,9 +10042,6 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Copy File Hash"), this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
-      menu.addSeparator();
-      menu.addAction(tr("Discover &Missing Links..."), this,
-		     SLOT(slotDiscoverMissingLinks(void)));
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.received->mapToGlobal(point));
     }

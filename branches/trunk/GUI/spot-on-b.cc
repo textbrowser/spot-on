@@ -5214,19 +5214,6 @@ void spoton::slotReceivedKernelMessage(void)
 		      str.append("</a>");
 		      content = str;
 		    }
-		  else if(spoton_misc::
-			  isValidStarBeamMissingLinksMagnet(content.
-							    toLatin1()))
-		    {
-		      QString str("");
-
-		      str.prepend("<a href='");
-		      str.append(content);
-		      str.append("'>");
-		      str.append(content);
-		      str.append("</a>");
-		      content = str;
-		    }
 
 		  if(m_settings.value("gui/enableChatEmoticons", false).
 		     toBool())

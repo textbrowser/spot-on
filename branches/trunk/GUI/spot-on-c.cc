@@ -1206,9 +1206,6 @@ void spoton::prepareContextMenuMirrors(void)
       action = menu->addAction(tr("&Copy File Hash"), this,
 			       SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
-      menu->addSeparator();
-      menu->addAction(tr("Discover &Missing Links..."), this,
-		      SLOT(slotDiscoverMissingLinks(void)));
       m_ui.receivedActionMenu->setMenu(menu);
       connect(m_ui.receivedActionMenu,
 	      SIGNAL(clicked(void)),
@@ -4406,78 +4403,51 @@ void spoton::slotTransmit(void)
 
 	query.prepare("INSERT INTO transmitted "
 		      "(file, fragmented, "
-		      "hash, missing_links, mosaic, nova, "
+		      "hash, mosaic, nova, "
 		      "position, pulse_size, "
 		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0, crypt->
-	   encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
-			       &ok).toBase64());
-	query.bindValue
-	  (1, m_ui.fragment_starbeam->isChecked() ? 1 : 0);
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	query.addBindValue
+	  (crypt->encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
+				      &ok).toBase64());
+	query.addBindValue
+	  (m_ui.fragment_starbeam->isChecked() ? 1 : 0);
 
 	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed
-	     (spoton_crypt::
-	      sha1FileHash(m_ui.transmittedFile->text()).toHex(),
-	      &ok).toBase64());
-
-	if(ok)
-	  {
-	    QString missingLinks;
-	    QStringList list(m_ui.missingLinks->text().
-			     remove("magnet:?").split("&"));
-
-	    while(!list.isEmpty())
-	      {
-		QString str(list.takeFirst());
-
-		if(str.startsWith("ml="))
-		  {
-		    str.remove(0, 3);
-		    missingLinks = str;
-		    break;
-		  }
-	      }
-
-	    query.bindValue
-	      (3, crypt->
-	       encryptedThenHashed(missingLinks.
-				   toLatin1(), &ok).toBase64());
-	  }
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(spoton_crypt::
+				 sha1FileHash(m_ui.transmittedFile->text()).
+				 toHex(), &ok).toBase64());
 
 	if(ok)
 	  {
 	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
 
 	    if(ok)
-	      query.bindValue(4, encryptedMosaic.toBase64());
+	      query.addBindValue(encryptedMosaic.toBase64());
 	  }
 
 	if(ok)
-	  query.bindValue
-	    (5, crypt->encryptedThenHashed
-	     (m_ui.transmitNova->text().
-	      toLatin1(), &ok).toBase64());
+	  query.addBindValue
+	    (crypt->encryptedThenHashed(m_ui.transmitNova->text().
+					toLatin1(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (6, crypt->encryptedThenHashed("0", &ok).toBase64());
+	  query.addBindValue
+	    (crypt->encryptedThenHashed("0", &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (7, crypt->
+	  query.addBindValue
+	    (crypt->
 	     encryptedThenHashed(QByteArray::number(m_ui.pulseSize->value()),
 				 &ok).toBase64());
 
-	query.bindValue(8, "paused");
+	query.addBindValue("paused");
 
 	if(ok)
-	  query.bindValue
-	    (9, crypt->
+	  query.addBindValue
+	    (crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
 
@@ -4492,16 +4462,15 @@ void spoton::slotTransmit(void)
 			  "mosaic = ?))");
 
 	    if(ok)
-	      query.bindValue
-		(0, crypt->
-		 encryptedThenHashed(magnets.at(i), &ok).toBase64());
+	      query.addBindValue
+		(crypt->encryptedThenHashed(magnets.at(i), &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue
-		(1, crypt->keyedHash(magnets.at(i), &ok).toBase64());
+	      query.addBindValue
+		(crypt->keyedHash(magnets.at(i), &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue(2, encryptedMosaic.toBase64());
+	      query.addBindValue(encryptedMosaic.toBase64());
 
 	    if(ok)
 	      query.exec();
@@ -4517,8 +4486,8 @@ void spoton::slotTransmit(void)
 	    query.exec("PRAGMA secure_delete = ON");
 	    query.prepare("DELETE FROM magnets WHERE "
 			  "magnet_hash = ? and one_time_magnet = 1");
-	    query.bindValue(0, crypt->keyedHash(magnets.at(i), &ok).
-			    toBase64());
+	    query.addBindValue
+	      (crypt->keyedHash(magnets.at(i), &ok).toBase64());
 
 	    if(ok)
 	      query.exec();
@@ -4549,8 +4518,6 @@ void spoton::slotTransmit(void)
   else
     {
       m_ui.fragment_starbeam->setChecked(false);
-      m_ui.missingLinks->clear();
-      m_ui.missingLinksCheckBox->setChecked(false);
       m_ui.pulseSize->setValue(15000);
       m_ui.transmitNova->clear();
       m_ui.transmittedFile->clear();

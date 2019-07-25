@@ -2785,103 +2785,6 @@ bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
   return valid;
 }
 
-bool spoton_misc::isValidStarBeamMissingLinksMagnet(const QByteArray &magnet)
-{
-  QList<QByteArray> list;
-  QStringList starts;
-  bool valid = false;
-  int tokens = 0;
-
-  /*
-  ** Validate the magnet.
-  */
-
-  if(magnet.startsWith("magnet:?"))
-    list = magnet.mid(static_cast<int> (qstrlen("magnet:?"))).split('&');
-  else
-    goto done_label;
-
-  starts << "fn="
-	 << "ml="
-	 << "ps="
-	 << "xt=";
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(starts.contains("fn=") && str.startsWith("fn="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("fn=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ps=") && str.startsWith("ps="))
-	{
-	  str.remove(0, 3);
-
-	  bool ok = true;
-	  qint64 integer = str.toLongLong(&ok);
-
-	  if(integer < spoton_common::MINIMUM_STARBEAM_PULSE_SIZE || !ok)
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ps=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("ml=") && str.startsWith("ml="))
-	{
-	  str.remove(0, 3);
-
-	  if(str.isEmpty())
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("ml=");
-	      tokens += 1;
-	    }
-	}
-      else if(starts.contains("xt=") && str.startsWith("xt="))
-	{
-	  str.remove(0, 3);
-
-	  if(str != "urn:starbeam-missing-links")
-	    {
-	      valid = false;
-	      goto done_label;
-	    }
-	  else
-	    {
-	      starts.removeAll("xt=");
-	      tokens += 1;
-	    }
-	}
-    }
-
-  if(tokens == 4)
-    valid = true;
-
- done_label:
-  return valid;
-}
-
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 				     const QVariant &loop,
 #if defined(Q_OS_WIN)
@@ -5106,7 +5009,6 @@ void spoton_misc::prepareDatabases(void)
 		   "hash TEXT NOT NULL, " /*
 					  ** SHA-1 hash of the file.
 					  */
-		   "missing_links BLOB NOT NULL, "
 		   "mosaic TEXT PRIMARY KEY NOT NULL, "
 		   "nova TEXT NOT NULL, " /*
 					  ** Please
@@ -5264,8 +5166,7 @@ void spoton_misc::removeOneTimeStarBeamMagnets(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM magnets WHERE "
-		   "one_time_magnet = 1");
+	query.exec("DELETE FROM magnets WHERE one_time_magnet = 1");
       }
 
     db.close();

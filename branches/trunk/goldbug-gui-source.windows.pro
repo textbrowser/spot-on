@@ -22,7 +22,6 @@ FORMS           = GoldBug-UI\\spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI\\spot-on-rss.ui \
 		  GoldBug-UI\\spot-on-smpwindow.ui \
 		  GoldBug-UI\\spot-on-socket-options.ui \
-                  GoldBug-UI\\spot-on-starbeamanalyzer.ui \
 		  GoldBug-UI\\spot-on-statisticswindow.ui \
 		  GoldBug-UI\\spot-on-statusbar.ui \
 		  GoldBug-UI\\spot-on-unlock.ui \
@@ -41,7 +40,6 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-rosetta.h \
 		  GUI\\spot-on-rss.h \
 		  GUI\\spot-on-smpwindow.h \
-                  GUI\\spot-on-starbeamanalyzer.h \
                   GUI\\spot-on-tabwidget.h \
 		  GUI\\spot-on-textbrowser.h \
 		  GUI\\spot-on-textedit.h
@@ -79,7 +77,6 @@ SOURCES		= Common\\spot-on-crypt.cc \
 		  GUI\\spot-on-rss.cc \
 		  GUI\\spot-on-smp.cc \
 		  GUI\\spot-on-smpwindow.cc \
-                  GUI\\spot-on-starbeamanalyzer.cc \
 		  GUI\\spot-on-tabwidget.cc \
 		  GUI\\spot-on-textbrowser.cc \
 		  GUI\\spot-on-textedit.cc \

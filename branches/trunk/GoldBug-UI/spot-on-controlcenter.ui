@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>649</width>
-             <height>654</height>
+             <height>627</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2739,8 +2739,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>1884</height>
+             <width>515</width>
+             <height>1902</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -3966,7 +3966,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>629</width>
-             <height>654</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5049,7 +5049,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>611</width>
-             <height>654</height>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8721,38 +8721,6 @@ QPushButton:pressed {
                     </layout>
                    </item>
                    <item>
-                    <widget class="QFrame" name="missing_links_frame">
-                     <layout class="QHBoxLayout" name="horizontalLayout_14">
-                      <item>
-                       <widget class="QCheckBox" name="missingLinksCheckBox">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tools: StarBeam Analyzer. It allows to check if you received all links for a mosaic. If not, send your friend the &amp;quot;missing links magnet&amp;quot; and they will transfer only the missing links of the file. The hash comparison with your friend allows you to check if you have the same file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="text">
-                         <string>&amp;Missing Links Magnet</string>
-                        </property>
-                       </widget>
-                      </item>
-                      <item>
-                       <widget class="QLineEdit" name="missingLinks"/>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="demagnetizeMissingLinks">
-                        <property name="text">
-                         <string>Demagnetize</string>
-                        </property>
-                       </widget>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                   <item>
                     <widget class="QPushButton" name="transmit">
                      <property name="styleSheet">
                       <string notr="true">QPushButton {
@@ -9046,8 +9014,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
-             <height>674</height>
+             <width>463</width>
+             <height>527</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -10658,8 +10626,6 @@ border-style: inset;
     <addaction name="separator"/>
     <addaction name="action_Rosetta"/>
     <addaction name="separator"/>
-    <addaction name="action_StarBeam_Analyzer"/>
-    <addaction name="separator"/>
     <addaction name="action_Vacuum_Databases"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -11210,9 +11176,6 @@ border-style: inset;
   <tabstop>generateNova</tabstop>
   <tabstop>pulseSize</tabstop>
   <tabstop>fragment_starbeam</tabstop>
-  <tabstop>missingLinksCheckBox</tabstop>
-  <tabstop>missingLinks</tabstop>
-  <tabstop>demagnetizeMissingLinks</tabstop>
   <tabstop>transmit</tabstop>
   <tabstop>transmitted</tabstop>
   <tabstop>transmittedMagnets</tabstop>

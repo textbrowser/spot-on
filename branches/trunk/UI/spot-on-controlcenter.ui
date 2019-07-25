@@ -3643,7 +3643,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>777</width>
+                  <width>745</width>
                   <height>486</height>
                  </rect>
                 </property>
@@ -5369,7 +5369,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>861</width>
+             <width>831</width>
              <height>1204</height>
             </rect>
            </property>
@@ -7375,35 +7375,6 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QFrame" name="missing_links_frame">
-                      <layout class="QHBoxLayout" name="horizontalLayout_45">
-                       <item>
-                        <widget class="QCheckBox" name="missingLinksCheckBox">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="text">
-                          <string>&amp;Missing Links Magnet</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QLineEdit" name="missingLinks"/>
-                       </item>
-                       <item>
-                        <widget class="QPushButton" name="demagnetizeMissingLinks">
-                         <property name="text">
-                          <string>Demagnetize</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                    <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_44">
                       <property name="spacing">
                        <number>5</number>
@@ -8387,8 +8358,6 @@
     <addaction name="separator"/>
     <addaction name="action_Rosetta"/>
     <addaction name="separator"/>
-    <addaction name="action_StarBeam_Analyzer"/>
-    <addaction name="separator"/>
     <addaction name="action_Vacuum_Databases"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -8943,9 +8912,6 @@
   <tabstop>addTransmittedMagnets</tabstop>
   <tabstop>transmitNova</tabstop>
   <tabstop>generateNova</tabstop>
-  <tabstop>missingLinksCheckBox</tabstop>
-  <tabstop>missingLinks</tabstop>
-  <tabstop>demagnetizeMissingLinks</tabstop>
   <tabstop>transmittedFile</tabstop>
   <tabstop>etpSelectFile</tabstop>
   <tabstop>fragment_starbeam</tabstop>

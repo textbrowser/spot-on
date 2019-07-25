@@ -168,7 +168,6 @@ class spoton_misc
 			       const QByteArray &signature,
 			       spoton_crypt *crypt);
   static bool isValidStarBeamMagnet(const QByteArray &magnet);
-  static bool isValidStarBeamMissingLinksMagnet(const QByteArray &magnet);
   static bool joinMulticastGroup(const QHostAddress &address,
 				 const QVariant &loop,
 #if defined(Q_OS_WIN)

@@ -28,7 +28,6 @@
 #include <QDataStream>
 
 #include "spot-on-defines.h"
-#include "spot-on-starbeamanalyzer.h"
 #include "spot-on.h"
 #include "ui_spot-on-adaptive-echo-prompt.h"
 #include "ui_spot-on-ipinformation.h"
@@ -1530,30 +1529,6 @@ void spoton::slotDeleteInstitution(void)
   refreshInstitutions();
 }
 
-void spoton::slotDemagnetizeMissingLinks(void)
-{
-  QStringList list
-    (m_ui.missingLinks->text().remove("magnet:?").split("&"));
-
-  while(!list.isEmpty())
-    {
-      QString str(list.takeFirst());
-
-      if(str.startsWith("fn="))
-	{
-	  str.remove(0, 3);
-	  m_ui.transmittedFile->setText(str);
-	}
-      else if(str.startsWith("ps="))
-	{
-	  str.remove(0, 3);
-	  m_ui.pulseSize->setValue(str.toInt());
-	}
-      else
-	break;
-    }
-}
-
 void spoton::slotDisconnectAllNeighbors(void)
 {
   QString connectionName("");
@@ -1578,47 +1553,6 @@ void spoton::slotDisconnectAllNeighbors(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotDiscoverMissingLinks(void)
-{
-  if(!m_starbeamAnalyzer)
-    return;
-
-  QString fileName("");
-  QString oid("");
-  QString pulseSize("");
-  QString totalSize("");
-  int row = -1;
-
-  if((row = m_ui.received->currentRow()) >= 0)
-    {
-      QTableWidgetItem *item = 0;
-
-      item = m_ui.received->item(row, 4); // File
-
-      if(item)
-	fileName = item->text();
-
-      item = m_ui.received->item(row, 2); // Pulse Size
-
-      if(item)
-	pulseSize = item->text();
-
-      item = m_ui.received->item(row, 3); // Total Size
-
-      if(item)
-	totalSize = item->text();
-
-      item = m_ui.received->item
-	(row, m_ui.received->columnCount() - 1); // OID
-
-      if(item)
-	oid = item->text();
-    }
-
-  m_starbeamAnalyzer->add(fileName, oid, pulseSize, totalSize);
-  m_starbeamAnalyzer->show(this);
 }
 
 void spoton::slotDisplayPopups(bool state)
@@ -2676,12 +2610,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.urlDistributionModel->setVisible(!state);
 #endif
   m_sb.errorlog->setHidden(state);
-}
-
-void spoton::slotShowStarBeamAnalyzer(void)
-{
-  if(m_starbeamAnalyzer)
-    m_starbeamAnalyzer->show(this);
 }
 
 void spoton::slotSignatureKeyTypeChanged(int index)

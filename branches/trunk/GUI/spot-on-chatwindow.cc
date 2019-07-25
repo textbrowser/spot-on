@@ -632,10 +632,10 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	QSqlQuery query(db);
 
 	query.prepare("INSERT INTO transmitted "
-		      "(file, hash, missing_links, mosaic, nova, "
+		      "(file, hash, mosaic, nova, "
 		      "position, pulse_size, read_interval, "
 		      "status_control, total_size, ultra) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
 	  (0, crypt->
 	   encryptedThenHashed(fileInfo.absoluteFilePath().toUtf8(),
@@ -650,42 +650,37 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	      &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed(QByteArray(), &ok).toBase64());
-
-	if(ok)
 	  {
 	    encryptedMosaic = crypt->encryptedThenHashed(mosaic, &ok);
 
 	    if(ok)
-	      query.bindValue(3, encryptedMosaic.toBase64());
+	      query.bindValue(2, encryptedMosaic.toBase64());
 	  }
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (3, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed("0", &ok).toBase64());
+	    (4, crypt->encryptedThenHashed("0", &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->
+	    (5, crypt->
 	     encryptedThenHashed(QByteArray::number(30000),
 				 &ok).toBase64());
 
-	query.bindValue(7, 2.500);
-	query.bindValue(8, "transmitting");
+	query.bindValue(6, 2.500);
+	query.bindValue(7, "transmitting");
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->
+	    (8, crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
 
-	query.bindValue(10, 1);
+	query.bindValue(9, 1);
 
 	if(ok)
 	  query.exec();

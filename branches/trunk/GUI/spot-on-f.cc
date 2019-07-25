@@ -40,7 +40,6 @@
 #include "spot-on-neighborstatistics.h"
 #endif
 #include "spot-on-rss.h"
-#include "spot-on-starbeamanalyzer.h"
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-forward-secrecy-algorithms-selection.h"
@@ -1435,7 +1434,6 @@ void spoton::slotLock(void)
   m_rosetta.close();
   m_rss->close();
   m_smpWindow.close();
-  m_starbeamAnalyzer->close();
   m_statisticsWindow->close();
   m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
 

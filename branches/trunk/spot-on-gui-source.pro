@@ -24,7 +24,6 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-rss.ui \
 		  UI/spot-on-smpwindow.ui \
 		  UI/spot-on-socket-options.ui \
-                  UI/spot-on-starbeamanalyzer.ui \
 		  UI/spot-on-statisticswindow.ui \
 		  UI/spot-on-statusbar.ui \
 		  UI/spot-on-stylesheet.ui \
@@ -46,7 +45,6 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-rosetta.h \
 		  GUI/spot-on-rss.h \
 		  GUI/spot-on-smpwindow.h \
-                  GUI/spot-on-starbeamanalyzer.h \
                   GUI/spot-on-tabwidget.h \
 		  GUI/spot-on-textbrowser.h \
 		  GUI/spot-on-textedit.h
@@ -86,7 +84,6 @@ SOURCES		= Common/spot-on-crypt.cc \
 		  GUI/spot-on-rss.cc \
 		  GUI/spot-on-smp.cc \
 		  GUI/spot-on-smpwindow.cc \
-                  GUI/spot-on-starbeamanalyzer.cc \
 		  GUI/spot-on-tabwidget.cc \
 		  GUI/spot-on-textbrowser.cc \
 		  GUI/spot-on-textedit.cc \

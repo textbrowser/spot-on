@@ -47,7 +47,6 @@ var searchData=
   ['spoton_5fstarbeam_5freader',['spoton_starbeam_reader',['../classspoton__starbeam__reader.html',1,'']]],
   ['spoton_5fstarbeam_5fwriter',['spoton_starbeam_writer',['../classspoton__starbeam__writer.html',1,'']]],
   ['spoton_5fstarbeam_5fwriter_5fworker',['spoton_starbeam_writer_worker',['../classspoton__starbeam__writer__worker.html',1,'']]],
-  ['spoton_5fstarbeamanalyzer',['spoton_starbeamanalyzer',['../classspoton__starbeamanalyzer.html',1,'']]],
   ['spoton_5ftabwidget',['spoton_tabwidget',['../classspoton__tabwidget.html',1,'']]],
   ['spoton_5ftextbrowser',['spoton_textbrowser',['../classspoton__textbrowser.html',1,'']]],
   ['spoton_5ftextedit',['spoton_textedit',['../classspoton__textedit.html',1,'']]],

@@ -422,7 +422,6 @@ class spoton_documentation;
 class spoton_echo_key_share;
 class spoton_rss;
 class spoton_smp;
-class spoton_starbeamanalyzer;
 
 class spoton_forward_secrecy
 {
@@ -575,7 +574,6 @@ class spoton: public QMainWindow
   spoton_rosetta m_rosetta;
   spoton_rss *m_rss;
   spoton_smpwindow m_smpWindow;
-  spoton_starbeamanalyzer *m_starbeamAnalyzer;
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
   QByteArray copyMyEmailPublicKey(void) const;
@@ -803,7 +801,6 @@ class spoton: public QMainWindow
   void slotDeleteReceived(void);
   void slotDeleteTransmitted(void);
   void slotDeleteUrlDistillers(void);
-  void slotDemagnetizeMissingLinks(void);
   void slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 				  const QString &oid);
   void slotDeriveGeminiPairViaSMP(void);
@@ -814,7 +811,6 @@ class spoton: public QMainWindow
   void slotDisconnectNeighbor(void);
   void slotDiscover(void);
   void slotDiscoverExternalAddress(void);
-  void slotDiscoverMissingLinks(void);
   void slotDisplayPopups(bool state);
   void slotDropUrlTables(void);
   void slotDuplicateTransmittedMagnet(void);
@@ -1049,7 +1045,6 @@ class spoton: public QMainWindow
   void slotShowReleaseNotes(void);
   void slotShowRss(void);
   void slotShowSMPWindow(void);
-  void slotShowStarBeamAnalyzer(void);
   void slotShowStatistics(void);
   void slotShowStatisticsWindow(void);
   void slotShowUrlSettings(bool state);

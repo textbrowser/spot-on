@@ -466,9 +466,16 @@ void spoton_starbeam_reader::slotTimeout(void)
 
 	    query.setForwardOnly(true);
 	    query.prepare
-	      ("SELECT file, fragmented, hash, missing_links, nova, "
-	       "position, pulse_size, read_interval, status_control, "
-	       "total_size FROM transmitted WHERE OID = ?");
+	      ("SELECT file, "    // 0
+	       "fragmented, "     // 1
+	       "hash, "           // 2
+	       "nova, "           // 3
+	       "position, "       // 4
+	       "pulse_size, "     // 5
+	       "read_interval, "  // 6
+	       "status_control, " // 7
+	       "total_size "      // 8
+	       "FROM transmitted WHERE OID = ?");
 	    query.bindValue(0, m_id);
 
 	    if(query.exec())
@@ -476,8 +483,8 @@ void spoton_starbeam_reader::slotTimeout(void)
 		{
 		  m_fragmented = query.value(1).toBool();
 		  m_readInterval = qBound
-		    (0.100, query.value(7).toDouble(), 60.000);
-		  status = query.value(8).toString().toLower();
+		    (0.100, query.value(6).toDouble(), 60.000);
+		  status = query.value(7).toString().toLower();
 
 		  if(status == "completed")
 		    {
@@ -516,21 +523,21 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      if(ok)
 			nova = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(4).toByteArray()),
+			  (QByteArray::fromBase64(query.value(3).toByteArray()),
 			   &ok);
 
 		      if(ok)
 			pulseSize = s_crypt->
 			  decryptedAfterAuthenticated
 			  (QByteArray::
-			   fromBase64(query.value(6).toByteArray()),
+			   fromBase64(query.value(5).toByteArray()),
 			   &ok).
 			  constData();
 
 		      if(ok)
 			fileSize = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(9).toByteArray()),
+			  (QByteArray::fromBase64(query.value(8).toByteArray()),
 			   &ok).constData();
 
 		      if(ok)
