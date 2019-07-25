@@ -54,7 +54,7 @@ extern "C"
 #endif
 
 /*
-** Please read http://gcc.gnu.org/onlinedocs/gcc-4.4.1/gcc/Optimize-Options.html#Type_002dpunning.
+** Please read https://gcc.gnu.org/onlinedocs/gcc-4.4.1/gcc/Optimize-Options.html#Type_002dpunning.
 */
 
 typedef union spoton_type_punning_sockaddr

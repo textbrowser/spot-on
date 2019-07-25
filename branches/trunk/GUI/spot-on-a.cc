@@ -3907,14 +3907,14 @@ void spoton::slotAbout(void)
 
   pixmap = pixmap.scaled
     (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = "<html>Please visit <a href=\"http://spot-on.sourceforge.net\">"
-    "spot-on.sourceforge.net</a> for more information.";
+  str = "<html>Please visit <a href=\"https://spot-on.sourceforge.io\">"
+    "https://spot-on.sourceforge.io</a> for more information.";
   mb.setIconPixmap(pixmap);
 #else
   str = "<html>GoldBug is an open source application published under "
     "the Revised BSD License.<br>"
-    "Please visit <a href=\"http://goldbug.sourceforge.net\">"
-    "goldbug.sourceforge.net</a> for more information.";
+    "Please visit <a href=\"https://goldbug.sourceforge.io\">"
+    "https://goldbug.sourceforge.io</a> for more information.";
   mb.setIconPixmap(*m_ui.logo->pixmap());
 #endif
   str.append("<br><br>");
