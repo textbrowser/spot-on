@@ -40,16 +40,8 @@
 extern "C"
 {
 #include "libSpotOn/libspoton.h"
-}
-
-extern "C"
-{
-#include <libpq-fe.h>
-}
-
-extern "C"
-{
 #include <fcntl.h>
+#include <libpq-fe.h>
 #if defined(Q_OS_WIN)
 #include <process.h>
 #endif
