@@ -136,17 +136,17 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   QMenu *menu = new QMenu(this);
 
-  menu->addAction(tr("&Reset the SMP machine's internal state to s0."),
+  menu->addAction(tr("&Reset SMP Machine's Internal State (S0)"),
 		  this,
 		  SLOT(slotInitializeSMP(void)));
-  menu->addAction(tr("&Set an SMP Secret..."),
+  menu->addAction(tr("&Set SMP Secret..."),
 		  this,
 		  SLOT(slotPrepareSMP(void)));
-  menu->addAction(tr("&Verify the SMP secret."),
+  menu->addAction(tr("&Verify SMP Secret"),
 		  this,
 		  SLOT(slotVerifySMPSecret(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Derive Gemini pair from SMP secret."),
+  menu->addAction(tr("&Derive Gemini Pair From SMP Secret"),
 		  this,
 		  SLOT(slotDeriveGeminiPairViaSMP(void)));
   ui.smp->setMenu(menu);
