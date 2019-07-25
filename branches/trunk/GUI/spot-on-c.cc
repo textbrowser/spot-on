@@ -4542,8 +4542,7 @@ void spoton::slotTransmittedPaused(bool state)
 	  {
 	    QSqlQuery query(db);
 
-	    query.prepare("UPDATE transmitted SET "
-			  "status_control = ? "
+	    query.prepare("UPDATE transmitted SET status_control = ? "
 			  "WHERE OID = ? AND status_control <> 'deleted'");
 	    query.bindValue(0, state ? "paused" : "transmitting");
 	    query.bindValue(1, checkBox->property("oid"));

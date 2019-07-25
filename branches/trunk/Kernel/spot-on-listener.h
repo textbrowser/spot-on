@@ -51,8 +51,8 @@ class spoton_listener_tcp_server: public QTcpServer
   Q_OBJECT
 
  public:
-  spoton_listener_tcp_server(const qint64 id,
-			     QObject *parent):QTcpServer(parent)
+  spoton_listener_tcp_server(const qint64 id, QObject *parent):
+    QTcpServer(parent)
   {
     m_id = id;
   }
@@ -92,8 +92,8 @@ class spoton_listener_udp_server: public QUdpSocket
   Q_OBJECT
 
  public:
-  spoton_listener_udp_server(const qint64 id,
-			     QObject *parent):QUdpSocket(parent)
+  spoton_listener_udp_server(const qint64 id, QObject *parent):
+    QUdpSocket(parent)
   {
     m_id = id;
     m_maxPendingConnections = 5;
