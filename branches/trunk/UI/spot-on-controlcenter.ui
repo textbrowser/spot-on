@@ -6541,7 +6541,7 @@
                 <item>
                  <widget class="QLabel" name="label_95">
                   <property name="text">
-                   <string>Please do not remove magnets until the respective StarBeam have completed.</string>
+                   <string>Please do not remove magnets until the respective StarBeams have completed.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -6852,7 +6852,7 @@
                     <item>
                      <widget class="QLabel" name="label_96">
                       <property name="text">
-                       <string>Please do not remove novas until the respective StarBeam have completed.</string>
+                       <string>Please do not remove novas until the respective StarBeams have completed.</string>
                       </property>
                       <property name="wordWrap">
                        <bool>true</bool>
