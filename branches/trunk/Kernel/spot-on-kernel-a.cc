@@ -2865,7 +2865,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 			starbeam->setReadInterval(readInterval);
 		    }
 		}
-	      else
+	      else if(status != "paused")
 		{
 		  QPointer<spoton_starbeam_reader> starbeam
 		    (m_starbeamReaders.value(id, 0));

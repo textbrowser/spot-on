@@ -374,8 +374,12 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 	query.exec("PRAGMA synchronous = NORMAL");
 	query.prepare("UPDATE transmitted "
 		      "SET position = ?, "
-		      "status_control = CASE WHEN status_control = 'deleted' "
-		      "THEN 'deleted' ELSE ? END "
+		      "status_control = "
+		      "CASE "
+		      "WHEN status_control = 'deleted' THEN 'deleted' "
+		      "WHEN status_control = 'paused' THEN 'paused' "
+		      "ELSE ? "
+		      "END "
 		      "WHERE OID = ?");
 	query.bindValue
 	  (0, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
