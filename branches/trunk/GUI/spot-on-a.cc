@@ -1018,6 +1018,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAcceptBuzzMagnets(bool)));
+  connect(m_optionsUi.acceptChatKeys,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAcceptChatKeys(bool)));
+  connect(m_optionsUi.acceptEmailKeys,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAcceptEmailKeys(bool)));
+  connect(m_optionsUi.acceptGeminis,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotAcceptGeminis(bool)));
   connect(m_optionsUi.acceptPublishedConnected,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -1030,10 +1042,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(pressed(void)),
 	  this,
 	  SLOT(slotAcceptPublicizedListeners(void)));
-  connect(m_optionsUi.acceptGeminis,
+  connect(m_optionsUi.acceptUrlKeys,
 	  SIGNAL(toggled(bool)),
 	  this,
-	  SLOT(slotAcceptGeminis(bool)));
+	  SLOT(slotAcceptUrlKeys(bool)));
   connect(m_optionsUi.action_Close,
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
@@ -1050,6 +1062,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveBuzzAutoJoin(bool)));
+  connect(m_optionsUi.chatAcceptSigned,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.chatAlternatingRowColors,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1062,6 +1078,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotChatSendMethodChanged(int)));
+  connect(m_optionsUi.chatSignMessages,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.chatTimestamps,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1074,6 +1094,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.coAcceptSigned,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.defaults,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1090,6 +1114,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotDisplayPopups(bool)));
+  connect(m_optionsUi.emailAcceptSigned,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.emailAlternatingRowColors,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1098,6 +1126,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotMailRetrievalIntervalChanged(int)));
+  connect(m_optionsUi.emailSignMessages,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.email_fs_request,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1286,6 +1318,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTestSslControlString(void)));
+  connect(m_optionsUi.urlAcceptSigned,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
+  connect(m_optionsUi.urlSignMessages,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_optionsUi.urlsAlternatingRowColors,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1877,46 +1917,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(tabCloseRequested(int)),
 	  this,
 	  SLOT(slotCloseBuzzTab(int)));
-  connect(m_optionsUi.chatAcceptSigned,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.acceptChatKeys,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAcceptChatKeys(bool)));
-  connect(m_optionsUi.acceptEmailKeys,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAcceptEmailKeys(bool)));
-  connect(m_optionsUi.acceptUrlKeys,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotAcceptUrlKeys(bool)));
-  connect(m_optionsUi.chatSignMessages,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.emailAcceptSigned,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.emailSignMessages,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.urlSignMessages,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.coAcceptSigned,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
-  connect(m_optionsUi.urlAcceptSigned,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotSignatureCheckBoxToggled(bool)));
   connect(m_ui.addAcceptedIP,
 	  SIGNAL(clicked(void)),
 	  this,
