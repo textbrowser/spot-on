@@ -1102,6 +1102,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.enableChatEmoticons,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotEnableChatEmoticons(bool)));
   connect(m_optionsUi.forceRegistration,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1677,10 +1681,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentChanged(int)),
 	  this,
 	  SLOT(slotMailTabChanged(int)));
-  connect(m_optionsUi.enableChatEmoticons,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotEnableChatEmoticons(bool)));
   connect(m_ui.postofficeCheckBox,
 	  SIGNAL(toggled(bool)),
 	  this,
