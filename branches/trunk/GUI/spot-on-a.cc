@@ -1126,6 +1126,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSecureMemoryPoolChanged(int)));
+  connect(m_optionsUi.icons,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSetIcons(int)));
+  connect(m_optionsUi.iconsize,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSetIconSize(int)));
   connect(m_optionsUi.ignorePublished,
 	  SIGNAL(pressed(void)),
 	  this,
@@ -1222,6 +1230,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotRemoveOtmOnExit(bool)));
+  connect(m_optionsUi.saveCopy,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotKeepCopy(bool)));
   connect(m_optionsUi.saveSslControlString,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1685,18 +1697,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnabledPostOffice(bool)));
-  connect(m_optionsUi.saveCopy,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotKeepCopy(bool)));
-  connect(m_optionsUi.icons,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotSetIcons(int)));
-  connect(m_optionsUi.iconsize,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotSetIconSize(int)));
   connect(m_optionsUi.position,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
