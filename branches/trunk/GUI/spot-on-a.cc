@@ -1210,6 +1210,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotPlaySounds(bool)));
+  connect(m_optionsUi.position,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotChangeTabPosition(int)));
   connect(m_optionsUi.postgresql_kernel_url_distribution_timeout,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -1697,10 +1701,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnabledPostOffice(bool)));
-  connect(m_optionsUi.position,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotChangeTabPosition(int)));
   connect(m_ui.action_Export_Listeners,
 	  SIGNAL(triggered(void)),
 	  this,
