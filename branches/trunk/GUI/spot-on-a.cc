@@ -1335,6 +1335,10 @@ spoton::spoton(void):QMainWindow()
   ** Connect m_ui's items.
   */
 
+  connect(m_ui.acceptedIP,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddAcceptedIP(void)));
   connect(m_ui.action_About,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1345,6 +1349,10 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotShowAddParticipant(void)));
 #endif
+  connect(m_ui.action_Buzz,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1361,10 +1369,30 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotViewEchoKeyShare(void)));
+  connect(m_ui.action_Export_Listeners,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotExportListeners(void)));
+  connect(m_ui.action_Export_Public_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotExportPublicKeys(void)));
   connect(m_ui.action_File_Encryption,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowEncryptFile(void)));
+  connect(m_ui.action_Import_Neighbors,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotImportNeighbors(void)));
+  connect(m_ui.action_Import_Public_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotImportPublicKeys(void)));
+  connect(m_ui.action_Listeners,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Log_Viewer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1373,10 +1401,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowMinimalDisplay(bool)));
+  connect(m_ui.action_Neighbors,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_New_Global_Name,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotNewGlobalName(void)));
+  connect(m_ui.action_Notifications_Window,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowNotificationsWindow(void)));
   connect(m_ui.action_Options,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1385,6 +1421,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
+  connect(m_ui.action_Poptastic_Settings,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotConfigurePoptastic(void)));
   connect(m_ui.action_Purge_Ephemeral_Keys,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1401,10 +1441,34 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowReleaseNotes(void)));
+  connect(m_ui.action_ResetSpotOn,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotResetAll(void)));
   connect(m_ui.action_Rosetta,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotViewRosetta(void)));
+  connect(m_ui.action_SMP,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowSMPWindow(void)));
+  connect(m_ui.action_Search,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_StarBeam,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Statistics_Window,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotShowStatisticsWindow(void)));
+  connect(m_ui.action_Urls,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Vacuum_Databases,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1417,506 +1481,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotActiveUrlDistribution(bool)));
-  connect(m_ui.addInstitution,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddInstitution(void)));
-  connect(m_ui.addListener,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddListener(void)));
-  connect(m_ui.addNeighbor,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddNeighbor(void)));
-  connect(m_ui.attachment,
-	  SIGNAL(anchorClicked(const QUrl &)),
-	  this,
-	  SLOT(slotRemoveAttachment(const QUrl &)));
-  connect(m_ui.chatSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.chatSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.chatSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowChatSecretsMenu(void)));
-  connect(m_ui.copyInstitution,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotCopyInstitution(void)));
-  connect(m_ui.deactivateKernel,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeactivateKernel(void)));
-  connect(m_ui.dynamicdns,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.emailSecrets,
-	  SIGNAL(clicked(void)),
-	  m_ui.emailSecrets,
-	  SLOT(showMenu(void)));
-  connect(m_ui.emailSecrets->menu(),
-	  SIGNAL(aboutToShow(void)),
-	  this,
-	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
-  connect(m_ui.etpSelectDestination,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectDestination(void)));
-  connect(m_ui.ipv4Listener,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.ipv4Neighbor,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.ipv6Listener,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.ipv6Neighbor,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProtocolRadioToggled(bool)));
-  connect(m_ui.saveAttachment,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveAttachment(void)));
-  connect(m_ui.selectKernelPath,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectKernelPath(void)));
-  connect(m_ui.etpSelectFile,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectTransmitFile(void)));
-  connect(m_ui.selectUrlIni,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectUrlIniPath(void)));
-  connect(m_ui.setPassphrase,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
-  connect(m_ui.custom,
-	  SIGNAL(textChanged(void)),
-	  this,
-	  SLOT(slotSaveCustomStatus(void)));
-  connect(m_ui.passphrase1,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
-  connect(m_ui.passphrase1,
-	  SIGNAL(textChanged(const QString &)),
-	  this,
-	  SLOT(slotPassphraseChanged(const QString &)));
-  connect(m_ui.passphrase2,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
-  connect(m_ui.destination,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveDestination(void)));
-  connect(m_ui.kernelPath,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveKernelPath(void)));
-  connect(m_ui.passphrase,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotValidatePassphrase(void)));
-  connect(m_ui.answer_authenticate,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotValidatePassphrase(void)));
-  connect(m_ui.question_authenticate,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotValidatePassphrase(void)));
-  connect(m_ui.passphraseButton,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotValidatePassphrase(void)));
-  connect(m_ui.tab,
-	  SIGNAL(currentChanged(int)),
-	  this,
-	  SLOT(slotTabChanged(int)));
-  connect(m_ui.sendMessage,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSendMessage(void)));
-  connect(m_ui.message,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSendMessage(void)));
-  connect(m_ui.clearMessages,
-	  SIGNAL(clicked(void)),
-	  m_ui.messages,
-	  SLOT(clear(void)));
-  connect(m_ui.saveBuzzName,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveBuzzName(void)));
-  connect(m_ui.saveNodeName,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveNodeName(void)));
-  connect(m_ui.saveUrlName,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveUrlName(void)));
-  connect(m_ui.buzzName,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveBuzzName(void)));
-  connect(m_ui.kernelExternalIpFetch,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotExternalIp(int)));
-  connect(m_ui.favorites,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotFavoritesActivated(int)));
-  connect(m_ui.buzzActions,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotBuzzActionsActivated(int)));
-  connect(m_ui.nodeName,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveNodeName(void)));
-  connect(m_ui.email_fs_gb,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotEmailFsGb(int)));
-  connect(m_ui.emailNameEditable,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveEmailName(void)));
-  connect(m_ui.keys,
-	  SIGNAL(currentIndexChanged(const QString &)),
-	  this,
-	  SLOT(slotKeysIndexChanged(const QString &)));
-  connect(m_ui.urlName,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSaveUrlName(void)));
-  connect(m_ui.listenerIP,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotAddListener(void)));
-  connect(m_ui.neighborIP,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotAddNeighbor(void)));
-  connect(m_ui.listenerIPCombo,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotListenerIPComboChanged(int)));
-  connect(m_ui.transmit,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotTransmit(void)));
-  connect(m_ui.listenerTransport,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotTransportChanged(int)));
-  connect(m_ui.neighborTransport,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotTransportChanged(int)));
-  connect(m_ui.folder,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotRefreshMail(void)));
-  connect(m_ui.status,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotStatusChanged(int)));
-  connect(m_ui.kernelCipherType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotKernelCipherTypeChanged(int)));
-  connect(m_ui.kernelHashType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotKernelHashTypeChanged(int)));
-  connect(m_ui.addFriend,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddFriendsKey(void)));
-  connect(m_ui.clearFriend,
-	  SIGNAL(clicked(void)),
-	  m_ui.friendInformation,
-	  SLOT(clear(void)));
-  connect(m_ui.action_ResetSpotOn,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotResetAll(void)));
-  connect(m_ui.showStatistics,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotShowStatistics(void)));
-  connect(m_ui.showUrlSettings,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowUrlSettings(bool)));
-  connect(m_ui.sendMail,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSendMail(void)));
-  connect(m_ui.resend,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotResendMail(void)));
-  connect(m_ui.reloadEmailNames,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotReloadEmailNames(void)));
-  connect(m_ui.participants,
-	  SIGNAL(itemChanged(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
-  connect(m_ui.participants,
-	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotParticipantDoubleClicked(QTableWidgetItem *)));
-  connect(m_ui.commonBuzzChannels,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotCommonBuzzChannelsActivated(int)));
-  connect(m_ui.clearOutgoing,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotClearOutgoingMessage(void)));
-  connect(m_ui.deleteInstitution,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeleteInstitution(void)));
-  connect(m_ui.deleteEmail,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeleteMail(void)));
-  connect(m_ui.refreshMail,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRefreshMail(void)));
-  connect(m_ui.refreshMail,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRefreshPostOffice(void)));
-  connect(m_ui.mail,
-	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotMailSelected(QTableWidgetItem *)));
-  connect(m_ui.mail,
-	  SIGNAL(itemSelectionChanged(void)),
-	  this,
-	  SLOT(slotMailSelected(void)));
-  connect(m_ui.listeners,
-	  SIGNAL(itemSelectionChanged(void)),
-	  this,
-	  SLOT(slotListenerSelected(void)));
-  connect(m_ui.transmitted,
-	  SIGNAL(itemSelectionChanged(void)),
-	  this,
-	  SLOT(slotTransmittedSelected(void)));
-  connect(m_ui.emptyTrash,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotEmptyTrash(void)));
-  connect(m_ui.retrieveMail,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRetrieveMail(void)));
-  connect(m_ui.mailTab,
-	  SIGNAL(currentChanged(int)),
-	  this,
-	  SLOT(slotMailTabChanged(int)));
-  connect(m_ui.postofficeCheckBox,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotEnabledPostOffice(bool)));
-  connect(m_ui.action_Export_Listeners,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotExportListeners(void)));
-  connect(m_ui.action_Export_Public_Keys,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotExportPublicKeys(void)));
-  connect(m_ui.action_Import_Neighbors,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotImportNeighbors(void)));
-  connect(m_ui.action_Import_Public_Keys,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotImportPublicKeys(void)));
-  connect(m_ui.newKeys,
-	  SIGNAL(toggled(bool)),
-	  m_ui.encryptionKeySize,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.newKeys,
-	  SIGNAL(toggled(bool)),
-	  m_ui.signatureKeySize,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.newKeys,
-	  SIGNAL(toggled(bool)),
-	  m_ui.encryptionKeyType,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.newKeys,
-	  SIGNAL(toggled(bool)),
-	  m_ui.signatureKeyType,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.newKeys,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotNewKeys(bool)));
-  connect(m_ui.encryptionKeyType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotEncryptionKeyTypeChanged(int)));
-  connect(m_ui.signatureKeyType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotSignatureKeyTypeChanged(int)));
-  connect(m_ui.cost,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotCostChanged(int)));
-  connect(m_ui.days,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotDaysChanged(int)));
-  connect(m_ui.etpMaxMosaicSize,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotMaxMosaicSize(int)));
-  connect(m_ui.kernelSecureMemoryPool,
-	  SIGNAL(valueChanged(int)),
-	  this,
-	  SLOT(slotSecureMemoryPoolChanged(int)));
-  connect(m_ui.reply,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotReply(void)));
-  connect(m_ui.requireSsl,
-	  SIGNAL(toggled(bool)),
-	  m_ui.addException,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.requireSsl,
-	  SIGNAL(toggled(bool)),
-	  m_ui.neighborKeySize,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.requireSsl,
-	  SIGNAL(toggled(bool)),
-	  m_ui.sslKeySizeLabel,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.requireSsl,
-	  SIGNAL(toggled(bool)),
-	  m_ui.neighborsSslControlString,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
-	  m_ui.listenerKeySize,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
-	  m_ui.permanentCertificate,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
-	  m_ui.recordIPAddress,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
-	  m_ui.listenersSslControlString,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
-	  m_ui.days_valid,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.hideOfflineParticipants,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotHideOfflineParticipants(bool)));
-  connect(m_ui.proxyType,
-	  SIGNAL(currentIndexChanged(int)),
-	  this,
-	  SLOT(slotProxyTypeChanged(int)));
-  connect(m_ui.congestionAlgorithm,
-	  SIGNAL(currentIndexChanged(const QString &)),
-	  this,
-	  SLOT(slotSaveCongestionAlgorithm(const QString &)));
-  connect(m_ui.kernelKeySize,
-	  SIGNAL(currentIndexChanged(const QString &)),
-	  this,
-	  SLOT(slotKernelKeySizeChanged(const QString &)));
-  connect(m_ui.kernelLogEvents,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotKernelLogEvents(bool)));
-  connect(m_ui.proxy,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotProxyChecked(bool)));
-  connect(m_ui.channel,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotJoinBuzzChannel(void)));
-  connect(m_ui.acceptedIP,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotAddAcceptedIP(void)));
   connect(m_ui.addAEToken,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddAEToken(void)));
-  connect(m_ui.deleteAEToken,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeleteAEToken(void)));
-  connect(m_ui.addNova,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddReceiveNova(void)));
-  connect(m_ui.receiveNova,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotAddReceiveNova(void)));
-  connect(m_ui.answer,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
-  connect(m_ui.question,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetPassphrase(void)));
-  connect(m_ui.urlIniPath,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotSetUrlIniPath(void)));
-  connect(m_ui.reloadIni,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSetUrlIniPath(void)));
-  connect(m_ui.search,
-	  SIGNAL(returnPressed(void)),
-	  this,
-	  SLOT(slotDiscover(void)));
-  connect(m_ui.join,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotJoinBuzzChannel(void)));
-  connect(m_ui.buzzTab,
-	  SIGNAL(tabCloseRequested(int)),
-	  this,
-	  SLOT(slotCloseBuzzTab(int)));
   connect(m_ui.addAcceptedIP,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1925,78 +1493,18 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddAccount(void)));
-  connect(m_ui.deleteAccount,
+  connect(m_ui.addDistiller,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotDeleteAccount(void)));
-  connect(m_ui.deleteAcceptedIP,
+	  SLOT(slotAddDistiller(void)));
+  connect(m_ui.addFriend,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotDeleteAcceptedIP(void)));
-  connect(m_ui.saveMOTD,
+	  SLOT(slotAddFriendsKey(void)));
+  connect(m_ui.addInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotSaveMOTD(void)));
-  connect(m_ui.deleteNova,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotDeleteNova(void)));
-  connect(m_ui.buzzTools,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotBuzzTools(int)));
-  connect(m_ui.magnetRadio,
-	  SIGNAL(toggled(bool)),
-	  m_ui.etpMagnet,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.magnetRadio,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotMagnetRadioToggled(bool)));
-  connect(m_ui.pairRadio,
-	  SIGNAL(toggled(bool)),
-	  m_ui.pairFrame,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.pairRadio,
-	  SIGNAL(toggled(bool)),
-	  m_ui.generate,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.generate,
-	  SIGNAL(activated(int)),
-	  this,
-	  SLOT(slotGenerateEtpKeys(int)));
-  connect(m_ui.generateNova,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotGenerateNova(void)));
-  connect(m_ui.addMagnet,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddEtpMagnet(void)));
-  connect(m_ui.receivers,
-	  SIGNAL(clicked(bool)),
-	  this,
-	  SLOT(slotReceiversClicked(bool)));
-  connect(m_ui.buzz_details,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowBuzzDetails(bool)));
-  connect(m_ui.rewind,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotRewindFile(void)));
-  connect(m_ui.action_SMP,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowSMPWindow(void)));
-  connect(m_ui.action_Notifications_Window,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowNotificationsWindow(void)));
-  connect(m_ui.action_Statistics_Window,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotShowStatisticsWindow(void)));
+	  SLOT(slotAddInstitution(void)));
   connect(m_ui.addInstitutionCheckBox,
 	  SIGNAL(toggled(bool)),
 	  m_ui.addInstitutionLineEdit,
@@ -2013,10 +1521,382 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotAddInstitution(void)));
-  connect(m_ui.selectAttachment,
+  connect(m_ui.addListener,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotAddAttachment(void)));
+	  SLOT(slotAddListener(void)));
+  connect(m_ui.addMagnet,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddEtpMagnet(void)));
+  connect(m_ui.addNeighbor,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddNeighbor(void)));
+  connect(m_ui.addNova,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddReceiveNova(void)));
+  connect(m_ui.answer,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.answer_authenticate,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotValidatePassphrase(void)));
+  connect(m_ui.attachment,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotRemoveAttachment(const QUrl &)));
+  connect(m_ui.buzzActions,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotBuzzActionsActivated(int)));
+  connect(m_ui.buzzName,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveBuzzName(void)));
+  connect(m_ui.buzzTab,
+	  SIGNAL(tabCloseRequested(int)),
+	  this,
+	  SLOT(slotCloseBuzzTab(int)));
+  connect(m_ui.buzzTools,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotBuzzTools(int)));
+  connect(m_ui.buzz_details,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowBuzzDetails(bool)));
+  connect(m_ui.channel,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotJoinBuzzChannel(void)));
+  connect(m_ui.chatSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.chatSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.chatSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowChatSecretsMenu(void)));
+  connect(m_ui.clearFriend,
+	  SIGNAL(clicked(void)),
+	  m_ui.friendInformation,
+	  SLOT(clear(void)));
+  connect(m_ui.clearMessages,
+	  SIGNAL(clicked(void)),
+	  m_ui.messages,
+	  SLOT(clear(void)));
+  connect(m_ui.clearOutgoing,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotClearOutgoingMessage(void)));
+  connect(m_ui.commonBuzzChannels,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotCommonBuzzChannelsActivated(int)));
+  connect(m_ui.congestionAlgorithm,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotSaveCongestionAlgorithm(const QString &)));
+  connect(m_ui.copyInstitution,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCopyInstitution(void)));
+  connect(m_ui.correctUrlDatabases,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCorrectUrlDatabases(void)));
+  connect(m_ui.cost,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotCostChanged(int)));
+  connect(m_ui.custom,
+	  SIGNAL(textChanged(void)),
+	  this,
+	  SLOT(slotSaveCustomStatus(void)));
+  connect(m_ui.days,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotDaysChanged(int)));
+  connect(m_ui.deactivateKernel,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeactivateKernel(void)));
+  connect(m_ui.deleteAEToken,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteAEToken(void)));
+  connect(m_ui.deleteAcceptedIP,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteAcceptedIP(void)));
+  connect(m_ui.deleteAccount,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteAccount(void)));
+  connect(m_ui.deleteDistillers,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteUrlDistillers(void)));
+  connect(m_ui.deleteEmail,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteMail(void)));
+  connect(m_ui.deleteInstitution,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteInstitution(void)));
+  connect(m_ui.deleteNova,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDeleteNova(void)));
+  connect(m_ui.destination,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveDestination(void)));
+  connect(m_ui.discover,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDiscover(void)));
+  connect(m_ui.domain,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddDistiller(void)));
+  connect(m_ui.dynamicdns,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.emailNameEditable,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveEmailName(void)));
+  connect(m_ui.emailSecrets,
+	  SIGNAL(clicked(void)),
+	  m_ui.emailSecrets,
+	  SLOT(showMenu(void)));
+  connect(m_ui.emailSecrets->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowEmailSecretsMenu(void)));
+  connect(m_ui.email_fs_gb,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEmailFsGb(int)));
+  connect(m_ui.emptyTrash,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotEmptyTrash(void)));
+  connect(m_ui.encryptionKeyType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotEncryptionKeyTypeChanged(int)));
+  connect(m_ui.etpMaxMosaicSize,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotMaxMosaicSize(int)));
+  connect(m_ui.etpSelectDestination,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectDestination(void)));
+  connect(m_ui.etpSelectFile,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectTransmitFile(void)));
+  connect(m_ui.favorites,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotFavoritesActivated(int)));
+  connect(m_ui.folder,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotRefreshMail(void)));
+  connect(m_ui.generate,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotGenerateEtpKeys(int)));
+  connect(m_ui.generateNova,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotGenerateNova(void)));
+  connect(m_ui.hideOfflineParticipants,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotHideOfflineParticipants(bool)));
+  connect(m_ui.importUrls,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotImportUrls(void)));
+  connect(m_ui.ipv4Listener,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.ipv4Neighbor,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.ipv6Listener,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.ipv6Neighbor,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.join,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotJoinBuzzChannel(void)));
+  connect(m_ui.kernelCipherType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotKernelCipherTypeChanged(int)));
+  connect(m_ui.kernelExternalIpFetch,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotExternalIp(int)));
+  connect(m_ui.kernelHashType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotKernelHashTypeChanged(int)));
+  connect(m_ui.kernelKeySize,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotKernelKeySizeChanged(const QString &)));
+  connect(m_ui.kernelLogEvents,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotKernelLogEvents(bool)));
+  connect(m_ui.kernelPath,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveKernelPath(void)));
+  connect(m_ui.kernelSecureMemoryPool,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSecureMemoryPoolChanged(int)));
+  connect(m_ui.keys,
+	  SIGNAL(currentIndexChanged(const QString &)),
+	  this,
+	  SLOT(slotKeysIndexChanged(const QString &)));
+  connect(m_ui.listenerIP,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddListener(void)));
+  connect(m_ui.listenerIPCombo,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotListenerIPComboChanged(int)));
+  connect(m_ui.listenerTransport,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotTransportChanged(int)));
+  connect(m_ui.listeners,
+	  SIGNAL(itemSelectionChanged(void)),
+	  this,
+	  SLOT(slotListenerSelected(void)));
+  connect(m_ui.magnetRadio,
+	  SIGNAL(toggled(bool)),
+	  m_ui.etpMagnet,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.magnetRadio,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotMagnetRadioToggled(bool)));
+  connect(m_ui.mail,
+	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotMailSelected(QTableWidgetItem *)));
+  connect(m_ui.mail,
+	  SIGNAL(itemSelectionChanged(void)),
+	  this,
+	  SLOT(slotMailSelected(void)));
+  connect(m_ui.mailTab,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotMailTabChanged(int)));
+  connect(m_ui.message,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSendMessage(void)));
+  connect(m_ui.messages,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotLinkClicked(const QUrl &)));
+  connect(m_ui.neighborIP,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddNeighbor(void)));
+  connect(m_ui.neighborTransport,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotTransportChanged(int)));
+  connect(m_ui.newKeys,
+	  SIGNAL(toggled(bool)),
+	  m_ui.encryptionKeySize,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.newKeys,
+	  SIGNAL(toggled(bool)),
+	  m_ui.encryptionKeyType,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.newKeys,
+	  SIGNAL(toggled(bool)),
+	  m_ui.signatureKeySize,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.newKeys,
+	  SIGNAL(toggled(bool)),
+	  m_ui.signatureKeyType,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.newKeys,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotNewKeys(bool)));
+  connect(m_ui.nodeName,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveNodeName(void)));
+  connect(m_ui.pairRadio,
+	  SIGNAL(toggled(bool)),
+	  m_ui.generate,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.pairRadio,
+	  SIGNAL(toggled(bool)),
+	  m_ui.pairFrame,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.participants,
+	  SIGNAL(itemChanged(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
+  connect(m_ui.participants,
+	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotParticipantDoubleClicked(QTableWidgetItem *)));
+  connect(m_ui.passphrase,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotValidatePassphrase(void)));
+  connect(m_ui.passphrase1,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.passphrase1,
+	  SIGNAL(textChanged(const QString &)),
+	  this,
+	  SLOT(slotPassphraseChanged(const QString &)));
+  connect(m_ui.passphrase2,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.passphraseButton,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotValidatePassphrase(void)));
+  connect(m_ui.passphrase_rb,
+	  SIGNAL(toggled(bool)),
+	  m_ui.answer,
+	  SLOT(setDisabled(bool)));
   connect(m_ui.passphrase_rb,
 	  SIGNAL(toggled(bool)),
 	  m_ui.passphrase1,
@@ -2031,7 +1911,11 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(setDisabled(bool)));
   connect(m_ui.passphrase_rb,
 	  SIGNAL(toggled(bool)),
-	  m_ui.answer,
+	  this,
+	  SLOT(slotPassphraseRadioToggled(bool)));
+  connect(m_ui.passphrase_rb_authenticate,
+	  SIGNAL(toggled(bool)),
+	  m_ui.answer_authenticate,
 	  SLOT(setDisabled(bool)));
   connect(m_ui.passphrase_rb_authenticate,
 	  SIGNAL(toggled(bool)),
@@ -2043,110 +1927,232 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(setDisabled(bool)));
   connect(m_ui.passphrase_rb_authenticate,
 	  SIGNAL(toggled(bool)),
-	  m_ui.answer_authenticate,
-	  SLOT(setDisabled(bool)));
-  connect(m_ui.passphrase_rb,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotPassphraseRadioToggled(bool)));
-  connect(m_ui.passphrase_rb_authenticate,
-	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotPassphraseAuthenticateRadioToggled(bool)));
-  connect(m_ui.prepareUrlDatabases,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotPrepareUrlDatabases(void)));
-  connect(m_ui.importUrls,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotImportUrls(void)));
-  connect(m_ui.verify,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotVerify(void)));
-  connect(m_ui.saveUrlCredentials,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveUrlCredentials(void)));
-  connect(m_ui.saveCommonUrlCredentials,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSaveCommonUrlCredentials(void)));
   connect(m_ui.postgresqlConnect,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPostgreSQLConnect(void)));
-  connect(m_ui.discover,
+  connect(m_ui.postofficeCheckBox,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotEnabledPostOffice(bool)));
+  connect(m_ui.prepareUrlDatabases,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotDiscover(void)));
-  connect(m_ui.url_pages, SIGNAL(linkActivated(const QString &)),
-	  this, SLOT(slotPageClicked(const QString &)));
-  connect(m_ui.urls_db_type, SIGNAL(currentIndexChanged(int)),
-	  this, SLOT(slotPostgreSQLDisconnect(int)));
-  connect(m_ui.action_Poptastic_Settings, SIGNAL(triggered(void)),
-	  this, SLOT(slotConfigurePoptastic(void)));
-  connect(m_ui.action_Buzz,
+	  SLOT(slotPrepareUrlDatabases(void)));
+  connect(m_ui.proxy,
 	  SIGNAL(toggled(bool)),
 	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.action_Listeners,
-	  SIGNAL(toggled(bool)),
+	  SLOT(slotProxyChecked(bool)));
+  connect(m_ui.proxyType,
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.action_Neighbors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.action_Search,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.action_StarBeam,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.action_Urls,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-  connect(m_ui.addDistiller,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotAddDistiller(void)));
-  connect(m_ui.domain,
+	  SLOT(slotProxyTypeChanged(int)));
+  connect(m_ui.question,
 	  SIGNAL(returnPressed(void)),
 	  this,
-	  SLOT(slotAddDistiller(void)));
+	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.question_authenticate,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotValidatePassphrase(void)));
+  connect(m_ui.receiveNova,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotAddReceiveNova(void)));
+  connect(m_ui.receivers,
+	  SIGNAL(clicked(bool)),
+	  this,
+	  SLOT(slotReceiversClicked(bool)));
   connect(m_ui.refreshDistillers,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRefreshUrlDistillers(void)));
-  connect(m_ui.deleteDistillers,
+  connect(m_ui.refreshMail,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotDeleteUrlDistillers(void)));
-  connect(m_ui.urls,
-	  SIGNAL(anchorClicked(const QUrl &)),
+	  SLOT(slotRefreshMail(void)));
+  connect(m_ui.refreshMail,
+	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotUrlLinkClicked(const QUrl &)));
-  connect(m_ui.messages,
-	  SIGNAL(anchorClicked(const QUrl &)),
+	  SLOT(slotRefreshPostOffice(void)));
+  connect(m_ui.reloadEmailNames,
+	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotLinkClicked(const QUrl &)));
+	  SLOT(slotReloadEmailNames(void)));
+  connect(m_ui.reloadIni,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSetUrlIniPath(void)));
+  connect(m_ui.reply,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotReply(void)));
+  connect(m_ui.requireSsl,
+	  SIGNAL(toggled(bool)),
+	  m_ui.addException,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.requireSsl,
+	  SIGNAL(toggled(bool)),
+	  m_ui.neighborKeySize,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.requireSsl,
+	  SIGNAL(toggled(bool)),
+	  m_ui.neighborsSslControlString,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.requireSsl,
+	  SIGNAL(toggled(bool)),
+	  m_ui.sslKeySizeLabel,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.resend,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotResendMail(void)));
+  connect(m_ui.retrieveMail,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRetrieveMail(void)));
+  connect(m_ui.rewind,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRewindFile(void)));
+  connect(m_ui.saveAttachment,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveAttachment(void)));
+  connect(m_ui.saveBuzzName,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveBuzzName(void)));
+  connect(m_ui.saveCommonUrlCredentials,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveCommonUrlCredentials(void)));
+  connect(m_ui.saveMOTD,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveMOTD(void)));
+  connect(m_ui.saveNodeName,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveNodeName(void)));
+  connect(m_ui.saveUrlCredentials,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveUrlCredentials(void)));
+  connect(m_ui.saveUrlName,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveUrlName(void)));
+  connect(m_ui.search,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotDiscover(void)));
   connect(m_ui.secondary_storage,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveSecondaryStorage(bool)));
+  connect(m_ui.selectAttachment,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddAttachment(void)));
+  connect(m_ui.selectKernelPath,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectKernelPath(void)));
+  connect(m_ui.selectUrlIni,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectUrlIniPath(void)));
+  connect(m_ui.sendMail,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSendMail(void)));
+  connect(m_ui.sendMessage,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSendMessage(void)));
+  connect(m_ui.setPassphrase,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSetPassphrase(void)));
+  connect(m_ui.showStatistics,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotShowStatistics(void)));
+  connect(m_ui.showUrlSettings,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowUrlSettings(bool)));
+  connect(m_ui.signatureKeyType,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSignatureKeyTypeChanged(int)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.days_valid,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.listenerKeySize,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.listenersSslControlString,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.permanentCertificate,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.sslListener,
+	  SIGNAL(toggled(bool)),
+	  m_ui.recordIPAddress,
+	  SLOT(setEnabled(bool)));
+  connect(m_ui.status,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotStatusChanged(int)));
+  connect(m_ui.tab,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotTabChanged(int)));
+  connect(m_ui.transmit,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotTransmit(void)));
+  connect(m_ui.transmitted,
+	  SIGNAL(itemSelectionChanged(void)),
+	  this,
+	  SLOT(slotTransmittedSelected(void)));
   connect(m_ui.urlDistributionModel,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotSaveUrlDistribution(int)));
-  connect(m_ui.correctUrlDatabases,
+  connect(m_ui.urlIniPath,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSetUrlIniPath(void)));
+  connect(m_ui.urlName,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveUrlName(void)));
+  connect(m_ui.url_pages,
+	  SIGNAL(linkActivated(const QString &)),
+	  this,
+	  SLOT(slotPageClicked(const QString &)));
+  connect(m_ui.urls,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotUrlLinkClicked(const QUrl &)));
+  connect(m_ui.urls_db_type,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotPostgreSQLDisconnect(int)));
+  connect(m_ui.verify,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotCorrectUrlDatabases(void)));
+	  SLOT(slotVerify(void)));
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);
