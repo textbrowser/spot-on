@@ -1420,8 +1420,7 @@ QList<QByteArray> spoton_receive::process0091
   if(!s_crypt)
     {
       spoton_misc::logError
-	("spoton_receive::process0091(): "
-	 "s_crypt is zero.");
+	("spoton_receive::process0091(): s_crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -1527,9 +1526,8 @@ QList<QByteArray> spoton_receive::process0091
 	   keyType == "open-library" || keyType == "poptastic" ||
 	   keyType == "url"))
 	{
-	  spoton_misc::logError
-	    ("spoton_receive::process0091(): "
-	     "unexpected key type.");
+	  spoton_misc::logError("spoton_receive::process0091(): "
+				"unexpected key type.");
 	  return QList<QByteArray> ();
 	}
 
@@ -1886,8 +1884,7 @@ QString spoton_receive::findMessageType
   if(!s_crypt)
     {
       spoton_misc::logError
-	("spoton_receive::findMessageType(): "
-	 "s_crypt is zero.");
+	("spoton_receive::findMessageType(): s_crypt is zero.");
       return "";
     }
 
