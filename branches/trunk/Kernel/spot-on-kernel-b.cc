@@ -41,8 +41,10 @@ struct curl_upload_status
   int lines_read;
 };
 
-static size_t curl_payload_source
-(void *ptr, size_t size, size_t nmemb, void *userp)
+static size_t curl_payload_source(void *ptr,
+				  size_t size,
+				  size_t nmemb,
+				  void *userp)
 {
   if(nmemb == 0 || !ptr || size == 0 || (nmemb * size) < 1 || !userp)
     return 0;
@@ -71,8 +73,9 @@ static size_t curl_payload_source
   return 0;
 }
 
-static size_t curl_write_memory_callback
-(void *contents, size_t size, size_t nmemb)
+static size_t curl_write_memory_callback(void *contents,
+					 size_t size,
+					 size_t nmemb)
 {
   if(!contents || nmemb == 0 || size == 0)
     return 0;

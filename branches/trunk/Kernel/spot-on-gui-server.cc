@@ -891,8 +891,8 @@ void spoton_gui_server::slotReadyRead(void)
     }
 }
 
-void spoton_gui_server::slotReceivedBuzzMessage
-(const QByteArrayList &list, const QByteArrayList &keys)
+void spoton_gui_server::slotReceivedBuzzMessage(const QByteArrayList &list,
+						const QByteArrayList &keys)
 {
   if(spoton_kernel::buzzKeyCount() == 0 || spoton_kernel::interfaces() == 0)
     return;

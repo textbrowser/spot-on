@@ -1004,8 +1004,8 @@ spoton_kernel::~spoton_kernel()
 			arg(QCoreApplication::applicationPid()));
 }
 
-QList<QByteArray> spoton_kernel::findBuzzKey
-(const QByteArray &data, const QByteArray &hash)
+QList<QByteArray> spoton_kernel::findBuzzKey(const QByteArray &data,
+					     const QByteArray &hash)
 {
   if(hash.isEmpty())
     return QList<QByteArray> ();
@@ -1040,8 +1040,8 @@ QList<QByteArray> spoton_kernel::findBuzzKey
   return list;
 }
 
-QList<QByteArray> spoton_kernel::findInstitutionKey
-(const QByteArray &data, const QByteArray &hash)
+QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
+						    const QByteArray &hash)
 {
   if(hash.isEmpty())
     return QList<QByteArray> ();
@@ -4174,7 +4174,8 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			{
 			  ok = false;
 			  spoton_misc::logError
-			    ("spoton_kernel::slotCallParticipantUsingGemini(): "
+			    ("spoton_kernel::"
+			     "slotCallParticipantUsingGemini(): "
 			     "unable to discover distinct keys.");
 			}
 		    }
@@ -6212,11 +6213,10 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_kernel::writeMessage006X
-(const QByteArray &data,
- const QString &messageType,
- int *neighborIndex,
- bool *ok)
+void spoton_kernel::writeMessage006X(const QByteArray &data,
+				     const QString &messageType,
+				     int *neighborIndex,
+				     bool *ok)
 {
   /*
   ** StarBeams.
