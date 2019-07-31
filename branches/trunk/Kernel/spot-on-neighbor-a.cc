@@ -2186,8 +2186,8 @@ void spoton_neighbor::slotSendMOTD(void)
        arg(m_port));
 }
 
-void spoton_neighbor::slotSendMail
-(const QPairByteArrayInt64List &list, const QString &messageType)
+void spoton_neighbor::slotSendMail(const QPairByteArrayInt64List &list,
+				   const QString &messageType)
 {
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     return;

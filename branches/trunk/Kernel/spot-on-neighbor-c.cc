@@ -619,7 +619,8 @@ void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
   }
 }
 
-void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0000(int length,
+				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -648,7 +649,8 @@ void spoton_neighbor::process0000(int length, const QByteArray &dataIn,
     }
 }
 
-void spoton_neighbor::process0000a(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0000a(int length,
+				   const QByteArray &dataIn,
 				   const QString &messageType)
 {
   /*
@@ -671,7 +673,8 @@ void spoton_neighbor::process0000a(int length, const QByteArray &dataIn,
 	       list.value(4), messageType);
 }
 
-void spoton_neighbor::process0000b(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0000b(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -689,7 +692,8 @@ void spoton_neighbor::process0000b(int length, const QByteArray &dataIn,
 	       list.value(5), "0000b");
 }
 
-void spoton_neighbor::process0000d(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0000d(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -1042,7 +1046,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
        arg(m_port));
 }
 
-void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0001b(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
@@ -1223,9 +1228,9 @@ void spoton_neighbor::process0001b(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
-void spoton_neighbor::process0001c
-(int length, const QByteArray &dataIn,
- const QList<QByteArray> &symmetricKeys)
+void spoton_neighbor::process0001c(int length,
+				   const QByteArray &dataIn,
+				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
     (spoton_receive::process0001c(length, dataIn, symmetricKeys,
@@ -1237,7 +1242,8 @@ void spoton_neighbor::process0001c
 }
 
 void spoton_neighbor::process0002a
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
@@ -1398,7 +1404,8 @@ void spoton_neighbor::process0002a
 }
 
 void spoton_neighbor::process0002b
-(int length, const QByteArray &dataIn,
+(int length,
+ const QByteArray &dataIn,
  const QList<QByteArray> &symmetricKeys,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
@@ -1659,7 +1666,8 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
        arg(m_port));
 }
 
-void spoton_neighbor::process0013(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0013(int length,
+				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -1950,7 +1958,8 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
        arg(m_port));
 }
 
-void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0040a(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QByteArray data(dataIn);
@@ -2029,7 +2038,8 @@ void spoton_neighbor::process0040a(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
-void spoton_neighbor::process0040b(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0040b(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -2592,7 +2602,8 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
        arg(m_port));
 }
 
-void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0080(int length,
+				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QByteArray data(dataIn);
@@ -2777,7 +2788,8 @@ void spoton_neighbor::process0080(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
-void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0090(int length,
+				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QByteArray data(dataIn);
@@ -2888,7 +2900,8 @@ void spoton_neighbor::process0090(int length, const QByteArray &dataIn,
        arg(m_port));
 }
 
-void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0091a(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -2899,7 +2912,8 @@ void spoton_neighbor::process0091a(int length, const QByteArray &dataIn,
     emit forwardSecrecyRequest(list);
 }
 
-void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0091b(int length,
+				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
@@ -2910,7 +2924,8 @@ void spoton_neighbor::process0091b(int length, const QByteArray &dataIn,
     emit saveForwardSecrecySessionKeys(list);
 }
 
-void spoton_neighbor::process0092(int length, const QByteArray &dataIn,
+void spoton_neighbor::process0092(int length,
+				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
