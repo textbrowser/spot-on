@@ -460,8 +460,8 @@ class spoton: public QMainWindow
   QHash<QString, quint64> m_chatSequenceNumbers;
   QHash<QString, spoton_crypt *> crypts(void) const;
   QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
-  QList<QByteArray> retrieveForwardSecrecyInformation
-    (const QString &oid, bool *ok) const;
+  QList<QByteArray> retrieveForwardSecrecyInformation(const QString &oid,
+						      bool *ok) const;
   QSqlDatabase urlDatabase(void) const;
 
   QSslSocket *kernelSocket(void)
@@ -589,11 +589,10 @@ class spoton: public QMainWindow
   QString listenerTransport(void) const;
   QString neighborTransport(void) const;
   QString participantKeyType(QTableWidget *table) const;
-  QString saveCommonUrlCredentials
-    (const QPair<QByteArray, QByteArray> &keys,
-     const QString &cipherType,
-     const QString &hashType,
-     spoton_crypt *crypt) const;
+  QString saveCommonUrlCredentials(const QPair<QByteArray, QByteArray> &keys,
+				   const QString &cipherType,
+				   const QString &hashType,
+				   spoton_crypt *crypt) const;
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
   QThread::Priority neighborThreadPriority(void) const;
