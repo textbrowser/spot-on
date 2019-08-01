@@ -3943,6 +3943,10 @@ void spoton::slotActivateKernel(void)
       if(m_ui.pid->text().toLongLong() > 0)
 	return;
     }
+  else
+    // Remove shared.db.
+
+    QFile::remove(spoton_misc::homePath() + QDir::separator() + "shared.db");
 
   QFileInfo fileInfo(m_ui.kernelPath->text());
 

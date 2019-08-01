@@ -179,6 +179,10 @@ Completed Items
 129.   Automatic computations of rapid StarBeam digests may be incorrect.
        See spoton::slotPopulateStars().
 130.   DTLS.
+131.   Format changes (order members).
+132.   Per request, provide an automatic StarBeam rewind mechanism with a
+       timer. Private and public libraries. Not required as StarBeams are
+       now reliable.
 
 Ignored Items
 
@@ -191,8 +195,7 @@ Ignored Items
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
 6.     Allow for other ciphers besides AES for e-mail.
-7.     Per request, provide an automatic StarBeam rewind mechanism with a
-       timer. Private and public libraries.
+7.     URLs statistics.
 8.     Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
 9.     Database entries containing hashes can be maliciously twisted. Encrypt?
@@ -218,7 +221,6 @@ Ignored Items
 25.    Allow custom addresses for spoton_external_address.
 26.    Qt 5.5.x supports serial ports.
 27.    Key pools.
-28.    URLs statistics.
 
 Remaining Items
 
@@ -235,4 +237,3 @@ Remaining Items
 9.     Python Web interface for the Search machine.
 10.    Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
-11.    Format changes.
