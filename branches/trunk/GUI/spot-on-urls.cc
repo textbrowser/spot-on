@@ -1532,7 +1532,7 @@ void spoton::slotPrepareUrlDatabases(void)
   QSqlQuery query(m_urlDatabase);
 
   if(m_urlDatabase.driverName() == "QSQLITE")
-    query.exec("PRAGMA journal_mode = OFF");
+    query.exec("PRAGMA journal_mode = DELETE");
 
   for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)

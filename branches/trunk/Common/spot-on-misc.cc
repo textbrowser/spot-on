@@ -1764,7 +1764,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	}
 
       if(disable_synchronous_sqlite_writes)
-	query.exec("PRAGMA synchronous = OFF");
+	query.exec("PRAGMA synchronous = NORMAL");
       else
 	query.exec("PRAGMA synchronous = NORMAL");
 
@@ -1838,7 +1838,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       if(db.driverName() == "QSQLITE")
 	{
 	  if(disable_synchronous_sqlite_writes)
-	    query.exec("PRAGMA synchronous = OFF");
+	    query.exec("PRAGMA synchronous = NORMAL");
 	  else
 	    query.exec("PRAGMA synchronous = NORMAL");
 	}
