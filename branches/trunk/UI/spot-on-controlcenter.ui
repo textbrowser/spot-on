@@ -6471,7 +6471,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>806</width>
+             <width>604</width>
              <height>716</height>
             </rect>
            </property>
@@ -7501,8 +7501,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>679</width>
-             <height>517</height>
+             <width>826</width>
+             <height>546</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7815,7 +7815,7 @@
                     <item>
                      <widget class="QLabel" name="label_43">
                       <property name="text">
-                       <string>RSS and Search interpret the Import settings.</string>
+                       <string>RSS interprets the Import settings.</string>
                       </property>
                       <property name="wordWrap">
                        <bool>true</bool>
