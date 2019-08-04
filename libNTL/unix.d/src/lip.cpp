@@ -5631,6 +5631,83 @@ _ntl_reduce_struct_build(_ntl_gbigint modulus, _ntl_gbigint excess)
 }
 
 
+#if (defined(NTL_GMP_LIP) && NTL_NAIL_BITS == 0)
+// DIRT: only works with empty nails
+// Assumes: F > 1,   0 < g < F,   e > 0
+
+struct wrapped_mpz {
+   mpz_t body;
+
+   wrapped_mpz() { mpz_init(body); }
+   ~wrapped_mpz() { mpz_clear(body); }
+};
+
+static
+void _ntl_gmp_powermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
+                       _ntl_gbigint *h)
+{
+   wrapped_mpz gg;
+   wrapped_mpz ee;
+   wrapped_mpz FF;
+   wrapped_mpz res;
+
+   mpz_import(gg.body, SIZE(g), -1, sizeof(mp_limb_t), 0, 0, DATA(g));
+   mpz_import(ee.body, SIZE(e), -1, sizeof(mp_limb_t), 0, 0, DATA(e));
+   mpz_import(FF.body, SIZE(F), -1, sizeof(mp_limb_t), 0, 0, DATA(F));
+
+   mpz_powm(res.body, gg.body, ee.body, FF.body);
+
+   if (mpz_sgn(res.body) == 0) {
+      _ntl_gzero(h);
+      return;
+   }
+
+   long sz = mpz_size(res.body);
+
+   _ntl_gsetlength(h, sz);
+   _ntl_limb_t *hdata = DATA(*h);
+   SIZE(*h) = sz;
+
+   mpz_export(hdata, 0, -1, sizeof(mp_limb_t), 0, 0, res.body);
+}
+
+
+#if 1
+// This version avoids memory allocations.
+// On 2-limb numbers, it is about 10% faster.
+
+static
+void _ntl_gmp_powermod_alt(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
+                           _ntl_gbigint *h)
+{
+   NTL_TLS_LOCAL(wrapped_mpz, gg);
+   NTL_TLS_LOCAL(wrapped_mpz, ee);
+   NTL_TLS_LOCAL(wrapped_mpz, FF);
+   NTL_TLS_LOCAL(wrapped_mpz, res);
+
+   mpz_import(gg.body, SIZE(g), -1, sizeof(mp_limb_t), 0, 0, DATA(g));
+   mpz_import(ee.body, SIZE(e), -1, sizeof(mp_limb_t), 0, 0, DATA(e));
+   mpz_import(FF.body, SIZE(F), -1, sizeof(mp_limb_t), 0, 0, DATA(F));
+
+   mpz_powm(res.body, gg.body, ee.body, FF.body);
+
+   if (mpz_sgn(res.body) == 0) {
+      _ntl_gzero(h);
+      return;
+   }
+
+   long sz = mpz_size(res.body);
+
+   _ntl_gsetlength(h, sz);
+   _ntl_limb_t *hdata = DATA(*h);
+   SIZE(*h) = sz;
+
+   mpz_export(hdata, 0, -1, sizeof(mp_limb_t), 0, 0, res.body);
+}
+#endif
+
+
+#endif
 
 #define REDC_CROSS (32)
 
@@ -5644,31 +5721,20 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
 */
 
 {
-   _ntl_gbigint_wrapped res, gg, t;
-   UniqueArray<_ntl_gbigint_wrapped> v;
-
-   long n, i, k, val, cnt, m;
-   long use_redc, sF;
-   _ntl_limb_t inv;
  
    
-   if (_ntl_gsign(g) < 0 || _ntl_gcompare(g, F) >= 0 || 
+   if (_ntl_gsign(e) < 0 || _ntl_gsign(g) < 0 || _ntl_gcompare(g, F) >= 0 || 
        _ntl_gscompare(F, 1) <= 0) {
       LogicError("PowerMod: bad args");
    }
 
-   if (_ntl_gscompare(e, 0) == 0) {
+   if (ZEROP(e)) {
       _ntl_gone(h);
       return;
    }
 
-   if (_ntl_gscompare(e, 1) == 0) {
+   if (ONEP(e)) {
       _ntl_gcopy(g, h);
-      return;
-   }
-
-   if (_ntl_gscompare(e, -1) == 0) {
-      _ntl_ginvmod(g, F, h);
       return;
    }
 
@@ -5677,14 +5743,29 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
       return;
    }
 
-   if (_ntl_gscompare(e, -2) == 0) {
-      res = 0;
-      _ntl_gsqmod(g, F, &res);
-      _ntl_ginvmod(res, F, h);
+   if (ZEROP(g)) {
+      _ntl_gzero(h);
       return;
    }
 
-   n = _ntl_g2log(e);
+   long n = _ntl_g2log(e);
+
+#if (1 && defined(NTL_GMP_LIP) && NTL_NAIL_BITS == 0)
+   if (n > 10) {
+      if (SIZE(F) < 6 && SIZE(e) < 10) 
+         _ntl_gmp_powermod_alt(g, e, F, h); 
+      else
+         _ntl_gmp_powermod(g, e, F, h);
+      return;
+   }
+#endif
+
+   _ntl_gbigint_wrapped res, gg, t;
+   UniqueArray<_ntl_gbigint_wrapped> v;
+
+   long i, k, val, cnt, m;
+   long use_redc, sF;
+   _ntl_limb_t inv;
 
    sF = SIZE(F);
 
@@ -5757,8 +5838,6 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
          }
       }
 
-      if (_ntl_gsign(e) < 0) _ntl_ginvmod(res, F, &res);
-
       _ntl_gcopy(res, h);
       return;
    }
@@ -5787,8 +5866,6 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
             _ntl_gsub(res, F, &res);
          }
       }
-
-      if (_ntl_gsign(e) < 0) _ntl_ginvmod(res, F, &res);
 
       _ntl_gcopy(res, h);
       return;
@@ -5859,8 +5936,6 @@ void _ntl_gpowermod(_ntl_gbigint g, _ntl_gbigint e, _ntl_gbigint F,
          _ntl_gsub(res, F, &res);
       }
    }
-
-   if (_ntl_gsign(e) < 0) _ntl_ginvmod(res, F, &res);
 
    _ntl_gcopy(res, h);
 }

@@ -18,6 +18,32 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2018.11.15: Changes between NTL 11.3.1 and 11.3.2
+</h3>
+
+<ul>
+<li>
+Fixed a somewhat embarrassing performance issue
+in the <tt>PowerMod</tt> function for the <tt>ZZ</tt> class
+(which also impacts the prime testing and generation functions).
+When using GMP, NTL will now call GMP's <tt>mpz_powm</tt>
+function.
+Although GMP does have an <tt>mpn_pown</tt> function,
+it is not documented, and so cannot be used by NTL.
+This means that NTL is now using some <tt>mpz</tt>-level
+functionality, in addition to <tt>mpn</tt>-level functionality.
+<ul>
+<li>
+This leads to a significant speedup (sometimes 2-3x),
+especially for numbers
+with a small number of limbs.
+<li>
+Thanks to Niek Bouman for helping to sort this out.
+</ul>
+</ul>
+
+<p><hr><p>
+<h3>
 2018.10.20: Changes between NTL 11.3.0 and 11.3.1
 </h3>
 
