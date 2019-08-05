@@ -70,7 +70,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>24</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -84,7 +84,7 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="action_Empty_Log"/>
-    <addaction name="actionEnable_Log"/>
+    <addaction name="action_Enable_Log"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -103,7 +103,7 @@
     <string>&amp;Empty Log</string>
    </property>
   </action>
-  <action name="actionEnable_Log">
+  <action name="action_Enable_Log">
    <property name="checkable">
     <bool>true</bool>
    </property>
