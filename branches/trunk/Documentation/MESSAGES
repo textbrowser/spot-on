@@ -35,7 +35,8 @@ Encryption Key (Base-64)
 	2 - Message
 	3 - Sequence Number
 	4 - UTC Date
-	5 - Signature (First Group Items and Previous Five Items) (*)
+	5 - Recipient's SHA-512 Digest
+	6 - Signature (First Group Items and Previous Six Items)
 }
 EOL
 {
@@ -68,7 +69,8 @@ Encryption Key (Base-64)
 	1 - Gemini Encryption Key
 	2 - Gemini Digest Key
 	3 - UTC Date
-	4 - Signature (First Group Items and Previous Four Items) (*)
+	4 - Recipient's SHA-512 Digest
+	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
 {
@@ -90,7 +92,8 @@ Gemini Encryption Key (Base-64)
 	2 - Gemini Encryption Key
 	3 - Gemini Digest Key
 	4 - UTC Date
-	5 - Signature (Previous Five Items) (*)
+	5 - Recipient's SHA-512 Digest
+	6 - Signature (Previous Six Items)
 }
 EOL
 {
@@ -395,7 +398,8 @@ Encryption Key (Base-64)
 	1 - Name
 	2 - Status
 	3 - UTC Date
-	4 - Signature (First Group Items and Previous Four Items) (*)
+	4 - Recipient's SHA-512 Digest
+	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
 {
@@ -590,13 +594,14 @@ Encryption Key (Base-64)
 	3 - Description
 	4 - Content
 	...
-	I - URL
-	I + 1 - Title
-	I + 2 - Description
-	I + 3 - Content
+	i - URL
+	i + 1 - Title
+	i + 2 - Description
+	i + 3 - Content
 	...
-	N - 1 - UTC Date
-	N - Signature (First Group Items and Previous N - 1 Items) (*)
+	n - 2 - UTC Date
+	n - 1 - Recipient's SHA-512 Digest
+	n - Signature (First Group Items and Previous n - 1 Items)
 }
 EOL
 {
@@ -653,7 +658,8 @@ Encryption Key (Base-64)
 	0 - Dispatcher's SHA-512 Digest
 	1 - Dispatcher's Ephemeral Public Key
 	2 - UTC Date
-	3 - Signature (First Group Items and Previous Three Items)
+	3 - Recipient's SHA-512 Digest
+	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
 {
@@ -687,7 +693,8 @@ Encryption Key (Base-64)
 		3 - Forward Secrecy Encryption Key
 	}
 	2 - UTC Date
-	3 - Signature (First Group Items and Previous Three Items)
+	3 - Recipient's SHA-512 Digest
+	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
 {
@@ -718,7 +725,8 @@ Encryption Key (Base-64)
 	0 - Dispatcher's SHA-512 Digest
 	1 - Data
 	2 - UTC Date
-	3 - Signature (First Group Items and Previous Three Items)
+	3 - Recipient's SHA-512 Digest
+	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
 {
@@ -730,8 +738,3 @@ EOL
 	    Preceding Data and Encrypted Timestamp,
 	    Encrypted Timestamp (Base-64)
 }
-
-(*) - Recipient and sender identities are included in the digital signature.
-      The recipient's identity is not explicitly included in the
-      message bundle as the destination is implied through the encryption
-      process via the destination's public key.
