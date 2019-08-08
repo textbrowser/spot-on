@@ -584,7 +584,6 @@ void spoton_starbeam_reader::slotTimeout(void)
     db.close();
   }
 
- done_label:
   QSqlDatabase::removeDatabase(connectionName);
 
   if(shouldDelete)
