@@ -17,6 +17,22 @@ mv curl-temporary.d/*/include/curl/*.h libcURL/Win32.d/include/curl/.
 rm -f $curl.zip
 rm -fr curl-temporary.d
 
+# OpenSSL
+
+openssl=openssl-1.1.1c-win32-mingw
+
+rm -f $openssl.zip
+rm -fr $openssl
+wget --output-document=$openssl.zip \
+     --progress=bar \
+     https://bintray.com/vszakats/generic/download_file?file_path=$openssl.zip
+unzip -o $openssl.zip
+mv $openssl/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
+mv $openssl/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+chmod +w,-x libOpenSSL/Libraries.win32/*.dll
+rm -f $openssl.zip
+rm -fr $openssl
+
 # PostgreSQL
 
 postgresql=postgresql.zip
