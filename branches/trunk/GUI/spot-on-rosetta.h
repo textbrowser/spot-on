@@ -33,6 +33,7 @@
 #include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
+class spoton;
 class spoton_crypt;
 
 class spoton_rosetta: public QMainWindow
@@ -42,10 +43,11 @@ class spoton_rosetta: public QMainWindow
  public:
   spoton_rosetta(void);
   void setName(const QString &text);
-  void show(QWidget *parent);
+  void show(spoton *parent);
 
  private:
   Ui_spoton_rosetta ui;
+  spoton *m_parent;
   QByteArray copyMyRosettaPublicKey(void) const;
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);

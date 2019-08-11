@@ -47,7 +47,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &publicKeyHash,
 				     const QString &status,
 				     QSslSocket *kernelSocket,
-				     QWidget *parent):QMainWindow(parent)
+				     spoton *parent):QMainWindow(parent)
 {
   m_id = id;
   m_keyType = keyType.toLower();
@@ -56,6 +56,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     m_keyType = "chat";
 
   m_kernelSocket = kernelSocket;
+  m_parent = parent;
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
 
@@ -130,8 +131,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   ui.share->setEnabled(m_keyType != "poptastic");
   ui.starbeam->setEnabled(m_keyType != "poptastic");
   ui.table->resizeColumnToContents(0);
-  ui.table->setModel(spoton::instance() ?
-		     spoton::instance()->starbeamReceivedModel() : 0);
+  ui.table->setModel(m_parent ? m_parent->starbeamReceivedModel() : 0);
   ui.table->setVisible(false);
 
   QMenu *menu = new QMenu(this);
@@ -221,10 +221,10 @@ void spoton_chatwindow::sendMessage(bool *ok)
     }
 
   if(m_keyType == "chat")
-    name = spoton::instance() ? spoton::instance()->m_settings.
+    name = m_parent ? m_parent->m_settings.
       value("gui/nodeName", "unknown").toByteArray() : "unknown";
   else
-    name = spoton::instance() ? spoton::instance()->m_settings.
+    name = m_parent ? m_parent->m_settings.
       value("gui/poptasticName", "unknown@unknown.org").toByteArray() :
       "unknown@unknown.org";
 
@@ -248,11 +248,11 @@ void spoton_chatwindow::sendMessage(bool *ok)
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
 
-  if(spoton::instance())
+  if(m_parent)
     {
-      spoton::instance()->ui().messages->append(msg);
-      spoton::instance()->ui().messages->verticalScrollBar()->setValue
-	(spoton::instance()->ui().messages->verticalScrollBar()->maximum());
+      m_parent->ui().messages->append(msg);
+      m_parent->ui().messages->verticalScrollBar()->setValue
+	(m_parent->ui().messages->verticalScrollBar()->maximum());
     }
 
   if(name.isEmpty())
@@ -263,12 +263,12 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	name = "unknown@unknown.org";
     }
 
-  if(spoton::instance())
+  if(m_parent)
     {
-      if(!spoton::instance()->m_chatSequenceNumbers.contains(m_id))
-	spoton::instance()->m_chatSequenceNumbers[m_id] = 0;
+      if(!m_parent->m_chatSequenceNumbers.contains(m_id))
+	m_parent->m_chatSequenceNumbers[m_id] = 0;
 
-      spoton::instance()->m_chatSequenceNumbers[m_id] += 1;
+      m_parent->m_chatSequenceNumbers[m_id] += 1;
     }
 
   if(m_keyType == "chat")
@@ -282,16 +282,16 @@ void spoton_chatwindow::sendMessage(bool *ok)
   message.append(ui.message->toPlainText().toUtf8().toBase64());
   message.append("_");
   message.append
-    (QByteArray::number(spoton::instance() ?
-			spoton::instance()->m_chatSequenceNumbers[m_id] :
+    (QByteArray::number(m_parent ?
+			m_parent->m_chatSequenceNumbers[m_id] :
 			1).toBase64());
   message.append("_");
   message.append(QDateTime::currentDateTime().toUTC().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 
-  if(spoton::instance())
-    spoton::instance()->addMessageToReplayQueue(msg, message, m_publicKeyHash);
+  if(m_parent)
+    m_parent->addMessageToReplayQueue(msg, message, m_publicKeyHash);
 
   if(m_kernelSocket->write(message.constData(), message.length()) !=
      message.length())
@@ -319,7 +319,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
       if(player)
 	player->deleteLater();
 
-      if(spoton::instance() ? spoton::instance()->m_settings.
+      if(m_parent ? m_parent->m_settings.
 	 value("gui/play_sounds", false).toBool() : false)
 	{
 	  QFileInfo fileInfo;
@@ -526,8 +526,7 @@ void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 void spoton_chatwindow::slotShareStarBeam(void)
 {
   QString error("");
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {

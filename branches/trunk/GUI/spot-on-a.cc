@@ -158,7 +158,6 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-static QPointer<spoton> s_gui = 0;
 
 #if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
@@ -373,19 +372,11 @@ int main(int argc, char *argv[])
 
   spoton_crypt::init
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
-  s_gui = new (std::nothrow) spoton();
 
   int rc = 0;
+  spoton spoton;
 
-  if(s_gui)
-    rc = qapplication.exec();
-  else
-    {
-      rc = EXIT_FAILURE;
-      std::cerr << "Critical memory failure. Exiting." << std::endl;
-    }
-
-  delete s_gui;
+  rc = qapplication.exec();
   curl_global_cleanup();
   spoton_crypt::terminate();
   return rc;
@@ -473,13 +464,13 @@ spoton::spoton(void):QMainWindow()
   m_documentation = new spoton_documentation(QUrl("qrc:/Spot-On.html"), 0);
   m_documentation->setWindowTitle
     (tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
-  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, 0);
+  m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
   m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
     (QUrl("qrc:/Documentation/RELEASE-NOTES.html"), 0);
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
-  m_rss = new spoton_rss(0);
+  m_rss = new spoton_rss(this);
   m_starbeamDigestInterrupt = 0;
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
@@ -506,6 +497,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.tab->setSpotOn(this);
   m_ui.tab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -3293,11 +3285,6 @@ spoton::spoton(void):QMainWindow()
 
 spoton::~spoton()
 {
-}
-
-QPointer<spoton> spoton::instance(void)
-{
-  return s_gui;
 }
 
 void spoton::authenticate(spoton_crypt *crypt, const QString &oid,

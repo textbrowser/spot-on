@@ -37,8 +37,9 @@ spoton_emailwindow::spoton_emailwindow
 (const QString &message,
  const QString &subject,
  const QString &receiver_sender_hash,
- QWidget *parent):QMainWindow(parent)
+ spoton *parent):QMainWindow(parent)
 {
+  m_parent = parent;
   m_receiver_sender_hash = receiver_sender_hash;
   m_ui.setupUi(this);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
@@ -57,9 +58,9 @@ spoton_emailwindow::spoton_emailwindow
   m_ui.outgoingMessage->append(message);
   m_ui.outgoingSubject->setText(subject);
 
-  if(spoton::instance())
+  if(m_parent)
     m_ui.sign_this_email->setChecked
-      (spoton::instance()->m_settings.
+      (m_parent->m_settings.
        value("gui/emailSignMessages", true).toBool());
 
   connect(m_ui.attachment,
@@ -112,14 +113,14 @@ void spoton_emailwindow::closeEvent(QCloseEvent *event)
 
 void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
 {
-  if(!spoton::instance())
+  if(!m_parent)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.emailSecrets->menu()->clear();
 
   QMapIterator<QString, QByteArray> it
-    (spoton::instance()->
+    (m_parent->
      SMPWindowStreams(QStringList() << "e-mail" << "poptastic"));
 
   while(it.hasNext())
@@ -214,10 +215,10 @@ void spoton_emailwindow::slotNewGlobalName(const QString &text)
 
 void spoton_emailwindow::slotPopulateParticipants(void)
 {
-  if(!spoton::instance())
+  if(!m_parent)
     return;
 
-  spoton_crypt *crypt = spoton::instance()->crypts().value("chat", 0);
+  spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
 
   if(!crypt)
     return;
@@ -225,10 +226,10 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.emailName->clear();
   m_ui.emailName->addItem
-    (QString::fromUtf8(spoton::instance()->
+    (QString::fromUtf8(m_parent->
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().constData(),
-		       spoton::instance()->
+		       m_parent->
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().length()).trimmed());
   m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
@@ -352,7 +353,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		      if(keyType == "email")
 			item->setIcon
 			  (QIcon(QString(":/%1/key.png").
-				 arg(spoton::instance()->m_settings.
+				 arg(m_parent->m_settings.
 				     value("gui/iconSet",
 					   "nouve").toString())));
 		      else if(keyType == "poptastic")
@@ -371,7 +372,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 				(QBrush(QColor(137, 207, 240)));
 			      item->setIcon
 				(QIcon(QString(":/%1/key.png").
-				       arg(spoton::instance()->m_settings.
+				       arg(m_parent->m_settings.
 					   value("gui/iconSet",
 						 "nouve").toString())));
 			    }
@@ -388,7 +389,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 			  QList<QByteArray> list;
 			  bool ok = true;
 
-			  list = spoton::instance()->
+			  list = m_parent->
 			    retrieveForwardSecrecyInformation(oid, &ok);
 
 			  if(ok)
@@ -475,13 +476,13 @@ void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
 
 void spoton_emailwindow::slotSendMail(void)
 {
-  if(!spoton::instance())
+  if(!m_parent)
     return;
 
   QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
 		     "email.db");
   qint64 maximumSize = 1048576 *
-    spoton::instance()->
+    m_parent->
     m_settings.value("gui/maximumEmailFileSize", 1024).toLongLong();
 
   if(fileInfo.size() >= maximumSize)
@@ -564,7 +565,7 @@ void spoton_emailwindow::slotSendMail(void)
       QApplication::restoreOverrideCursor();
     }
 
-  spoton_crypt *crypt = spoton::instance()->crypts().value("email", 0);
+  spoton_crypt *crypt = m_parent->crypts().value("email", 0);
 
   if(!crypt)
     {
@@ -656,7 +657,7 @@ void spoton_emailwindow::slotSendMail(void)
 
   if(mixed)
     {
-      if(spoton::instance()->m_settings.value("gui/poptasticNameEmail").
+      if(m_parent->m_settings.value("gui/poptasticNameEmail").
 	 isNull())
 	{
 	  QMessageBox::information
@@ -667,7 +668,7 @@ void spoton_emailwindow::slotSendMail(void)
 	  emit configurePoptastic();
 	}
 
-      if(spoton::instance()->
+      if(m_parent->
 	 m_settings.value("gui/poptasticNameEmail").isNull())
 	return;
     }
@@ -820,7 +821,7 @@ void spoton_emailwindow::slotSendMail(void)
 		if(ok)
 		  query.addBindValue
 		    (crypt->
-		     encryptedThenHashed(spoton::instance()->m_settings.
+		     encryptedThenHashed(m_parent->m_settings.
 					 value("gui/poptasticNameEmail").
 					 toByteArray(), &ok).toBase64());
 	      }
@@ -942,7 +943,7 @@ void spoton_emailwindow::slotSendMail(void)
 	m_ui.outgoingSubject->clear();
 	m_ui.richtext->setChecked(true);
 	m_ui.sign_this_email->setChecked
-	  (spoton::instance()->m_settings.
+	  (m_parent->m_settings.
 	   value("gui/emailSignMessages", true).toBool());
       }
 
@@ -956,13 +957,13 @@ void spoton_emailwindow::slotSendMail(void)
 
 void spoton_emailwindow::slotUpdate(void)
 {
-  if(!spoton::instance())
+  if(!m_parent)
     return;
 
   m_ui.emailParticipants->setAlternatingRowColors
-    (spoton::instance()->m_settings.
+    (m_parent->m_settings.
      value("gui/emailAlternatingRowColors", true).toBool());
   m_ui.sign_this_email->setChecked
-    (spoton::instance()->m_settings.
+    (m_parent->m_settings.
      value("gui/emailSignMessages", true).toBool());
 }

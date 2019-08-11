@@ -33,6 +33,8 @@
 
 #include "ui_spot-on-emailwindow.h"
 
+class spoton;
+
 class spoton_emailwindow: public QMainWindow
 {
   Q_OBJECT
@@ -41,12 +43,13 @@ class spoton_emailwindow: public QMainWindow
   spoton_emailwindow(const QString &message,
 		     const QString &subject,
 		     const QString &receiver_sender_hash,
-		     QWidget *parent);
+		     spoton *parent);
   ~spoton_emailwindow();
 
  private:
   QString m_receiver_sender_hash;
   Ui_spoton_emailwindow m_ui;
+  spoton *m_parent;
   void closeEvent(QCloseEvent *event);
 
  private slots:

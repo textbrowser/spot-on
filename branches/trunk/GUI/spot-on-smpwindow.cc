@@ -37,6 +37,7 @@
 
 spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
 {
+  m_parent = 0;
   m_ui.setupUi(this);
   m_ui.participants->setColumnHidden
     (m_ui.participants->columnCount() - 1, true); // OID
@@ -193,7 +194,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       return;
     }
 
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt = m_parent ? m_parent->
     crypts().value(smp->m_keyType, 0) : 0;
 
   if(!s_crypt)
@@ -308,8 +309,7 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_smpwindow::populateSecrets(void)
 {
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     return;
@@ -399,8 +399,10 @@ void spoton_smpwindow::populateSecrets(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_smpwindow::show(QWidget *parent)
+void spoton_smpwindow::show(spoton *parent)
 {
+  m_parent = parent;
+
   if(!isVisible())
     slotRefresh();
 
@@ -409,7 +411,7 @@ void spoton_smpwindow::show(QWidget *parent)
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, parent);
+  spoton_utilities::centerWidget(this, m_parent);
 }
 
 void spoton_smpwindow::showError(const QString &error)
@@ -434,9 +436,8 @@ void spoton_smpwindow::slotExecute(void)
   QModelIndexList list
     (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
   QString keyType(list.value(0).data().toString());
-  spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
-    crypts().value(keyType, 0) : 0;
-  spoton_crypt *s_crypt2 = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt1 = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  spoton_crypt *s_crypt2 = m_parent ? m_parent->
     crypts().value(keyType + "-signature", 0) : 0;
 
   if(!s_crypt1 || !s_crypt2)
@@ -446,8 +447,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QSslSocket *kernelSocket = spoton::instance() ?
-    spoton::instance()->kernelSocket() : 0;
+  QSslSocket *kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
   QString error("");
 
   if(!kernelSocket)
@@ -736,8 +736,7 @@ void spoton_smpwindow::slotGenerateData(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ? m_parent-> crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -816,8 +815,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -934,8 +932,7 @@ void spoton_smpwindow::slotPurgeSMPStateMachines(void)
 
 void spoton_smpwindow::slotRefresh(void)
 {
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -1073,8 +1070,7 @@ void spoton_smpwindow::slotRemove(void)
   if(list.isEmpty())
     return;
 
-  spoton_crypt *s_crypt = spoton::instance() ? spoton::instance()->
-    crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -1136,9 +1132,9 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       return;
     }
 
-  spoton_crypt *s_crypt1 = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt1 = m_parent ? m_parent->
     crypts().value(smp->m_keyType, 0) : 0;
-  spoton_crypt *s_crypt2 = spoton::instance() ? spoton::instance()->
+  spoton_crypt *s_crypt2 = m_parent ? m_parent->
     crypts().value(smp->m_keyType + "-signature", 0) : 0;
 
   if(!s_crypt1 || !s_crypt2)
@@ -1188,8 +1184,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QByteArray recipientDigest;
   QByteArray signature;
   QScopedPointer<spoton_crypt> crypt;
-  QSslSocket *kernelSocket = spoton::instance() ?
-    spoton::instance()->kernelSocket() : 0;
+  QSslSocket *kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
   QString error("");
   bool ok = true;
   bool passed = false;

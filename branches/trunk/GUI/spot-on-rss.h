@@ -36,6 +36,7 @@
 
 #include "ui_spot-on-rss.h"
 
+class spoton;
 class spoton_crypt;
 
 class spoton_rss: public QMainWindow
@@ -43,7 +44,7 @@ class spoton_rss: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_rss(QWidget *parent);
+  spoton_rss(spoton *parent);
   ~spoton_rss();
   void center(QWidget *parent);
   void deactivate(void);
@@ -65,6 +66,7 @@ class spoton_rss: public QMainWindow
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
+  spoton *m_parent;
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void hideUrl(const QUrl &url, const bool state);

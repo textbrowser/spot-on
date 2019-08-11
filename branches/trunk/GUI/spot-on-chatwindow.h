@@ -34,6 +34,7 @@
 #include "ui_spot-on-chatwindow.h"
 
 class QSslSocket;
+class spoton;
 class spoton_crypt;
 
 class spoton_chatwindow: public QMainWindow
@@ -48,7 +49,7 @@ class spoton_chatwindow: public QMainWindow
 		    const QString &publicKeyHash,
 		    const QString &status,
 		    QSslSocket *kernelSocket,
-		    QWidget *parent);
+		    spoton *parent);
   ~spoton_chatwindow();
   QString id(void) const;
   void append(const QString &text);
@@ -63,6 +64,7 @@ class spoton_chatwindow: public QMainWindow
   QString m_keyType;
   QString m_publicKeyHash;
   Ui_spoton_chatwindow ui;
+  spoton *m_parent;
   void closeEvent(QCloseEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void sendMessage(bool *ok);

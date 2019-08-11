@@ -42,6 +42,7 @@
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
+  m_parent = 0;
   ui.setupUi(this);
   setWindowTitle
     (tr("%1: Rosetta").
@@ -135,9 +136,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 {
-  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
-    value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
     value("rosetta-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
@@ -218,8 +218,8 @@ void spoton_rosetta::populateContacts(void)
 	QMultiMap<QString, QByteArray> names;
 	QSqlQuery query(db);
 	bool ok = true;
-	spoton_crypt *eCrypt = spoton::instance() ?
-	  spoton::instance()->crypts().value("rosetta", 0) : 0;
+	spoton_crypt *eCrypt = m_parent ?
+	  m_parent->crypts().value("rosetta", 0) : 0;
 
 	ui.contacts->clear();
 	query.setForwardOnly(true);
@@ -292,27 +292,28 @@ void spoton_rosetta::setName(const QString &text)
   slotSaveName();
 }
 
-void spoton_rosetta::show(QWidget *parent)
+void spoton_rosetta::show(spoton *parent)
 {
+  m_parent = parent;
   showNormal();
   activateWindow();
   raise();
 
-  if(parent)
+  if(m_parent)
     {
-      QPoint p(parent->pos());
+      QPoint p(m_parent->pos());
       int X = 0;
       int Y = 0;
 
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
+      if(m_parent->width() >= width())
+	X = p.x() + (m_parent->width() - width()) / 2;
       else
-	X = p.x() - (width() - parent->width()) / 2;
+	X = p.x() - (width() - m_parent->width()) / 2;
 
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
+      if(m_parent->height() >= height())
+	Y = p.y() + (m_parent->height() - height()) / 2;
       else
-	Y = p.y() - (height() - parent->height()) / 2;
+	Y = p.y() - (height() - m_parent->height()) / 2;
 
       move(X, Y);
     }
@@ -329,9 +330,8 @@ void spoton_rosetta::show(QWidget *parent)
 
 void spoton_rosetta::slotAddContact(void)
 {
-  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
-    value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
     value("rosetta-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
@@ -545,9 +545,8 @@ void spoton_rosetta::slotClose(void)
 
 void spoton_rosetta::slotConvert(void)
 {
-  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
-    value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = spoton::instance() ? spoton::instance()->crypts().
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
     value("rosetta-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
@@ -1000,8 +999,7 @@ void spoton_rosetta::slotDelete(void)
 	  ok = query.exec();
 
 	spoton_misc::purgeSignatureRelationships
-	  (db, spoton::instance() ? spoton::instance()->crypts().
-	   value("rosetta", 0) : 0);
+	  (db, m_parent ? m_parent->crypts().value("rosetta", 0) : 0);
       }
     else
       ok = false;
@@ -1030,8 +1028,7 @@ void spoton_rosetta::slotEncryptToggled(bool state)
 
 void spoton_rosetta::slotRename(void)
 {
-  spoton_crypt *eCrypt = spoton::instance() ? spoton::instance()->crypts().
-    value("rosetta", 0) : 0;
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!eCrypt)
     {

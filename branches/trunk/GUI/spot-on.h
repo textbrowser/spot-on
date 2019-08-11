@@ -476,7 +476,6 @@ class spoton: public QMainWindow
   static QList<QTableWidgetItem *> findItems(QTableWidget *table,
 					     const QString &text,
 					     const int column);
-  static QPointer<spoton> instance(void);
   static QString mapIconToEmoticon(const QString &content);
   static void prepareDatabasesFromUI(void);
   void addMessageToReplayQueue(const QString &message1,

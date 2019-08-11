@@ -36,9 +36,10 @@
 #include "spot-on-neighborstatistics.h"
 #include "spot-on.h"
 
-spoton_neighborstatistics::spoton_neighborstatistics(QWidget *parent):
+spoton_neighborstatistics::spoton_neighborstatistics(spoton *parent):
   QMainWindow(parent)
 {
+  m_parent = parent;
   m_ui.setupUi(this);
   connect(&m_futureWatcher,
 	  SIGNAL(finished(void)),
@@ -65,8 +66,7 @@ spoton_neighborstatistics::~spoton_neighborstatistics()
 QString spoton_neighborstatistics::query(void)
 {
   QString text("");
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(crypt)
     {

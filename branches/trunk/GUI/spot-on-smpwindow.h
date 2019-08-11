@@ -35,6 +35,7 @@
 #include "ui_spot-on-smpwindow.h"
 
 class QKeyEvent;
+class spoton;
 
 class spoton_smpwindow_smp
 {
@@ -66,11 +67,12 @@ class spoton_smpwindow: public QMainWindow
   ~spoton_smpwindow();
   QMap<QString, QByteArray> streams(const QStringList &keyTypes) const;
   void populateSecrets(void);
-  void show(QWidget *parent);
+  void show(spoton *parent);
 
  private:
   QHash<QByteArray, spoton_smpwindow_smp *> m_smps;
   Ui_spoton_smpwindow m_ui;
+  spoton *m_parent;
   void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
   void showError(const QString &error);

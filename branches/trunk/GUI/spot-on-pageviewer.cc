@@ -42,9 +42,10 @@
 
 spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
 				     const QString &urlHash,
-				     QWidget *parent):QMainWindow(parent)
+				     spoton *parent):QMainWindow(parent)
 {
   m_database = db;
+  m_parent = parent;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
@@ -340,8 +341,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
 
 void spoton_pageviewer::slotRevisionChanged(int index)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->urlCommonCrypt() : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->urlCommonCrypt() : 0;
 
   if(!crypt || !m_database || !m_database->isOpen())
     {

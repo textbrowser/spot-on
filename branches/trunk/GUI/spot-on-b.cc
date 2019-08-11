@@ -4427,8 +4427,14 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
     }
 
   QPointer<spoton_chatwindow> chat = new spoton_chatwindow
-    (icon, oid, keyType, participant, publicKeyHash, status, &m_kernelSocket,
-     0);
+    (icon,
+     oid,
+     keyType,
+     participant,
+     publicKeyHash,
+     status,
+     &m_kernelSocket,
+     this);
 
   connect(chat,
 	  SIGNAL(anchorClicked(const QUrl &)),

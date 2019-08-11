@@ -37,11 +37,11 @@
 #include "spot-on.h"
 
 spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
-					     QWidget *parent):
+					     spoton *parent):
   QMainWindow(0)
 {
-  Q_UNUSED(parent);
   m_kernelSocket = kernelSocket;
+  m_parent = parent;
   ui.setupUi(this);
   setWindowTitle
     (tr("%1: Echo Public Key Share").arg(SPOTON_APPLICATION_NAME));
@@ -125,8 +125,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 				 const QString &name,
 				 const QVariant &category_oid)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return false;
@@ -222,8 +221,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 void spoton_echo_key_share::addCategory(void)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -279,8 +277,7 @@ void spoton_echo_key_share::addCategory(void)
 
 void spoton_echo_key_share::createDefaultUrlCommunity(void)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -418,8 +415,7 @@ void spoton_echo_key_share::deleteSelected(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -489,8 +485,7 @@ void spoton_echo_key_share::keyPressEvent(QKeyEvent *event)
 
 void spoton_echo_key_share::populate(void)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -658,10 +653,9 @@ void spoton_echo_key_share::resetWidgets(void)
 
 void spoton_echo_key_share::shareSelected(const QString &keyType)
 {
-  spoton_crypt *eCrypt = spoton::instance() ?
-    spoton::instance()->crypts().value(keyType, 0) : 0;
-  spoton_crypt *sCrypt = spoton::instance() ?
-    spoton::instance()->crypts().value(keyType + "-signature", 0) : 0;
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  spoton_crypt *sCrypt = m_parent ?
+    m_parent->crypts().value(keyType + "-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
     {
@@ -742,9 +736,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
   else if(keyType == "open-library")
     name = settings.value("gui/openLibraryName", "unknown").toByteArray();
   else if(keyType == "poptastic")
-    name = spoton::instance() ?
-      spoton::instance()->m_settings.value("gui/poptasticName",
-					   "unknown@unknown.org").
+    name = m_parent ? m_parent->m_settings.value("gui/poptasticName",
+						 "unknown@unknown.org").
       toByteArray() : "unknown@unknown.org";
   else if(keyType == "rosetta")
     name = settings.value("gui/rosettaName", "unknown").toByteArray();
@@ -868,8 +861,7 @@ void spoton_echo_key_share::slotClose(void)
 void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
 					    int column)
 {
-  spoton_crypt *crypt = spoton::instance() ? spoton::instance()->crypts().
-    value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;

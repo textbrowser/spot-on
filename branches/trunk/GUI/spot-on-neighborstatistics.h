@@ -35,12 +35,14 @@
 
 #include "ui_spot-on-neighborstatistics.h"
 
+class spoton;
+
 class spoton_neighborstatistics: public QMainWindow
 {
   Q_OBJECT
 
  public:
-  spoton_neighborstatistics(QWidget *parent);
+  spoton_neighborstatistics(spoton *parent);
   ~spoton_neighborstatistics();
   void show(void);
 
@@ -50,6 +52,7 @@ class spoton_neighborstatistics: public QMainWindow
   QTimer m_timer;
   QString query(void);
   Ui_spoton_neighbor_statistics m_ui;
+  spoton *m_parent;
   void closeEvent(QCloseEvent *event);
 
  private slots:

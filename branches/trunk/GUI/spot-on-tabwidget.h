@@ -32,6 +32,7 @@
 #include <QTimer>
 
 class QTabBar;
+class spoton;
 
 class spoton_tabwidget: public QTabWidget
 {
@@ -41,9 +42,11 @@ class spoton_tabwidget: public QTabWidget
   spoton_tabwidget(QWidget *parent);
   ~spoton_tabwidget();
   QTabBar *tabBar(void) const;
+  void setSpotOn(spoton *parent);
 
  private:
   QTimer m_timer;
+  spoton *m_parent;
 
  private slots:
   void slotTimeout(void);

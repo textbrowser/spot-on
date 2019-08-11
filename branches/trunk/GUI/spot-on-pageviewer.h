@@ -42,6 +42,7 @@
 #include "ui_spot-on-pageviewer.h"
 
 class QPrinter;
+class spoton;
 class spoton_crypt;
 
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
@@ -78,7 +79,7 @@ class spoton_pageviewer: public QMainWindow
  public:
   spoton_pageviewer(QSqlDatabase *db,
 		    const QString &urlHash,
-		    QWidget *parent);
+		    spoton *parent);
   ~spoton_pageviewer();
   void setPage(const QByteArray &data,
 	       const QUrl &url,
@@ -96,6 +97,7 @@ class spoton_pageviewer: public QMainWindow
   QWebView *m_webView;
 #endif
   Ui_spoton_pageviewer m_ui;
+  spoton *m_parent;
 #if !defined(SPOTON_WEBENGINE_ENABLED) && !defined(SPOTON_WEBKIT_ENABLED)
   spoton_textbrowser *m_webView;
 #endif

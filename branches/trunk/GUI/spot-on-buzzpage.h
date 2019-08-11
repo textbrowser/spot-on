@@ -35,6 +35,7 @@
 
 #include "ui_spot-on-buzzpage.h"
 
+class spoton;
 class spoton_crypt;
 
 class spoton_buzzpage: public QWidget
@@ -51,7 +52,7 @@ class spoton_buzzpage: public QWidget
 		  const QByteArray &hashKey,
 		  const QByteArray &hashType,
 		  const QByteArray &key,
-		  QWidget *parent);
+		  spoton *parent);
   ~spoton_buzzpage();
   QByteArray channel(void) const;
   QByteArray channelType(void) const;
@@ -76,6 +77,7 @@ class spoton_buzzpage: public QWidget
   QPointer<QSslSocket> m_kernelSocket;
   QTimer m_statusTimer;
   Ui_spoton_buzzPage ui;
+  spoton *m_parent;
   unsigned long int m_iterationCount;
 
  private slots:

@@ -37,6 +37,7 @@ spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  m_parent = 0;
   m_timer.start(2500);
 #ifdef Q_OS_MAC
   setStyleSheet("QTabWidget::tab-bar {"
@@ -53,12 +54,17 @@ QTabBar *spoton_tabwidget::tabBar(void) const
   return QTabWidget::tabBar();
 }
 
+void spoton_tabwidget::setSpotOn(spoton *parent)
+{
+  m_parent = parent;
+}
+
 void spoton_tabwidget::slotTimeout(void)
 {
   QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
 		     "email.db");
-  qint64 maximumSize = 1048576 * (spoton::instance() ?
-				  spoton::instance()->m_settings.
+  qint64 maximumSize = 1048576 * (m_parent ?
+				  m_parent->m_settings.
 				  value("gui/maximumEmailFileSize", 1024).
 				  toLongLong() : 1024);
 

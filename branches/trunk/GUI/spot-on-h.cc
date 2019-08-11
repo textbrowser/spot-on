@@ -594,9 +594,9 @@ void spoton::slotNewEmailWindow(void)
       (action->property("message").toString(),
        action->property("subject").toString(),
        action->property("receiver_sender_hash").toString(),
-       0);
+       this);
   else
-    window = new spoton_emailwindow("", "", "", 0);
+    window = new spoton_emailwindow("", "", "", this);
 
   connect(this,
 	  SIGNAL(newGlobalName(const QString &)),

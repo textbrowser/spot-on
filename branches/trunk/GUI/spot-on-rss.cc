@@ -46,10 +46,11 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 
-spoton_rss::spoton_rss(QWidget *parent):QMainWindow(parent)
+spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 {
   m_cancelImport = 0;
   m_currentFeedRow = -1;
+  m_parent = parent;
   m_ui.setupUi(this);
   m_ui.feeds->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder); // Feed
@@ -330,8 +331,7 @@ spoton_rss::~spoton_rss()
 bool spoton_rss::importUrl(const QList<QVariant> &list,
 			   const int maximumKeywords)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return false;
@@ -431,7 +431,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 spoton_crypt *spoton_rss::urlCommonCrypt(void) const
 {
   return spoton_misc::retrieveUrlCommonCredentials
-    (spoton::instance() ? spoton::instance()->crypts().value("chat", 0) : 0);
+    (m_parent ? m_parent->crypts().value("chat", 0) : 0);
 }
 
 void spoton_rss::center(QWidget *parent)
@@ -463,8 +463,7 @@ void spoton_rss::deactivate(void)
 
 void spoton_rss::hideUrl(const QUrl &url, const bool state)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -515,8 +514,7 @@ void spoton_rss::hideUrl(const QUrl &url, const bool state)
 
 void spoton_rss::import(const int maximumKeywords)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -1100,7 +1098,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      description.toUtf8(),
      title.toUtf8(),
      spoton_misc::urlToEncoded(url),
-     spoton::instance() ? spoton::instance()->urlDatabase() : QSqlDatabase(),
+     m_parent ? m_parent->urlDatabase() : QSqlDatabase(),
      m_ui.maximum_keywords->value(),
      settings.value("gui/disable_ui_synchronous_sqlite_url_import",
 		    false).toBool(),
@@ -1114,8 +1112,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 void spoton_rss::populateFeeds(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -1207,8 +1204,7 @@ void spoton_rss::prepareAfterAuthentication(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   populateFeeds();
 
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(crypt)
     {
@@ -1397,8 +1393,7 @@ void spoton_rss::saveFeedData(const QString &d,
 			      const QString &link,
 			      const QString &t)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -1452,8 +1447,7 @@ void spoton_rss::saveFeedData(const QString &d,
 
 void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -1499,8 +1493,7 @@ void spoton_rss::saveFeedLink(const QString &d,
 {
   Q_UNUSED(url);
 
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -1633,8 +1626,7 @@ void spoton_rss::slotAddFeed(void)
   QString error("");
   QString new_feed(m_ui.new_feed->text().trimmed());
   QUrl url(QUrl::fromUserInput(new_feed));
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -1774,8 +1766,7 @@ void spoton_rss::slotContentReplyFinished(void)
 
   if(reply)
     {
-      spoton_crypt *crypt = spoton::instance() ?
-	spoton::instance()->crypts().value("chat", 0) : 0;
+      spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
       if(!crypt)
 	{
@@ -1973,8 +1964,7 @@ void spoton_rss::slotDownloadContent(void)
   if(!findChildren<QProgressDialog *> ().isEmpty())
     return;
 
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -2299,8 +2289,7 @@ void spoton_rss::slotFindInitialize(void)
 
 void spoton_rss::slotImport(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -2399,8 +2388,7 @@ void spoton_rss::slotPurgeDaysChanged(int value)
 
 void spoton_rss::slotRefreshTimeline(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -2726,8 +2714,7 @@ void spoton_rss::slotSaveProxy(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
 
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(crypt)
     {
@@ -3117,8 +3104,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
     }
   else if(url.scheme().toLower().trimmed().startsWith("remove-"))
     {
-      spoton_crypt *crypt = spoton::instance() ?
-	spoton::instance()->crypts().value("chat", 0) : 0;
+      spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
       if(!crypt)
 	return;
@@ -3177,8 +3163,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
       return;
     }
 
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -3186,7 +3171,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
-  spoton_pageviewer *pageViewer = new spoton_pageviewer(0, QString(), 0);
+  spoton_pageviewer *pageViewer = new spoton_pageviewer(0, QString(), m_parent);
 
   pageViewer->setPage(QByteArray(), QUrl("http://127.0.0.1"), 0);
 

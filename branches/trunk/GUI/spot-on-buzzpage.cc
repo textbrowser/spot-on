@@ -51,10 +51,11 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 const QByteArray &hashKey,
 				 const QByteArray &hashType,
 				 const QByteArray &key,
-				 QWidget *parent):QWidget(parent)
+				 spoton *parent):QWidget(parent)
 {
   ui.setupUi(this);
   m_channel = channel;
+  m_parent = parent;
 
   if(m_channel.isEmpty())
     m_channel = "unknown";
@@ -316,8 +317,7 @@ void spoton_buzzpage::slotCopy(void)
 
 void spoton_buzzpage::slotRemove(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -402,8 +402,7 @@ void spoton_buzzpage::slotRemove(void)
 
 void spoton_buzzpage::slotSave(void)
 {
-  spoton_crypt *crypt = spoton::instance() ?
-    spoton::instance()->crypts().value("chat", 0) : 0;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
