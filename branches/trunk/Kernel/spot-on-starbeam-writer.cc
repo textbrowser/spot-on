@@ -367,7 +367,6 @@ void spoton_starbeam_writer::processData
     }
 
   QByteArray hash = list.value(7);
-  bool ultra = list.value(10).toShort();
   qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 id = list.value(9).toLongLong();
   qint64 maximumSize = 1048576 * spoton_kernel::setting
@@ -375,8 +374,6 @@ void spoton_starbeam_writer::processData
   qint64 position = qAbs(list.value(2).toLongLong());
   qint64 pulseSize = qAbs(list.value(6).toLongLong());
   qint64 totalSize = qAbs(list.value(4).toLongLong());
-
-  Q_UNUSED(ultra);
 
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
