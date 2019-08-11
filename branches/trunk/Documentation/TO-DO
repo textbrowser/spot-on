@@ -237,3 +237,5 @@ Remaining Items
 9.     Python Web interface for the Search machine.
 10.    Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
+11.    Remove Q_UNUSED.
+12.    Remove obsolete includes.
