@@ -164,8 +164,8 @@ static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,
 			       const QString &msg)
 {
-  Q_UNUSED(type);
   Q_UNUSED(context);
+  Q_UNUSED(type);
   spoton_misc::logError(QString("A UI error (%1) occurred.").arg(msg));
 }
 #else
