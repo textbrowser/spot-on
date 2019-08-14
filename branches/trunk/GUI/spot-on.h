@@ -1091,6 +1091,7 @@ class spoton: public QMainWindow
 			   QSqlQuery *query,
 			   const QString &connectionName,
 			   const int &size);
+  void newEmailName(const QString &text);
   void newGlobalName(const QString &text);
   void participantsQueryReady(QSqlDatabase *db,
 			      QSqlQuery *query,

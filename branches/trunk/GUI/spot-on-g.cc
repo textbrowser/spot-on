@@ -1207,6 +1207,7 @@ void spoton::slotNewGlobalName(void)
   slotSaveEmailName();
   slotSaveNodeName();
   slotSaveUrlName();
+  emit newEmailName(text);
   emit newGlobalName(text);
 }
 

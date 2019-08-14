@@ -5810,6 +5810,7 @@ void spoton::slotSaveEmailName(void)
 
   settings.setValue("gui/emailName", str.toUtf8());
   m_ui.emailNameEditable->selectAll();
+  emit newEmailName(str);
 }
 
 void spoton::slotSaveNodeName(void)

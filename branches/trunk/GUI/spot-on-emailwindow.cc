@@ -207,7 +207,7 @@ void spoton_emailwindow::slotEmailSecretsActionSelected(void)
   m_ui.goldbug->setText(action->property("stream").toString());
 }
 
-void spoton_emailwindow::slotNewGlobalName(const QString &text)
+void spoton_emailwindow::slotNewEmailName(const QString &text)
 {
   Q_UNUSED(text);
   slotPopulateParticipants();
