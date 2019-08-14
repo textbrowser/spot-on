@@ -3291,17 +3291,20 @@ void spoton_neighbor::processData(void)
 	  ** Remove some header data.
 	  */
 
-	  length -= static_cast<int> (qstrlen("content="));
-
 	  int indexOf = data.lastIndexOf("\r\n");
 
 	  if(indexOf > -1)
 	    data = data.mid(0, indexOf + 2);
 
-	  indexOf = data.indexOf("content=");
+	  QRegExp rx("(type=[0-9][0-9][0-9][0-9][a-z]{0,1}&){0,1}content=");
+
+	  indexOf = QString(data.constData()).indexOf(rx);
 
 	  if(indexOf > -1)
-	    data.remove(0, indexOf + static_cast<int> (qstrlen("content=")));
+	    {
+	      data.remove(0, indexOf + rx.matchedLength());
+	      length -= rx.matchedLength();
+	    }
 
 	  if(data.length() == length)
 	    {
