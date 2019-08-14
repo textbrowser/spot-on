@@ -35,7 +35,9 @@ QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie \
 			  -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
-QMAKE_DISTCLEAN += .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += .qmake.cache .qmake.stash -r debug \
+                          object_script.GoldBug.Debug \
+                          object_script.GoldBug.Release
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\PostgreSQL\\Include.win32 \
