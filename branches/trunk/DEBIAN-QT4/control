@@ -4,7 +4,7 @@ Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
 Section: Science
-Version: 2019.08.08
+Version: 2019.09.09
 Description: Spot-On
  Welcome to Spot-On!
  A spot-on.desktop file will also be installed in /usr/share/applications/.
