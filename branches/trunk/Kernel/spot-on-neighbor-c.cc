@@ -3128,8 +3128,9 @@ void spoton_neighbor::processData(void)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::processData(): "
-		     "data does not contain Content-Length "
-		     "from node %1:%2.").
+		     "data (%1) does not contain Content-Length "
+		     "from node %2:%3.").
+	     arg(originalData.mid(0, 128).constData()).
 	     arg(m_address).
 	     arg(m_port));
 	  continue;
@@ -3312,9 +3313,10 @@ void spoton_neighbor::processData(void)
 	      spoton_misc::logError
 		(QString("spoton_neighbor::processData(): "
 			 "data length does not equal content length "
-			 "from node %1:%2. Ignoring.").
+			 "from node %1:%2 (%3). Ignoring.").
 		 arg(m_address).
-		 arg(m_port));
+		 arg(m_port).
+		 arg(originalData.mid(0, 128).constData()));
 	      continue;
 	    }
 
