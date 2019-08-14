@@ -3312,8 +3312,10 @@ void spoton_neighbor::processData(void)
 	    {
 	      spoton_misc::logError
 		(QString("spoton_neighbor::processData(): "
-			 "data length does not equal content length "
-			 "from node %1:%2 (%3). Ignoring.").
+			 "data length (%1) does not equal content length (%2) "
+			 "from node %3:%4 (%5). Ignoring.").
+		 arg(data.length()).
+		 arg(length).
 		 arg(m_address).
 		 arg(m_port).
 		 arg(originalData.mid(0, 128).constData()));
@@ -3342,8 +3344,8 @@ void spoton_neighbor::processData(void)
 	  ** data.
 	  */
 
-	  QString messageType(findMessageType(data, symmetricKeys,
-					      discoveredAdaptiveEchoPair));
+	  QString messageType
+	    (findMessageType(data, symmetricKeys, discoveredAdaptiveEchoPair));
 
 	  if(messageType == "0000")
 	    process0000(length, data, symmetricKeys);
