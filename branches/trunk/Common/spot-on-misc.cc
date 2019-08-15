@@ -1092,8 +1092,7 @@ QString spoton_misc::homePath(void)
     return QDir::homePath() + QDir::separator() + ".spot-on";
 #endif
   else
-    return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH).
-      constData();
+    return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH);
 }
 
 QString spoton_misc::htmlEncode(const QString &string)
@@ -1540,7 +1539,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   if(!title.isEmpty())
     all_keywords.append(" ").append(title);
   else if(title.isEmpty())
-    title = urlToEncoded(url).constData();
+    title = urlToEncoded(url);
 
   all_keywords.append(" ").append(url.toString().toUtf8());
 
