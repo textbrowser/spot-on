@@ -70,11 +70,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="question">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="question"/>
      </item>
      <item>
       <widget class="QLabel" name="label">
@@ -87,11 +83,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="answer">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
+      <widget class="QLineEdit" name="answer"/>
      </item>
     </layout>
    </item>
