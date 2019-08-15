@@ -442,8 +442,7 @@ void spoton_starbeam_writer::processData
 
 	  data = qUncompress(data);
 
-	  if(static_cast<int> (file.write(data.constData(),
-					  data.length())) != data.length())
+	  if(static_cast<int> (file.write(data)) != data.length())
 	    {
 	      ok = false;
 	      spoton_misc::logError

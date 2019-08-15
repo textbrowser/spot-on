@@ -546,9 +546,9 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
 	  bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
 	  bytes = bytes.rightJustified(12, '0');
-	  serviceUuid.append(bytes.mid(0, 8).constData());
+	  serviceUuid.append(bytes.mid(0, 8));
 	  serviceUuid.append("-");
-	  serviceUuid.append(bytes.mid(8).constData());
+	  serviceUuid.append(bytes.mid(8));
 	  serviceUuid.append("-0000-0000-");
 	  serviceUuid.append(QString(m_address).remove(":"));
 	  classId << QVariant::fromValue
@@ -1844,8 +1844,7 @@ void spoton_listener::slotTimeout(void)
 			 fromBase64(query.
 				    value(2).
 				    toByteArray()),
-			 &ok).
-			constData();
+			 &ok);
 
 		    if(ok)
 		      if(echoMode == "full" || echoMode == "half")

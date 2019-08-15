@@ -470,8 +470,7 @@ void spoton_mailer::slotTimeout(void)
 	      bool ok = true;
 
 	      status = s_crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(6).toByteArray()), &ok).
-		constData();
+		(QByteArray::fromBase64(query.value(6).toByteArray()), &ok);
 
 	      if(status.toLower() != "queued")
 		continue;

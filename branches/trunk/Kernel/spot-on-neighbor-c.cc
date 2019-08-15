@@ -3298,7 +3298,7 @@ void spoton_neighbor::processData(void)
 
 	  QRegExp rx("(type=[0-9][0-9][0-9][0-9][a-z]{0,1}&){0,1}content=");
 
-	  indexOf = QString(data.constData()).indexOf(rx);
+	  indexOf = QString(data).indexOf(rx);
 
 	  if(indexOf > -1)
 	    {

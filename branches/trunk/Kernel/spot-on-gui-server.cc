@@ -968,7 +968,7 @@ void spoton_gui_server::slotStatusMessageReceived
 
   QByteArray message("chat_status_");
 
-  message.append(publicKeyHash.toBase64().constData());
+  message.append(publicKeyHash.toBase64());
   message.append("_");
   message.append(status);
   message.append("\n");

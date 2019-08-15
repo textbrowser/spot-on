@@ -535,14 +535,13 @@ void spoton_starbeam_reader::slotTimeout(void)
 			  decryptedAfterAuthenticated
 			  (QByteArray::
 			   fromBase64(query.value(5).toByteArray()),
-			   &ok).
-			  constData();
+			   &ok);
 
 		      if(ok)
 			fileSize = s_crypt->
 			  decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.value(8).toByteArray()),
-			   &ok).constData();
+			   &ok);
 
 		      if(ok)
 			{

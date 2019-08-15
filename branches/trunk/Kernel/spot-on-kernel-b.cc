@@ -159,7 +159,7 @@ void spoton_kernel::importUrls(void)
 			QPair<QUrl, QString> pair;
 
 			pair.first = url;
-			pair.second = permission.constData();
+			pair.second = permission;
 			polarizers.append(pair);
 		      }
 		}

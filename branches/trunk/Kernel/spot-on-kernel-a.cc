@@ -2954,7 +2954,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 				toByteArray()), &ok).trimmed();
 
       if(ok)
-	name = bytes.constData();
+	name = bytes;
 
       hash = spoton_misc::poptasticSettings(name, s_crypt1, &ok).value(0);
     }
@@ -3040,7 +3040,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		  (QByteArray::fromBase64(query.
 					  value(3).
 					  toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(!ok)
 		continue;
@@ -4814,7 +4814,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      cipherType = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok).constData();
+		 &ok);
 
 	      if(ok)
 		hashType = s_crypt->decryptedAfterAuthenticated
@@ -5221,7 +5221,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  institutionCipherType = s_crypt1->
 		    decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(0).toByteArray()),
-		     &ok).constData();
+		     &ok);
 
 		  if(ok)
 		    institutionHashType = s_crypt1->
