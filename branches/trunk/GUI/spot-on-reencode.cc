@@ -884,7 +884,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		 fromBase64(query.
 			    value(0).
 			    toByteArray()),
-		 &ok).constData();
+		 &ok);
 
 	      if(ok)
 		port = oldCrypt->decryptedAfterAuthenticated
@@ -892,7 +892,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(1).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		scopeId = oldCrypt->decryptedAfterAuthenticated
@@ -900,7 +900,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(2).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		protocol = oldCrypt->decryptedAfterAuthenticated
@@ -908,7 +908,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(3).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		echoMode = oldCrypt->decryptedAfterAuthenticated
@@ -916,7 +916,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(4).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		certificate = oldCrypt->decryptedAfterAuthenticated
@@ -948,7 +948,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(8).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		orientation = oldCrypt->decryptedAfterAuthenticated
@@ -956,14 +956,14 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(9).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		if(!query.isNull(10))
 		  privateApplicationCredentials = oldCrypt->
 		    decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(10).toByteArray()),
-		     &ok).constData();
+		     &ok);
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1324,7 +1324,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		 fromBase64(query.
 			    value(0).
 			    toByteArray()),
-		 &ok).constData();
+		 &ok);
 
 	      if(ok)
 		port = oldCrypt->decryptedAfterAuthenticated
@@ -1332,7 +1332,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(1).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		scopeId = oldCrypt->decryptedAfterAuthenticated
@@ -1340,7 +1340,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(2).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		country = oldCrypt->decryptedAfterAuthenticated
@@ -1348,7 +1348,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(3).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		proxyHostName = oldCrypt->decryptedAfterAuthenticated
@@ -1356,7 +1356,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(5).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		proxyPassword = oldCrypt->decryptedAfterAuthenticated
@@ -1364,7 +1364,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(6).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		proxyPort = oldCrypt->decryptedAfterAuthenticated
@@ -1372,7 +1372,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(7).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		proxyType = oldCrypt->decryptedAfterAuthenticated
@@ -1380,7 +1380,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(8).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		proxyUsername = oldCrypt->decryptedAfterAuthenticated
@@ -1388,7 +1388,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(9).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		uuid = oldCrypt->decryptedAfterAuthenticated
@@ -1401,7 +1401,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		echoMode = oldCrypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(11).toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		peerCertificate = oldCrypt->decryptedAfterAuthenticated
@@ -1417,7 +1417,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(13).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		accountName = oldCrypt->decryptedAfterAuthenticated
@@ -1425,7 +1425,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(14).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		accountPassword = oldCrypt->decryptedAfterAuthenticated
@@ -1433,7 +1433,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(15).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		transport = oldCrypt->decryptedAfterAuthenticated
@@ -1441,7 +1441,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(16).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		orientation = oldCrypt->decryptedAfterAuthenticated
@@ -1449,7 +1449,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		   fromBase64(query.
 			      value(17).
 			      toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 	      if(ok)
 		if(!query.isNull(18))
@@ -1458,7 +1458,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		     fromBase64(query.
 				value(18).
 				toByteArray()),
-		     &ok).constData();
+		     &ok);
 
 	      if(ok)
 		if(!query.isNull(19))
@@ -1467,14 +1467,14 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		     fromBase64(query.
 				value(19).
 				toByteArray()),
-		     &ok).constData();
+		     &ok);
 
 	      if(ok)
 		if(!query.isNull(20))
 		  privateApplicationCredentials = oldCrypt->
 		    decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(20).toByteArray()),
-		     &ok).constData();
+		     &ok);
 
 	      if(ok)
 		updateQuery.bindValue

@@ -1095,7 +1095,7 @@ void spoton::slotImportUrls(void)
 	    cipherType = crypt->decryptedAfterAuthenticated
 	      (QByteArray::fromBase64(query.value(0).
 				      toByteArray()),
-	       &ok).constData();
+	       &ok);
 
 	    if(ok)
 	      symmetricKey = crypt->decryptedAfterAuthenticated
@@ -1935,7 +1935,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       url.setScheme(scheme);
 
       QMessageBox mb(this);
-      QString str(spoton_misc::urlToEncoded(url).constData());
+      QString str(spoton_misc::urlToEncoded(url));
 
       if(str.length() > 64)
 	str = str.mid(0, 24) + "..." + str.right(24);
@@ -2243,7 +2243,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       if(m_settings.value("gui/openLinks", false).toBool())
 	{
 	  QMessageBox mb(this);
-	  QString str(spoton_misc::urlToEncoded(url).constData());
+	  QString str(spoton_misc::urlToEncoded(url));
 
 	  if(str.length() > 64)
 	    str = str.mid(0, 24) + "..." + str.right(24);

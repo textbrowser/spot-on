@@ -1549,7 +1549,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    QTableWidgetItem *item = m_ui.mail->item(row, 0); // Date
 
 	    if(item)
-	      item->setText(list.value(0).constData());
+	      item->setText(list.value(0));
 
 	    item = m_ui.mail->item(row, 1); // From / To
 
@@ -1570,13 +1570,13 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 		      item->setText(it->text());
 		  }
 		else
-		  item->setText(list.value(3).constData());
+		  item->setText(list.value(3));
 	      }
 
 	    item = m_ui.mail->item(row, 3); // Subject
 
 	    if(item)
-	      item->setText(list.value(5).constData());
+	      item->setText(list.value(5));
 
 	    item = m_ui.mail->item(row, 4); // Attachment(s)
 
@@ -1601,12 +1601,12 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 	    item = m_ui.mail->item(row, 6); // Message
 
 	    if(item)
-	      item->setText(list.value(1).constData());
+	      item->setText(list.value(1));
 
 	    item = m_ui.mail->item(row, 10); // Signature
 
 	    if(item)
-	      item->setText(list.value(7).constData());
+	      item->setText(list.value(7));
 
 	    m_ui.mail->setSortingEnabled(true);
 	  }
@@ -1830,7 +1830,7 @@ void spoton::populateAccounts(const QString &listenerOid)
 
 		name = crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 		if(!name.isEmpty())
 		  names.append(name);
@@ -1900,7 +1900,7 @@ void spoton::populateListenerIps(const QString &listenerOid)
 
 		ip = crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 		if(!ip.isEmpty())
 		  ips.append(ip);
@@ -2114,11 +2114,12 @@ void spoton::populateMail(void)
 			    if(goldbug == "0")
 			      {
 				item = new QTableWidgetItem
-				  (m_crypts.value("email")->
-				   decryptedAfterAuthenticated
-				   (QByteArray::
-				    fromBase64(query.value(i).toByteArray()),
-				    &ok).constData());
+				  (QString(m_crypts.value("email")->
+					   decryptedAfterAuthenticated
+					   (QByteArray::
+					    fromBase64(query.value(i).
+						       toByteArray()),
+					    &ok)));
 
 				if(!ok)
 				  item->setText(tr("error"));
@@ -2174,7 +2175,7 @@ void spoton::populateMail(void)
 			  }
 		      }
 		    else if(i == 5) // goldbug
-		      item = new QTableWidgetItem(goldbug.constData());
+		      item = new QTableWidgetItem(QString(goldbug));
 		    else
 		      item = new QTableWidgetItem(query.value(i).toString());
 
@@ -4740,7 +4741,7 @@ void spoton::slotReceivedKernelMessage(void)
 			name = "unknown";
 		    }
 
-		  QString str(list.value(0).toBase64().constData());
+		  QString str(list.value(0).toBase64());
 
 		  notify(QDateTime::currentDateTime().toString());
 		  notify
@@ -4806,10 +4807,8 @@ void spoton::slotReceivedKernelMessage(void)
 			    "accept</a> the invitation. If accepted, a new "
 			    "window will be displayed.</i>").
 			 arg(list.value(2).constData()).
-			 arg(hash.toBase64().mid(0, 16).
-			     constData()).
-			 arg(hash.toBase64().right(16).
-			     constData()));
+			 arg(hash.toBase64().mid(0, 16).constData()).
+			 arg(hash.toBase64().right(16).constData()));
 
 		      if(chat)
 			{
@@ -4881,10 +4880,8 @@ void spoton::slotReceivedKernelMessage(void)
 			    "from %2 (%3...%4).</i>").
 			 arg(notsigned).
 			 arg(smpName).
-			 arg(hash.toBase64().mid(0, 16).
-			     constData()).
-			 arg(hash.toBase64().right(16).
-			     constData()));
+			 arg(hash.toBase64().mid(0, 16).constData()).
+			 arg(hash.toBase64().right(16).constData()));
 
 		      if(chat)
 			{
@@ -5006,10 +5003,8 @@ void spoton::slotReceivedKernelMessage(void)
 				      "%1 (%2...%3) "
 				      "has failed.</i></font>").
 				   arg(smpName).
-				   arg(hash.toBase64().mid(0, 16).
-				       constData()).
-				   arg(hash.toBase64().right(16).
-				       constData()));
+				   arg(hash.toBase64().mid(0, 16).constData()).
+				   arg(hash.toBase64().right(16).constData()));
 
 			      /*
 			      ** Set the SMP's state to the first stage.
@@ -5028,10 +5023,8 @@ void spoton::slotReceivedKernelMessage(void)
 				  "The respective state machine has been reset."
 				  "</i></font>").
 			       arg(smpName).
-			       arg(hash.toBase64().mid(0, 16).
-				   constData()).
-			       arg(hash.toBase64().right(16).
-				   constData()));
+			       arg(hash.toBase64().mid(0, 16).constData()).
+			       arg(hash.toBase64().right(16).constData()));
 
 			  m_ui.messages->append(msg);
 			  m_ui.messages->verticalScrollBar()->setValue

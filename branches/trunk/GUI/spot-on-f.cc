@@ -305,7 +305,7 @@ void spoton::addMessageToReplayQueue(const QString &message1,
 
 void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 {
-  QString keyType(QByteArray::fromBase64(list.value(0)).constData());
+  QString keyType(QByteArray::fromBase64(list.value(0)));
 
   if(!(keyType == "chat" || keyType == "email" ||
        keyType == "open-library" || keyType == "poptastic" ||
@@ -344,7 +344,7 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
 	    name = "unknown";
 	}
 
-      QString str(publicKeyHash.toBase64().constData());
+      QString str(publicKeyHash.toBase64());
 
       notify(QDateTime::currentDateTime().toString());
       notify
@@ -377,7 +377,7 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
   else
     {
       QByteArray publicKeyHash(m_forwardSecrecyRequests.keys().value(0));
-      QString str(publicKeyHash.toBase64().constData());
+      QString str(publicKeyHash.toBase64());
 
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
@@ -1270,7 +1270,7 @@ void spoton::slotLinkClicked(const QUrl &url)
     return;
 
   QMessageBox mb(this);
-  QString str(spoton_misc::urlToEncoded(url).constData());
+  QString str(spoton_misc::urlToEncoded(url));
 
   if(str.length() > 64)
     str = str.mid(0, 24) + "..." + str.right(24);
@@ -1797,7 +1797,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   QString name("");
   QString keySize("");
   QString keyType("");
-  QString str(publicKeyHash.toBase64().constData());
+  QString str(publicKeyHash.toBase64());
   QStringList aTypes;
   QStringList eTypes;
   Ui_spoton_forwardsecrecyalgorithmsselection ui;

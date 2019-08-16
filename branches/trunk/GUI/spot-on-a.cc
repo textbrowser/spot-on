@@ -4924,7 +4924,7 @@ void spoton::slotBlockNeighbor(void)
 		 fromBase64(query.
 			    value(0).
 			    toByteArray()),
-		 &ok).constData();
+		 &ok);
 
 	      if(ok)
 		if(ip == remoteIp)
@@ -6772,14 +6772,12 @@ void spoton::slotPopulateListeners(void)
 		    }
 
 		if(ok)
-		  transport = QString(crypt->
-				      decryptedAfterAuthenticated
-				      (QByteArray::
-				       fromBase64(query.
-						  value(15).
-						  toByteArray()),
-				       &ok).
-				      constData()).toUpper();
+		  transport = QString
+		    (crypt->
+		     decryptedAfterAuthenticated(QByteArray::
+						 fromBase64(query.value(15).
+							    toByteArray()),
+						 &ok)).toUpper();
 
 		tooltip = QString
 		  (tr("Status: %1\n"
@@ -6804,37 +6802,32 @@ void spoton::slotPopulateListeners(void)
 						  fromBase64(query.
 							     value(3).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
 							     value(4).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
 							     value(5).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
 							     value(7).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(query.value(9).toString()).
 		  arg(crypt->
 		      decryptedAfterAuthenticated(QByteArray::
 						  fromBase64(query.
 							     value(11).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(query.value(12).toLongLong() ? tr("Yes") : tr("No")).
 		  arg(transport).
 		  arg(query.value(16).toLongLong() ? tr("Yes") : tr("No")).
@@ -6843,8 +6836,7 @@ void spoton::slotPopulateListeners(void)
 						  fromBase64(query.
 							     value(18).
 							     toByteArray()),
-						  &ok).
-		      constData()).
+						  &ok).constData()).
 		  arg(query.value(19).toString()).
 		  arg(locale.toString(query.value(20).toInt())).
 		  arg(query.value(21).toInt() ? tr("Yes") : tr("No")).
@@ -7097,8 +7089,7 @@ void spoton::slotPopulateListeners(void)
 			m_ui.listeners->setCellWidget(row, i, box);
 		      }
 		    else if(i == 17) // Certificate Digest
-		      item = new QTableWidgetItem
-			(certificateDigest.constData());
+		      item = new QTableWidgetItem(QString(certificateDigest));
 		    else if(i == 20) // Lane Width
 		      {
 			QComboBox *box = new QComboBox();
@@ -7183,14 +7174,13 @@ void spoton::slotPopulateListeners(void)
 			    else
 			      {
 				item = new QTableWidgetItem
-				  (crypt->
-				   decryptedAfterAuthenticated
-				   (QByteArray::
-				    fromBase64(query.
-					       value(i).
-					       toByteArray()),
-				    &ok).
-				   constData());
+				  (QString(crypt->
+					   decryptedAfterAuthenticated
+					   (QByteArray::
+					    fromBase64(query.
+						       value(i).
+						       toByteArray()),
+					    &ok)));
 
 				if(!ok)
 				  item->setText(tr("error"));
@@ -7242,7 +7232,7 @@ void spoton::slotPopulateListeners(void)
 		bytes4 = crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(columnTRANSPORT).
 					  toByteArray()),
-		   &ok).constData();
+		   &ok);
 
 		if(ip == bytes1 && port == bytes2 && scopeId == bytes3 &&
 		   transportS == bytes4)
@@ -7551,8 +7541,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 					fromBase64(query->
 						   value(1).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(query->value(2).toString().toLower()).
 	arg(query->value(3).toString()).
 	arg(query->value(5).toString()).
@@ -7562,57 +7551,49 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 					fromBase64(query->
 						   value(7).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(9).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(10).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(11).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(12).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(14).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(15).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->
 						   value(18).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(isEncrypted ? "Secure" : "Insecure").
 	arg(QString::
 	    number(static_cast<double> (query->value(19).
@@ -7633,8 +7614,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 					fromBase64(query->
 						   value(25).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated
 	    (QByteArray::
@@ -7655,8 +7635,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 					fromBase64(query->
 						   value(28).
 						   toByteArray()),
-					&ok).
-	    constData()).
+					&ok).constData()).
 	arg(query->value(34).toString()).
 	arg(priority).
 	arg(locale.toString(query->value(36).toInt())).
@@ -7742,7 +7721,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    }
 
 		  if(i != 3) // SSL Key Size
-		    item = new QTableWidgetItem(bytes.constData());
+		    item = new QTableWidgetItem(QString(bytes));
 		}
 	    }
 	  else if(i >= 16 && i <= 17)
@@ -7796,54 +7775,48 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    item = new QTableWidgetItem
 	      (locale.toString(query->value(i).toLongLong()));
 	  else if(i == 21) // Certificate Digest
-	    item = new QTableWidgetItem
-	      (certificateDigest.constData());
+	    item = new QTableWidgetItem(QString(certificateDigest));
 	  else if(i == 22 || i == 23) // bytes_read, bytes_written
 	    item = new QTableWidgetItem
 	      (locale.toString(query->value(i).toLongLong()));
 	  else if(i == 24) // SSL Session Cipher
-	    item = new QTableWidgetItem
-	      (sslSessionCipher.constData());
+	    item = new QTableWidgetItem(QString(sslSessionCipher));
 	  else if(i == 26) // Account Authenticated
 	    {
 	      if(!query->isNull(i))
 		{
 		  item = new QTableWidgetItem
-		    (crypt->decryptedAfterAuthenticated
-		     (QByteArray::
-		      fromBase64(query->
-				 value(i).
-				 toByteArray()),
-		      &ok).constData());
+		    (QString(crypt->decryptedAfterAuthenticated
+			     (QByteArray::
+			      fromBase64(query->
+					 value(i).
+					 toByteArray()),
+			      &ok)));
 
 		  if(ok)
 		    {
 		      if(item->text() != "0")
-			item->setBackground
-			  (QBrush(QColor("lightgreen")));
+			item->setBackground(QBrush(QColor("lightgreen")));
 		      else
-			item->setBackground
-			  (QBrush(QColor(240, 128, 128)));
+			item->setBackground(QBrush(QColor(240, 128, 128)));
 		    }
 		  else
 		    {
 		      item->setText(tr("error"));
-		      item->setBackground
-			(QBrush(QColor(240, 128, 128)));
+		      item->setBackground(QBrush(QColor(240, 128, 128)));
 		    }
 		}
 	      else
 		{
 		  item = new QTableWidgetItem("0");
-		  item->setBackground
-		    (QBrush(QColor(240, 128, 128)));
+		  item->setBackground(QBrush(QColor(240, 128, 128)));
 		}
 	    }
 	  else if(i == 29) // MOTD
 	    item = new QTableWidgetItem
 	      (query->value(i).toString().trimmed());
 	  else if(i == 31) // Certificate
-	    item = new QTableWidgetItem(certificate.constData());
+	    item = new QTableWidgetItem(QString(certificate));
 	  else if(i == 35) // Priority
 	    {
 	      item = new QTableWidgetItem(priorityTr);
@@ -8222,8 +8195,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 	query->value(2).toLongLong() == -1 ? false : true;
 
       keyType = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(8).toByteArray()),
-	 &ok).constData();
+	(QByteArray::fromBase64(query->value(8).toByteArray()), &ok);
 
       if(ok)
 	{
@@ -8236,8 +8208,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 					 &ok));
 
 	  if(ok)
-	    name = QString::fromUtf8
-	      (bytes.constData(), bytes.length());
+	    name = QString::fromUtf8(bytes.constData(), bytes.length());
 	}
 
       if(!ok)
@@ -8334,11 +8305,11 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  else
 		    {
 		      item = new QTableWidgetItem
-			(crypt->decryptedAfterAuthenticated
-			 (QByteArray::fromBase64(query->
-						 value(i).
-						 toByteArray()),
-			  &ok).toBase64().constData());
+			(QString(crypt->decryptedAfterAuthenticated
+				 (QByteArray::fromBase64(query->
+							 value(i).
+							 toByteArray()),
+				  &ok).toBase64()));
 
 		      if(!ok)
 			item->setText(tr("error"));
@@ -8424,21 +8395,17 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  QList<QByteArray> list;
 		  bool ok = true;
 
-		  list = retrieveForwardSecrecyInformation
-		    (oid, &ok);
+		  list = retrieveForwardSecrecyInformation(oid, &ok);
 
 		  if(ok)
 		    item->setText
-		      (spoton_misc::
-		       forwardSecrecyMagnetFromList(list).
-		       constData());
+		      (spoton_misc::forwardSecrecyMagnetFromList(list));
 		  else
 		    item->setText(tr("error"));
 		}
 
 	      item->setData(Qt::UserRole, temporary);
-	      item->setData
-		(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+	      item->setData(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
 
 	      /*
 	      ** Delete the item if the participant is offline
@@ -8522,14 +8489,12 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		      QList<QByteArray> list;
 		      bool ok = true;
 
-		      list = retrieveForwardSecrecyInformation
-			(oid, &ok);
+		      list = retrieveForwardSecrecyInformation(oid, &ok);
 
 		      if(ok)
 			item = new QTableWidgetItem
-			  (spoton_misc::
-			   forwardSecrecyMagnetFromList(list).
-			   constData());
+			  (QString(spoton_misc::
+				   forwardSecrecyMagnetFromList(list)));
 		      else
 			item = new QTableWidgetItem(tr("error"));
 		    }
@@ -10230,8 +10195,7 @@ void spoton::slotUnblockNeighbor(void)
 					     fromBase64(query.
 							value(0).
 							toByteArray()),
-					     &ok).
-		 constData());
+					     &ok));
 
 	      if(ok)
 		if(ip == remoteIp)
@@ -10461,7 +10425,7 @@ void spoton::slotValidatePassphrase(void)
 					  toByteArray()), &ok).trimmed();
 
 		if(ok)
-		  name = bytes.constData();
+		  name = bytes;
 
 		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(settings.
@@ -10469,7 +10433,7 @@ void spoton::slotValidatePassphrase(void)
 					  toByteArray()), &ok).trimmed();
 
 		if(ok)
-		  nameEmail = bytes.constData();
+		  nameEmail = bytes;
 	      }
 
 	    if(name.isEmpty())

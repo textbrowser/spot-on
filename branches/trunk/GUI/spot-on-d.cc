@@ -426,7 +426,7 @@ void spoton::populateAETokens(void)
 	      QTableWidgetItem *item = 0;
 
 	      if(ok)
-		item = new QTableWidgetItem(token.constData());
+		item = new QTableWidgetItem(QString(token));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -435,7 +435,7 @@ void spoton::populateAETokens(void)
 	      m_ui.ae_tokens->setItem(row, 0, item);
 
 	      if(ok)
-		item = new QTableWidgetItem(eType.constData());
+		item = new QTableWidgetItem(QString(eType));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -444,7 +444,7 @@ void spoton::populateAETokens(void)
 	      m_ui.ae_tokens->setItem(row, 1, item);
 
 	      if(ok)
-		item = new QTableWidgetItem(hType.constData());
+		item = new QTableWidgetItem(QString(hType));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -581,7 +581,7 @@ void spoton::refreshInstitutions(void)
 	      QTableWidgetItem *item = 0;
 
 	      if(ok)
-		item = new QTableWidgetItem(name.constData());
+		item = new QTableWidgetItem(QString(name));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -589,7 +589,7 @@ void spoton::refreshInstitutions(void)
 	      m_ui.institutions->setItem(row, 0, item);
 
 	      if(ok)
-		item = new QTableWidgetItem(cipherType.constData());
+		item = new QTableWidgetItem(QString(cipherType));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -597,7 +597,7 @@ void spoton::refreshInstitutions(void)
 	      m_ui.institutions->setItem(row, 1, item);
 
 	      if(ok)
-		item = new QTableWidgetItem(postalAddress.constData());
+		item = new QTableWidgetItem(QString(postalAddress));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 
@@ -605,7 +605,7 @@ void spoton::refreshInstitutions(void)
 	      m_ui.institutions->setItem(row, 2, item);
 
 	      if(ok)
-		item = new QTableWidgetItem(hashType.constData());
+		item = new QTableWidgetItem(QString(hashType));
 	      else
 		item = new QTableWidgetItem(tr("error"));
 

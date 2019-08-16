@@ -376,8 +376,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 		    QString country
 		      (spoton_misc::
-		       countryNameFromIPAddress(hash.value("ip_address").
-						constData()));
+		       countryNameFromIPAddress(hash.value("ip_address")));
 
 		    if(ok)
 		      query.bindValue
@@ -541,7 +540,7 @@ void spoton::populateNovas(void)
 					      fromBase64(query.
 							 value(0).
 							 toByteArray()),
-					      &ok).constData();
+					      &ok);
 
 		if(!nova.isEmpty())
 		  novas.append(nova);
@@ -3113,7 +3112,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		QTableWidgetItem *item = 0;
 
 		if(ok)
-		  item = new QTableWidgetItem(bytes.constData());
+		  item = new QTableWidgetItem(QString(bytes));
 		else
 		  item = new QTableWidgetItem(tr("error"));
 
@@ -3130,7 +3129,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		checkBox = new QCheckBox();
 
 		if(ok)
-		  checkBox->setText(bytes.replace("&", "&&").constData());
+		  checkBox->setText(bytes.replace("&", "&&"));
 		else
 		  checkBox->setText(tr("error"));
 
@@ -3296,7 +3295,7 @@ void spoton::slotPopulateStars(void)
 			      (QString::fromUtf8(bytes.constData(),
 						 bytes.length()));
 			  else
-			    item = new QTableWidgetItem(bytes.constData());
+			    item = new QTableWidgetItem(QString(bytes));
 			}
 		      else
 			item = new QTableWidgetItem(tr("error"));
@@ -3549,12 +3548,11 @@ void spoton::slotPopulateStars(void)
 			  if(i == 5)
 			    {
 			      fileName = QString::fromUtf8
-				(bytes.constData(),
-				 bytes.length());
+				(bytes.constData(), bytes.length());
 			      item = new QTableWidgetItem(fileName);
 			    }
 			  else
-			    item = new QTableWidgetItem(bytes.constData());
+			    item = new QTableWidgetItem(QString(bytes));
 			}
 		      else
 			{
@@ -3583,7 +3581,7 @@ void spoton::slotPopulateStars(void)
 		      QByteArray bytes(query.value(i).toByteArray());
 
 		      bytes = bytes.mid(0, 16) + "..." + bytes.right(16);
-		      item = new QTableWidgetItem(bytes.constData());
+		      item = new QTableWidgetItem(QString(bytes));
 		    }
 		  else if(i == 8 || i == query.record().count() - 1)
 		    item = new QTableWidgetItem
@@ -4640,7 +4638,7 @@ void spoton::slotTransmittedSelected(void)
 					      fromBase64(query.
 							 value(0).
 							 toByteArray()),
-					      &ok).constData();
+					      &ok);
 
 		if(!magnet.isEmpty())
 		  magnets.append(magnet);
@@ -4814,12 +4812,12 @@ void spoton::updatePublicKeysLabel(void)
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
       if(ok)
-	item->setText(bytes.constData());
+	item->setText(bytes);
 
       m_ui.personal_public_keys->setItem(i, 3, item);
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      item->setText(base64.constData());
+      item->setText(base64);
 
       if(!base64.isEmpty())
 	item->setToolTip(base64.mid(0, 16) + "..." + base64.right(16));

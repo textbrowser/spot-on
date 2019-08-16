@@ -292,7 +292,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
 	      keyType = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(4).toByteArray()),
-		 &ok).constData();
+		 &ok);
 
 	      if(ok)
 		{
@@ -394,8 +394,8 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
 			  if(ok)
 			    item = new QTableWidgetItem
-			      (spoton_misc::forwardSecrecyMagnetFromList(list).
-			       constData());
+			      (QString(spoton_misc::
+				       forwardSecrecyMagnetFromList(list)));
 			  else
 			    item = new QTableWidgetItem(tr("error"));
 			}

@@ -367,10 +367,9 @@ void spoton_smpwindow::populateSecrets(void)
 		  if(ok)
 		    {
 		      if(i == 0)
-			item = new QTableWidgetItem
-			  (bytes.toBase64().constData());
+			item = new QTableWidgetItem(QString(bytes.toBase64()));
 		      else
-			item = new QTableWidgetItem(bytes.constData());
+			item = new QTableWidgetItem(QString(bytes));
 		    }
 		  else
 		    item = new QTableWidgetItem(tr("error"));
@@ -1027,7 +1026,7 @@ void spoton_smpwindow::slotRefresh(void)
 		{
 		  QTableWidgetItem *item = 0;
 
-		  item = new QTableWidgetItem(list.at(i).constData());
+		  item = new QTableWidgetItem(QString(list.at(i)));
 
 		  if(i == 2)
 		    item->setText

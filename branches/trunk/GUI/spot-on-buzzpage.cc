@@ -251,8 +251,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
   QByteArray message(list.value(2));
   QDateTime now(QDateTime::currentDateTime());
   QDateTime dateTime
-    (QDateTime::fromString(list.value(3).constData(),
-			   "MMddyyyyhhmmss"));
+    (QDateTime::fromString(list.value(3).constData(), "MMddyyyyhhmmss"));
   QString msg("");
 
   if(name.isEmpty() || name == "unknown")
@@ -280,10 +279,8 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
      arg(dateTime.toString("ss")));
   msg.append
     (QString("<font color=blue>%1: </font>").
-     arg(QString::fromUtf8(name.constData(),
-			   name.length())));
-  msg.append(QString::fromUtf8(message.constData(),
-			       message.length()));
+     arg(QString::fromUtf8(name.constData(), name.length())));
+  msg.append(QString::fromUtf8(message.constData(), message.length()));
   ui.messages->append(msg);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
@@ -752,7 +749,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 
       item->setToolTip(id.mid(0, 16) + "..." + id.right(16));
       ui.clients->setItem(ui.clients->rowCount() - 1, 0, item);
-      item = new QTableWidgetItem(id.constData());
+      item = new QTableWidgetItem(QString(id));
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
       ui.clients->setItem(ui.clients->rowCount() - 1, 1, item);
       item = new QTableWidgetItem
@@ -772,8 +769,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	 arg(now.toString("mm")).
 	 arg(now.toString("ss")));
       msg.append(tr("<i>%1 has joined %2.</i>").
-		 arg(QString::fromUtf8(name.constData(),
-				       name.length())).
+		 arg(QString::fromUtf8(name.constData(), name.length())).
 		 arg(QString::fromUtf8(m_channel.constData(),
 				       m_channel.length())));
       ui.messages->append(msg);

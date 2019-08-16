@@ -403,7 +403,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      url.setScheme(scheme);
 
 	      if(title.isEmpty())
-		title = spoton_misc::urlToEncoded(url).constData();
+		title = spoton_misc::urlToEncoded(url);
 
 	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
 	      exportUrl.setPath(hash + "%3" +
@@ -417,28 +417,28 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      viewUrl.setScheme(QString("view-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");
-	      html.append(spoton_misc::urlToEncoded(url).constData());
+	      html.append(spoton_misc::urlToEncoded(url));
 	      html.append("\">");
 	      html.append(title);
 	      html.append("</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(spoton_misc::urlToEncoded(exportUrl).constData());
+	      html.append(spoton_misc::urlToEncoded(exportUrl));
 	      html.append("\">");
 	      html.append("Export Page As PDF</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(spoton_misc::urlToEncoded(deleteUrl).constData());
+	      html.append(spoton_misc::urlToEncoded(deleteUrl));
 	      html.append("\">");
 	      html.append("Remove URL</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(spoton_misc::urlToEncoded(shareUrl).constData());
+	      html.append(spoton_misc::urlToEncoded(shareUrl));
 	      html.append("\">");
 	      html.append("Share URL</a>");
 	      html.append(" | ");
 	      html.append("<a href=\"");
-	      html.append(spoton_misc::urlToEncoded(viewUrl).constData());
+	      html.append(spoton_misc::urlToEncoded(viewUrl));
 	      html.append("\">");
 	      html.append("View Locally</a>");
 	      html.append("<br>");

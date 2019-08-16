@@ -583,7 +583,7 @@ void spoton_rss::import(const int maximumKeywords)
 			QPair<QUrl, QString> pair;
 
 			pair.first = url;
-			pair.second = permission.constData();
+			pair.second = permission;
 			polarizers.append(pair);
 		      }
 		}
@@ -1156,7 +1156,7 @@ void spoton_rss::populateFeeds(void)
 	      if(!ok)
 		item->setText(tr("error"));
 	      else
-		item->setText(feed.constData());
+		item->setText(feed);
 
 	      if(ok)
 		{
@@ -2548,8 +2548,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		    {
 		      html.append("<a href=\"");
 		      html.append(spoton_misc::urlToEncoded(list.value(2).
-							    toUrl()).
-				  constData());
+							    toUrl()));
 		      html.append("\">");
 		      html.append
 			(spoton_misc::
@@ -2566,16 +2565,14 @@ void spoton_rss::slotRefreshTimeline(void)
 		      html.append(" | ");
 		      html.append("<a href=\"hide-");
 		      html.append(spoton_misc::urlToEncoded(list.value(2).
-							    toUrl()).
-				  constData());
+							    toUrl()));
 		      html.append("\">");
 		      html.append("Hide URL");
 		      html.append("</a>");
 		      html.append(" | ");
 		      html.append("<a href=\"remove-");
 		      html.append(spoton_misc::urlToEncoded(list.value(2).
-							    toUrl()).
-				  constData());
+							    toUrl()));
 		      html.append("\">");
 		      html.append("Remove URL");
 		      html.append("</a>");
@@ -2585,16 +2582,14 @@ void spoton_rss::slotRefreshTimeline(void)
 		      html.append(" | ");
 		      html.append("<a href=\"remove-");
 		      html.append(spoton_misc::urlToEncoded(list.value(2).
-							    toUrl()).
-				  constData());
+							    toUrl()));
 		      html.append("\">");
 		      html.append("Remove URL");
 		      html.append("</a>");
 		      html.append(" | ");
 		      html.append("<a href=\"visible-");
 		      html.append(spoton_misc::urlToEncoded(list.value(2).
-							    toUrl()).
-				  constData());
+							    toUrl()));
 		      html.append("\">");
 		      html.append("Show URL");
 		      html.append("</a>");
