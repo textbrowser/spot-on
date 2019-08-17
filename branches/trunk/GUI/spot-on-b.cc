@@ -2430,8 +2430,7 @@ void spoton::sendMessage(bool *ok)
 	  if(chat)
 	    chat->append(msg);
 
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
+	  if(!writeKernelSocketData(message))
 	    spoton_misc::logError
 	      (QString("spoton::sendMessage(): write() failure for "
 		       "%1:%2.").
@@ -3943,8 +3942,7 @@ void spoton::slotJoinBuzzChannel(void)
 	message.append(page->hashType().toBase64());
 	message.append("\n");
 
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
+	if(!writeKernelSocketData(message))
 	  spoton_misc::logError
 	    (QString("spoton::slotJoinBuzzChannel(): "
 		     "write() failure for %1:%2.").
@@ -4507,8 +4505,7 @@ void spoton::slotPublicizeAllListenersPlaintext(void)
 
   message.append("publicizealllistenersplaintext\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotPublicizeAllListenersPlaintext(): "
 	       "write() failure for %1:%2.").
@@ -4545,8 +4542,7 @@ void spoton::slotPublicizeListenerPlaintext(void)
   message.append(oid);
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotPublicizeListenerPlaintext(): "
 	       "write() failure for %1:%2.").
@@ -5734,8 +5730,7 @@ void spoton::slotRetrieveMail(void)
 	{
 	  QByteArray message("retrievemail\n");
 
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
+	  if(!writeKernelSocketData(message))
 	    spoton_misc::logError
 	      (QString("spoton::slotRetrieveMail(): write() failure "
 		       "for %1:%2.").
@@ -6651,8 +6646,7 @@ void spoton::slotShareChatPublicKey(void)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotShareChatPublicKey(): write() failure "
 		   "for %1:%2.").
@@ -6755,8 +6749,7 @@ void spoton::slotShareEmailPublicKey(void)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotShareEmailPublicKey(): write() failure "
 		   "for %1:%2.").
@@ -6859,8 +6852,7 @@ void spoton::slotShareURLPublicKey(void)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotShareURLPublicKey(): write() failure "
 		   "for %1:%2.").

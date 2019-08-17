@@ -607,6 +607,7 @@ class spoton: public QMainWindow
 		  const QString &oid);
   bool updateMailStatus(const QString &oid, const QString &status);
   bool verifyInitializationPassphrase(QWidget *parent);
+  bool writeKernelSocketData(const QByteArray &bytes);
   int applyGoldBugToLetter(const QByteArray &goldbug, const int row);
   int tabIndexFromName(const QString &name) const;
   void applyGoldBugToAttachments(const QString &folderOid,

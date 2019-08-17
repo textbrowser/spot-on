@@ -2514,8 +2514,7 @@ void spoton::slotSharePoptasticPublicKey(void)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotSharePoptasticPublicKey(): write() failure "
 		   "for %1:%2.").

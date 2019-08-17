@@ -115,8 +115,7 @@ void spoton::askKernelToReadStarBeamKeys(void)
 
   message.append("populate_starbeam_keys\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::askKernelToReadStarBeamKeys(): "
 	       "write() failure for %1:%2.").
@@ -1462,8 +1461,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::sharePublicKeyWithParticipant(): "
 		   "write() failure for %1:%2.").
@@ -4258,8 +4256,7 @@ void spoton::slotShareBuzzMagnet(void)
   message.append(data.toBase64());
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotShareBuzzMagnet(): write() failure "
 	       "for %1:%2.").

@@ -715,8 +715,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   message.append(oid);
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotCallParticipantViaForwardSecrecy(): "
 	       "write() failure for %1:%2.").
@@ -1118,8 +1117,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	  message.append(type.toLatin1().toBase64()); // Widget type.
 	  message.append("\n");
 
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
+	  if(!writeKernelSocketData(message))
 	    spoton_misc::logError
 	      (QString("spoton::slotEstablishEmailForwardSecrecy(): "
 		       "write() failure for "
@@ -1628,8 +1626,7 @@ void spoton::slotPurgeEphemeralKeyPair(void)
   message.append(publicKeyHashes.value(0).data().toByteArray());
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotPurgeEphemeralKeyPair(): write() failure for "
 	       "%1:%2.").
@@ -1647,8 +1644,7 @@ void spoton::slotPurgeEphemeralKeys(void)
 
   QByteArray message("purge_ephemeral_keys\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotPurgeEphemeralKeys(): write() failure for "
 	       "%1:%2.").
@@ -1710,8 +1706,7 @@ void spoton::slotReplayMessages(void)
     {
       QByteArray message(queue2.at(i));
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotReplayMessages(): write() failure for "
 		   "%1:%2.").
@@ -1982,8 +1977,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   message.append(symmetricKey.toBase64());
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotRespondToForwardSecrecy(): "
 	       "write() failure for "

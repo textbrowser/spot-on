@@ -2128,8 +2128,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       if(mb.exec() != QMessageBox::Yes)
 	return;
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotUrlLinkClicked(): write() failure for "
 		   "%1:%2.").

@@ -329,8 +329,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	message.append(page->hashType().toBase64());
 	message.append("\n");
 
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
+	if(!writeKernelSocketData(message))
 	  spoton_misc::logError
 	    (QString("spoton::joinBuzzChannel(): "
 		     "write() failure for %1:%2.").
@@ -594,8 +593,7 @@ void spoton::slotBuzzInvite(void)
   message.append(page->hashType().toBase64());
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotBuzzInvite(): "
 	       "write() failure for %1:%2.").
@@ -625,8 +623,7 @@ void spoton::slotBuzzInvite(void)
 		     toString("MMddyyyyhhmmss").toLatin1().toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotBuzzInvite(): write() failure "
 		   "for %1:%2.").
@@ -1913,8 +1910,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
       message.append(sSignature.toBase64());
       message.append("\n");
 
-      if(m_kernelSocket.write(message.constData(), message.length()) !=
-	 message.length())
+      if(!writeKernelSocketData(message))
 	spoton_misc::logError
 	  (QString("spoton::slotShareOpenLibraryPublicKey(): write() failure "
 		   "for %1:%2.").

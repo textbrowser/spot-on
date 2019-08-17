@@ -748,8 +748,7 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::sendSMPLinkToKernel(): write() failure for "
 	       "%1:%2.").

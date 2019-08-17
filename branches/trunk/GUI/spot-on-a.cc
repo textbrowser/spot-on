@@ -3804,8 +3804,7 @@ void spoton::sendBuzzKeysToKernel(void)
 	  message.append(page->hashType().toBase64());
 	  message.append("\n");
 
-	  if(m_kernelSocket.write(message.constData(), message.length()) !=
-	     message.length())
+	  if(!writeKernelSocketData(message))
 	    {
 	      sent = false;
 	      spoton_misc::logError
@@ -3875,8 +3874,7 @@ void spoton::sendKeysToKernel(void)
 	  keys.append(hashKey);
 	  keys.append("\n");
 
-	  if(m_kernelSocket.write(keys.constData(), keys.length()) !=
-	     keys.length())
+	  if(!writeKernelSocketData(keys))
 	    spoton_misc::logError
 	      (QString("spoton::sendKeysToKernel(): write() failure "
 		       "for %1:%2.").
@@ -5043,8 +5041,7 @@ void spoton::slotCallParticipant(void)
   message.append(oid);
   message.append("\n");
 
-  if(m_kernelSocket.write(message.constData(), message.length()) !=
-     message.length())
+  if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotCallParticipant(): write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
@@ -5677,8 +5674,7 @@ void spoton::slotDetachListenerNeighbors(void)
 	message.append(oid);
 	message.append("\n");
 
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
+	if(!writeKernelSocketData(message))
 	  spoton_misc::logError
 	    (QString("spoton::slotDetachListenerNeighbors(): write() "
 		     "failure for %1:%2.").
@@ -5714,8 +5710,7 @@ void spoton::slotDisconnectListenerNeighbors(void)
 	message.append(oid);
 	message.append("\n");
 
-	if(m_kernelSocket.write(message.constData(), message.length()) !=
-	   message.length())
+	if(!writeKernelSocketData(message))
 	  spoton_misc::logError
 	    (QString("spoton::slotDisconnectListenerNeighbors(): "
 		     "write() failure for %1:%2.").

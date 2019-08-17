@@ -154,6 +154,11 @@ bool spoton::neighborSupportsSslTls(void) const
   return false;
 }
 
+bool spoton::writeKernelSocketData(const QByteArray &bytes)
+{
+  return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());
+}
+
 void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 {
   if(!settings.value("is_kernel_active").toBool())
