@@ -5096,15 +5096,12 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 {
   if(!crypt)
     {
-      logError
-	("spoton_misc::purgeSignatureRelationships(): crypt "
-	 "is zero.");
+      logError("spoton_misc::purgeSignatureRelationships(): crypt is zero.");
       return;
     }
   else if(!db.isOpen())
     {
-      logError
-	("spoton_misc::purgeSignatureRelationships(): db is closed.");
+      logError("spoton_misc::purgeSignatureRelationships(): db is closed.");
       return;
     }
 
