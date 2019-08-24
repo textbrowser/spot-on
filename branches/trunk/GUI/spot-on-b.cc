@@ -842,7 +842,6 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
-
 	  if(mb.exec() != QMessageBox::Yes)
 	    return false;
 	}
@@ -6374,7 +6373,6 @@ void spoton::slotSetIcons(int index)
   m_ui.saveBuzzName->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 
   // Chat
-
 
   if(m_ui.chatActionMenu->menu())
     {

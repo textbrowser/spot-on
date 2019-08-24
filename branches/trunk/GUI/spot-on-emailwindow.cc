@@ -439,7 +439,6 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		}
 	    }
 
-
 	if(selectedRow != -1)
 	  m_ui.emailParticipants->selectRow(selectedRow);
 
