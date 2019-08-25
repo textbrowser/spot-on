@@ -492,6 +492,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.dooble_import_groupbox->setVisible(false);
   m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.importUrls->setVisible(false);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.mail->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
