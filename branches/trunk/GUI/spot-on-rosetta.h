@@ -69,6 +69,8 @@ class spoton_rosetta: public QMainWindow
   void slotSetIcons(void);
 
  signals:
+  void participantAdded(const QString &type);
+  void participantDeleted(const QString &oid, const QString &type);
   void participantNameChanged(const QByteArray &publicKeyHash,
 			      const QString &name);
 };

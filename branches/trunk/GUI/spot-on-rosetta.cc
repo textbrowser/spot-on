@@ -515,10 +515,12 @@ void spoton_rosetta::slotAddContact(void)
     QMessageBox::critical
       (this, tr("%1: Error").
        arg(SPOTON_APPLICATION_NAME),
-       tr("An error occurred while attempting to save the friendship "
-	  "bundle."));
+       tr("An error occurred while attempting to save the friendship bundle."));
   else
-    populateContacts();
+    {
+      emit participantAdded("rosetta");
+      populateContacts();
+    }
 }
 
 void spoton_rosetta::slotClear(void)
@@ -973,7 +975,14 @@ void spoton_rosetta::slotDelete(void)
   if(mb.exec() != QMessageBox::Yes)
     return;
 
+  QByteArray data
+    (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
+  QString oid
+    (QString::
+     number(spoton_misc::
+	    oidFromPublicKeyHash(spoton_crypt::
+				 sha512Hash(data, 0).toBase64())));
   bool ok = true;
 
   {
@@ -984,8 +993,6 @@ void spoton_rosetta::slotDelete(void)
 
     if(db.open())
       {
-	QByteArray data(ui.contacts->itemData(ui.contacts->currentIndex()).
-			toByteArray());
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
@@ -1015,6 +1022,7 @@ void spoton_rosetta::slotDelete(void)
 	  "participant."));
   else
     {
+      emit participantDeleted(oid, "rosetta");
       ui.contacts->removeItem(ui.contacts->currentIndex());
       sortContacts();
     }
@@ -1108,8 +1116,8 @@ void spoton_rosetta::slotRename(void)
 	  "participant."));
   else
     {
-      sortContacts();
       emit participantNameChanged(publicKeyHash, name);
+      sortContacts();
     }
 }
 

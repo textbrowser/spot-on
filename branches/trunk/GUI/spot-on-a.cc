@@ -976,6 +976,14 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotPopulateParticipants(void)));
   connect(&m_rosetta,
+	  SIGNAL(participantAdded(const QString &)),
+	  &m_smpWindow,
+	  SLOT(slotRefresh(void)));
+  connect(&m_rosetta,
+	  SIGNAL(participantDeleted(const QString &, const QString &)),
+	  &m_smpWindow,
+	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
+  connect(&m_rosetta,
 	  SIGNAL(participantNameChanged(const QByteArray &,
 					const QString &)),
 	  &m_smpWindow,
