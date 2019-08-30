@@ -785,7 +785,8 @@ void spoton_smpwindow::slotGenerateData(void)
 
   if(keyType.isEmpty() || name.isEmpty() || publicKey.isEmpty())
     {
-      error = tr("Please select a participant.");
+      error = tr("Please select a participant. "
+		 "Perhaps the participant has been removed.");
       showError(error);
       return;
     }
