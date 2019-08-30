@@ -213,6 +213,25 @@ void spoton_emailwindow::slotNewEmailName(const QString &text)
   slotPopulateParticipants();
 }
 
+void spoton_emailwindow::slotParticipantAdded(const QString &type)
+{
+  if(type == "email")
+    slotPopulateParticipants();
+}
+
+void spoton_emailwindow::slotParticipantDeleted(const QString &oid,
+						const QString &type)
+{
+  if(type != "email")
+    return;
+
+  QList<QTableWidgetItem *> list
+    (spoton::findItems(m_ui.emailParticipants, oid, 1));
+
+  if(!list.isEmpty() && list.at(0))
+    m_ui.emailParticipants->removeRow(list.at(0)->row());
+}
+
 void spoton_emailwindow::slotParticipantNameChanged
 (const QByteArray &publicKeyHash, const QString &name)
 {

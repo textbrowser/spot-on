@@ -3915,7 +3915,9 @@ void spoton::slotRemoveUrlParticipants(void)
 		query.prepare("DELETE FROM friends_public_keys WHERE "
 			      "OID = ?");
 		query.bindValue(0, data.toString());
-		query.exec();
+
+		if(query.exec())
+		  emit participantDeleted(data.toString(), "url");
 	      }
 	  }
 

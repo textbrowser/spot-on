@@ -608,6 +608,14 @@ void spoton::slotNewEmailWindow(void)
 	  window,
 	  SLOT(slotNewEmailName(const QString &)));
   connect(this,
+	  SIGNAL(participantAdded(const QString &)),
+	  window,
+	  SLOT(slotPopulateParticipants(void)));
+  connect(this,
+	  SIGNAL(participantDeleted(const QString &, const QString &)),
+	  window,
+	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
+  connect(this,
 	  SIGNAL(participantNameChanged(const QByteArray &,
 					const QString &)),
 	  window,

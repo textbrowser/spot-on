@@ -894,6 +894,8 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				   "to save the friendship bundle."));
 	  return false;
 	}
+      else
+	emit participantAdded(keyType);
     }
   else if(type == "R")
     {
@@ -5447,7 +5449,9 @@ void spoton::slotRemoveEmailParticipants(void)
 		query.prepare("DELETE FROM friends_public_keys WHERE "
 			      "OID = ?");
 		query.bindValue(0, data.toString());
-		query.exec();
+
+		if(query.exec())
+		  emit participantDeleted(data.toString(), "email");
 	      }
 	  }
 
@@ -5515,7 +5519,9 @@ void spoton::slotRemoveParticipants(void)
 		query.prepare("DELETE FROM friends_public_keys WHERE "
 			      "OID = ?");
 		query.bindValue(0, data.toString());
-		query.exec();
+
+		if(query.exec())
+		  emit participantDeleted(data.toString(), "chat");
 	      }
 
 	    if(m_chatSequenceNumbers.contains(data.toString()))

@@ -58,6 +58,8 @@ class spoton_emailwindow: public QMainWindow
   void slotEmailFsGb(int index);
   void slotEmailSecretsActionSelected(void);
   void slotNewEmailName(const QString &text);
+  void slotParticipantAdded(const QString &type);
+  void slotParticipantDeleted(const QString &oid, const QString &type);
   void slotParticipantNameChanged(const QByteArray &publicKeyHash,
 				  const QString &name);
   void slotPopulateParticipants(void);
