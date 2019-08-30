@@ -866,6 +866,12 @@ spoton::spoton(void):QMainWindow()
 				     const QString &,
 				     const int &)));
   connect(this,
+	  SIGNAL(participantNameChanged(const QByteArray &,
+					const QString &)),
+	  &m_smpWindow,
+	  SLOT(slotParticipantNameChanged(const QByteArray &,
+					  const QString &)));
+  connect(this,
 	  SIGNAL(participantsQueryReady(QSqlDatabase *,
 					QSqlQuery *,
 					const QString &)),

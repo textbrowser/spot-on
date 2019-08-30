@@ -810,6 +810,28 @@ void spoton_smpwindow::slotGenerateData(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_smpwindow::slotParticipantNameChanged
+(const QByteArray &publicKeyHash, const QString &name)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QTableWidgetItem *> list;
+  QString oid
+    (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
+
+  list = spoton::findItems(m_ui.participants, oid, 3);
+
+  if(!list.isEmpty() && list.at(0))
+    {
+      QTableWidgetItem *item = m_ui.participants->item(list.at(0)->row(), 0);
+
+      if(item)
+	item->setText(name);
+    }
+
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton_smpwindow::slotPrepareSMPObject(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));

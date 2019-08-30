@@ -3440,6 +3440,39 @@ int spoton_misc::minimumNeighborLaneWidth(void)
   return laneWidth;
 }
 
+qint64 spoton_misc::oidFromPublicKeyHash(const QByteArray &publicKeyHash)
+{
+  QString connectionName("");
+  qint64 oid = -1;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT OID "
+		      "FROM friends_public_keys WHERE "
+		      "public_key_hash = ?");
+	query.bindValue(0, publicKeyHash);
+
+	if(query.exec())
+	  if(query.next())
+	    oid = query.value(0).toLongLong();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return oid;
+}
+
 qint64 spoton_misc::participantCount(const QString &keyType,
 				     spoton_crypt *crypt)
 {

@@ -81,6 +81,8 @@ class spoton_smpwindow: public QMainWindow
   void slotClose(void);
   void slotExecute(void);
   void slotGenerateData(void);
+  void slotParticipantNameChanged(const QByteArray &publicKeyHash,
+				  const QString &name);
   void slotPrepareSMPObject(void);
   void slotPurgeSMPStateMachines(void);
   void slotRefresh(void);

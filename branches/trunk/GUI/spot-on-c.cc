@@ -4024,25 +4024,55 @@ void spoton::slotRenameParticipant(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(ok)
-    if(currentTabName() == "chat")
-      {
-	QTableWidgetItem *item = m_ui.participants->item
-	  (list.value(0).row(), 3); // public_key_hash
+    {
+      QString tabName(currentTabName());
 
-	if(item)
-	  {
-	    QString publicKeyHash(item->text());
+      if(tabName == "chat")
+	{
+	  QTableWidgetItem *item = m_ui.participants->item
+	    (list.value(0).row(), 3); // public_key_hash
 
-	    if(m_chatWindows.contains(publicKeyHash))
-	      {
-		QPointer<spoton_chatwindow> chat =
-		  m_chatWindows.value(publicKeyHash, 0);
+	  if(item)
+	    {
+	      QString publicKeyHash(item->text());
 
-		if(chat)
-		  chat->setName(name);
-	      }
-	  }
-      }
+	      if(m_chatWindows.contains(publicKeyHash))
+		{
+		  QPointer<spoton_chatwindow> chat =
+		    m_chatWindows.value(publicKeyHash, 0);
+
+		  if(chat)
+		    chat->setName(name);
+		}
+
+	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
+	    }
+	}
+      else if(tabName == "email")
+	{
+	  QTableWidgetItem *item = m_ui.emailParticipants->item
+	    (list.value(0).row(), 3); // public_key_hash
+
+	  if(item)
+	    {
+	      QString publicKeyHash(item->text());
+
+	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
+	    }
+	}
+      else if(tabName == "urls")
+	{
+	  QTableWidgetItem *item = m_ui.urlParticipants->item
+	    (list.value(0).row(), 3); // public_key_hash
+
+	  if(item)
+	    {
+	      QString publicKeyHash(item->text());
+
+	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
+	    }
+	}
+    }
 }
 
 void spoton::slotResetCertificate(void)

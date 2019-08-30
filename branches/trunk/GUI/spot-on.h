@@ -1094,6 +1094,8 @@ class spoton: public QMainWindow
 			   const int &size);
   void newEmailName(const QString &text);
   void newGlobalName(const QString &text);
+  void participantNameChanged(const QByteArray &publicKeyHash,
+			      const QString &name);
   void participantsQueryReady(QSqlDatabase *db,
 			      QSqlQuery *query,
 			      const QString &connectionName);
