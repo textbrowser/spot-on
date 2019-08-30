@@ -234,6 +234,48 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
   return publicKey;
 }
 
+QByteArray spoton_misc::publicKeyFromOID(const qint64 oid, spoton_crypt *crypt)
+{
+  if(!crypt)
+    {
+      logError
+	("spoton_misc::publicKeyFromHash(): crypt is zero.");
+      return QByteArray();
+    }
+
+  QByteArray publicKey;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_key "
+		      "FROM friends_public_keys WHERE "
+		      "OID = ?");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  if(query.next())
+	    publicKey = crypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKey;
+}
+
 QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
 (const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt)
 {
@@ -2999,6 +3041,40 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   return ok;
+}
+
+bool spoton_misc::publicKeyExists(const qint64 oid)
+{
+  QString connectionName("");
+  bool exists = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() +
+       "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT EXISTS(SELECT 1 FROM "
+		      "friends_public_keys WHERE "
+		      "OID = ?)");
+	query.bindValue(0, oid);
+
+	if(query.exec())
+	  if(query.next())
+	    exists = query.value(0).toBool();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return exists;
 }
 
 bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,

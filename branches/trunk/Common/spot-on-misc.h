@@ -80,6 +80,7 @@ class spoton_misc
     (const QList<QByteArray> &list);
   static QByteArray publicKeyFromHash(const QByteArray &publicKeyHash,
 				      spoton_crypt *crypt);
+  static QByteArray publicKeyFromOID(const qint64 oid, spoton_crypt *crypt);
   static QByteArray publicKeyFromSignaturePublicKeyHash
     (const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt);
   static QByteArray signaturePublicKeyFromPublicKeyHash
@@ -178,6 +179,7 @@ class spoton_misc
 				 const quint16 port);
   static bool prepareUrlDistillersDatabase(void);
   static bool prepareUrlKeysDatabase(void);
+  static bool publicKeyExists(const qint64 oid);
   static bool saveFriendshipBundle(const QByteArray &keyType,
 				   const QByteArray &name,
 				   const QByteArray &publicKey,

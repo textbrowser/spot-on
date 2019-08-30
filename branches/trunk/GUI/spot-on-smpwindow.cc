@@ -415,6 +415,9 @@ void spoton_smpwindow::show(spoton *parent)
 
 void spoton_smpwindow::showError(const QString &error)
 {
+  if(!isVisible())
+    return;
+
   if(QApplication::overrideCursor() &&
      QApplication::overrideCursor()->shape() == Qt::WaitCursor)
     QApplication::restoreOverrideCursor();
@@ -547,10 +550,11 @@ void spoton_smpwindow::slotExecute(void)
       smp = new spoton_smpwindow_smp(secret);
       smp->m_keyType = keyType;
       smp->m_name = name;
+      smp->m_oid = list.value(0).data().toLongLong();
       smp->m_publicKey = publicKey;
       m_smps[bytes] = smp;
-      statusBar()->showMessage(tr("A total of %1 SMP objects are "
-				  "registered.").arg(m_smps.size()));
+      statusBar()->showMessage
+	(tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
     }
   else
     smp->m_smp->setGuess(secret);
@@ -746,6 +750,10 @@ void spoton_smpwindow::slotGenerateData(void)
   QByteArray publicKey;
   QString connectionName("");
   QString error("");
+  QString oid
+    (m_ui.participants->selectionModel()->
+     selectedRows(m_ui.participants->columnCount() - 1).value(0).data().
+     toString());
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -760,10 +768,7 @@ void spoton_smpwindow::slotGenerateData(void)
 
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
-	query.addBindValue
-	  (m_ui.participants->selectionModel()->
-	   selectedRows(m_ui.participants->columnCount() - 1).value(0).data().
-	   toString()); // OID
+	query.addBindValue(oid);
 
 	if(query.exec())
 	  if(query.next())
@@ -805,9 +810,44 @@ void spoton_smpwindow::slotGenerateData(void)
   smp.reset(new spoton_smpwindow_smp(secret));
   smp->m_keyType = keyType;
   smp->m_name = name;
+  smp->m_oid = oid.toLongLong();
   smp->m_publicKey = publicKey;
   generateSecretData(smp.data());
   populateSecrets();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_smpwindow::slotParticipantDeleted(const QString &oid,
+					      const QString &type)
+{
+  Q_UNUSED(type);
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QTableWidgetItem *> list
+    (spoton::findItems(m_ui.participants, oid, 3));
+
+  if(!list.isEmpty() && list.at(0))
+    {
+      QMutableHashIterator<QByteArray, spoton_smpwindow_smp *> it(m_smps);
+
+      while(it.hasNext())
+	{
+	  it.next();
+
+	  if(it.value())
+	    if(!spoton_misc::publicKeyExists(it.value()->m_oid))
+	      {
+		delete it.value();
+		it.remove();
+	      }
+	}
+
+      m_ui.participants->removeRow(list.at(0)->row());
+      statusBar()->showMessage
+	(tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
@@ -817,17 +857,31 @@ void spoton_smpwindow::slotParticipantNameChanged
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QList<QTableWidgetItem *> list;
-  QString oid
-    (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
+  qint64 oid = spoton_misc::oidFromPublicKeyHash(publicKeyHash);
 
-  list = spoton::findItems(m_ui.participants, oid, 3);
+  list = spoton::findItems(m_ui.participants, QString::number(oid), 3);
 
   if(!list.isEmpty() && list.at(0))
     {
       QTableWidgetItem *item = m_ui.participants->item(list.at(0)->row(), 0);
 
       if(item)
-	item->setText(name);
+	{
+	  QHashIterator<QByteArray, spoton_smpwindow_smp *> it(m_smps);
+
+	  while(it.hasNext())
+	    {
+	      it.next();
+
+	      if(it.value() && it.value()->m_oid == oid)
+		{
+		  it.value()->m_name = name;
+		  break;
+		}
+	    }
+
+	  item->setText(name);
+	}
     }
 
   m_ui.participants->sortByColumn
@@ -928,10 +982,11 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
       smp->m_keyType = keyType;
       smp->m_name = m_ui.participants->selectionModel()->selectedRows(0).
 	value(0).data().toString();
+      smp->m_oid = list.at(0).data().toLongLong();
       smp->m_publicKey = publicKey;
       m_smps[bytes] = smp;
-      statusBar()->showMessage(tr("A total of %1 SMP objects are "
-				  "registered.").arg(m_smps.size()));
+      statusBar()->showMessage
+	(tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
     }
   else
     smp->m_smp->setGuess(secret);

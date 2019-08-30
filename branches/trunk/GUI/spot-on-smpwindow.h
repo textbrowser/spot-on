@@ -55,6 +55,7 @@ class spoton_smpwindow_smp
   QHash<QByteArray, char> m_cache;
   QString m_keyType;
   QString m_name;
+  qint64 m_oid;
   spoton_smp *m_smp;
 };
 
@@ -81,6 +82,7 @@ class spoton_smpwindow: public QMainWindow
   void slotClose(void);
   void slotExecute(void);
   void slotGenerateData(void);
+  void slotParticipantDeleted(const QString &oid, const QString &type);
   void slotParticipantNameChanged(const QByteArray &publicKeyHash,
 				  const QString &name);
   void slotPrepareSMPObject(void);
