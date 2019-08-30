@@ -213,6 +213,30 @@ void spoton_emailwindow::slotNewEmailName(const QString &text)
   slotPopulateParticipants();
 }
 
+void spoton_emailwindow::slotParticipantNameChanged
+(const QByteArray &publicKeyHash, const QString &name)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QTableWidgetItem *> list;
+
+  list = spoton::findItems(m_ui.emailParticipants, publicKeyHash, 3);
+
+  if(!list.isEmpty() && list.at(0))
+    {
+      QTableWidgetItem *item = m_ui.emailParticipants->item
+	(list.at(0)->row(), 0);
+
+      if(item)
+	item->setText(name);
+    }
+
+  m_ui.emailParticipants->sortByColumn
+    (m_ui.emailParticipants->horizontalHeader()->sortIndicatorSection(),
+     m_ui.emailParticipants->horizontalHeader()->sortIndicatorOrder());
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton_emailwindow::slotPopulateParticipants(void)
 {
   if(!m_parent)
