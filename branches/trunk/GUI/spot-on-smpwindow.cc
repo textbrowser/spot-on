@@ -830,6 +830,9 @@ void spoton_smpwindow::slotParticipantNameChanged
 	item->setText(name);
     }
 
+  m_ui.participants->sortByColumn
+    (m_ui.participants->horizontalHeader()->sortIndicatorSection(),
+     m_ui.participants->horizontalHeader()->sortIndicatorOrder());
   QApplication::restoreOverrideCursor();
 }
 

@@ -51,6 +51,7 @@ class spoton_rosetta: public QMainWindow
   QByteArray copyMyRosettaPublicKey(void) const;
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
+  void sortContacts(void);
 
  private slots:
   void slotAddContact(void);

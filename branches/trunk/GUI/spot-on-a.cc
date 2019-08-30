@@ -968,9 +968,11 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotPopulateParticipants(void)));
   connect(&m_rosetta,
-	  SIGNAL(participantNameChanged(const QByteArray &, const QString &)),
-	  this,
-	  SIGNAL(participantNameChanged(const QByteArray &, const QString &)));
+	  SIGNAL(participantNameChanged(const QByteArray &,
+					const QString &)),
+	  &m_smpWindow,
+	  SLOT(slotParticipantNameChanged(const QByteArray &,
+					  const QString &)));
   connect(&m_starbeamUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,

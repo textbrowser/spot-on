@@ -485,9 +485,7 @@ void spoton_rosetta::slotAddContact(void)
 
     if(db.open())
       {
-	QByteArray name(list.value(1));
-
-	name = QByteArray::fromBase64(name);
+	QByteArray name(QByteArray::fromBase64(list.value(1)));
 
 	if((ok = spoton_misc::saveFriendshipBundle(keyType,
 						   name,
@@ -1016,7 +1014,10 @@ void spoton_rosetta::slotDelete(void)
        tr("An error occurred while attempting to delete the specified "
 	  "participant."));
   else
-    populateContacts();
+    {
+      ui.contacts->removeItem(ui.contacts->currentIndex());
+      sortContacts();
+    }
 }
 
 void spoton_rosetta::slotEncryptToggled(bool state)
@@ -1088,7 +1089,8 @@ void spoton_rosetta::slotRename(void)
 	  }
 
 	if(ok)
-	  ok = query.exec();
+	  if((ok = query.exec()))
+	    ui.contacts->setItemText(ui.contacts->currentIndex(), name);
       }
     else
       ok = false;
@@ -1106,7 +1108,7 @@ void spoton_rosetta::slotRename(void)
 	  "participant."));
   else
     {
-      populateContacts();
+      sortContacts();
       emit participantNameChanged(publicKeyHash, name);
     }
 }
@@ -1147,4 +1149,32 @@ void spoton_rosetta::slotSetIcons(void)
   ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+}
+
+void spoton_rosetta::sortContacts(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QMultiMap<QString, QVariant> map;
+
+  for(int i = 0; i < ui.contacts->count(); i++)
+    map.insert(ui.contacts->itemText(i), ui.contacts->itemData(i));
+
+  ui.contacts->clear();
+
+  QMapIterator<QString, QVariant> it(map);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QString str(it.key().trimmed());
+
+      if(str.isEmpty())
+	ui.contacts->addItem("unknown", it.value());
+      else
+	ui.contacts->addItem(str, it.value());
+    }
+
+  QApplication::restoreOverrideCursor();
 }
