@@ -1059,6 +1059,7 @@ void spoton_rosetta::slotRename(void)
   if(name.isEmpty() || !ok)
     return;
 
+  QByteArray publicKeyHash;
   QString connectionName("");
 
   {
@@ -1081,7 +1082,10 @@ void spoton_rosetta::slotRename(void)
 	  (0, eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, spoton_crypt::sha512Hash(data, &ok).toBase64());
+	  {
+	    publicKeyHash = spoton_crypt::sha512Hash(data, &ok).toBase64();
+	    query.bindValue(1, publicKeyHash);
+	  }
 
 	if(ok)
 	  ok = query.exec();
@@ -1101,7 +1105,10 @@ void spoton_rosetta::slotRename(void)
        tr("An error occurred while attempting to rename the specified "
 	  "participant."));
   else
-    populateContacts();
+    {
+      populateContacts();
+      emit participantNameChanged(publicKeyHash, name);
+    }
 }
 
 void spoton_rosetta::slotSaveName(void)

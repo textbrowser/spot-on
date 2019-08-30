@@ -66,6 +66,10 @@ class spoton_rosetta: public QMainWindow
   void slotRename(void);
   void slotSaveName(void);
   void slotSetIcons(void);
+
+ signals:
+  void participantNameChanged(const QByteArray &publicKeyHash,
+			      const QString &name);
 };
 
 #endif
