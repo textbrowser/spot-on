@@ -10411,8 +10411,8 @@ void spoton::slotValidatePassphrase(void)
 		  if(i == 0)
 		    m_ui.emailName->insertSeparator(1);
 
-		  m_ui.emailName->addItem(list.at(i).value("in_username").
-					  toString());
+		  m_ui.emailName->addItem
+		    (list.at(i).value("in_username").toString());
 		}
 
 	      QApplication::restoreOverrideCursor();
