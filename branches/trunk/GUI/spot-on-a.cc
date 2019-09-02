@@ -10144,23 +10144,29 @@ void spoton::slotTabChanged(int index)
 {
   Q_UNUSED(index);
 
-  if(currentTabName() == "listeners")
+  QString tabName(currentTabName());
+
+  if(tabName == "buzz")
+    m_sb.buzz->setVisible(false);
+  else if(tabName == "chat")
+    {
+      if(m_participantsFuture.isFinished())
+	m_participantsLastModificationTime = QDateTime();
+
+      m_sb.chat->setVisible(false);
+    }
+  else if(tabName == "listeners")
     m_listenersLastModificationTime = QDateTime();
-  else if(currentTabName() == "neighbors")
+  else if(tabName == "neighbors")
     {
       if(m_neighborsFuture.isFinished())
 	m_neighborsLastModificationTime = QDateTime();
     }
-  else if(currentTabName() == "starbeam")
+  else if(tabName == "starbeam")
     {
       m_magnetsLastModificationTime = QDateTime();
       m_starsLastModificationTime = QDateTime();
     }
-
-  if(currentTabName() == "buzz")
-    m_sb.buzz->setVisible(false);
-  else if(currentTabName() == "chat")
-    m_sb.chat->setVisible(false);
 }
 
 void spoton::slotUnblockNeighbor(void)

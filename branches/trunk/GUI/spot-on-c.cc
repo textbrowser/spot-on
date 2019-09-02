@@ -3951,12 +3951,13 @@ void spoton::slotRenameParticipant(void)
     return;
 
   QModelIndexList list;
+  QString tabName(currentTabName());
 
-  if(currentTabName() == "chat")
+  if(tabName == "chat")
     if(type == "chat" || type == "poptastic")
       list = m_ui.participants->selectionModel()->selectedRows(1); // OID
 
-  if(currentTabName() == "email")
+  if(tabName == "email")
     if(type == "email" || type == "poptastic")
       list = m_ui.emailParticipants->selectionModel()->selectedRows(1); // OID
 
@@ -3968,11 +3969,11 @@ void spoton::slotRenameParticipant(void)
 
   QVariant data(list.value(0).data());
 
-  if(currentTabName() == "chat")
+  if(tabName == "chat")
     if(type == "chat" || type == "poptastic")
       list = m_ui.participants->selectionModel()->selectedRows(0); // Name
 
-  if(currentTabName() == "email")
+  if(tabName == "email")
     if(type == "email" || type == "poptastic")
       list = m_ui.emailParticipants->selectionModel()->selectedRows(0); // Name
 
@@ -4027,8 +4028,6 @@ void spoton::slotRenameParticipant(void)
 
   if(ok)
     {
-      QString tabName(currentTabName());
-
       if(tabName == "chat")
 	{
 	  QTableWidgetItem *item = m_ui.participants->item
