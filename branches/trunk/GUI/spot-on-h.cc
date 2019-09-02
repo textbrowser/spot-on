@@ -246,23 +246,24 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	    */
 
 	    query.exec("PRAGMA secure_delete = ON");
-	    query.exec("DELETE FROM neighbors WHERE "
-		       "status_control = 'deleted'");
-	    query.exec("UPDATE neighbors SET "
-		       "account_authenticated = NULL, "
-		       "buffered_content = 0, "
-		       "bytes_discarded_on_write = 0, "
-		       "bytes_read = 0, "
-		       "bytes_written = 0, "
-		       "external_ip_address = NULL, "
-		       "is_encrypted = 0, "
-		       "local_ip_address = NULL, "
-		       "local_port = NULL, "
-		       "ssl_session_cipher = NULL, "
-		       "status = 'disconnected', "
-		       "uptime = 0 WHERE "
-		       "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
-		       "OR status <> 'disconnected'");
+	    query.exec
+	      ("DELETE FROM neighbors WHERE status_control = 'deleted'");
+	    query.exec
+	      ("UPDATE neighbors SET "
+	       "account_authenticated = NULL, "
+	       "buffered_content = 0, "
+	       "bytes_discarded_on_write = 0, "
+	       "bytes_read = 0, "
+	       "bytes_written = 0, "
+	       "external_ip_address = NULL, "
+	       "is_encrypted = 0, "
+	       "local_ip_address = NULL, "
+	       "local_port = NULL, "
+	       "ssl_session_cipher = NULL, "
+	       "status = 'disconnected', "
+	       "uptime = 0 WHERE "
+	       "local_ip_address IS NOT NULL OR local_port IS NOT NULL "
+	       "OR status <> 'disconnected'");
 	  }
 
 	db.close();
