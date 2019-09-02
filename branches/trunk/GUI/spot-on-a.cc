@@ -7347,6 +7347,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	     SIGNAL(itemChanged(QTableWidgetItem *)),
 	     this,
 	     SLOT(slotNeighborChanged(QTableWidgetItem *)));
+  query->seek(-1);
 
   QModelIndexList list;
   QString proxyIp("");
@@ -8142,6 +8143,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  query->seek(-1);
 
   QList<int> rows;  // Chat
   QList<int> rowsE; // E-Mail

@@ -378,8 +378,6 @@ void spoton::retrieveNeighbors(void)
 	QSqlQuery *query = new QSqlQuery(*db);
 	int size = 0;
 
-	query->setForwardOnly(true);
-
 	if(query->exec("SELECT COUNT(*) FROM neighbors "
 		       "WHERE status_control <> 'deleted'"))
 	  if(query->next())
@@ -431,6 +429,7 @@ void spoton::retrieveNeighbors(void)
 		       "OID "
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
+	    while(query->next());
 	    emit neighborsQueryReady(db, query, connectionName, size);
 	    return;
 	  }
@@ -482,7 +481,6 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 	QSqlQuery *query = new QSqlQuery(*db);
 	bool ok = true;
 
-	query->setForwardOnly(true);
 	query->prepare("SELECT "
 		       "name, "               // 0
 		       "OID, "                // 1
@@ -513,6 +511,7 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 
 	if(ok && query->exec())
 	  {
+	    while(query->next());
 	    emit participantsQueryReady(db, query, connectionName);
 	    return;
 	  }
