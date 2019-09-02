@@ -72,6 +72,11 @@ int spoton_sqlquery::recordCount(void) const
   return m_current.size();
 }
 
+int spoton_sqlquery::size(void) const
+{
+  return m_queue.size();
+}
+
 void spoton_sqlquery::enqueue(const QHash<int, QPair<QVariant, bool> > &hash)
 {
   m_queue.enqueue(hash);

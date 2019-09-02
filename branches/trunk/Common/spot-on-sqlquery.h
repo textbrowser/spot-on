@@ -43,6 +43,7 @@ class spoton_sqlquery
   bool next(void);
   int indexOfField(const QString &field) const;
   int recordCount(void) const;
+  int size(void) const;
   void enqueue(const QHash<int, QPair<QVariant, bool> > &hash);
   void setField(const int index, const QString &field);
 
