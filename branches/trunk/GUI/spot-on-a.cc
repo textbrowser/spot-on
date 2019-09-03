@@ -3480,26 +3480,6 @@ void spoton::cleanup(void)
   if(m_settings.value("gui/removeOtmOnExit", false).toBool())
     spoton_misc::removeOneTimeStarBeamMagnets();
 
-  m_encryptFile.abort();
-  m_neighborsFuture.cancel();
-  m_neighborsFuture.waitForFinished();
-  m_participantsFuture.cancel();
-  m_participantsFuture.waitForFinished();
-  m_pqUrlDatabaseFuture.cancel();
-  m_pqUrlDatabaseFuture.waitForFinished();
-  m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
-
-  while(!m_starbeamDigestFutures.isEmpty())
-    {
-      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
-
-      future.cancel();
-      future.waitForFinished();
-    }
-
-  m_statisticsFuture.cancel();
-  m_statisticsFuture.waitForFinished();
-
   /*
   ** Abort timers.
   */
@@ -3518,11 +3498,30 @@ void spoton::cleanup(void)
   m_updateChatWindowsTimer.stop();
 
   /*
-  ** Terminate dependent futures.
+  ** Abort threads.
   */
 
+  m_encryptFile.abort();
   m_generalFuture.cancel();
   m_generalFuture.waitForFinished();
+  m_neighborsFuture.cancel();
+  m_neighborsFuture.waitForFinished();
+  m_participantsFuture.cancel();
+  m_participantsFuture.waitForFinished();
+  m_pqUrlDatabaseFuture.cancel();
+  m_pqUrlDatabaseFuture.waitForFinished();
+  m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+
+  while(!m_starbeamDigestFutures.isEmpty())
+    {
+      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+
+      future.cancel();
+      future.waitForFinished();
+    }
+
+  m_statisticsFuture.cancel();
+  m_statisticsFuture.waitForFinished();
 
   /*
   ** Close databases.
