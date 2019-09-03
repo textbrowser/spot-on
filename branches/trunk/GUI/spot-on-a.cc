@@ -1854,6 +1854,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotTransportChanged(int)));
+  connect(m_ui.neighbors,
+	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotShowNeighborStatistics(void)));
   connect(m_ui.newKeys,
 	  SIGNAL(toggled(bool)),
 	  m_ui.encryptionKeySize,
