@@ -657,7 +657,7 @@
      spoton_misc::publicKeyFromSignaturePublicKeyHash(), and
      spoton_misc::signaturePublicKeyFromPublicKeyHash() neglected to
      close the database handles. Corrected.
-18   Improved performance of spoton_neighbor::findMessageType() by
+18.  Improved performance of spoton_neighbor::findMessageType() by
      inspecting group counts.
 19.  Terminate timers in destructors.
 20.  Removed random selection of ciphers. The default cipher has
