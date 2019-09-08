@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>925</width>
+    <width>800</width>
     <height>600</height>
    </rect>
   </property>
@@ -437,8 +437,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>885</width>
-             <height>477</height>
+             <width>779</width>
+             <height>151</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -628,8 +628,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>925</width>
-     <height>26</height>
+     <width>800</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
