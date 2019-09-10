@@ -33,7 +33,7 @@
 
 #include <limits>
 
-#define SPOTON_VERSION_STR "2019.09.09"
+#define SPOTON_VERSION_STR "2019.09.15"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;

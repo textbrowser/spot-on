@@ -27,6 +27,7 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QMessageBox>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -101,7 +102,7 @@ spoton_encryptfile_page::~spoton_encryptfile_page()
 
 bool spoton_encryptfile_page::occupied(void) const
 {
-  return m_occupied;
+  return m_future.isRunning() || m_occupied;
 }
 
 void spoton_encryptfile_page::abort(void)
@@ -555,6 +556,7 @@ void spoton_encryptfile_page::slotConvert(void)
   QFileInfo fileInfo(ui.file->text());
   QList<QVariant> list;
   QPair<QByteArray, QByteArray> derivedKeys;
+  QScopedPointer<QMessageBox> mb;
   QString error("");
   QString modeOfOperation("");
   QString password(ui.password->text());
@@ -592,7 +594,17 @@ void spoton_encryptfile_page::slotConvert(void)
       goto done_label;
     }
 
-  m_occupied = true;
+  mb.reset(new QMessageBox(this));
+  mb->setIcon(QMessageBox::Question);
+  mb->setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb->setText(tr("Continue with the conversion process?"));
+  mb->setWindowIcon(windowIcon());
+  mb->setWindowModality(Qt::ApplicationModal);
+  mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb->exec() != QMessageBox::Yes)
+    return;
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   ui.status_label->setText
     (tr("Generating derived keys. Please be patient."));
@@ -630,6 +642,7 @@ void spoton_encryptfile_page::slotConvert(void)
   else
     modeOfOperation = "gcm";
 
+  m_occupied = true;
   m_quit = false;
 
   if(ui.directory_mode->isChecked())

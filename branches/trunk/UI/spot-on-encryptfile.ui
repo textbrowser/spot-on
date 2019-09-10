@@ -19,16 +19,7 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="leftMargin">
-     <number>5</number>
-    </property>
-    <property name="topMargin">
-     <number>5</number>
-    </property>
-    <property name="rightMargin">
-     <number>5</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>5</number>
     </property>
     <item>
@@ -49,7 +40,7 @@
      <x>0</x>
      <y>0</y>
      <width>885</width>
-     <height>19</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -73,7 +64,10 @@
   </action>
   <action name="action_New_Page">
    <property name="text">
-    <string>&amp;New Page</string>
+    <string>New &amp;Tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
