@@ -761,9 +761,7 @@ void spoton_encryptfile_page::slotSelect(void)
 {
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle
-    (tr("%1: Select File").
-     arg(SPOTON_APPLICATION_NAME));
+  dialog.setWindowTitle(tr("%1: Select File").arg(SPOTON_APPLICATION_NAME));
 
   if(sender() == ui.select)
     {
