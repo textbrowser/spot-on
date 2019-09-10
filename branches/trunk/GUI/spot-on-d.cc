@@ -153,8 +153,7 @@ bool spoton::promptBeforeExit(void)
 		 arg(SPOTON_APPLICATION_NAME));
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::WindowModal);
-      mb.setWindowTitle(tr("%1: Question").
-			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowTitle(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	return true;
