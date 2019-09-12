@@ -1204,7 +1204,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       SLOT(slotComputeFileHash(void)));
       action->setProperty("widget_of", "received");
       menu->addSeparator();
-      action = menu->addAction(tr("&Copy File Hash"), this,
+      action = menu->addAction(tr("&Copy SHA-1 Hash"), this,
 			       SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
       m_ui.receivedActionMenu->setMenu(menu);
@@ -1233,7 +1233,7 @@ void spoton::prepareContextMenuMirrors(void)
 			       SLOT(slotComputeFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu->addSeparator();
-      action = menu->addAction(tr("&Copy File Hash"), this,
+      action = menu->addAction(tr("&Copy SHA-1 Hash"), this,
 			       SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu->addSeparator();
@@ -3499,9 +3499,19 @@ void spoton::slotPopulateStars(void)
 	  if(query.next())
 	    m_ui.transmitted->setRowCount(query.value(0).toInt());
 
-	query.prepare("SELECT 0, position, pulse_size, total_size, "
-		      "status_control, file, mosaic, hash, read_interval, "
-		      "fragmented, OID FROM transmitted "
+	query.prepare("SELECT 0, "       // 0
+		      "position, "       // 1
+		      "pulse_size, "     // 2
+		      "total_size, "     // 3
+		      "status_control, " // 4
+		      "file, "           // 5
+		      "mosaic, "         // 6
+		      "hash, "           // 7
+		      "read_interval, "  // 8
+		      "fragmented, "     // 9
+		      "sha3_512_hash, "  // 10
+		      "OID "             // 11
+		      "FROM transmitted "
 		      "WHERE status_control <> 'deleted'");
 
 	if(query.exec())
@@ -3532,7 +3542,7 @@ void spoton::slotPopulateStars(void)
 		      (QByteArray::fromBase64(query.value(i).
 					      toByteArray()),
 		       &ok).toLongLong();
-		  else if(i == 2 || i == 3 || i == 5 || i == 7)
+		  else if(i == 2 || i == 3 || i == 5 || i == 7 || i == 10)
 		    {
 		      QByteArray bytes
 			(crypt->
@@ -4459,8 +4469,9 @@ void spoton::slotTransmit(void)
 		      "(file, fragmented, "
 		      "hash, mosaic, nova, "
 		      "position, pulse_size, "
-		      "status_control, total_size) "
-		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "sha3_512_hash, "
+		      "status_control, total_size, ultra) "
+		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.addBindValue
 	  (crypt->encryptedThenHashed(m_ui.transmittedFile->text().toUtf8(),
 				      &ok).toBase64());
@@ -4495,6 +4506,13 @@ void spoton::slotTransmit(void)
 	    (crypt->
 	     encryptedThenHashed(QByteArray::number(m_ui.pulseSize->value()),
 				 &ok).toBase64());
+	if(ok)
+	  query.addBindValue
+	    (crypt->
+	     encryptedThenHashed(spoton_crypt::
+				 sha3_512FileHash(m_ui.transmittedFile->
+						  text()).
+				 toHex(), &ok).toBase64());
 
 	query.addBindValue("paused");
 
@@ -4503,6 +4521,8 @@ void spoton::slotTransmit(void)
 	    (crypt->
 	     encryptedThenHashed(QByteArray::number(fileInfo.size()),
 				 &ok).toBase64());
+
+	query.addBindValue(1);
 
 	if(ok)
 	  ok = query.exec();

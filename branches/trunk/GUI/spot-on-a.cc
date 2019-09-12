@@ -10047,7 +10047,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      SLOT(slotComputeFileHash(void)));
       action->setProperty("widget_of", "received");
       menu.addSeparator();
-      action = menu.addAction(tr("&Copy File Hash"), this,
+      action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -10070,7 +10070,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      SLOT(slotComputeFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
-      action = menu.addAction(tr("&Copy File Hash"), this,
+      action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();

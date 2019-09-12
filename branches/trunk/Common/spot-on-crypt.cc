@@ -1858,20 +1858,9 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
 
 QByteArray spoton_crypt::sha1FileHash(const QString &fileName)
 {
-  QByteArray buffer(4096, 0);
-  QCryptographicHash hash(QCryptographicHash::Sha1);
-  QFile file(fileName);
+  QAtomicInt atomic;
 
-  if(file.open(QIODevice::ReadOnly))
-    {
-      qint64 rc = 0;
-
-      while((rc = file.read(buffer.data(), buffer.length())) > 0)
-	hash.addData(buffer, static_cast<int> (rc));
-    }
-
-  file.close();
-  return hash.result();
+  return sha1FileHash(fileName, atomic);
 }
 
 QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
@@ -1906,6 +1895,43 @@ QByteArray spoton_crypt::sha1Hash(const QByteArray &data, bool *ok)
 QByteArray spoton_crypt::sha256Hash(const QByteArray &data, bool *ok)
 {
   return shaXHash(GCRY_MD_SHA256, data, ok);
+}
+
+QByteArray spoton_crypt::sha3_512FileHash(const QString &fileName)
+{
+  QAtomicInt atomic;
+
+  return sha3_512FileHash(fileName, atomic);
+}
+
+QByteArray spoton_crypt::sha3_512FileHash(const QString &fileName,
+					  QAtomicInt &atomic)
+{
+#if QT_VERSION >= 0x050100
+  QByteArray buffer(4096, 0);
+  QCryptographicHash hash(QCryptographicHash::Sha3_512);
+  QFile file(fileName);
+
+  if(file.open(QIODevice::ReadOnly))
+    {
+      qint64 rc = 0;
+
+      while((rc = file.read(buffer.data(), buffer.length())) > 0)
+	{
+	  if(atomic.fetchAndAddOrdered(0))
+	    break;
+
+	  hash.addData(buffer, static_cast<int> (rc));
+	}
+    }
+
+  file.close();
+  return hash.result();
+#else
+  Q_UNUSED(atomic);
+  Q_UNUSED(fileName);
+  return QByteArray();
+#endif
 }
 
 QByteArray spoton_crypt::sha512Hash(const QByteArray &data, bool *ok)

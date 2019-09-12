@@ -4980,8 +4980,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(std::numeric_limits<int>::max()));
-	query.exec("ALTER TABLE neighbors ADD buffered_content "
-		   "INTEGER NOT NULL DEFAULT 0");
       }
 
     db.close();
@@ -5100,7 +5098,9 @@ void spoton_misc::prepareDatabases(void)
 							   */
 		   "locked INTEGER NOT NULL DEFAULT 0, "
 		   "pulse_size TEXT NOT NULL, "
+		   "sha3_512_hash TEXT, "
 		   "total_size TEXT NOT NULL)");
+	query.exec("ALTER TABLE received ADD sha3_512_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS received_novas ("
 		   "nova TEXT NOT NULL, " /*
 					  ** Please
@@ -5130,13 +5130,13 @@ void spoton_misc::prepareDatabases(void)
 		   "pulse_size TEXT NOT NULL, "
 		   "read_interval REAL NOT NULL DEFAULT 1.500 "
 		   "CHECK (read_interval >= 0.100), "
+		   "sha3_512_hash TEXT, "
 		   "status_control TEXT NOT NULL DEFAULT 'paused' CHECK "
 		   "(status_control IN ('completed', 'deleted', 'paused', "
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL, "
 		   "ultra INTEGER NOT NULL DEFAULT 1)"); // Ignored.
-	query.exec
-	  ("ALTER TABLE transmitted ADD ultra INTEGER NOT NULL DEFAULT 1");
+	query.exec("ALTER TABLE transmitted ADD sha3_512_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT NOT NULL, " // Keyed hash.
