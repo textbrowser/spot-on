@@ -42,11 +42,9 @@ wget --output-document=$postgresql \
      --progress=bar \
      "https://get.enterprisedb.com/postgresql/postgresql-9.6.15-1-windows-binaries.zip"
 unzip $postgresql
-mv pgsql/bin/libcrypto-1_1.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libiconv-2.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libintl-8.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libpq.dll PostgreSQL/Libraries.win32/.
-mv pgsql/bin/libssl-1_1.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libxml2.dll PostgreSQL/Libraries.win32/.
 mv pgsql/bin/libxslt.dll PostgreSQL/Libraries.win32/.
 mv pgsql/include/libpq-fe.h PostgreSQL/Include.win32/.
