@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>685</width>
-             <height>650</height>
+             <height>631</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -3966,7 +3966,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>641</width>
-             <height>650</height>
+             <height>572</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5049,7 +5049,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>612</width>
-             <height>650</height>
+             <height>450</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -8384,6 +8384,16 @@ QPushButton:pressed {
                       </column>
                       <column>
                        <property name="text">
+                        <string>Computed SHA3-512 Hash</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
+                        <string>Expected SHA3-512 Hash</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
                         <string>OID</string>
                        </property>
                       </column>
@@ -8844,6 +8854,11 @@ QPushButton:pressed {
                       </column>
                       <column>
                        <property name="text">
+                        <string>SHA3-512 Hash</string>
+                       </property>
+                      </column>
+                      <column>
+                       <property name="text">
                         <string>OID</string>
                        </property>
                       </column>
@@ -9024,8 +9039,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>609</width>
-             <height>666</height>
+             <width>593</width>
+             <height>536</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
