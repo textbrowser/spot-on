@@ -3241,8 +3241,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>829</width>
-             <height>476</height>
+             <width>776</width>
+             <height>492</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3643,7 +3643,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>791</width>
+                  <width>738</width>
                   <height>474</height>
                  </rect>
                 </property>
@@ -5332,6 +5332,29 @@
                   </spacer>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <widget class="QFrame" name="find_frame">
+                 <layout class="QHBoxLayout" name="horizontalLayout_45">
+                  <item>
+                   <widget class="QLabel" name="label_101">
+                    <property name="text">
+                     <string>&amp;Find</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>find</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="find">
+                    <property name="toolTip">
+                     <string>Please press the Enter key after providing the search text.</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -8464,9 +8487,6 @@
    <property name="text">
     <string>&amp;File Encryption...</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+F</string>
-   </property>
   </action>
   <action name="action_Clear_Clipboard_Buffer">
    <property name="text">
@@ -8656,14 +8676,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textedit</class>
-   <extends>QTextEdit</extends>
-   <header>GUI/spot-on-textedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textbrowser</class>
    <extends>QTextBrowser</extends>
    <header>spot-on-textbrowser.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textedit</class>
+   <extends>QTextEdit</extends>
+   <header>GUI/spot-on-textedit.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>
@@ -8854,6 +8874,7 @@
   <tabstop>discover</tabstop>
   <tabstop>searchfor</tabstop>
   <tabstop>urls</tabstop>
+  <tabstop>find</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>kernelExternalIpFetch</tabstop>
   <tabstop>kernelSecureMemoryPool</tabstop>

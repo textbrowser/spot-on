@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>816</width>
     <height>600</height>
    </rect>
   </property>
@@ -470,7 +470,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="find"/>
+               <widget class="QLineEdit" name="find">
+                <property name="toolTip">
+                 <string>Please press the Enter key after providing the search text.</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="purge">
@@ -628,7 +632,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>816</width>
      <height>31</height>
     </rect>
    </property>

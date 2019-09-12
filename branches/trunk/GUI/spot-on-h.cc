@@ -527,6 +527,14 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotFindInSearch(void)
+{
+  QString text(m_ui.find->text());
+
+  if(!m_ui.urls->find(text))
+    m_ui.urls->moveCursor(QTextCursor::Start);
+}
+
 void spoton::slotKeysIndexChanged(const QString &text)
 {
 #ifndef SPOTON_OPEN_LIBRARY_SUPPORTED

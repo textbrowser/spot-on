@@ -598,7 +598,7 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.buildInformation->setText
     (QString("<html>"
-	     "<font color=\"#6a5acd\">Gold Gecko</font>"
+	     "<font color=\"#6a5acd\">Solar September</font>"
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
@@ -780,6 +780,9 @@ spoton::spoton(void):QMainWindow()
     (m_optionsUi.position->model()->index(1, 0), 0, Qt::UserRole - 1);
   m_optionsUi.position->model()->setData
     (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
+  m_ui.find_frame->setVisible(false);
+#else
+  m_ui.find->setPlaceholderText(tr("Find Text"));
 #endif
 
   /*
@@ -1730,6 +1733,14 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotFavoritesActivated(int)));
+  connect(m_ui.find,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotFindInSearch(void)));
+  connect(m_ui.find,
+	  SIGNAL(textChanged(const QString &)),
+	  this,
+	  SLOT(slotFindInSearch(void)));
   connect(m_ui.folder,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,

@@ -94,16 +94,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
       </layout>
@@ -123,38 +114,10 @@
       </item>
       <item>
        <widget class="QLineEdit" name="find">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>16777215</height>
-         </size>
+        <property name="toolTip">
+         <string>Please press the Enter key after providing the search text.</string>
         </property>
        </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
       </item>
      </layout>
     </item>
@@ -166,7 +129,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>19</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

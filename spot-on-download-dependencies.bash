@@ -4,12 +4,12 @@
 
 # CURL
 
-curl=curl-7.65.3-win32-mingw
+curl=curl-7.66.0_2-win32-mingw
 
 rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
-     https://curl.haxx.se/windows/dl-7.65.3/curl-7.65.3-win32-mingw.zip
+     https://curl.haxx.se/windows/dl-7.66.0_2/curl-7.66.0_2-win32-mingw.zip
 unzip $curl.zip -d curl-temporary.d
 mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
 mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
@@ -19,7 +19,7 @@ rm -fr curl-temporary.d
 
 # OpenSSL
 
-openssl=openssl-1.1.1c-win32-mingw
+openssl=openssl-1.1.1d-win32-mingw
 
 rm -f $openssl.zip
 rm -fr $openssl
