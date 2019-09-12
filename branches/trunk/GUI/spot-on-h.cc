@@ -529,10 +529,20 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 
 void spoton::slotFindInSearch(void)
 {
+#if SPOTON_GOLDBUG == 0
   QString text(m_ui.find->text());
 
   if(!m_ui.urls->find(text))
     m_ui.urls->moveCursor(QTextCursor::Start);
+#endif
+}
+
+void spoton::slotFindInSearchInitialize(void)
+{
+#if SPOTON_GOLDBUG == 0
+  m_ui.find->selectAll();
+  m_ui.find->setFocus();
+#endif
 }
 
 void spoton::slotKeysIndexChanged(const QString &text)

@@ -780,9 +780,11 @@ spoton::spoton(void):QMainWindow()
     (m_optionsUi.position->model()->index(1, 0), 0, Qt::UserRole - 1);
   m_optionsUi.position->model()->setData
     (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
-  m_ui.find_frame->setVisible(false);
 #else
   m_ui.find->setPlaceholderText(tr("Find Text"));
+  new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F),
+		this,
+		SLOT(slotFindInSearchInitialize(void)));
 #endif
 
   /*
@@ -1733,6 +1735,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotFavoritesActivated(int)));
+#if SPOTON_GOLDBUG == 0
   connect(m_ui.find,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -1741,6 +1744,7 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(textChanged(const QString &)),
 	  this,
 	  SLOT(slotFindInSearch(void)));
+#endif
   connect(m_ui.folder,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
