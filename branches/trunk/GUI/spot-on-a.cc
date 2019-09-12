@@ -39,6 +39,7 @@ extern "C"
 #endif
 #include <QProgressDialog>
 #include <QScopedPointer>
+#include <QShortcut>
 #include <QStandardItemModel>
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #include <QWebEngineProfile>
