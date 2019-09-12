@@ -6364,6 +6364,10 @@ void spoton::slotSetIcons(int index)
 
   // Generic
 
+  m_ui.action_Echo_Key_Share->setIcon
+    (QIcon(QString(":/%1/share.png").arg(iconSet)));
+  m_ui.action_File_Encryption->setIcon
+    (QIcon(QString(":/%1/lock.png").arg(iconSet)));
   m_ui.action_Log_Viewer->setIcon
     (QIcon(QString(":/%1/information.png").arg(iconSet)));
 #if SPOTON_GOLDBUG == 1
