@@ -921,9 +921,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(setting("gui/publishPeriodically", false).toBool())
     m_publishAllListenersPlaintextTimer.start();
 
-  if(setting("gui/etpReceivers", false).toBool())
-    m_starbeamWriter->start();
-
   if(setting("gui/impersonate", false).toBool())
     m_impersonateTimer.start();
 
@@ -932,6 +929,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   else
     m_urlDistribution->quit();
 
+  m_starbeamWriter->start();
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
   m_initialized = true;
@@ -5914,16 +5912,8 @@ void spoton_kernel::slotUpdateSettings(void)
 	m_urlDistribution->quit();
     }
 
-  if(m_starbeamWriter)
-    {
-      if(setting("gui/etpReceivers", false).toBool())
-	{
-	  if(!m_starbeamWriter->isActive())
-	    m_starbeamWriter->start();
-	}
-      else
-	m_starbeamWriter->stop();
-    }
+  if(m_starbeamWriter && !m_starbeamWriter->isActive())
+    m_starbeamWriter->start();
 
   if(setting("gui/impersonate", false).toBool())
     {

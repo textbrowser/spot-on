@@ -3780,11 +3780,11 @@ void spoton::slotPopulateStars(void)
 
 void spoton::slotReceiversClicked(bool state)
 {
-  m_settings["gui/etpReceivers"] = state;
+  /*
+  ** Obsolete!
+  */
 
-  QSettings settings;
-
-  settings.setValue("gui/etpReceivers", state);
+  Q_UNUSED(state);
 }
 
 void spoton::slotRegenerateKey(void)

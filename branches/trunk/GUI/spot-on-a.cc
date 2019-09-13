@@ -2269,6 +2269,7 @@ spoton::spoton(void):QMainWindow()
   settings.remove("gui/disable_kernel_synchronous_sqlite_url_download");
   settings.remove("gui/enableCongestionControl");
   settings.remove("gui/encryptionKey");
+  settings.remove("gui/etpReceivers");
   settings.remove("gui/geoipPath");
   settings.remove("gui/keySize");
   settings.remove("gui/my_poptasticStatus");
@@ -2721,8 +2722,6 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/coAcceptSignedMessagesOnly", true).toBool());
   m_optionsUi.urlAcceptSigned->setChecked
     (m_settings.value("gui/urlAcceptSignedMessagesOnly", true).toBool());
-  m_ui.receivers->setChecked
-    (m_settings.value("gui/etpReceivers", false).toBool());
   m_optionsUi.autoEmailRetrieve->setChecked
     (m_settings.value("gui/automaticallyRetrieveEmail", false).toBool());
   m_optionsUi.acceptBuzzMagnets->setChecked

@@ -8303,12 +8303,6 @@ QPushButton:pressed {
                    <property name="title">
                     <string>&amp;Received</string>
                    </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
                    <layout class="QVBoxLayout" name="verticalLayout_41">
                     <property name="spacing">
                      <number>5</number>
@@ -9039,7 +9033,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>593</width>
+             <width>473</width>
              <height>536</height>
             </rect>
            </property>

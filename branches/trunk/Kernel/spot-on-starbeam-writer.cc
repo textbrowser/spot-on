@@ -108,8 +108,7 @@ bool spoton_starbeam_writer::append
 
   locker.unlock();
 
-  if(!magnet.isEmpty() &&
-     spoton_kernel::setting("gui/etpReceivers", false).toBool())
+  if(!magnet.isEmpty())
     {
       /*
       ** If the thread is not active, it should be!

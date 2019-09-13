@@ -6945,12 +6945,6 @@
                    <property name="title">
                     <string>Received</string>
                    </property>
-                   <property name="checkable">
-                    <bool>true</bool>
-                   </property>
-                   <property name="checked">
-                    <bool>false</bool>
-                   </property>
                    <layout class="QVBoxLayout" name="verticalLayout_41">
                     <property name="spacing">
                      <number>5</number>
@@ -8691,14 +8685,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textbrowser</class>
-   <extends>QTextBrowser</extends>
-   <header>spot-on-textbrowser.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
    <header>GUI/spot-on-textedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>
