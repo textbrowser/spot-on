@@ -516,6 +516,7 @@ Optional Nova AES-256 (Base-64)
 	8  - UTC Date
 	9  - ID
 	10 - Ultra?
+	11 - SHA3-512 File Digest
 }
 Optional Nova SHA-512
 {

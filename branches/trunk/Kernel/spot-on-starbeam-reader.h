@@ -73,6 +73,7 @@ class spoton_starbeam_reader: public QObject
 	       const QByteArray &magnet,
 	       const QByteArray &nova,
 	       const QByteArray &hash,
+	       const QByteArray &sha3_512_hash,
 	       const qint64 rc,
 	       spoton_crypt *crypt);
   void savePositionAndStatus(const QString &status);

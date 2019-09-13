@@ -191,10 +191,11 @@ class spoton_misc
   static bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 			 const QString &oid,
 			 spoton_crypt *crypt);
-  static bool saveReceivedStarBeamHash(const QSqlDatabase &db,
-				       const QByteArray &hash,
-				       const QString &oid,
-				       spoton_crypt *crypt);
+  static bool saveReceivedStarBeamHashes(const QSqlDatabase &db,
+					 const QByteArray &hash1,
+					 const QByteArray &hash2,
+					 const QString &oid,
+					 spoton_crypt *crypt);
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
   static int minimumNeighborLaneWidth(void);

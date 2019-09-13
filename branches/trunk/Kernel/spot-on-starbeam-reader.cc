@@ -238,6 +238,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 				     const QByteArray &magnet,
 				     const QByteArray &nova,
 				     const QByteArray &hash,
+				     const QByteArray &sha3_512_hash,
 				     const qint64 rc,
 				     spoton_crypt *s_crypt)
 {
@@ -285,7 +286,8 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
             toLatin1()
 	 << QByteArray::number(m_id)
-	 << QByteArray::number(m_ultra);
+	 << QByteArray::number(m_ultra)
+	 << sha3_512_hash;
 
   if(stream.status() != QDataStream::Ok)
     ok = false;
@@ -477,8 +479,9 @@ void spoton_starbeam_reader::slotTimeout(void)
 	       "position, "       // 4
 	       "pulse_size, "     // 5
 	       "read_interval, "  // 6
-	       "status_control, " // 7
-	       "total_size "      // 8
+	       "sha3_512_hash, "  // 7
+	       "status_control, " // 8
+	       "total_size "      // 9
 	       "FROM transmitted WHERE OID = ?");
 	    query.bindValue(0, m_id);
 
@@ -488,7 +491,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		  m_fragmented = query.value(1).toBool();
 		  m_readInterval = qBound
 		    (0.100, query.value(6).toDouble(), 60.000);
-		  status = query.value(7).toString().toLower();
+		  status = query.value(8).toString().toLower();
 
 		  if(status == "completed")
 		    {
@@ -502,6 +505,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      QByteArray bytes;
 		      QByteArray hash;
 		      QByteArray nova;
+		      QByteArray sha3_512_hash;
 		      QString fileName("");
 		      QString fileSize("");
 		      QString pulseSize("");
@@ -525,6 +529,12 @@ void spoton_starbeam_reader::slotTimeout(void)
 			   &ok);
 
 		      if(ok)
+			fileSize = s_crypt->
+			  decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(query.value(9).toByteArray()),
+			   &ok);
+
+		      if(ok)
 			nova = s_crypt->
 			  decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(query.value(3).toByteArray()),
@@ -538,9 +548,9 @@ void spoton_starbeam_reader::slotTimeout(void)
 			   &ok);
 
 		      if(ok)
-			fileSize = s_crypt->
+			sha3_512_hash = s_crypt->
 			  decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(8).toByteArray()),
+			  (QByteArray::fromBase64(query.value(7).toByteArray()),
 			   &ok);
 
 		      if(ok)
@@ -559,9 +569,16 @@ void spoton_starbeam_reader::slotTimeout(void)
 
 			      if(!pair.first.isEmpty())
 				pulsate
-				  (pair.first, fileName, pulseSize, fileSize,
+				  (pair.first,
+				   fileName,
+				   pulseSize,
+				   fileSize,
 				   m_magnets.value(qrand() % m_magnets.count()),
-				   nova, hash, pair.second, s_crypt);
+				   nova,
+				   hash,
+				   sha3_512_hash,
+				   pair.second,
+				   s_crypt);
 
 			      m_rc = pair.second;
 			      m_readFuture =

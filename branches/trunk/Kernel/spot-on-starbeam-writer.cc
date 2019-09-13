@@ -144,6 +144,15 @@ void spoton_starbeam_writer::processData
       return;
     }
 
+  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(!s_crypt)
+    {
+      spoton_misc::logError
+	("spoton_starbeam_writer::processData(): s_crypt is zero.");
+      return;
+    }
+
   QByteArray data(dataIn.trimmed());
   QList<QByteArray> list(data.split('\n'));
 
@@ -162,7 +171,7 @@ void spoton_starbeam_writer::processData
 		     0,
 		     0,
 		     "");
-  static const int expectedEntries0060 = 11;
+  static const int expectedEntries0060 = 12;
   static const int expectedEntries0061 = 4;
 
   data = crypt.decrypted(list.value(0), &ok);
@@ -332,41 +341,38 @@ void spoton_starbeam_writer::processData
      QString::fromUtf8(list.value(1).constData(),
 		       list.value(1).length()).replace(" ", "-"));
   int locked = 0;
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
 
-  if(s_crypt)
-    {
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	QSqlQuery query(db);
+	bool ok = true;
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
+	query.setForwardOnly(true);
+	query.prepare("SELECT locked FROM received WHERE file_hash = ?");
+	query.bindValue
+	  (0, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-	    bool ok = true;
-
-	    query.setForwardOnly(true);
-	    query.prepare("SELECT locked FROM received WHERE file_hash = ?");
-	    query.bindValue
-	      (0, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
-
-	    if(ok)
-	      if(query.exec() && query.next())
-		locked = query.value(0).toInt();
-	  }
-
-	db.close();
+	if(ok)
+	  if(query.exec() && query.next())
+	    locked = query.value(0).toInt();
       }
 
-      QSqlDatabase::removeDatabase(connectionName);
+    db.close();
+  }
 
-      if(locked)
-	return;
-    }
+  QSqlDatabase::removeDatabase(connectionName);
 
-  QByteArray hash = list.value(7);
+  if(locked)
+    return;
+
+  QByteArray hash(list.value(7));
+  QByteArray sha3_512_hash(list.value(11));
   qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 id = list.value(9).toLongLong();
   qint64 maximumSize = 1048576 * spoton_kernel::setting
@@ -471,13 +477,6 @@ void spoton_starbeam_writer::processData
   if(!ok)
     return;
 
-  if(!s_crypt)
-    {
-      spoton_misc::logError("spoton_starbeam_writer::processData(): "
-			    "s_crypt is zero.");
-      return;
-    }
-
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
@@ -490,10 +489,22 @@ void spoton_starbeam_writer::processData
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO received "
-	   "(expected_file_hash, file, file_hash, hash, pulse_size, "
-	   "total_size) "
-	   "VALUES (?, ?, ?, "
-	   "(SELECT hash FROM received WHERE file_hash = ?), ?, ?)");
+	   "(expected_file_hash, "    // 0
+	   "expected_sha3_512_hash, " // 1
+	   "file, "                   // 2
+	   "file_hash, "              // 3
+	   "hash, "                   // 4
+	   "pulse_size, "             // 5
+	   "sha3_512_hash, "          // 6
+	   "total_size) "             // 7
+	   "VALUES (?, "
+	   "?, "
+	   "?, "
+	   "?, "
+	   "(SELECT hash FROM received WHERE file_hash = ?), "
+	   "?, "
+	   "(SELECT sha3_512_hash FROM received WHERE file_hash = ?), "
+	   "?)");
 
 	if(hash.isEmpty())
 	  query.bindValue(0, QVariant::String);
@@ -502,13 +513,19 @@ void spoton_starbeam_writer::processData
 	    (0, s_crypt->encryptedThenHashed(hash, &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (1,
-	     s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
+	  {
+	    if(sha3_512_hash.isEmpty())
+	      query.bindValue(1, QVariant::String);
+	    else
+	      query.bindValue
+		(1,
+		 s_crypt->encryptedThenHashed(sha3_512_hash, &ok).toBase64());
+	  }
 
 	if(ok)
 	  query.bindValue
-	    (2, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+	    (2,
+	     s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -516,13 +533,21 @@ void spoton_starbeam_writer::processData
 
 	if(ok)
 	  query.bindValue
-	    (4, s_crypt->
+	    (4, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (5, s_crypt->
 	     encryptedThenHashed(QByteArray::number(pulseSize), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (5, s_crypt->
+	    (6, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (7, s_crypt->
 	     encryptedThenHashed(QByteArray::number(totalSize), &ok).
 	     toBase64());
 
@@ -536,6 +561,9 @@ void spoton_starbeam_writer::processData
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!ok)
+    return;
 
   /*
   ** Produce a response.

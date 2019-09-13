@@ -337,12 +337,16 @@ void spoton::computeFileDigest(const QByteArray &expectedFileHash,
 
 	if(db.open())
 	  {
-	    QByteArray hash
+	    QByteArray hash1
 	      (spoton_crypt::sha1FileHash(fileName,
 					  m_starbeamDigestInterrupt));
+	    QByteArray hash2
+	      (spoton_crypt::sha3_512FileHash(fileName,
+					      m_starbeamDigestInterrupt));
 
 	    if(!m_starbeamDigestInterrupt.fetchAndAddOrdered(0))
-	      spoton_misc::saveReceivedStarBeamHash(db, hash, oid, crypt);
+	      spoton_misc::saveReceivedStarBeamHashes
+		(db, hash1, hash2, oid, crypt);
 	  }
 
 	db.close();

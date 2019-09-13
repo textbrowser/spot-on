@@ -3245,8 +3245,16 @@ void spoton::slotPopulateStars(void)
 	      m_ui.received->setRowCount(query.value(0).toInt());
 	    }
 
-	query.prepare("SELECT locked, pulse_size, total_size, file, hash, "
-		      "expected_file_hash, OID FROM received");
+	query.prepare("SELECT locked, "          // 0
+		      "pulse_size, "             // 1
+		      "total_size, "             // 2
+		      "file, "                   // 3
+		      "hash, "                   // 4
+		      "expected_file_hash, "     // 5
+		      "sha3_512_hash, "          // 6
+		      "expected_sha3_512_hash, " // 7
+		      "OID "                     // 8
+		      "FROM received");
 
 	if(query.exec())
 	  while(query.next() && totalRows < m_ui.received->rowCount())
@@ -3254,7 +3262,9 @@ void spoton::slotPopulateStars(void)
 	      totalRows += 1;
 
 	      QByteArray expectedFileHash;
+	      QByteArray expected_sha3_512_hash;
 	      QByteArray hash;
+	      QByteArray sha3_512_hash;
 	      QCheckBox *check = 0;
 	      QString fileName("");
 	      bool ok = true;
@@ -3275,7 +3285,7 @@ void spoton::slotPopulateStars(void)
 		      else
 			item->setCheckState(Qt::Unchecked);
 		    }
-		  else if(i >= 1 && i <= 5)
+		  else if(i >= 1 && i <= 7)
 		    {
 		      QByteArray bytes;
 
@@ -3301,19 +3311,43 @@ void spoton::slotPopulateStars(void)
 		      item->setFlags(Qt::ItemIsEnabled |
 				     Qt::ItemIsSelectable);
 
-		      if(i == 3)
+		      switch(i)
 			{
-			  fileName = item->text();
+			case 3:
+			  {
+			    fileName = item->text();
 
-			  QStandardItem *sItem = new QStandardItem(fileName);
+			    QStandardItem *sItem = new QStandardItem(fileName);
 
-			  sItem->setEditable(false);
-			  m_starbeamReceivedModel->setItem(row, 1, sItem);
+			    sItem->setEditable(false);
+			    m_starbeamReceivedModel->setItem(row, 1, sItem);
+			    break;
+			  }
+			case 4:
+			  {
+			    hash = bytes;
+			    break;
+			  }
+			case 5:
+			  {
+			    expectedFileHash = bytes;
+			    break;
+			  }
+			case 6:
+			  {
+			    expected_sha3_512_hash = bytes;
+			    break;
+			  }
+			case 7:
+			  {
+			    sha3_512_hash = bytes;
+			    break;
+			  }
+			default:
+			  {
+			    break;
+			  }
 			}
-		      else if(i == 4)
-			hash = bytes;
-		      else if(i == 5)
-			expectedFileHash = bytes;
 		    }
 		  else if(i == query.record().count() - 1)
 		    {

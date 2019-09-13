@@ -3277,22 +3277,23 @@ bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
   return ok;
 }
 
-bool spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
-					   const QByteArray &hash,
-					   const QString &oid,
-					   spoton_crypt *crypt)
+bool spoton_misc::saveReceivedStarBeamHashes(const QSqlDatabase &db,
+					     const QByteArray &hash1,
+					     const QByteArray &hash2,
+					     const QString &oid,
+					     spoton_crypt *crypt)
 {
   if(!crypt)
     {
       logError
-	("spoton_misc::saveReceivedStarBeamHash(): crypt "
+	("spoton_misc::saveReceivedStarBeamHashes(): crypt "
 	 "is zero.");
       return false;
     }
   else if(!db.isOpen())
     {
       logError
-	("spoton_misc::saveReceivedStarBeamHash(): db is closed.");
+	("spoton_misc::saveReceivedStarBeamHashes(): db is closed.");
       return false;
     }
 
@@ -3300,16 +3301,21 @@ bool spoton_misc::saveReceivedStarBeamHash(const QSqlDatabase &db,
   bool ok = true;
 
   query.prepare
-    ("UPDATE received SET hash = ? WHERE OID = ?");
+    ("UPDATE received SET hash = ?, sha3_512_hash = ? WHERE OID = ?");
 
-  if(hash.isEmpty())
+  if(hash1.isEmpty())
     query.bindValue(0, QVariant::String);
   else
     query.bindValue
-      (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
-       toBase64());
+      (0, crypt->encryptedThenHashed(hash1.toHex(), &ok).toBase64());
 
-  query.bindValue(1, oid);
+  if(hash2.isEmpty())
+    query.bindValue(1, QVariant::String);
+  else
+    query.bindValue
+      (1, crypt->encryptedThenHashed(hash2.toHex(), &ok).toBase64());
+
+  query.bindValue(2, oid);
 
   if(ok)
     ok = query.exec();
@@ -5087,6 +5093,7 @@ void spoton_misc::prepareDatabases(void)
 		   "one_time_magnet INTEGER NOT NULL DEFAULT 0)");
 	query.exec("CREATE TABLE IF NOT EXISTS received ("
 		   "expected_file_hash TEXT, "
+		   "expected_sha3_512_hash TEXT, "
 		   "file TEXT NOT NULL, "
 		   "file_hash TEXT PRIMARY KEY NOT NULL, " /*
 							   ** Keyed hash of
@@ -5100,7 +5107,6 @@ void spoton_misc::prepareDatabases(void)
 		   "pulse_size TEXT NOT NULL, "
 		   "sha3_512_hash TEXT, "
 		   "total_size TEXT NOT NULL)");
-	query.exec("ALTER TABLE received ADD sha3_512_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS received_novas ("
 		   "nova TEXT NOT NULL, " /*
 					  ** Please
@@ -5136,7 +5142,6 @@ void spoton_misc::prepareDatabases(void)
 		   "'transmitting')), "
 		   "total_size TEXT NOT NULL, "
 		   "ultra INTEGER NOT NULL DEFAULT 1)"); // Ignored.
-	query.exec("ALTER TABLE transmitted ADD sha3_512_hash TEXT");
 	query.exec("CREATE TABLE IF NOT EXISTS transmitted_magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT NOT NULL, " // Keyed hash.
