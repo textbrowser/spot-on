@@ -1202,6 +1202,14 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       action = menu->addAction(tr("&Compute SHA-1 Hash"), this,
 			       SLOT(slotComputeFileHash(void)));
+      action->setProperty("hash", "sha-1");
+      action->setProperty("widget_of", "received");
+      action = menu->addAction(tr("&Compute SHA3-512  Hash"), this,
+			       SLOT(slotComputeFileHash(void)));
+#if QT_VERSION < 0x050100
+      action->setEnabled(false);
+#endif
+      action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "received");
       menu->addSeparator();
       action = menu->addAction(tr("&Copy SHA-1 Hash"), this,
@@ -1231,6 +1239,14 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       action = menu->addAction(tr("&Compute SHA-1 Hash"), this,
 			       SLOT(slotComputeFileHash(void)));
+      action->setProperty("hash", "sha-1");
+      action->setProperty("widget_of", "transmitted");
+      action = menu->addAction(tr("&Compute SHA3-512 Hash"), this,
+			       SLOT(slotComputeFileHash(void)));
+#if QT_VERSION < 0x050100
+      action->setEnabled(false);
+#endif
+      action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "transmitted");
       menu->addSeparator();
       action = menu->addAction(tr("&Copy SHA-1 Hash"), this,
@@ -1792,7 +1808,20 @@ void spoton::slotComputeFileHash(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray hash(spoton_crypt::sha1FileHash(fileName));
+  QByteArray hash;
+  QString field("");
+  QString type(action->property("hash").toString());
+
+  if(hash == "sha-1")
+    {
+      hash = spoton_crypt::sha1FileHash(fileName);
+      field = "hash";
+    }
+  else
+    {
+      hash = spoton_crypt::sha3_512FileHash(fileName);
+      field = "sha3_512_hash";
+    }
 
   QApplication::restoreOverrideCursor();
 
@@ -1803,8 +1832,8 @@ void spoton::slotComputeFileHash(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -1813,10 +1842,11 @@ void spoton::slotComputeFileHash(void)
 
 	if(m_ui.received == table)
 	  query.prepare
-	    ("UPDATE received SET hash = ? WHERE OID = ?");
+	    (QString("UPDATE received SET %1 = ? WHERE OID = ?").arg(field));
 	else
 	  query.prepare
-	    ("UPDATE transmitted SET hash = ? WHERE OID = ?");
+	    (QString("UPDATE transmitted SET %1 = ? WHERE OID = ?").
+	     arg(field));
 
 	if(hash.isEmpty())
 	  query.bindValue(0, QVariant::String);

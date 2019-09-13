@@ -10050,6 +10050,14 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
 			      SLOT(slotComputeFileHash(void)));
+      action->setProperty("hash", "sha-1");
+      action->setProperty("widget_of", "received");
+      action = menu.addAction(tr("&Compute SHA3-512 Hash"), this,
+			      SLOT(slotComputeFileHash(void)));
+#if QT_VERSION < 0x050100
+      action->setEnabled(false);
+#endif
+      action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "received");
       menu.addSeparator();
       action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
@@ -10073,6 +10081,13 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
 			      SLOT(slotComputeFileHash(void)));
+      action->setProperty("widget_of", "transmitted");
+      action = menu.addAction(tr("&Compute SHA3-512 Hash"), this,
+			      SLOT(slotComputeFileHash(void)));
+#if QT_VERSION < 0x050100
+      action->setEnabled(false);
+#endif
+      action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
       action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
