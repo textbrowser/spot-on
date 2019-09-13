@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>650</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -84,8 +84,8 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-118</y>
-         <width>774</width>
+         <y>0</y>
+         <width>624</width>
          <height>575</height>
         </rect>
        </property>
@@ -450,7 +450,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>650</width>
      <height>31</height>
     </rect>
    </property>

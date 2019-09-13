@@ -1812,7 +1812,7 @@ void spoton::slotComputeFileHash(void)
   QString field("");
   QString type(action->property("hash").toString());
 
-  if(hash == "sha-1")
+  if(type == "sha-1")
     {
       hash = spoton_crypt::sha1FileHash(fileName);
       field = "hash";

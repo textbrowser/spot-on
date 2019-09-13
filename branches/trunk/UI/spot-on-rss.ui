@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>816</width>
-    <height>600</height>
+    <width>650</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -243,6 +243,30 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="periodic_import">
+            <property name="text">
+             <string>&amp;Periodic Import</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>&amp;Download Interval</string>
@@ -292,14 +316,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="periodic_import">
-            <property name="text">
-             <string>&amp;Periodic Import</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
+           <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -311,6 +328,10 @@
             </property>
            </spacer>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
            <widget class="QToolButton" name="action_menu">
             <property name="toolTip">
@@ -330,6 +351,19 @@
              <bool>true</bool>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -435,10 +469,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-158</x>
              <y>0</y>
-             <width>776</width>
-             <height>476</height>
+             <width>768</width>
+             <height>510</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -632,7 +666,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>816</width>
+     <width>650</width>
      <height>31</height>
     </rect>
    </property>
@@ -804,9 +838,9 @@
   <tabstop>proxyPassword</tabstop>
   <tabstop>save_proxy_settings</tabstop>
   <tabstop>activate</tabstop>
+  <tabstop>periodic_import</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>maximum_keywords</tabstop>
-  <tabstop>periodic_import</tabstop>
   <tabstop>action_menu</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
