@@ -305,7 +305,7 @@
           <item>
            <widget class="QSpinBox" name="maximum_keywords">
             <property name="toolTip">
-             <string>A large value may impede the process.</string>
+             <string>A large value may impede the import process.</string>
             </property>
             <property name="minimum">
              <number>50</number>
@@ -469,10 +469,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-158</x>
+             <x>0</x>
              <y>0</y>
-             <width>768</width>
-             <height>510</height>
+             <width>779</width>
+             <height>151</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">

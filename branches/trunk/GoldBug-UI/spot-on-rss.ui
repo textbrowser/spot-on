@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>815</width>
+    <width>829</width>
     <height>600</height>
    </rect>
   </property>
@@ -232,7 +232,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&amp;Activate</string>
+             <string>&amp;Active</string>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -281,7 +281,7 @@
           <item>
            <widget class="QSpinBox" name="maximum_keywords">
             <property name="toolTip">
-             <string>A large value may impede the process.</string>
+             <string>A large value may impede the import process.</string>
             </property>
             <property name="minimum">
              <number>50</number>
@@ -437,7 +437,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>885</width>
+             <width>789</width>
              <height>476</height>
             </rect>
            </property>
@@ -628,7 +628,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>815</width>
+     <width>829</width>
      <height>31</height>
     </rect>
    </property>
