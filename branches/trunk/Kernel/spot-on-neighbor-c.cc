@@ -497,8 +497,19 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	sent = m_sctpSocket->write(data, remaining);
       else if(m_tcpSocket)
 	{
-	  sent = m_tcpSocket->write
-	    (data, qMin(spoton_common::MAXIMUM_TCP_PACKET_SIZE, remaining));
+	  QReadLocker locker(&m_maximumBufferSizeMutex);
+	  qint64 maximumBufferSize = m_maximumBufferSize;
+
+	  locker.unlock();
+
+	  qint64 minimum = qMin
+	    (spoton_common::MAXIMUM_TCP_PACKET_SIZE,
+	     maximumBufferSize - m_tcpSocket->bytesToWrite());
+
+	  if(minimum > 0)
+	    sent = m_tcpSocket->write(data, qMin(minimum, remaining));
+	  else
+	    sent = 0;
 
 	  if(sent > 0)
 	    {

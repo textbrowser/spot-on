@@ -509,14 +509,14 @@
               <item>
                <widget class="QComboBox" name="timeline_filter">
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>0</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
-                  <string>All</string>
+                  <string>All (Not Hidden)</string>
                  </property>
                 </item>
                 <item>

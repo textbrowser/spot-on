@@ -471,8 +471,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>779</width>
-             <height>151</height>
+             <width>784</width>
+             <height>510</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -547,14 +547,14 @@
               <item>
                <widget class="QComboBox" name="timeline_filter">
                 <property name="currentIndex">
-                 <number>3</number>
+                 <number>0</number>
                 </property>
                 <property name="sizeAdjustPolicy">
                  <enum>QComboBox::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
-                  <string>All</string>
+                  <string>All (Not Hidden)</string>
                  </property>
                 </item>
                 <item>
