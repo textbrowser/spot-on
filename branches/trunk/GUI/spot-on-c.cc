@@ -4218,6 +4218,8 @@ void spoton::slotRewindFile(void)
   if(oid.isEmpty())
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
 
   {
@@ -4231,23 +4233,39 @@ void spoton::slotRewindFile(void)
 	QSqlQuery query(db);
 	bool ok = true;
 
-	query.prepare
-	  ("UPDATE transmitted SET position = ?, "
-	   "status_control = 'paused' "
-	   "WHERE OID = ? AND status_control <> 'deleted'");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray::number(0), &ok).
-	   toBase64());
-	query.bindValue(1, oid);
+	for(int i = 1; i <= 10; i++)
+	  {
+	    query.prepare
+	      ("UPDATE transmitted SET position = ?, "
+	       "status_control = 'paused' "
+	       "WHERE OID = ? AND status_control <> 'deleted'");
+	    query.addBindValue
+	      (crypt->
+	       encryptedThenHashed(QByteArray::number(0), &ok).toBase64());
+	    query.addBindValue(oid);
 
-	if(ok)
-	  query.exec();
+	    if(ok)
+	      query.exec();
+
+	    query.prepare
+	      ("SELECT status_control FROM transmitted WHERE OID = ?");
+	    query.addBindValue(oid);
+
+	    if(query.exec() && query.next())
+	      {
+		QString status(query.value(0).toString().toLower().trimmed());
+
+		if(status == "deleted" || status == "paused")
+		  break;
+	      }
+	  }
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotSaveDestination(void)
