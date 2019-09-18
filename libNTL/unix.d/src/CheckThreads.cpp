@@ -2,6 +2,7 @@
 #include <NTL/new.h>
 #include <atomic>
 #include <thread>
+#include <utility>
 #include <cstdlib>
 
 #include <iostream>
@@ -32,15 +33,40 @@ void ResourceError(const char *msg) { TerminalError(msg); }
 
 #if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
 
-
 namespace details_pthread {
 
 
-template<class T> void do_delete_aux(T* t) noexcept { delete t;  }
+struct Node {
+   Node *next;
+
+   Node() : next(0) { }
+   virtual ~Node() { }
+};
+
+template<class T>
+struct DerivedNode : Node {
+   T t;
+
+   template<class... Args>
+   DerivedNode(Args&&... args) : t(std::forward<Args>(args)...) { }
+};
+
+inline void 
+delete_node(Node *p) noexcept { delete p;  }
 // an exception here would likely lead to a complete mess...
 // the noexcept specification should force an immediate termination
 
-template<class T> void do_delete(void* t) { do_delete_aux((T*)t);  }
+inline void 
+delete_list(void *vp)
+{
+   Node *p = (Node *) vp;
+   while (p) {
+      Node *tmp = p;
+      p = p->next;
+      delete_node(tmp);
+   }
+}
+
 
 using namespace std;
 // I'm not sure if pthread stuff might be placed in namespace std
@@ -53,33 +79,43 @@ struct key_wrapper {
       if (pthread_key_create(&key, destructor))
          ResourceError("pthread_key_create failed");
    }
-
-   template<class T>
-   T* set(T *p)
-   {
-      if (!p) MemoryError();
-      if (pthread_setspecific(key, p)) {
-         do_delete_aux(p);
-         ResourceError("pthread_setspecific failed");
-      }
-      return p;
-   }
-
 };
+
+
+inline void
+push_node(Node *p)
+// this pushes a new node to the front to the list
+// of objects that need to be deleted
+{
+   if (!p) MemoryError();
+
+   static key_wrapper wkey(delete_list);
+   // This relies on C++11 thread-safe static initialization.
+   // It also relies on the guarantee that there is just one
+   // global key (this requirement is only needed to 
+   // limit the number of keys, not for correctness).
+
+   p->next = (Node *) pthread_getspecific(wkey.key);
+
+   if (pthread_setspecific(wkey.key, p)) {
+      delete_node(p);
+      ResourceError("pthread_setspecific failed");
+   }
+}
 
 }
 
 
 #define NTL_TLS_LOCAL_INIT(type, var, init)  \
-   static NTL_CHEAP_THREAD_LOCAL type *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
-   type *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
+   static NTL_CHEAP_THREAD_LOCAL details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
+   details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
    if (!_ntl_hidden_variable_tls_local_ptr1_ ## var) {  \
-      static details_pthread::key_wrapper hidden_variable_key(details_pthread::do_delete<type>);  \
-      type *_ntl_hidden_variable_tls_local_ptr2_ ## var = hidden_variable_key.set(NTL_NEW_OP type init);  \
+      details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr2_ ## var = NTL_NEW_OP details_pthread::DerivedNode<type> init;  \
+      details_pthread::push_node(_ntl_hidden_variable_tls_local_ptr2_ ## var); \
       _ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr2_ ## var;  \
       _ntl_hidden_variable_tls_local_ptr_ ## var = _ntl_hidden_variable_tls_local_ptr1_ ## var;  \
    }  \
-   type &var = *_ntl_hidden_variable_tls_local_ptr1_ ## var  \
+   type &var = _ntl_hidden_variable_tls_local_ptr1_ ## var->t  \
 
 
 
@@ -115,14 +151,17 @@ struct key_wrapper {
 _ntl_hidden_typedef_tls_access_ ## var & var = _ntl_hidden_function_tls_access_ ## var()
 
 
-std::atomic_long count(0);
+//=======================
+
+std::atomic_long count_con(0);
+std::atomic_long count_des(0);
 std::atomic_long count1(0);
 
 struct X {
    long d;
 
-   X() { d = count1++; count++; }
-   ~X() { count--; }
+   X() { d = count1++; count_con++; }
+   ~X() { count_des++; }
 };
 
 NTL_TLS_GLOBAL_DECL(X,x)
@@ -148,7 +187,8 @@ int main()
    t2.join();
    t3.join();
 
-   //std::cout << count << "\n";
+   //std::cout << count_con << "\n";
+   //std::cout << count_des << "\n";
    //std::cout << v1 << " " << v2 << " " << v3 << "\n";
 
    long s1, s2, s3;
@@ -156,7 +196,7 @@ int main()
    s3 = MAX(MAX(v1,v2),v3);
    s2 = v1+v2+v3-s1-s3;
 
-   if (count != 0 || s1 != 0 || s2 != 1 || s3 != 2) {
+   if (count_con != 3 || count_des != 3 || s1 != 0 || s2 != 1 || s3 != 2) {
       return -1;
    }
    return 0;

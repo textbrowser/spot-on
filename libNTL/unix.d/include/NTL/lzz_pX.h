@@ -601,7 +601,7 @@ inline void TofftRep_trunc(fftRep& y, const zz_pX& x, long k, long len)
 inline
 void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
 // computes an n = 2^k point convolution of x[lo..hi].
-{ TofftRep_trunc(y, x, k, 0, lo, hi); }
+{ TofftRep_trunc(y, x, k, 1L << k, lo, hi); }
 
 inline void TofftRep(fftRep& y, const zz_pX& x, long k)
 

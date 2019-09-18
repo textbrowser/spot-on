@@ -18,6 +18,46 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2019.09.07: Changes between NTL 11.3.3 and 11.3.4
+</h3>
+
+<ul>
+<li>
+Changed NTL's build system so that if <tt>NTL_THREADS=on</tt>
+(which is the default) and <tt>SHARED=on</tt> 
+(which is not the default), NTL's makefile will now pass
+<tt>-lpthread</tt> to <tt>libtool</tt> when it builds the library.
+On most platforms, this should allow users to forgo passing 
+the <tt>-pthread</tt> option to their compiler when linking.
+
+<li>
+Made the build system's check of correct multithreading behavior
+a bit more robust.
+</ul>
+
+<p><hr><p>
+<h3>
+2019.09.02: Changes between NTL 11.3.2 and 11.3.3
+</h3>
+
+<ul>
+<li>
+Changed "TLS hack" implementation to use fewer pthread keys
+(I did not realize these were a "scarce resource").
+
+<li>
+Implemented <tt>xdouble</tt> to <tt>double</tt> conversion to be more
+efficient for exponents of large magnitude.
+
+<li>
+Changed some internal interfaces (for <tt>FFTRoundUp</tt>) to
+be simpler and (in rare circumstances) to yield somewhat
+more efficient code.
+</ul>
+
+
+<p><hr><p>
+<h3>
 2018.11.15: Changes between NTL 11.3.1 and 11.3.2
 </h3>
 
@@ -34,7 +74,7 @@ This means that NTL is now using some <tt>mpz</tt>-level
 functionality, in addition to <tt>mpn</tt>-level functionality.
 <ul>
 <li>
-This leads to a significant speedup (sometimes 2-3x),
+This leads to a significant speedup (sometimes 2-3x), 
 especially for numbers
 with a small number of limbs.
 <li>

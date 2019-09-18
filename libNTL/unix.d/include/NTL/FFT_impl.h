@@ -31,10 +31,13 @@ NTL_OPEN_NNS
 
 inline
 long FFTRoundUp(long xn, long k)
+// Assumes k >= 0.
+// Returns an integer m such that 1 <= m <= n = 2^k and 
+// m divsisible my 2^NTL_FFT_RDUP.
+// Also, if xn <= n, then m >= xn.
 {
    long n = 1L << k;
-   if (xn <= 0) return n;
-   // default truncation value of 0 gets converted to n
+   if (xn <= 0) xn = 1;
 
    xn = ((xn+((1L << NTL_FFT_RDUP)-1)) >> NTL_FFT_RDUP) << NTL_FFT_RDUP; 
 

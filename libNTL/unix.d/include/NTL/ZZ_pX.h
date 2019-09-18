@@ -589,7 +589,7 @@ inline void ToFFTRep_trunc(FFTRep& y, const ZZ_pX& x, long k, long len)
 inline
 void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi)
 // computes an n = 2^k point convolution of x[lo..hi].
-{ ToFFTRep_trunc(y, x, k, 0, lo, hi); }
+{ ToFFTRep_trunc(y, x, k, 1L << k, lo, hi); }
 
 inline void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k)
 

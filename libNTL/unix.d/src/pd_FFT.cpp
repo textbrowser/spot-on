@@ -1126,4 +1126,8 @@ pd_ifft_trunc_impl(long* A, const long* a, double* xp, long lgN, const pd_mod_t&
 
 NTL_END_IMPL
 
+#else
+
+void _ntl_pd_FFT_dummy() { }
+
 #endif

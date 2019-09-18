@@ -313,8 +313,6 @@ ZZX& operator%=(ZZX& x, const ZZX& b);
 
 void DivRem(ZZX& q, ZZX& r, const ZZX& a, const ZZX& b);
 // computes q, r such that a = b q + r and deg(r) < deg(b).
-// requires LeadCoeff(b) is a unit (+1, -1); otherwise,
-// an error is raised.
 
 void div(ZZX& q, const ZZX& a, const ZZX& b);
 void div(ZZX& q, const ZZX& a, const ZZ& b);

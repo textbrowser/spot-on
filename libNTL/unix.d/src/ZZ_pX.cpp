@@ -1862,7 +1862,7 @@ NTL_TBDECL(FromFFTRep)(ZZ_pX& x, FFTRep& y, long lo, long hi)
    l = max(l, 0);
 
    long len = y.len;
-   if (len <= hi) LogicError("FromFFTRep: bad len");
+   if (len <= hi) LogicError("FromFFTRep: bad len 1"); 
 
 
    for (i = 0; i < nprimes; i++) {
@@ -1912,7 +1912,7 @@ void FromFFTRep(ZZ_pX& x, FFTRep& y, long lo, long hi)
    l = max(l, 0);
 
    long len = y.len;
-   if (len <= hi) LogicError("FromFFTRep: bad len");
+   if (len <= hi) LogicError("FromFFTRep: bad len 2");
 
    pool->exec_range(nprimes,
    [&y, k, len](long first, long last) {
@@ -2095,7 +2095,7 @@ NTL_TBDECL(NDFromFFTRep)(ZZ_pX& x, const FFTRep& y, long lo, long hi, FFTRep& z)
    l = max(l, 0);
 
    long len = y.len;
-   if (len <= hi) LogicError("FromFFTRep: bad len");
+   if (len <= hi) LogicError("FromFFTRep: bad len 3");
 
    z.SetSize(k);
 
@@ -2147,7 +2147,7 @@ void NDFromFFTRep(ZZ_pX& x, const FFTRep& y, long lo, long hi, FFTRep& z)
    l = max(l, 0);
 
    long len = y.len;
-   if (len <= hi) LogicError("FromFFTRep: bad len");
+   if (len <= hi) LogicError("FromFFTRep: bad len 4");
 
    z.SetSize(k);
 
@@ -2219,7 +2219,7 @@ NTL_TBDECL(FromFFTRep)(ZZ_p* x, FFTRep& y, long lo, long hi)
    n = (1L << k);
 
    //if (y.len <= min(hi, n-1)) LogicError("FromFFTRep: bad len");
-   if (y.len != n) LogicError("FromFFTRep: bad len");
+   if (y.len != n) LogicError("FromFFTRep: bad len 5");
 
    long nprimes = FFTInfo->NumPrimes;
    t.SetLength(nprimes);
@@ -2267,7 +2267,7 @@ void FromFFTRep(ZZ_p* x, FFTRep& y, long lo, long hi)
    n = (1L << k);
 
    //if (y.len <= min(hi, n-1)) LogicError("FromFFTRep: bad len");
-   if (y.len != n) LogicError("FromFFTRep: bad len");
+   if (y.len != n) LogicError("FromFFTRep: bad len 6");
 
    long nprimes = FFTInfo->NumPrimes;
 
@@ -2889,7 +2889,7 @@ void FromFFTRep(ZZ_pXModRep& x, const FFTRep& a)
    long k = a.k;
    long n = 1L << k;
 
-   if (a.len != n) LogicError("FromFFTRep: bad len");
+   if (a.len != n) LogicError("FromFFTRep: bad len 7");
 
    x.SetSize(n);
    for (long i = 0; i < nprimes; i++) {

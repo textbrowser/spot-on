@@ -62,6 +62,13 @@ xdouble to_xdouble(double a)
 
 
 void conv(double& xx, const xdouble& a)
+// This is implemented so that if a can be represented exactly
+// as a double, then it will be.  If not, it will be represented
+// as best as possible: as infinity if the exponent is too large,
+// or as zero (or possibly denormalized number) if the exponent
+// is too small.  Even for very large or small exponents, it
+// is designed to be fairly efficient.
+
 {
    double x;
    long e;
@@ -69,8 +76,45 @@ void conv(double& xx, const xdouble& a)
    x = a.x;
    e = a.e;
 
-   while (e > 0) { x *= NTL_XD_BOUND; e--; }
-   while (e < 0) { x *= NTL_XD_BOUND_INV; e++; }
+   if (x == 0 || e == 0) {
+      xx = x;
+      return;
+   }
+
+   long e_neg = 0;
+   if (e < 0) {
+     e = -e;
+     e_neg = 1;
+   }
+
+   double base = e_neg ? NTL_XD_BOUND_INV :  NTL_XD_BOUND;
+   // set x = x * base^e
+
+   if (e < 4) {
+      while (e > 0) { x *= base; e--; }
+   }
+   else {
+      // repeated squaring from low to high, but with high bit
+      // treated seperately to avoid unnecessary exponent 
+      // overflow/underflow
+
+      // this code requires e >= 2
+
+      if (e % 2) x *= base;
+      e /= 2;
+      while (e > 1) {
+         base *= base;
+         if (e % 2) x *= base;
+         e /= 2;
+      }
+
+      // last step: multiply by base^2, one multply at a time.
+      // Doing it this way prevents unnecessary exponent overflow/
+      // underflow. 
+
+      x *= base;
+      x *= base;
+   }
 
    xx = x;
 }

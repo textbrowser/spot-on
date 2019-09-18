@@ -648,11 +648,37 @@ public:
 namespace details_pthread {
 
 
-template<class T> void do_delete_aux(T* t) noexcept { delete t;  }
+struct Node {
+   Node *next;
+
+   Node() : next(0) { }
+   virtual ~Node() { }
+};
+
+template<class T>
+struct DerivedNode : Node {
+   T t;
+
+   template<class... Args>
+   DerivedNode(Args&&... args) : t(std::forward<Args>(args)...) { }
+};
+
+inline void 
+delete_node(Node *p) noexcept { delete p;  }
 // an exception here would likely lead to a complete mess...
 // the noexcept specification should force an immediate termination
 
-template<class T> void do_delete(void* t) { do_delete_aux((T*)t);  }
+inline void 
+delete_list(void *vp)
+{
+   Node *p = (Node *) vp;
+   while (p) {
+      Node *tmp = p;
+      p = p->next;
+      delete_node(tmp);
+   }
+}
+
 
 using namespace std;
 // I'm not sure if pthread stuff might be placed in namespace std
@@ -665,33 +691,44 @@ struct key_wrapper {
       if (pthread_key_create(&key, destructor))
          ResourceError("pthread_key_create failed");
    }
-
-   template<class T>
-   T* set(T *p)
-   {
-      if (!p) MemoryError();
-      if (pthread_setspecific(key, p)) {
-         do_delete_aux(p);
-         ResourceError("pthread_setspecific failed");
-      }
-      return p;
-   }
-
 };
+
+
+inline void
+push_node(Node *p)
+// this pushes a new node to the front to the list
+// of objects that need to be deleted
+{
+   if (!p) MemoryError();
+
+   static key_wrapper wkey(delete_list);
+   // This relies on C++11 thread-safe static initialization.
+   // It also relies on the guarantee that there is just one
+   // global key (this requirement is only needed to 
+   // limit the number of keys, not for correctness).
+
+
+   p->next = (Node *) pthread_getspecific(wkey.key);
+
+   if (pthread_setspecific(wkey.key, p)) {
+      delete_node(p);
+      ResourceError("pthread_setspecific failed");
+   }
+}
 
 }
 
 
 #define NTL_TLS_LOCAL_INIT(type, var, init)  \
-   static NTL_CHEAP_THREAD_LOCAL type *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
-   type *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
+   static NTL_CHEAP_THREAD_LOCAL details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
+   details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
    if (!_ntl_hidden_variable_tls_local_ptr1_ ## var) {  \
-      static details_pthread::key_wrapper hidden_variable_key(details_pthread::do_delete<type>);  \
-      type *_ntl_hidden_variable_tls_local_ptr2_ ## var = hidden_variable_key.set(NTL_NEW_OP type init);  \
+      details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr2_ ## var = NTL_NEW_OP details_pthread::DerivedNode<type> init;  \
+      details_pthread::push_node(_ntl_hidden_variable_tls_local_ptr2_ ## var); \
       _ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr2_ ## var;  \
       _ntl_hidden_variable_tls_local_ptr_ ## var = _ntl_hidden_variable_tls_local_ptr1_ ## var;  \
    }  \
-   type &var = *_ntl_hidden_variable_tls_local_ptr1_ ## var  \
+   type &var = _ntl_hidden_variable_tls_local_ptr1_ ## var->t  \
 
 
 
@@ -1045,7 +1082,7 @@ constexpr bool Relocate_aux_has_any_copy(T*)
 // to make sure there actually is a non-deleted copy constructor.
 // Just to be on the safe side, I check for a trivial destructor.
 
-// This strategy is checked in the CheckCOPY_TRAITS1.cpp program.
+// This strategy is checked in the CheckCOPY_TRAITS2.cpp program.
 
 template <bool statement, typename out>
 struct Relocate_aux_Failable

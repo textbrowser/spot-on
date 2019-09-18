@@ -22,6 +22,7 @@ sudo cp -p ./Translations/*.qm /usr/local/spot-on/Translations/.
 sudo cp -pr ./Documentation/* /usr/local/spot-on/Documentation/.
 sudo chmod -x /usr/local/spot-on/Lib/lib*
 sudo chown -Rh root:staff /usr/local/spot-on
+sudo find /usr/local/spot-on -type f -exec chmod g+w {} \;
 
 Preparing Spot-On-x_amd64.deb:
 

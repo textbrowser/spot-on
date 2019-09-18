@@ -45,6 +45,12 @@ LIBTOOL_LINK_FLAGS=@{LIBTOOL_LINK_FLAGS}
 # flags to add to command line when building a shared library
 # mainly used to pass the argument "-no-undefined" on cygwin
 
+LIBTOOL_LINK_LIBS=@{LIBTOOL_LINK_LIBS}
+# libraries to add to the command line when building a shared library
+# mainly used to pass the argument "-lpthread", which NTL's
+# configure script will do "automagically" unless user overrides
+# that behavior
+
 DEF_PREFIX=@{DEF_PREFIX}
 
 PREFIX=@{PREFIX}
@@ -363,7 +369,7 @@ setup4:
 ntl.a:	$(OBJ) 
 @{LSTAT}	$(AR) $(ARFLAGS) ntl.a $(OBJ) #LSTAT
 @{LSTAT}	- $(RANLIB) ntl.a #LSTAT
-@{LSHAR}	$(LIBTOOL) --tag=CXX --mode=link $(LINK) $(LIBTOOL_LINK_FLAGS) -o libntl.la $(OBJ:.o=.lo) $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) -rpath $(LIBDIR) -version-info `cat VERSION_INFO` #LSHAR
+@{LSHAR}	$(LIBTOOL) --tag=CXX --mode=link $(LINK) $(LIBTOOL_LINK_FLAGS) -o libntl.la $(OBJ:.o=.lo) $(GMP_OPT_LIBDIR) $(GMP_OPT_LIB) $(GF2X_OPT_LIBDIR) $(GF2X_OPT_LIB) $(LDLIBS) $(LIBTOOL_LINK_LIBS) -rpath $(LIBDIR) -version-info `cat VERSION_INFO` #LSHAR
 
 @{LSTAT}LCOMP= #LSTAT
 @{LSHAR}LCOMP=$(LIBTOOL) --tag=CXX --mode=compile #LSHAR

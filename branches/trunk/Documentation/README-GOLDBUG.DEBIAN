@@ -21,6 +21,7 @@ sudo cp -p ./Translations/*.qm /usr/local/goldbug/Translations/.
 sudo cp -pr ./Documentation/* /usr/local/goldbug/Documentation/.
 sudo chmod -x /usr/local/goldbug/Lib/lib*
 sudo chown -Rh root:staff /usr/local/goldbug
+sudo find /usr/local/goldbug -type f -exec chmod g+w {} \;
 
 Preparing GoldBug-x_amd64.deb:
 

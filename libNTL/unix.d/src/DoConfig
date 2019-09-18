@@ -22,6 +22,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 'RANLIB'      => 'ranlib',
 'LIBTOOL'     => undef,
 'LIBTOOL_LINK_FLAGS' => '',
+'LIBTOOL_LINK_LIBS' => undef,
 
 'LDFLAGS'     => '',
 'LDLIBS'      => '-lm',
@@ -186,6 +187,10 @@ if ($MakeFlag{'SHARED'} eq 'off') {
       $MakeVal{'LIBTOOL'} = 'libtool';
    }
 
+   if (!defined($MakeVal{'LIBTOOL_LINK_LIBS'})) {
+      $MakeVal{'LIBTOOL_LINK_LIBS'} = '';
+   }
+
 } else {
 
    $MakeVal{'LSTAT'} = '# ';
@@ -223,6 +228,15 @@ if ($MakeFlag{'SHARED'} eq 'off') {
 
    }
 
+   # special processing to make sure -lpthread gets passed
+   # to libtool, to prevent so-called "underlinking".
+   # This helps to ensure that clients using NTL as a shared library
+   # do not need to pass -pthread when compiling.
+   if (!defined($MakeVal{'LIBTOOL_LINK_LIBS'})) {
+      if ($ConfigFlag{'NTL_THREADS'} eq 'on') {
+         $MakeVal{'LIBTOOL_LINK_LIBS'} = '-lpthread';
+      }
+   }
 
 
 }
@@ -576,7 +590,7 @@ sub Process_TUNE {
 Process_TUNE();
 # we call this once here and then optionally again later
 # if the TUNE flag is not set on the command line
-# and the architecture is recognized (write now, only
+# and the architecture is recognized (right now, only
 # x86 is recognized)
 
 

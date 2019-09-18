@@ -121,12 +121,12 @@ accept <tt>C++11</tt>.
 This can usually be acomplished by passing <tt>-std=c++11</tt>
 to the compiler.
 Newer versions (6.1 or later) of GCC compile in <tt>C++14</tt>
-mode by default, so this may not be not necessary.
+mode by default, so this may not be not necessary (or even desirable).
 This same option can be passed to other GCC-like compilers, such as CLANG 
 and Intel's ICC compiler.
 <li>
 By default, NTL is built with multithreading enabled,
-and for this reason, you need to pass the <tt>-pthread</tt>
+and for this reason, you <i>may</i> need to pass the <tt>-pthread</tt>
 option to GCC.
 This same option can be passed to other GCC-like compilers, such as CLANG 
 and Intel's ICC compiler.
@@ -139,8 +139,7 @@ and Intel's ICC compiler.
 <li>
 You can look in the file <tt>/usr/local/include/NTL/ConfigLog.h</tt>
 to see what options (in addition to <tt>-g -O2</tt>) were chosen
-by NTL's configuration script. Look a line that looks like this:
-of 
+by NTL's configuration script. Look for a line that looks like this:
 <pre>
    CXXAUTOFLAGS=" -std=c++11 -pthread -march=native"
 </pre>
@@ -148,6 +147,7 @@ of
 <li>
 If you build NTL with <tt>gf2x</tt>, just add the option
 <tt>-lgf2x</tt> to the above, right after <tt>-lgmp</tt>.
+Again, if NTL is built as a shared library, this may not be necessary.
 </ol>
 
 
@@ -598,8 +598,22 @@ relies on
 features specific to GNU make.
 
 <p>
-On Cygwin, you may need to set <tt>LIBTOOL_LINK_FLAGS=-no-undefined</tt> for very 
+On Cygwin, 
+you may need to set <tt>LIBTOOL_LINK_FLAGS=-no-undefined</tt> for very 
 obscure reasons.
+
+<p>
+There is also a makefile varibale <tt>LIBTOOL_LINK_LIBS</tt>
+that the configutation script automatically sets to 
+<tt>-lpthread</tt> when 
+<tt>NTL_THREADS=on</tt> (which is the default)
+and you are 
+building a shared library.
+This is passed to the libtool script, and it allows you to
+forgo passing <tt>-pthread</tt> when linking your own programs
+against NTL.
+You can supply an explicit value to <tt>LIBTOOL_LINK_LIBS</tt>
+when you run NTL's configuration script to override this behavior.
 
 <p>
 Note that if you want to build NTL as a shared library,
@@ -613,12 +627,16 @@ instructions.
 On many systems, you need to set the shell variable 
 <tt>LD_LIBRARY_PATH</tt> to a path that contains the directory where
 the shared library is installed.
+
+<p>
 In addition, if NTL is built as a shared library, then
 you typically do not have to include <tt>-lgmp</tt> (if using GMP),
 or <tt>-lgf2x</tt> (if using <tt>gf2x</tt>), or corresponding
 <tt>-L</tt> flags, or <tt>-lm</tt>  
 on
 the command line when compiling programs that use NTL.
+As mentioned above, you can typically also forgo including 
+<tt>-pthread</tt> on the command line.
 
 <p>
 <h2>

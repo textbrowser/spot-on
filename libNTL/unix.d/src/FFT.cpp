@@ -1245,7 +1245,7 @@ void LazyPrecompFFTMultipliers(long k, mint_t q, mulmod_t qinv, const mint_t *ro
 // so it seems safest to use macros instead.
 // w and wqinv are read only once.
 // q is read several times.
-// xx0, xx1 is are read once and written once
+// xx0, xx1 are read once and written once
 
 #define fwd_butterfly(xx0, xx1, w, q, wqinv)  \
 do \

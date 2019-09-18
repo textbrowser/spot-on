@@ -825,9 +825,13 @@ LeftRotate(ZZ& a, const ZZ& b, long e, const ZZ& p, long n, ZZ& scratch)
 
 static long 
 SS_FFTRoundUp(long xn, long k)
+// Assumes k >= 0.
+// Returns an integer m such that 1 <= m <= n = 2^k and 
+// m divsisible my 2^SS_FFT_RDUP.
+// Also, if xn <= n, then m >= xn.
 {
    long n = 1L << k;
-   if (xn <= 0) return n;
+   if (xn <= 0) xn = 1;
 
    xn = ((xn+((1L << SS_FFT_RDUP)-1)) >> SS_FFT_RDUP) << SS_FFT_RDUP; 
 
