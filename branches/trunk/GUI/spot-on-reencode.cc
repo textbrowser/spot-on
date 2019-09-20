@@ -530,7 +530,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM institutions WHERE "
 				      "OID = ?");
-		  deleteQuery.bindValue(0, query.value(4));
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }
@@ -603,7 +604,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM post_office WHERE "
 				      "OID = ?");
-		  deleteQuery.bindValue(0, query.value(3));
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }
@@ -2159,102 +2161,56 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT expected_file_hash, "
-		      "file, file_hash, hash, pulse_size, total_size "
+	if(query.exec("SELECT expected_file_hash, " // 0
+		      "expected_sha3_512_hash, "    // 1
+		      "file, "                      // 2
+		      "hash, "                      // 3
+		      "pulse_size, "                // 4
+		      "sha3_512_hash, "             // 5
+		      "total_size, "                // 6
+		      "OID "                        // 7
 		      "FROM received"))
 	  while(query.next())
 	    {
-	      QByteArray bytes;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE received "
 				  "SET expected_file_hash = ?, "
+				  "expected_sha3_512_hash = ?, "
 				  "file = ?, "
 				  "file_hash = ?, "
 				  "hash = ?, "
 				  "pulse_size = ?, "
+				  "sha3_512_hash = ?, "
 				  "total_size = ? "
-				  "WHERE file_hash = ?");
+				  "WHERE OID = ?");
 
-	      if(!query.isNull(0))
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(0).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
+	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
-		  if(query.isNull(0))
-		    updateQuery.bindValue(0, QVariant::String);
-		  else
-		    updateQuery.bindValue
-		      (0, newCrypt->encryptedThenHashed(bytes, &ok).
-		       toBase64());
+		  QByteArray bytes;
+
+		  if(!query.isNull(i))
+		    bytes = oldCrypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(i).toByteArray()),
+		       &ok);
+
+		  if(ok)
+		    {
+		      if(query.isNull(i))
+			updateQuery.addBindValue(QVariant::String);
+		      else
+			updateQuery.addBindValue
+			  (newCrypt->
+			   encryptedThenHashed(bytes, &ok).toBase64());
+
+		      if(i == 2 && ok)
+			updateQuery.addBindValue
+			  (newCrypt->keyedHash(bytes, &ok).toBase64());
+		    }
 		}
 
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(1).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (1, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		updateQuery.bindValue
-		  (2, newCrypt->keyedHash(bytes, &ok).toBase64());
-
-	      if(ok)
-		if(!query.isNull(3))
-		  bytes = oldCrypt->decryptedAfterAuthenticated
-		    (QByteArray::
-		     fromBase64(query.
-				value(3).
-				toByteArray()),
-		     &ok);
-
-	      if(ok)
-		{
-		  if(query.isNull(3))
-		    updateQuery.bindValue(3, QVariant::String);
-		  else
-		    updateQuery.bindValue
-		      (3, newCrypt->
-		       encryptedThenHashed(bytes, &ok).toBase64());
-		}
-
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(4).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (4, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(5).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (5, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      updateQuery.bindValue(6, query.value(2));
+	      updateQuery.addBindValue(query.value(query.record().count() - 1));
 
 	      if(ok)
 		updateQuery.exec();
@@ -2267,7 +2223,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM received WHERE "
 				      "file_hash = ?");
-		  deleteQuery.bindValue(0, query.value(2));
+		  deleteQuery.bindValue(0, query.value(3));
 		  deleteQuery.exec();
 		}
 	    }
@@ -2316,11 +2272,17 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT file, hash, mosaic, nova, position, "
-		      "pulse_size, total_size FROM transmitted"))
+	if(query.exec("SELECT file, "   // 0
+		      "mosaic, "        // 1
+		      "nova, "          // 2
+		      "position, "      // 3
+		      "pulse_size, "    // 4
+		      "sha3_512_hash, " // 5
+		      "total_size, "    // 6
+		      "OID "            // 7
+		      "FROM transmitted"))
 	  while(query.next())
 	    {
-	      QByteArray bytes;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
@@ -2331,82 +2293,36 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "nova = ?, "
 				  "position = ?, "
 				  "pulse_size = ?, "
+				  "sha3_512_hash = ?, "
 				  "total_size = ? "
-				  "WHERE mosaic = ?");
-	      bytes = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+				  "WHERE OID = ?");
 
-	      if(ok)
-		updateQuery.bindValue
-		  (0, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+	      for(int i = 0; i < query.record().count() - 1; i++)
+		{
+		  QByteArray bytes;
 
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(1).
-			      toByteArray()),
-		   &ok);
+		  if(!query.isNull(i))
+		    bytes = oldCrypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(i).toByteArray()),
+		       &ok);
 
-	      if(ok)
-		updateQuery.bindValue
-		  (1, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+		  if(ok)
+		    {
+		      if(query.isNull(i))
+			updateQuery.addBindValue(QVariant::String);
+		      else
+			updateQuery.addBindValue
+			  (newCrypt->
+			   encryptedThenHashed(bytes, &ok).toBase64());
 
-	      updateQuery.bindValue(2, query.value(2));
+		      if(i == 1 && ok)
+			updateQuery.addBindValue
+			  (newCrypt->keyedHash(bytes, &ok).toBase64());
+		    }
+		}
 
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(3).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (3, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(4).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (4, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(5).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (5, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      if(ok)
-		bytes = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(6).
-			      toByteArray()),
-		   &ok);
-
-	      if(ok)
-		updateQuery.bindValue
-		  (6, newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-	      updateQuery.bindValue(7, query.value(2));
+	      updateQuery.addBindValue
+		(query.value(query.record().count() - 1));
 
 	      if(ok)
 		updateQuery.exec();
@@ -2647,7 +2563,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM import_key_information "
 				      "WHERE OID = ?");
-		  deleteQuery.bindValue(0, query.value(2));
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }
@@ -2710,7 +2627,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM remote_key_information "
 				      "WHERE OID = ?");
-		  deleteQuery.bindValue(0, query.value(4));
+		  deleteQuery.bindValue
+		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
 		}
 	    }
