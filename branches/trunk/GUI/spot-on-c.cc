@@ -2639,6 +2639,7 @@ void spoton::slotExportListeners(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QFile file;
@@ -2683,6 +2684,8 @@ void spoton::slotExportListeners(void)
       file.close();
       QApplication::restoreOverrideCursor();
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotExportPublicKeys(void)
@@ -2712,6 +2715,7 @@ void spoton::slotExportPublicKeys(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QFile file;
@@ -2751,6 +2755,8 @@ void spoton::slotExportPublicKeys(void)
       file.close();
       QApplication::restoreOverrideCursor();
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotExternalIp(int index)
@@ -2917,6 +2923,8 @@ void spoton::slotImportNeighbors(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       QFileInfo fileInfo;
 
       fileInfo.setFile(dialog.directory(),
@@ -2939,11 +2947,18 @@ void spoton::slotImportNeighbors(void)
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return;
+	    {
+	      QApplication::processEvents();
+	      return;
+	    }
+
+	  QApplication::processEvents();
 	}
 
       importNeighbors(fileInfo.filePath());
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotImportPublicKeys(void)
@@ -2971,6 +2986,8 @@ void spoton::slotImportPublicKeys(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       QFileInfo fileInfo;
 
       fileInfo.setFile(dialog.directory(),
@@ -2993,7 +3010,12 @@ void spoton::slotImportPublicKeys(void)
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return;
+	    {
+	      QApplication::processEvents();
+	      return;
+	    }
+
+	  QApplication::processEvents();
 	}
 
       QByteArray bytes;
@@ -3026,6 +3048,8 @@ void spoton::slotImportPublicKeys(void)
 	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
 	    "were not imported.").arg(imported).arg(notimported));
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotMailRetrievalIntervalChanged(int value)
@@ -3835,7 +3859,12 @@ void spoton::slotRegenerateKey(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   if(m_ui.encryptionKeyType->currentIndex() == 1)
     {
@@ -3858,7 +3887,12 @@ void spoton::slotRegenerateKey(void)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
     }
 
   repaint();
@@ -3955,8 +3989,12 @@ void spoton::slotRemoveUrlParticipants(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
@@ -4322,7 +4360,12 @@ void spoton::slotSelectDestination(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
-    saveDestination(dialog.selectedFiles().value(0));
+    {
+      QApplication::processEvents();
+      saveDestination(dialog.selectedFiles().value(0));
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSelectTransmitFile(void)
@@ -4338,8 +4381,12 @@ void spoton::slotSelectTransmitFile(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
-    m_ui.transmittedFile->setText
-      (dialog.selectedFiles().value(0));
+    {
+      QApplication::processEvents();
+      m_ui.transmittedFile->setText(dialog.selectedFiles().value(0));
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotShareBuzzMagnet(void)

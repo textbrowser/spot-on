@@ -3356,6 +3356,8 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       QString name(ui.name->text().trimmed());
       QString password(ui.password->text());
 
@@ -3416,6 +3418,8 @@ void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
 	      "must contain at least thirty-two characters "
 	      "each."));
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
@@ -3905,9 +3909,12 @@ void spoton::sendKeysToKernel(void)
 
 	      if(mb.exec() != QMessageBox::Yes)
 		{
+		  QApplication::processEvents();
 		  m_keysShared["keys_sent_to_kernel"] = "ignore";
 		  return;
 		}
+
+	      QApplication::processEvents();
 	    }
 
 	  QByteArray hashKey(m_crypts.value("chat")->hashKey());
@@ -3964,6 +3971,7 @@ void spoton::slotAbout(void)
   mb.setWindowIcon(windowIcon());
   mb.setWindowTitle(SPOTON_APPLICATION_NAME);
   mb.exec();
+  QApplication::processEvents();
 }
 
 void spoton::slotActivateKernel(void)
@@ -5445,7 +5453,12 @@ void spoton::slotDeactivateKernel(void)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -8947,11 +8960,15 @@ void spoton::slotSelectGeoIPPath(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       if(m_optionsUi.selectGeoIP4 == sender())
 	saveGeoIPPath(4, dialog.selectedFiles().value(0));
       else
 	saveGeoIPPath(6, dialog.selectedFiles().value(0));
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSelectKernelPath(void)
@@ -8967,7 +8984,12 @@ void spoton::slotSelectKernelPath(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
-    saveKernelPath(dialog.selectedFiles().value(0));
+    {
+      QApplication::processEvents();
+      saveKernelPath(dialog.selectedFiles().value(0));
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSetPassphrase(void)
@@ -9010,6 +9032,7 @@ void spoton::slotSetPassphrase(void)
 
       if(mb.exec() != QMessageBox::Yes)
 	{
+	  QApplication::processEvents();
 	  m_ui.answer->clear();
 	  m_ui.passphrase1->clear();
 	  m_ui.passphrase2->clear();
@@ -9152,6 +9175,8 @@ void spoton::slotSetPassphrase(void)
 
 	      if(mb.exec() == QMessageBox::Yes)
 		proceed = true;
+
+	      QApplication::processEvents();
 	    }
 	  else
 	    proceed = m_wizardHash.value("initialize_public_keys", true);
@@ -9181,6 +9206,8 @@ void spoton::slotSetPassphrase(void)
 
 		if(mb.exec() != QMessageBox::Yes)
 		  proceed = false;
+
+		QApplication::processEvents();
 	      }
 
 	  if(proceed)
@@ -9404,6 +9431,8 @@ void spoton::slotSetPassphrase(void)
 
 		  if(mb.exec() == QMessageBox::Yes)
 		    proceed = true;
+
+		  QApplication::processEvents();
 		}
 	      else
 		proceed = m_wizardHash.value("url_credentials", true);
@@ -9612,6 +9641,8 @@ void spoton::slotSetPassphrase(void)
 
 		if(mb.exec() == QMessageBox::Yes)
 		  proceed = true;
+
+		QApplication::processEvents();
 	      }
 	    else
 	      proceed = m_wizardHash.value("launch_kernel", true);

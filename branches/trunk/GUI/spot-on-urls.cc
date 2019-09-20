@@ -575,9 +575,13 @@ void spoton::slotCorrectUrlDatabases(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
   else
     {
+      QApplication::processEvents();
       m_rss->deactivate();
       slotDeactivateKernel();
     }
@@ -740,9 +744,13 @@ void spoton::slotDeleteAllUrls(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
   else
     {
+      QApplication::processEvents();
       m_rss->deactivate();
       slotDeactivateKernel();
     }
@@ -857,9 +865,13 @@ void spoton::slotDropUrlTables(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
   else
     {
+      QApplication::processEvents();
       m_rss->deactivate();
       slotDeactivateKernel();
     }
@@ -1057,8 +1069,12 @@ void spoton::slotImportUrls(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
@@ -1389,6 +1405,7 @@ void spoton::slotPostgreSQLConnect(void)
     {
       if(dialog.exec() == QDialog::Accepted)
 	{
+	  QApplication::processEvents();
 	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	  m_ui.url_database_connection_information->clear();
 	  m_urlDatabase.close();
@@ -1461,7 +1478,10 @@ void spoton::slotPostgreSQLConnect(void)
 	    }
 	}
       else
-	break;
+	{
+	  QApplication::processEvents();
+	  break;
+	}
     }
   while(true);
 }
@@ -1492,9 +1512,13 @@ void spoton::slotPrepareUrlDatabases(void)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
       else
 	{
+	  QApplication::processEvents();
 	  m_rss->deactivate();
 	  slotDeactivateKernel();
 	}
@@ -1734,13 +1758,14 @@ void spoton::slotSaveCommonUrlCredentials(void)
   mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb->exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
   else
     {
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       m_rss->deactivate();
       slotDeactivateKernel();
     }
@@ -1896,7 +1921,12 @@ void spoton::slotSelectUrlIniPath(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
-    saveUrlIniPath(dialog.selectedFiles().value(0));
+    {
+      QApplication::processEvents();
+      saveUrlIniPath(dialog.selectedFiles().value(0));
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSetUrlIniPath(void)
@@ -1949,7 +1979,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
     }
   else if(scheme.startsWith("export-"))
     {
@@ -2004,6 +2039,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       if(dialog.exec() == QDialog::Accepted)
 	{
+	  QApplication::processEvents();
+
 	  QString hash(url.toString());
 
 	  if(hash.startsWith("export-ftp:"))
@@ -2076,6 +2113,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    }
 	}
 
+      QApplication::processEvents();
       return;
     }
   else if(scheme.startsWith("share-"))
@@ -2126,7 +2164,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
 
       if(!writeKernelSocketData(message))
 	spoton_misc::logError
@@ -2257,8 +2300,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return;
+	    {
+	      QApplication::processEvents();
+	      return;
+	    }
 
+	  QApplication::processEvents();
 	  QDesktopServices::openUrl(url);
 	}
 

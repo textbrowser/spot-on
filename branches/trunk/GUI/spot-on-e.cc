@@ -673,9 +673,15 @@ void spoton::prepareSMP(const QString &hash)
     dialog.m_ui.passphrase->setText(smp->guessString());
 
   if(dialog.exec() == QDialog::Accepted)
-    guess = dialog.m_ui.passphrase->text();
+    {
+      QApplication::processEvents();
+      guess = dialog.m_ui.passphrase->text();
+    }
   else
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
   if(!smp)
     {
@@ -1003,6 +1009,7 @@ void spoton::slotConfigurePoptastic(void)
 
   if(m_poptasticRetroPhoneDialog->exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       prepareDatabasesFromUI();
 
       QString error("");
@@ -1044,6 +1051,7 @@ void spoton::slotConfigurePoptastic(void)
       slotReloadEmailNames();
     }
 
+  QApplication::processEvents();
   m_poptasticRetroPhoneSettingsUi.in_password->clear();
   m_poptasticRetroPhoneSettingsUi.in_password->setToolTip("");
   m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked(true);
@@ -1079,7 +1087,12 @@ void spoton::slotDeletePoptasticAccount(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
@@ -1437,8 +1450,12 @@ void spoton::slotPoptasticSettingsReset(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
   m_poptasticRetroPhoneSettingsUi.account->clear();
   m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
@@ -1794,10 +1811,13 @@ void spoton::slotSelectCAPath(void)
 
       if(dialog.exec() == QDialog::Accepted)
 	{
+	  QApplication::processEvents();
 	  fileName = dialog.selectedFiles().value(0);
 	  m_poptasticRetroPhoneSettingsUi.capath->setText
 	    (dialog.selectedFiles().value(0));
 	}
+
+      QApplication::processEvents();
     }
   else
     fileName = m_poptasticRetroPhoneSettingsUi.capath->text();
@@ -2041,7 +2061,12 @@ void spoton::slotShareStarBeam(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() != QDialog::Accepted)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   QFileInfo fileInfo(dialog.selectedFiles().value(0));
 

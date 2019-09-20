@@ -83,7 +83,12 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() == QMessageBox::Yes)
-	QDesktopServices::openUrl(url);
+	{
+	  QApplication::processEvents();
+	  QDesktopServices::openUrl(url);
+	}
+
+      QApplication::processEvents();
 
       if(m_ui.textBrowser->isBackwardAvailable())
 	QTimer::singleShot(250, m_ui.textBrowser, SLOT(backward(void)));
@@ -121,7 +126,12 @@ void spoton_documentation::slotPagePrintPreview(void)
   QApplication::restoreOverrideCursor();
 
   if(printDialog.exec() == QDialog::Accepted)
-    m_ui.textBrowser->print(&printer);
+    {
+      QApplication::processEvents();
+      m_ui.textBrowser->print(&printer);
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton_documentation::slotPrint(QPrinter *printer)

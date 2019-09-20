@@ -764,7 +764,12 @@ bool spoton::addFriendsKey(const QByteArray &k,
 		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
+	    {
+	      QApplication::processEvents();
+	      return false;
+	    }
+
+	  QApplication::processEvents();
 	}
 
       mySPublicKey = m_crypts.value
@@ -786,7 +791,12 @@ bool spoton::addFriendsKey(const QByteArray &k,
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
+	    {
+	      QApplication::processEvents();
+	      return false;
+	    }
+
+	  QApplication::processEvents();
 	}
 
       if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
@@ -818,7 +828,10 @@ bool spoton::addFriendsKey(const QByteArray &k,
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
+	    {
+	      QApplication::processEvents();
+	      return false;
+	    }
 	}
 
       QByteArray sPublicKey(list.value(4));
@@ -843,7 +856,12 @@ bool spoton::addFriendsKey(const QByteArray &k,
 			    arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
-	    return false;
+	    {
+	      QApplication::processEvents();
+	      return false;
+	    }
+
+	  QApplication::processEvents();
 	}
 
       QString connectionName("");
@@ -3696,8 +3714,12 @@ void spoton::slotEmptyTrash(void)
 		    arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
@@ -4029,8 +4051,12 @@ void spoton::slotKernelStatus(void)
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
 
+      QApplication::processEvents();
       slotDeactivateKernel();
     }
   else
@@ -4148,9 +4174,15 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	dialog.setWindowTitle(tr("%1: Gold Bug").arg(SPOTON_APPLICATION_NAME));
 
 	if(dialog.exec() != QDialog::Accepted)
-	  return;
+	  {
+	    QApplication::processEvents();
+	    return;
+	  }
 	else
-	  goldbug = ui.goldbug->text().trimmed();
+	  {
+	    QApplication::processEvents();
+	    goldbug = ui.goldbug->text().trimmed();
+	  }
 
 	if(goldbug.isEmpty())
 	  return;
@@ -5415,8 +5447,12 @@ void spoton::slotRemoveEmailParticipants(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
@@ -5482,8 +5518,12 @@ void spoton::slotRemoveParticipants(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
@@ -5663,8 +5703,12 @@ void spoton::slotResetAll(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   slotDeactivateKernel();
 
   QStringList list;
@@ -6322,6 +6366,7 @@ void spoton::slotSendMail(void)
 	mb.setWindowModality(Qt::WindowModal);
 	mb.setWindowTitle(tr("GoldBug: Confirmation"));
 	mb.exec();
+	QApplication::processEvents();
 #endif
       }
 
@@ -6964,6 +7009,7 @@ void spoton::slotTestSslControlString(void)
   mb.setWindowTitle(tr("%1: Information").
 		    arg(SPOTON_APPLICATION_NAME));
   mb.exec();
+  QApplication::processEvents();
 }
 
 void spoton::slotViewLog(void)

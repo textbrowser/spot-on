@@ -156,7 +156,12 @@ bool spoton::promptBeforeExit(void)
       mb.setWindowTitle(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return true;
+	{
+	  QApplication::processEvents();
+	  return true;
+	}
+
+      QApplication::processEvents();
     }
 
   if(!m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
@@ -176,7 +181,12 @@ bool spoton::promptBeforeExit(void)
 			  arg(SPOTON_APPLICATION_NAME));
 
 	if(mb.exec() != QMessageBox::Yes)
-	  return true;
+	  {
+	    QApplication::processEvents();
+	    return true;
+	  }
+
+	QApplication::processEvents();
       }
 
   m_quit = true;
@@ -742,6 +752,7 @@ void spoton::slotAddAttachment(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QStringList list(dialog.selectedFiles());
@@ -760,6 +771,8 @@ void spoton::slotAddAttachment(void)
 
       QApplication::restoreOverrideCursor();
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotAddInstitution(const QString &text)
@@ -1149,6 +1162,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       ip = ui.ip->text().trimmed();
 
       if(!ip.isEmpty())
@@ -1230,6 +1244,8 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
       QSqlDatabase::removeDatabase(connectionName);
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotAutoAddSharedSBMagnets(bool state)
@@ -1968,8 +1984,12 @@ void spoton::slotSaveAttachment(void)
                         arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() != QDialog::Accepted)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   bool ok = false;
@@ -2187,6 +2207,8 @@ void spoton::slotSetAETokenInformation(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       QString token(ui.token->text());
       QString tokenType(ui.token_e_type->currentText() + "\n" +
 			ui.token_h_type->currentText());
@@ -2261,6 +2283,8 @@ void spoton::slotSetAETokenInformation(void)
 			      tr("The token must contain "
 				 "at least ninety-six characters."));
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSetListenerSSLControlString(void)

@@ -158,9 +158,11 @@ magnet
 received
 
 expected_file_hash
+expected_sha3_512_hash
 file
 hash
 pulse_size
+sha3_512_hash
 total_size
 
 received_novas
@@ -175,6 +177,7 @@ missing_links
 nova
 position
 pulse_size
+sha3_512_hash
 total_size
 
 transmitted_magnets

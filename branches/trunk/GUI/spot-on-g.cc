@@ -1251,6 +1251,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 
   if(mb.exec() == QMessageBox::Yes)
     {
+      QApplication::processEvents();
       m_wizardHash["shown"] = true;
 
       QDialog dialog(this);
@@ -1291,6 +1292,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 
       if(dialog.exec() == QDialog::Accepted)
 	{
+	  QApplication::processEvents();
 	  m_wizardHash["accepted"] = true;
 	  m_wizardHash["initialize_public_keys"] =
 	    m_wizardUi->initialize_public_keys->isChecked();
@@ -1314,6 +1316,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	}
       else
 	{
+	  QApplication::processEvents();
 	  m_ui.passphrase1->clear();
 	  m_ui.passphrase2->clear();
 	  m_ui.passphrase_rb->setChecked(true);
@@ -1325,6 +1328,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
       m_ui.settingsVerticalLayout->insertWidget(1, m_ui.passphraseGroupBox);
     }
 
+  QApplication::processEvents();
   m_wizardHash["shown"] = false;
 }
 
@@ -1402,8 +1406,12 @@ void spoton::slotResetAllStyleSheets(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QSettings settings;
@@ -1613,6 +1621,8 @@ void spoton::slotSetPrivateApplicationInformation(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       if(ui.magnet->isChecked())
 	{
 	  QScopedPointer<spoton_crypt> crypt
@@ -1745,6 +1755,8 @@ void spoton::slotSetPrivateApplicationInformation(void)
 				 "private application credentials").
 			      arg(error));
     }
+
+  QApplication::processEvents();
 }
 
 void spoton::slotSetStyleSheet(void)
@@ -1777,6 +1789,8 @@ void spoton::slotSetStyleSheet(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       QString str(ui.textEdit->toPlainText().trimmed());
 
       widget->setStyleSheet(str);
@@ -1789,7 +1803,10 @@ void spoton::slotSetStyleSheet(void)
 	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
     }
   else
-    widget->setStyleSheet(str);
+    {
+      QApplication::processEvents();
+      widget->setStyleSheet(str);
+    }
 
 #endif
 }

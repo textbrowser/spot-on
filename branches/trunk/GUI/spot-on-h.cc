@@ -905,8 +905,12 @@ void spoton::slotSetSocketOptions(void)
       }
 
   if(dialog.exec() != QDialog::Accepted)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   socketOptions.clear();
 
   if(ui.nodelay->isEnabled())

@@ -455,8 +455,12 @@ void spoton_chatwindow::slotLinkClicked(const QUrl &url)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QDesktopServices::openUrl(url);
 }
 
@@ -567,7 +571,12 @@ void spoton_chatwindow::slotShareStarBeam(void)
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() != QDialog::Accepted)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   QFileInfo fileInfo(dialog.selectedFiles().value(0));
 

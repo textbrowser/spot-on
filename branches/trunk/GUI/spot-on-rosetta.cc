@@ -413,7 +413,12 @@ void spoton_rosetta::slotAddContact(void)
 			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
     }
 
   mySPublicKey = sCrypt->publicKey(&ok);
@@ -433,7 +438,12 @@ void spoton_rosetta::slotAddContact(void)
 			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
     }
 
   if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
@@ -973,7 +983,12 @@ void spoton_rosetta::slotDelete(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   QByteArray data
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());

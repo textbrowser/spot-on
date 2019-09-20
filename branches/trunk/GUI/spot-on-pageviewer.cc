@@ -313,6 +313,7 @@ void spoton_pageviewer::slotPagePrintPreview(void)
 
   if(printDialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
 #if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
 #elif defined(SPOTON_WEBKIT_ENABLED)
       m_webView->print(&printer);
@@ -320,6 +321,8 @@ void spoton_pageviewer::slotPagePrintPreview(void)
       m_webView->print(&printer);
 #endif
     }
+
+  QApplication::processEvents();
 }
 
 void spoton_pageviewer::slotPrint(QPrinter *printer)

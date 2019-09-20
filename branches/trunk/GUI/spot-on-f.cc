@@ -782,12 +782,13 @@ void spoton::slotDeleteKey(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   if(keyType == "chat")
     {
@@ -1029,13 +1030,14 @@ void spoton::slotEstablishForwardSecrecy(void)
 	  SLOT(slotForwardSecrecyEncryptionKeyChanged(int)));
 
   if(dialog->exec() != QDialog::Accepted)
-    goto done_label;
+    {
+      QApplication::processEvents();
+      goto done_label;
+    }
 
   dialog->close();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   if(ui.encryptionKeyType->currentIndex() == 0)
     algorithm = "elg";
@@ -1281,8 +1283,12 @@ void spoton::slotLinkClicked(const QUrl &url)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QDesktopServices::openUrl(url);
 }
 
@@ -1303,9 +1309,15 @@ void spoton::slotLock(void)
 			arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
       else
-	m_locked = !m_locked;
+	{
+	  QApplication::processEvents();
+	  m_locked = !m_locked;
+	}
     }
   else
     {
@@ -1336,7 +1348,12 @@ void spoton::slotLock(void)
       ui.passphrase->setFocus();
 
       if(dialog.exec() != QDialog::Accepted)
-	return;
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
 
       QByteArray computedHash;
       QByteArray hashType
@@ -1876,14 +1893,13 @@ void spoton::slotRespondToForwardSecrecy(void)
 
   if(dialog->exec() != QDialog::Accepted)
     {
+      QApplication::processEvents();
       popForwardSecrecyRequest(publicKeyHash);
       goto done_label;
     }
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);

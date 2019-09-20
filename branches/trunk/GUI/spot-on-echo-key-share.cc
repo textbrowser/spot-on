@@ -413,7 +413,12 @@ void spoton_echo_key_share::deleteSelected(void)
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
 
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 

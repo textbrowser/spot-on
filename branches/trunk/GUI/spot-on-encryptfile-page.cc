@@ -603,8 +603,12 @@ void spoton_encryptfile_page::slotConvert(void)
   mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb->exec() != QMessageBox::Yes)
-    return;
+    {
+      QApplication::processEvents();
+      return;
+    }
 
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   ui.status_label->setText
     (tr("Generating derived keys. Please be patient."));
@@ -784,6 +788,8 @@ void spoton_encryptfile_page::slotSelect(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
+
       if(sender() == ui.select)
 	{
 	  QString str(dialog.selectedFiles().value(0));
@@ -802,4 +808,6 @@ void spoton_encryptfile_page::slotSelect(void)
       else
 	ui.destination->setText(dialog.selectedFiles().value(0));
     }
+
+  QApplication::processEvents();
 }

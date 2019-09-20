@@ -162,6 +162,7 @@ void spoton_emailwindow::slotAddAttachment(void)
 
   if(dialog.exec() == QDialog::Accepted)
     {
+      QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QStringList list(dialog.selectedFiles());
@@ -180,6 +181,8 @@ void spoton_emailwindow::slotAddAttachment(void)
 
       QApplication::restoreOverrideCursor();
     }
+
+  QApplication::processEvents();
 }
 
 void spoton_emailwindow::slotEmailFsGb(int index)
