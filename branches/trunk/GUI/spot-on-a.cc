@@ -3690,8 +3690,11 @@ void spoton::magnetize(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 }
 
 void spoton::removeFavorite(const bool removeAll)
@@ -3749,8 +3752,11 @@ void spoton::removeFavorite(const bool removeAll)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
   else
     {
       slotPopulateBuzzFavorites();
@@ -4075,9 +4081,12 @@ void spoton::slotActivateKernel(void)
 	joinDefaultBuzzChannel();
     }
   else if(m_ui.activateKernel == sender())
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-       tr("The kernel process could not be started. Good luck."));
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("The kernel process could not be started. Good luck."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotAddListener(void)
@@ -4089,6 +4098,7 @@ void spoton::slotAddListener(void)
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -4131,6 +4141,7 @@ void spoton::slotAddListener(void)
 	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	     tr("You're attempting to create a UDP multicast listener. "
 		"Please create a UDP multicast neighbor instead."));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -4488,6 +4499,8 @@ void spoton::slotAddListener(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to add the specified listener.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotAddNeighbor(void)
@@ -4500,6 +4513,7 @@ void spoton::slotAddNeighbor(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -4512,6 +4526,7 @@ void spoton::slotAddNeighbor(void)
       QMessageBox::information
 	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("DTLS is not functional over multicast!"));
+      QApplication::processEvents();
       return;
     }
 #endif
@@ -4885,6 +4900,8 @@ void spoton::slotAddNeighbor(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to add the specified neighbor.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotAuthenticate(void)
@@ -4897,6 +4914,7 @@ void spoton::slotAuthenticate(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -4911,6 +4929,7 @@ void spoton::slotAuthenticate(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid neighbor OID. "
 			       "Please select a neighbor."));
+      QApplication::processEvents();
       return;
     }
 
@@ -5202,6 +5221,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The public keys are too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -5424,6 +5444,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The e-mail bundle is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -9307,6 +9328,7 @@ void spoton::slotSetPassphrase(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("An error (%1) occurred with spoton_crypt::"
 	    "derivedKeys().").arg(error1.trimmed()));
+      QApplication::processEvents();
     }
   else if(!error2.trimmed().isEmpty())
     {
@@ -9320,6 +9342,7 @@ void spoton::slotSetPassphrase(void)
 			       "spoton_crypt::"
 			       "reencodePrivatePublicKeys().").
 			    arg(error2.trimmed()));
+      QApplication::processEvents();
     }
   else if(!error3.trimmed().isEmpty())
     {
@@ -9333,6 +9356,7 @@ void spoton::slotSetPassphrase(void)
 			       "spoton_crypt::"
 			       "saltedPassphraseHash().").
 			    arg(error3.trimmed()));
+      QApplication::processEvents();
     }
   else
     {
@@ -9599,6 +9623,7 @@ void spoton::slotSetPassphrase(void)
 	(this, tr("%1: Information").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Your confidential information has been saved. Enjoy!"));
+      QApplication::processEvents();
 
       if(m_ui.pid->text() == "0")
 	if(QFileInfo(m_ui.kernelPath->text()).isExecutable())

@@ -526,6 +526,7 @@ void spoton::slotDiscover(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Did you prepare common credentials?"));
+      QApplication::processEvents();
       return;
     }
 
@@ -535,6 +536,7 @@ void spoton::slotDiscover(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 

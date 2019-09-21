@@ -856,6 +856,7 @@ void spoton_echo_key_share::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QApplication::processEvents();
 }
 
 void spoton_echo_key_share::slotClose(void)

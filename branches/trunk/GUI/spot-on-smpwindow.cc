@@ -424,6 +424,7 @@ void spoton_smpwindow::showError(const QString &error)
 
   QMessageBox::critical
     (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+  QApplication::processEvents();
 }
 
 void spoton_smpwindow::slotClose(void)

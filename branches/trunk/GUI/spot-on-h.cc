@@ -992,6 +992,7 @@ void spoton::slotShowErrorMessage(void)
   timer->deleteLater();
   QMessageBox::critical
     (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), str);
+  QApplication::processEvents();
 }
 
 void spoton::slotShowReleaseNotes(void)

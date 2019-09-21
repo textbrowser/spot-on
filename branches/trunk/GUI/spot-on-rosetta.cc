@@ -340,6 +340,7 @@ void spoton_rosetta::slotAddContact(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object(s). This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -351,6 +352,7 @@ void spoton_rosetta::slotAddContact(void)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Empty key(s). Really?"));
+      QApplication::processEvents();
       return;
     }
 
@@ -361,6 +363,7 @@ void spoton_rosetta::slotAddContact(void)
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid key(s). The provided text "
 	    "must start with either the letter K or the letter k."));
+      QApplication::processEvents();
       return;
     }
 
@@ -373,6 +376,7 @@ void spoton_rosetta::slotAddContact(void)
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Irregular data. Expecting 6 entries, received %1.").
 	 arg(list.size()));
+      QApplication::processEvents();
       return;
     }
 
@@ -386,6 +390,7 @@ void spoton_rosetta::slotAddContact(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid key type. Expecting 'rosetta'."));
+      QApplication::processEvents();
       return;
     }
 
@@ -454,6 +459,7 @@ void spoton_rosetta::slotAddContact(void)
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("You're attempting to add your own '%1' keys. "
 	    "Please do not do this!").arg(keyType.constData()));
+      QApplication::processEvents();
       return;
     }
 
@@ -466,6 +472,7 @@ void spoton_rosetta::slotAddContact(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid 'rosetta' public key signature."));
+      QApplication::processEvents();
       return;
     }
 
@@ -482,6 +489,7 @@ void spoton_rosetta::slotAddContact(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid signature public key signature."));
+      QApplication::processEvents();
       return;
     }
 
@@ -522,10 +530,14 @@ void spoton_rosetta::slotAddContact(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("An error occurred while attempting to save the friendship bundle."));
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("An error occurred while attempting to save the "
+	    "friendship bundle."));
+      QApplication::processEvents();
+    }
   else
     {
       emit participantAdded("rosetta");
@@ -565,6 +577,7 @@ void spoton_rosetta::slotConvert(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object(s). This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -699,9 +712,12 @@ void spoton_rosetta::slotConvert(void)
       QApplication::restoreOverrideCursor();
 
       if(!error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      error);
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				error);
+	  QApplication::processEvents();
+	}
     }
   else
     {
@@ -874,9 +890,12 @@ void spoton_rosetta::slotConvert(void)
     done_label2:
 
       if(!error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      error);
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME),
+				error);
+	  QApplication::processEvents();
+	}
     }
 }
 
@@ -902,6 +921,7 @@ void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The rosetta public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -967,6 +987,7 @@ void spoton_rosetta::slotDelete(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid item data. This is a serious flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1028,11 +1049,14 @@ void spoton_rosetta::slotDelete(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("An error occurred while attempting to delete the specified "
-	  "participant."));
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("An error occurred while attempting to delete the specified "
+	    "participant."));
+      QApplication::processEvents();
+    }
   else
     {
       emit participantDeleted(oid, "rosetta");
@@ -1058,6 +1082,7 @@ void spoton_rosetta::slotRename(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
   else if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
@@ -1066,6 +1091,7 @@ void spoton_rosetta::slotRename(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid item data. This is a serious flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1122,11 +1148,14 @@ void spoton_rosetta::slotRename(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical
-      (this, tr("%1: Error").
-       arg(SPOTON_APPLICATION_NAME),
-       tr("An error occurred while attempting to rename the specified "
-	  "participant."));
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").
+	 arg(SPOTON_APPLICATION_NAME),
+	 tr("An error occurred while attempting to rename the specified "
+	    "participant."));
+      QApplication::processEvents();
+    }
   else
     {
       emit participantNameChanged(publicKeyHash, name);

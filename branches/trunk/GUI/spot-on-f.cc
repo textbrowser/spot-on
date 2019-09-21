@@ -759,6 +759,7 @@ void spoton::slotDeleteKey(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt objects. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -994,16 +995,22 @@ void spoton::slotEstablishForwardSecrecy(void)
     }
 
   if(count > 0)
-    QMessageBox::information
-      (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-       tr("Some of the selected participants are temporary. "
-	  "Forward Secrecy credentials will not be established."));
+    {
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("Some of the selected participants are temporary. "
+	    "Forward Secrecy credentials will not be established."));
+      QApplication::processEvents();
+    }
 
   if(traditional > 0)
-    QMessageBox::information
-      (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
-       tr("Please note that traditional e-mail accounts do not "
-	  "support Forward Secrecy."));
+    {
+      QMessageBox::information
+	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please note that traditional e-mail accounts do not "
+	    "support Forward Secrecy."));
+      QApplication::processEvents();
+    }
 
   dialog.reset(new QDialog(this));
   dialog->setWindowTitle
@@ -1132,8 +1139,11 @@ void spoton::slotEstablishForwardSecrecy(void)
     dialog->close();
 
   if(!error.isEmpty())
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
@@ -2003,8 +2013,11 @@ void spoton::slotRespondToForwardSecrecy(void)
     dialog->deleteLater();
 
   if(!error.isEmpty())
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotSaveCongestionAlgorithm(const QString &text)

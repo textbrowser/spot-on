@@ -152,6 +152,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
 	"The process completed in %4 second(s).").
      arg(imported).arg(not_imported).arg(declined).
      arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
+  QApplication::processEvents();
 }
 
 void spoton::populateUrlDistillers(void)
@@ -400,6 +401,7 @@ void spoton::slotAddDistiller(void)
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -532,6 +534,8 @@ void spoton::slotAddDistiller(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to add the specified URL domain.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotCorrectUrlDatabases(void)
@@ -542,6 +546,7 @@ void spoton::slotCorrectUrlDatabases(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -702,6 +707,7 @@ void spoton::slotCorrectUrlDatabases(void)
      arg(SPOTON_APPLICATION_NAME),
      tr("Approximate orphaned keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
+  QApplication::processEvents();
 }
 
 void spoton::slotDeleteAllUrls(void)
@@ -712,6 +718,7 @@ void spoton::slotDeleteAllUrls(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -750,12 +757,15 @@ void spoton::slotDeleteAllUrls(void)
   prepareUrlLabels();
 
   if(!deleted)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("One or more errors occurred while "
-			     "attempting to delete the URL data. "
-			     "Please verify that you have correct "
-			     "administrator privileges."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("One or more errors occurred while "
+			       "attempting to delete the URL data. "
+			       "Please verify that you have correct "
+			       "administrator privileges."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotDeleteUrlDistillers(void)
@@ -835,6 +845,7 @@ void spoton::slotDropUrlTables(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -939,10 +950,13 @@ void spoton::slotDropUrlTables(void)
       }
 
   if(!dropped)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("One or more errors occurred while "
-			     "attempting to destroy the URL tables."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("One or more errors occurred while "
+			       "attempting to destroy the URL tables."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotGatherUrlStatistics(void)
@@ -1016,6 +1030,7 @@ void spoton::slotImportUrls(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1025,6 +1040,7 @@ void spoton::slotImportUrls(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1034,6 +1050,7 @@ void spoton::slotImportUrls(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Did you prepare URL common credentials?"));
+      QApplication::processEvents();
       return;
     }
 
@@ -1058,6 +1075,7 @@ void spoton::slotImportUrls(void)
      arg(SPOTON_APPLICATION_NAME),
      tr("Please note that the URL-import process may "
 	"require a considerable amount of time to complete."));
+  QApplication::processEvents();
 
   /*
   ** We need to determine the encryption key that was
@@ -1337,6 +1355,7 @@ void spoton::slotPostgreSQLConnect(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1415,6 +1434,7 @@ void spoton::slotPostgreSQLConnect(void)
 	      QMessageBox::critical
 		(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("Could not open (%1) a database connection.").arg(str));
+	      QApplication::processEvents();
 	    }
 	  else
 	    {
@@ -1464,6 +1484,7 @@ void spoton::slotPrepareUrlDatabases(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1684,10 +1705,13 @@ void spoton::slotPrepareUrlDatabases(void)
   QApplication::processEvents();
 
   if(!created)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("One or more errors occurred while attempting "
-			     "to create the URL databases."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("One or more errors occurred while attempting "
+			       "to create the URL databases."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotRefreshUrlDistillers(void)
@@ -1756,9 +1780,12 @@ void spoton::slotSaveCommonUrlCredentials(void)
     mb->close();
 
   if(!error.isEmpty())
-    QMessageBox::critical(this,
-			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			  error);
+    {
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+			    error);
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.commonUrlCipher->setCurrentIndex(0);
@@ -1852,9 +1879,12 @@ void spoton::slotSaveUrlCredentials(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this,
-			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			  error);
+    {
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+			    error);
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.urlCipher->setCurrentIndex(0);
@@ -1918,6 +1948,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this,
 	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Please connect to a URL database."));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -1954,6 +1985,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this,
 	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Please connect to a URL database."));
+	  QApplication::processEvents();
 	  return;
 	}
       else if(!m_urlCommonCrypt)
@@ -1962,6 +1994,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -2096,6 +2129,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     error);
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -2156,6 +2190,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this,
 	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Please connect to a URL database."));
+	  QApplication::processEvents();
 	  return;
 	}
       else if(!m_urlCommonCrypt)
@@ -2164,6 +2199,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	    (this, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -2280,6 +2316,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
   else if(!m_urlCommonCrypt)
@@ -2288,6 +2325,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
   else if(!m_urlDatabase.isOpen())
@@ -2296,6 +2334,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2328,6 +2367,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	QMessageBox::critical(this, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("Invalid permissions."));
+	QApplication::processEvents();
 	return;
       }
 
@@ -2471,4 +2511,6 @@ void spoton::slotVerify(void)
       (this, tr("%1: Error").
        arg(SPOTON_APPLICATION_NAME),
        tr("The provided credentials are incorrect."));
+
+  QApplication::processEvents();
 }

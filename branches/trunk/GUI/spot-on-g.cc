@@ -117,6 +117,8 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
 			      tr("The answer and question must contain "
 				 "at least eight characters each."));
 
+      QApplication::processEvents();
+
       if(m_ui.passphrase_rb->isChecked())
 	{
 	  m_ui.passphrase1->selectAll();
@@ -136,6 +138,7 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
       QMessageBox::critical(parent, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("The passphrases are not identical."));
+      QApplication::processEvents();
       m_ui.passphrase1->selectAll();
       m_ui.passphrase1->setFocus();
       return false;
@@ -146,6 +149,7 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
       QMessageBox::critical(parent, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please provide a name."));
+      QApplication::processEvents();
       m_ui.username->selectAll();
       m_ui.username->setFocus();
       return false;
@@ -731,6 +735,7 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The open-library public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -907,6 +912,7 @@ void spoton::slotCopyUrlKeys(void)
 	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("The URL keys are too long (%1 bytes).").
 	     arg(QLocale().toString(text.length())));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -987,6 +993,7 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1018,6 +1025,7 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 			    tr("An error (%1) occurred while attempting "
 			       "to generate a new certificate.").
 			    arg(error));
+      QApplication::processEvents();
       return;
     }
 
@@ -1087,6 +1095,8 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
 			  arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to record the generated data.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotGoldBugDialogActionSelected(void)
@@ -1551,6 +1561,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1572,6 +1583,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid listener / neighbor OID. "
 			       "Please select a listener / neighbor."));
+      QApplication::processEvents();
       return;
     }
   else
@@ -1586,6 +1598,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			    tr("The method spoton_crypt::cipherTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1598,6 +1611,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 			    tr("The method spoton_crypt::hashTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1626,6 +1640,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	      QMessageBox::critical(this, tr("%1: Error").
 				    arg(SPOTON_APPLICATION_NAME),
 				    tr("Invalid magnet or memory failure."));
+	      QApplication::processEvents();
 	      return;
 	    }
 	}
@@ -1645,6 +1660,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 				    arg(SPOTON_APPLICATION_NAME),
 				    tr("Please provide a Secret that contains "
 				       "at least sixteen characters."));
+	      QApplication::processEvents();
 	      return;
 	    }
 

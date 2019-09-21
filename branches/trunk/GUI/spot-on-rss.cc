@@ -1703,8 +1703,11 @@ void spoton_rss::slotAddFeed(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error.trimmed());
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error.trimmed());
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.new_feed->clear();

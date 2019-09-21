@@ -1618,8 +1618,11 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   if(!error.isEmpty())
     {
       if(displayError)
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME), error);
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME), error);
+	  QApplication::processEvents();
+	}
     }
   else
     askKernelToReadStarBeamKeys();
@@ -1635,6 +1638,7 @@ void spoton::slotAddReceiveNova(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1648,6 +1652,7 @@ void spoton::slotAddReceiveNova(void)
 	 tr("Please provide a nova that contains at least "
 	    "forty-eight characters. Reach for the "
 	    "stars!"));
+      QApplication::processEvents();
       return;
     }
 
@@ -1694,9 +1699,12 @@ void spoton::slotAddReceiveNova(void)
       askKernelToReadStarBeamKeys();
     }
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to store the nova."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Unable to store the nova."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotAutoRetrieveEmail(bool state)
@@ -1964,6 +1972,7 @@ void spoton::slotCopyEmailKeys(void)
 	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("The e-mail keys are too long (%1 bytes).").
 	     arg(QLocale().toString(text.length())));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -2303,6 +2312,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The URL bundle is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -2444,6 +2454,7 @@ void spoton::slotDeleteNova(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2454,6 +2465,7 @@ void spoton::slotDeleteNova(void)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select a nova to delete."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2489,10 +2501,13 @@ void spoton::slotDeleteNova(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the speficied nova."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting "
+			       "to delete the speficied nova."));
+      QApplication::processEvents();
+    }
   else
     {
       populateNovas();
@@ -2609,6 +2624,7 @@ void spoton::slotExportListeners(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Unable to export an empty listeners table."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2896,6 +2912,7 @@ void spoton::slotImportNeighbors(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3043,6 +3060,7 @@ void spoton::slotImportPublicKeys(void)
 	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
 	    "were not imported.").arg(imported).arg(notimported));
+      QApplication::processEvents();
     }
 
   QApplication::processEvents();
@@ -3834,6 +3852,7 @@ void spoton::slotRegenerateKey(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object(s). This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3959,12 +3978,15 @@ void spoton::slotRegenerateKey(void)
   updatePublicKeysLabel();
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred with "
-			     "spoton_crypt::"
-			     "generatePrivatePublicKeys().").
-			  arg(error.trimmed()));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error (%1) occurred with "
+			       "spoton_crypt::"
+			       "generatePrivatePublicKeys().").
+			    arg(error.trimmed()));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotRemoveUrlParticipants(void)
@@ -4707,8 +4729,11 @@ void spoton::slotTransmit(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.fragment_starbeam->setChecked(false);

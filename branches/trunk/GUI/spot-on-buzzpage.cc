@@ -322,6 +322,7 @@ void spoton_buzzpage::slotRemove(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is a "
 			       "fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -392,6 +393,8 @@ void spoton_buzzpage::slotRemove(void)
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("An error (%1) occurred while attempting to "
 				 "remove the channel data.").arg(error));
+
+      QApplication::processEvents();
     }
   else
     emit channelSaved();
@@ -407,6 +410,7 @@ void spoton_buzzpage::slotSave(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -483,6 +487,8 @@ void spoton_buzzpage::slotSave(void)
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("An error (%1) occurred while attempting to "
 				 "save the channel data.").arg(error));
+
+      QApplication::processEvents();
     }
   else
     emit channelSaved();
@@ -590,8 +596,11 @@ void spoton_buzzpage::slotSendMessage(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 }
 
 void spoton_buzzpage::slotSendStatus(void)

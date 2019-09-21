@@ -804,6 +804,7 @@ void spoton::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QApplication::processEvents();
 }
 
 void spoton::slotAcceptGeminis(bool state)
@@ -834,6 +835,7 @@ void spoton::slotConfigurePoptastic(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -879,6 +881,7 @@ void spoton::slotConfigurePoptastic(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("A failure occurred with "
 			       "spoton_misc::poptasticSettings()."));
+      QApplication::processEvents();
     }
   else
     {
@@ -1027,6 +1030,7 @@ void spoton::slotConfigurePoptastic(void)
 				tr("An error (%1) occurred while "
 				   "attempting to save the Poptastic "
 				   "information.").arg(error));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -1102,6 +1106,7 @@ void spoton::slotDeletePoptasticAccount(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1663,11 +1668,14 @@ void spoton::slotSavePoptasticAccount(void)
   QApplication::restoreOverrideCursor();
 
   if(!error.isEmpty())
-    QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error (%1) occurred while "
-			     "attempting to save the Poptastic "
-			     "information.").arg(error));
+    {
+      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error (%1) occurred while "
+			       "attempting to save the Poptastic "
+			       "information.").arg(error));
+      QApplication::processEvents();
+    }
   else
     {
       QList<QHash<QString, QVariant> > list;
@@ -1895,6 +1903,7 @@ void spoton::slotSetSBPulseSize(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1940,10 +1949,13 @@ void spoton::slotSetSBPulseSize(void)
   if(ok)
     setSBField(oid, bytes, "pulse_size");
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting to "
-			     "secure the pulse size."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting to "
+			       "secure the pulse size."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotSetSBReadInterval(void)
@@ -2371,6 +2383,8 @@ void spoton::slotTestPoptasticPop3Settings(void)
        tr("%1: Poptastic Incoming Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotTestPoptasticSmtpSettings(void)
@@ -2518,6 +2532,8 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("%1: Poptastic Outgoing Connection Test").
        arg(SPOTON_APPLICATION_NAME),
        tr("Failure!\nError: %1.").arg(error));
+
+  QApplication::processEvents();
 }
 
 void spoton::slotVerifySMPSecret(const QString &hash,

@@ -351,8 +351,11 @@ void spoton_chatwindow::sendMessage(bool *ok)
       if(ok)
 	*ok = false;
       else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME), error);
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME), error);
+	  QApplication::processEvents();
+	}
     }
 }
 
@@ -406,6 +409,7 @@ void spoton_chatwindow::showError(const QString &error)
 
   QMessageBox::critical(this, tr("%1: Error").
 			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QApplication::processEvents();
 }
 
 void spoton_chatwindow::showNormal(void)

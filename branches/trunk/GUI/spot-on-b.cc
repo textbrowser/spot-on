@@ -621,6 +621,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object. This is "
 				   "a fatal flaw."));
+	  QApplication::processEvents();
 	  return false;
 	}
       else if(!key.contains("@"))
@@ -629,6 +630,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a normal e-mail address."));
+	  QApplication::processEvents();
 	  return false;
 	}
       else if(key.isEmpty())
@@ -636,6 +638,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty e-mail address. Really?"));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -676,6 +679,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("An error occurred while attempting "
 				   "to save the friendship bundle."));
+	  QApplication::processEvents();
 	  return false;
 	}
     }
@@ -692,6 +696,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object(s). This is "
 				   "a fatal flaw."));
+	  QApplication::processEvents();
 	  return false;
 	}
       else if(key.isEmpty())
@@ -699,6 +704,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty key(s). Really?"));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -709,6 +715,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key(s). The provided text must start with either "
 		"the letter K or the letter k."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -721,6 +728,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 6 entries, received %1.").
 	     arg(list.size()));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -736,6 +744,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     tr("Invalid key type. Expecting 'chat', 'email', "
 		"'open-library', "
 		"'poptastic', 'rosetta', or 'url'."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -807,6 +816,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("You're attempting to add your own '%1' keys. "
 		"Please do not do this!").arg(keyType.constData()));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -910,6 +920,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("An error occurred while attempting "
 				   "to save the friendship bundle."));
+	  QApplication::processEvents();
 	  return false;
 	}
       else
@@ -933,6 +944,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object(s). This is "
 				   "a fatal flaw."));
+	  QApplication::processEvents();
 	  return false;
 	}
       else if(key.isEmpty())
@@ -940,6 +952,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Empty key(s). Really?"));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -950,6 +963,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid repleo(s). The provided text must start with "
 		"either the letter R or the letter r."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -962,6 +976,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 3 entries, received %1.").
 	     arg(list.size()));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1009,6 +1024,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				 tr("Asymmetric decryption failure. "
 				    "Are you attempting "
 				    "to add a repleo that you gathered?"));
+			      QApplication::processEvents();
 			      return false;
 			    }
 			}
@@ -1026,6 +1042,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 3 entries, received %1.").
 	     arg(list.size()));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1049,6 +1066,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QMessageBox::critical(parent, tr("%1: Error").
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Unable to compute a keyed hash."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1059,6 +1077,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("The computed hash does not match "
 				   "the provided hash."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1070,6 +1089,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	    (parent, tr("%1: Error").
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Symmetric decryption failure. Serious!"));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1082,6 +1102,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Irregular data. Expecting 6 entries, received %1.").
 	     arg(list.size()));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1096,6 +1117,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     tr("Invalid key type. Expecting 'chat', 'email', "
 		"'open-library', 'poptastic', "
 		"'rosetta', or 'url'."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1165,6 +1187,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 		"%1 was not able to retrieve your keys for "
 		"comparison.").
 	     arg(SPOTON_APPLICATION_NAME));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1178,6 +1201,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
 		"'rosetta', or 'url' "
 		"public key signature."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1192,6 +1216,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	     tr("Invalid 'chat', 'email', 'open-library', 'poptastic', "
 		"'rosetta', or 'url' "
 		"signature public key signature."));
+	  QApplication::processEvents();
 	  return false;
 	}
 
@@ -1239,6 +1264,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				arg(SPOTON_APPLICATION_NAME),
 				tr("An error occurred while attempting "
 				   "to save the friendship bundle."));
+	  QApplication::processEvents();
 	  return false;
 	}
     }
@@ -2472,8 +2498,11 @@ void spoton::sendMessage(bool *ok)
       if(ok)
 	*ok = false;
       else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME), error);
+	{
+	  QMessageBox::critical(this, tr("%1: Error").
+				arg(SPOTON_APPLICATION_NAME), error);
+	  QApplication::processEvents();
+	}
     }
 }
 
@@ -2521,6 +2550,7 @@ void spoton::slotAddAcceptedIP(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2541,6 +2571,7 @@ void spoton::slotAddAcceptedIP(void)
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid listener OID. Please select a listener."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2553,6 +2584,7 @@ void spoton::slotAddAcceptedIP(void)
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("Please provide an IP address or "
 				 "the keyword Any."));
+	QApplication::processEvents();
 	return;
       }
 
@@ -2616,9 +2648,12 @@ void spoton::slotAddAcceptedIP(void)
   if(ok)
     m_ui.acceptedIP->clear();
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to record the IP address."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Unable to record the IP address."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotAddAccount(void)
@@ -2718,8 +2753,11 @@ void spoton::slotAddAccount(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.accountName->clear();
@@ -3059,6 +3097,7 @@ void spoton::slotCopyFriendshipBundle(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The chat bundle is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3080,6 +3119,7 @@ void spoton::slotCopyMyChatPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The chat public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3110,6 +3150,7 @@ void spoton::slotCopyMyEmailPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The e-mail public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3140,6 +3181,7 @@ void spoton::slotCopyMyPoptasticPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The poptastic public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3170,6 +3212,7 @@ void spoton::slotCopyMyRosettaPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The rosetta public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3200,6 +3243,7 @@ void spoton::slotCopyMyURLPublicKey(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The URL public key is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
+      QApplication::processEvents();
       return;
     }
 
@@ -3244,6 +3288,7 @@ void spoton::slotDeleteAcceptedIP(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3265,6 +3310,7 @@ void spoton::slotDeleteAcceptedIP(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid listener OID. "
 			       "Please select a listener."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3283,6 +3329,7 @@ void spoton::slotDeleteAcceptedIP(void)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select an address to delete."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3360,10 +3407,13 @@ void spoton::slotDeleteAcceptedIP(void)
   if(ok)
     delete m_ui.acceptedIPList->takeItem(row);
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified IP."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting "
+			       "to delete the specified IP."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotDeleteAccount(void)
@@ -3376,6 +3426,7 @@ void spoton::slotDeleteAccount(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3397,6 +3448,7 @@ void spoton::slotDeleteAccount(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid listener OID. "
 			       "Please select a listener."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3407,6 +3459,7 @@ void spoton::slotDeleteAccount(void)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select an account to delete."));
+      QApplication::processEvents();
       return;
     }
 
@@ -3443,10 +3496,13 @@ void spoton::slotDeleteAccount(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified account."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting "
+			       "to delete the specified account."));
+      QApplication::processEvents();
+    }
   else
     populateAccounts(oid);
 }
@@ -3964,8 +4020,11 @@ void spoton::slotJoinBuzzChannel(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotKeepCopy(bool state)
@@ -4195,6 +4254,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 				  arg(SPOTON_APPLICATION_NAME),
 				  tr("An error occurred while processing "
 				     "the attachment(s)."));
+	    QApplication::processEvents();
 	    return;
 	  }
 	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_DATABASE)
@@ -4202,6 +4262,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	    QMessageBox::critical(this, tr("%1: Error").
 				  arg(SPOTON_APPLICATION_NAME),
 				  tr("A database error occurred."));
+	    QApplication::processEvents();
 	    return;
 	  }
 	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_GENERAL)
@@ -4210,6 +4271,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 				  arg(SPOTON_APPLICATION_NAME),
 				  tr("The provided Gold Bug may be "
 				     "incorrect."));
+	    QApplication::processEvents();
 	    return;
 	  }
 	else if(rc == APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY)
@@ -4217,6 +4279,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	    QMessageBox::critical(this, tr("%1: Error").
 				  arg(SPOTON_APPLICATION_NAME),
 				  tr("A severe memory issue occurred."));
+	    QApplication::processEvents();
 	    return;
 	  }
 	else if(item)
@@ -5784,8 +5847,11 @@ void spoton::slotRetrieveMail(void)
 
   if(m_ui.retrieveMail == sender())
     if(!error.isEmpty())
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      {
+	QMessageBox::critical(this, tr("%1: Error").
+			      arg(SPOTON_APPLICATION_NAME), error);
+	QApplication::processEvents();
+      }
 }
 
 void spoton::slotSaveBuzzName(void)
@@ -5869,6 +5935,7 @@ void spoton::slotSendMail(void)
 	 tr("The file email.db has exceeded the defined limit. Please "
 	    "remove some entries and/or increase the limit "
 	    "via the Permissions section in Options."));
+      QApplication::processEvents();
       return;
     }
 
@@ -5898,6 +5965,7 @@ void spoton::slotSendMail(void)
 		 arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 cannot be accessed.").
 		 arg(fileName));
+	      QApplication::processEvents();
 	      return;
 	    }
 	  else if(fileInfo.size() >
@@ -5911,6 +5979,7 @@ void spoton::slotSendMail(void)
 		    "of an attachment is %2 byte(s).").arg(fileName).
 		 arg(locale.toString(spoton_common::
 				     EMAIL_ATTACHMENT_MAXIMUM_SIZE)));
+	      QApplication::processEvents();
 	      return;
 	    }
 
@@ -5931,6 +6000,7 @@ void spoton::slotSendMail(void)
 		 arg(SPOTON_APPLICATION_NAME),
 		 tr("An error occurred while reading the attachment %1.").
 		 arg(fileName));
+	      QApplication::processEvents();
 	      return;
 	    }
 
@@ -5949,6 +6019,7 @@ void spoton::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -5962,6 +6033,7 @@ void spoton::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Please select at least one participant."));
+      QApplication::processEvents();
       m_ui.emailParticipants->setFocus();
       return;
     }
@@ -5971,6 +6043,7 @@ void spoton::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Please compose an actual letter."));
+      QApplication::processEvents();
       m_ui.outgoingMessage->setFocus();
       return;
     }
@@ -5983,6 +6056,7 @@ void spoton::slotSendMail(void)
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a Gold Bug that contains at least ninety-six "
 		"characters."));
+	  QApplication::processEvents();
 	  return;
 	}
     }
@@ -6028,6 +6102,7 @@ void spoton::slotSendMail(void)
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("At least one of the selected e-mail recipients is temporary. "
 	    "Please correct."));
+      QApplication::processEvents();
       return;
     }
 
@@ -6040,6 +6115,7 @@ void spoton::slotSendMail(void)
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("The Poptastic & RetroPhone Settings window will be "
 		"displayed. Please prepare at least one Poptastic account."));
+	  QApplication::processEvents();
 	  slotConfigurePoptastic();
 	}
 

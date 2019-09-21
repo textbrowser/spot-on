@@ -726,8 +726,11 @@ void spoton::slotAddAEToken(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
   else
     {
       m_ui.ae_e_type->setCurrentIndex(0);
@@ -785,6 +788,7 @@ void spoton::slotAddInstitution(const QString &text)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -842,6 +846,7 @@ void spoton::slotAddInstitution(const QString &text)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please provide an institution name."));
+      QApplication::processEvents();
       return;
     }
 
@@ -851,6 +856,7 @@ void spoton::slotAddInstitution(const QString &text)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please provide an institution "
 			       "postal address."));
+      QApplication::processEvents();
       return;
     }
 
@@ -923,9 +929,12 @@ void spoton::slotAddInstitution(const QString &text)
       refreshInstitutions();
     }
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("Unable to record the institution."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Unable to record the institution."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotAddInstitutionCheckBoxToggled(bool state)
@@ -963,6 +972,7 @@ void spoton::slotAddMagnet(void)
 				arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object. This is "
 				   "a fatal flaw."));
+	  QApplication::processEvents();
 	  return;
 	}
 
@@ -1085,6 +1095,8 @@ void spoton::slotAddMagnet(void)
 	       arg(SPOTON_APPLICATION_NAME),
 	       tr("An error (%1) occurred while attempting to "
 		  "save the channel data.").arg(error));
+
+	  QApplication::processEvents();
 	}
       else
 	slotPopulateBuzzFavorites();
@@ -1443,6 +1455,7 @@ void spoton::slotDeleteAEToken(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1453,6 +1466,7 @@ void spoton::slotDeleteAEToken(void)
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select a token to delete."));
+      QApplication::processEvents();
       return;
     }
 
@@ -1491,11 +1505,14 @@ void spoton::slotDeleteAEToken(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to delete the specified adaptive echo "
-			     "token."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting "
+			       "to delete the specified adaptive echo "
+			       "token."));
+      QApplication::processEvents();
+    }
   else
     populateAETokens();
 }
@@ -1954,6 +1971,7 @@ void spoton::slotSaveAttachment(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2060,10 +2078,13 @@ void spoton::slotSaveAttachment(void)
   QApplication::restoreOverrideCursor();
 
   if(!ok)
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
-			  tr("An error occurred while attempting "
-			     "to extract the attachment(s)."));
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("An error occurred while attempting "
+			       "to extract the attachment(s)."));
+      QApplication::processEvents();
+    }
 }
 
 void spoton::slotSaveBuzzAutoJoin(bool state)
@@ -2131,8 +2152,11 @@ void spoton::slotSaveMOTD(void)
  done_label:
 
   if(!error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
   else
     m_ui.motd->selectAll();
 }
@@ -2147,6 +2171,7 @@ void spoton::slotSetAETokenInformation(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2162,6 +2187,7 @@ void spoton::slotSetAETokenInformation(void)
 			    arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid neighbor OID. "
 			       "Please select a neighbor."));
+      QApplication::processEvents();
       return;
     }
   else
@@ -2176,6 +2202,7 @@ void spoton::slotSetAETokenInformation(void)
 			    tr("The method spoton_crypt::cipherTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -2188,6 +2215,7 @@ void spoton::slotSetAETokenInformation(void)
 			    tr("The method spoton_crypt::hashTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 

@@ -538,6 +538,7 @@ void spoton_emailwindow::slotSendMail(void)
 	 tr("The file email.db has exceeded the specified limit. Please "
 	    "remove some entries and/or increase the limit "
 	    "via the Permissions section in Options."));
+      QApplication::processEvents();
       return;
     }
 
@@ -567,6 +568,7 @@ void spoton_emailwindow::slotSendMail(void)
 		 arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 cannot be accessed.").
 		 arg(fileName));
+	      QApplication::processEvents();
 	      return;
 	    }
 	  else if(fileInfo.size() >
@@ -580,6 +582,7 @@ void spoton_emailwindow::slotSendMail(void)
 		    "of an attachment is %2 byte(s).").arg(fileName).
 		 arg(locale.toString(spoton_common::
 				     EMAIL_ATTACHMENT_MAXIMUM_SIZE)));
+	      QApplication::processEvents();
 	      return;
 	    }
 
@@ -600,6 +603,7 @@ void spoton_emailwindow::slotSendMail(void)
 		 arg(SPOTON_APPLICATION_NAME),
 		 tr("An error occurred while reading the attachment %1.").
 		 arg(fileName));
+	      QApplication::processEvents();
 	      return;
 	    }
 
@@ -618,6 +622,7 @@ void spoton_emailwindow::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
       return;
     }
 
@@ -631,6 +636,7 @@ void spoton_emailwindow::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Please select at least one participant."));
+      QApplication::processEvents();
       m_ui.emailParticipants->setFocus();
       return;
     }
@@ -640,6 +646,7 @@ void spoton_emailwindow::slotSendMail(void)
 	(this, tr("%1: Error").
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("Please compose an actual letter."));
+      QApplication::processEvents();
       m_ui.outgoingMessage->setFocus();
       return;
     }
@@ -652,6 +659,7 @@ void spoton_emailwindow::slotSendMail(void)
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a Gold Bug that contains at least ninety-six "
 		"characters."));
+	  QApplication::processEvents();
 	  return;
 	}
     }
@@ -697,6 +705,7 @@ void spoton_emailwindow::slotSendMail(void)
 	 arg(SPOTON_APPLICATION_NAME),
 	 tr("At least one of the selected e-mail recipients is temporary. "
 	    "Please correct."));
+      QApplication::processEvents();
       return;
     }
 
@@ -710,11 +719,11 @@ void spoton_emailwindow::slotSendMail(void)
 	     arg(SPOTON_APPLICATION_NAME),
 	     tr("The Poptastic & RetroPhone Settings window will be "
 		"displayed. Please prepare at least one Poptastic account."));
+	  QApplication::processEvents();
 	  emit configurePoptastic();
 	}
 
-      if(m_parent->
-	 m_settings.value("gui/poptasticNameEmail").isNull())
+      if(m_parent->m_settings.value("gui/poptasticNameEmail").isNull())
 	return;
     }
 
