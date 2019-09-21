@@ -65,6 +65,8 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
     setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+  else
+    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
 #endif
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),

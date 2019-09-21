@@ -1336,9 +1336,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString oid("");
   QString publicKeyHash("");
@@ -2133,9 +2131,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString oid("");
   int row = -1;
@@ -3896,9 +3892,7 @@ void spoton::slotRegenerateKey(void)
     }
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   if(keyType == "chat")
     {
@@ -3998,9 +3992,7 @@ void spoton::slotRemoveUrlParticipants(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString connectionName("");
 

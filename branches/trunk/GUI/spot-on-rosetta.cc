@@ -910,9 +910,7 @@ void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
   if(clipboard)
     {
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();

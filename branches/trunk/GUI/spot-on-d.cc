@@ -1275,9 +1275,7 @@ void spoton::slotClearClipboardBuffer(void)
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       menuBar()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       clipboard->clear();
       QApplication::restoreOverrideCursor();
     }
@@ -1286,9 +1284,7 @@ void spoton::slotClearClipboardBuffer(void)
 void spoton::slotCommonBuzzChannelsActivated(int index)
 {
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   m_ui.demagnetize->setText
     (m_ui.commonBuzzChannels->itemData(index).toString());
   demagnetize();
@@ -2470,9 +2466,7 @@ void spoton::slotSharePoptasticPublicKey(void)
     m_ui.neighborsActionMenu->menu()->repaint();
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");

@@ -430,9 +430,7 @@ void spoton::slotAboutToShowEmailSecretsMenu(void)
 void spoton::slotAfterFirstShow(void)
 {
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_sb.status->setText(tr("Preparing databases. Please be patient."));
   m_sb.status->repaint();
@@ -478,9 +476,7 @@ void spoton::slotBuzzInvite(void)
     return;
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   /*
   ** Let's generate an anonymous Buzz channel.
@@ -744,9 +740,7 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -1306,9 +1300,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	  m_wizardHash["url_distribution"] = m_wizardUi->
 	    enable_url_distribution->isChecked();
 	  repaint();
-#ifndef Q_OS_MAC
 	  QApplication::processEvents();
-#endif
 	  slotSetPassphrase();
 
 	  if(m_wizardUi->prepare_sqlite_urls_db->isChecked())
@@ -1657,9 +1649,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	    }
 
 	  repaint();
-#ifndef Q_OS_MAC
 	  QApplication::processEvents();
-#endif
 
 	  /*
 	  ** The salt will be composed of the cipher type, hash type,
@@ -1860,9 +1850,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
     m_ui.neighborsActionMenu->menu()->repaint();
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");
@@ -2065,9 +2053,7 @@ void spoton::slotShowSMPWindow(void)
 {
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   m_smpWindow.show(this);
   spoton_utilities::centerWidget(&m_smpWindow, this);
 }

@@ -2863,9 +2863,7 @@ void spoton::slotCopyFriendshipBundle(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString keyType("");
   QString oid("");
@@ -3091,9 +3089,7 @@ void spoton::slotCopyMyChatPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -3123,9 +3119,7 @@ void spoton::slotCopyMyEmailPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -3155,9 +3149,7 @@ void spoton::slotCopyMyPoptasticPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -3187,9 +3179,7 @@ void spoton::slotCopyMyRosettaPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -3219,9 +3209,7 @@ void spoton::slotCopyMyURLPublicKey(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -5456,9 +5444,7 @@ void spoton::slotRemoveEmailParticipants(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString connectionName("");
 
@@ -5527,9 +5513,7 @@ void spoton::slotRemoveParticipants(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString connectionName("");
 
@@ -6632,9 +6616,7 @@ void spoton::slotShareChatPublicKey(void)
     m_ui.neighborsActionMenu->menu()->repaint();
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");
@@ -6735,9 +6717,7 @@ void spoton::slotShareEmailPublicKey(void)
     m_ui.neighborsActionMenu->menu()->repaint();
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");
@@ -6838,9 +6818,7 @@ void spoton::slotShareURLPublicKey(void)
     m_ui.neighborsActionMenu->menu()->repaint();
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString oid("");

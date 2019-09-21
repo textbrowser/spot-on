@@ -1264,9 +1264,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
     return;
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QPair<QByteArray, QByteArray> gemini;
@@ -1311,9 +1309,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
     return;
 
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QPair<QByteArray, QByteArray> gemini;

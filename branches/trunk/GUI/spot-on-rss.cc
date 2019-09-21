@@ -2418,9 +2418,7 @@ void spoton_rss::slotRefreshTimeline(void)
   progress.raise();
   progress.activateWindow();
   progress.repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   m_ui.timeline->clear();
 
   QString connectionName("");
@@ -2488,9 +2486,7 @@ void spoton_rss::slotRefreshTimeline(void)
 		progress.setValue(i);
 
 	      progress.repaint();
-#ifndef Q_OS_MAC
 	      QApplication::processEvents();
-#endif
 
 	      QByteArray bytes;
 	      QList<QVariant> list;

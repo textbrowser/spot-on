@@ -655,9 +655,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString forwardSecrecyInformation("");
   QString keyType("");
@@ -1057,9 +1055,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 			  arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
@@ -1068,9 +1064,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	progress.setValue(i + 1);
 
       progress.repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
 
       bool temporary = publicKeyHashes.at(i).data(Qt::UserRole).toBool();
 
@@ -2244,9 +2238,7 @@ void spoton::slotVacuumDatabases(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
   spoton_misc::vacuumAllDatabases();
   QApplication::restoreOverrideCursor();
 }

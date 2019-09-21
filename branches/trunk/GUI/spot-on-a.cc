@@ -4038,9 +4038,7 @@ void spoton::slotActivateKernel(void)
 
   do
     {
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
 
       if(m_ui.pid->text().toLongLong() > 0)
 	break;
@@ -5035,9 +5033,7 @@ void spoton::slotCallParticipant(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString keyType("");
   QString oid("");
@@ -5215,9 +5211,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
     {
       m_ui.toolButtonCopyToClipboard->menu()->repaint();
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       clipboard->setText(text);
       QApplication::restoreOverrideCursor();
@@ -5234,9 +5228,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   menuBar()->repaint();
   repaint();
-#ifndef Q_OS_MAC
   QApplication::processEvents();
-#endif
 
   QString keyType("");
   QString oid("");
@@ -5508,9 +5500,7 @@ void spoton::slotDeactivateKernel(void)
 
   do
     {
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
 
       if(m_ui.pid->text().toLongLong() <= 0)
 	break;
@@ -9042,9 +9032,7 @@ void spoton::slotSetPassphrase(void)
       else
 	{
 	  repaint();
-#ifndef Q_OS_MAC
 	  QApplication::processEvents();
-#endif
 	  m_rss->deactivate();
 	  slotDeactivateKernel();
 	  reencode = true;
@@ -9053,9 +9041,7 @@ void spoton::slotSetPassphrase(void)
   else
     {
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
 
       /*
       ** Deactivate machines before preparing keys.
@@ -9213,9 +9199,7 @@ void spoton::slotSetPassphrase(void)
 	  if(proceed)
 	    {
 	      repaint();
-#ifndef Q_OS_MAC
 	      QApplication::processEvents();
-#endif
 
 	      QString encryptionKeyType("");
 	      QString signatureKeyType("");
@@ -9256,9 +9240,7 @@ void spoton::slotSetPassphrase(void)
 				      arg(SPOTON_APPLICATION_NAME));
 	      progress.show();
 	      progress.repaint();
-#ifndef Q_OS_MAC
 	      QApplication::processEvents();
-#endif
 
 	      for(int i = 0; i < list.size() && !progress.wasCanceled(); i++)
 		{
@@ -9266,9 +9248,7 @@ void spoton::slotSetPassphrase(void)
 		    progress.setValue(i + 1);
 
 		  progress.repaint();
-#ifndef Q_OS_MAC
 		  QApplication::processEvents();
-#endif
 
 		  spoton_crypt crypt
 		    (m_ui.cipherType->currentText(),
@@ -9519,9 +9499,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.signatureKeyType->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
       repaint();
-#ifndef Q_OS_MAC
       QApplication::processEvents();
-#endif
 
       for(int i = 0; i < m_ui.tab->count(); i++)
 	{

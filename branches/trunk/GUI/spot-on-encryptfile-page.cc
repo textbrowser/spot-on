@@ -665,9 +665,7 @@ void spoton_encryptfile_page::slotConvert(void)
       while(true)
 	{
 	  repaint();
-#ifndef Q_OS_MAC
 	  QApplication::processEvents();
-#endif
 
 	  if(files.isEmpty() || m_quit)
 	    break;
