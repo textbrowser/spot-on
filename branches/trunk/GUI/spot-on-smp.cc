@@ -477,14 +477,14 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
   if(!m_a2)
     {if(ok) *ok = false; list.clear(); goto done_label;}
   else if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
 
   m_a3 = generateRandomExponent(ok);
 
   if(!m_a3)
     {if(ok) *ok = false; list.clear(); goto done_label;}
   else if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
 
   /*
   ** Gather some log proofs.
@@ -679,14 +679,14 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other, bool *ok)
   if(!m_b2)
     {if(ok) *ok = false; list.clear(); goto done_label;}
   else if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
 
   m_b3 = generateRandomExponent(ok);
 
   if(!m_b3)
     {if(ok) *ok = false; list.clear(); goto done_label;}
   else if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
 
   /*
   ** Gather some log proofs.
@@ -744,7 +744,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other, bool *ok)
   r = generateRandomExponent(ok);
 
   if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
   else if(!r)
     {if(ok) *ok = false; list.clear(); goto done_label;}
 
@@ -936,7 +936,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other, bool *ok)
   s = generateRandomExponent(ok);
 
   if(ok && !*ok)
-    {if(ok) *ok = false; list.clear(); goto done_label;}
+    {list.clear(); *ok = false; goto done_label;}
   else if(!s)
     {if(ok) *ok = false; list.clear(); goto done_label;}
 
