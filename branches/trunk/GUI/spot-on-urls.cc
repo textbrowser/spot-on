@@ -642,6 +642,8 @@ void spoton::slotCorrectUrlDatabases(void)
 	progress.setLabelText
 	  (tr("Reviewing spot_on_keywords_%1%2 for orphaned entries. "
 	      "Please be patient.").arg(c1).arg(c2));
+	progress.repaint();
+	QApplication::processEvents();
 	query1.prepare
 	  (QString("SELECT url_hash FROM "
 		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
@@ -1570,6 +1572,8 @@ void spoton::slotPrepareUrlDatabases(void)
 	    progress.setLabelText
 	      (tr("Creating spot_on_keywords_%1%2. "
 		  "Please be patient.").arg(c1).arg(c2));
+	    progress.repaint();
+	    QApplication::processEvents();
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -1600,6 +1604,8 @@ void spoton::slotPrepareUrlDatabases(void)
 	    progress.setLabelText
 	      (tr("Creating spot_on_urls_%1%2. "
 		  "Please be patient.").arg(c1).arg(c2));
+	    progress.repaint();
+	    QApplication::processEvents();
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {
@@ -1637,6 +1643,8 @@ void spoton::slotPrepareUrlDatabases(void)
 	    progress.setLabelText
 	      (tr("Creating spot_on_urls_revisions_%1%2. "
 		  "Please be patient.").arg(c1).arg(c2));
+	    progress.repaint();
+	    QApplication::processEvents();
 
 	    if(m_urlDatabase.driverName() == "QPSQL")
 	      {

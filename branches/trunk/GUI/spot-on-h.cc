@@ -26,6 +26,7 @@
 */
 
 #include <QApplication>
+#include <QProgressDialog>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
@@ -334,8 +335,9 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
   if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
 	      password))
     {
-      if(m_pqUrlFaultyCounter.fetchAndAddOrdered(1) > 5)
-	emit pqUrlDatabaseFaulty();
+      if(!db.lastError().text().toLower().contains("query results lost"))
+	if(m_pqUrlFaultyCounter.fetchAndAddOrdered(1) > 5)
+	  emit pqUrlDatabaseFaulty();
     }
   else
     m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
@@ -654,8 +656,11 @@ void spoton::slotNewEmailWindow(void)
 
 void spoton::slotPQUrlDatabaseFaulty(void)
 {
-  m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
-  slotPostgreSQLDisconnect(0);
+  if(findChildren<QProgressDialog *> ().isEmpty())
+    {
+      m_pqUrlFaultyCounter.fetchAndStoreOrdered(0);
+      slotPostgreSQLDisconnect(0);
+    }
 }
 
 void spoton::slotPopulateNeighbors(void)
