@@ -3330,9 +3330,9 @@ void spoton::slotPopulateStars(void)
 	      totalRows += 1;
 
 	      QByteArray expectedFileHash;
-	      QByteArray expected_sha3_512_hash;
+	      QByteArray expectedSha3512FileHash;
 	      QByteArray hash;
-	      QByteArray sha3_512_hash;
+	      QByteArray sha3512Hash;
 	      QCheckBox *check = 0;
 	      QString fileName("");
 	      bool ok = true;
@@ -3403,12 +3403,12 @@ void spoton::slotPopulateStars(void)
 			  }
 			case 6:
 			  {
-			    expected_sha3_512_hash = bytes;
+			    expectedSha3512FileHash = bytes;
 			    break;
 			  }
 			case 7:
 			  {
-			    sha3_512_hash = bytes;
+			    sha3512Hash = bytes;
 			    break;
 			  }
 			default:
@@ -3502,8 +3502,7 @@ void spoton::slotPopulateStars(void)
 			if(hash.isEmpty())
 			  m_starbeamDigestFutures.append
 			    (QtConcurrent::run(this,
-					       &spoton::computeFileDigest,
-					       expectedFileHash,
+					       &spoton::computeFileDigests,
 					       fileName,
 					       query.
 					       value(query.record().
@@ -3521,24 +3520,32 @@ void spoton::slotPopulateStars(void)
 		  if(!hash.isEmpty() && spoton_crypt::memcmp(expectedFileHash,
 							     hash))
 		    {
-		      item3->setBackground
-			(QBrush(QColor("lightgreen")));
+		      item3->setBackground(QBrush(QColor("lightgreen")));
 		      item3->setToolTip(tr("The computed file digest "
 					   "is identical to the expected "
 					   "file digest."));
-		      item4->setBackground
-			(QBrush(QColor("lightgreen")));
+		      item4->setBackground(QBrush(QColor("lightgreen")));
 		    }
 		  else
 		    {
-		      item3->setBackground
-			(QBrush(QColor(240, 128, 128)));
+		      item3->setBackground(QBrush(QColor(240, 128, 128)));
 		      item3->setToolTip(tr("The computed file digest "
 					   "does not equal the expected "
 					   "file digest."));
-		      item4->setBackground
-			(QBrush(QColor(240, 128, 128)));
+		      item4->setBackground(QBrush(QColor(240, 128, 128)));
 		    }
+		}
+
+	      item4 = m_ui.received->item(row, 7);
+
+	      if(item4)
+		{
+		  if(!sha3512Hash.isEmpty() &&
+		     spoton_crypt::memcmp(expectedSha3512FileHash,
+					  sha3512Hash))
+		    item4->setBackground(QBrush(QColor("lightgreen")));
+		  else
+		    item4->setBackground(QBrush(QColor(240, 128, 128)));
 		}
 
 	      if(m_ui.received->item(row, 4) &&

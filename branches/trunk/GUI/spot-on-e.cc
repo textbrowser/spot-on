@@ -314,13 +314,10 @@ static QStringList curl_protocols(void)
   return list;
 }
 
-void spoton::computeFileDigest(const QByteArray &expectedFileHash,
-			       const QString &fileName,
-			       const QString &oid,
-			       spoton_crypt *crypt)
+void spoton::computeFileDigests(const QString &fileName,
+				const QString &oid,
+				spoton_crypt *crypt)
 {
-  Q_UNUSED(expectedFileHash);
-
   QFile file;
 
   file.setFileName(fileName);

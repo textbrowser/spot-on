@@ -189,6 +189,7 @@ Completed Items
 136.   Repopulate separated e-mail windows after participant removal.
 137.   Repopulate SMP Window after participant removal.
 138.   Re-encode SHA3-512 starbeam.db fields.
+139.   Highlight StarBeam SHA3-512 file digest.
 
 Ignored Items
 
@@ -244,4 +245,3 @@ Remaining Items
 10.    Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
 11.    Remove obsolete includes.
-12.    Highlight StarBeam SHA3-512 file digest.

@@ -628,10 +628,9 @@ class spoton: public QMainWindow
   void changeEchoMode(const QString &mode, QTableWidget *tableWidget);
   void cleanup(void);
   void closeEvent(QCloseEvent *event);
-  void computeFileDigest(const QByteArray &expectedFileHash,
-			 const QString &fileName,
-			 const QString &oid,
-			 spoton_crypt *crypt);
+  void computeFileDigests(const QString &fileName,
+			  const QString &oid,
+			  spoton_crypt *crypt);
   void demagnetize(void);
   void derivativeUpdates(void);
   void discoverUrls(void);
