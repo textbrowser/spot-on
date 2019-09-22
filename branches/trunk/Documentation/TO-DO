@@ -190,6 +190,7 @@ Completed Items
 137.   Repopulate SMP Window after participant removal.
 138.   Re-encode SHA3-512 starbeam.db fields.
 139.   Highlight StarBeam SHA3-512 file digest.
+140.   Index the PostgreSQL tables. Automatically created.
 
 Ignored Items
 
@@ -218,7 +219,7 @@ Ignored Items
 16.    1-N SCTP support.
 17.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-18.    Index the PostgreSQL tables.
+18.    Key pools.
 19.    The libgcrypt library supports GCRY_KDF_SCRYPT.
 20.    Weather feeds.
 21.    Create a user's configuration database. Store key types too.
@@ -227,7 +228,6 @@ Ignored Items
 24.    Per-participant permissions.
 25.    Allow custom addresses for spoton_external_address.
 26.    Qt 5.5.x supports serial ports.
-27.    Key pools.
 
 Remaining Items
 
