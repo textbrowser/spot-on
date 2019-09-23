@@ -757,6 +757,7 @@ void spoton_encryptfile_page::slotReset(void)
   ui.pin->clear();
   ui.readSize->setCurrentIndex(1);
   ui.sign->setChecked(true);
+  ui.status_label->clear();
 }
 
 void spoton_encryptfile_page::slotSelect(void)
