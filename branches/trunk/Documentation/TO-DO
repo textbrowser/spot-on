@@ -191,6 +191,7 @@ Completed Items
 138.   Re-encode SHA3-512 starbeam.db fields.
 139.   Highlight StarBeam SHA3-512 file digest.
 140.   Index the PostgreSQL tables. Automatically created.
+141.   Scramblers are too periodic. Stable interval.
 
 Ignored Items
 
@@ -207,7 +208,7 @@ Ignored Items
 8.     Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
 9.     Database entries containing hashes can be maliciously twisted. Encrypt?
-10.    Scramblers are too periodic.
+10.    Qt 5.5.x supports serial ports.
 11.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
 12.    Remote kernel termination.
 13.    Limit the number of entries that are allowed to be inserted into
@@ -227,7 +228,6 @@ Ignored Items
 23.    gcry_md_setkey() does not impose minimum key lengths.
 24.    Per-participant permissions.
 25.    Allow custom addresses for spoton_external_address.
-26.    Qt 5.5.x supports serial ports.
 
 Remaining Items
 
