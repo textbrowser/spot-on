@@ -192,6 +192,12 @@ Completed Items
 139.   Highlight StarBeam SHA3-512 file digest.
 140.   Index the PostgreSQL tables. Automatically created.
 141.   Scramblers are too periodic. Stable interval.
+142.   gcry_md_setkey() does not impose minimum key lengths.
+       For use with the HMAC feature or BLAKE2 keyed hash, set the MAC
+       key to the value of key of length keylen bytes. For HMAC, there is
+       no restriction on the length of the key. For keyed BLAKE2b hash,
+       length of the key must be 64 bytes or less. For keyed BLAKE2s hash,
+       length of the key must be 32 bytes or less.)
 
 Ignored Items
 
@@ -225,9 +231,8 @@ Ignored Items
 20.    Weather feeds.
 21.    Create a user's configuration database. Store key types too.
 22.    C++11, unique_ptr and malloc().
-23.    gcry_md_setkey() does not impose minimum key lengths.
-24.    Per-participant permissions.
-25.    Allow custom addresses for spoton_external_address.
+23.    Per-participant permissions.
+24.    Allow custom addresses for spoton_external_address.
 
 Remaining Items
 
