@@ -2874,7 +2874,8 @@ QStringList spoton_crypt::buzzHashTypes(void)
 {
   QStringList types;
 
-  types << "sha3-512"
+  types << "blake2b_512"
+	<< "sha3-512"
 	<< "sha384"
 	<< "sha512"
 	<< "stribog512"
@@ -2948,7 +2949,8 @@ QStringList spoton_crypt::hashTypes(void)
 {
   QStringList types;
 
-  types << "sha3-512"
+  types << "blake2b_512"
+	<< "sha3-512"
 	<< "sha512"
 	<< "stribog512"
 	<< "whirlpool";
