@@ -2904,8 +2904,7 @@ QStringList spoton_crypt::cipherTypes(void)
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
-      int algorithm = gcry_cipher_map_name(types.at(i).toLatin1().
-					   constData());
+      int algorithm = gcry_cipher_map_name(types.at(i).toLatin1().constData());
 
       if(!(algorithm != 0 && gcry_cipher_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -2920,7 +2919,13 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
 {
   QStringList types;
 
-  types << "sha1"
+  types << "blake2b_160"
+	<< "blake2b_256"
+	<< "blake2b_384"
+	<< "blake2b_512"
+	<< "blake2s_128"
+	<< "blake2s_224"
+	<< "sha1"
 	<< "sha224"
 	<< "sha3-224"
 	<< "sha3-256"
