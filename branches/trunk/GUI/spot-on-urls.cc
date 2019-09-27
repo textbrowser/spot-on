@@ -46,7 +46,7 @@ bool spoton::deleteAllUrls(void)
   bool deleted = true;
 
   progress.setLabelText(tr("Deleting URL data... Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Deleting URL Data").
@@ -60,12 +60,9 @@ bool spoton::deleteAllUrls(void)
   if(m_urlDatabase.driverName() != "QPSQL")
     query.exec("PRAGMA secure_delete = ON");
 
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+  for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -84,25 +81,20 @@ bool spoton::deleteAllUrls(void)
 	    else
 	      c2 = QChar(j + 97 - 10);
 
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_keywords_%1%2").
+	    if(!query.exec(QString("DELETE FROM spot_on_keywords_%1%2").
 			   arg(c1).arg(c2)))
 	      deleted = false;
 
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_urls_%1%2").
+	    if(!query.exec(QString("DELETE FROM spot_on_urls_%1%2").
 			   arg(c1).arg(c2)))
 	      deleted = false;
 
-	    if(!query.exec(QString("DELETE FROM "
-				   "spot_on_urls_revisions_%1%2").
+	    if(!query.exec(QString("DELETE FROM spot_on_urls_revisions_%1%2").
 			   arg(c1).arg(c2)))
 	      deleted = false;
 	  }
 	else
 	  deleted = false;
-
-	processed += 1;
       }
 
   QString connectionName("");
@@ -594,7 +586,7 @@ void spoton::slotCorrectUrlDatabases(void)
 
   progress.setLabelText(tr("Deleting orphaned URL keywords. "
 			   "Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
@@ -617,12 +609,9 @@ void spoton::slotCorrectUrlDatabases(void)
       query3.exec("PRAGMA secure_delete = ON");
     }
 
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+  for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -694,8 +683,6 @@ void spoton::slotCorrectUrlDatabases(void)
 			}
 		}
 	  }
-
-	processed += 1;
       }
 
   progress.close();
@@ -884,7 +871,7 @@ void spoton::slotDropUrlTables(void)
   bool dropped = true;
 
   progress.setLabelText(tr("Dropping URL tables. Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Dropping URL Tables").
@@ -906,12 +893,9 @@ void spoton::slotDropUrlTables(void)
 	dropped = false;
     }
 
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+  for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -947,8 +931,6 @@ void spoton::slotDropUrlTables(void)
 	  }
 	else
 	  dropped = false;
-
-	processed += 1;
       }
 
   if(!dropped)
@@ -964,12 +946,11 @@ void spoton::slotDropUrlTables(void)
 void spoton::slotGatherUrlStatistics(void)
 {
   QProgressDialog progress(this);
-  int processed = 0;
   qint64 count = 0;
   qint64 size = 0;
 
   progress.setLabelText(tr("Gathering URL statistics. Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Gathering URL Statistics").
@@ -983,9 +964,6 @@ void spoton::slotGatherUrlStatistics(void)
   for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -1017,8 +995,6 @@ void spoton::slotGatherUrlStatistics(void)
 	      if(query.next())
 		size += query.value(0).toLongLong();
 	  }
-
-	processed += 1;
       }
 }
 
@@ -1171,152 +1147,143 @@ void spoton::slotImportUrls(void)
 		      "FROM urls");
 
 	if(query.exec())
-	  {
-	    int processed = 0;
+	  while(query.next())
+	    {
+	      if(progress.wasCanceled())
+		break;
 
-	    while(query.next())
-	      {
-		if(progress.wasCanceled())
-		  break;
+	      progress.repaint();
+	      QApplication::processEvents();
 
-		if(processed <= progress.maximum())
-		  progress.setValue(processed);
+	      QByteArray content;
+	      QByteArray description;
+	      QByteArray title;
+	      QByteArray url;
+	      bool encrypted = query.value(2).toBool();
+	      bool ok = true;
 
-		progress.repaint();
-		QApplication::processEvents();
+	      if(encrypted)
+		{
+		  if(!readEncrypted)
+		    {
+		      not_imported += 1;
+		      continue;
+		    }
 
-		QByteArray content;
-		QByteArray description;
-		QByteArray title;
-		QByteArray url;
-		bool encrypted = query.value(2).toBool();
-		bool ok = true;
+		  spoton_crypt crypt
+		    (cipherType,
+		     "",
+		     QByteArray(),
+		     symmetricKey,
+		     0,
+		     0,
+		     "");
 
-		if(encrypted)
-		  {
-		    if(!readEncrypted)
-		      {
-			not_imported += 1;
+		  content = crypt.decrypted
+		    (query.value(0).toByteArray(), &ok);
+
+		  if(ok)
+		    description = crypt.decrypted
+		      (query.value(1).toByteArray(), &ok);
+
+		  if(ok)
+		    title = crypt.decrypted
+		      (query.value(3).toByteArray(), &ok);
+
+		  if(ok)
+		    url = crypt.decrypted
+		      (query.value(4).toByteArray(), &ok);
+		}
+	      else
+		{
+		  content = query.value(0).toByteArray();
+		  description = query.value(1).toByteArray();
+		  title = query.value(3).toByteArray();
+		  url = query.value(4).toByteArray();
+		}
+
+	      if(ok)
+		{
+		  ok = false;
+
+		  for(int i = 0; i < m_ui.sharedDistillers->rowCount(); i++)
+		    {
+		      QComboBox *box = qobject_cast<QComboBox *>
+			(m_ui.sharedDistillers->cellWidget(i, 1));
+		      QTableWidgetItem *item = m_ui.sharedDistillers->
+			item(i, 0);
+
+		      if(!box || !item)
 			continue;
-		      }
 
-		    spoton_crypt crypt
-		      (cipherType,
-		       "",
-		       QByteArray(),
-		       symmetricKey,
-		       0,
-		       0,
-		       "");
+		      QString type("");
+		      QUrl u1(QUrl::fromUserInput(item->text()));
+		      QUrl u2(QUrl::fromUserInput(url));
 
-		    content = crypt.decrypted
-		      (query.value(0).toByteArray(), &ok);
+		      if(box->currentIndex() == 0)
+			type = "accept";
+		      else
+			type = "deny";
 
-		    if(ok)
-		      description = crypt.decrypted
-			(query.value(1).toByteArray(), &ok);
+		      if(type == "accept")
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = true;
+			      break;
+			    }
+			}
+		      else
+			{
+			  if(spoton_misc::urlToEncoded(u2).
+			     startsWith(spoton_misc::urlToEncoded(u1)))
+			    {
+			      ok = false;
+			      break;
+			    }
+			}
+		    }
 
-		    if(ok)
-		      title = crypt.decrypted
-			(query.value(3).toByteArray(), &ok);
+		  if(!ok)
+		    declined += 1;
 
-		    if(ok)
-		      url = crypt.decrypted
-			(query.value(4).toByteArray(), &ok);
-		  }
-		else
-		  {
-		    content = query.value(0).toByteArray();
-		    description = query.value(1).toByteArray();
-		    title = query.value(3).toByteArray();
-		    url = query.value(4).toByteArray();
-		  }
+		  if(ok)
+		    {
+		      QAtomicInt atomic(0);
+		      QString error("");
 
-		if(ok)
-		  {
-		    ok = false;
+		      ok = spoton_misc::importUrl
+			(content,
+			 description,
+			 title,
+			 url,
+			 m_urlDatabase,
+			 m_optionsUi.maximum_url_keywords_interface->value(),
+			 m_settings.value("gui/disable_ui_synchronous_"
+					  "sqlite_url_import",
+					  false).toBool(),
+			 atomic,
+			 error,
+			 m_urlCommonCrypt);
+		    }
+		}
 
-		    for(int i = 0; i < m_ui.sharedDistillers->rowCount(); i++)
-		      {
-			QComboBox *box = qobject_cast<QComboBox *>
-			  (m_ui.sharedDistillers->cellWidget(i, 1));
-			QTableWidgetItem *item = m_ui.sharedDistillers->
-			  item(i, 0);
+	      if(ok)
+		imported += 1;
+	      else
+		not_imported += 1;
 
-			if(!box || !item)
-			  continue;
+	      if(ok)
+		{
+		  QSqlQuery deleteQuery(db);
 
-			QString type("");
-			QUrl u1(QUrl::fromUserInput(item->text()));
-			QUrl u2(QUrl::fromUserInput(url));
-
-			if(box->currentIndex() == 0)
-			  type = "accept";
-			else
-			  type = "deny";
-
-			if(type == "accept")
-			  {
-			    if(spoton_misc::urlToEncoded(u2).
-			       startsWith(spoton_misc::urlToEncoded(u1)))
-			      {
-				ok = true;
-				break;
-			      }
-			  }
-			else
-			  {
-			    if(spoton_misc::urlToEncoded(u2).
-			       startsWith(spoton_misc::urlToEncoded(u1)))
-			      {
-				ok = false;
-				break;
-			      }
-			  }
-		      }
-
-		    if(!ok)
-		      declined += 1;
-
-		    if(ok)
-		      {
-			QAtomicInt atomic(0);
-			QString error("");
-
-			ok = spoton_misc::importUrl
-			  (content,
-			   description,
-			   title,
-			   url,
-			   m_urlDatabase,
-			   m_optionsUi.maximum_url_keywords_interface->value(),
-			   m_settings.value("gui/disable_ui_synchronous_"
-					    "sqlite_url_import",
-					    false).toBool(),
-			   atomic,
-			   error,
-			   m_urlCommonCrypt);
-		      }
-		  }
-
-		if(ok)
-		  imported += 1;
-		else
-		  not_imported += 1;
-
-		if(ok)
-		  {
-		    QSqlQuery deleteQuery(db);
-
-		    deleteQuery.exec("PRAGMA secure_delete = ON");
-		    deleteQuery.prepare("DELETE FROM urls WHERE url = ?");
-		    deleteQuery.bindValue(0, query.value(4));
-		    deleteQuery.exec();
-		  }
-
-		processed += 1;
-	      }
-	  }
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM urls WHERE url = ?");
+		  deleteQuery.bindValue(0, query.value(4));
+		  deleteQuery.exec();
+		}
+	    }
       }
 
     db.close();
@@ -1524,7 +1491,7 @@ void spoton::slotPrepareUrlDatabases(void)
   bool created = true;
 
   progress.setLabelText(tr("Creating URL databases. Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Creating URL Databases").
@@ -1545,12 +1512,9 @@ void spoton::slotPrepareUrlDatabases(void)
   if(m_urlDatabase.driverName() == "QSQLITE")
     query.exec("PRAGMA journal_mode = DELETE");
 
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+  for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -1681,8 +1645,6 @@ void spoton::slotPrepareUrlDatabases(void)
 	  }
 	else
 	  created = false;
-
-	processed += 1;
       }
 
   if(created)
@@ -2395,7 +2357,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   QProgressDialog progress(this);
 
   progress.setLabelText(tr("Deleting URL keywords. Please be patient."));
-  progress.setMaximum(10 * 10 + 6 * 6);
+  progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Deleting URL Keywords").
@@ -2404,12 +2366,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.repaint();
   QApplication::processEvents();
 
-  for(int i = 0, processed = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
+  for(int i = 0; i < 10 + 6 && !progress.wasCanceled(); i++)
     for(int j = 0; j < 10 + 6 && !progress.wasCanceled(); j++)
       {
-	if(processed <= progress.maximum())
-	  progress.setValue(processed);
-
 	progress.repaint();
 	QApplication::processEvents();
 
@@ -2431,7 +2390,6 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 			      "url_hash = ?").arg(c1).arg(c2));
 	query.bindValue(0, urlHash.constData());
 	query.exec();
-	processed += 1;
       }
 
   /*
