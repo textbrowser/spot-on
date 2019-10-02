@@ -5392,7 +5392,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>879</width>
+             <width>912</width>
              <height>1212</height>
             </rect>
            </property>
@@ -7619,6 +7619,9 @@
                <widget class="QSpinBox" name="web_server_port">
                 <property name="toolTip">
                  <string>A positive values enables the UI's Web server machine.</string>
+                </property>
+                <property name="buttonSymbols">
+                 <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
                 <property name="minimum">
                  <number>0</number>
