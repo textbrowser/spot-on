@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QNetworkInterface>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSslKey>
@@ -46,15 +47,6 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
   QByteArray privateKey;
   QByteArray publicKey;
   QString error("");
-
-  spoton_crypt::generateSslKeys
-    (3072,
-     certificate,
-     privateKey,
-     publicKey,
-     serverAddress(),
-     60L * 60L * 24L * 365L,
-     error);
 
   if(error.isEmpty())
     {
@@ -92,9 +84,7 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 #if QT_VERSION >= 0x050501
 	  spoton_crypt::setSslCiphers
-	    (QSslConfiguration::supportedCiphers(),
-	     sslCS,
-	     configuration);
+	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
 	  spoton_crypt::setSslCiphers
 	    (socket->supportedCiphers(), sslCS, configuration);
@@ -112,8 +102,9 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 	    socket->deleteLater();
 
 	  spoton_misc::closeSocket(socketDescriptor);
-	  spoton_misc::logError("spoton_web_server_tcp_server::"
-				"incomingConnection(): socket deleted.");
+	  spoton_misc::logError
+	    ("spoton_web_server_tcp_server::incomingConnection(): "
+	     "socket deleted.");
 	}
     }
   else
@@ -135,10 +126,6 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):
   spoton_web_server_tcp_server(parent)
 {
-  if(!listen(QHostAddress("192.168.178.15")))
-    spoton_misc::logError("spoton_web_server::spoton_web_server(): "
-			  "listen() failure. This is a serious problem!");
-
   connect(&m_generalTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -267,8 +254,46 @@ void spoton_web_server::slotReadyRead(void)
 
 void spoton_web_server::slotTimeout(void)
 {
+  quint16 port = static_cast<quint16>
+    (spoton_kernel::setting("gui/web_server_port", 0).toInt());
+
+  if(port == 0)
+    {
+      close();
+
+      foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+	socket->deleteLater();
+
+      return;
+    }
+
   if(!isListening())
-    if(!listen(QHostAddress("192.168.178.15"))) // Non-local address.
-      spoton_misc::logError("spoton_web_server::slotTimeout(): "
-			    "listen() failure. This is a serious problem!");
+    {
+      QHostAddress address;
+      QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+
+      while(!interfaces.isEmpty())
+	{
+	  QNetworkInterface interface(interfaces.takeFirst());
+
+	  if(!interface.isValid() || !(interface.flags() &
+				       QNetworkInterface::IsUp))
+	    continue;
+
+	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+
+	  while(!addresses.isEmpty())
+	    {
+	      QNetworkAddressEntry entry;
+
+	      entry = addresses.takeFirst();
+	      address = entry.ip();
+	    }
+	}
+
+      if(!listen(address, port))
+	spoton_misc::logError
+	  ("spoton_web_server::slotTimeout(): listen() failure. "
+	   "This is a serious problem!");
+    }
 }

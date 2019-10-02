@@ -65,6 +65,7 @@ class spoton_neighbor;
 class spoton_starbeam_reader;
 class spoton_starbeam_writer;
 class spoton_urldistribution;
+class spoton_web_server;
 
 class spoton_kernel: public QObject
 {
@@ -166,6 +167,7 @@ class spoton_kernel: public QObject
   spoton_mailer *m_mailer;
   spoton_starbeam_writer *m_starbeamWriter;
   spoton_urldistribution *m_urlDistribution;
+  spoton_web_server *m_webServer;
   static QByteArray s_messagingCacheKey;
   static QDateTime s_institutionLastModificationTime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;

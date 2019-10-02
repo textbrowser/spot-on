@@ -3350,8 +3350,7 @@ void spoton::slotDeleteAcceptedIP(void)
 	query.prepare("DELETE FROM listeners_allowed_ips WHERE "
 		      "ip_address_hash = ? AND listener_oid = ?");
 	query.bindValue
-	  (0, crypt->keyedHash(ip.toLatin1(),
-			       &ok).toBase64());
+	  (0, crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
 	query.bindValue(1, oid);
 
 	if(ok)
@@ -3480,8 +3479,7 @@ void spoton::slotDeleteAccount(void)
 	query.prepare("DELETE FROM listeners_accounts WHERE "
 		      "account_name_hash = ? AND listener_oid = ?");
 	query.bindValue
-	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
-	   toBase64());
+	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).toBase64());
 	query.bindValue(1, oid);
 
 	if(ok)

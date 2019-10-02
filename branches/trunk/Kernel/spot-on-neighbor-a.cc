@@ -1813,16 +1813,19 @@ void spoton_neighbor::slotReadyRead(void)
   if(m_bluetoothSocket)
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      data = m_bluetoothSocket->readAll();
+      while(m_bluetoothSocket->bytesAvailable() > 0)
+	data.append(m_bluetoothSocket->readAll());
 #endif
     }
   else if(m_sctpSocket)
     data = m_sctpSocket->readAll();
   else if(m_tcpSocket)
-    data = m_tcpSocket->readAll();
+    while(m_tcpSocket->bytesAvailable() > 0)
+      data.append(m_tcpSocket->readAll());
   else if(m_udpSocket)
     {
-      data = m_udpSocket->readAll();
+      while(m_udpSocket->bytesAvailable() > 0)
+	data.append(m_udpSocket->readAll());
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       if(m_dtls && m_isUserDefined)

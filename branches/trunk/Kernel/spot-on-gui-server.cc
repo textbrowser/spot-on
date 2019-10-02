@@ -438,7 +438,9 @@ void spoton_gui_server::slotReadyRead(void)
   if(!socket->isEncrypted() &&
      spoton_kernel::setting("gui/kernelKeySize", 2048).toInt() > 0)
     {
-      socket->readAll();
+      while(socket->bytesAvailable() > 0)
+	socket->readAll();
+
       spoton_misc::logError
 	(QString("spoton_gui_server::slotReadyRead(): "
 		 "socket %1:%2 is not encrypted. Discarding data.").
@@ -451,23 +453,26 @@ void spoton_gui_server::slotReadyRead(void)
   ** What if socketDescriptor() equals negative one?
   */
 
-  QByteArray data(socket->readAll());
-
-  if(data.length() > 0)
+  while(socket->bytesAvailable() > 0)
     {
-      QWriteLocker locker(&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+      QByteArray data(socket->readAll());
 
-      spoton_kernel::s_totalUiBytesReadWritten.first +=
-	static_cast<quint64> (data.length());
+      if(data.length() > 0)
+	{
+	  QWriteLocker locker(&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	  spoton_kernel::s_totalUiBytesReadWritten.first +=
+	    static_cast<quint64> (data.length());
+	}
+
+      m_guiSocketData[socket->socketDescriptor()].append(data);
     }
-
-  m_guiSocketData[socket->socketDescriptor()].append(data);
 
   if(m_guiSocketData[socket->socketDescriptor()].contains('\n'))
     {
       QByteArray data(m_guiSocketData[socket->socketDescriptor()]);
-      QList<QByteArray> messages(data.mid(0, data.lastIndexOf('\n')).
-				 split('\n'));
+      QList<QByteArray> messages
+	(data.mid(0, data.lastIndexOf('\n')).split('\n'));
 
       data.remove(0, data.lastIndexOf('\n'));
 

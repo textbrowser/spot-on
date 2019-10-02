@@ -69,6 +69,7 @@ extern "C"
 #include "spot-on-starbeam-reader.h"
 #include "spot-on-starbeam-writer.h"
 #include "spot-on-urldistribution.h"
+#include "spot-on-web-server.h"
 
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000
@@ -488,13 +489,14 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_fireShare = 0;
   m_guiServer = 0;
   m_initialized = false;
+  m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_mailer = 0;
   m_starbeamWriter = 0;
+  m_uptime = QDateTime::currentDateTime();
   m_urlDistribution = 0;
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
-  m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_uptime = QDateTime::currentDateTime();
+  m_webServer = 0;
   s_institutionLastModificationTime = QDateTime();
   s_messagingCacheKey = spoton_crypt::weakRandomBytes
     (static_cast<size_t> (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
@@ -713,6 +715,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
   m_urlDistribution = new spoton_urldistribution(this);
+  m_webServer = new spoton_web_server(this);
 
   if(m_guiServer)
     {
@@ -1544,8 +1547,8 @@ int spoton_kernel::interfaces(void)
       int count = 0;
       int kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
 
-      foreach(QSslSocket *socket, instance()->m_guiServer->
-	      findChildren<QSslSocket *> ())
+      foreach(QSslSocket *socket,
+	      instance()->m_guiServer->findChildren<QSslSocket *> ())
 	count += (kernelKeySize == 0) || socket->isEncrypted();
 
       return count;
