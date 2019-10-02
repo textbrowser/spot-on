@@ -2194,6 +2194,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotVerify(void)));
+  connect(m_ui.web_server_port,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotWebServerPortChanged(int)));
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);
@@ -2616,10 +2620,12 @@ spoton::spoton(void):QMainWindow()
   m_ui.kernelHashType->blockSignals(false);
   m_ui.urlCipher->addItems(spoton_crypt::cipherTypes());
   m_ui.urlHash->addItems(spoton_crypt::hashTypes());
+  m_ui.web_server_port->setValue
+    (m_settings.value("gui/web_server_port", 0).toInt());
   m_ui.cost->setValue(m_settings.value("gui/congestionCost", 10000).toInt());
   m_ui.days->setValue(m_settings.value("gui/postofficeDays", 1).toInt());
-  m_ui.etpMaxMosaicSize->setValue(m_settings.value("gui/maxMosaicSize",
-						   512).toInt());
+  m_ui.etpMaxMosaicSize->setValue
+    (m_settings.value("gui/maxMosaicSize", 512).toInt());
   m_optionsUi.emailRetrievalInterval->setValue
     (m_settings.value("gui/emailRetrievalInterval", 5).toInt());
   m_optionsUi.maximumEmailFileSize->setValue

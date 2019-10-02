@@ -1016,3 +1016,12 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
 
   settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
+
+void spoton::slotWebServerPortChanged(int value)
+{
+  m_settings["gui/web_server_port"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/web_server_port", value);
+}

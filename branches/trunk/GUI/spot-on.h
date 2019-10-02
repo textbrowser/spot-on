@@ -1087,6 +1087,7 @@ class spoton: public QMainWindow
   void slotViewEchoKeyShare(void);
   void slotViewLog(void);
   void slotViewRosetta(void);
+  void slotWebServerPortChanged(int value);
   void slotWizardButtonClicked(void);
   void slotWizardCheckClicked(void);
 
