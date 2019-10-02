@@ -815,13 +815,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 #endif
 	 this);
     }
-  catch(const std::bad_alloc &exception)
-    {
-      error = "memory allocation failure";
-      neighbor = 0;
-      spoton_misc::logError
-	("spoton_listener::slotNewConnection(): memory failure.");
-    }
   catch(...)
     {
       error = "irregular exception";
@@ -1400,13 +1393,6 @@ void spoton_listener::slotNewConnection(void)
 	 m_privateApplicationCredentials,
 	 socket,
 	 this);
-    }
-  catch(const std::bad_alloc &exception)
-    {
-      error = "memory allocation failure";
-      neighbor = 0;
-      spoton_misc::logError
-	("spoton_listener::slotNewConnection(): memory failure.");
     }
   catch(...)
     {

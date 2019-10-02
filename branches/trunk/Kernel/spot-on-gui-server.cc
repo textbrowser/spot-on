@@ -63,12 +63,12 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 
   if(error.isEmpty())
     {
-      QPointer<QSslSocket> socket = new QSslSocket(this);
-      bool ok = true;
+      QPointer<QSslSocket> socket;
 
       try
 	{
-	  ok = socket->setSocketDescriptor(socketDescriptor);
+	  socket = new QSslSocket(this);
+	  socket->setSocketDescriptor(socketDescriptor);
 	  socket->setSocketOption
 	    (QAbstractSocket::LowDelayOption,
 	     spoton_kernel::setting("kernel/tcp_nodelay", 1).
@@ -124,11 +124,11 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
       catch(...)
 	{
 	  m_queue.removeOne(socket);
-	  socket->deleteLater();
 
-	  if(!ok)
-	    spoton_misc::closeSocket(socketDescriptor);
+	  if(socket)
+	    socket->deleteLater();
 
+	  spoton_misc::closeSocket(socketDescriptor);
 	  spoton_misc::logError("spoton_gui_server_tcp_server::"
 				"incomingConnection(): socket deleted.");
 	}
@@ -701,10 +701,6 @@ void spoton_gui_server::slotReadyRead(void)
 					setting("gui/iterationCount",
 						10000).toInt()),
 			     names.at(i));
-			}
-		      catch(const std::bad_alloc &exception)
-			{
-			  crypt = 0;
 			}
 		      catch(...)
 			{

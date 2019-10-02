@@ -390,10 +390,6 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 		  this,
 		  SLOT(slotActivated(int)));
         }
-      catch(const std::bad_alloc &exception)
-	{
-	  m_socketNotifier = 0;
-	}
       catch(...)
 	{
 	  if(m_socketNotifier)

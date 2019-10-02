@@ -1434,10 +1434,6 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			  altered = true;
 			}
 		    }
-		  catch(const std::bad_alloc &exception)
-		    {
-		      crypt = 0;
-		    }
 		  catch(...)
 		    {
 		      delete crypt;
@@ -2377,14 +2373,6 @@ void spoton_kernel::prepareListeners(void)
 				 query.value(22).toString(),
 				 this);
 			    }
-			  catch(const std::bad_alloc &exception)
-			    {
-			      listener = 0;
-			      s_connectionCounts.remove(id);
-			      spoton_misc::logError
-				("spoton_kernel::prepareListeners(): "
-				 "memory failure.");
-			    }
 			  catch(...)
 			    {
 			      if(listener)
@@ -2691,13 +2679,6 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(30).toString(),
 				 this);
 			    }
-			  catch(const std::bad_alloc &exception)
-			    {
-			      neighbor = 0;
-			      spoton_misc::logError
-				("spoton_kernel::prepareNeighbors(): "
-				 "memory failure.");
-			    }
 			  catch(...)
 			    {
 			      if(neighbor)
@@ -2814,10 +2795,6 @@ void spoton_kernel::prepareStarbeamReaders(void)
 			{
 			  starbeam = new spoton_starbeam_reader
 			    (id, readInterval, this);
-			}
-		      catch(const std::bad_alloc &exception)
-			{
-			  starbeam = 0;
 			}
 		      catch(...)
 			{
