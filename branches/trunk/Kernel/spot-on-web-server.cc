@@ -268,32 +268,8 @@ void spoton_web_server::slotTimeout(void)
     }
 
   if(!isListening())
-    {
-      QHostAddress address;
-      QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
-
-      while(!interfaces.isEmpty())
-	{
-	  QNetworkInterface interface(interfaces.takeFirst());
-
-	  if(!interface.isValid() || !(interface.flags() &
-				       QNetworkInterface::IsUp))
-	    continue;
-
-	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
-
-	  while(!addresses.isEmpty())
-	    {
-	      QNetworkAddressEntry entry;
-
-	      entry = addresses.takeFirst();
-	      address = entry.ip();
-	    }
-	}
-
-      if(!listen(address, port))
-	spoton_misc::logError
-	  ("spoton_web_server::slotTimeout(): listen() failure. "
-	   "This is a serious problem!");
-    }
+    if(!listen(spoton_misc::localAddress(), port))
+      spoton_misc::logError
+	("spoton_web_server::slotTimeout(): listen() failure. "
+	 "This is a serious problem!");
 }

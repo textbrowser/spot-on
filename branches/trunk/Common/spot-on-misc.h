@@ -89,6 +89,7 @@ class spoton_misc
   static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
+  static QHostAddress localAddress(void);
   static QHostAddress peerAddressAndPort(
 #if defined(Q_OS_WIN)
 					 const SOCKET socketDescriptor,

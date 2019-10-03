@@ -57,6 +57,7 @@ extern "C"
 #include <QDir>
 #include <QFile>
 #include <QLocale>
+#include <QNetworkInterface>
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QSqlDatabase>
@@ -473,6 +474,31 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 
   QSqlDatabase::removeDatabase(connectionName);
   return hash;
+}
+
+QHostAddress spoton_misc::localAddress(void)
+{
+  QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+
+  while(!interfaces.isEmpty())
+    {
+      QNetworkInterface interface(interfaces.takeFirst());
+
+      if(!interface.isValid() || !(interface.flags() & QNetworkInterface::IsUp))
+	continue;
+
+      QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+
+      while(!addresses.isEmpty())
+	{
+	  QNetworkAddressEntry entry;
+
+	  entry = addresses.takeFirst();
+	  return entry.ip();
+	}
+    }
+
+  return QHostAddress();
 }
 
 QHostAddress spoton_misc::peerAddressAndPort(

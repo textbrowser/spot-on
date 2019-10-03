@@ -1024,4 +1024,28 @@ void spoton::slotWebServerPortChanged(int value)
   QSettings settings;
 
   settings.setValue("gui/web_server_port", value);
+
+  if(value != 0)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QByteArray certificate;
+      QByteArray privateKey;
+      QByteArray publicKey;
+      QString error("");
+
+      m_sb.status->setText
+	(tr("Generating 3072-bit SSL/TLS data. Please be patient."));
+      m_sb.status->repaint();
+      spoton_crypt::generateSslKeys
+	(3072,
+	 certificate,
+	 privateKey,
+	 publicKey,
+	 spoton_misc::localAddress(),
+	 365L * 60L * 60L * 24L,
+	 error);
+      m_sb.status->clear();
+      QApplication::restoreOverrideCursor();
+    }
 }
