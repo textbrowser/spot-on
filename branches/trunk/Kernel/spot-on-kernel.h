@@ -111,9 +111,10 @@ class spoton_kernel: public QObject
 				const int add_msecs = 0);
   static void removeBuzzKey(const QByteArray &data);
   bool acceptRemoteBluetoothConnection(const QString &localAddress,
-				       const QString &peerAddress);
+				       const QString &peerAddress) const;
   bool acceptRemoteConnection(const QHostAddress &localAddress,
-			      const QHostAddress &peerAddress);
+			      const QHostAddress &peerAddress) const;
+  bool hasStarBeamReaderId(const qint64 id) const;
   bool initialized(void) const;
   bool processPotentialStarBeamData
     (const QByteArray &data,

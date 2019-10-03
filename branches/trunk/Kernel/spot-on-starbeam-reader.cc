@@ -208,6 +208,11 @@ QPair<QByteArray, qint64> spoton_starbeam_reader::read
   return pair;
 }
 
+qint64 spoton_starbeam_reader::id(void) const
+{
+  return m_id;
+}
+
 void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
 {
   if(!db.isOpen())

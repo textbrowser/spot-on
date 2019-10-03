@@ -333,47 +333,15 @@ void spoton_starbeam_writer::processData
       return;
     }
 
-  QString connectionName("");
-  QString fileName
-    (spoton_kernel::setting("gui/etpDestinationPath", QDir::homePath()).
-     toString() + QDir::separator() +
-     QString::fromUtf8(list.value(1).constData(),
-		       list.value(1).length()).replace(" ", "-"));
-  int locked = 0;
+  qint64 fileId = list.value(9).toLongLong();
 
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT locked FROM received WHERE file_hash = ?");
-	query.bindValue
-	  (0, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  if(query.exec() && query.next())
-	    locked = query.value(0).toInt();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(locked)
+  if(spoton_kernel::instance() &&
+     spoton_kernel::instance()->hasStarBeamReaderId(fileId))
     return;
 
   QByteArray hash(list.value(7));
   QByteArray sha3_512_hash(list.value(11));
   qint64 dataSize = qAbs(list.value(3).toLongLong());
-  qint64 id = list.value(9).toLongLong();
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
   qint64 position = qAbs(list.value(2).toLongLong());
@@ -417,6 +385,44 @@ void spoton_starbeam_writer::processData
 	 "spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE.");
       return;
     }
+
+  QString connectionName("");
+  QString fileName
+    (spoton_kernel::setting("gui/etpDestinationPath",
+			    QDir::homePath()).toString() +
+     QDir::separator() +
+     QString::fromUtf8(list.value(1).constData(),
+		       list.value(1).length()).replace(" ", "-"));
+  int locked = 0;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT locked FROM received WHERE file_hash = ?");
+	query.bindValue
+	  (0, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  if(query.exec() && query.next())
+	    locked = query.value(0).toInt();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(locked)
+    return;
 
   QFile file;
 
@@ -573,7 +579,7 @@ void spoton_starbeam_writer::processData
 	 << QByteArray::number(position)
 	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
             toLatin1()
-	 << QByteArray::number(id);
+	 << QByteArray::number(fileId);
 
   if(stream.status() != QDataStream::Ok)
     ok = false;

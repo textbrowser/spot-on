@@ -31,6 +31,23 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
+#include "spot-on-starbeam-reader.h"
+
+bool spoton_kernel::hasStarBeamReaderId(const qint64 id) const
+{
+  QHashIterator<qint64, QPointer<spoton_starbeam_reader> > it
+    (m_starbeamReaders);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value() && it.value()->id() == id)
+	return true;
+    }
+
+  return false;
+}
 
 bool spoton_kernel::initialized(void) const
 {

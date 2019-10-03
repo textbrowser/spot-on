@@ -45,6 +45,7 @@ class spoton_starbeam_reader: public QObject
 			 const double readInterval,
 			 QObject *parent);
   ~spoton_starbeam_reader();
+  qint64 id(void) const;
   void setReadInterval(const double readInterval);
 
  private:

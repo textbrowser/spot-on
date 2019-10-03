@@ -1239,7 +1239,7 @@ QVariant spoton_kernel::setting(const QString &name,
 }
 
 bool spoton_kernel::acceptRemoteBluetoothConnection
-(const QString &localAddress, const QString &peerAddress)
+(const QString &localAddress, const QString &peerAddress) const
 {
   if(peerAddress.trimmed().isEmpty())
     return false;
@@ -1276,8 +1276,8 @@ bool spoton_kernel::acceptRemoteBluetoothConnection
     }
 }
 
-bool spoton_kernel::acceptRemoteConnection(const QHostAddress &localAddress,
-					   const QHostAddress &peerAddress)
+bool spoton_kernel::acceptRemoteConnection
+(const QHostAddress &localAddress, const QHostAddress &peerAddress) const
 {
   if(peerAddress.isNull() || peerAddress.toString().isEmpty())
     return false;
