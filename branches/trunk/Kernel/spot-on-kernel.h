@@ -309,6 +309,7 @@ class spoton_kernel: public QObject
   void slotTerminate(const bool registered);
   void slotUrlImportTimerExpired(void);
   void slotUpdateSettings(void);
+  void slotWriteMessage0061(const QByteArray &data);
 
  signals:
   void callParticipant(const QByteArray &data, const QString &messageType);

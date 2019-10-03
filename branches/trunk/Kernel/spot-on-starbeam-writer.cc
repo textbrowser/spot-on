@@ -426,8 +426,7 @@ void spoton_starbeam_writer::processData
     if(!(file.permissions() & QFile::WriteOwner))
       {
 	spoton_misc::logError
-	  ("spoton_starbeam_writer::processData(): "
-	   "file permissions error.");
+	  ("spoton_starbeam_writer::processData(): file permissions error.");
 	return;
       }
 
@@ -437,8 +436,8 @@ void spoton_starbeam_writer::processData
 	if(!file.resize(position))
 	  {
 	    ok = false;
-	    spoton_misc::logError("spoton_starbeam_writer::processData(): "
-				  "resize() failure.");
+	    spoton_misc::logError
+	      ("spoton_starbeam_writer::processData(): resize() failure.");
 	  }
 
       if(file.seek(position))
@@ -451,8 +450,7 @@ void spoton_starbeam_writer::processData
 	    {
 	      ok = false;
 	      spoton_misc::logError
-		("spoton_starbeam_writer::processData(): "
-		 "write() failure.");
+		("spoton_starbeam_writer::processData(): write() failure.");
 	    }
 
 	  file.flush();
@@ -460,13 +458,13 @@ void spoton_starbeam_writer::processData
       else
 	{
 	  ok = false;
-	  spoton_misc::logError("spoton_starbeam_writer::processData(): "
-				"seek() failure.");
+	  spoton_misc::logError
+	    ("spoton_starbeam_writer::processData(): seek() failure.");
 	}
     }
   else
-    spoton_misc::logError("spoton_starbeam_writer::processData(): "
-			  "QFile::open() failure.");
+    spoton_misc::logError
+      ("spoton_starbeam_writer::processData(): QFile::open() failure.");
 
 #ifdef Q_OS_UNIX
   fsync(file.handle());
@@ -623,8 +621,7 @@ void spoton_starbeam_writer::processData
     data = data.toBase64() + "\n" + messageCode.toBase64();
 
   if(ok)
-    if(spoton_kernel::instance())
-      spoton_kernel::instance()->writeMessage006X(data, "0061", 0, &ok);
+    emit writeMessage0061(data);
 }
 
 void spoton_starbeam_writer::run(void)

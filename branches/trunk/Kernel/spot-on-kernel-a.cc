@@ -714,6 +714,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   m_mailer = new spoton_mailer(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
+  connect(m_starbeamWriter,
+	  SIGNAL(writeMessage0061(const QByteArray &)),
+	  this,
+	  SLOT(slotWriteMessage0061(const QByteArray &)));
   m_urlDistribution = new spoton_urldistribution(this);
   m_webServer = new spoton_web_server(this);
 
@@ -1524,14 +1528,8 @@ bool spoton_kernel::processPotentialStarBeamData
 (const QByteArray &data,
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
-  if(messagingCacheContains(data))
-    return false;
-
   if(m_starbeamWriter)
-    {
-      messagingCacheAdd(data);
-      return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
-    }
+    return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
   else
     return false;
 }

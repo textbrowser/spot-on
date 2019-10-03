@@ -269,3 +269,8 @@ void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 			       list.value(4),
 			       QPair<QByteArray, QByteArray> ()));
 }
+
+void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
+{
+  writeMessage006X(data, "0061", 0, 0);
+}

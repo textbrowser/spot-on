@@ -61,6 +61,7 @@ class spoton_starbeam_writer: public QThread
  signals:
   void newData(const QByteArray &data, const QStringByteArrayHash &magnet);
   void notifyStarBeamReader(const qint64 id, const qint64 position);
+  void writeMessage0061(const QByteArray &data);
 };
 
 class spoton_starbeam_writer_worker: public QObject
