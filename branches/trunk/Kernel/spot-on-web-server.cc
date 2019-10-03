@@ -268,7 +268,7 @@ void spoton_web_server::slotTimeout(void)
     }
 
   if(!isListening())
-    if(!listen(spoton_misc::localAddress(), port))
+    if(!listen(spoton_misc::localAddressIPv4(), port))
       spoton_misc::logError
 	("spoton_web_server::slotTimeout(): listen() failure. "
 	 "This is a serious problem!");

@@ -1524,8 +1524,14 @@ bool spoton_kernel::processPotentialStarBeamData
 (const QByteArray &data,
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
+  if(messagingCacheContains(data))
+    return false;
+
   if(m_starbeamWriter)
-    return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
+    {
+      messagingCacheAdd(data);
+      return m_starbeamWriter->append(data, discoveredAdaptiveEchoPair);
+    }
   else
     return false;
 }

@@ -476,7 +476,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
   return hash;
 }
 
-QHostAddress spoton_misc::localAddress(void)
+QHostAddress spoton_misc::localAddressIPv4(void)
 {
   QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
 
@@ -494,7 +494,10 @@ QHostAddress spoton_misc::localAddress(void)
 	  QNetworkAddressEntry entry;
 
 	  entry = addresses.takeFirst();
-	  return entry.ip();
+
+	  if(entry.ip() != QHostAddress::LocalHost &&
+	     entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
+	    return entry.ip();
 	}
     }
 

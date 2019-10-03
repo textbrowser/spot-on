@@ -1059,7 +1059,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
 	 certificate,
 	 privateKey,
 	 publicKey,
-	 spoton_misc::localAddress(),
+	 spoton_misc::localAddressIPv4(),
 	 365L * 60L * 60L * 24L,
 	 error);
       m_sb.status->clear();
