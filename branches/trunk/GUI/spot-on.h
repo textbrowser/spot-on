@@ -553,6 +553,7 @@ class spoton: public QMainWindow
   QTimer m_starbeamUpdateTimer;
   QTimer m_tableTimer;
   QTimer m_updateChatWindowsTimer;
+  QTimer m_webServerValueChangedTimer;
   QWidget *m_sbWidget;
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_notifications_window m_notificationsUi;
@@ -1088,6 +1089,7 @@ class spoton: public QMainWindow
   void slotViewLog(void);
   void slotViewRosetta(void);
   void slotWebServerPortChanged(int value);
+  void slotWebServerValueChangedTimeout(void);
   void slotWizardButtonClicked(void);
   void slotWizardCheckClicked(void);
 

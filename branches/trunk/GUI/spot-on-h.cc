@@ -1019,13 +1019,30 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
 
 void spoton::slotWebServerPortChanged(int value)
 {
+  Q_UNUSED(value);
+  connect(&m_webServerValueChangedTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotWebServerValueChangedTimeout(void)),
+	  Qt::UniqueConnection);
+  m_webServerValueChangedTimer.setSingleShot(true);
+  m_webServerValueChangedTimer.start(2500);
+}
+
+void spoton::slotWebServerValueChangedTimeout(void)
+{
+  int value = m_ui.web_server_port->value();
+
   m_settings["gui/web_server_port"] = value;
 
   QSettings settings;
 
   settings.setValue("gui/web_server_port", value);
 
-  if(value != 0)
+  if(value == 0)
+    {
+    }
+  else
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
