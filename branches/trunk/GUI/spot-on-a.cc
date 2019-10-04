@@ -2318,6 +2318,10 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/showStarBeamPage", true).toBool());
   m_ui.action_Urls->setChecked
     (m_settings.value("gui/showUrlsPage", true).toBool());
+  m_ui.web_server_port->blockSignals(true);
+  m_ui.web_server_port->setValue
+    (m_settings.value("gui/web_server_port", 0).toInt());
+  m_ui.web_server_port->blockSignals(false);
 
   if(m_ui.postgresqlConnect->isEnabled())
     {
@@ -2620,8 +2624,6 @@ spoton::spoton(void):QMainWindow()
   m_ui.kernelHashType->blockSignals(false);
   m_ui.urlCipher->addItems(spoton_crypt::cipherTypes());
   m_ui.urlHash->addItems(spoton_crypt::hashTypes());
-  m_ui.web_server_port->setValue
-    (m_settings.value("gui/web_server_port", 0).toInt());
   m_ui.cost->setValue(m_settings.value("gui/congestionCost", 10000).toInt());
   m_ui.days->setValue(m_settings.value("gui/postofficeDays", 1).toInt());
   m_ui.etpMaxMosaicSize->setValue

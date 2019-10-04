@@ -1041,9 +1041,40 @@ void spoton::slotWebServerValueChangedTimeout(void)
 
   if(value == 0)
     {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM kernel_web_server");
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
     }
   else
     {
+      spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+      if(!crypt)
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid spoton_crypt object. This is a fatal flaw."));
+	  QApplication::processEvents();
+	  return;
+	}
+
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QByteArray certificate;
@@ -1063,6 +1094,43 @@ void spoton::slotWebServerValueChangedTimeout(void)
 	 365L * 60L * 60L * 24L,
 	 error);
       m_sb.status->clear();
+
+      if(error.isEmpty())
+	{
+	  QString connectionName("");
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName
+	      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+		bool ok = true;
+
+		query.prepare("INSERT INTO kernel_web_server "
+			      "(certificate, private_key) "
+			      "VALUES (?, ?)");
+		query.addBindValue
+		  (crypt->encryptedThenHashed(certificate, &ok).toBase64());
+		query.addBindValue
+		  (crypt->encryptedThenHashed(privateKey, &ok).toBase64());
+		query.exec();
+	      }
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+	}
+      else
+	{
+	  m_sb.status->setText(tr("Error generating Web Server credentials."));
+	  QTimer::singleShot(5000, m_sb.status, SLOT(clear(void)));
+	}
+
       QApplication::restoreOverrideCursor();
     }
 }
