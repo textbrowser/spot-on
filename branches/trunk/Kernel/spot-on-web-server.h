@@ -69,9 +69,11 @@ class spoton_web_server_tcp_server: public QTcpServer
 #endif
 
  private:
+  QQueue<QPointer<QSslSocket> > m_queue;
+
+ protected:
   QByteArray m_certificate;
   QByteArray m_privateKey;
-  QQueue<QPointer<QSslSocket> > m_queue;
 
  signals:
   void modeChanged(QSslSocket::SslMode mode);

@@ -4302,31 +4302,7 @@ void spoton::slotRewindFile(void)
 	      (crypt->
 	       encryptedThenHashed(QByteArray::number(0), &ok).toBase64());
 	    query.addBindValue(oid);
-
-	    if(ok)
-	      query.exec();
-
-	    query.prepare
-	      ("SELECT position, status_control FROM transmitted "
-	       "WHERE OID = ?");
-	    query.addBindValue(oid);
-
-	    if(query.exec() && query.next())
-	      {
-		QString status(query.value(1).toString().toLower().trimmed());
-
-		if(status == "deleted")
-		  break;
-		else if(status == "paused")
-		  {
-		    int position = crypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(0).toByteArray()), 0).
-		      toInt();
-
-		    if(position == 0)
-		      break;
-		  }
-	      }
+	    query.exec();
 	  }
       }
 

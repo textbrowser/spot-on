@@ -37,6 +37,24 @@
 #include "spot-on-web-server.h"
 #include "spot-on-kernel.h"
 
+static QByteArray s_search =
+  "HTTP/1.1 200 OK\r\n"
+  "Content-Type: text/html; charset=utf-8\r\n\r\n"
+  "<!DOCTYPE html>"
+  "<html>"
+  "<head>"
+  "<title>Spot-On Search</title>"
+  "</head>"
+  "<div class=\"content\" id=\"search\">"
+  "<center>"
+  "<form action=\"\" method=\"get\" name=\"input\">"
+  "<input maxlength=\"50\" size=\"50\" style=\"height: 24px\" "
+  "type=\"text\" value=\"\"></input>"
+  "</center>"
+  "</form>"
+  "</div>"
+  "</html>";
+
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
 #else
@@ -128,10 +146,6 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
-	  SIGNAL(modeChanged(QSslSocket::SslMode)),
-	  this,
-	  SLOT(slotModeChanged(QSslSocket::SslMode)));
-  connect(this,
 	  SIGNAL(newConnection(void)),
 	  this,
 	  SLOT(slotClientConnected(void)));
@@ -222,24 +236,28 @@ void spoton_web_server::slotReadyRead(void)
   ** What if socketDescriptor() equals negative one?
   */
 
-  QByteArray data(socket->readAll());
+  while(socket->bytesAvailable() > 0)
+    m_webSocketData[socket->socketDescriptor()].append(socket->readAll());
 
-  m_webSocketData[socket->socketDescriptor()].append(data);
-
-  if(m_webSocketData[socket->socketDescriptor()].contains('\n'))
+  if(m_webSocketData.value(socket->socketDescriptor()).endsWith("\r\n\r\n"))
     {
-      QByteArray data(m_webSocketData[socket->socketDescriptor()]);
+      QByteArray data
+	(m_webSocketData.value(socket->socketDescriptor()).toLower().trimmed());
 
-      if(data.isEmpty())
-	m_webSocketData.remove(socket->socketDescriptor());
-      else
-	m_webSocketData.insert(socket->socketDescriptor(), data);
+      if(data.startsWith("get / http/1.1\r\nhost"))
+	{
+	  socket->write(s_search);
+	  socket->flush();
+	}
+
+      m_webSocketData.remove(socket->socketDescriptor());
+      socket->deleteLater();
     }
 
-  if(m_webSocketData[socket->socketDescriptor()].size() >
+  if(m_webSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
     {
-      m_webSocketData[socket->socketDescriptor()].clear();
+      m_webSocketData.remove(socket->socketDescriptor());
       spoton_misc::logError
 	(QString("spoton_web_server::slotReadyRead(): "
 		 "container for socket %1:%2 contains too much data. "
@@ -262,6 +280,43 @@ void spoton_web_server::slotTimeout(void)
 	socket->deleteLater();
 
       return;
+    }
+
+  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+  if(crypt)
+    {
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+
+	    if(query.exec("SELECT certificate, private_key "
+			  "FROM kernel_web_server"))
+	      while(query.next())
+		{
+		  bool ok = true;
+
+		  m_certificate = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+		  m_privateKey = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+		}
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
     }
 
   if(isListening())

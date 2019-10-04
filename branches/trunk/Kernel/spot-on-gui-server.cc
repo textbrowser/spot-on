@@ -165,10 +165,6 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
-	  SIGNAL(modeChanged(QSslSocket::SslMode)),
-	  this,
-	  SLOT(slotModeChanged(QSslSocket::SslMode)));
-  connect(this,
 	  SIGNAL(newConnection(void)),
 	  this,
 	  SLOT(slotClientConnected(void)));
@@ -468,9 +464,9 @@ void spoton_gui_server::slotReadyRead(void)
       m_guiSocketData[socket->socketDescriptor()].append(data);
     }
 
-  if(m_guiSocketData[socket->socketDescriptor()].contains('\n'))
+  if(m_guiSocketData.value(socket->socketDescriptor()).contains('\n'))
     {
-      QByteArray data(m_guiSocketData[socket->socketDescriptor()]);
+      QByteArray data(m_guiSocketData.value(socket->socketDescriptor()));
       QList<QByteArray> messages
 	(data.mid(0, data.lastIndexOf('\n')).split('\n'));
 
@@ -879,10 +875,10 @@ void spoton_gui_server::slotReadyRead(void)
 	}
     }
 
-  if(m_guiSocketData[socket->socketDescriptor()].size() >
+  if(m_guiSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
     {
-      m_guiSocketData[socket->socketDescriptor()].clear();
+      m_guiSocketData.remove(socket->socketDescriptor());
       spoton_misc::logError
 	(QString("spoton_gui_server::slotReadyRead(): "
 		 "container for socket %1:%2 contains too much data. "
