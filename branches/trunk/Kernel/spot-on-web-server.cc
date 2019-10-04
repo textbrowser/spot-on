@@ -43,9 +43,6 @@ void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 {
-  QByteArray certificate;
-  QByteArray privateKey;
-  QByteArray publicKey;
   QString error("");
 
   if(error.isEmpty())
@@ -72,9 +69,9 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 	     setting("gui/sslControlString",
 		     spoton_common::SSL_CONTROL_STRING).toString());
 
-	  configuration.setLocalCertificate(QSslCertificate(certificate));
+	  configuration.setLocalCertificate(QSslCertificate(m_certificate));
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	  configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
 	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption

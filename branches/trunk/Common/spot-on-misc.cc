@@ -4780,6 +4780,14 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS kernel_statistics ("
 		   "statistic TEXT PRIMARY KEY NOT NULL, "
 		   "value TEXT)");
+	query.exec("CREATE TABLE IF NOT EXISTS kernel_web_server ("
+		   "certificate TEXT NOT NULL, "
+		   "private_key TEXT NOT NULL)");
+	query.exec("CREATE TRIGGER IF NOT EXISTS kernel_web_server_trigger "
+		   "BEFORE INSERT ON kernel_web_server "
+		   "BEGIN "
+		   "DELETE FROM kernel_web_server; "
+		   "END");
       }
 
     db.close();
