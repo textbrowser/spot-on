@@ -264,6 +264,15 @@ void spoton_web_server::slotTimeout(void)
       return;
     }
 
+  if(isListening())
+    if(port != serverPort())
+      {
+	close();
+
+	foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+	  socket->deleteLater();
+      }
+
   if(!isListening())
     if(!listen(spoton_misc::localAddressIPv4(), port))
       spoton_misc::logError
