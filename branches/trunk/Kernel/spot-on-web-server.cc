@@ -50,8 +50,8 @@ static QByteArray s_search =
   "<form action=\"\" method=\"get\" name=\"input\">"
   "<input maxlength=\"50\" size=\"50\" style=\"height: 24px\" "
   "type=\"text\" value=\"\"></input>"
-  "</center>"
   "</form>"
+  "</center>"
   "</div>"
   "</html>";
 
