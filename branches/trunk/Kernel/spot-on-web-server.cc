@@ -47,8 +47,9 @@ static QByteArray s_search =
   "</head>"
   "<div class=\"content\" id=\"search\">"
   "<center>"
-  "<form action=\"\" method=\"get\" name=\"input\">"
-  "<input maxlength=\"50\" size=\"50\" style=\"height: 24px\" "
+  "<form action=\"\" method=\"post\" name=\"input\">"
+  "<input maxlength=\"1000\" name=\"search\" "
+  "size=\"75\" style=\"height: 25px\" "
   "type=\"text\" value=\"\"></input>"
   "</form>"
   "</center>"
@@ -242,16 +243,18 @@ void spoton_web_server::slotReadyRead(void)
   if(m_webSocketData.value(socket->socketDescriptor()).endsWith("\r\n\r\n"))
     {
       QByteArray data
-	(m_webSocketData.value(socket->socketDescriptor()).toLower().trimmed());
+	(m_webSocketData.value(socket->socketDescriptor()).
+	 simplified().toLower().trimmed());
 
-      if(data.startsWith("get / http/1.1\r\nhost"))
+      if(data.startsWith("get / http/1.1"))
 	{
 	  socket->write(s_search);
 	  socket->flush();
+	  socket->deleteLater();
 	}
-
-      m_webSocketData.remove(socket->socketDescriptor());
-      socket->deleteLater();
+      else if(data.startsWith("post / http/1.1"))
+	{
+	}
     }
 
   if(m_webSocketData.value(socket->socketDescriptor()).size() >
