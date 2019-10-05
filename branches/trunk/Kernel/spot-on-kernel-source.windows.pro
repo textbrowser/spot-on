@@ -11,6 +11,8 @@ HEADERS		= ..\\Common\\spot-on-external-address.h \
 		  spot-on-starbeam-writer.h \
 		  spot-on-urldistribution.h
 
+RESOURCES	= ..\\HTML\\html.qrc
+
 SOURCES		= ..\\Common\\spot-on-crypt.cc \
 		  ..\\Common\\spot-on-crypt-mceliece.cc \
 		  ..\\Common\\spot-on-crypt-ntru.cc \
@@ -36,4 +38,3 @@ SOURCES		= ..\\Common\\spot-on-crypt.cc \
 		  spot-on-starbeam-reader.cc \
 		  spot-on-starbeam-writer.cc \
 		  spot-on-urldistribution.cc
-

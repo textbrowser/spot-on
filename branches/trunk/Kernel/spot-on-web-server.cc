@@ -36,24 +36,7 @@
 #include "spot-on-web-server.h"
 #include "spot-on-kernel.h"
 
-static QByteArray s_search =
-  "HTTP/1.1 200 OK\r\n"
-  "Content-Type: text/html; charset=utf-8\r\n\r\n"
-  "<!DOCTYPE html>"
-  "<html>"
-  "<head>"
-  "<title>Spot-On Search</title>"
-  "</head>"
-  "<div class=\"content\" id=\"search\">"
-  "<center>"
-  "<form action=\"\" method=\"post\" name=\"input\">"
-  "<input maxlength=\"1000\" name=\"search\" "
-  "size=\"75\" style=\"height: 25px\" "
-  "type=\"text\" value=\"\"></input>"
-  "</form>"
-  "</center>"
-  "</div>"
-  "</html>";
+static QByteArray s_search;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
@@ -120,6 +103,11 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):
   spoton_web_server_tcp_server(parent)
 {
+  QFile file(":/search.html");
+
+  file.open(QFile::ReadOnly);
+  s_search = file.readAll();
+  file.close();
   connect(&m_generalTimer,
 	  SIGNAL(timeout(void)),
 	  this,
