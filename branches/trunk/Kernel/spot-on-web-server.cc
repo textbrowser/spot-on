@@ -147,6 +147,10 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
+	  SIGNAL(finished(QSslSocket *)),
+	  this,
+	  SLOT(slotFinished(QSslSocket *)));
+  connect(this,
 	  SIGNAL(newConnection(void)),
 	  this,
 	  SLOT(slotClientConnected(void)));
@@ -155,8 +159,28 @@ spoton_web_server::spoton_web_server(QObject *parent):
 
 spoton_web_server::~spoton_web_server()
 {
+#if QT_VERSION < 0x050000
+  QMutableHashIterator<int, QFuture<void> > it(m_futures);
+#else
+  QMutableHashIterator<qintptr, QFuture<void> > it(m_futures);
+#endif
+
+  while(it.hasNext())
+    {
+      it.next();
+      it.value().cancel();
+      it.value().waitForFinished();
+      it.remove();
+    }
+
   m_generalTimer.stop();
   m_webSocketData.clear();
+}
+
+void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
+{
+  Q_UNUSED(data);
+  emit finished(socket);
 }
 
 void spoton_web_server::slotClientConnected(void)
@@ -191,6 +215,7 @@ void spoton_web_server::slotClientDisconnected(void)
 		 "client %1:%2 disconnected.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
+      m_futures.remove(socket->socketDescriptor());
       m_webSocketData.remove(socket->socketDescriptor());
       socket->deleteLater();
     }
@@ -198,6 +223,12 @@ void spoton_web_server::slotClientDisconnected(void)
 
 void spoton_web_server::slotEncrypted(void)
 {
+}
+
+void spoton_web_server::slotFinished(QSslSocket *socket)
+{
+  if(socket)
+    socket->deleteLater();
 }
 
 void spoton_web_server::slotModeChanged(QSslSocket::SslMode mode)
@@ -240,22 +271,19 @@ void spoton_web_server::slotReadyRead(void)
   while(socket->bytesAvailable() > 0)
     m_webSocketData[socket->socketDescriptor()].append(socket->readAll());
 
-  if(m_webSocketData.value(socket->socketDescriptor()).endsWith("\r\n\r\n"))
-    {
-      QByteArray data
-	(m_webSocketData.value(socket->socketDescriptor()).
-	 simplified().toLower().trimmed());
+  QByteArray data
+    (m_webSocketData.
+     value(socket->socketDescriptor()).simplified().toLower().trimmed());
 
-      if(data.startsWith("get / http/1.1"))
-	{
-	  socket->write(s_search);
-	  socket->flush();
-	  socket->deleteLater();
-	}
-      else if(data.startsWith("post / http/1.1"))
-	{
-	}
+  if(data.startsWith("get / http/1.1"))
+    {
+      socket->write(s_search);
+      socket->flush();
+      socket->deleteLater();
     }
+  else if(data.startsWith("post / http/1.1"))
+    m_futures[socket->socketDescriptor()] =
+      QtConcurrent::run(this, &spoton_web_server::process, socket, data);
 
   if(m_webSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
@@ -285,41 +313,46 @@ void spoton_web_server::slotTimeout(void)
       return;
     }
 
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(crypt)
+  if(m_certificate.isEmpty() || m_privateKey.isEmpty())
     {
-      QString connectionName("");
+      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
 
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+      if(crypt)
+	{
+	  QString connectionName("");
 
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
-
-	if(db.open())
 	  {
-	    QSqlQuery query(db);
+	    QSqlDatabase db = spoton_misc::database(connectionName);
 
-	    query.setForwardOnly(true);
+	    db.setDatabaseName
+	      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
-	    if(query.exec("SELECT certificate, private_key "
-			  "FROM kernel_web_server"))
-	      while(query.next())
-		{
-		  bool ok = true;
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
 
-		  m_certificate = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
-		  m_privateKey = crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
-		}
+		query.setForwardOnly(true);
+
+		if(query.exec("SELECT certificate, private_key "
+			      "FROM kernel_web_server"))
+		  while(query.next())
+		    {
+		      bool ok = true;
+
+		      m_certificate = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(0).toByteArray()),
+			 &ok);
+		      m_privateKey = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(1).toByteArray()),
+			 &ok);
+		    }
+	      }
+
+	    db.close();
 	  }
 
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
+	  QSqlDatabase::removeDatabase(connectionName);
+	}
     }
 
   if(isListening())
@@ -329,6 +362,9 @@ void spoton_web_server::slotTimeout(void)
 
 	foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
 	  socket->deleteLater();
+
+	m_certificate.clear();
+	m_privateKey.clear();
       }
 
   if(!isListening())

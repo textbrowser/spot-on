@@ -28,6 +28,7 @@
 #ifndef _spoton_web_server_h_
 #define _spoton_web_server_h_
 
+#include <QFuture>
 #include <QPointer>
 #include <QQueue>
 #include <QSslSocket>
@@ -91,18 +92,25 @@ class spoton_web_server: public spoton_web_server_tcp_server
  private:
 #if QT_VERSION < 0x050000
   QHash<int, QByteArray> m_webSocketData;
+  QHash<int, QFuture<void> > m_futures;
 #else
   QHash<qintptr, QByteArray> m_webSocketData;
+  QHash<qintptr, QFuture<void> > m_futures;
 #endif
   QTimer m_generalTimer;
+  void process(QSslSocket *socket, const QByteArray &data);
 
  private slots:
   void slotClientConnected(void);
   void slotClientDisconnected(void);
   void slotEncrypted(void);
+  void slotFinished(QSslSocket *socket);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotReadyRead(void);
   void slotTimeout(void);
+
+ signals:
+  void finished(QSslSocket *socket);
 };
 
 #endif
