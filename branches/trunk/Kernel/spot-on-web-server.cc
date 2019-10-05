@@ -147,9 +147,9 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
-	  SIGNAL(finished(QSslSocket *)),
+	  SIGNAL(finished(QSslSocket *, const QByteArray &)),
 	  this,
-	  SLOT(slotFinished(QSslSocket *)));
+	  SLOT(slotFinished(QSslSocket *, const QByteArray &)));
   connect(this,
 	  SIGNAL(newConnection(void)),
 	  this,
@@ -179,8 +179,7 @@ spoton_web_server::~spoton_web_server()
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  Q_UNUSED(data);
-  emit finished(socket);
+  emit finished(socket, data);
 }
 
 void spoton_web_server::slotClientConnected(void)
@@ -225,10 +224,18 @@ void spoton_web_server::slotEncrypted(void)
 {
 }
 
-void spoton_web_server::slotFinished(QSslSocket *socket)
+void spoton_web_server::slotFinished(QSslSocket *socket, const QByteArray &data)
 {
   if(socket)
-    socket->deleteLater();
+    {
+      if(data.isEmpty())
+	socket->write(s_search);
+      else
+	socket->write(data);
+
+      socket->flush();
+      socket->deleteLater();
+    }
 }
 
 void spoton_web_server::slotModeChanged(QSslSocket::SslMode mode)
@@ -271,17 +278,16 @@ void spoton_web_server::slotReadyRead(void)
   while(socket->bytesAvailable() > 0)
     m_webSocketData[socket->socketDescriptor()].append(socket->readAll());
 
-  QByteArray data
-    (m_webSocketData.
-     value(socket->socketDescriptor()).simplified().toLower().trimmed());
+  QByteArray data(m_webSocketData.value(socket->socketDescriptor()).toLower());
 
-  if(data.startsWith("get / http/1.1"))
+  if(data.endsWith("\r\n\r\n") &&
+     data.simplified().trimmed().startsWith("get / http/1.1"))
     {
       socket->write(s_search);
       socket->flush();
       socket->deleteLater();
     }
-  else if(data.startsWith("post / http/1.1"))
+  else if(data.simplified().startsWith("post / http/1.1"))
     m_futures[socket->socketDescriptor()] =
       QtConcurrent::run(this, &spoton_web_server::process, socket, data);
 

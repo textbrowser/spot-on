@@ -104,13 +104,13 @@ class spoton_web_server: public spoton_web_server_tcp_server
   void slotClientConnected(void);
   void slotClientDisconnected(void);
   void slotEncrypted(void);
-  void slotFinished(QSslSocket *socket);
+  void slotFinished(QSslSocket *socket, const QByteArray &data);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotReadyRead(void);
   void slotTimeout(void);
 
  signals:
-  void finished(QSslSocket *socket);
+  void finished(QSslSocket *socket, const QByteArray &data);
 };
 
 #endif
