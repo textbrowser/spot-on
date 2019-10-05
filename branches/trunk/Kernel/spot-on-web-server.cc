@@ -61,80 +61,59 @@ void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 {
-  QString error("");
+  QPointer<QSslSocket> socket;
 
-  if(error.isEmpty())
+  try
     {
-      QPointer<QSslSocket> socket;
+      socket = new QSslSocket(this);
+      socket->setSocketDescriptor(socketDescriptor);
+      socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+      connect(socket,
+	      SIGNAL(encrypted(void)),
+	      this,
+	      SLOT(slotEncrypted(void)));
+      connect(socket,
+	      SIGNAL(modeChanged(QSslSocket::SslMode)),
+	      this,
+	      SIGNAL(modeChanged(QSslSocket::SslMode)));
 
-      try
-	{
-	  socket = new QSslSocket(this);
-	  socket->setSocketDescriptor(socketDescriptor);
-	  socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-	  connect(socket,
-		  SIGNAL(encrypted(void)),
-		  this,
-		  SLOT(slotEncrypted(void)));
-	  connect(socket,
-		  SIGNAL(modeChanged(QSslSocket::SslMode)),
-		  this,
-		  SIGNAL(modeChanged(QSslSocket::SslMode)));
+      QSslConfiguration configuration;
+      QString sslCS
+	(spoton_kernel::
+	 setting("gui/sslControlString",
+		 spoton_common::SSL_CONTROL_STRING).toString());
 
-	  QSslConfiguration configuration;
-	  QString sslCS
-	    (spoton_kernel::
-	     setting("gui/sslControlString",
-		     spoton_common::SSL_CONTROL_STRING).toString());
-
-	  configuration.setLocalCertificate(QSslCertificate(m_certificate));
-	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	  configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
+      configuration.setLocalCertificate(QSslCertificate(m_certificate));
+      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+      configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableEmptyFragments, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+      configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
+      configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
 #if QT_VERSION >= 0x050501
-	  spoton_crypt::setSslCiphers
-	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
+      spoton_crypt::setSslCiphers
+	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
-	  spoton_crypt::setSslCiphers
-	    (socket->supportedCiphers(), sslCS, configuration);
+      spoton_crypt::setSslCiphers
+	(socket->supportedCiphers(), sslCS, configuration);
 #endif
-	  socket->setSslConfiguration(configuration);
-	  socket->startServerEncryption();
-	  m_queue.enqueue(socket);
-	  emit newConnection();
-	}
-      catch(...)
-	{
-	  m_queue.removeOne(socket);
-
-	  if(socket)
-	    socket->deleteLater();
-
-	  spoton_misc::closeSocket(socketDescriptor);
-	  spoton_misc::logError
-	    ("spoton_web_server_tcp_server::incomingConnection(): "
-	     "socket deleted.");
-	}
+      socket->setSslConfiguration(configuration);
+      socket->startServerEncryption();
+      m_queue.enqueue(socket);
+      emit newConnection();
     }
-  else
+  catch(...)
     {
-      QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
+      m_queue.removeOne(socket);
 
-      if(socket.setSocketDescriptor(socketDescriptor))
-	socket.abort();
-      else
-	spoton_misc::closeSocket(socketDescriptor);
+      if(socket)
+	socket->deleteLater();
 
+      spoton_misc::closeSocket(socketDescriptor);
       spoton_misc::logError
-	(QString("spoton_web_server_tcp_server::"
-		 "incomingConnection(): "
-		 "generateSslKeys() failure (%1).").arg(error));
+	("spoton_web_server_tcp_server::incomingConnection(): socket deleted.");
     }
 }
 
