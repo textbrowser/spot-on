@@ -37,7 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static int s_limit = 25;
+static quint64 s_urlLimit = 10;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
@@ -215,7 +215,16 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
   if(db.isOpen())
     {
+      QString link(">");
       QString querystr("");
+      QString search("");
+      quint64 count = 0;
+      quint64 urlCurrentPage = 1;
+      quint64 urlOffset = 0;
+      quint64 urlPages = 0;
+
+      search = data.mid(data.indexOf("search=") + 7);
+      search.replace("%22", "\"");
 
       for(int i = 0; i < 10 + 6; i++)
 	for(int j = 0; j < 10 + 6; j++)
@@ -244,7 +253,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  }
 
       querystr.append(" ORDER BY 4 DESC ");
-      querystr.append(QString(" LIMIT %1 ").arg(s_limit));
+      querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
       querystr.append(QString(" OFFSET %1 ").arg(0));
 
       QSqlQuery query(db);
@@ -341,10 +350,50 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    }
 
 		  html.append("</p><br>");
+		  count += 1;
 		}
 	    }
 
-	  html.append("</div></html>");
+	  if(count > 0)
+	    if(link == ">")
+	      if(urlOffset / s_urlLimit >= urlPages)
+		urlPages += 1;
+
+	  QString str("");
+	  quint64 lower = 0;
+	  quint64 upper = 0;
+
+	  // 1  ... 10.
+	  // 11 ... 20.
+	  // Find the lower and upper bounds.
+
+	  lower = urlOffset / s_urlLimit + 1;
+	  upper = lower + s_urlLimit;
+
+	  if(urlPages < upper)
+	    upper = urlPages;
+
+	  if(upper > s_urlLimit) // Number of pages to display.
+	    lower = upper - s_urlLimit;
+	  else
+	    lower = 1;
+
+	  for(quint64 i = lower; i <= upper; i++)
+	    if(i != urlCurrentPage)
+	      str.append(QString(" <a href=\"%1\">%1</a> ").arg(i));
+	    else
+	      str.append(QString(" %1 ").arg(i));
+
+	  if(count >= s_urlLimit)
+	    str.append(tr(" <a href=\">\">Next</a> "));
+
+	  if(urlCurrentPage != 1)
+	    str.prepend(tr(" <a href=\"<\">Previous</a> "));
+
+	  str = str.trimmed();
+	  html.append("<center>");
+	  html.append(str);
+	  html.append("</center></div></html>");
 	}
     }
 
