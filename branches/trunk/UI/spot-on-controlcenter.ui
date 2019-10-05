@@ -73,7 +73,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>492</height>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -448,8 +448,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>750</width>
-                <height>498</height>
+                <width>746</width>
+                <height>502</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -868,8 +868,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>890</width>
-             <height>683</height>
+             <width>866</width>
+             <height>686</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2065,7 +2065,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>492</height>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2759,8 +2759,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>272</width>
-                     <height>1501</height>
+                     <width>258</width>
+                     <height>1451</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3242,7 +3242,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>492</height>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3643,8 +3643,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>738</width>
-                  <height>474</height>
+                  <width>745</width>
+                  <height>486</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4397,7 +4397,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>492</height>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4473,8 +4473,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>750</width>
-                 <height>678</height>
+                 <width>746</width>
+                 <height>649</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5392,8 +5392,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>912</width>
-             <height>1212</height>
+             <width>831</width>
+             <height>1204</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6494,8 +6494,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>760</width>
-             <height>686</height>
+             <width>756</width>
+             <height>716</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7533,8 +7533,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>760</width>
-             <height>557</height>
+             <width>756</width>
+             <height>549</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7618,7 +7618,7 @@
               <item>
                <widget class="QSpinBox" name="web_server_port">
                 <property name="toolTip">
-                 <string>A positive values enables the UI's Web server machine.</string>
+                 <string>A positive port value will enable the Spot-On Search Server (SOSS); an active kernel is also required. Please modify the current port or press the Enter key while keyboard focus in on the Web Server Port widget for new credentials. A port value of zero will deactivate the Spot-On Search Server (SOSS).</string>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
@@ -8156,7 +8156,7 @@
              <x>0</x>
              <y>0</y>
              <width>776</width>
-             <height>492</height>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8377,7 +8377,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>31</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
