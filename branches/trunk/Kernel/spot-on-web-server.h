@@ -31,6 +31,7 @@
 #include <QFuture>
 #include <QPointer>
 #include <QQueue>
+#include <QSqlDatabase>
 #include <QSslSocket>
 #include <QTcpServer>
 #include <QTimer>
@@ -98,6 +99,7 @@ class spoton_web_server: public spoton_web_server_tcp_server
   QHash<qintptr, QFuture<void> > m_futures;
 #endif
   QTimer m_generalTimer;
+  QSqlDatabase database(void) const;
   void process(QSslSocket *socket, const QByteArray &data);
 
  private slots:

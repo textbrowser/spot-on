@@ -26,7 +26,6 @@
 */
 
 #include <QNetworkInterface>
-#include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSslKey>
 #include <QSslSocket>
@@ -177,9 +176,73 @@ spoton_web_server::~spoton_web_server()
   m_webSocketData.clear();
 }
 
+QSqlDatabase spoton_web_server::database(void) const
+{
+  QSqlDatabase db;
+  QString connectionName(spoton_misc::databaseName());
+
+  if(spoton_kernel::setting("gui/sqliteSearch", true).toBool())
+    {
+      db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "urls.db");
+      db.open();
+    }
+  else
+    {
+      QByteArray password;
+      QString database
+	(spoton_kernel::setting("gui/postgresql_database", "").
+	 toString().trimmed());
+      QString host
+	(spoton_kernel::setting("gui/postgresql_host", "localhost").
+	 toString().trimmed());
+      QString name
+	(spoton_kernel::setting("gui/postgresql_name", "").toString().
+	 trimmed());
+      QString str("connect_timeout=10");
+      bool ok = true;
+      bool ssltls = spoton_kernel::setting
+	("gui/postgresql_ssltls", false).toBool();
+      int port = spoton_kernel::setting("gui/postgresql_port", 5432).toInt();
+      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+      if(crypt)
+	password = crypt->decryptedAfterAuthenticated
+	  (QByteArray::
+	   fromBase64(spoton_kernel::setting("gui/postgresql_password", "").
+		      toByteArray()), &ok);
+
+      if(ssltls)
+	str.append(";requiressl=1");
+
+      db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+      db.setConnectOptions(str);
+      db.setDatabaseName(database);
+      db.setHostName(host);
+      db.setPort(port);
+
+      if(ok)
+	db.open(name, password);
+    }
+
+  return db;
+}
+
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  emit finished(socket, data);
+  QByteArray results;
+  QSqlDatabase db(database());
+  QString connectionName(db.connectionName());
+
+  if(db.isOpen())
+    {
+    }
+
+  db.close();
+  db = QSqlDatabase();
+  QSqlDatabase::removeDatabase(connectionName);
+  emit finished(socket, results);
 }
 
 void spoton_web_server::slotClientConnected(void)
