@@ -246,9 +246,9 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
       if(query.exec())
 	{
-	  html.append("HTTP/1.1 200 OK\r\n"
-		      "Content-Type: text/html; charset=utf-8\r\n\r\n"
-		      "<!DOCTYPE html>");
+	  html.append(s_search);
+	  html.remove(s_search.indexOf("</html>"), 7);
+	  html.append("<div id=\"footer\">");
 
 	  while(query.next())
 	    {
@@ -310,6 +310,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  if(title.isEmpty())
 		    title = spoton_misc::urlToEncoded(url);
 
+		  html.append("<p>");
 		  html.append("<a href=\"");
 		  html.append(spoton_misc::urlToEncoded(url));
 		  html.append("\">");
@@ -328,11 +329,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 			 arg(description));
 		    }
 
-		  html.append("<br><br>");
+		  html.append("</p><br>");
 		}
 	    }
 
-	  html.append("</html>");
+	  html.append("</div></html>");
 	}
     }
 
