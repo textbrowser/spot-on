@@ -37,6 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
+static int s_limit = 25;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
@@ -198,9 +199,9 @@ QSqlDatabase spoton_web_server::database(void) const
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  QByteArray html;
   QSqlDatabase db(database());
   QString connectionName(db.connectionName());
+  QString html("");
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
      retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
@@ -236,7 +237,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  }
 
       querystr.append(" ORDER BY 4 DESC ");
-      querystr.append(QString(" LIMIT %1 ").arg(10));
+      querystr.append(QString(" LIMIT %1 ").arg(s_limit));
       querystr.append(QString(" OFFSET %1 ").arg(0));
 
       QSqlQuery query(db);
@@ -246,8 +247,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
       if(query.exec())
 	{
+	  html.append
+	    ("HTTP/1.1 200 OK\r\n"
+	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
 	  html.append(s_search);
-	  html.remove(s_search.indexOf("</html>"), 7);
+	  html.remove("</html>");
 	  html.append("<div id=\"footer\">");
 
 	  while(query.next())
@@ -340,7 +344,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  emit finished(socket, html);
+  emit finished(socket, html.toUtf8());
 }
 
 void spoton_web_server::slotClientConnected(void)
@@ -390,7 +394,12 @@ void spoton_web_server::slotFinished(QSslSocket *socket, const QByteArray &data)
   if(socket)
     {
       if(data.isEmpty())
-	socket->write(s_search);
+	{
+	  socket->write
+	    ("HTTP/1.1 200 OK\r\n"
+	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
+	  socket->write(s_search);
+	}
       else
 	socket->write(data);
 
@@ -444,6 +453,8 @@ void spoton_web_server::slotReadyRead(void)
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1.1"))
     {
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
       socket->write(s_search);
       socket->flush();
       socket->deleteLater();
