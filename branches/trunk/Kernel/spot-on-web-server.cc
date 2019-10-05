@@ -210,18 +210,148 @@ QSqlDatabase spoton_web_server::database(void) const
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  QByteArray results;
+  QByteArray html;
   QSqlDatabase db(database());
   QString connectionName(db.connectionName());
+  QScopedPointer<spoton_crypt> crypt
+    (spoton_misc::
+     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
 
-  if(db.isOpen())
+  if(crypt && db.isOpen())
     {
+      QString querystr("");
+
+      for(int i = 0; i < 10 + 6; i++)
+	for(int j = 0; j < 10 + 6; j++)
+	  {
+	    QChar c1;
+	    QChar c2;
+
+	    if(i <= 9)
+	      c1 = QChar(i + 48);
+	    else
+	      c1 = QChar(i + 97 - 10);
+
+	    if(j <= 9)
+	      c2 = QChar(j + 48);
+	    else
+	      c2 = QChar(j + 97 - 10);
+
+	    if(i == 15 && j == 15)
+	      querystr.append
+		(QString("SELECT title, url, description, date_time_inserted "
+			 "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
+	    else
+	      querystr.append
+		(QString("SELECT title, url, description, date_time_inserted "
+			 "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
+	  }
+
+      querystr.append(" ORDER BY 4 DESC ");
+      querystr.append(QString(" LIMIT %1 ").arg(10));
+      querystr.append(QString(" OFFSET %1 ").arg(0));
+
+      QSqlQuery query(db);
+
+      query.setForwardOnly(true);
+      query.prepare(querystr);
+
+      if(query.exec())
+	{
+	  html.append("HTTP/1.1 200 OK\r\n"
+		      "Content-Type: text/html; charset=utf-8\r\n\r\n"
+		      "<!DOCTYPE html>");
+
+	  while(query.next())
+	    {
+	      QByteArray bytes;
+	      QString description("");
+	      QString title("");
+	      QUrl url;
+	      bool ok = true;
+
+	      bytes = crypt-> decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
+	      description = QString::fromUtf8
+		(bytes.constData(), bytes.length()).trimmed();
+
+	      if(ok)
+		{
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+		  title = QString::fromUtf8
+		    (bytes.constData(), bytes.length()).trimmed();
+		  title = spoton_misc::removeSpecialHtmlTags(title).trimmed();
+		}
+
+	      if(ok)
+		{
+		  bytes = crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+		  url = QUrl::fromUserInput
+		    (QString::fromUtf8(bytes.constData(), bytes.length()));
+		}
+
+	      if(ok)
+		{
+		  description = spoton_misc::removeSpecialHtmlTags(description);
+
+		  if(description.length() >
+		     spoton_common::MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
+		    {
+		      description = description.mid
+			(0,
+			 spoton_common::
+			 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
+
+		      if(description.endsWith("..."))
+			{
+			}
+		      else if(description.endsWith(".."))
+			description.append(".");
+		      else if(description.endsWith("."))
+			description.append("..");
+		      else
+			description.append("...");
+		    }
+
+		  QString scheme(url.scheme().toLower().trimmed());
+
+		  url.setScheme(scheme);
+
+		  if(title.isEmpty())
+		    title = spoton_misc::urlToEncoded(url);
+
+		  html.append("<a href=\"");
+		  html.append(spoton_misc::urlToEncoded(url));
+		  html.append("\">");
+		  html.append(title);
+		  html.append("</a>");
+		  html.append("<br>");
+		  html.append
+		    (QString("<font color=\"green\" size=3>%1</font>").
+		     arg(spoton_misc::urlToEncoded(url).constData()));
+
+		  if(!description.isEmpty())
+		    {
+		      html.append("<br>");
+		      html.append
+			(QString("<font color=\"gray\" size=3>%1</font>").
+			 arg(description));
+		    }
+
+		  html.append("<br><br>");
+		}
+	    }
+
+	  html.append("</html>");
+	}
     }
 
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  emit finished(socket, results);
+  emit finished(socket, html);
 }
 
 void spoton_web_server::slotClientConnected(void)
