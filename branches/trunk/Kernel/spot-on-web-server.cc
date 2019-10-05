@@ -199,14 +199,21 @@ QSqlDatabase spoton_web_server::database(void) const
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  QSqlDatabase db(database());
-  QString connectionName(db.connectionName());
-  QString html("");
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
      retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
 
-  if(crypt && db.isOpen())
+  if(!crypt)
+    {
+      emit finished(socket, QByteArray());
+      return;
+    }
+
+  QSqlDatabase db(database());
+  QString connectionName(db.connectionName());
+  QString html("");
+
+  if(db.isOpen())
     {
       QString querystr("");
 
@@ -322,14 +329,14 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  html.append("</a>");
 		  html.append("<br>");
 		  html.append
-		    (QString("<font color=\"green\" size=3>%1</font>").
+		    (QString("<font color=\"green\" size=2>%1</font>").
 		     arg(spoton_misc::urlToEncoded(url).constData()));
 
 		  if(!description.isEmpty())
 		    {
 		      html.append("<br>");
 		      html.append
-			(QString("<font color=\"gray\" size=3>%1</font>").
+			(QString("<font color=\"gray\" size=2>%1</font>").
 			 arg(description));
 		    }
 
