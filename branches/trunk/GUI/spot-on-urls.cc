@@ -634,8 +634,8 @@ void spoton::slotCorrectUrlDatabases(void)
 	progress.repaint();
 	QApplication::processEvents();
 	query1.prepare
-	  (QString("SELECT url_hash FROM "
-		   "spot_on_keywords_%1%2").arg(c1).arg(c2));
+	  (QString("SELECT url_hash FROM spot_on_keywords_%1%2").
+	   arg(c1).arg(c2));
 
 	if(query1.exec())
 	  {

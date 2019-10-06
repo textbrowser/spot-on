@@ -3567,20 +3567,8 @@ void spoton::cleanup(void)
 
   m_ui.url_database_connection_information->clear();
   saveSettings();
-  delete m_urlCommonCrypt;
   delete m_wizardUi;
-  m_urlCommonCrypt = 0;
   m_wizardUi = 0;
-
-  QMutableHashIterator<QString, spoton_crypt *> it(m_crypts);
-
-  while(it.hasNext())
-    {
-      it.next();
-      delete it.value();
-      it.remove();
-    }
-
 #if SPOTON_GOLDBUG == 0
   m_addParticipantWindow->deleteLater();
 #endif
@@ -3591,6 +3579,18 @@ void spoton::cleanup(void)
   m_releaseNotes->deleteLater();
   m_rss->deleteLater();
   m_statisticsWindow->deleteLater();
+  delete m_urlCommonCrypt;
+  m_urlCommonCrypt = 0;
+
+  QMutableHashIterator<QString, spoton_crypt *> it(m_crypts);
+
+  while(it.hasNext())
+    {
+      it.next();
+      delete it.value();
+      it.remove();
+    }
+
   QApplication::instance()->quit();
 }
 
@@ -6085,26 +6085,27 @@ void spoton::slotGeneralTimerTimeout(void)
 
   if(!m_ui.url_database_connection_information->text().isEmpty())
     if(m_urlDatabase.driverName() == "QPSQL")
-      if(m_pqUrlDatabaseFuture.isFinished())
-	{
-	  spoton_crypt *crypt = m_crypts.value("chat", 0);
+      if(findChildren<QProgressDialog *> ().isEmpty())
+	if(m_pqUrlDatabaseFuture.isFinished())
+	  {
+	    spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-	  if(crypt)
-	    {
-	      QByteArray password;
-	      bool ok = true;
+	    if(crypt)
+	      {
+		QByteArray password;
+		QSettings settings;
+		bool ok = true;
 
-	      password = crypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(m_settings.
-			    value("gui/postgresql_password", "").
-			    toByteArray()), &ok);
+		password = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(settings.
+					  value("gui/postgresql_password", "").
+					  toByteArray()), &ok);
 
-	      if(ok)
-		m_pqUrlDatabaseFuture = QtConcurrent::run
-		  (this, &spoton::inspectPQUrlDatabase, password);
-	    }
-	}
+		if(ok)
+		  m_pqUrlDatabaseFuture = QtConcurrent::run
+		    (this, &spoton::inspectPQUrlDatabase, password);
+	      }
+	  }
 }
 
 void spoton::slotHideOfflineParticipants(bool state)

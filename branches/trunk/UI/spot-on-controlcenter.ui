@@ -2122,7 +2122,7 @@
                      <string>Setting will not be retained.</string>
                     </property>
                     <property name="text">
-                     <string>Temporarily Pause Updates</string>
+                     <string>Pause Updates</string>
                     </property>
                    </widget>
                   </item>
@@ -5392,7 +5392,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>831</width>
+             <width>861</width>
              <height>1204</height>
             </rect>
            </property>

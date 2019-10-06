@@ -1006,8 +1006,9 @@ spoton_kernel::~spoton_kernel()
     }
 
   s_crypts.clear();
-  spoton_misc::logError(QString("Kernel %1 about to exit.").
-			arg(QCoreApplication::applicationPid()));
+  spoton_misc::logError
+    (QString("Kernel %1 about to exit.").
+     arg(QCoreApplication::applicationPid()));
 }
 
 QList<QByteArray> spoton_kernel::findBuzzKey(const QByteArray &data,
