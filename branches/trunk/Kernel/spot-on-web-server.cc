@@ -197,6 +197,11 @@ QSqlDatabase spoton_web_server::database(void) const
   return db;
 }
 
+int spoton_web_server::clientCount(void) const
+{
+  return m_webSocketData.size();
+}
+
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
   QScopedPointer<spoton_crypt> crypt
@@ -396,10 +401,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  */
 
 		  querystr.append
-		    (QString("SELECT title, url, description, "
-			     "date_time_inserted, LENGTH(content), url_hash "
-			     "FROM spot_on_urls_%1 WHERE "
-			     "url_hash IN (%2) ").
+		    (QString("SELECT title, "
+			     "url, "
+			     "description, "
+			     "date_time_inserted "
+			     "FROM spot_on_urls_%1 WHERE url_hash IN (%2) ").
 		     arg(it.key()).arg(it.value()));
 
 		  if(it.hasNext())
@@ -463,25 +469,6 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	      if(ok)
 		{
 		  description = spoton_misc::removeSpecialHtmlTags(description);
-
-		  if(description.length() >
-		     spoton_common::MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
-		    {
-		      description = description.mid
-			(0,
-			 spoton_common::
-			 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
-
-		      if(description.endsWith("..."))
-			{
-			}
-		      else if(description.endsWith(".."))
-			description.append(".");
-		      else if(description.endsWith("."))
-			description.append("..");
-		      else
-			description.append("...");
-		    }
 
 		  QString scheme(url.scheme().toLower().trimmed());
 

@@ -6181,6 +6181,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	  (0, QString("%1 Minutes").
 	   arg(qAbs(uptime.secsTo(QDateTime::currentDateTime())) / 60));
 	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('Web Server Clients', ?)");
+	query.bindValue(0, locale.toString(m_webServer->clientCount()));
+	query.exec();
       }
 
     db.close();

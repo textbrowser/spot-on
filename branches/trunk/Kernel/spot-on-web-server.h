@@ -89,6 +89,7 @@ class spoton_web_server: public spoton_web_server_tcp_server
  public:
   spoton_web_server(QObject *parent);
   ~spoton_web_server();
+  int clientCount(void) const;
 
  private:
 #if QT_VERSION < 0x050000
