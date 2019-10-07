@@ -270,15 +270,12 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  QSet<QString> keywords;
 	  QString keywordsearch("");
 	  QStringList keywordsearches;
-	  bool intersect = false;
 	  bool ok = true;
 
 	  do
 	    {
 	      int e = -1;
-	      int s = -1;
-
-	      s = search.indexOf('"');
+	      int s = search.indexOf('"');
 
 	      if(s < 0)
 		break;
@@ -320,9 +317,6 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  if(it.hasNext())
 		    keywordsearch.append(" INTERSECT ");
 		}
-
-	      if(!keywords.isEmpty())
-		intersect = true;
 
 	      keywordsearches << keywordsearch;
 	    }
