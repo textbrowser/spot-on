@@ -198,6 +198,7 @@ Completed Items
        no restriction on the length of the key. For keyed BLAKE2b hash,
        length of the key must be 64 bytes or less. For keyed BLAKE2s hash,
        length of the key must be 32 bytes or less.)
+143.   Python Web interface for the Search machine. Simple Web server.
 
 Ignored Items
 
@@ -246,7 +247,7 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     Own NTRU implementation.
-9.     Python Web interface for the Search machine.
+9.     Retrieve SOSS results from Spot-On.
 10.    Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
 11.    Remove obsolete includes.

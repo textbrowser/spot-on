@@ -37,7 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static quint64 s_urlLimit = 10;
+static quint64 s_urlLimit = 15;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
@@ -227,35 +227,193 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
 
-      for(int i = 0; i < 10 + 6; i++)
-	for(int j = 0; j < 10 + 6; j++)
-	  {
-	    QChar c1;
-	    QChar c2;
+      if(search.trimmed().isEmpty())
+	{
+	  for(int i = 0; i < 10 + 6; i++)
+	    for(int j = 0; j < 10 + 6; j++)
+	      {
+		QChar c1;
+		QChar c2;
 
-	    if(i <= 9)
-	      c1 = QChar(i + 48);
-	    else
-	      c1 = QChar(i + 97 - 10);
+		if(i <= 9)
+		  c1 = QChar(i + 48);
+		else
+		  c1 = QChar(i + 97 - 10);
 
-	    if(j <= 9)
-	      c2 = QChar(j + 48);
-	    else
-	      c2 = QChar(j + 97 - 10);
+		if(j <= 9)
+		  c2 = QChar(j + 48);
+		else
+		  c2 = QChar(j + 97 - 10);
 
-	    if(i == 15 && j == 15)
-	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
-			 "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
-	    else
-	      querystr.append
-		(QString("SELECT title, url, description, date_time_inserted "
-			 "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
-	  }
+		if(i == 15 && j == 15)
+		  querystr.append
+		    (QString("SELECT title, "
+			     "url, "
+			     "description, "
+			     "date_time_inserted "
+			     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
+		else
+		  querystr.append
+		    (QString("SELECT title, "
+			     "url, "
+			     "description, "
+			     "date_time_inserted "
+			     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
+	      }
 
-      querystr.append(" ORDER BY 4 DESC ");
-      querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
-      querystr.append(QString(" OFFSET %1 ").arg(0));
+	  querystr.append(" ORDER BY 4 DESC ");
+	  querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
+	  querystr.append(QString(" OFFSET %1 ").arg(0));
+	}
+      else
+	{
+	  QSet<QString> keywords;
+	  QString keywordsearch("");
+	  QStringList keywordsearches;
+	  bool intersect = false;
+	  bool ok = true;
+
+	  do
+	    {
+	      int e = -1;
+	      int s = -1;
+
+	      s = search.indexOf('"');
+
+	      if(s < 0)
+		break;
+
+	      e = search.indexOf('"', s + 1);
+
+	      if(e < 0 || e - s - 1 <= 0)
+		break;
+
+	      QString bundle(search.mid(s + 1, e - s - 1).trimmed());
+
+	      if(bundle.isEmpty())
+		break;
+
+	      search.remove(s, e - s + 1);
+	      keywords = bundle.split
+		     (QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
+	      keywordsearch.clear();
+
+	      QSetIterator<QString> it(keywords);
+
+	      while(it.hasNext())
+		{
+		  QByteArray keywordHash
+		    (crypt->keyedHash(it.next().toUtf8(), &ok));
+
+		  if(!ok)
+		    continue;
+
+		  QByteArray keywordHashHex(keywordHash.toHex());
+
+		  keywordsearch.append
+		     (QString("SELECT url_hash FROM "
+			      "spot_on_keywords_%1 WHERE "
+			      "keyword_hash = '%2' ").
+		      arg(keywordHashHex.mid(0, 2).constData()).
+		      arg(keywordHashHex.constData()));
+
+		  if(it.hasNext())
+		    keywordsearch.append(" INTERSECT ");
+		}
+
+	      if(!keywords.isEmpty())
+		intersect = true;
+
+	      keywordsearches << keywordsearch;
+	    }
+	  while(true);
+
+	  keywords = search.toLower().trimmed().
+	    split(QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
+	  keywordsearch.clear();
+
+	  QSetIterator<QString> it(keywords);
+
+	  while(it.hasNext())
+	    {
+	      QByteArray keywordHash(crypt->keyedHash(it.next().toUtf8(), &ok));
+
+	      if(!ok)
+		continue;
+
+	      QByteArray keywordHashHex(keywordHash.toHex());
+
+	      keywordsearch.append
+		(QString("SELECT url_hash FROM "
+			 "spot_on_keywords_%1 WHERE "
+			 "keyword_hash = '%2' ").
+		 arg(keywordHashHex.mid(0, 2).constData()).
+		 arg(keywordHashHex.constData()));
+
+	      if(it.hasNext())
+		keywordsearch.append(" UNION ");
+	    }
+
+	  if(!keywords.isEmpty())
+	    keywordsearches << keywordsearch;
+
+	  keywordsearch.clear();
+
+	  QMap<QString, QString> prefixes;
+
+	  for(int i = 0; i < keywordsearches.size(); i++)
+	    {
+	      QSqlQuery query(db);
+
+	      query.setForwardOnly(true);
+
+	      if(query.exec(keywordsearches.at(i)))
+		while(query.next())
+		  {
+		    QString hash(query.value(0).toString());
+		    QString prefix(hash.mid(0, 2));
+
+		    if(!prefixes.contains(prefix))
+		      prefixes.insert(prefix, QString("'%1'").arg(hash));
+		    else
+		      {
+			QString str(prefixes.value(prefix));
+
+			str.append(QString(", '%1'").arg(hash));
+			prefixes.insert(prefix, str);
+		      }
+		  }
+	    }
+
+	  if(!prefixes.isEmpty())
+	    {
+	      QMapIterator<QString, QString> it(prefixes);
+
+	      while(it.hasNext())
+		{
+		  it.next();
+
+		  /*
+		  ** For absolute correctness, we ought to use parameters in
+		  ** the SQL queries.
+		  */
+
+		  querystr.append
+		    (QString("SELECT title, url, description, "
+			     "date_time_inserted, LENGTH(content), url_hash "
+			     "FROM spot_on_urls_%1 WHERE "
+			     "url_hash IN (%2) ").
+		     arg(it.key()).arg(it.value()));
+
+		  if(it.hasNext())
+		    querystr.append(" UNION ");
+		}
+
+	      querystr.append(" ORDER BY 4 DESC ");
+	      querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
+	      querystr.append(QString(" OFFSET %1 ").arg(urlOffset));
+	    }
+	}
 
       QSqlQuery query(db);
 
