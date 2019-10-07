@@ -122,6 +122,7 @@ class spoton_misc
   static QString massageIpForUi(const QString &ip, const QString &protocol);
   static QString nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 				       spoton_crypt *crypt);
+  static QString percentEncoding(const QString &string);
   static QString prettyFileSize(const qint64 size);
   static QString removeSpecialHtmlTags(const QString &text);
   static bool acceptableTimeSeconds(const QDateTime &then, const int delta);

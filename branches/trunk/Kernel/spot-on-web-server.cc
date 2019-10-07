@@ -224,7 +224,8 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       quint64 urlPages = 0;
 
       search = data.mid(data.indexOf("search=") + 7);
-      search.replace("%22", "\"");
+      search = spoton_misc::percentEncoding(search);
+      search.replace("+", " ");
 
       for(int i = 0; i < 10 + 6; i++)
 	for(int j = 0; j < 10 + 6; j++)
@@ -267,6 +268,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	    ("HTTP/1.1 200 OK\r\n"
 	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
 	  html.append(s_search);
+	  html.replace("value=\"\"", QString("value=\"%1\"").arg(search));
 	  html.remove("</html>");
 	  html.append("<div id=\"footer\">");
 

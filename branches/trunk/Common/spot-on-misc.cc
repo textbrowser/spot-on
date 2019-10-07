@@ -72,6 +72,7 @@ extern "C"
 #include <QtCore>
 
 #include <limits>
+#include <sstream>
 
 #include "spot-on-common.h"
 #include "spot-on-crypt.h"
@@ -1312,6 +1313,30 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 
   QSqlDatabase::removeDatabase(connectionName);
   return name;
+}
+
+QString spoton_misc::percentEncoding(const QString &string)
+{
+  QString str("");
+
+  for(int i = 0; i < string.length(); i++)
+    if(string.at(i) == '%')
+      {
+	QByteArray hex(string.mid(i + 1, 2).toLatin1());
+	int d = 0;
+	std::stringstream stream;
+
+	stream << std::hex << hex.constData();
+	stream >> d;
+	str.append("&#");
+	str.append(d < 10 ? QString("0%1").arg(d) : QString::number(d));
+	str.append(';');
+	i += 2;
+      }
+    else
+      str.append(string[i]);
+
+  return str;
 }
 
 QString spoton_misc::prettyFileSize(const qint64 size)
