@@ -414,13 +414,13 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
       QSqlQuery query(db);
 
-      if(!querystr.isEmpty())
+      if(!querystr.trimmed().isEmpty())
 	{
 	  query.setForwardOnly(true);
 	  query.prepare(querystr);
 	}
 
-      if(query.exec() || querystr.isEmpty())
+      if(query.exec() || querystr.trimmed().isEmpty())
 	{
 	  html.append
 	    ("HTTP/1.1 200 OK\r\n"

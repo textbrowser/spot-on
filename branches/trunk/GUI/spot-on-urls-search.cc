@@ -293,10 +293,13 @@ void spoton::showUrls(const QString &link, const QString &querystr)
   QSqlQuery query(m_urlDatabase);
   quint64 count = 0;
 
-  query.setForwardOnly(true);
-  query.prepare(querystr);
+  if(!querystr.trimmed().isEmpty())
+    {
+      query.setForwardOnly(true);
+      query.prepare(querystr);
+    }
 
-  if(query.exec())
+  if(query.exec() || querystr.trimmed().isEmpty())
     {
       QString html("<html>");
 
