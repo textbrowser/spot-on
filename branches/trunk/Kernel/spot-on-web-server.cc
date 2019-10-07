@@ -269,28 +269,31 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	{
 	  QSet<QString> keywords;
 	  QString keywordsearch("");
+	  QString originalSearch(search);
 	  QStringList keywordsearches;
 	  bool ok = true;
+
+	  originalSearch.replace("&#34;", "\"");
 
 	  do
 	    {
 	      int e = -1;
-	      int s = search.indexOf('"');
+	      int s = originalSearch.indexOf('"');
 
 	      if(s < 0)
 		break;
 
-	      e = search.indexOf('"', s + 1);
+	      e = originalSearch.indexOf('"', s + 1);
 
 	      if(e < 0 || e - s - 1 <= 0)
 		break;
 
-	      QString bundle(search.mid(s + 1, e - s - 1).trimmed());
+	      QString bundle(originalSearch.mid(s + 1, e - s - 1).trimmed());
 
 	      if(bundle.isEmpty())
 		break;
 
-	      search.remove(s, e - s + 1);
+	      originalSearch.remove(s, e - s + 1);
 	      keywords = bundle.split
 		     (QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
 	      keywordsearch.clear();
@@ -322,7 +325,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	    }
 	  while(true);
 
-	  keywords = search.toLower().trimmed().
+	  keywords = originalSearch.toLower().trimmed().
 	    split(QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
 	  keywordsearch.clear();
 
@@ -411,10 +414,13 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
       QSqlQuery query(db);
 
-      query.setForwardOnly(true);
-      query.prepare(querystr);
+      if(!querystr.isEmpty())
+	{
+	  query.setForwardOnly(true);
+	  query.prepare(querystr);
+	}
 
-      if(query.exec())
+      if(query.exec() || querystr.isEmpty())
 	{
 	  html.append
 	    ("HTTP/1.1 200 OK\r\n"
