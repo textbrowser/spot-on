@@ -3510,6 +3510,9 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   X509_NAME_ENTRY *commonNameEntry = 0;
   char *buffer = 0;
   int length = 0;
+  static const unsigned char *organization =
+    reinterpret_cast<const unsigned char *>
+    ("Spot-On Origami Self-Signed Certificate");
   unsigned char *commonName = 0;
 
   if(!error.isEmpty())
@@ -3619,6 +3622,20 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       error = QObject::tr("X509_NAME_new() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
 			    "X509_NAME_new() failure.");
+      goto done_label;
+    }
+
+  if(X509_NAME_add_entry_by_txt(subject,
+				"O",
+				MBSTRING_ASC,
+				organization,
+				-1,
+				-1,
+				0) != 1)
+    {
+      error = QObject::tr("X509_NAME_add_entry_by_txt() failure");
+      spoton_misc::logError("spoton_crypt::generateCertificate(): "
+			    "X509_NAME_add_entry_by_txt() failure.");
       goto done_label;
     }
 
