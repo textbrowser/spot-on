@@ -387,7 +387,8 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 		      "WHEN status_control = 'paused' THEN 'paused' "
 		      "ELSE ? "
 		      "END "
-		      "WHERE OID = ?");
+		      "WHERE status_control NOT IN ('deleted', 'paused') AND "
+		      "OID = ?");
 	query.bindValue
 	  (0, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
 					   &ok).toBase64());
