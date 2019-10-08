@@ -208,7 +208,7 @@ class spoton_listener: public QObject
  private:
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   QBluetoothServer *m_bluetoothServer;
-  QBluetoothServiceInfo m_bluetoothServiceInfo;
+  QBluetoothServiceInfo *m_bluetoothServiceInfo;
 #endif
   QByteArray m_certificate;
   QByteArray m_privateApplicationCredentials;

@@ -206,6 +206,7 @@ spoton_listener::spoton_listener
 {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothServer = 0;
+  m_bluetoothServiceInfo = 0;
 #endif
   m_sctpServer = 0;
   m_tcpServer = 0;
@@ -395,8 +396,13 @@ spoton_listener::~spoton_listener()
   m_timer.stop();
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServiceInfo.isRegistered())
-    m_bluetoothServiceInfo.unregisterService();
+  if(m_bluetoothServiceInfo)
+    {
+      if(m_bluetoothServiceInfo->isRegistered())
+	m_bluetoothServiceInfo->unregisterService();
+
+      delete m_bluetoothServiceInfo;
+    }
 #endif
   if(m_sctpServer)
     m_sctpServer->close();
@@ -553,31 +559,35 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  serviceUuid.append(QString(m_address).remove(":"));
 	  classId << QVariant::fromValue
 	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
-	  m_bluetoothServiceInfo.setAttribute
+
+	  if(!m_bluetoothServiceInfo)
+	    m_bluetoothServiceInfo = new QBluetoothServiceInfo();
+
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList,
 	     classId);
 	  classId.prepend(QVariant::fromValue(QBluetoothUuid(serviceUuid)));
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::ServiceClassIds, classId);
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::ServiceName,
 	     QString("Spot-On-Bluetooth-Server-%1:%2").
 	     arg(m_address).arg(m_port));
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::ServiceDescription,
 	     QString("Spot-On-Bluetooth-Server-%1:%2").
 	     arg(m_address).arg(m_port));
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::ServiceProvider, "spot-on.sf.net");
-	  m_bluetoothServiceInfo.setServiceUuid(QBluetoothUuid(serviceUuid));
+	  m_bluetoothServiceInfo->setServiceUuid(QBluetoothUuid(serviceUuid));
 
 	  QBluetoothServiceInfo::Sequence publicBrowse;
 
 	  publicBrowse << QVariant::fromValue
 	    (QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BrowseGroupList,
 	     publicBrowse);
 
@@ -592,16 +602,22 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	    << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
 	    << QVariant::fromValue(quint8(m_bluetoothServer->serverPort()));
 	  protocolDescriptorList.append(QVariant::fromValue(protocol));
-	  m_bluetoothServiceInfo.setAttribute
+	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::ProtocolDescriptorList,
 	     protocolDescriptorList);
-	  ok = m_bluetoothServiceInfo.registerService(localAdapter);
+	  ok = m_bluetoothServiceInfo->registerService(localAdapter);
 	}
 
       if(!ok)
 	{
-	  if(m_bluetoothServiceInfo.isRegistered())
-	    m_bluetoothServiceInfo.unregisterService();
+	  if(m_bluetoothServiceInfo)
+	    {
+	      if(m_bluetoothServiceInfo->isRegistered())
+		m_bluetoothServiceInfo->unregisterService();
+
+	      delete m_bluetoothServiceInfo;
+	      m_bluetoothServiceInfo = 0;
+	    }
 
 	  m_bluetoothServer->deleteLater();
 	  m_bluetoothServer = 0;
@@ -667,8 +683,14 @@ quint16 spoton_listener::serverPort(void) const
 void spoton_listener::close(void)
 {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServiceInfo.isRegistered())
-    m_bluetoothServiceInfo.unregisterService();
+  if(m_bluetoothServiceInfo)
+    {
+      if(m_bluetoothServiceInfo->isRegistered())
+	m_bluetoothServiceInfo->unregisterService();
+
+      delete m_bluetoothServiceInfo;
+      m_bluetoothServiceInfo = 0;
+    }
 
   if(m_bluetoothServer)
     {
