@@ -3503,6 +3503,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   BIO *memory = 0;
   BUF_MEM *bptr;
   EVP_PKEY *pk = 0;
+  QString addressString(address.toString().trimmed());
   X509 *x509 = 0;
   X509_NAME *name = 0;
   X509_NAME *subject = 0;
@@ -3576,13 +3577,14 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(std::numeric_limits<int>::max() -
-     address.toString().toLatin1().length() < 1)
+  if(addressString.isEmpty() || address == QHostAddress::LocalHost)
+    addressString = "Spot-On-" + weakRandomBytes(10).toHex();
+
+  if(std::numeric_limits<int>::max() - addressString.toLatin1().length() < 1)
     commonName = 0;
   else
     commonName = static_cast<unsigned char *>
-      (calloc(static_cast<size_t> (address.toString().
-				   toLatin1().length() + 1),
+      (calloc(static_cast<size_t> (addressString.toLatin1().length() + 1),
 	      sizeof(unsigned char)));
 
   if(!commonName)
@@ -3593,9 +3595,9 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  length = address.toString().toLatin1().length();
+  length = addressString.toLatin1().length();
   memcpy(commonName,
-	 address.toString().toLatin1().constData(),
+	 addressString.toLatin1().constData(),
 	 static_cast<size_t> (length));
   commonNameEntry = X509_NAME_ENTRY_create_by_NID
     (0,
