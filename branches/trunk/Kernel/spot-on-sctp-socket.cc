@@ -448,8 +448,8 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
   if(rc == -1)
     {
 #if defined(Q_OS_WIN)
-      QString errorstr(QString("read()::recv()::error=%1").
-		       arg(WSAGetLastError()));
+      QString errorstr
+	(QString("read()::recv()::error=%1").arg(WSAGetLastError()));
 
       if(WSAGetLastError() == WSAEWOULDBLOCK)
 	/*
@@ -460,8 +460,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
       else
 	emit error(errorstr, UnknownSocketError);
 #else
-      QString errorstr(QString("read()::recv()::errno=%1").
-		       arg(errno));
+      QString errorstr(QString("read()::recv()::errno=%1").arg(errno));
 
       if(errno == EAGAIN || errno == EINPROGRESS || errno == EWOULDBLOCK)
 	/*
@@ -539,13 +538,12 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
   if(sent == -1)
     {
 #if defined(Q_OS_WIN)
-      QString errorstr(QString("write()::send()::error=%1").
-		       arg(WSAGetLastError()));
+      QString errorstr
+	(QString("write()::send()::error=%1").arg(WSAGetLastError()));
 
       emit error(errorstr, UnknownSocketError);
 #else
-      QString errorstr(QString("write()::send()::errno=%1").
-		       arg(errno));
+      QString errorstr(QString("write()::send()::errno=%1").arg(errno));
 
       if(errno == EACCES)
 	emit error(errorstr, SocketAccessError);
@@ -988,7 +986,7 @@ void spoton_sctp_socket::slotTimeout(void)
       FD_SET(m_socketDescriptor, &rfds);
       FD_SET(m_socketDescriptor, &wfds);
       tv.tv_sec = 0;
-      tv.tv_usec = 250000;
+      tv.tv_usec = 250000; // 250 milliseconds.
 
       if(select(m_socketDescriptor + 1, &rfds, &wfds, 0, &tv) > 0)
 	{
@@ -1038,7 +1036,7 @@ void spoton_sctp_socket::slotTimeout(void)
 
   if(rc > 0)
     {
-      if(static_cast<int> (rc) <= m_readBufferSize - m_readBuffer.length())
+      if(rc <= m_readBufferSize - static_cast<qint64> (m_readBuffer.length()))
 	m_readBuffer.append(data.mid(0, static_cast<int> (rc)));
       else
 	{
