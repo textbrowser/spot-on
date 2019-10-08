@@ -53,10 +53,6 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
       socket->setSocketDescriptor(socketDescriptor);
       socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
       connect(socket,
-	      SIGNAL(encrypted(void)),
-	      this,
-	      SLOT(slotEncrypted(void)));
-      connect(socket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)));
@@ -586,10 +582,6 @@ void spoton_web_server::slotClientDisconnected(void)
       m_webSocketData.remove(socket->socketDescriptor());
       socket->deleteLater();
     }
-}
-
-void spoton_web_server::slotEncrypted(void)
-{
 }
 
 void spoton_web_server::slotFinished(QSslSocket *socket, const QByteArray &data)

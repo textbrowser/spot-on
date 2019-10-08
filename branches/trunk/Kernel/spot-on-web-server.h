@@ -106,7 +106,6 @@ class spoton_web_server: public spoton_web_server_tcp_server
  private slots:
   void slotClientConnected(void);
   void slotClientDisconnected(void);
-  void slotEncrypted(void);
   void slotFinished(QSslSocket *socket, const QByteArray &data);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotReadyRead(void);
