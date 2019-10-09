@@ -3556,7 +3556,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   ** Set some attributes.
   */
 
-  if(X509_set_version(x509, 3) == 0)
+  if(X509_set_version(x509, 2) == 0)
     {
       error = QObject::tr("X509_set_version() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
