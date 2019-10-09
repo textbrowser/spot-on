@@ -4881,13 +4881,10 @@ void spoton::slotTransportChanged(int index)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       m_ui.listenersSslControlString->setEnabled(index == 2 || // TCP
 						 index == 3);  // UDP
-      m_ui.permanentCertificate->setEnabled(index == 2 || // TCP
-					    index == 3);  // UDP
       m_ui.recordIPAddress->setEnabled(index == 2 || // TCP
 				       index == 3);  // UDP
 #else
       m_ui.listenersSslControlString->setEnabled(index == 2);
-      m_ui.permanentCertificate->setEnabled(index == 2);
       m_ui.recordIPAddress->setEnabled(index == 2);
 #endif
 

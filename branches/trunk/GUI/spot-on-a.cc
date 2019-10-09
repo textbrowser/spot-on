@@ -2145,10 +2145,6 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(setEnabled(bool)));
   connect(m_ui.sslListener,
 	  SIGNAL(toggled(bool)),
-	  m_ui.permanentCertificate,
-	  SLOT(setEnabled(bool)));
-  connect(m_ui.sslListener,
-	  SIGNAL(toggled(bool)),
 	  m_ui.recordIPAddress,
 	  SLOT(setEnabled(bool)));
   connect(m_ui.status,
@@ -4117,7 +4113,6 @@ void spoton::slotAddListener(void)
   QString error("");
 
   if(m_ui.listenerTransport->currentIndex() == 2 && // TCP
-     m_ui.permanentCertificate->isChecked() &&
      m_ui.sslListener->isChecked())
     {
       QHostAddress address;
@@ -4155,8 +4150,7 @@ void spoton::slotAddListener(void)
 	}
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-      if(m_ui.permanentCertificate->isChecked() &&
-	 m_ui.sslListener->isChecked())
+      if(m_ui.sslListener->isChecked())
 	{
 	  QHostAddress address;
 
