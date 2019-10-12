@@ -210,6 +210,14 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       return;
     }
 
+  QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
+
+  if(list.size() != 5)
+    {
+      emit finished(socket, QByteArray());
+      return;
+    }
+
   QSqlDatabase db(database());
   QString connectionName(db.connectionName());
   QString html("");
@@ -219,15 +227,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       QString link("");
       QString querystr("");
       QString search("");
-      QString particles("");
-      QStringList list;
+      QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
       quint64 current = 1;
       quint64 offset = 0;
       quint64 pages = 0;
-
-      list = QString(data.mid(data.indexOf("current=") + 8)).split("&");
-      particles = data.mid(data.indexOf("current="));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i,
@@ -678,7 +682,7 @@ void spoton_web_server::slotReadyRead(void)
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
     {
-      data = data.simplified().trimmed().mid(5);
+      data = data.simplified().trimmed().mid(5); // get /c <- c
       data = data.mid(0, data.indexOf(' '));
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
