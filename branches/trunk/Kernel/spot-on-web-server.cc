@@ -731,9 +731,22 @@ void spoton_web_server::slotReadyRead(void)
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
     }
-  else if(data.simplified().startsWith("post / http/1.1"))
-    m_futures[socket->socketDescriptor()] =
-      QtConcurrent::run(this, &spoton_web_server::process, socket, data);
+  else if(data.simplified().startsWith("post / http/1.1") ||
+	  data.simplified().startsWith("post /current="))
+    {
+      if(data.simplified().startsWith("post /current="))
+	{
+	  socket->write
+	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	     "charset=utf-8\r\n\r\n");
+	  socket->write(s_search);
+	  socket->flush();
+	  socket->deleteLater();
+	}
+      else
+	m_futures[socket->socketDescriptor()] =
+	  QtConcurrent::run(this, &spoton_web_server::process, socket, data);
+    }
 
   if(m_webSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
