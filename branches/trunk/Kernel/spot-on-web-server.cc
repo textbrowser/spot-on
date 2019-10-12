@@ -216,15 +216,32 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
   if(db.isOpen())
     {
-      QString link(">");
+      QString link("");
       QString querystr("");
       QString search("");
+      QString particles("");
+      QStringList list;
       quint64 count = 0;
-      quint64 urlCurrentPage = 1;
-      quint64 urlOffset = 0;
-      quint64 urlPages = 0;
+      quint64 current = 1;
+      quint64 offset = 0;
+      quint64 pages = 0;
 
-      search = data.mid(data.indexOf("search=") + 7);
+      list = QString(data.mid(data.indexOf("current=") + 8)).split("&");
+      particles = data.mid(data.indexOf("current="));
+
+      for(int i = 0; i < list.size(); i++)
+	list.replace(i,
+		     QString(list.at(i)).
+		     remove("link=").
+		     remove("offset=").
+		     remove("pages=").
+		     remove("search="));
+
+      current = list.value(0).toULongLong();
+      link = list.value(1).toLower();
+      offset = list.value(2).toULongLong();
+      pages = list.value(3).toULongLong();
+      search = list.value(4);
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
 
@@ -410,7 +427,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
 	      querystr.append(" ORDER BY 4 DESC ");
 	      querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
-	      querystr.append(QString(" OFFSET %1 ").arg(urlOffset));
+	      querystr.append(QString(" OFFSET %1 ").arg(offset));
 	    }
 	}
 
@@ -498,9 +515,9 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	    }
 
 	  if(count > 0)
-	    if(link == ">")
-	      if(urlOffset / s_urlLimit >= urlPages)
-		urlPages += 1;
+	    if(link == "%3e")
+	      if(offset / s_urlLimit >= pages)
+		pages += 1;
 
 	  QString str("");
 	  quint64 lower = 0;
@@ -510,11 +527,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  // 11 ... 20.
 	  // Find the lower and upper bounds.
 
-	  lower = urlOffset / s_urlLimit + 1;
+	  lower = offset / s_urlLimit + 1;
 	  upper = lower + s_urlLimit;
 
-	  if(urlPages < upper)
-	    upper = urlPages;
+	  if(pages < upper)
+	    upper = pages;
 
 	  if(upper > s_urlLimit) // Number of pages to display.
 	    lower = upper - s_urlLimit;
@@ -522,16 +539,17 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	    lower = 1;
 
 	  for(quint64 i = lower; i <= upper; i++)
-	    if(i != urlCurrentPage)
+	    if(i != current)
 	      str.append(QString(" <a href=\"%1\">%1</a> ").arg(i));
 	    else
 	      str.append(QString(" %1 ").arg(i));
 
 	  if(count >= s_urlLimit)
-	    str.append(tr(" <a href=\">\">Next</a> "));
+	    str.append(QString(" <a href=\"%1\">Next</a> ").arg(particles));
 
-	  if(urlCurrentPage != 1)
-	    str.prepend(tr(" <a href=\"<\">Previous</a> "));
+	  if(current != 1)
+	    str.prepend
+	      (QString(" <a href=\"%1\">Previous</a> ").arg(particles));
 
 	  str = str.trimmed();
 	  html.append("<center>");
@@ -578,8 +596,11 @@ void spoton_web_server::slotClientDisconnected(void)
 		 "client %1:%2 disconnected.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
-      m_futures.remove(socket->socketDescriptor());
-      m_webSocketData.remove(socket->socketDescriptor());
+
+      auto fd = socket->socketDescriptor();
+
+      m_futures.remove(fd);
+      m_webSocketData.remove(fd);
       socket->deleteLater();
     }
 }
@@ -653,6 +674,14 @@ void spoton_web_server::slotReadyRead(void)
       socket->write(s_search);
       socket->flush();
       socket->deleteLater();
+    }
+  else if(data.endsWith("\r\n\r\n") &&
+	  data.simplified().trimmed().startsWith("get /current="))
+    {
+      data = data.simplified().trimmed().mid(5);
+      data = data.mid(0, data.indexOf(' '));
+      m_futures[socket->socketDescriptor()] =
+	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
     }
   else if(data.simplified().startsWith("post / http/1.1"))
     m_futures[socket->socketDescriptor()] =
