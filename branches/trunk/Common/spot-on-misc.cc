@@ -400,11 +400,15 @@ QByteArray spoton_misc::urlToEncoded(const QUrl &url)
 
 QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
 {
-  QByteArray bytes;
   int length = qMin(a.length(), b.length());
 
+  if(length == 0)
+    return QByteArray();
+
+  QByteArray bytes(length, 0);
+
   for(int i = 0; i < length; i++)
-    bytes.append(a[i] ^ b[i]);
+    bytes[i] = a[i] ^ b[i];
 
   return bytes;
 }
