@@ -200,19 +200,19 @@ int spoton_web_server::clientCount(void) const
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
-  QScopedPointer<spoton_crypt> crypt
-    (spoton_misc::
-     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
+  QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
-  if(!crypt)
+  if(list.size() != 5)
     {
       emit finished(socket, QByteArray());
       return;
     }
 
-  QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
+  QScopedPointer<spoton_crypt> crypt
+    (spoton_misc::
+     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
 
-  if(list.size() != 5)
+  if(!crypt)
     {
       emit finished(socket, QByteArray());
       return;
@@ -229,7 +229,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       QString search("");
       QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
-      quint64 current = 1;
+      quint64 current = 0;
       quint64 offset = 0;
       quint64 pages = 0;
 
@@ -285,7 +285,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
 	  querystr.append(" ORDER BY 4 DESC ");
 	  querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
-	  querystr.append(QString(" OFFSET %1 ").arg(0));
+	  querystr.append(QString(" OFFSET %1 ").arg(offset));
 	}
       else
 	{
@@ -518,6 +518,29 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		}
 	    }
 
+	  if(link == "%3c")
+	    {
+	      if(current >= 1)
+		current -= 1;
+	      else
+		current = 0;
+
+	      if(offset > s_urlLimit)
+		offset -= s_urlLimit;
+	      else
+		offset = 0;
+	    }
+	  else if(link == "%3e")
+	    {
+	      current += 1;
+	      offset += s_urlLimit;
+	    }
+	  else
+	    {
+	      current = link.toULongLong();
+	      offset = (current - 1) * s_urlLimit;
+	    }
+
 	  if(count > 0)
 	    if(link == "%3e")
 	      if(offset / s_urlLimit >= pages)
@@ -546,14 +569,24 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	    if(i != current)
 	      str.append(QString(" <a href=\"%1\">%1</a> ").arg(i));
 	    else
-	      str.append(QString(" %1 ").arg(i));
+	      str.append(QString(" | %1 | ").arg(i));
 
 	  if(count >= s_urlLimit)
-	    str.append(QString(" <a href=\"%1\">Next</a> ").arg(particles));
+	    {
+	      particles = QString
+		("current=%1&link=>&offset=%2&pages=%3&search=%4").
+		arg(current).arg(offset).arg(pages).arg(search);
+	      str.append(QString(" <a href=\"%1\">Next</a> ").arg(particles));
+	    }
 
 	  if(current != 1)
-	    str.prepend
-	      (QString(" <a href=\"%1\">Previous</a> ").arg(particles));
+	    {
+	      particles = QString
+		("current=%1&link=<&offset=%2&pages=%3&search=%4").
+		arg(current).arg(offset).arg(pages).arg(search);
+	      str.prepend
+		(QString(" <a href=\"%1\">Previous</a> ").arg(particles));
+	    }
 
 	  str = str.trimmed();
 	  html.append("<center>");
