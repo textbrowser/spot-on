@@ -566,6 +566,8 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  else
 	    lower = 1;
 
+	  search.replace(" ", "+");
+
 	  for(quint64 i = lower; i <= upper; i++)
 	    if(i != current)
 	      {
