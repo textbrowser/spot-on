@@ -497,8 +497,8 @@ void spoton_encryptfile_page::encrypt(const bool sign,
 
 void spoton_encryptfile_page::slotCancel(void)
 {
-  m_quit = true;
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_quit = true;
   m_future.cancel();
   m_future.waitForFinished();
   QApplication::restoreOverrideCursor();
@@ -527,6 +527,8 @@ void spoton_encryptfile_page::slotCompleted(const QString &error)
 
   ui.cancel->setVisible(false);
   ui.convert->setEnabled(true);
+  ui.directory_mode->setEnabled(true);
+  ui.file_mode->setEnabled(true);
   ui.progressBar->setVisible(false);
   ui.reset->setEnabled(true);
   ui.status_label->clear();
@@ -637,6 +639,8 @@ void spoton_encryptfile_page::slotConvert(void)
   list << ui.readSize->currentText();
   ui.cancel->setVisible(true);
   ui.convert->setEnabled(false);
+  ui.directory_mode->setEnabled(false);
+  ui.file_mode->setEnabled(false);
   ui.reset->setEnabled(false);
   ui.progressBar->setValue(0);
   ui.progressBar->setVisible(true);
@@ -710,6 +714,8 @@ void spoton_encryptfile_page::slotConvert(void)
 
       ui.cancel->setVisible(false);
       ui.convert->setEnabled(true);
+      ui.directory_mode->setEnabled(true);
+      ui.file_mode->setEnabled(true);
       ui.reset->setEnabled(true);
       ui.progressBar->setVisible(false);
       ui.status_label->clear();
