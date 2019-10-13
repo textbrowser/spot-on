@@ -37,7 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static quint64 s_urlLimit = 15;
+static quint64 s_urlLimit = 25;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
@@ -519,19 +519,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		}
 	    }
 
-	  if(link == "%3c")
-	    {
-	      if(current >= 1)
-		current -= 1;
-	      else
-		current = 0;
-
-	      if(offset > s_urlLimit)
-		offset -= s_urlLimit;
-	      else
-		offset = 0;
-	    }
-	  else if(link == "%3e")
+	  if(link == "%3e")
 	    {
 	      current += 1;
 	      offset += s_urlLimit;
@@ -595,8 +583,12 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  if(current != 1)
 	    {
 	      particles = QString
-		("current=%1&link=<&offset=%2&pages=%3&search=%4").
-		arg(current).arg(offset).arg(pages).arg(search);
+		("current=%1&link=%2&offset=%3&pages=%4&search=%5").
+		arg(current - 2).
+		arg(current - 1).
+		arg((current - 2) * s_urlLimit).
+		arg(pages).
+		arg(search);
 	      str.prepend
 		(QString(" <a href=\"%1\">Previous</a> ").arg(particles));
 	    }
