@@ -738,13 +738,13 @@ void spoton_web_server::slotReadyRead(void)
   if(m_webSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
     {
-      m_webSocketData.remove(socket->socketDescriptor());
       spoton_misc::logError
 	(QString("spoton_web_server::slotReadyRead(): "
 		 "container for socket %1:%2 contains too much data. "
 		 "Discarding data.").
 	 arg(socket->localAddress().toString()).
 	 arg(socket->localPort()));
+      socket->deleteLater();
     }
 }
 
