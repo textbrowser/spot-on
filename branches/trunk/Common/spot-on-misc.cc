@@ -30,12 +30,15 @@
 #ifdef Q_OS_FREEBSD
 extern "C"
 {
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 }
 #elif defined(Q_OS_LINUX)
 extern "C"
 {
+#include <linux/sockios.h>
+#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 }
@@ -65,6 +68,7 @@ extern "C"
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QString>
+#include <QTcpSocket>
 #include <QUrl>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
@@ -3578,6 +3582,43 @@ int spoton_misc::minimumNeighborLaneWidth(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   return laneWidth;
+}
+
+int spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
+{
+  if(!tcpSocket)
+    return -1;
+
+  int count = 0;
+
+#ifdef Q_OS_FREEBSD
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
+	   FIONWRITE,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_LINUX)
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
+	   SIOCOUTQ,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_MACOS)
+  socklen_t length = (socklen_t) sizeof(count);
+
+  if(getsockopt(static_cast<int> (m_remote_socket->socketDescriptor()),
+		SOL_SOCKET,
+		SO_NWRITE,
+		&count,
+		&length) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_OPENBSD)
+  if(ioctl(static_cast<int> (m_remote_socket->socketDescriptor()),
+	   TIOCOUTQ,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#else
+  count = tcpSocket->bytesToWrite();
+#endif
+  return count;
 }
 
 qint64 spoton_misc::oidFromPublicKeyHash(const QByteArray &publicKeyHash)

@@ -504,7 +504,8 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 
 	  qint64 minimum = qMin
 	    (spoton_common::MAXIMUM_TCP_PACKET_SIZE,
-	     maximumBufferSize - m_tcpSocket->bytesToWrite());
+	     maximumBufferSize -
+	     static_cast<qint64> (spoton_misc::sendQueueSize(m_tcpSocket)));
 
 	  if(minimum > 0)
 	    sent = m_tcpSocket->write(data, qMin(minimum, remaining));

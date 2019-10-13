@@ -66,6 +66,7 @@ typedef union spoton_type_punning_sockaddr
 }
 spoton_type_punning_sockaddr_t;
 
+class QTcpSocket;
 class spoton_crypt;
 
 class spoton_misc
@@ -201,6 +202,7 @@ class spoton_misc
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
   static int minimumNeighborLaneWidth(void);
+  static int sendQueueSize(QTcpSocket *socket);
   static qint64 oidFromPublicKeyHash(const QByteArray &publicKeyHash);
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
