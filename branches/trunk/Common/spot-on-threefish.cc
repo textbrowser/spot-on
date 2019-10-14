@@ -860,19 +860,11 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
     }
 
   m_tweakLength = static_cast<size_t> (tweak.length());
-
-  if(!m_tweak)
-    {
-      if(ok)
-	*ok = false;
-
-      goto done_label;
-    }
+  memcpy(m_tweak, tweak.constData(), m_tweakLength);
 
   if(ok)
     *ok = true;
 
-  memcpy(m_tweak, tweak.constData(), m_tweakLength);
   return;
 
  done_label:
