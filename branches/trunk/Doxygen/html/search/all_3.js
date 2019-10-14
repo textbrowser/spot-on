@@ -54,5 +54,7 @@ var searchData=
   ['spoton_5ftype_5fpunning_5fsockaddr',['spoton_type_punning_sockaddr',['../unionspoton__type__punning__sockaddr.html',1,'']]],
   ['spoton_5furldistribution',['spoton_urldistribution',['../classspoton__urldistribution.html',1,'']]],
   ['spoton_5futilities',['spoton_utilities',['../classspoton__utilities.html',1,'']]],
-  ['spoton_5fvirtual_5fkeyboard',['spoton_virtual_keyboard',['../classspoton__virtual__keyboard.html',1,'']]]
+  ['spoton_5fvirtual_5fkeyboard',['spoton_virtual_keyboard',['../classspoton__virtual__keyboard.html',1,'']]],
+  ['spoton_5fweb_5fserver',['spoton_web_server',['../classspoton__web__server.html',1,'']]],
+  ['spoton_5fweb_5fserver_5ftcp_5fserver',['spoton_web_server_tcp_server',['../classspoton__web__server__tcp__server.html',1,'']]]
 ];
