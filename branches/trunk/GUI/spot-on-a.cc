@@ -85,6 +85,8 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
                                                       << 75000
 						      << 100000
 						      << 2097152
+						      << 5242880
+						      << 10485760
 						      << 20971520;
 QString spoton_common::SSL_CONTROL_STRING =
   "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
