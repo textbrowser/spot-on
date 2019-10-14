@@ -101,7 +101,7 @@ static void bytesToWords(uint64_t *W,
 
   for(size_t i = 0; i < bytes_size / 8; i++)
     {
-      b[0] = bytes[i * 8 + 0];
+      b[0] = bytes[i * 8];
       b[1] = bytes[i * 8 + 1];
       b[2] = bytes[i * 8 + 2];
       b[3] = bytes[i * 8 + 3];
@@ -219,13 +219,16 @@ static void threefish_decrypt_implementation(char *D,
 
   bool error = false;
   static const uint64_t C240 = 0x1bd11bdaa9fc1a22;
+  uint64_t *f = new (std::nothrow) uint64_t[Nw];
   uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
   uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
   uint64_t *v = new (std::nothrow) uint64_t[Nw];
+  uint64_t x0 = 0;
+  uint64_t x1 = 0;
 
-  if(Q_UNLIKELY(!k || !s || !v))
+  if(Q_UNLIKELY(!f || !k || !s || !v))
     {
       if(ok)
 	*ok = false;
@@ -253,11 +256,16 @@ static void threefish_decrypt_implementation(char *D,
   bytesToWords(t, T, 16);
   bytesToWords(v, C, C_size);
 
-  for(size_t i = 0; i < Nw; i++)
-    kNw ^= k[i]; // Section 3.3.2.
+  /*
+  ** Section 3.3.2.
+  */
 
+  kNw ^= k[0];
+  kNw ^= k[1];
+  kNw ^= k[2];
+  kNw ^= k[3];
   k[Nw] = kNw;
-  t[2] = t[0] ^ t[1]; // Section 3.3.2.
+  t[2] = t[0] ^ t[1];
 
   /*
   ** Prepare the key schedule, section 3.3.2.
@@ -276,42 +284,32 @@ static void threefish_decrypt_implementation(char *D,
 	  s[d][i] += t[d % 3];
       }
 
-  for(size_t i = 0; i < Nw; i++)
-    v[i] -= s[Nr / 4][i];
+  v[0] -= s[Nr / 4][0];
+  v[1] -= s[Nr / 4][1];
+  v[2] -= s[Nr / 4][2];
+  v[3] -= s[Nr / 4][3];
 
   for(size_t d = Nr - 1;; d--)
     {
-      uint64_t *f = new (std::nothrow) uint64_t[Nw];
-
-      if(Q_UNLIKELY(!f))
-	{
-	  if(ok)
-	    *ok = false;
-
-	  goto done_label;
-	}
-
-      for(size_t i = 0; i < Nw; i++)
-	f[i] = v[RPi[i]];
-
-      for(size_t i = 0; i < Nw / 2; i++)
-	{
-	  uint64_t x0 = 0;
-	  uint64_t x1 = 0;
-	  uint64_t y0 = f[i * 2];
-	  uint64_t y1 = f[i * 2 + 1];
-
-	  mix_inverse(y0, y1, d, i, &x0, &x1, block_size);
-	  v[i * 2] = x0;
-	  v[i * 2 + 1] = x1;
-	}
-
+      f[0] = v[RPi[0]];
+      f[1] = v[RPi[1]];
+      f[2] = v[RPi[2]];
+      f[3] = v[RPi[3]];
+      mix_inverse(f[0], f[1], d, 0, &x0, &x1, block_size);
+      v[0] = x0;
+      v[1] = x1;
+      mix_inverse(f[2], f[3], d, 1, &x0, &x1, block_size);
+      v[2] = x0;
+      v[3] = x1;
       memset(f, 0, sizeof(*f) * static_cast<size_t> (Nw));
-      delete []f;
 
       if(d % 4 == 0)
-	for(size_t i = 0; i < Nw; i++)
-	  v[i] -= s[d / 4][i];
+	{
+	  v[0] -= s[d / 4][0];
+	  v[1] -= s[d / 4][1];
+	  v[2] -= s[d / 4][2];
+	  v[3] -= s[d / 4][3];
+	}
 
       if(d == 0)
 	break;
@@ -323,6 +321,7 @@ static void threefish_decrypt_implementation(char *D,
     *ok = true;
 
  done_label:
+  delete []f;
 
   if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
@@ -391,13 +390,16 @@ static void threefish_encrypt_implementation(char *E,
 
   bool error = false;
   static const uint64_t C240 = 0x1bd11bdaa9fc1a22;
+  uint64_t *f = new (std::nothrow) uint64_t[Nw];
   uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
   uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
   uint64_t *v = new (std::nothrow) uint64_t[Nw];
+  uint64_t y0 = 0;
+  uint64_t y1 = 0;
 
-  if(Q_UNLIKELY(!k || !s || !v))
+  if(Q_UNLIKELY(!f || !k || !s || !v))
     {
       if(ok)
 	*ok = false;
@@ -425,11 +427,16 @@ static void threefish_encrypt_implementation(char *E,
   bytesToWords(t, T, 16);
   bytesToWords(v, P, P_size);
 
-  for(size_t i = 0; i < Nw; i++)
-    kNw ^= k[i]; // Section 3.3.2.
+  /*
+  ** Section 3.3.2.
+  */
 
+  kNw ^= k[0];
+  kNw ^= k[1];
+  kNw ^= k[2];
+  kNw ^= k[3];
   k[Nw] = kNw;
-  t[2] = t[0] ^ t[1]; // Section 3.3.2.
+  t[2] = t[0] ^ t[1];
 
   /*
   ** Prepare the key schedule, section 3.3.2.
@@ -451,47 +458,37 @@ static void threefish_encrypt_implementation(char *E,
   for(size_t d = 0; d < Nr; d++)
     {
       if(d % 4 == 0)
-	for(size_t i = 0; i < Nw; i++)
-	  v[i] += s[d / 4][i];
-
-      uint64_t *f = new (std::nothrow) uint64_t[Nw];
-
-      if(Q_UNLIKELY(!f))
 	{
-	  if(ok)
-	    *ok = false;
-
-	  goto done_label;
+	  v[0] += s[d / 4][0];
+	  v[1] += s[d / 4][1];
+	  v[2] += s[d / 4][2];
+	  v[3] += s[d / 4][3];
 	}
 
-      for(size_t i = 0; i < Nw / 2; i++)
-	{
-	  uint64_t x0 = v[i * 2];
-	  uint64_t x1 = v[i * 2 + 1];
-	  uint64_t y0 = 0;
-	  uint64_t y1 = 0;
-
-	  mix(x0, x1, d, i, &y0, &y1, block_size);
-	  f[i * 2] = y0;
-	  f[i * 2 + 1] = y1;
-	}
-
-      for(size_t i = 0; i < Nw; i++)
-	v[i] = f[Pi[i]];
-
+      mix(v[0], v[1], d, 0, &y0, &y1, block_size);
+      f[0] = y0;
+      f[1] = y1;
+      mix(v[2], v[3], d, 1, &y0, &y1, block_size);
+      f[2] = y0;
+      f[3] = y1;
+      v[0] = f[Pi[0]];
+      v[1] = f[Pi[1]];
+      v[2] = f[Pi[2]];
+      v[3] = f[Pi[3]];
       memset(f, 0, sizeof(*f) * static_cast<size_t> (Nw));
-      delete []f;
     }
 
-  for(size_t i = 0; i < Nw; i++)
-    v[i] += s[Nr / 4][i];
-
+  v[0] += s[Nr / 4][0];
+  v[1] += s[Nr / 4][1];
+  v[2] += s[Nr / 4][2];
+  v[3] += s[Nr / 4][3];
   wordsToBytes(E, v, Nw);
 
   if(ok)
     *ok = true;
 
  done_label:
+  delete []f;
 
   if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
@@ -525,7 +522,7 @@ static void wordsToBytes(char *B,
 
   for(size_t i = 0; i < words_size; i++)
     {
-      B[i * 8 + 0] = static_cast<char> (words[i] & 0xff);
+      B[i * 8] = static_cast<char> (words[i] & 0xff);
       B[i * 8 + 1] = static_cast<char> ((words[i] >> 8) & 0xff);
       B[i * 8 + 2] = static_cast<char> ((words[i] >> 16) & 0xff);
       B[i * 8 + 3] = static_cast<char> ((words[i] >> 24) & 0xff);
