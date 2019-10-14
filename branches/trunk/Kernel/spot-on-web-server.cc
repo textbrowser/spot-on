@@ -208,6 +208,29 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
       return;
     }
 
+  quint64 current = 0;
+  quint64 offset = 0;
+  quint64 pages = 0;
+
+  for(int i = 0; i < list.size(); i++)
+    list.replace
+      (i,
+       QString(list.at(i)).
+       remove("link=").
+       remove("offset=").
+       remove("pages=").
+       remove("search="));
+
+  current = list.value(0).toULongLong();
+  offset = list.value(2).toULongLong();
+  pages = list.value(3).toULongLong();
+
+  if(current > pages || offset % s_urlLimit != 0)
+    {
+      emit finished(socket, QByteArray());
+      return;
+    }
+
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
      retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
@@ -224,27 +247,12 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 
   if(db.isOpen())
     {
-      QString link("");
+      QString link(list.value(1).toLower());
       QString querystr("");
       QString search("");
       QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
-      quint64 current = 0;
-      quint64 offset = 0;
-      quint64 pages = 0;
 
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i,
-		     QString(list.at(i)).
-		     remove("link=").
-		     remove("offset=").
-		     remove("pages=").
-		     remove("search="));
-
-      current = list.value(0).toULongLong();
-      link = list.value(1).toLower();
-      offset = list.value(2).toULongLong();
-      pages = list.value(3).toULongLong();
       search = list.value(4);
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
