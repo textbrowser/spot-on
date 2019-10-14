@@ -37,6 +37,12 @@ extern "C"
 #include <gcrypt.h>
 }
 
+/*
+** Threefish 256-bit only!
+*/
+
+static const size_t Nr = 72;
+static const size_t Nw = 4;
 static const uint8_t *Pi = 0;
 static const uint8_t *RPi = 0;
 static const uint8_t Pi_4[4] = {0, 3, 2, 1};
@@ -49,8 +55,6 @@ static const uint8_t R_4[8][2] = {{14, 16},
 				  {46, 12},
 				  {58, 22},
 				  {32, 32}};
-static size_t Nr = 0;
-static size_t Nw = 0;
 static void bytesToWords(uint64_t *W,
 			 const char *bytes,
 			 const size_t bytes_size);
@@ -187,9 +191,9 @@ static void threefish_decrypt(char *D,
       return;
     }
 
-  Nr = 72;
-  Nw = 4;
-  RPi = RPi_4;
+  if(!RPi)
+    RPi = RPi_4;
+
   threefish_decrypt_implementation(D, K, T, C, C_size, block_size, ok);
 }
 
@@ -359,9 +363,9 @@ static void threefish_encrypt(char *E,
       return;
     }
 
-  Nr = 72;
-  Nw = 4;
-  Pi = Pi_4;
+  if(!Pi)
+    Pi = Pi_4;
+
   threefish_encrypt_implementation(E, K, T, P, P_size, block_size, ok);
 }
 
