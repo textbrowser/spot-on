@@ -5314,8 +5314,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  {
 			    if(ok)
 			      items.replace
-				(i, crypt->encryptedThenHashed(items.at(i),
-							       &ok));
+				(i,
+				 crypt->encryptedThenHashed(items.at(i), &ok));
 			    else
 			      break;
 			  }
