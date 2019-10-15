@@ -481,22 +481,15 @@ void mul(ZZ_pX& c, const ZZ_pX& a, const ZZ_pX& b)
       long mbits;
       mbits = NumBits(ZZ_p::modulus());
 
-      long nt = AvailableThreads();
-      // right now, SSMul does not parallelize very well
+      // long nt = AvailableThreads();
+      // SSMul is now fully thread boosted
       
       double rat = SSRatio(deg(a), mbits, deg(b), mbits);
 
-      if ( nt == 1 && (
+      if ( (k >= 106 && rat < 1.50) || 
+           (k >= 212 && rat < 1.75) ) {
 
-         (k >= 106 && rat < 1.50) || 
-         (k >= 212 && rat < 1.75) 
-
-      )) {
-         ZZX A, B, C;
-         conv(A, a);
-         conv(B, b);
-         SSMul(C, A, B);
-         conv(c, C);
+         SSMul(c, a, b);
       }
       else {
          FFTMul(c, a, b);
@@ -532,28 +525,15 @@ void sqr(ZZ_pX& c, const ZZ_pX& a)
       mbits = NumBits(ZZ_p::modulus());
 
 
-      long nt = 1;
-      // FIXME: needs to be updated when I thread-enable the SS
-      // mul routine
-
-#ifdef NTL_THREAD_BOOST
-      BasicThreadPool *pool = GetThreadPool();
-      if (pool && !pool->active()) nt  = pool->NumThreads();
-#endif
+      // long nt = AvailableThreads();
+      // SSMul is now fully thread boosted
 
       double rat = SSRatio(deg(a), mbits, deg(a), mbits);
 
-      if ( nt == 1 && (
+      if ( (k >= 53  && rat < 1.20) || (k >= 106 && rat < 1.30) || 
+           (k >= 212 && rat < 1.75) ) {
 
-         (k >= 53  && rat < 1.20) || 
-         (k >= 106 && rat < 1.30) || 
-         (k >= 212 && rat < 1.75) 
-
-      )) {
-         ZZX A, C;
-         conv(A, a);
-         SSSqr(C, A);
-         conv(c, C);
+         SSSqr(c, a);
       }
       else {
          FFTSqr(c, a);

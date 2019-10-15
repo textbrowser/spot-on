@@ -756,6 +756,16 @@ long CRT(ZZX& gg, ZZ& a, const ZZ_pX& G)
 }
 
 
+#define SS_PAR_THRESH (2000.0)
+//#define SS_PAR_THRESH (10.0) 
+// For testing
+
+
+static inline bool SS_BelowThresh(long n, long k)
+{
+   return double(n)*double(k) < SS_PAR_THRESH;
+}
+
 
 static void
 SS_AddMod(ZZ& x, const ZZ& a, const ZZ& b, const ZZ& p, long n)
@@ -993,8 +1003,14 @@ fft_rec(ZZ* xp, long lgN, long r, long l, const ZZ& p, long n,
 static void 
 fft_short(ZZ* xp, long yn, long xn, long lgN, 
          long r, long l, const ZZ& p, long n,
-         ZZ* tmp)
+         ZZ* tmp, RecursiveThreadPool *pool)
 {
+  Vec<ZZ> alt_tmp;
+  if (!tmp) {
+    alt_tmp.SetLength(SS_NTEMPS);
+    tmp = &alt_tmp[0];
+  }
+
   long N = 1L << lgN;
 
   if (yn == N)
@@ -1016,7 +1032,7 @@ fft_short(ZZ* xp, long yn, long xn, long lgN,
     {
       if (xn <= half)
 	{
-	  fft_short(xp, yn, xn, lgN-1, r, l, p, n, tmp);
+	  fft_short(xp, yn, xn, lgN-1, r, l, p, n, tmp, pool);
 	}
       else
 	{
@@ -1026,7 +1042,7 @@ fft_short(ZZ* xp, long yn, long xn, long lgN,
 	  for (long j = 0; j < xn; j++)
 	    SS_AddMod(xp[j], xp[j], xp[j + half], p, n);
 
-	  fft_short(xp, yn, half, lgN-1, r, l, p, n, tmp);
+	  fft_short(xp, yn, half, lgN-1, r, l, p, n, tmp, pool);
 	}
     }
   else
@@ -1042,8 +1058,12 @@ fft_short(ZZ* xp, long yn, long xn, long lgN,
 	  for (long j = 0; j < xn; j++)
 	    Rotate(xp1[j], xp0[j], j, lgN, r, l, p, n, tmp);
 
-	  fft_short(xp0, half, xn, lgN-1,  r, l, p, n, tmp);
-	  fft_short(xp1, yn, xn, lgN-1, r, l, p, n, tmp);
+          
+          bool seq = SS_BelowThresh(half+yn, p.size());
+          NTL_EXEC_DIVIDE(seq, pool, helper, double(half)/double(half+yn),
+	     fft_short(xp0, half, xn, lgN-1,  r, l, p, n, tmp, helper.subpool(0)),
+	     fft_short(xp1, yn, xn, lgN-1, r, l, p, n, 
+                       (helper.concurrent() ? 0 : tmp), helper.subpool(1)))
 	}
       else
 	{
@@ -1057,8 +1077,11 @@ fft_short(ZZ* xp, long yn, long xn, long lgN,
 	  for (long j = xn; j < half; j++)
             Rotate(xp1[j], xp0[j], j, lgN, r, l, p, n, tmp);
 
-	  fft_short(xp0, half, half, lgN-1, r, l, p, n, tmp);
-	  fft_short(xp1, yn, half, lgN-1, r, l, p, n, tmp);
+          bool seq = SS_BelowThresh(half+yn, p.size());
+          NTL_EXEC_DIVIDE(seq, pool, helper, double(half)/double(half+yn),
+	     fft_short(xp0, half, half, lgN-1, r, l, p, n, tmp, helper.subpool(0)),
+	     fft_short(xp1, yn, half, lgN-1, r, l, p, n, 
+                       (helper.concurrent() ? 0 : tmp), helper.subpool(1)))
 	}
     }
 }
@@ -1084,7 +1107,20 @@ fft_trunc(ZZVec& a, long yn, long xn,
           long r, long l, long l1, const ZZ& p, long n)
 {
    ZZ tmp[SS_NTEMPS];
-   fft_short(&a[0], yn, xn, l, r, l1, p, n, &tmp[0]);
+   fft_short(&a[0], yn, xn, l, r, l1, p, n, &tmp[0], NTL_INIT_DIVIDE);
+}
+
+static void 
+fft_trunc_pair(ZZVec& a_0, ZZVec& a_1, long yn, long xn_0, long xn_1, 
+          long r, long l, long l1, const ZZ& p, long n, 
+          RecursiveThreadPool* pool)
+{
+   ZZ tmp_0[SS_NTEMPS];
+   ZZ tmp_1[SS_NTEMPS];
+   bool seq = SS_BelowThresh(yn, p.size());
+   NTL_EXEC_DIVIDE(seq, pool, helper, 0.5,
+     fft_short(&a_0[0], yn, xn_0, l, r, l1, p, n, &tmp_0[0], helper.subpool(0)),
+     fft_short(&a_1[0], yn, xn_1, l, r, l1, p, n, &tmp_1[0], helper.subpool(1)))
 }
 
 static void
@@ -1142,21 +1178,60 @@ ifft_rec(ZZ* xp, long lgN, long r, long l, const ZZ& p, long n,
 
 static void 
 ifft_short2(ZZ* xp, long yn, long lgN, 
-           long r, long l, const ZZ& p, long n, ZZ* tmp);
+           long r, long l, const ZZ& p, long n, ZZ* tmp, RecursiveThreadPool* pool);
 
 static void 
-ifft_short1(ZZ* xp, long yn, long lgN, 
-           long r, long l, const ZZ& p, long n, ZZ* tmp)
+ifft_short0(ZZ* xp, long lgN, 
+           long r, long l, const ZZ& p, long n, ZZ* tmp, RecursiveThreadPool* pool)
 
 {
+  Vec<ZZ> alt_tmp;
+  if (!tmp) {
+    alt_tmp.SetLength(SS_NTEMPS);
+    tmp = &alt_tmp[0];
+  }
+
+
   long N = 1L << lgN;
 
-  if (yn == N && lgN <= SS_FFT_THRESH)
+  if (lgN <= SS_FFT_THRESH)
     {
       // no truncation
       ifft_base(xp, lgN, r, l, p, n, tmp);
       return;
     }
+
+  // divide-and-conquer algorithm
+
+  long half = N >> 1;
+
+  ZZ *xp0 = xp;
+  ZZ *xp1 = xp + half;
+
+  bool seq = SS_BelowThresh(N, p.size());
+  NTL_EXEC_DIVIDE(seq, pool, helper, 0.5,
+     ifft_short0(xp0, lgN-1, r, l, p, n, tmp, helper.subpool(0)),
+     ifft_short0(xp1, lgN-1, r, l, p, n, 
+                 (helper.concurrent() ? 0 : tmp), helper.subpool(1)))
+
+  // (X, Y) -> (X + Y/w, X - Y/w)
+  SS_butterfly(xp0[0], xp1[0], p, n, tmp);
+  for (long j = 1; j < half; j++) 
+    SS_inv_butterfly(xp0[j], xp1[j], j, lgN, r, l, p, n, tmp);
+}
+
+static void 
+ifft_short1(ZZ* xp, long yn, long lgN, 
+           long r, long l, const ZZ& p, long n, ZZ* tmp, RecursiveThreadPool* pool)
+
+{
+  long N = 1L << lgN;
+
+  if (yn == N) {
+    // no truncation
+    ifft_short0(xp, lgN, r, l, p, n, tmp, pool);
+    return;
+  }
 
   // divide-and-conquer algorithm
 
@@ -1168,14 +1243,14 @@ ifft_short1(ZZ* xp, long yn, long lgN,
       for (long j = 0; j < yn; j++)
       	SS_AddMod(xp[j], xp[j], xp[j], p, n);
 
-      ifft_short1(xp, yn, lgN-1, r, l, p, n, tmp);
+      ifft_short1(xp, yn, lgN-1, r, l, p, n, tmp, pool);
     }
   else
     {
       ZZ *xp0 = xp;
       ZZ *xp1 = xp + half;
 
-      ifft_short1(xp0, half, lgN-1, r, l, p, n, tmp);
+      ifft_short0(xp0, lgN-1, r, l, p, n, tmp, pool);
 
       yn -= half;
 
@@ -1187,7 +1262,7 @@ ifft_short1(ZZ* xp, long yn, long lgN,
           Rotate(xp1[j], tmp[0], j, lgN, r, l, p, n, tmp+1);
 	}
 
-      ifft_short2(xp1, yn, lgN-1, r, l, p, n, tmp);
+      ifft_short2(xp1, yn, lgN-1, r, l, p, n, tmp, pool);
 
       // (X, Y) -> (X + Y/w, X - Y/w)
       SS_butterfly(xp0[0], xp1[0], p, n, tmp);
@@ -1199,17 +1274,16 @@ ifft_short1(ZZ* xp, long yn, long lgN,
 
 static void 
 ifft_short2(ZZ* xp, long yn, long lgN, 
-           long r, long l, const ZZ& p, long n, ZZ* tmp)
+           long r, long l, const ZZ& p, long n, ZZ* tmp, RecursiveThreadPool* pool)
 
 {
   long N = 1L << lgN;
 
-  if (yn == N && lgN <= SS_FFT_THRESH)
-    {
-      // no truncation
-      ifft_base(xp, lgN, r, l, p, n, tmp);
-      return;
-    }
+  if (yn == N) {
+    // no truncation
+    ifft_short0(xp, lgN, r, l, p, n, tmp, pool);
+    return;
+  }
 
   // divide-and-conquer algorithm
 
@@ -1225,7 +1299,7 @@ ifft_short2(ZZ* xp, long yn, long lgN,
       for (long j = yn; j < half; j++)
 	SS_AddMod(xp[j], xp[j], xp[j + half], p, n);
 
-      ifft_short2(xp, yn, lgN-1, r, l, p, n, tmp);
+      ifft_short2(xp, yn, lgN-1, r, l, p, n, tmp, pool);
 
       // (X, Y) -> X - Y
       for (long j = 0; j < yn; j++)
@@ -1236,7 +1310,7 @@ ifft_short2(ZZ* xp, long yn, long lgN,
       ZZ *xp0 = xp;
       ZZ *xp1 = xp + half;
 
-      ifft_short1(xp0, half, lgN-1, r, l, p, n, tmp);
+      ifft_short0(xp0, lgN-1, r, l, p, n, tmp, pool);
 
       yn -= half;
 
@@ -1249,7 +1323,7 @@ ifft_short2(ZZ* xp, long yn, long lgN,
 	}
 
 
-      ifft_short2(xp1, yn, lgN-1, r, l, p, n, tmp);
+      ifft_short2(xp1, yn, lgN-1, r, l, p, n, tmp, pool);
 
       // (X, Y) -> (X + Y/w, X - Y/w)
       SS_butterfly(xp0[0], xp1[0], p, n, tmp);
@@ -1277,7 +1351,7 @@ static void
 ifft_trunc(ZZVec& a, long yn, long r, long l, long l1, const ZZ& p, long n)
 {
    ZZ tmp[SS_NTEMPS];
-   ifft_short1(&a[0], yn, l, r, l1, p, n, &tmp[0]);
+   ifft_short1(&a[0], yn, l, r, l1, p, n, &tmp[0], NTL_INIT_DIVIDE);
 }
 
 
@@ -1374,15 +1448,15 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
   long yn = SS_FFTRoundUp(n+1, l+1);
 
   /* N-point FFT's mod p */
-  fft_trunc(aa, yn, SS_FFTRoundUp(na+1, l+1), r, l+1, l1+1, p, mr);
-  fft_trunc(bb, yn, SS_FFTRoundUp(nb+1, l+1), r, l+1, l1+1, p, mr);
+  fft_trunc_pair(aa, bb, yn, SS_FFTRoundUp(na+1, l+1), SS_FFTRoundUp(nb+1, l+1),
+                 r, l+1, l1+1, p, mr, NTL_INIT_DIVIDE);
+  //fft_trunc(aa, yn, SS_FFTRoundUp(na+1, l+1), r, l+1, l1+1, p, mr);
+  //fft_trunc(bb, yn, SS_FFTRoundUp(nb+1, l+1), r, l+1, l1+1, p, mr);
 
 
   /* Pointwise multiplication aa := aa * bb mod p */
-  // NOTE: we attempt to parallelize this
-  // Unfortunately, the bulk of the time is spent 
-  // in the FFT, so this is not very effective
-  NTL_EXEC_RANGE(yn, first, last)
+  bool seq = SS_BelowThresh(yn, p.size());
+  NTL_GEXEC_RANGE(seq, yn, first, last)
   ZZ tmp, ai;
   for (long i = first; i < last; i++) {
     mul(ai, aa[i], bb[i]);
@@ -1396,11 +1470,12 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
     }
     aa[i] = ai;
   }
-  NTL_EXEC_RANGE_END
+  NTL_GEXEC_RANGE_END
 
   ifft_trunc(aa, yn, r, l+1, l1+1, p, mr);
 
   /* Retrieve c, dividing by N, and subtracting p where necessary */
+
   c.rep.SetLength(n + 1);
   ZZ ai, tmp, scratch;
   for (long i = 0; i <= n; i++) {
@@ -1420,6 +1495,124 @@ void SSMul(ZZX& c, const ZZX& a, const ZZX& b)
        clear(ci);
   }
 }
+
+void SSMul(ZZ_pX& c, const ZZ_pX& a, const ZZ_pX& b)
+{
+  if (&a == &b) {
+    SSSqr(c, a);
+    return;
+  }
+
+  long na = deg(a);
+  long nb = deg(b);
+
+  if (na <= 0 || nb <= 0) {
+    PlainMul(c, a, b);
+    return;
+  }
+
+  long n = na + nb; /* degree of the product */
+
+
+  /* Choose m and r suitably */
+  long l = NextPowerOfTwo(n + 1) - 1; /* 2^l <= n < 2^{l+1} */
+  long N = 1L << (l + 1); /* N = 2^{l+1} */
+  /* Bitlength of the product: if the coefficients of a are absolutely less
+     than 2^ka and the coefficients of b are absolutely less than 2^kb, then
+     the coefficients of ab are absolutely less than
+     (min(na,nb)+1)2^{ka+kb} <= 2^bound. */
+  long bound = 2 + NumBits(min(na, nb)) + 2*NumBits(ZZ_p::modulus());
+  /* Let r be minimal so that mr > bound */
+  long r = (bound >> l) + 1;
+  long mr = r << l;
+
+  // sqrt(2) trick
+  long l1 = l;
+  if (l1 >= 3) {
+    long alt_l1 = l-1;
+    long alt_r = (bound >> alt_l1) + 1;
+    long alt_mr = alt_r << alt_l1;
+
+    if (alt_mr < mr - mr/8) {
+      l1 = alt_l1;
+      r = alt_r;
+      mr = alt_mr;
+    }
+  }
+
+  /* p := 2^{mr}+1 */
+  ZZ p;
+  set(p);
+  LeftShift(p, p, mr);
+  add(p, p, 1);
+
+  ZZVec aa, bb;
+  aa.SetSize(N, p.size());
+  bb.SetSize(N, p.size());
+
+  for (long i = 0; i <= deg(a); i++) {
+      aa[i] = rep(a.rep[i]);
+  }
+
+  for (long i = 0; i <= deg(b); i++) {
+    bb[i] = rep(b.rep[i]);
+  }
+
+  long yn = SS_FFTRoundUp(n+1, l+1);
+
+  /* N-point FFT's mod p */
+  fft_trunc_pair(aa, bb, yn, SS_FFTRoundUp(na+1, l+1), SS_FFTRoundUp(nb+1, l+1),
+                 r, l+1, l1+1, p, mr, NTL_INIT_DIVIDE);
+  //fft_trunc(aa, yn, SS_FFTRoundUp(na+1, l+1), r, l+1, l1+1, p, mr);
+  //fft_trunc(bb, yn, SS_FFTRoundUp(nb+1, l+1), r, l+1, l1+1, p, mr);
+
+
+  /* Pointwise multiplication aa := aa * bb mod p */
+  bool seq = SS_BelowThresh(yn, p.size());
+  NTL_GEXEC_RANGE(seq, yn, first, last)
+  ZZ tmp, ai;
+  for (long i = first; i < last; i++) {
+    mul(ai, aa[i], bb[i]);
+    if (NumBits(ai) > mr) {
+      RightShift(tmp, ai, mr);
+      trunc(ai, ai, mr);
+      sub(ai, ai, tmp);
+      if (sign(ai) < 0) {
+        add(ai, ai, p);
+      }
+    }
+    aa[i] = ai;
+  }
+  NTL_GEXEC_RANGE_END
+
+  ifft_trunc(aa, yn, r, l+1, l1+1, p, mr);
+
+  /* Retrieve c, dividing by N, and subtracting p where necessary */
+
+  c.rep.SetLength(n+1);
+  bool seq1 = SS_BelowThresh(n+1, p.size());
+  ZZ_pContext context;
+  context.save();
+  NTL_GEXEC_RANGE(seq1, n+1, first, last)
+  context.restore();
+  ZZ ai, tmp, scratch;
+  for (long i = first; i < last; i++) {
+    ai = aa[i];
+    ZZ_p& ci = c.rep[i];
+    if (!IsZero(ai)) {
+      /* ci = -ai * 2^{mr-l-1} = ai * 2^{-l-1} = ai / N mod p */
+      LeftRotate(ai, ai, mr - l - 1, p, mr, scratch);
+      sub(tmp, p, ai);
+      conv(ci, tmp);
+    } 
+    else
+       clear(ci);
+  }
+  NTL_GEXEC_RANGE_END
+
+  c.normalize();
+}
+
 
 
 // SSRatio computes how much bigger the SS modulus must be
@@ -1470,11 +1663,25 @@ void conv(vec_zz_p& x, const ZZVec& a)
 
 
 
-// Decide to use SSMul.  This is a real mess...tested on a Haswell machine
+// Decide to use SSMul.  
 static bool ChooseSS(long da, long maxbitsa, long db, long maxbitsb)
 {
    long k = ((maxbitsa+maxbitsb+NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS)/2;
    double rat = SSRatio(da, maxbitsa, db, maxbitsb);
+
+#if 1
+   // I've made SSMul fully thread boosted, so I'm using
+   // just one set of crossovers...FIXME: may need to tune this.
+   return (k >= 13  && rat < 1.15) ||
+	  (k >= 26  && rat < 1.30) ||
+	  (k >= 53  && rat < 1.60) ||
+	  (k >= 106 && rat < 1.80) ||
+	  (k >= 212 && rat < 2.00);
+
+#else
+   // This old code was based on the fact that SSMul was not 
+   // full thread boosted
+
    long nt = AvailableThreads();
 
    if (nt == 1) {
@@ -1515,6 +1722,7 @@ static bool ChooseSS(long da, long maxbitsa, long db, long maxbitsb)
       return false;
 
    }
+#endif
  
 }
 
@@ -1622,10 +1830,8 @@ void SSSqr(ZZX& c, const ZZX& a)
 
 
   /* Pointwise multiplication aa := aa * bb mod p */
-  // NOTE: we attempt to parallelize this
-  // Unfortunately, the bulk of the time is spent 
-  // in the FFT, so this is not very effective
-  NTL_EXEC_RANGE(yn, first, last)
+  bool seq = SS_BelowThresh(yn, p.size());
+  NTL_GEXEC_RANGE(seq, yn, first, last)
   ZZ tmp, ai;
   for (long i = first; i < last; i++) {
     sqr(ai, aa[i]);
@@ -1639,7 +1845,7 @@ void SSSqr(ZZX& c, const ZZX& a)
     }
     aa[i] = ai;
   }
-  NTL_EXEC_RANGE_END
+  NTL_GEXEC_RANGE_END
 
   ifft_trunc(aa, yn, r, l+1, l1+1, p, mr);
 
@@ -1662,6 +1868,105 @@ void SSSqr(ZZX& c, const ZZX& a)
     else
        clear(ci);
   }
+}
+
+void SSSqr(ZZ_pX& c, const ZZ_pX& a)
+
+{
+  long na = deg(a);
+
+  if (na <= 0) {
+    PlainSqr(c, a);
+    return;
+  }
+
+  long n = na + na; /* degree of the product */
+
+
+  /* Choose m and r suitably */
+  long l = NextPowerOfTwo(n + 1) - 1; /* 2^l <= n < 2^{l+1} */
+  long N = 1L << (l + 1); /* N = 2^{l+1} */
+  long bound = 2 + NumBits(na) + 2*NumBits(ZZ_p::modulus());
+  /* Let r be minimal so that mr > bound */
+  long r = (bound >> l) + 1;
+  long mr = r << l;
+
+  // sqrt(2) trick
+  long l1 = l;
+  if (l1 >= 3) {
+    long alt_l1 = l-1;
+    long alt_r = (bound >> alt_l1) + 1;
+    long alt_mr = alt_r << alt_l1;
+
+    if (alt_mr < mr - mr/8) {
+      l1 = alt_l1;
+      r = alt_r;
+      mr = alt_mr;
+    }
+  }
+
+  /* p := 2^{mr}+1 */
+  ZZ p;
+  set(p);
+  LeftShift(p, p, mr);
+  add(p, p, 1);
+
+  ZZVec aa;
+  aa.SetSize(N, p.size());
+
+  for (long i = 0; i <= deg(a); i++) {
+      aa[i] = rep(a.rep[i]);
+  }
+
+  long yn = SS_FFTRoundUp(n+1, l+1);
+
+  /* N-point FFT's mod p */
+  fft_trunc(aa, yn, SS_FFTRoundUp(na+1, l+1), r, l+1, l1+1, p, mr);
+
+
+  /* Pointwise multiplication aa := aa * bb mod p */
+  bool seq = SS_BelowThresh(yn, p.size());
+  NTL_GEXEC_RANGE(seq, yn, first, last)
+  ZZ tmp, ai;
+  for (long i = first; i < last; i++) {
+    sqr(ai, aa[i]);
+    if (NumBits(ai) > mr) {
+      RightShift(tmp, ai, mr);
+      trunc(ai, ai, mr);
+      sub(ai, ai, tmp);
+      if (sign(ai) < 0) {
+        add(ai, ai, p);
+      }
+    }
+    aa[i] = ai;
+  }
+  NTL_GEXEC_RANGE_END
+
+  ifft_trunc(aa, yn, r, l+1, l1+1, p, mr);
+
+  /* Retrieve c, dividing by N, and subtracting p where necessary */
+  c.rep.SetLength(n+1);
+  bool seq1 = SS_BelowThresh(n+1, p.size());
+  ZZ_pContext context;
+  context.save();
+  NTL_GEXEC_RANGE(seq1, n+1, first, last)
+  context.restore();
+  ZZ ai, tmp, scratch;
+  for (long i = first; i < last; i++) {
+    ai = aa[i];
+    ZZ_p& ci = c.rep[i];
+    if (!IsZero(ai)) {
+      /* ci = -ai * 2^{mr-l-1} = ai * 2^{-l-1} = ai / N mod p */
+      LeftRotate(ai, ai, mr - l - 1, p, mr, scratch);
+      sub(tmp, p, ai);
+      conv(ci, tmp);
+    } 
+    else
+       clear(ci);
+  }
+  NTL_GEXEC_RANGE_END
+
+  c.normalize();
 }
 
 

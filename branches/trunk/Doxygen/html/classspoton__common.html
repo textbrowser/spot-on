@@ -124,12 +124,13 @@ static const int&#160;</td><td class="memItemRight" valign="bottom"><b>KERNEL_CE
 static const int&#160;</td><td class="memItemRight" valign="bottom"><b>KERNEL_URL_DISPATCHER_INTERVAL_STATIC</b> = 60</td></tr>
 <tr class="separator:a75b2ee94e8ba0f2b69dba0d606bf3ceb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc8e8f4fe5ef8072588b9136438637d3"><td class="memItemLeft" align="right" valign="top"><a id="afc8e8f4fe5ef8072588b9136438637d3"></a>
-static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_DEFAULT</b> = 104857600</td></tr>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_DEFAULT</b> = 5242880</td></tr>
 <tr class="separator:afc8e8f4fe5ef8072588b9136438637d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7022cad8fe905c5ff183b49bb600e10a"><td class="memItemLeft" align="right" valign="top"><a id="a7022cad8fe905c5ff183b49bb600e10a"></a>
-static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_MAXIMUM</b> = LANE_WIDTH_DEFAULT</td></tr>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_MAXIMUM</b> = 20971520</td></tr>
 <tr class="separator:a7022cad8fe905c5ff183b49bb600e10a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa1e024f9cb5925deb3dc8ab2b23fd16b"><td class="memItemLeft" align="right" valign="top">static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_MINIMUM</b></td></tr>
+<tr class="memitem:aa1e024f9cb5925deb3dc8ab2b23fd16b"><td class="memItemLeft" align="right" valign="top"><a id="aa1e024f9cb5925deb3dc8ab2b23fd16b"></a>
+static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LANE_WIDTH_MINIMUM</b> = 4096</td></tr>
 <tr class="separator:aa1e024f9cb5925deb3dc8ab2b23fd16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae133c3cf9f5104e67a65e020d743b7dc"><td class="memItemLeft" align="right" valign="top"><a id="ae133c3cf9f5104e67a65e020d743b7dc"></a>
 static const int&#160;</td><td class="memItemRight" valign="bottom"><b>LOG_FILE_MAXIMUM_SIZE</b> = 8 * 1024 * 1024</td></tr>
@@ -236,7 +237,8 @@ static const qint64&#160;</td><td class="memItemRight" valign="bottom"><b>MAXIMU
 <tr class="memitem:ace4741cea5e9d19b73efafd07f20ea15"><td class="memItemLeft" align="right" valign="top"><a id="ace4741cea5e9d19b73efafd07f20ea15"></a>
 static const qint64&#160;</td><td class="memItemRight" valign="bottom"><b>MAXIMUM_TCP_PACKET_SIZE</b> = 4096</td></tr>
 <tr class="separator:ace4741cea5e9d19b73efafd07f20ea15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a402e5ef3a158f61cf287158ffbacf161"><td class="memItemLeft" align="right" valign="top">static const qint64&#160;</td><td class="memItemRight" valign="bottom"><b>MINIMUM_NEIGHBOR_CONTENT_LENGTH</b></td></tr>
+<tr class="memitem:a402e5ef3a158f61cf287158ffbacf161"><td class="memItemLeft" align="right" valign="top"><a id="a402e5ef3a158f61cf287158ffbacf161"></a>
+static const qint64&#160;</td><td class="memItemRight" valign="bottom"><b>MINIMUM_NEIGHBOR_CONTENT_LENGTH</b> = 256</td></tr>
 <tr class="separator:a402e5ef3a158f61cf287158ffbacf161"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f76dfc93c4778d3803c7e39fe399675"><td class="memItemLeft" align="right" valign="top"><a id="a6f76dfc93c4778d3803c7e39fe399675"></a>
 static const unsigned long int&#160;</td><td class="memItemRight" valign="bottom"><b>GEMINI_ITERATION_COUNT</b> = 25000</td></tr>
@@ -391,28 +393,6 @@ static const unsigned long int&#160;</td><td class="memItemRight" valign="bottom
 <b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">  spoton_common::KERNEL_URL_DISPATCHER_INTERVAL_STATIC</div></div><!-- fragment -->
 </div>
 </div>
-<a id="aa1e024f9cb5925deb3dc8ab2b23fd16b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa1e024f9cb5925deb3dc8ab2b23fd16b">&#9670;&nbsp;</a></span>LANE_WIDTH_MINIMUM</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int spoton_common::LANE_WIDTH_MINIMUM</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    4096 &lt; LANE_WIDTH_DEFAULT ? 4096 : LANE_WIDTH_DEFAULT</div></div><!-- fragment -->
-</div>
-</div>
 <a id="ab8db6677922ec845e0d3695c0b9fbe94"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab8db6677922ec845e0d3695c0b9fbe94">&#9670;&nbsp;</a></span>LANE_WIDTHS</h2>
 
@@ -432,7 +412,7 @@ static const unsigned long int&#160;</td><td class="memItemRight" valign="bottom
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">= QList&lt;int&gt; () &lt;&lt; 14500</div><div class="line">                              &lt;&lt; 20000</div><div class="line">                                                      &lt;&lt; 25000</div><div class="line">                                                      &lt;&lt; 50000</div><div class="line">                                                      &lt;&lt; 75000</div><div class="line">                              &lt;&lt; 100000</div><div class="line">                              &lt;&lt; 2097152</div><div class="line">                              &lt;&lt; 20971520</div></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">= QList&lt;int&gt; () &lt;&lt; 14500</div><div class="line">                              &lt;&lt; 20000</div><div class="line">                                                      &lt;&lt; 25000</div><div class="line">                                                      &lt;&lt; 50000</div><div class="line">                                                      &lt;&lt; 75000</div><div class="line">                              &lt;&lt; 100000</div><div class="line">                              &lt;&lt; 2097152</div><div class="line">                              &lt;&lt; 5242880</div><div class="line">                              &lt;&lt; 10485760</div><div class="line">                              &lt;&lt; 20971520</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a4ed6a68ae41bcc4849d3b836f70d519a"></a>
@@ -520,29 +500,7 @@ static const unsigned long int&#160;</td><td class="memItemRight" valign="bottom
   </tr>
 </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    104856576 &lt; MAXIMUM_NEIGHBOR_BUFFER_SIZE ?</div><div class="line">    104856576 : MAXIMUM_NEIGHBOR_BUFFER_SIZE</div></div><!-- fragment -->
-</div>
-</div>
-<a id="a402e5ef3a158f61cf287158ffbacf161"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a402e5ef3a158f61cf287158ffbacf161">&#9670;&nbsp;</a></span>MINIMUM_NEIGHBOR_CONTENT_LENGTH</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const qint64 spoton_common::MINIMUM_NEIGHBOR_CONTENT_LENGTH</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    256 &lt; MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?</div><div class="line">    256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH</div></div><!-- fragment -->
+<b>Initial value:</b><div class="fragment"><div class="line">=</div><div class="line">    MAXIMUM_NEIGHBOR_BUFFER_SIZE</div></div><!-- fragment -->
 </div>
 </div>
 <a id="a2dca05b1c657ac8759ad7c38685c3eba"></a>

@@ -1,8 +1,17 @@
 
 
 #include <NTL/vec_ZZ_p.h>
+#include <NTL/BasicThreadPool.h>
+
 
 NTL_START_IMPL
+
+#define PAR_THRESH (4000.0)
+
+static inline bool BelowThresh(long n)
+{
+   return double(n)*double(ZZ_p::ModulusSize()) < PAR_THRESH;
+}
 
 static 
 void BasicBlockConstruct(ZZ_p* x, long n, long d)
@@ -249,6 +258,37 @@ void random(vec_ZZ_p& x, long n)
 {
    x.SetLength(n);
    for (long i = 0; i < n; i++) random(x[i]);
+}
+
+// thread-boosted conversion.
+// This is used in the implementation of ZZ_pX multiplication in terms
+// of ZZX SSMul.
+void conv(vec_ZZ_p& x, const vec_ZZ& a)
+{
+   long n = a.length();
+   x.SetLength(n);
+
+   if (n == 0) return;
+
+   const ZZ *ap = a.elts();
+   ZZ_p *xp = x.elts();
+
+   ZZ_pContext context;
+   context.save();
+
+   bool seq = BelowThresh(n);
+
+   NTL_GEXEC_RANGE(seq, n, first, last)
+   NTL_IMPORT(ap)
+   NTL_IMPORT(xp)
+
+      context.restore();
+
+      for (long i = first; i < last; i++)
+         conv(xp[i], ap[i]);
+
+   NTL_GEXEC_RANGE_END
+
 }
 
 NTL_END_IMPL

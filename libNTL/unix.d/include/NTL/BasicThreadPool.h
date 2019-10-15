@@ -193,6 +193,8 @@ assigned to each index = 0..n-1, and managed externally.
 
 
 class BasicThreadPool {
+friend struct RecursiveThreadPool;
+
 private:
 
 // lots of nested stuff
@@ -411,7 +413,6 @@ private:
 
 public:
 
-
   long NumThreads() const { return nthreads; }
   bool active() const { return active_flag; }
 
@@ -420,9 +421,11 @@ public:
     nthreads(_nthreads), active_flag(false), counter(0)
   {
     if (nthreads <= 0) LogicError("BasicThreadPool::BasicThreadPool: bad args");
+    if (nthreads == 1) return;
 
     if (NTL_OVERFLOW(nthreads, 1, 0)) 
       ResourceError("BasicThreadPool::BasicThreadPool: arg too big");
+
 
     threadVec.SetLength(nthreads-1);
 
@@ -565,9 +568,104 @@ public:
 };
 
 
-
-
 // NOTE: BasicThreadPool's are non-relocatable
+
+struct RecursiveThreadPool : BasicThreadPool {
+   BasicThreadPool *base_pool;
+   long lo, hi; // range of indices is [lo..hi)
+
+   RecursiveThreadPool(BasicThreadPool* _base_pool, long _lo, long _hi) :
+      BasicThreadPool(1), base_pool(_base_pool), lo(_lo), hi(_hi) 
+   {
+      if (lo == 0 && hi == base_pool->nthreads)
+         base_pool->active_flag = true;
+   }
+
+   ~RecursiveThreadPool() 
+   {
+      if (lo == 0 && hi == base_pool->nthreads)
+         base_pool->active_flag = false;
+   }
+         
+
+   template<class Fct0, class Fct1>
+   void exec_pair(long mid, const Fct0& fct0, const Fct1& fct1) 
+   {
+     ConcurrentTaskFct<Fct0> task0(this, fct0);
+     ConcurrentTaskFct<Fct1> task1(this, fct1);
+
+     begin(2);
+     base_pool->launch(&task1, mid);
+     runOneTask(&task0, lo);
+     end();
+   }
+};
+
+// NOTE: RecursiveThreadPool's are non-relocatable
+
+inline
+SmartPtr<RecursiveThreadPool> StartRecursion(BasicThreadPool *base_pool)
+{
+   if (!base_pool || base_pool->active()) return 0;
+   long nthreads = base_pool->NumThreads();
+   if (nthreads <= 1) return 0;
+   return MakeSmart<RecursiveThreadPool>(base_pool, 0, nthreads);
+}
+
+// NOTE: returning some kind of smart pointer ensures that
+// the object itself will stay alive until the end of the
+// largest enclosing expression, and then be destroyed.
+// I could have also used a UniquePtr, and relied on the move
+// constructor to be called.  However, NTL still has a DISABLE_MOVE
+// option that would break that.  I could also have used 
+// std::unique_ptr; however, I'm generally avoiding those parts
+// of the standard library. A SmartPtr has some additional
+// overhead, but this will only be called once at the outermost
+// recursion, so it should be OK.
+
+
+
+
+struct RecursiveThreadPoolHelper {
+   UniquePtr<RecursiveThreadPool> subpool_stg[2];
+   RecursiveThreadPool *subpool_ptr[2];
+   long mid;
+
+   bool concurrent() { return mid != 0; }
+   RecursiveThreadPool* subpool(long i) { return subpool_ptr[i]; } 
+
+   RecursiveThreadPoolHelper(RecursiveThreadPool *pool, bool seq, double load0)
+   {
+      mid = 0;
+      subpool_ptr[0] = subpool_ptr[1] = 0;
+
+      if (seq || !pool) return; 
+      long n = pool->hi - pool->lo;
+      if (n <= 1) return;
+     
+      long n0 = long(load0*n + 0.5);
+      if (n0 < 0 || n0 > n) LogicError("RecursiveThreadPoolHelper: bad load0");
+
+      if (n0 == 0) {
+         subpool_ptr[1] = pool;
+         return;
+      }
+
+      if (n0 == n) {
+         subpool_ptr[0] = pool;
+         return;
+      }
+
+      mid = pool->lo + n0;
+
+      long n1 = n-n0;
+      if (n0 > 1) subpool_stg[0].make(pool->base_pool, pool->lo, mid);
+      if (n1 > 1) subpool_stg[1].make(pool->base_pool, mid, pool->hi);
+
+      subpool_ptr[0] = subpool_stg[0].get();
+      subpool_ptr[1] = subpool_stg[1].get();
+   }
+};
 
 
 
@@ -658,6 +756,28 @@ NTL_CLOSE_NNS
 #define NTL_TBDECL(x) static void basic_ ## x
 #define NTL_TBDECL_static(x) static void basic_ ## x
 
+#define NTL_IMPORT(x) auto _ntl_hidden_variable_IMPORT__ ## x = x; auto x = _ntl_hidden_variable_IMPORT__ ##x;
+
+
+#define NTL_INIT_DIVIDE StartRecursion(GetThreadPool()).get()
+
+#define NTL_EXEC_DIVIDE(seq, pool, helper, load0, F0, F1) \
+{ \
+  NTL::RecursiveThreadPoolHelper helper(pool, seq, load0); \
+  if (!helper.mid) { \
+    { F0; } \
+    { F1; } \
+  } \
+  else { \
+    pool->exec_pair(helper.mid,  \
+      [&](long){ F0; }, \
+      [&](long){ F1; } ); \
+  } \
+}
+
+
+
+
 
 #else
 
@@ -667,6 +787,13 @@ NTL_OPEN_NNS
 inline void SetNumThreads(long n) { }
 
 inline long AvailableThreads() { return 1; }
+
+struct RecursiveThreadPool;
+
+struct RecursiveThreadPoolDummyHelper {
+   bool concurrent() { return false; }
+   RecursiveThreadPool* subpool(long i) { return 0; }
+};
 
 
 NTL_CLOSE_NNS
@@ -712,20 +839,20 @@ NTL_CLOSE_NNS
 #define NTL_TBDECL(x) void x
 #define NTL_TBDECL_static(x) static void x
 
-#endif
-
-
-
-#ifdef NTL_THREADS
-
-#define NTL_IMPORT(x) auto _ntl_hidden_variable_IMPORT__ ## x = x; auto x = _ntl_hidden_variable_IMPORT__ ##x;
-
-#else
-
 #define NTL_IMPORT(x)
 
+#define NTL_INIT_DIVIDE ((RecursiveThreadPool*) 0)
+
+#define NTL_EXEC_DIVIDE(seq, pool, helper, load0, F0, F1) \
+{ \
+  NTL::RecursiveThreadPoolDummyHelper helper; \
+  { F0; } \
+  { F1; } \
+}
 
 #endif
+
+
 
 
 

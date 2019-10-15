@@ -18,6 +18,64 @@ A Tour of NTL: Summary of Changes
 
 <p><hr><p>
 <h3>
+2019.10.08: Changes between NTL 11.4.0 and 11.4.1
+</h3>
+
+<ul>
+<li>
+Fixed bug in new <tt>NTL_EXEC_DIVIDE</tt> that 
+could manifest itself when <tt>NTL_THREAD_BOOST=off</tt>.
+Existing code that does not explicitly use this feature
+should not be affected by this bug.
+<li>
+Fixed some namespace visibility issues in the TLS hack macros.
+</ul>
+
+
+<p><hr><p>
+<h3>
+2019.09.24: Changes between NTL 11.3.4 and 11.4.0
+</h3>
+
+<ul>
+<li>
+The Schoenhage-Strassen FFT for both <tt>ZZ_pX</tt>
+and <tt>ZZX</tt> is now fully "thread boosted".
+Here is a snapshot of performance, based on 
+multiplying two polynomials of degree less than 8000
+with 8000-bit coefficients.
+For <tt>ZZ_pX</tt>:
+<pre>
+    # threads   time (ms)   effectiveness
+    1           606   
+    2           310         97%
+    4           168         90%
+    8           103         74%
+</pre>
+For <tt>ZZX</tt>:
+<pre>
+    # threads   time (ms)   effectiveness
+    1           461 
+    2           247         93%
+    4           144         80%
+    8            96         60%
+</pre>
+
+<p> <li>
+Introduced new tools for applying thread pools to divide and conquer 
+algorithms.
+See <tt>NTL_EXEC_DIVIDE</tt> in 
+<a href="BasicThreadPool.cpp.html">BasicThreadPool.txt</a>.
+
+<li>
+Fixed a few other minor issues.
+
+</ul>
+
+
+
+<p><hr><p>
+<h3>
 2019.09.07: Changes between NTL 11.3.3 and 11.3.4
 </h3>
 

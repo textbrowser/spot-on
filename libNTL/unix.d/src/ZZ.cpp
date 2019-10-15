@@ -644,7 +644,7 @@ void MultiThreadedRandomPrime(ZZ& n, long l, long NumTrials)
       AtomicCounter counter(initial_counter);
 
       Vec< UniquePtr<ZZ> > result(INIT_SIZE, nt);
-      Vec<long> result_ctr(INIT_SIZE, nt, -1UL);
+      Vec<unsigned long> result_ctr(INIT_SIZE, nt, -1UL);
 
       NTL_EXEC_INDEX(nt, index)
 
@@ -685,7 +685,7 @@ void MultiThreadedRandomPrime(ZZ& n, long l, long NumTrials)
       // find index of low_water_mark
 
       unsigned long low_water_mark1 = low_water_mark;
-      unsigned long low_water_index = -1;
+      long low_water_index = -1;
 
       for (long index = 0; index < nt; index++) {
 	 if (result_ctr[index] == low_water_mark1) {
@@ -2969,7 +2969,7 @@ void MultiThreadedGenGermainPrime(ZZ& n, long k, long err)
       AtomicCounter counter(initial_counter);
 
       Vec< UniquePtr<ZZ> > result(INIT_SIZE, nt);
-      Vec<long> result_ctr(INIT_SIZE, nt, -1UL);
+      Vec<unsigned long> result_ctr(INIT_SIZE, nt, -1UL);
 
       NTL_EXEC_INDEX(nt, index)
 
@@ -3045,7 +3045,7 @@ void MultiThreadedGenGermainPrime(ZZ& n, long k, long err)
       // find index of low_water_mark
 
       unsigned long low_water_mark1 = low_water_mark;
-      unsigned long low_water_index = -1;
+      long low_water_index = -1;
 
       for (long index = 0; index < nt; index++) {
 	 if (result_ctr[index] == low_water_mark1) {

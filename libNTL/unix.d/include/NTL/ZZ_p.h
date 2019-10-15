@@ -530,7 +530,10 @@ inline void conv(ZZ_p& x, const ZZ_p& a) { x = a; }
 /* ------------------------------------- */
 
 
+// Thread-boosted conversion. Defined in vec_zz_p.cpp.
+void conv(Vec<ZZ_p>& x, const Vec<ZZ>& a);
 
+/* ------------------------------------- */
 
 // overload these functions for Vec<ZZ_p>.
 // They are defined in vec_ZZ_p.c

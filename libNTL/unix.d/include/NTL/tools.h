@@ -638,6 +638,7 @@ public:
 
 
 
+#define NTL_DETAILS_PTHREAD NTL_NNS details_pthread
 
 
 #if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
@@ -720,11 +721,11 @@ push_node(Node *p)
 
 
 #define NTL_TLS_LOCAL_INIT(type, var, init)  \
-   static NTL_CHEAP_THREAD_LOCAL details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
-   details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
+   static NTL_CHEAP_THREAD_LOCAL NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
+   NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
    if (!_ntl_hidden_variable_tls_local_ptr1_ ## var) {  \
-      details_pthread::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr2_ ## var = NTL_NEW_OP details_pthread::DerivedNode<type> init;  \
-      details_pthread::push_node(_ntl_hidden_variable_tls_local_ptr2_ ## var); \
+      NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr2_ ## var = NTL_NEW_OP NTL_DETAILS_PTHREAD::DerivedNode<type> init;  \
+      NTL_DETAILS_PTHREAD::push_node(_ntl_hidden_variable_tls_local_ptr2_ ## var); \
       _ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr2_ ## var;  \
       _ntl_hidden_variable_tls_local_ptr_ ## var = _ntl_hidden_variable_tls_local_ptr1_ ## var;  \
    }  \

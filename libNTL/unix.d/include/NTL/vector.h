@@ -215,10 +215,10 @@ public:
 
    class _vec_deleter {
    public:
-      static void apply(T* p) { 
-         if (p)  {
-            NTL_SNS free(((char *) p) - sizeof(_ntl_AlignedVectorHeader));
-         }
+      static void apply(T* p) 
+      { 
+         // WrappedPtr only calls this when p is non-null
+         NTL_SNS free(((char *) p) - sizeof(_ntl_AlignedVectorHeader));
       }
    };
 

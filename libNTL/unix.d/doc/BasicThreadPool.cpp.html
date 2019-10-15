@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/junk/ntl/ntl-11.3.3/doc/BasicThreadPool.cpp.html</title>
+<title>~/ntl-11.4.1/doc/BasicThreadPool.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -207,6 +207,72 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">// execution. For example, on very small problems the runtime overhead of a</span>
 <span class="Comment">// parallel for loop may not be worthwhile, or in other situations parallel</span>
 <span class="Comment">// execution could cause incorrect behavior.  See below for details.</span>
+
+
+
+
+
+<span class="Comment">// ********************** Simple parallel divide and conquer ************</span>
+<span class="Comment">//</span>
+<span class="Comment">// Some tools are provided for parallelizing simple divide and conquer</span>
+<span class="Comment">// algorithms.  The interface for this set of tools is still experimental</span>
+<span class="Comment">// and subject to change (but hopefully not).</span>
+<span class="Comment">//</span>
+<span class="Comment">// Suppose you have a recursive divide and conquer algorithm:</span>
+
+   <span class="Type">void</span> rec_alg(...)
+   {
+      ...
+      <span class="Comment">// two recursive invocations that can run in parallel</span>
+      rec_alg(...call <span class="Constant">0.</span>..);
+      rec_alg(...call <span class="Constant">1</span>...);
+      ...
+   }
+
+<span class="Comment">// and this algorithm is invoked initially as </span>
+
+   <span class="Type">void</span> alg(...)
+   {
+      rec_alg(...initial call...);
+   }
+
+<span class="Comment">// Then the following recipe will paralelize it:</span>
+
+   <span class="Type">void</span> rec_alg(..., RecursiveThreadPool *pool)
+   {
+      ...
+      NTL_EXEC_DIVIDE(seq, pool, helper, load,
+         rec_alg(...call <span class="Constant">0.</span>.., helper.subpool(<span class="Constant">0</span>)),
+         rec_alg(...call <span class="Constant">1</span>..., helper.subpool(<span class="Constant">1</span>)) )
+      ...
+   }
+
+   <span class="Type">void</span> alg(...)
+   {
+      rec_alg(...initial call..., NTL_INIT_DIVIDE);
+   }
+
+<span class="Comment">// Here, seq is a boolean &quot;guard&quot; value: if true, the two recursive calls will</span>
+<span class="Comment">// run sequentially, as usual.  Also, load is a floating point number, which</span>
+<span class="Comment">// represents the fraction of threads that should be assigned to call 0.</span>
+<span class="Comment">// If the load should be equally balanced, then load=0.5 is a good choice.</span>
+<span class="Comment">// The name helper is the name of an auxilliary object, which will be in the</span>
+<span class="Comment">// scope of the two recursive calls.  It supplies a method helper.concurrent(),</span>
+<span class="Comment">// which returns true if the two calls are being run concurrently, and false</span>
+<span class="Comment">// otherwise.</span>
+
+<span class="Comment">// If thread-boosting is not enabled, these macros will revert to the normal</span>
+<span class="Comment">// sequential execution, with no overhead.  If thread-boosting is enabled, then</span>
+<span class="Comment">// the two calls may or may not run concurrently, depending on a number of</span>
+<span class="Comment">// factors.  If they do run concurrently, call 0 will run on the current</span>
+<span class="Comment">// thread, while call 1 will run on another thread; in addition, when the</span>
+<span class="Comment">// current thread finishes execution of call 0, it will wait for the execution</span>
+<span class="Comment">// of call 1 on the other thread to finish before continuing any further.</span>
+
+<span class="Comment">// As one can see, the use cases here are fairly limited to those in which you</span>
+<span class="Comment">// have a recursive algorithm that calls itself exactly twice.  One example of</span>
+<span class="Comment">// this is QuickSort.  Another example is a recursive FFT.</span>
+
 
 
 <span class="Comment">// ************************** Thread Pools ******************************</span>

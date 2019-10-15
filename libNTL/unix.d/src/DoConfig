@@ -349,6 +349,9 @@ if ($ConfigSub{'NTL_CRT_ALTCODE'} + $ConfigSub{'NTL_CRT_ALTCODE_SMALL'} > 1) {
 
 }
 
+if ($ConfigSub{'NTL_ENABLE_AVX_FFT'} == 1 && $MakeSub{'TUNE'} eq 'auto') {
+   die "Error: incompatible options NTL_ENABLE_AVX_FFT=on and TUNE=auto\n";
+}
 
 
 

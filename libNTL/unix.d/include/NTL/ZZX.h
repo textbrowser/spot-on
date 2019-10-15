@@ -461,6 +461,9 @@ void HomSqr(ZZX& x, const ZZX& a);
 void SSMul(ZZX& x, const ZZX& a, const ZZX& b);
 void SSSqr(ZZX& x, const ZZX& a);
 
+void SSMul(ZZ_pX& x, const ZZ_pX& a, const ZZ_pX& b);
+void SSSqr(ZZ_pX& x, const ZZ_pX& a);
+
 double SSRatio(long na, long maxa, long nb, long maxb);
 
 

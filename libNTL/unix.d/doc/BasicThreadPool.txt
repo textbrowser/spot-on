@@ -178,6 +178,72 @@ which facilitite simple parallel for loops.
 // execution could cause incorrect behavior.  See below for details.
 
 
+
+
+
+// ********************** Simple parallel divide and conquer ************
+//
+// Some tools are provided for parallelizing simple divide and conquer
+// algorithms.  The interface for this set of tools is still experimental
+// and subject to change (but hopefully not).
+//
+// Suppose you have a recursive divide and conquer algorithm:
+
+   void rec_alg(...)
+   {
+      ...
+      // two recursive invocations that can run in parallel
+      rec_alg(...call 0...);
+      rec_alg(...call 1...);
+      ...
+   }
+
+// and this algorithm is invoked initially as 
+
+   void alg(...)
+   {
+      rec_alg(...initial call...);
+   }
+
+// Then the following recipe will paralelize it:
+
+   void rec_alg(..., RecursiveThreadPool *pool)
+   {
+      ...
+      NTL_EXEC_DIVIDE(seq, pool, helper, load,
+         rec_alg(...call 0..., helper.subpool(0)),
+         rec_alg(...call 1..., helper.subpool(1)) )
+      ...
+   }
+
+   void alg(...) 
+   {
+      rec_alg(...initial call..., NTL_INIT_DIVIDE);
+   }
+
+// Here, seq is a boolean "guard" value: if true, the two recursive calls will
+// run sequentially, as usual.  Also, load is a floating point number, which
+// represents the fraction of threads that should be assigned to call 0.
+// If the load should be equally balanced, then load=0.5 is a good choice.
+// The name helper is the name of an auxilliary object, which will be in the
+// scope of the two recursive calls.  It supplies a method helper.concurrent(),
+// which returns true if the two calls are being run concurrently, and false
+// otherwise.
+
+// If thread-boosting is not enabled, these macros will revert to the normal
+// sequential execution, with no overhead.  If thread-boosting is enabled, then
+// the two calls may or may not run concurrently, depending on a number of
+// factors.  If they do run concurrently, call 0 will run on the current
+// thread, while call 1 will run on another thread; in addition, when the
+// current thread finishes execution of call 0, it will wait for the execution
+// of call 1 on the other thread to finish before continuing any further.
+
+// As one can see, the use cases here are fairly limited to those in which you
+// have a recursive algorithm that calls itself exactly twice.  One example of
+// this is QuickSort.  Another example is a recursive FFT.
+
+
+
 // ************************** Thread Pools ******************************
 // 
 // The above facilities are built on top of a more general thread pool class,
