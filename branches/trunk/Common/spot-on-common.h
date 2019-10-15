@@ -71,14 +71,9 @@ class spoton_common
   static const int IDENTICAL_CREDENTIALS_ITERATIONS = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URL_DISPATCHER_INTERVAL_STATIC = 60;
-  static const int LANE_WIDTH_DEFAULT = 104857600;
-  static const int LANE_WIDTH_MAXIMUM = LANE_WIDTH_DEFAULT;
-  static const int LANE_WIDTH_MINIMUM =
-    4096 < LANE_WIDTH_DEFAULT ? 4096 : LANE_WIDTH_DEFAULT; /*
-							   ** Must be smaller
-							   ** than the
-							   ** default.
-							   */
+  static const int LANE_WIDTH_DEFAULT = 5242880;
+  static const int LANE_WIDTH_MAXIMUM = 20971520;
+  static const int LANE_WIDTH_MINIMUM = 4096;
   static const int LOG_FILE_MAXIMUM_SIZE = 8 * 1024 * 1024;
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;
   static const int MAXIMUM_ATTEMPTS_PER_POPTASTIC_POST = 2;
@@ -131,14 +126,11 @@ class spoton_common
 					      ** than the content length.
 					      */
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
-    104856576 < MAXIMUM_NEIGHBOR_BUFFER_SIZE ?
-    104856576 : MAXIMUM_NEIGHBOR_BUFFER_SIZE;
+    MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   static const qint64 MAXIMUM_SCTP_PACKET_SIZE = 4096;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 2500000;
   static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096;
-  static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH =
-    256 < MAXIMUM_NEIGHBOR_CONTENT_LENGTH ?
-    256 : MAXIMUM_NEIGHBOR_CONTENT_LENGTH;
+  static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;
   static const unsigned long int GEMINI_ITERATION_COUNT = 25000;
 
   /*
