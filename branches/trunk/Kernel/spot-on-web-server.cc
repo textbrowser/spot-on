@@ -736,9 +736,7 @@ void spoton_web_server::slotReadyRead(void)
   else if(data.simplified().startsWith("post / http/1.1") ||
 	  data.simplified().startsWith("post /current="))
     {
-      if(data.simplified().startsWith("post /current="))
-	data = data.mid(data.lastIndexOf("current="));
-
+      data = data.mid(data.lastIndexOf("current="));
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
     }
