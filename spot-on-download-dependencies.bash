@@ -50,8 +50,8 @@ mv pgsql/bin/libxslt.dll PostgreSQL/Libraries.win32/.
 mv pgsql/include/libpq-fe.h PostgreSQL/Include.win32/.
 mv pgsql/include/pg_config_ext.h PostgreSQL/Include.win32/.
 mv pgsql/include/postgres_ext.h PostgreSQL/Include.win32/.
-chmod -x PostgreSQL/Include.win32/*.h
-chmod -x PostgreSQL/Libraries.win32/*.dll
+chmod +w,-x PostgreSQL/Include.win32/*.h
+chmod +w,-x PostgreSQL/Libraries.win32/*.dll
 rm -f $postgresql
 rm -fr pgsql
 
@@ -63,7 +63,7 @@ rm -f $sqlite
 wget --progress=bar https://sqlite.org/2019/$sqlite
 unzip -o $sqlite
 mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
-chmod -x libSpotOn/Libraries.win32/*.dll
+chmod +w,-x libSpotOn/Libraries.win32/*.d*
 rm -f $sqlite
 
 # SQLite Source
