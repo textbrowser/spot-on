@@ -62,11 +62,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.8.3"
+#define GCRYPT_VERSION "1.8.4"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010803
+#define GCRYPT_VERSION_NUMBER 0x010804
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -1311,7 +1311,7 @@ gpg_error_t gcry_md_extract (gcry_md_hd_t hd, int algo, void *buffer,
                              size_t length);
 
 /* Convenience function to calculate the hash from the data in BUFFER
-   of size LENGTH using the algorithm ALGO avoiding the creating of a
+   of size LENGTH using the algorithm ALGO avoiding the creation of a
    hash object.  The hash is returned in the caller provided buffer
    DIGEST which must be large enough to hold the digest of the given
    algorithm. */

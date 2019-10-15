@@ -1,5 +1,5 @@
 /* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
- * Copyright (C) 2001-2018 g10 Code GmbH
+ * Copyright (C) 2001-2019 g10 Code GmbH
  *
  * This file is part of libgpg-error (aka libgpgrt).
  *
@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.32"
-#define GPGRT_VERSION     "1.32"
+#define GPG_ERROR_VERSION "1.36"
+#define GPGRT_VERSION     "1.36"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012000
-#define GPGRT_VERSION_NUMBER     0x012000
+#define GPG_ERROR_VERSION_NUMBER 0x012400
+#define GPGRT_VERSION_NUMBER     0x012400
 
 
 #ifdef __GNUC__
@@ -432,6 +432,8 @@ typedef enum
     GPG_ERR_ALREADY_FETCHED = 311,
     GPG_ERR_TRY_LATER = 312,
     GPG_ERR_WRONG_NAME = 313,
+    GPG_ERR_NO_AUTH = 314,
+    GPG_ERR_BAD_AUTH = 315,
     GPG_ERR_SYSTEM_BUG = 666,
     GPG_ERR_DNS_UNKNOWN = 711,
     GPG_ERR_DNS_SECTION = 712,
@@ -889,6 +891,12 @@ void gpgrt_get_syscall_clamp (void (**r_pre)(void), void (**r_post)(void));
 /* Register a custom malloc/realloc/free function.  */
 void gpgrt_set_alloc_func  (void *(*f)(void *a, size_t n));
 
+/* Register an emergency cleanup handler.  */
+void gpgrt_add_emergency_cleanup (void (*f)(void));
+
+/* Wrapper around abort to make sure emergency cleanups are run.  */
+void gpgrt_abort (void) GPGRT_ATTR_NORETURN;
+
 
 
 /*
@@ -1027,6 +1035,10 @@ int _gpg_w32_gettext_use_utf8 (int value);
 # define gettext_localename() _gpg_w32_gettext_localename ()
 # define gettext_use_utf8(a) _gpg_w32_gettext_use_utf8 (a)
 #endif /*GPG_ERR_ENABLE_GETTEXT_MACROS*/
+
+/* Force the use of the locale NAME or if NAME is NULL the one derived
+ * from LANGID.  This function must be used early and is not thread-safe. */
+void gpgrt_w32_override_locale (const char *name, unsigned short langid);
 
 
 /* A simple iconv implementation w/o the need for an extra DLL.  */
@@ -1301,6 +1313,11 @@ typedef struct _gpgrt_poll_s gpgrt_poll_t;
 typedef struct _gpgrt_poll_s es_poll_t;
 #endif
 
+/* The type of the string filter function as used by fprintf_sf et al.  */
+typedef char *(*gpgrt_string_filter_t) (const char *s, int n, void *opaque);
+
+
+
 gpgrt_stream_t gpgrt_fopen (const char *_GPGRT__RESTRICT path,
                             const char *_GPGRT__RESTRICT mode);
 gpgrt_stream_t gpgrt_mopen (void *_GPGRT__RESTRICT data,
@@ -1369,6 +1386,7 @@ int _gpgrt_pending_unlocked (gpgrt_stream_t stream); /* (private) */
 int gpgrt_fflush (gpgrt_stream_t stream);
 int gpgrt_fseek (gpgrt_stream_t stream, long int offset, int whence);
 int gpgrt_fseeko (gpgrt_stream_t stream, gpgrt_off_t offset, int whence);
+int gpgrt_ftruncate (gpgrt_stream_t stream, gpgrt_off_t length);
 long int gpgrt_ftell (gpgrt_stream_t stream);
 gpgrt_off_t gpgrt_ftello (gpgrt_stream_t stream);
 void gpgrt_rewind (gpgrt_stream_t stream);
@@ -1438,6 +1456,15 @@ int gpgrt_fprintf (gpgrt_stream_t _GPGRT__RESTRICT stream,
 int gpgrt_fprintf_unlocked (gpgrt_stream_t _GPGRT__RESTRICT stream,
                             const char *_GPGRT__RESTRICT format, ...)
                             GPGRT_ATTR_PRINTF(2,3);
+
+int gpgrt_fprintf_sf (gpgrt_stream_t _GPGRT__RESTRICT stream,
+                      gpgrt_string_filter_t sf, void *sfvalue,
+                      const char *_GPGRT__RESTRICT format,
+                      ...) GPGRT_ATTR_PRINTF(4,5);
+int gpgrt_fprintf_sf_unlocked (gpgrt_stream_t _GPGRT__RESTRICT stream,
+                               gpgrt_string_filter_t sf, void *sfvalue,
+                               const char *_GPGRT__RESTRICT format,
+                               ...) GPGRT_ATTR_PRINTF(4,5);
 
 int gpgrt_printf (const char *_GPGRT__RESTRICT format, ...)
                   GPGRT_ATTR_PRINTF(1,2);
@@ -1525,6 +1552,7 @@ int gpgrt_vsnprintf (char *buf,size_t bufsize,
 # define es_fflush            gpgrt_fflush
 # define es_fseek             gpgrt_fseek
 # define es_fseeko            gpgrt_fseeko
+# define es_ftruncate         gpgrt_ftruncate
 # define es_ftell             gpgrt_ftell
 # define es_ftello            gpgrt_ftello
 # define es_rewind            gpgrt_rewind
@@ -1927,6 +1955,15 @@ const char *gpgrt_strusage (int level);
 void gpgrt_set_strusage (const char *(*f)(int));
 void gpgrt_set_usage_outfnc (int (*f)(int, const char *));
 void gpgrt_set_fixed_string_mapper (const char *(*f)(const char*));
+
+
+/*
+ * Various helper functions
+ */
+
+/* Compare arbitrary version strings.  For the standard m.n.o version
+ * numbering scheme a LEVEL of 3 is suitable; see the manual.  */
+int gpgrt_cmp_version (const char *a, const char *b, int level);
 
 
 
