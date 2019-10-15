@@ -7602,7 +7602,7 @@
               <item>
                <widget class="QSpinBox" name="web_server_port">
                 <property name="toolTip">
-                 <string>A positive port value will enable the Spot-On Search Server (SOSS); an active kernel is also required. Please modify the current port or press the Enter key while keyboard focus in on the Web Server Port widget for new credentials. A port value of zero will deactivate the Spot-On Search Server (SOSS).</string>
+                 <string>A positive port value will enable the Spot-On Search Server (SOSS); an active kernel is also required. Please modify the current port or press the Enter key while keyboard focus is on the Web Server Port widget for new credentials. A port value of zero will deactivate the Spot-On Search Server (SOSS).</string>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
