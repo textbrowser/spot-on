@@ -495,6 +495,24 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		{
 		  description = spoton_misc::removeSpecialHtmlTags(description);
 
+	          if(description.length() > spoton_common::
+		     MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS)
+		    {
+		      description = description.mid
+			(0, spoton_common::
+			 MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS).trimmed();
+
+		      if(description.endsWith("..."))
+			{
+			}
+		      else if(description.endsWith(".."))
+			description.append(".");
+		      else if(description.endsWith("."))
+			description.append("..");
+		      else
+			description.append("...");
+		    }
+
 		  QString scheme(url.scheme().toLower().trimmed());
 
 		  url.setScheme(scheme);
