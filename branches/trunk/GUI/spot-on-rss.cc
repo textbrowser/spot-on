@@ -2415,8 +2415,7 @@ void spoton_rss::slotRefreshTimeline(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Populating").
-			  arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle(tr("%1: Populating").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.raise();
   progress.activateWindow();
