@@ -1761,6 +1761,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotGenerateNova(void)));
+  connect(m_ui.generate_institution_key_pair,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotGenerateInstitutionKeyPair(void)));
   connect(m_ui.hideOfflineParticipants,
 	  SIGNAL(toggled(bool)),
 	  this,

@@ -448,7 +448,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>422</width>
+                <width>746</width>
                 <height>502</height>
                </rect>
               </property>
@@ -2013,6 +2013,13 @@
                          </spacer>
                         </item>
                         <item>
+                         <widget class="QPushButton" name="generate_institution_key_pair">
+                          <property name="text">
+                           <string>Generate Key Pair</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
                          <widget class="QPushButton" name="addInstitution">
                           <property name="text">
                            <string>Add</string>
@@ -3225,8 +3232,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>740</width>
-             <height>262</height>
+             <width>776</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4380,8 +4387,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>431</height>
+             <width>776</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4457,7 +4464,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>679</width>
+                 <width>746</width>
                  <height>649</height>
                 </rect>
                </property>
@@ -6478,7 +6485,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>604</width>
+             <width>756</width>
              <height>716</height>
             </rect>
            </property>
@@ -7517,7 +7524,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>679</width>
+             <width>756</width>
              <height>549</height>
             </rect>
            </property>
@@ -8139,8 +8146,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>265</width>
-             <height>152</height>
+             <width>776</width>
+             <height>496</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8805,6 +8812,7 @@
   <tabstop>institutionNameType</tabstop>
   <tabstop>institutionPostalAddress</tabstop>
   <tabstop>institutionPostalAddressType</tabstop>
+  <tabstop>generate_institution_key_pair</tabstop>
   <tabstop>addInstitution</tabstop>
   <tabstop>scrollArea_7</tabstop>
   <tabstop>listenersActionMenu</tabstop>

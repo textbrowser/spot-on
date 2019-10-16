@@ -521,12 +521,11 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    title = spoton_misc::urlToEncoded(url);
 
 		  html.append("<p>");
-		  html.append(QString::number(count + offset + 1));
-		  html.append(" | <a href=\"");
+		  html.append("<a href=\"");
 		  html.append(spoton_misc::urlToEncoded(url));
-		  html.append("\">");
+		  html.append("\"><font color=\"#0000EE\">");
 		  html.append(title);
-		  html.append("</a>");
+		  html.append("</font></a>");
 		  html.append("<br>");
 		  html.append
 		    (QString("<font color=\"green\" size=2>%1</font>").
@@ -536,7 +535,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    {
 		      html.append("<br>");
 		      html.append
-			(QString("<font color=\"gray\" size=2>%1</font>").
+			(QString("<font color=\"#696969\" size=2>%1</font>").
 			 arg(description));
 		    }
 
@@ -593,10 +592,12 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  arg(pages).
 		  arg(search);
 		str.append
-		  (QString(" <a href=\"%1\">%2</a> ").arg(particles).arg(i));
+		  (QString(" <a href=\"%1\"><font color=\"#c0c0c0\">%2</font>"
+			   "</a> ").arg(particles).arg(i));
 	      }
 	    else
-	      str.append(QString(" | %1 | ").arg(i));
+	      str.append
+		(QString("<font color=\"#696969\"> | %1 | </font>").arg(i));
 
 	  if(count >= s_urlLimit)
 	    {

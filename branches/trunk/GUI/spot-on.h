@@ -839,6 +839,7 @@ class spoton: public QMainWindow
   void slotGeneralTimerTimeout(void);
   void slotGenerateEtpKeys(int index);
   void slotGenerateGeminiInChat(void);
+  void slotGenerateInstitutionKeyPair(void);
   void slotGenerateNova(void);
   void slotGenerateOneYearListenerCertificate(void);
   void slotGoldBugDialogActionSelected(void);

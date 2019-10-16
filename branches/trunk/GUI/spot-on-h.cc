@@ -556,6 +556,17 @@ void spoton::slotFindInSearchInitialize(void)
 #endif
 }
 
+void spoton::slotGenerateInstitutionKeyPair(void)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_ui.institutionName->setText(spoton_crypt::strongRandomBytes(32).toBase64());
+  m_ui.institutionPostalAddress->setText
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+     toBase64());
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotKeysIndexChanged(const QString &text)
 {
 #ifndef SPOTON_OPEN_LIBRARY_SUPPORTED

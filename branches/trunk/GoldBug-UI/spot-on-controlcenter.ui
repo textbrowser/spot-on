@@ -2112,6 +2112,35 @@ QPushButton:pressed {
                          </spacer>
                         </item>
                         <item>
+                         <widget class="QPushButton" name="generate_institution_key_pair">
+                          <property name="styleSheet">
+                           <string notr="true">QPushButton {
+ border: 2px solid gray;
+ background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
+ border-radius: 5px;
+ margin: 2px;
+ padding: 2px;
+ }
+
+
+
+QPushButton:hover { 
+background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
+background-position: top center; } 
+
+QPushButton:pressed {
+     background-color: darkgray;
+     border-style: inset;
+ }</string>
+                          </property>
+                          <property name="text">
+                           <string>Generate Key Pair</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
                          <widget class="QPushButton" name="addInstitution">
                           <property name="styleSheet">
                            <string notr="true">QPushButton {
@@ -2739,8 +2768,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>1884</height>
+             <width>515</width>
+             <height>1902</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -5033,7 +5062,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>611</width>
-             <height>454</height>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -9017,7 +9046,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
+             <width>463</width>
              <height>559</height>
             </rect>
            </property>
@@ -11031,6 +11060,7 @@ border-style: inset;
   <tabstop>institutionPostalAddressType</tabstop>
   <tabstop>addInstitutionCheckBox</tabstop>
   <tabstop>addInstitutionLineEdit</tabstop>
+  <tabstop>generate_institution_key_pair</tabstop>
   <tabstop>addInstitution</tabstop>
   <tabstop>emailName</tabstop>
   <tabstop>emailNameEditable</tabstop>

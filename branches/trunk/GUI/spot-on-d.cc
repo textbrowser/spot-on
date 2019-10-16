@@ -886,8 +886,7 @@ void spoton::slotAddInstitution(const QString &text)
 	if(ok)
 	  query.bindValue
 	    (1, crypt->
-	     encryptedThenHashed(postalAddressType.toLatin1(),
-				 &ok).toBase64());
+	     encryptedThenHashed(postalAddressType.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
