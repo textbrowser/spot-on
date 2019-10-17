@@ -5766,6 +5766,7 @@ void spoton::slotResetAll(void)
        << "friends_public_keys.db"
        << "idiotes.db"
        << "kernel.db"
+       << "kernel_web_server.db"
        << "listeners.db"
        << "neighbors.db"
        << "poptastic.db"

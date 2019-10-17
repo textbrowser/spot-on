@@ -446,6 +446,11 @@ int main(int argc, char *argv[])
 
   if(err == LIBSPOTON_ERROR_NONE)
     {
+      QThreadPool *threadPool = QThreadPool::globalInstance();
+
+      if(threadPool)
+	threadPool->setMaxThreadCount(std::numeric_limits<int>::max());
+
       s_kernel = new (std::nothrow) spoton_kernel();
 
       int rc = 0;

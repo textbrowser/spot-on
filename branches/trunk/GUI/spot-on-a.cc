@@ -298,6 +298,11 @@ int main(int argc, char *argv[])
     qDebug() << "Cannot set the main thread's priority because "
       "the main thread does not exist.";
 
+  QThreadPool *threadPool = QThreadPool::globalInstance();
+
+  if(threadPool)
+    threadPool->setMaxThreadCount(std::numeric_limits<int>::max());
+
 #ifdef Q_OS_MAC
 #if QT_VERSION >= 0x050000
   /*

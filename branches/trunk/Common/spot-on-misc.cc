@@ -4850,6 +4850,27 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS kernel_statistics ("
 		   "statistic TEXT PRIMARY KEY NOT NULL, "
 		   "value TEXT)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "kernel_web_server.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+#ifdef Q_PROCESSOR_ARM
+	query.exec("PRAGMA journal_mode = DELETE");
+#else
+	query.exec("PRAGMA journal_mode = DELETE");
+#endif
 	query.exec("CREATE TABLE IF NOT EXISTS kernel_web_server ("
 		   "certificate TEXT NOT NULL, "
 		   "private_key TEXT NOT NULL)");
@@ -6283,6 +6304,7 @@ void spoton_misc::vacuumAllDatabases(void)
        << "friends_public_keys.db"
        << "idiotes.db"
        << "kernel.db"
+       << "kernel_web_server.db"
        << "listeners.db"
        << "neighbors.db"
        << "poptastic.db"

@@ -800,8 +800,9 @@ void spoton_web_server::slotTimeout(void)
 	  {
 	    QSqlDatabase db = spoton_misc::database(connectionName);
 
-	    db.setDatabaseName
-	      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+	    db.setDatabaseName(spoton_misc::homePath() +
+			       QDir::separator() +
+			       "kernel_web_server.db");
 
 	    if(db.open())
 	      {
