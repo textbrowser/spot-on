@@ -824,6 +824,73 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  sb.status->setText(QObject::tr("Re-encoding kernel_web_server.db."));
+  sb.status->repaint();
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() +
+		       QDir::separator() +
+		       "kernel_web_server.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT certificate, "
+		      "private_key, "
+		      "OID "
+		      "FROM kernel_web_server"))
+	  while(query.next())
+	    {
+	      QByteArray data;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      updateQuery.prepare("UPDATE kernel_web_server "
+				  "SET certificate = ?, "
+				  "private_key = ? WHERE "
+				  "OID = ?");
+	      data = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 &ok);
+
+	      if(ok)
+		updateQuery.bindValue
+		  (0, newCrypt->encryptedThenHashed(data, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (1, newCrypt->keyedHash(data, &ok).toBase64());
+
+	      updateQuery.bindValue
+		(2, query.value(2));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  spoton_misc::logError
+		    ("Re-encoding kernel_web_server error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare
+		    ("DELETE FROM kernel_web_server WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(2));
+		  deleteQuery.exec();
+		}
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   sb.status->setText(QObject::tr("Re-encoding listeners.db."));
   sb.status->repaint();
 
