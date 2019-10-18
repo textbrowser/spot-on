@@ -200,6 +200,12 @@ int spoton_web_server::clientCount(void) const
 
 void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 {
+  if(!socket)
+    {
+      emit finished(socket, QByteArray());
+      return;
+    }
+
   QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
   if(list.size() != 5)
@@ -280,6 +286,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    (QString("SELECT title, "
 			     "url, "
 			     "description, "
+			     "url_hash, "
 			     "date_time_inserted "
 			     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 		else
@@ -287,11 +294,12 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    (QString("SELECT title, "
 			     "url, "
 			     "description, "
+			     "url_hash, "
 			     "date_time_inserted "
 			     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
 	      }
 
-	  querystr.append(" ORDER BY 4 DESC ");
+	  querystr.append(" ORDER BY 5 DESC ");
 	  querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
 	  querystr.append(QString(" OFFSET %1 ").arg(offset));
 	}
@@ -429,6 +437,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    (QString("SELECT title, "
 			     "url, "
 			     "description, "
+			     "url_hash, "
 			     "date_time_inserted "
 			     "FROM spot_on_urls_%1 WHERE url_hash IN (%2) ").
 		     arg(it.key()).arg(it.value()));
@@ -437,7 +446,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		    querystr.append(" UNION ");
 		}
 
-	      querystr.append(" ORDER BY 4 DESC ");
+	      querystr.append(" ORDER BY 5 DESC ");
 	      querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
 	      querystr.append(QString(" OFFSET %1 ").arg(offset));
 	    }
@@ -466,6 +475,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	      QByteArray bytes;
 	      QString description("");
 	      QString title("");
+	      QString urlHash(query.value(3).toByteArray());
 	      QUrl url;
 	      bool ok = true;
 
@@ -525,6 +535,15 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  html.append(spoton_misc::urlToEncoded(url));
 		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
 		  html.append(title);
+		  html.append("</font></a> | ");
+		  html.append("<a href=\"https://");
+		  html.append(socket->localAddress().toString());
+		  html.append(":");
+		  html.append(QString::number(socket->localPort()));
+		  html.append("/local-");
+		  html.append(urlHash);
+		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
+		  html.append("View Locally");
 		  html.append("</font></a>");
 		  html.append("<br>");
 		  html.append
@@ -624,6 +643,63 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	  html.append("<center>");
 	  html.append(str);
 	  html.append("</center></div></html>");
+	}
+    }
+
+  db.close();
+  db = QSqlDatabase();
+  QSqlDatabase::removeDatabase(connectionName);
+  emit finished(socket, html.toUtf8());
+}
+
+void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
+{
+  QScopedPointer<spoton_crypt> crypt
+    (spoton_misc::
+     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
+
+  if(!crypt)
+    {
+      emit finished(socket, QByteArray());
+      return;
+    }
+
+  QSqlDatabase db(database());
+  QString connectionName(db.connectionName());
+  QString html("");
+
+  if(db.isOpen())
+    {
+      QSqlQuery query(db);
+      QString querystr("");
+
+      querystr.append("SELECT content FROM spot_on_urls_");
+      querystr.append(data.mid(0, 2).constData());
+      querystr.append(" WHERE url_hash = ?");
+      query.setForwardOnly(true);
+      query.prepare(querystr);
+      query.addBindValue(data.constData());
+
+      if(query.exec() && query.next())
+	{
+	  QByteArray content;
+	  bool ok = true;
+
+	  content = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	  if(ok)
+	    {
+	      content = qUncompress(content);
+
+	      if(!content.isEmpty())
+		{
+		  html.append
+		    ("HTTP/1.1 200 OK\r\n"
+		     "Content-Type: text/html; charset=utf-8\r\n\r\n");
+		  html.append(content);
+		}
+	    }
 	}
     }
 
@@ -752,6 +828,14 @@ void spoton_web_server::slotReadyRead(void)
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
     }
+  else if(data.endsWith("\r\n\r\n") &&
+	  data.simplified().trimmed().startsWith("get /local-"))
+    {
+      data = data.simplified().trimmed().mid(11); // get /local-x <- x
+      data = data.mid(0, data.indexOf(' '));
+      m_futures[socket->socketDescriptor()] =
+	QtConcurrent::run(this, &spoton_web_server::processLocal, socket, data);
+    }
   else if(data.simplified().startsWith("post / http/1.1") ||
 	  data.simplified().startsWith("post /current="))
     {
@@ -760,6 +844,8 @@ void spoton_web_server::slotReadyRead(void)
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
     }
+  else if(m_futures.value(socket->socketDescriptor()).isFinished())
+    socket->close();
 
   if(m_webSocketData.value(socket->socketDescriptor()).size() >
      spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)

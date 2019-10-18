@@ -102,6 +102,7 @@ class spoton_web_server: public spoton_web_server_tcp_server
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
   void process(QSslSocket *socket, const QByteArray &data);
+  void processLocal(QSslSocket *socket, const QByteArray &data);
 
  private slots:
   void slotClientConnected(void);
