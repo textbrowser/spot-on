@@ -523,7 +523,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  html.append("<p>");
 		  html.append("<a href=\"");
 		  html.append(spoton_misc::urlToEncoded(url));
-		  html.append("\"><font color=\"#0000EE\">");
+		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
 		  html.append(title);
 		  html.append("</font></a>");
 		  html.append("<br>");
