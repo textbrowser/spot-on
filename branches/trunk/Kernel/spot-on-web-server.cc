@@ -198,14 +198,10 @@ int spoton_web_server::clientCount(void) const
   return m_webSocketData.size();
 }
 
-void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
+void spoton_web_server::process(QSslSocket *socket,
+				const QByteArray &data,
+				const QPair<QString, QString> &address)
 {
-  if(!socket)
-    {
-      emit finished(socket, QByteArray());
-      return;
-    }
-
   QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
   if(list.size() != 5)
@@ -537,9 +533,9 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		  html.append(title);
 		  html.append("</font></a> | ");
 		  html.append("<a href=\"https://");
-		  html.append(socket->localAddress().toString());
+		  html.append(address.first);
 		  html.append(":");
-		  html.append(QString::number(socket->localPort()));
+		  html.append(address.second);
 		  html.append("/local-");
 		  html.append(urlHash);
 		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
@@ -616,14 +612,14 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 	      }
 	    else
 	      str.append
-		(QString("<font color=\"#696969\"> | %1 | </font>").arg(i));
+		(QString(" <font color=\"#696969\">| %1 |</font> ").arg(i));
 
 	  if(count >= s_urlLimit)
 	    {
 	      particles = QString
 		("current=%1&link=>&offset=%2&pages=%3&search=%4").
 		arg(current).arg(current * s_urlLimit).arg(pages).arg(search);
-	      str.append(QString(" <a href=\"%1\">Next</a> ").arg(particles));
+	      str.append(QString(" <a href=\"%1\">></a> ").arg(particles));
 	    }
 
 	  if(current != 1)
@@ -636,7 +632,7 @@ void spoton_web_server::process(QSslSocket *socket, const QByteArray &data)
 		arg(pages).
 		arg(search);
 	      str.prepend
-		(QString(" <a href=\"%1\">Previous</a> ").arg(particles));
+		(QString(" <a href=\"%1\"><</a> ").arg(particles));
 	    }
 
 	  str = str.trimmed();
@@ -825,8 +821,16 @@ void spoton_web_server::slotReadyRead(void)
     {
       data = data.simplified().trimmed().mid(5); // get /c <- c
       data = data.mid(0, data.indexOf(' '));
+
+      QPair<QString, QString> address (socket->localAddress().toString(),
+				       QString::number(socket->localPort()));
+
       m_futures[socket->socketDescriptor()] =
-	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
+	QtConcurrent::run(this,
+			  &spoton_web_server::process,
+			  socket,
+			  data,
+			  address);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
@@ -841,8 +845,16 @@ void spoton_web_server::slotReadyRead(void)
     {
       data = data.simplified().trimmed();
       data = data.mid(data.lastIndexOf("current="));
+
+      QPair<QString, QString> address (socket->localAddress().toString(),
+				       QString::number(socket->localPort()));
+
       m_futures[socket->socketDescriptor()] =
-	QtConcurrent::run(this, &spoton_web_server::process, socket, data);
+	QtConcurrent::run(this,
+			  &spoton_web_server::process,
+			  socket,
+			  data,
+			  address);
     }
   else if(m_futures.value(socket->socketDescriptor()).isFinished())
     socket->close();
