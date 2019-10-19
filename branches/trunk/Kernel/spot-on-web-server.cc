@@ -660,9 +660,9 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
       return;
     }
 
+  QByteArray html;
   QSqlDatabase db(database());
   QString connectionName(db.connectionName());
-  QString html("");
 
   if(db.isOpen())
     {
@@ -702,7 +702,7 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  emit finished(socket, html.toUtf8());
+  emit finished(socket, html);
 }
 
 void spoton_web_server::slotClientConnected(void)
