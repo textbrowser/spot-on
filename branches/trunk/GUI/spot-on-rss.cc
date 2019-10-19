@@ -242,14 +242,16 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 		  this,
 		  SLOT(slotPopulateFeeds(void)));
   menu->addSeparator();
-  menu->addAction(tr("&Schedule Selected RSS Feed For Update"),
-		  this, SLOT(slotScheduleFeedUpdate(void)));
+  m_scheduleAction = menu->addAction
+    (tr("&Schedule Selected RSS Feed For Update"),
+     this, SLOT(slotScheduleFeedUpdate(void)));
+  m_scheduleAction->setEnabled(m_ui.activate->isChecked());
   menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.action_menu->setMenu(menu);
   connect(m_ui.action_menu,
 	  SIGNAL(clicked(void)),
-	  m_ui.action_menu,
-	  SLOT(showMenu(void)));
+	  this,
+	  SLOT(slotShowMenu(void)));
   setWindowTitle(tr("%1: RSS").arg(SPOTON_APPLICATION_NAME));
 
   QSettings settings;
@@ -2859,22 +2861,12 @@ void spoton_rss::slotScheduleFeedUpdate(void)
 {
   m_currentFeedRow = m_ui.feeds->currentRow() - 1;
 
-  if(!m_ui.activate->isChecked())
-    QTimer::singleShot(100, this, SLOT(slotDownloadTimeout(void)));
-
   QTableWidgetItem *item = m_ui.feeds->item(m_currentFeedRow + 1, 0);
 
   if(item)
-    {
-      if(m_ui.activate->isChecked())
-	emit logError
-	  (QString("The feed <a href=\"%1\">%1</a> has been scheduled "
-		   "for an update.").arg(item->text()));
-      else
-	emit logError(QString("The feed <a href=\"%1\">%1</a> has been "
-			      "scheduled for an immediate update.").
-		      arg(item->text()));
-    }
+    emit logError
+      (QString("The feed <a href=\"%1\">%1</a> has been scheduled "
+	       "for an update.").arg(item->text()));
 }
 
 void spoton_rss::slotShowContextMenu(const QPoint &point)
@@ -2893,8 +2885,17 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 		 this, SLOT(slotPopulateFeeds(void)));
   menu.addSeparator();
   menu.addAction(tr("&Schedule Selected Feed For Update"),
-		 this, SLOT(slotScheduleFeedUpdate(void)));
+		 this, SLOT(slotScheduleFeedUpdate(void)))->setEnabled
+    (m_ui.activate->isChecked());
   menu.exec(m_ui.feeds->mapToGlobal(point));
+}
+
+void spoton_rss::slotShowMenu(void)
+{
+  if(m_scheduleAction)
+    m_scheduleAction->setEnabled(m_ui.activate->isChecked());
+
+  m_ui.action_menu->showMenu();
 }
 
 void spoton_rss::slotStatisticsTimeout(void)

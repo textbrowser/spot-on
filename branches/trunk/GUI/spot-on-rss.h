@@ -32,6 +32,7 @@
 #include <QFuture>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QPointer>
 #include <QTimer>
 
 #include "ui_spot-on-rss.h"
@@ -58,6 +59,7 @@ class spoton_rss: public QMainWindow
   QFuture<void> m_parseXmlFuture;
   QNetworkAccessManager m_networkAccessManager;
   QPalette m_originalFindPalette;
+  QPointer<QAction> m_scheduleAction;
   QString removeSpecialTags(const QString &text);
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
@@ -65,8 +67,8 @@ class spoton_rss: public QMainWindow
   QTimer m_statisticsTimer;
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;
-  bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton *m_parent;
+  bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void hideUrl(const QUrl &url, const bool state);
@@ -114,6 +116,7 @@ class spoton_rss: public QMainWindow
   void slotSaveProxy(void);
   void slotScheduleFeedUpdate(void);
   void slotShowContextMenu(const QPoint &point);
+  void slotShowMenu(void);
   void slotStatisticsTimeout(void);
   void slotTabChanged(int index);
   void slotTimeOrderBy(bool state);
