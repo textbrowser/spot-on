@@ -39,7 +39,8 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -mtune=native -pedantic -pie -std=c++11 -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
-                          -Wextra -Wno-expansion-to-defined \
+                          -Wextra -Wno-deprecated-copy \
+                          -Wno-expansion-to-defined \
                           -Wno-unused \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
