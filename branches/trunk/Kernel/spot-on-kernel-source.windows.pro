@@ -9,7 +9,8 @@ HEADERS		= ..\\Common\\spot-on-external-address.h \
 		  spot-on-sctp-socket.h \
 		  spot-on-starbeam-reader.h \
 		  spot-on-starbeam-writer.h \
-		  spot-on-urldistribution.h
+		  spot-on-urldistribution.h \
+                  spot-on-web-server.h
 
 RESOURCES	= ..\\HTML\\html.qrc
 
@@ -37,4 +38,5 @@ SOURCES		= ..\\Common\\spot-on-crypt.cc \
 		  spot-on-sctp-socket.cc \
 		  spot-on-starbeam-reader.cc \
 		  spot-on-starbeam-writer.cc \
-		  spot-on-urldistribution.cc
+		  spot-on-urldistribution.cc \
+                  spot-on-web-server.cc
