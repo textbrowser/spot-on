@@ -62,7 +62,9 @@ extern "C"
 #include <QDir>
 #include <QFile>
 #include <QLocale>
+#ifndef Q_OS_WIN
 #include <QNetworkInterface>
+#endif
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QSqlDatabase>
