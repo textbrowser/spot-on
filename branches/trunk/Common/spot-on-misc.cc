@@ -52,6 +52,7 @@ extern "C"
 extern "C"
 {
 #include <winsock2.h>
+#include <QtNetwork>
 }
 #endif
 
