@@ -52,7 +52,6 @@ extern "C"
 extern "C"
 {
 #include <winsock2.h>
-#include <qt_windows.h>
 }
 #endif
 
@@ -61,7 +60,12 @@ extern "C"
 #include <QDir>
 #include <QFile>
 #include <QLocale>
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#include <QtNetwork>
+#else
 #include <QNetworkInterface>
+#endif
 #include <QNetworkProxy>
 #include <QSettings>
 #include <QSqlDatabase>
