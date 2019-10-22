@@ -808,7 +808,7 @@ void spoton_web_server::slotReadyRead(void)
   QByteArray data(m_webSocketData.value(socket->socketDescriptor()).toLower());
 
   if(data.endsWith("\r\n\r\n") &&
-     data.simplified().trimmed().startsWith("get / http/1.1"))
+     data.simplified().trimmed().startsWith("get / http/1."))
     {
       socket->write
 	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
@@ -840,7 +840,7 @@ void spoton_web_server::slotReadyRead(void)
       m_futures[socket->socketDescriptor()] =
 	QtConcurrent::run(this, &spoton_web_server::processLocal, socket, data);
     }
-  else if(data.simplified().startsWith("post / http/1.1") ||
+  else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
       data = data.simplified().trimmed();
