@@ -106,6 +106,14 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 		    (QSsl::SslOptionDisableEmptyFragments, true);
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+#if QT_VERSION >= 0x050501
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionPersistence, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionSharing, true);
+#endif
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionTickets, true);
 #endif
 #if QT_VERSION >= 0x050501
 		  spoton_crypt::setSslCiphers

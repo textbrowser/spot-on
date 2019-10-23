@@ -1802,12 +1802,19 @@ void spoton::initializeKernelSocket(void)
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableCompression, true);
+	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableEmptyFragments, true);
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+#if QT_VERSION >= 0x050501
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionPersistence, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionSharing, true);
+#endif
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionTickets, true);
 #endif
 #if QT_VERSION >= 0x050501
 	  spoton_crypt::setSslCiphers
