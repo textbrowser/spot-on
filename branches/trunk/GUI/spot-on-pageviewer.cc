@@ -114,7 +114,8 @@ spoton_pageviewer::~spoton_pageviewer()
 #endif
 }
 
-void spoton_pageviewer::setPage(const QByteArray &data, const QUrl &url,
+void spoton_pageviewer::setPage(const QByteArray &data,
+				const QUrl &url,
 				const int compressedSize)
 {
   disconnect(m_ui.revision,
