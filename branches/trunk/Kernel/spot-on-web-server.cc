@@ -71,9 +71,9 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #if QT_VERSION >= 0x040806
 	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption
-		 (QSsl::SslOptionDisableEmptyFragments, true);
+	    (QSsl::SslOptionDisableEmptyFragments, true);
 	  configuration.setSslOption
-		 (QSsl::SslOptionDisableLegacyRenegotiation, true);
+	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
 #endif
 #if QT_VERSION >= 0x050501
 	  spoton_crypt::setSslCiphers
