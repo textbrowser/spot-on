@@ -559,7 +559,7 @@ void spoton_web_server::process(QSslSocket *socket,
 		}
 	    }
 
-	  if(link == "%3e")
+	  if(link == "n")
 	    {
 	      current += 1;
 	      offset += s_urlLimit;
@@ -571,7 +571,7 @@ void spoton_web_server::process(QSslSocket *socket,
 	    }
 
 	  if(count > 0)
-	    if(link == "%3e")
+	    if(link == "n")
 	      if(offset / s_urlLimit > pages)
 		pages += 1;
 
@@ -617,7 +617,7 @@ void spoton_web_server::process(QSslSocket *socket,
 	  if(count >= s_urlLimit)
 	    {
 	      particles = QString
-		("current=%1&link=>&offset=%2&pages=%3&search=%4").
+		("current=%1&link=n&offset=%2&pages=%3&search=%4").
 		arg(current).arg(current * s_urlLimit).arg(pages).arg(search);
 	      str.append(QString(" <a href=\"%1\">></a> ").arg(particles));
 	    }
@@ -806,6 +806,8 @@ void spoton_web_server::slotReadyRead(void)
     m_webSocketData[socket->socketDescriptor()].append(socket->readAll());
 
   QByteArray data(m_webSocketData.value(socket->socketDescriptor()).toLower());
+
+  qDebug() << data;
 
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1."))
