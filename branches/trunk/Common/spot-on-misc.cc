@@ -515,7 +515,7 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 	}
     }
 
-  return QHostAddress();
+  return QHostAddress(QHostAddress::LocalHost);
 }
 
 QHostAddress spoton_misc::peerAddressAndPort(

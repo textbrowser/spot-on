@@ -1162,6 +1162,24 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
   settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
 
+void spoton::slotWebServerInformationTimeout(void)
+{
+  if(m_ui.web_server_port->value() == 0)
+    {
+      m_ui.web_server_information_label->clear();
+      m_ui.web_server_information_label->setVisible(false);
+    }
+  else
+    {
+      m_ui.web_server_information_label->setText
+	(tr("The Spot-On Search Engine may be accessed via "
+	    "<a href=\"https://%1:%2\">https://%1:%2</a>.").
+	 arg(spoton_misc::localAddressIPv4().toString()).
+	 arg(m_ui.web_server_port->value()));
+      m_ui.web_server_information_label->setVisible(true);
+    }
+}
+
 void spoton::slotWebServerPortChanged(int value)
 {
   Q_UNUSED(value);

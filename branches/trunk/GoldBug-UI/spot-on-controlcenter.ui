@@ -9047,7 +9047,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>584</width>
-             <height>579</height>
+             <height>791</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9158,6 +9158,25 @@ color: rgb(255, 255, 255);
                <widget class="QPushButton" name="postgresql_credentials">
                 <property name="text">
                  <string>&amp;PostgreSQL Credentials</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="web_server_information_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Web Server Information Label</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="openExternalLinks">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>

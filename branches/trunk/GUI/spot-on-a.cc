@@ -1022,6 +1022,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotUpdateChatWindows(void)));
+  connect(&m_webServerInformationTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotWebServerInformationTimeout(void)));
 
   /*
   ** Connect m_notificationsUi's items.
@@ -2262,6 +2266,7 @@ spoton::spoton(void):QMainWindow()
   m_generalTimer.start(1500);
   m_chatInactivityTimer.start(120000);
   m_updateChatWindowsTimer.start(3500);
+  m_webServerInformationTimer.start(10000);
   m_ui.ipv4Listener->setChecked(true);
   m_ui.listenerIP->setInputMask("");
   m_ui.addInstitutionLineEdit->setEnabled(false);
@@ -3542,6 +3547,7 @@ void spoton::cleanup(void)
   m_starbeamUpdateTimer.stop();
   m_tableTimer.stop();
   m_updateChatWindowsTimer.stop();
+  m_webServerInformationTimer.stop();
 
   /*
   ** Abort threads.

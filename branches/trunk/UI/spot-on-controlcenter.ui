@@ -448,7 +448,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>436</width>
+                <width>746</width>
                 <height>504</height>
                </rect>
               </property>
@@ -2071,8 +2071,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>717</width>
-             <height>452</height>
+             <width>776</width>
+             <height>493</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2750,7 +2750,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>281</width>
+                     <width>271</width>
                      <height>1510</height>
                     </rect>
                    </property>
@@ -3232,8 +3232,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>757</width>
-             <height>263</height>
+             <width>776</width>
+             <height>493</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -6485,7 +6485,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>636</width>
+             <width>756</width>
              <height>727</height>
             </rect>
            </property>
@@ -7525,7 +7525,7 @@
              <x>0</x>
              <y>0</y>
              <width>756</width>
-             <height>570</height>
+             <height>763</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -7629,6 +7629,25 @@
                <widget class="QPushButton" name="postgresql_credentials">
                 <property name="text">
                  <string>&amp;PostgreSQL Credentials</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="web_server_information_label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>Web Server Information Label</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+                <property name="openExternalLinks">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -8153,8 +8172,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>292</width>
-             <height>166</height>
+             <width>776</width>
+             <height>493</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
