@@ -200,6 +200,7 @@ Completed Items
        length of the key must be 32 bytes or less.)
 143.   Python Web interface for the Search machine. Simple Web server.
 144.   Retrieve SOSS results from Spot-On.
+145.   Web server credentials may differ from PQ Search credentials.
 
 Ignored Items
 
@@ -248,7 +249,6 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     Own NTRU implementation.
-9.     Web server credentials may differ from PQ Search credentials.
-10.    Compare random credentials with previously-established credentials.
+9.     Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
-11.    Remove obsolete includes.
+10.    Remove obsolete includes.

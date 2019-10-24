@@ -41,6 +41,7 @@
 #endif
 #include "spot-on-utilities.h"
 #include "spot-on.h"
+#include "ui_spot-on-postgresql-connect.h"
 #include "ui_spot-on-socket-options.h"
 
 QMap<QString, QByteArray> spoton::SMPWindowStreams
@@ -712,6 +713,126 @@ void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
 
 void spoton::slotPostgreSQLWebServerCredentials(void)
 {
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+  QByteArray password;
+  QDialog dialog(this);
+  QSettings settings;
+  Ui_spoton_postgresqlconnect ui;
+  bool ok = true;
+
+  password = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_web_password", "").
+			    toByteArray()), &ok);
+  ui.setupUi(&dialog);
+  dialog.setWindowTitle
+    (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
+  ui.connection_options->setEnabled(false);
+  ui.connection_options->setText
+    (settings.
+     value("gui/postgresql_connection_options", "").toString().trimmed());
+  ui.database->setEnabled(false);
+  ui.database->setText
+    (settings.value("gui/postgresql_database", "").toString().trimmed());
+  ui.database->selectAll();
+  ui.database->setFocus();
+  ui.host->setEnabled(false);
+  ui.host->setText
+    (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  ui.name->setText
+    (settings.value("gui/postgresql_web_name", "").toString().trimmed());
+
+  if(ok)
+    ui.password->setText(password);
+
+  ui.port->setEnabled(false);
+  ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
+  ui.ssltls->setChecked
+    (settings.value("gui/postgresql_ssltls", false).toBool());
+  ui.ssltls->setEnabled(false);
+
+  do
+    {
+      if(dialog.exec() == QDialog::Accepted)
+	{
+	  QApplication::processEvents();
+	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+	  if(QSqlDatabase::contains("URLDatabaseWeb"))
+	    QSqlDatabase::removeDatabase("URLDatabaseWeb");
+
+	  QSqlDatabase db = QSqlDatabase::addDatabase
+	    ("QPSQL", "URLDatabaseWeb");
+
+	  QString str("connect_timeout=10");
+
+	  if(!ui.connection_options->text().trimmed().isEmpty())
+	    str.append(";").append(ui.connection_options->text().trimmed());
+
+	  if(ui.ssltls->isChecked())
+	    str.append(";requiressl=1");
+
+	  db.setConnectOptions(str);
+	  db.setHostName(ui.host->text());
+	  db.setDatabaseName(ui.database->text());
+	  db.setPort(ui.port->value());
+	  db.open(ui.name->text(), ui.password->text());
+	  QApplication::restoreOverrideCursor();
+
+	  if(!db.isOpen())
+	    {
+	      QString str(db.lastError().text().trimmed());
+
+	      db = QSqlDatabase();
+
+	      if(QSqlDatabase::contains("URLDatabaseWeb"))
+		QSqlDatabase::removeDatabase("URLDatabaseWeb");
+
+	      QMessageBox::critical
+		(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+		 tr("Could not open (%1) a database connection.").arg(str));
+	      QApplication::processEvents();
+	    }
+	  else
+	    {
+	      db.close();
+	      db = QSqlDatabase();
+
+	      if(QSqlDatabase::contains("URLDatabaseWeb"))
+		QSqlDatabase::removeDatabase("URLDatabaseWeb");
+
+	      settings.setValue("gui/postgresql_web_name", ui.name->text());
+
+	      bool ok = true;
+
+	      settings.setValue
+		("gui/postgresql_web_password",
+		 crypt->encryptedThenHashed(ui.password->text().toUtf8(),
+					    &ok).toBase64());
+
+	      if(!ok)
+		settings.remove("gui/postgresql_web_password");
+
+	      break;
+	    }
+	}
+      else
+	{
+	  QApplication::processEvents();
+	  break;
+	}
+    }
+  while(true);
 }
 
 void spoton::slotPrepareContextMenuMirrors(void)

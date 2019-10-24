@@ -179,7 +179,7 @@ QSqlDatabase spoton_web_server::database(void) const
 	(spoton_kernel::setting("gui/postgresql_host", "localhost").
 	 toString().trimmed());
       QString name
-	(spoton_kernel::setting("gui/postgresql_name", "").toString().
+	(spoton_kernel::setting("gui/postgresql_web_name", "").toString().
 	 trimmed());
       QString str("connect_timeout=10");
       bool ok = true;
@@ -191,7 +191,7 @@ QSqlDatabase spoton_web_server::database(void) const
       if(crypt)
 	password = crypt->decryptedAfterAuthenticated
 	  (QByteArray::
-	   fromBase64(spoton_kernel::setting("gui/postgresql_password", "").
+	   fromBase64(spoton_kernel::setting("gui/postgresql_web_password", "").
 		      toByteArray()), &ok);
 
       if(ssltls)

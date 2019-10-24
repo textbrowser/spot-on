@@ -2768,7 +2768,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>558</width>
+             <width>584</width>
              <height>1975</height>
             </rect>
            </property>
@@ -5062,7 +5062,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>614</width>
-             <height>393</height>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6313,7 +6313,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>912</width>
+             <width>882</width>
              <height>1349</height>
             </rect>
            </property>
@@ -7786,8 +7786,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>493</width>
-             <height>1091</height>
+             <width>584</width>
+             <height>1053</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9151,6 +9151,13 @@ color: rgb(255, 255, 255);
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="postgresql_credentials">
+                <property name="text">
+                 <string>&amp;PostgreSQL Credentials</string>
                 </property>
                </widget>
               </item>
@@ -11259,6 +11266,7 @@ border-style: inset;
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlActionMenu</tabstop>
   <tabstop>urlName</tabstop>
   <tabstop>saveUrlName</tabstop>

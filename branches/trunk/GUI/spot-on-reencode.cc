@@ -2757,4 +2757,16 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
   if(!ok)
     settings.remove("gui/postgresql_password");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_web_password", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/postgresql_web_password",
+       newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/postgresql_web_password");
 }
