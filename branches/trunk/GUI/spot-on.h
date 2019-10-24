@@ -930,6 +930,7 @@ class spoton: public QMainWindow
   void slotPostgreSQLConnect(void);
   void slotPostgreSQLDisconnect(int index);
   void slotPostgreSQLKernelUrlDistributionTimeout(int value);
+  void slotPostgreSQLWebServerCredentials(void);
   void slotPrepareAndShowInstallationWizard(void);
   void slotPrepareContextMenuMirrors(void);
   void slotPrepareSMP(const QString &hash);

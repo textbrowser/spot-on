@@ -1754,10 +1754,14 @@ void spoton::slotPostgreSQLDisconnect(int index)
     QSqlDatabase::removeDatabase("URLDatabase");
 
   if(index == 0)
-    m_ui.postgresqlConnect->setVisible(true);
+    {
+      m_ui.postgresqlConnect->setVisible(true);
+      m_ui.postgresql_credentials->setVisible(true);
+    }
   else
     {
       m_ui.postgresqlConnect->setVisible(false);
+      m_ui.postgresql_credentials->setVisible(false);
       m_urlDatabase = QSqlDatabase::addDatabase("QSQLITE", "URLDatabase");
       m_urlDatabase.setDatabaseName
 	(spoton_misc::homePath() + QDir::separator() + "urls.db");

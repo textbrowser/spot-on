@@ -710,6 +710,10 @@ void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
   settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
 }
 
+void spoton::slotPostgreSQLWebServerCredentials(void)
+{
+}
+
 void spoton::slotPrepareContextMenuMirrors(void)
 {
   prepareContextMenuMirrors();

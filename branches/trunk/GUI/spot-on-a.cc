@@ -662,11 +662,14 @@ spoton::spoton(void):QMainWindow()
   m_ui.goldbug->setEnabled(false);
   m_ui.postgresqlConnect->setEnabled(false);
   m_ui.postgresqlConnect->setVisible(false);
+  m_ui.postgresql_credentials->setEnabled(false);
+  m_ui.postgresql_credentials->setVisible(false);
 
   foreach(const QString &driver, QSqlDatabase::drivers())
     if(driver.toLower().contains("qpsql"))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
+	m_ui.postgresql_credentials->setEnabled(true);
 	m_ui.urls_db_type->model()->setData
 	  (m_ui.urls_db_type->model()->index(0, 0), QVariant(1 | 32),
 	   Qt::UserRole - 1);
@@ -1986,6 +1989,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPostgreSQLConnect(void)));
+  connect(m_ui.postgresql_credentials,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPostgreSQLWebServerCredentials(void)));
   connect(m_ui.postofficeCheckBox,
 	  SIGNAL(toggled(bool)),
 	  this,

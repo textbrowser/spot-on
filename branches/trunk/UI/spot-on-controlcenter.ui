@@ -448,7 +448,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>746</width>
+                <width>436</width>
                 <height>504</height>
                </rect>
               </property>
@@ -2071,8 +2071,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>717</width>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2750,7 +2750,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>271</width>
+                     <width>281</width>
                      <height>1510</height>
                     </rect>
                    </property>
@@ -3232,8 +3232,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>757</width>
+             <height>263</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -6485,7 +6485,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>756</width>
+             <width>636</width>
              <height>727</height>
             </rect>
            </property>
@@ -7626,6 +7626,13 @@
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="postgresql_credentials">
+                <property name="text">
+                 <string>&amp;PostgreSQL Credentials</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -8146,8 +8153,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>292</width>
+             <height>166</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -8994,6 +9001,7 @@
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlName</tabstop>
   <tabstop>saveUrlName</tabstop>
   <tabstop>urlActionMenu</tabstop>
