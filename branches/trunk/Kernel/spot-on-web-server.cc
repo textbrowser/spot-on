@@ -903,8 +903,22 @@ void spoton_web_server::slotTimeout(void)
       foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
 	socket->deleteLater();
 
+      m_certificate.clear();
+      m_privateKey.clear();
       return;
     }
+
+  if(isListening())
+    if(port != serverPort())
+      {
+	close();
+
+	foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+	  socket->deleteLater();
+
+	m_certificate.clear();
+	m_privateKey.clear();
+      }
 
   if(m_certificate.isEmpty() || m_privateKey.isEmpty())
     {
@@ -948,18 +962,6 @@ void spoton_web_server::slotTimeout(void)
 	  QSqlDatabase::removeDatabase(connectionName);
 	}
     }
-
-  if(isListening())
-    if(port != serverPort())
-      {
-	close();
-
-	foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-	  socket->deleteLater();
-
-	m_certificate.clear();
-	m_privateKey.clear();
-      }
 
   if(!isListening())
     if(!listen(spoton_misc::localAddressIPv4(), port))
