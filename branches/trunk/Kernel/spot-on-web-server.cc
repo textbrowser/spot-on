@@ -37,7 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static quint64 s_urlLimit = 25;
+static quint64 s_urlLimit = 10;
 
 #if QT_VERSION < 0x050000
 void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
