@@ -378,7 +378,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
 	      QLocale locale;
 	      QString scheme(url.scheme().toLower().trimmed());
-	      QUrl deleteUrl(url);
+	      QUrl deleteUrl(hash);
 	      QUrl exportUrl(hash);
 	      QUrl shareUrl(hash);
 	      QUrl viewUrl(hash);
@@ -408,15 +408,13 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      if(title.isEmpty())
 		title = spoton_misc::urlToEncoded(url);
 
-	      deleteUrl.setScheme(QString("delete-%1").arg(url.scheme()));
-	      exportUrl.setPath(hash + "%3" +
-				spoton_misc::urlToEncoded(url));
+	      deleteUrl.setPath(hash + "/" + spoton_misc::urlToEncoded(url));
+	      deleteUrl.setScheme("delete-");
+	      exportUrl.setPath(hash + "%3" + spoton_misc::urlToEncoded(url));
 	      exportUrl.setScheme(QString("export-%1").arg(url.scheme()));
-	      shareUrl.setPath(hash + "%3" +
-			       spoton_misc::urlToEncoded(url));
+	      shareUrl.setPath(hash + "%3" + spoton_misc::urlToEncoded(url));
 	      shareUrl.setScheme(QString("share-%1").arg(url.scheme()));
-	      viewUrl.setPath(hash + "%3" +
-			      spoton_misc::urlToEncoded(url));
+	      viewUrl.setPath(hash + "%3" + spoton_misc::urlToEncoded(url));
 	      viewUrl.setScheme(QString("view-%1").arg(url.scheme()));
 	      html.append(QString::number(count + m_urlOffset + 1));
 	      html.append(" | <a href=\"");

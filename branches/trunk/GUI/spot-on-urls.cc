@@ -1912,7 +1912,16 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
   if(scheme.startsWith("delete-"))
     {
-      if(!m_urlDatabase.isOpen())
+      if(!m_urlCommonCrypt)
+	{
+	  QMessageBox::critical
+	    (this, tr("%1: Error").
+	     arg(SPOTON_APPLICATION_NAME),
+	     tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
+	  QApplication::processEvents();
+	  return;
+	}
+      else if(!m_urlDatabase.isOpen())
 	{
 	  QMessageBox::critical
 	    (this,
@@ -1922,11 +1931,10 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  return;
 	}
 
-      scheme.remove("delete-");
-      url.setScheme(scheme);
-
       QMessageBox mb(this);
       QString str(spoton_misc::urlToEncoded(url));
+
+      str = str.mid(str.indexOf("/") + 1);
 
       if(str.length() > 64)
 	str = str.mid(0, 24) + "..." + str.right(24);
@@ -2278,44 +2286,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       return;
     }
 
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  QString hash(url.toString());
 
-  if(!crypt)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
-      QApplication::processEvents();
-      return;
-    }
-  else if(!m_urlCommonCrypt)
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid m_urlCommonCrypt object. This is a fatal flaw."));
-      QApplication::processEvents();
-      return;
-    }
-  else if(!m_urlDatabase.isOpen())
-    {
-      QMessageBox::critical
-	(this,
-	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Please connect to a URL database."));
-      QApplication::processEvents();
-      return;
-    }
-
-  QByteArray urlHash;
-  bool ok = true;
-
-  urlHash = m_urlCommonCrypt->
-    keyedHash(spoton_misc::urlToEncoded(url), &ok).toHex();
-
-  if(!ok)
-    return;
+  hash = hash.mid(8, hash.indexOf("/") - 8);
 
   /*
   ** Let's first remove the URL from the correct URL table.
@@ -2326,10 +2299,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   if(m_urlDatabase.driverName() != "QPSQL")
     query.exec("PRAGMA secure_delete = ON");
 
-  query.prepare(QString("DELETE FROM spot_on_urls_%1 "
-			"WHERE url_hash = ?").
-		arg(urlHash.mid(0, 2).constData()));
-  query.bindValue(0, urlHash.constData());
+  query.prepare(QString("DELETE FROM spot_on_urls_%1 WHERE url_hash = ?").
+		arg(hash.mid(0, 2)));
+  query.bindValue(0, hash);
 
   if(!query.exec())
     if(query.lastError().text().toLower().contains("permission denied"))
@@ -2342,9 +2314,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       }
 
   query.prepare(QString("DELETE FROM spot_on_urls_revisions_%1 "
-			"WHERE url_hash = ?").
-		arg(urlHash.mid(0, 2).constData()));
-  query.bindValue(0, urlHash.constData());
+			"WHERE url_hash = ?").arg(hash.mid(0, 2)));
+  query.bindValue(0, hash);
   query.exec();
 
   /*
@@ -2388,7 +2359,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	query.prepare(QString("DELETE FROM "
 			      "spot_on_keywords_%1%2 WHERE "
 			      "url_hash = ?").arg(c1).arg(c2));
-	query.bindValue(0, urlHash.constData());
+	query.bindValue(0, hash);
 	query.exec();
       }
 
