@@ -945,8 +945,19 @@ void spoton::slotDropUrlTables(void)
 
 void spoton::slotGatherUrlStatistics(void)
 {
+  if(!m_urlDatabase.isOpen())
+    {
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please connect to a URL database."));
+      QApplication::processEvents();
+      return;
+    }
+
   QProgressDialog progress(this);
-  qint64 count = 0;
+  qint64 keywords_count = 0;
+  qint64 urls_count = 0;
   qint64 size = 0;
 
   progress.setLabelText(tr("Gathering URL statistics. Please be patient."));
@@ -967,35 +978,65 @@ void spoton::slotGatherUrlStatistics(void)
 	progress.repaint();
 	QApplication::processEvents();
 
-	if(m_urlDatabase.isOpen())
+	QChar c1;
+	QChar c2;
+
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	query.setForwardOnly(true);
+
+	if(query.exec(QString("SELECT COUNT(*) FROM spot_on_keywords_%1%2").
+		      arg(c1).arg(c2)))
+	  if(query.next())
+	    keywords_count += query.value(0).toLongLong();
+
+	if(query.exec(QString("SELECT COUNT(*) FROM spot_on_urls_%1%2").
+		      arg(c1).arg(c2)))
+	  if(query.next())
+	    urls_count += query.value(0).toLongLong();
+
+	if(m_urlDatabase.driverName() == "QPSQL")
 	  {
-	    QChar c1;
-	    QChar c2;
-
-	    if(i <= 9)
-	      c1 = QChar(i + 48);
-	    else
-	      c1 = QChar(i + 97 - 10);
-
-	    if(j <= 9)
-	      c2 = QChar(j + 48);
-	    else
-	      c2 = QChar(j + 97 - 10);
-
-	    query.setForwardOnly(true);
-
-	    if(query.exec(QString("SELECT COUNT(*) FROM spot_on_urls_%1%2").
-			  arg(c1).arg(c2)))
-	      if(query.next())
-		count += query.value(0).toLongLong();
-
 	    if(query.exec(QString("SELECT pg_total_relation_size"
 				  "('\"spot_on_urls_%1%2\"')").
 			  arg(c1).arg(c2)))
 	      if(query.next())
 		size += query.value(0).toLongLong();
 	  }
+	else
+	  {
+	    if(query.exec(QString("SELECT LENGTH(content) FROM "
+				  "spot_on_urls_%1%2").
+			  arg(c1).arg(c2)))
+	      if(query.next())
+		size += query.value(0).toLongLong();
+	  }
       }
+
+  progress.close();
+  repaint();
+  QApplication::processEvents();
+
+  QLocale locale;
+
+  QMessageBox::information
+    (this, tr("%1: Information").
+     arg(SPOTON_APPLICATION_NAME),
+     tr("Approximate URLs: %1. "
+	"Approximate content size: %2. "
+	"Approximate keywords: %3.").
+     arg(locale.toString(urls_count)).
+     arg(locale.toString(size)).
+     arg(locale.toString(keywords_count)));
+  QApplication::processEvents();
 }
 
 void spoton::slotImportUrls(void)

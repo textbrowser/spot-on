@@ -863,6 +863,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("Drop URL Tables"),
 		      this,
 		      SLOT(slotDropUrlTables(void)));
+      menu->addSeparator();
+      menu->addAction(tr("Gather Statistics"),
+		      this,
+		      SLOT(slotGatherUrlStatistics(void)));
       m_ui.deleteAllUrls->setMenu(menu);
       connect(m_ui.deleteAllUrls,
 	      SIGNAL(clicked(void)),
