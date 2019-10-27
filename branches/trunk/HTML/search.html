@@ -1,107 +1,106 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<!DOCTYPE html>
+<html>
   <head>
     <title>Spot-On Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+    <style>
+      * {box-sizing: border-box;}
+      *:focus {
+	  outline: none;
+      }
+      a {
+	  color: #008CBA;
+	  text-decoration: none;
+      }
+      body {
+	  font-family: Arial, Helvetica, sans-serif;
+	  margin: 0;
+      }
+      footer {
+	  text-align: left;
+	  width: 85%;
+      }
+      p {
+	  margin-left: 50px;
+	  margin-right: 50px;
+      }
+      .topnav {
+	  background-color: #e9e9e9;
+	  overflow: hidden;
+      }
+      .topnav a {
+	  color: black;
+	  display: block;
+	  float: left;
+	  font-size: 17px;
+	  padding: 14px 16px;
+	  text-align: center;
+	  text-decoration: none;
+      }
+      .topnav a.active {
+	  background-color: #2196F3;
+	  color: white;
+      }
+      .topnav a:hover {
+	  background-color: #ddd;
+	  color: black;
+      }
+      .topnav input[type=text] {
+	  border: none;
+	  font-size: 17px;
+	  margin-top: 8px;
+	  padding: 6px;
+	  width: 400px;
+      }
+      .topnav .search-container {
+	  float: right;
+      }
+      .topnav .search-container button {
+	  background: #ddd;
+	  border: none;
+	  cursor: pointer;
+	  float: right;
+	  font-size: 17px;
+	  margin-right: 16px;
+	  margin-top: 8px;
+	  padding: 6px 10px;
+      }
+      .topnav .search-container button:hover {
+	  background: #ccc;
+      }
+      @media screen and (max-width: 600px) {
+	  .topnav .search-container {
+	      float: none;
+	  }
+	  .topnav a, .topnav input[type=text], .topnav .search-container button {
+	      display: block;
+	      float: none;
+	      margin: 0;
+	      padding: 14px;
+	      text-align: left;
+	      width: 100%;
+	  }
+	  .topnav input[type=text] {
+	      border: 1px solid #ccc;
+	  }
+      }
+    </style>
+    <body>
+      <div class="topnav">
+	<a class="active" href=".">Spot-On Search</a>
+	<a href="https://github.com/textbrowser/spot-on" target="_blank">Contact</a>
+	<div class="search-container">
+	  <form action="." method="post" name="input">
+	    <input class="" name="current" type="hidden" value="0"></input>
+	    <input class="" name="link" type="hidden" value="n"></input>
+	    <input class="" name="offset" type="hidden" value="0"></input>
+	    <input class="" name="pages" type="hidden" value="0"></input>
+	    <input name="search" placeholder="Search..." type="text" value="">
+	      <button type="submit"><i class="fa fa-search"></i></button>
+	    </input>
+	  </form>
+	</div>
+      </div>
+    </body>
   </head>
-  <script type="text/javascript">
-  </script>
-
-  <style type="text/css">
-    .input {
-	padding-left: 5px;
-    }
-    .titlefield {
-	text-decoration: none;
-    }
-    .labelfield {
-	color: brown;
-	font-size: 90%;
-    }
-    .datefield {
-	color: gray;
-	font-size: 90%;
-    }
-    code {
-	color: red;
-    }
-    * {
-	font-family: "DejaVu Sans";
-	margin: 0;
-	padding: 0;
-    }
-    body {
-	background: white;
-	margin-top: 0px;
-    }
-    #header, #search, #footer {
-	margin: 10px auto;
-	width: 500px;
-    }
-    #header, #search {
-	padding: 10px;
-    }
-    #header {
-	background: white;
-	height: 20px;
-    }
-    #header2 {
-	background: -webkit-gradient(linear, from(#228), to(#668), color-stop(0.9, #66a));
-	height: 10px;
-    }
-    #header h1 {
-	color: #fff;
-	display: inline;
-	font-size: 1.7em;
-	font-weight: bold;
-    }
-    #header img {
-	display: inline;
-	float: right;
-	height: 150px;
-	margin-top: -80px;
-    }
-    #search {
-	color: #000;
-	text-align: center;
-    }
-    #search fieldset {
-	border: 0;
-    }
-    #search input[type=text] {
-	border: 1px solid #ccc;
-	border-radius: 3px;
-	width: 90%;
-    }
-    #search input[type=submit] {
-	width: 5%;
-    }
-    #footer {
-	color: #999;
-	text-align: left;
-	width: 85%;
-    }
-    #footer a {
-	color: #555;
-	text-decoration: none;
-    }
-    #footer a:hover {
-	text-decoration: underline;
-    }
-    *:focus {
-	outline: none;
-    }
-  </style>
-  <div id="header">
-    <h1><center><a href=".">Spot-On Search</a></center></h1>
-  </div>
-  <div id="search">
-    <form action="." method="post" name="input">
-      <input class="" name="current" type="hidden" value="0"></input>
-      <input class="" name="link" type="hidden" value="n"></input>
-      <input class="" name="offset" type="hidden" value="0"></input>
-      <input class="" name="pages" type="hidden" value="0"></input>
-      <input class="input" maxlength="100" name="search" placeholder="Search Spot-On..." size="70" style="height: 35px" type="text" value=""></input>
-      <input style="height: 25px; width: 25px" type="submit" value="&#x1F50D;"></input>
-    </form>
-  </div>
 </html>

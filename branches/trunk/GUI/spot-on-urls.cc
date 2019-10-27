@@ -1014,8 +1014,7 @@ void spoton::slotGatherUrlStatistics(void)
 	else
 	  {
 	    if(query.exec(QString("SELECT LENGTH(content) FROM "
-				  "spot_on_urls_%1%2").
-			  arg(c1).arg(c2)))
+				  "spot_on_urls_%1%2").arg(c1).arg(c2)))
 	      if(query.next())
 		size += query.value(0).toLongLong();
 	  }

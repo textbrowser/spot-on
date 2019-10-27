@@ -571,7 +571,7 @@ void spoton_web_server::process(QSslSocket *socket,
 			 arg(description));
 		    }
 
-		  html.append("</p><br>");
+		  html.append("</p>");
 		  count += 1;
 		}
 	    }
