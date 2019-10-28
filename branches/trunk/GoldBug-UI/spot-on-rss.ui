@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>829</width>
-    <height>600</height>
+    <width>650</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -243,6 +243,30 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="periodic_import">
+            <property name="text">
+             <string>&amp;Periodic Import</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <item>
            <widget class="QLabel" name="label">
             <property name="text">
              <string>&amp;Download Interval</string>
@@ -292,14 +316,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="periodic_import">
-            <property name="text">
-             <string>&amp;Periodic Import</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer">
+           <spacer name="horizontalSpacer_4">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -311,6 +328,10 @@
             </property>
            </spacer>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_7">
           <item>
            <widget class="QToolButton" name="action_menu">
             <property name="toolTip">
@@ -330,6 +351,19 @@
              <bool>true</bool>
             </property>
            </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -395,7 +429,7 @@
              <item>
               <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>&amp;Feed</string>
+                <string>&amp;Feed(s)</string>
                </property>
                <property name="buddy">
                 <cstring>new_feed</cstring>
@@ -403,7 +437,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="new_feed"/>
+              <widget class="QLineEdit" name="new_feed">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Multiple links may be specified. Please separate links via single spaces.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="add">
@@ -437,8 +475,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>789</width>
-             <height>476</height>
+             <width>814</width>
+             <height>160</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -470,7 +508,11 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="find"/>
+               <widget class="QLineEdit" name="find">
+                <property name="toolTip">
+                 <string>Please press the Enter key after providing the search text.</string>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QPushButton" name="purge">
@@ -628,8 +670,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>829</width>
-     <height>31</height>
+     <width>650</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -744,17 +786,6 @@
     <string>Toggle Not &amp;Indexed</string>
    </property>
   </action>
-  <action name="action_Titles_Only">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Descriptions in Timeline</string>
-   </property>
-  </action>
   <action name="action_Publication_Dates_in_Timeline">
    <property name="checkable">
     <bool>true</bool>
@@ -775,11 +806,6 @@
    </property>
    <property name="text">
     <string>&amp;Descriptions in Timeline</string>
-   </property>
-  </action>
-  <action name="action_Import">
-   <property name="text">
-    <string>Im&amp;port</string>
    </property>
   </action>
   <action name="action_URL_Links_in_Timeline">
@@ -816,9 +842,9 @@
   <tabstop>proxyPassword</tabstop>
   <tabstop>save_proxy_settings</tabstop>
   <tabstop>activate</tabstop>
+  <tabstop>periodic_import</tabstop>
   <tabstop>download_interval</tabstop>
   <tabstop>maximum_keywords</tabstop>
-  <tabstop>periodic_import</tabstop>
   <tabstop>action_menu</tabstop>
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>

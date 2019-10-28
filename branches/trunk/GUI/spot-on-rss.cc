@@ -227,6 +227,9 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 
   QMenu *menu = new QMenu(this);
 
+  menu->addAction(tr("Copy All Links"),
+		  this,
+		  SLOT(slotCopyFeedLinks(void)));
   menu->addAction(tr("Copy Selected &Link"),
 		  this,
 		  SLOT(slotCopyFeedLink(void)));
@@ -1626,8 +1629,9 @@ void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
   QString error("");
-  QString new_feed(m_ui.new_feed->text().trimmed());
-  QUrl url(QUrl::fromUserInput(new_feed));
+  QStringList list
+    (m_ui.new_feed->text().trimmed().replace("\n", " ").
+     split(" ", QString::SkipEmptyParts));
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
@@ -1635,15 +1639,9 @@ void spoton_rss::slotAddFeed(void)
       error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
       goto done_label;
     }
-  else if(url.isEmpty() || !url.isValid())
+  else if(list.isEmpty())
     {
-      error = tr("Please provide an RSS feed.");
-      goto done_label;
-    }
-  else if(!(url.scheme().toLower() == "http" ||
-	    url.scheme().toLower() == "https"))
-    {
-      error = tr("Invalid RSS feed scheme; HTTP or HTTPS please.");
+      error = tr("Please provide atleast one RSS feed.");
       goto done_label;
     }
 
@@ -1657,41 +1655,49 @@ void spoton_rss::slotAddFeed(void)
 
     if(db.open())
       {
-	QSqlQuery query(db);
-	bool ok = true;
+	for(int i = 0; i < list.size(); i++)
+	  {
+	    QUrl url(QUrl::fromUserInput(list.at(i).trimmed()));
 
-	query.prepare("INSERT OR REPLACE INTO rss_feeds "
-		      "(feed, feed_description, feed_hash, "
-		      "feed_image, feed_title) "
-		      "VALUES (?, ?, ?, ?, ?)");
-	query.bindValue
-	  (0,
-	   crypt->
-	   encryptedThenHashed(spoton_misc::urlToEncoded(new_feed), &ok).
-			       toBase64());
+	    if(url.isEmpty() || !url.isValid())
+	      continue;
+	    else if(!(url.scheme().toLower() == "http" ||
+		      url.scheme().toLower() == "https"))
+	      continue;
 
-	if(ok)
-	  query.bindValue(1, crypt->encryptedThenHashed(QByteArray(),
-							&ok).toBase64());
+	    QSqlQuery query(db);
+	    bool ok = true;
 
-	if(ok)
-	  query.bindValue
-	    (2, crypt->keyedHash(spoton_misc::urlToEncoded(new_feed), &ok).
-	     toBase64());
+	    query.prepare("INSERT OR REPLACE INTO rss_feeds "
+			  "(feed, feed_description, feed_hash, "
+			  "feed_image, feed_title) "
+			  "VALUES (?, ?, ?, ?, ?)");
+	    query.bindValue
+	      (0,
+	       crypt->
+	       encryptedThenHashed(spoton_misc::urlToEncoded(list.at(i)), &ok).
+	       toBase64());
 
-	if(ok)
-	  query.bindValue(3, crypt->encryptedThenHashed(QByteArray(),
-							&ok).toBase64());
+	    if(ok)
+	      query.bindValue(1, crypt->encryptedThenHashed(QByteArray(),
+							    &ok).toBase64());
 
-	if(ok)
-	  query.bindValue(4, crypt->encryptedThenHashed(QByteArray(),
-							&ok).toBase64());
+	    if(ok)
+	      query.bindValue
+		(2, crypt->keyedHash(spoton_misc::urlToEncoded(list.at(i)),
+				     &ok).toBase64());
 
-	if(ok)
-	  ok = query.exec();
+	    if(ok)
+	      query.bindValue(3, crypt->encryptedThenHashed(QByteArray(),
+							    &ok).toBase64());
 
-	if(!ok)
-	  error = tr("Unable to insert the specified feed.");
+	    if(ok)
+	      query.bindValue(4, crypt->encryptedThenHashed(QByteArray(),
+							    &ok).toBase64());
+
+	    if(ok)
+	      ok = query.exec();
+	  }
       }
     else
       error = tr("Unable to access rss.db.");
@@ -1870,6 +1876,26 @@ void spoton_rss::slotCopyFeedLink(void)
     return;
 
   clipboard->setText(item->text());
+}
+
+void spoton_rss::slotCopyFeedLinks(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  QString str("");
+
+  for(int i = 0; i < m_ui.feeds->rowCount(); i++)
+    {
+      QTableWidgetItem *item = m_ui.feeds->item(i, 0);
+
+      if(item)
+	str.append(item->text() + "\n");
+    }
+
+  clipboard->setText(str.trimmed());
 }
 
 void spoton_rss::slotDeleteAllFeeds(void)
@@ -2873,6 +2899,8 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 {
   QMenu menu(this);
 
+  menu.addAction(tr("Copy All Links"),
+		 this, SLOT(slotCopyFeedLinks(void)));
   menu.addAction(tr("Copy Selected &Link"),
 		 this, SLOT(slotCopyFeedLink(void)));
   menu.addSeparator();
