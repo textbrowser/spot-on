@@ -614,6 +614,9 @@ void spoton_web_server::process(QSslSocket *socket,
 	  search.replace(" ", "+");
 	  html.append("<p class=\"footer\">");
 
+	  if(!(current >= lower && current <= upper))
+	    current = lower;
+
 	  for(quint64 i = lower; i <= upper; i++)
 	    if(i != current)
 	      {
