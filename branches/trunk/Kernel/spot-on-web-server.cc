@@ -612,6 +612,7 @@ void spoton_web_server::process(QSslSocket *socket,
 	    lower = 1;
 
 	  search.replace(" ", "+");
+	  html.append("<p class=\"footer\">");
 
 	  for(quint64 i = lower; i <= upper; i++)
 	    if(i != current)
@@ -653,9 +654,8 @@ void spoton_web_server::process(QSslSocket *socket,
 	    }
 
 	  str = str.trimmed();
-	  html.append("<center>");
 	  html.append(str);
-	  html.append("</center></div></html>");
+	  html.append("</p></div></html>");
 	}
     }
 
