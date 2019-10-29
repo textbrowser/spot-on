@@ -221,7 +221,7 @@ void spoton_web_server::process(QSslSocket *socket,
 {
   QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
-  if(list.size() != 5)
+  if(list.size() != 4)
     {
       emit finished(socket, QByteArray());
       return;
@@ -236,15 +236,14 @@ void spoton_web_server::process(QSslSocket *socket,
       (i,
        QString(list.at(i)).
        remove("link=").
-       remove("offset=").
        remove("pages=").
        remove("search="));
 
   current = list.value(0).toULongLong();
-  offset = list.value(2).toULongLong();
-  pages = list.value(3).toULongLong();
+  offset = current * s_urlLimit;
+  pages = list.value(2).toULongLong();
 
-  if(current > pages || offset % s_urlLimit != 0)
+  if(current > pages)
     {
       emit finished(socket, QByteArray());
       return;
@@ -272,7 +271,7 @@ void spoton_web_server::process(QSslSocket *socket,
       QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
 
-      search = list.value(4);
+      search = list.value(3);
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
 
@@ -621,10 +620,9 @@ void spoton_web_server::process(QSslSocket *socket,
 	    if(i != current)
 	      {
 		particles = QString
-		  ("current=%1&link=%2&offset=%3&pages=%4&search=%5").
+		  ("current=%1&link=%2&pages=%3&search=%4").
 		  arg(i - 1).
 		  arg(i).
-		  arg((i - 1) * s_urlLimit).
 		  arg(pages).
 		  arg(search);
 		str.append
@@ -638,18 +636,17 @@ void spoton_web_server::process(QSslSocket *socket,
 	  if(count >= s_urlLimit)
 	    {
 	      particles = QString
-		("current=%1&link=n&offset=%2&pages=%3&search=%4").
-		arg(current).arg(current * s_urlLimit).arg(pages).arg(search);
+		("current=%1&link=n&pages=%2&search=%3").
+		arg(current).arg(pages).arg(search);
 	      str.append(QString(" <a href=\"%1\">></a> ").arg(particles));
 	    }
 
 	  if(current != 1)
 	    {
 	      particles = QString
-		("current=%1&link=%2&offset=%3&pages=%4&search=%5").
+		("current=%1&link=%2&pages=%3&search=%4").
 		arg(current - 2).
 		arg(current - 1).
-		arg((current - 2) * s_urlLimit).
 		arg(pages).
 		arg(search);
 	      str.prepend
