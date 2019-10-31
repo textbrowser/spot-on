@@ -1234,7 +1234,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-44</y>
              <width>680</width>
              <height>648</height>
             </rect>
@@ -3977,7 +3977,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-147</y>
              <width>653</width>
              <height>617</height>
             </rect>
@@ -6312,7 +6312,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-897</y>
              <width>882</width>
              <height>1349</height>
             </rect>
@@ -9047,7 +9047,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>584</width>
-             <height>791</height>
+             <height>810</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9070,12 +9070,8 @@ color: rgb(255, 255, 255);
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
-                <property name="font">
-                 <font>
-                  <pointsize>10</pointsize>
-                  <weight>75</weight>
-                  <bold>true</bold>
-                 </font>
+                <property name="toolTip">
+                 <string>Activate or deactivate the distribution of URLs.</string>
                 </property>
                 <property name="text">
                  <string>&amp;Active</string>
@@ -9151,6 +9147,16 @@ color: rgb(255, 255, 255);
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="web_server_serve_local_content">
+                <property name="toolTip">
+                 <string>Allow access to locally-stored content.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Local Links</string>
                 </property>
                </widget>
               </item>
@@ -11285,6 +11291,7 @@ border-style: inset;
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>web_server_serve_local_content</tabstop>
   <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlActionMenu</tabstop>
   <tabstop>urlName</tabstop>

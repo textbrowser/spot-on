@@ -7548,6 +7548,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="toolTip">
+                 <string>Activate or deactivate the distribution of URLs.</string>
+                </property>
                 <property name="text">
                  <string>&amp;Active</string>
                 </property>
@@ -7622,6 +7625,16 @@
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="web_server_serve_local_content">
+                <property name="toolTip">
+                 <string>Allow access to locally-stored content.</string>
+                </property>
+                <property name="text">
+                 <string>&amp;Local Links</string>
                 </property>
                </widget>
               </item>
@@ -9020,6 +9033,7 @@
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>web_server_serve_local_content</tabstop>
   <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlName</tabstop>
   <tabstop>saveUrlName</tabstop>
