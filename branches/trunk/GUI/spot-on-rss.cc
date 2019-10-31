@@ -279,7 +279,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 		 settings.value("gui/rss_last_tab", 0).toInt(),
 		 m_ui.tab->count());
   m_ui.tab->setCurrentIndex(index);
-  m_downloadContentTimer.setInterval(2500);
+  m_downloadContentTimer.setInterval(1500);
   dvalue = qBound
     (m_ui.download_interval->minimum(),
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
@@ -1323,7 +1323,8 @@ void spoton_rss::prepareAfterAuthentication(void)
 			    (static_cast<quint16> (m_ui.proxyPort->value()));
 			  proxy.setUser
 			    (m_ui.proxyUsername->text());
-			  m_networkAccessManager.setProxy(proxy);
+			  m_contentNetworkAccessManager.setProxy(proxy);
+			  m_feedNetworkAccessManager.setProxy(proxy);
 			}
 		    }
 		}
@@ -1750,7 +1751,8 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    emit logError(error);
 	    reply->deleteLater();
-	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+	    reply = m_contentNetworkAccessManager.get
+	      (QNetworkRequest(redirectUrl));
 
 	    if(!reply)
 	      {
@@ -1784,6 +1786,13 @@ void spoton_rss::slotContentReplyFinished(void)
 	  reply->deleteLater();
 	  return;
 	}
+
+      QString error
+	(QString("The content of URL <a href=\"%1\">%1</a> has "
+		 "been downloaded.").
+	 arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+
+      emit logError(error);
 
       QByteArray data(reply->readAll());
       QString connectionName("");
@@ -1852,7 +1861,17 @@ void spoton_rss::slotContentReplyFinished(void)
 			   &ok).toBase64());
 
 	    if(ok)
-	      query.exec();
+	      ok = query.exec();
+
+	    if(!ok)
+	      {
+		QString error
+		  (QString("The content of URL <a href=\"%1\">%1</a> was "
+			   "not saved because of an error.").
+		   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+
+		emit logError(error);
+	      }
 	  }
 
 	db.close();
@@ -2003,6 +2022,9 @@ void spoton_rss::slotDownloadContent(void)
 {
   if(!findChildren<QProgressDialog *> ().isEmpty())
     return;
+  else if(!m_contentNetworkAccessManager.
+	  findChildren<QNetworkReply *> ().isEmpty())
+    return;
 
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
@@ -2069,7 +2091,8 @@ void spoton_rss::slotDownloadContent(void)
 
       emit logError(error);
 
-      QNetworkReply *reply = m_networkAccessManager.get(QNetworkRequest(url));
+      QNetworkReply *reply = m_contentNetworkAccessManager.get
+	(QNetworkRequest(url));
 
       if(!reply)
 	{
@@ -2099,7 +2122,7 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
   if(!imageUrl.isEmpty() && imageUrl.isValid() &&
      !url.isEmpty() && url.isValid())
     {
-      QNetworkReply *reply = m_networkAccessManager.get
+      QNetworkReply *reply = m_feedNetworkAccessManager.get
 	(QNetworkRequest(imageUrl));
 
       if(!reply)
@@ -2155,7 +2178,7 @@ void spoton_rss::slotDownloadTimeout(void)
       return;
     }
 
-  QNetworkReply *reply = m_networkAccessManager.get
+  QNetworkReply *reply = m_feedNetworkAccessManager.get
     (QNetworkRequest(item->text()));
 
   if(!reply)
@@ -2249,7 +2272,8 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
 	    emit logError(error);
-	    reply = m_networkAccessManager.get(QNetworkRequest(redirectUrl));
+	    reply = m_feedNetworkAccessManager.get
+	      (QNetworkRequest(redirectUrl));
 
 	    if(!reply)
 	      {
@@ -2748,7 +2772,8 @@ void spoton_rss::slotSaveProxy(void)
   QNetworkProxy proxy;
 
   proxy.setType(QNetworkProxy::NoProxy);
-  m_networkAccessManager.setProxy(proxy);
+  m_contentNetworkAccessManager.setProxy(proxy);
+  m_feedNetworkAccessManager.setProxy(proxy);
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
 
@@ -2833,7 +2858,8 @@ void spoton_rss::slotSaveProxy(void)
 		      (static_cast<quint16> (m_ui.proxyPort->value()));
 		    proxy.setUser
 		      (m_ui.proxyUsername->text());
-		    m_networkAccessManager.setProxy(proxy);
+		    m_contentNetworkAccessManager.setProxy(proxy);
+		    m_feedNetworkAccessManager.setProxy(proxy);
 		  }
 	      }
 
