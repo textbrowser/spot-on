@@ -1234,9 +1234,9 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-44</y>
+             <y>0</y>
              <width>680</width>
-             <height>648</height>
+             <height>841</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -3977,9 +3977,9 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-147</y>
+             <y>0</y>
              <width>653</width>
-             <height>617</height>
+             <height>841</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5062,7 +5062,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>614</width>
-             <height>452</height>
+             <height>841</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5137,9 +5137,9 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-199</y>
                  <width>706</width>
-                 <height>642</height>
+                 <height>687</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6060,6 +6060,19 @@ QPushButton:pressed {
                   </layout>
                  </widget>
                 </item>
+                <item>
+                 <spacer name="verticalSpacer_3">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>40</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
                </layout>
               </widget>
              </widget>
@@ -6312,7 +6325,7 @@ color: rgb(255, 255, 255);</string>
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-897</y>
+             <y>0</y>
              <width>882</width>
              <height>1349</height>
             </rect>
@@ -9046,8 +9059,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
-             <height>810</height>
+             <width>604</width>
+             <height>861</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
