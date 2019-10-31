@@ -2217,6 +2217,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotWebServerPortChanged(int)));
+  connect(m_ui.web_server_serve_local_content,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotWebServerAllowServingLocalContent(bool)));
   m_ui.passphrase_rb->setChecked(true);
   m_ui.passphrase_rb_authenticate->setChecked(true);
   m_ui.answer->setEnabled(false);
@@ -2342,6 +2346,10 @@ spoton::spoton(void):QMainWindow()
   m_ui.web_server_port->setValue
     (m_settings.value("gui/web_server_port", 0).toInt());
   m_ui.web_server_port->blockSignals(false);
+  m_ui.web_server_serve_local_content->blockSignals(true);
+  m_ui.web_server_serve_local_content->setChecked
+    (m_settings.value("gui/web_server_serve_local_content", false).toBool());
+  m_ui.web_server_serve_local_content->blockSignals(false);
 
   if(m_ui.postgresqlConnect->isEnabled())
     {

@@ -1091,6 +1091,7 @@ class spoton: public QMainWindow
   void slotViewEchoKeyShare(void);
   void slotViewLog(void);
   void slotViewRosetta(void);
+  void slotWebServerAllowServingLocalContent(bool state);
   void slotWebServerInformationTimeout(void);
   void slotWebServerPortChanged(int value);
   void slotWebServerValueChangedTimeout(void);

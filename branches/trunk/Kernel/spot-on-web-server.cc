@@ -547,16 +547,24 @@ void spoton_web_server::process(QSslSocket *socket,
 		  html.append(spoton_misc::urlToEncoded(url));
 		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
 		  html.append(title);
-		  html.append("</font></a> | ");
-		  html.append("<a href=\"https://");
-		  html.append(address.first);
-		  html.append(":");
-		  html.append(address.second);
-		  html.append("/local-");
-		  html.append(urlHash);
-		  html.append("\" target=\"_blank\"><font color=\"#0000EE\">");
-		  html.append("View Locally");
 		  html.append("</font></a>");
+
+		  if(spoton_kernel::
+		     setting("gui/web_server_serve_local_content", false).
+		     toBool())
+		    {
+		      html.append(" | <a href=\"https://");
+		      html.append(address.first);
+		      html.append(":");
+		      html.append(address.second);
+		      html.append("/local-");
+		      html.append(urlHash);
+		      html.append
+			("\" target=\"_blank\"><font color=\"#0000EE\">");
+		      html.append("View Locally");
+		      html.append("</font></a>");
+		    }
+
 		  html.append("<br>");
 		  html.append
 		    (QString("<font color=\"green\" size=2>%1</font>").
@@ -854,10 +862,17 @@ void spoton_web_server::slotReadyRead(void)
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
     {
-      data = data.simplified().trimmed().mid(11); // get /local-x <- x
-      data = data.mid(0, data.indexOf(' '));
-      m_futures[socket->socketDescriptor()] =
-	QtConcurrent::run(this, &spoton_web_server::processLocal, socket, data);
+      if(spoton_kernel::
+	 setting("gui/web_server_serve_local_content", false).toBool())
+	{
+	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
+	  data = data.mid(0, data.indexOf(' '));
+	  m_futures[socket->socketDescriptor()] =
+	    QtConcurrent::run(this,
+			      &spoton_web_server::processLocal,
+			      socket,
+			      data);
+	}
     }
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))

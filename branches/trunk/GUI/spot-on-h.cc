@@ -1162,6 +1162,15 @@ void spoton::slotTerminateKernelOnUIExit(bool state)
   settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
 
+void spoton::slotWebServerAllowServingLocalContent(bool state)
+{
+  m_settings["gui/web_server_serve_local_content"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/web_server_serve_local_content", state);
+}
+
 void spoton::slotWebServerInformationTimeout(void)
 {
   if(m_ui.web_server_port->value() == 0)

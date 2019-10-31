@@ -28,12 +28,29 @@
 	  margin-left: none;
 	  margin-right: none;
 	  text-align: center;
-	  word-spacing: 5px;
+	  word-spacing: 10px;
       }
       .topnav {
 	  background-color: #e9e9e9;
 	  overflow: hidden;
       }
+      .topnav .search-container {
+	  float: right;
+      }
+      .topnav .search-container button {
+	  background: #ddd;
+	  border: none;
+	  cursor: pointer;
+	  float: right;
+	  font-size: 17px;
+	  margin-right: 16px;
+	  margin-top: 8px;
+	  padding: 6px 10px;
+      }
+      .topnav .search-container button:hover {
+	  background: #ccc;
+      }
+
       .topnav a {
 	  color: black;
 	  display: block;
@@ -57,22 +74,6 @@
 	  margin-top: 8px;
 	  padding: 6px;
 	  width: 400px;
-      }
-      .topnav .search-container {
-	  float: right;
-      }
-      .topnav .search-container button {
-	  background: #ddd;
-	  border: none;
-	  cursor: pointer;
-	  float: right;
-	  font-size: 17px;
-	  margin-right: 16px;
-	  margin-top: 8px;
-	  padding: 6px 10px;
-      }
-      .topnav .search-container button:hover {
-	  background: #ccc;
       }
       @media screen and (max-width: 600px) {
 	  .topnav .search-container {
