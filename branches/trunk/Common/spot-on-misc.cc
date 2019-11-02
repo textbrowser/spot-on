@@ -1703,7 +1703,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	      {
 		error = QString("spoton_misc::importUrl(): a failure occurred "
 				"while attempting to update the URL content. "
-				"The URL is %1").
+				"The URL is %1.").
 		  arg(urlToEncoded(url).constData());
 		logError(error);
 		return ok;

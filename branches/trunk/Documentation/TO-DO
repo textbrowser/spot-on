@@ -252,3 +252,4 @@ Remaining Items
 9.     Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct?
 10.    Remove obsolete includes.
+11.    Improve RSS importing (locked database).
