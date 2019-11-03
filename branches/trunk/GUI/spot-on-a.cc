@@ -10589,6 +10589,7 @@ void spoton::slotValidatePassphrase(void)
 	    if(!m_settings.value("gui/initial_url_distillers_defined",
 				 false).toBool())
 	      {
+		QApplication::setOverrideCursor(Qt::WaitCursor);
 		initializeUrlDistillers();
 
 		QSettings settings;
@@ -10596,6 +10597,8 @@ void spoton::slotValidatePassphrase(void)
 		settings.setValue("gui/initial_url_distillers_defined",
 				  true);
 		m_settings["gui/initial_url_distillers_defined"] = true;
+		populateUrlDistillers();
+		QApplication::restoreOverrideCursor();
 	      }
 
 	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",

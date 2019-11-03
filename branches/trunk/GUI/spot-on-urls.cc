@@ -1503,6 +1503,7 @@ void spoton::slotPrepareUrlDatabases(void)
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Please note that the database-preparation process may "
 		    "require a considerable amount of time to complete. "
+		    "Default URL distillers will also be created. "
 		    "The RSS mechanism and the kernel will be deactivated. "
 		    "Proceed?"));
       mb.setWindowIcon(windowIcon());
@@ -1537,11 +1538,8 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.show();
   progress.repaint();
   QApplication::processEvents();
-  created = spoton_misc::prepareUrlDistillersDatabase();
-
-  if(created)
-    created = spoton_misc::prepareUrlKeysDatabase();
-
+  initializeUrlDistillers();
+  created = spoton_misc::prepareUrlKeysDatabase();
   repaint();
   QApplication::processEvents();
 
