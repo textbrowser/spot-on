@@ -1665,10 +1665,20 @@ void spoton_rss::slotAddFeed(void)
 	    QUrl url(QUrl::fromUserInput(list.at(i).trimmed()));
 
 	    if(url.isEmpty() || !url.isValid())
-	      continue;
+	      {
+		if(error.isEmpty())
+		  error = tr("Empty or invalid URL.");
+
+		continue;
+	      }
 	    else if(!(url.scheme().toLower() == "http" ||
 		      url.scheme().toLower() == "https"))
-	      continue;
+	      {
+		if(error.isEmpty())
+		  error = tr("URL scheme must be HTTP or HTTPS.");
+
+		continue;
+	      }
 
 	    QSqlQuery query(db);
 	    bool ok = true;
@@ -1702,6 +1712,9 @@ void spoton_rss::slotAddFeed(void)
 
 	    if(ok)
 	      ok = query.exec();
+
+	    if(error.isEmpty() && !ok)
+	      error = tr("Database or crypt-object error.");
 	  }
       }
     else
@@ -1717,8 +1730,8 @@ void spoton_rss::slotAddFeed(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error.trimmed());
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error.trimmed());
       QApplication::processEvents();
     }
   else
@@ -1908,6 +1921,8 @@ void spoton_rss::slotCopyFeedLinks(void)
   if(!clipboard)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString str("");
 
   for(int i = 0; i < m_ui.feeds->rowCount(); i++)
@@ -1919,6 +1934,7 @@ void spoton_rss::slotCopyFeedLinks(void)
     }
 
   clipboard->setText(str.trimmed());
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::slotDeleteAllFeeds(void)
