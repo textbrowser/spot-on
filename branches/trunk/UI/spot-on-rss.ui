@@ -708,7 +708,7 @@
     </property>
     <addaction name="action_Remove_Malformed"/>
     <addaction name="separator"/>
-    <addaction name="action_Toggle_Failed_Imported"/>
+    <addaction name="action_Toggle_Failed_Imports"/>
     <addaction name="action_Toggle_Hidden"/>
     <addaction name="action_Toggle_Imported"/>
     <addaction name="action_Toggle_Indexed"/>
@@ -765,9 +765,9 @@
     <string>&amp;Publication Date</string>
    </property>
   </action>
-  <action name="action_Toggle_Failed_Imported">
+  <action name="action_Toggle_Failed_Imports">
    <property name="text">
-    <string>Toggle &amp;Failed Imported</string>
+    <string>Toggle &amp;Failed Imports</string>
    </property>
   </action>
   <action name="action_Toggle_Imported">

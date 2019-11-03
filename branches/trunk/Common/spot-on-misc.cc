@@ -1666,6 +1666,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   QSqlQuery query(db);
 
+  if(db.driverName() == "QSQLITE")
+    query.exec("PRAGMA journal_mode = WAL");
+
   query.setForwardOnly(true);
   query.prepare(QString("SELECT content FROM spot_on_urls_%1 WHERE "
 			"url_hash = ?").

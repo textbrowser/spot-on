@@ -104,7 +104,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotRemoveMalformed(void)));
-  connect(m_ui.action_Toggle_Failed_Imported,
+  connect(m_ui.action_Toggle_Failed_Imports,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotToggleState(void)));
@@ -459,6 +459,7 @@ void spoton_rss::closeEvent(QCloseEvent *event)
 
 void spoton_rss::deactivate(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.activate->setChecked(false);
   m_ui.periodic_import->setChecked(false);
   m_downloadContentTimer.stop();
@@ -468,6 +469,7 @@ void spoton_rss::deactivate(void)
   m_importFuture.waitForFinished();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::hideUrl(const QUrl &url, const bool state)
@@ -3148,7 +3150,7 @@ void spoton_rss::slotToggleState(void)
 
   QString str("");
 
-  if(action == m_ui.action_Toggle_Failed_Imported)
+  if(action == m_ui.action_Toggle_Failed_Imports)
     str = "UPDATE rss_feeds_links SET imported = 0 WHERE imported = 2";
   else if(action == m_ui.action_Toggle_Hidden)
     str = "UPDATE rss_feeds_links SET hidden = 0 WHERE hidden = 1";
