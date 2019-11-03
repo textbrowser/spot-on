@@ -489,10 +489,8 @@ void spoton::slotAddDistiller(void)
 	      ok = query.exec();
 
 	    if(query.lastError().isValid())
-	      {
+	      if(error.isEmpty())
 		error = query.lastError().text().trimmed();
-		break;
-	      }
 	  }
       }
     else
