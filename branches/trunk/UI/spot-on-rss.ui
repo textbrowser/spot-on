@@ -244,6 +244,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="periodic_import">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please verify that the URL database has been prepared. Please see the Search page of the main window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>&amp;Periodic Import</string>
             </property>
@@ -476,7 +479,7 @@
              <x>0</x>
              <y>0</y>
              <width>814</width>
-             <height>507</height>
+             <height>160</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -561,7 +564,7 @@
                   <string>All (Not Hidden)</string>
                  </property>
                 </item>
-		<item>
+                <item>
                  <property name="text">
                   <string>Failed Imports</string>
                  </property>
