@@ -104,6 +104,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotRemoveMalformed(void)));
+  connect(m_ui.action_Toggle_Failed_Imported,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotToggleState(void)));
   connect(m_ui.action_Toggle_Hidden,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2488,22 +2492,25 @@ void spoton_rss::slotRefreshTimeline(void)
 	QString str1("");
 	QString str2("");
 	int i = 0;
+	int index = m_ui.timeline_filter->currentIndex();
 
 	query.setForwardOnly(true);
 	str2 = "SELECT content, description, hidden, publication_date, "
 	  "title, url, url_redirected FROM rss_feeds_links ";
 
-	if(m_ui.timeline_filter->currentIndex() == 1) // Hidden
+	if(index == 1) // Failed Imports
+	  str1.append(" WHERE imported = 2 ");
+	else if(index == 2) // Hidden
 	  str1.append(" WHERE hidden = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 2) // Imported
+	else if(index == 3) // Imported
 	  str1.append(" WHERE imported = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 3) // Indexed
+	else if(index == 4) // Indexed
 	  str1.append(" WHERE visited = 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 4) // Malformed
-	  str1.append(" WHERE imported = 2 OR visited = 2 ");
-	else if(m_ui.timeline_filter->currentIndex() == 5) // Not Imported
-	  str1.append(" WHERE imported <> 1 ");
-	else if(m_ui.timeline_filter->currentIndex() == 6) // Not Indexed
+	else if(index == 5) // Malformed
+	  str1.append(" WHERE visited = 2 ");
+	else if(index == 6) // Not Imported
+	  str1.append(" WHERE imported <> 1 AND imported <> 2 ");
+	else if(index == 7) // Not Indexed
 	  str1.append(" WHERE visited <> 1 ");
 	else
 	  str1.append(" WHERE hidden <> 1 ");
@@ -2737,7 +2744,7 @@ void spoton_rss::slotRemoveMalformed(void)
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.exec("DELETE FROM rss_feeds_links WHERE "
-		   "imported = 2 OR visited = 2");
+		   "visited = 2");
       }
 
     db.close();
@@ -2974,24 +2981,27 @@ void spoton_rss::slotStatisticsTimeout(void)
 	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
 		      "UNION "
 		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE hidden = 1 "
+		      "WHERE imported = 2 "
 		      "UNION "
 		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE imported = 1 "
+		      "WHERE hidden = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE imported = 0 "
+		      "WHERE imported = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
-		      "WHERE visited = 1 "
+		      "WHERE imported = 0 "
 		      "UNION "
 		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
-		      "WHERE visited <> 1 "
+		      "WHERE visited = 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'g' FROM rss_feeds_links "
-		      "WHERE imported = 2 OR visited = 2 "
+		      "WHERE visited <> 1 "
 		      "UNION "
 		      "SELECT COUNT(*), 'h' FROM rss_feeds_links "
+		      "WHERE visited = 2 "
+		      "UNION "
+		      "SELECT COUNT(*), 'i' FROM rss_feeds_links "
 		      "ORDER BY 2");
 
 	if(query.exec())
@@ -3001,13 +3011,14 @@ void spoton_rss::slotStatisticsTimeout(void)
 	QLocale locale;
 
 	str = tr("%1 RSS Feeds | "         // a
-		 "%2 Hidden URLs | "       // b
-		 "%3 Imported URLs | "     // c
-		 "%4 Not Imported URLs | " // d
-		 "%5 Indexed URLs | "      // e
-		 "%6 Not Indexed URLs | "  // f
-		 "%7 Malformed | "         // g
-		 "%8 Total URLs").         // h
+		 "%2 Failed Imports | "    // b
+		 "%3 Hidden URLs | "       // c
+		 "%4 Imported URLs | "     // d
+		 "%5 Not Imported URLs | " // e
+		 "%6 Indexed URLs | "      // f
+		 "%7 Not Indexed URLs | "  // g
+		 "%8 Malformed | "         // h
+		 "%9 Total URLs").         // i
 	  arg(locale.toString(counts.value(0))).
 	  arg(locale.toString(counts.value(1))).
 	  arg(locale.toString(counts.value(2))).
@@ -3015,10 +3026,12 @@ void spoton_rss::slotStatisticsTimeout(void)
 	  arg(locale.toString(counts.value(4))).
 	  arg(locale.toString(counts.value(5))).
 	  arg(locale.toString(counts.value(6))).
-	  arg(locale.toString(counts.value(7)));
+	  arg(locale.toString(counts.value(7))).
+	  arg(locale.toString(counts.value(8)));
       }
     else
       str = tr("0 RSS Feeds | "
+	       "0 Failed Imports | "
 	       "0 Hidden URLs | "
 	       "0 Imported URLs | "
 	       "0 Not Imported URLs | "
@@ -3119,15 +3132,16 @@ void spoton_rss::slotToggleState(void)
 
   QString str("");
 
-  if(action == m_ui.action_Toggle_Hidden)
+  if(action == m_ui.action_Toggle_Failed_Imported)
+    str = "UPDATE rss_feeds_links SET imported = 0 WHERE imported = 2";
+  else if(action == m_ui.action_Toggle_Hidden)
     str = "UPDATE rss_feeds_links SET hidden = 0 WHERE hidden = 1";
   else if(action == m_ui.action_Toggle_Imported)
     str = "UPDATE rss_feeds_links SET imported = 0 WHERE imported = 1";
   else if(action == m_ui.action_Toggle_Indexed)
     str = "UPDATE rss_feeds_links SET visited = 0 WHERE visited = 1";
   else if(action == m_ui.action_Toggle_Malformed)
-    str = "UPDATE rss_feeds_links SET imported = 0, "
-      "visited = 0 WHERE imported = 2 OR visited = 2";
+    str = "UPDATE rss_feeds_links SET visited = 0 WHERE visited = 2";
   else if(action == m_ui.action_Toggle_Not_Indexed)
     str = "UPDATE rss_feeds_links SET visited = 1 WHERE visited = 0";
   else if(action == m_ui.action_Toggle_Shown)
