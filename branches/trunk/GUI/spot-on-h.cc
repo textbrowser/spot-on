@@ -441,7 +441,10 @@ void spoton::retrieveNeighbors(void)
 		       "OID "
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
-	    while(query->next());
+	    while(query->next())
+	      {
+	      }
+
 	    emit neighborsQueryReady(db, query, connectionName, size);
 	    return;
 	  }
@@ -523,7 +526,10 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 
 	if(ok && query->exec())
 	  {
-	    while(query->next());
+	    while(query->next())
+	      {
+	      }
+
 	    emit participantsQueryReady(db, query, connectionName);
 	    return;
 	  }
