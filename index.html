@@ -41,6 +41,38 @@
 	<img src="images/vessel.png">
 	<hr>
         <section id="main_content">
+	  <h4>Spot-On 2019.11.11</h4>
+	  <p>
+	    Welcome to the 2019.11.11 release of Spot-On. Corrections and new features are detailed below.
+	    <ul>
+	      <li>A listener may cause a kernel delay during initialization via QBluetoothServiceInfo. Initialize the QBluetoothServiceInfo object only if required.</li>
+	      <li>Allow copying of all RSS links to the clipboard buffer.</li>
+	      <li>Allow searching of local or remote URLs via remote clients. New Web server. Please see URLs panel.</li>
+	      <li>CURL 7.67 on W32.</li>
+	      <li>Close socket descriptors on failures.</li>
+	      <li>Create default URL distillers during the URL database-preparation process.</li>
+	      <li>Detection of StarBeam duplicate data bundles.</li>
+	      <li>Disable SSL session persistence, session sharing, session tickets where available.</li>
+	      <li>Do not write data to sockets from other threads.</li>
+	      <li>Ignore, yet report, errors when adding a URL distiller.</li>
+	      <li>Load SOSS URLs locally. Some pages may produce incorrect results, including automatic forwarding.</li>
+	      <li>Maximum thread pool sizes.</li>
+	      <li>NTL 11.4.1 on Linux. The configure script as well as make must be executed manually.</li>
+	      <li>New RSS tool: Toggle Failed Imports.</li>
+	      <li>RSS feed-scheduling requires an active process; disable options.</li>
+	      <li>Removed obsolete widget Permanent Certificate from Listeners page.</li>
+	      <li>Retrieve correct PostgreSQL URLs database password on connection validation.</li>
+	      <li>SQLite 3.30.1 on W32.</li>
+	      <li>Separated RSS network access managers: feeds and links.</li>
+	      <li>Set certificate version to 3; new certificates only.</li>
+	      <li>Set listener's certificate's CN if an external IP address is not available.</li>
+	      <li>Set listener's certificate's organization.</li>
+	      <li>Threefish optimizations.</li>
+	      <li>URL statistics.</li>
+	      <li>WAL journal mode for SQLite URL database.</li>
+	      <li>libgcrypt at version 1.8.4 on W32.</li>
+	    </ul>
+	  </p>
 	  <h4>Spot-On 2019.09.30</h4>
 	  <p>
 	    Welcome to the 2019.09.30 release of Spot-On. Corrections and new features are detailed below.
