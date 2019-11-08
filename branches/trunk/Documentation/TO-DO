@@ -202,6 +202,8 @@ Completed Items
 144.   Retrieve SOSS results from Spot-On.
 145.   Web server credentials may differ from PQ Search credentials.
 146.   Improve RSS importing (locked database).
+147.   The data stored in shared.db is not authenticated. Uniqueness
+       is not properly defined. Dooble integration separated.
 
 Ignored Items
 
@@ -223,8 +225,7 @@ Ignored Items
 12.    Remote kernel termination.
 13.    Limit the number of entries that are allowed to be inserted into
        a database.
-14.    The data stored in shared.db is not authenticated. Uniqueness
-       is not properly defined.
+14.    Allow custom addresses for spoton_external_address.
 15.    QFSFileEngine::open: No file name specified: created from
        e-mail. Missing images?
 16.    1-N SCTP support.
@@ -236,7 +237,6 @@ Ignored Items
 21.    Create a user's configuration database. Store key types too.
 22.    C++11, unique_ptr and malloc().
 23.    Per-participant permissions.
-24.    Allow custom addresses for spoton_external_address.
 
 Remaining Items
 
