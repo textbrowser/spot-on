@@ -763,7 +763,11 @@ void spoton_web_server::slotClientDisconnected(void)
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 
-      auto fd = socket->socketDescriptor();
+#if QT_VERSION < 0x050000
+      int fd = socket->socketDescriptor();
+#else
+      qintptr fd = socket->socketDescriptor();
+#endif
 
       m_futures.remove(fd);
       m_webSocketData.remove(fd);
