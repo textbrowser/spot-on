@@ -47,21 +47,6 @@ class spoton_web_server_tcp_server: public QTcpServer
 
   ~spoton_web_server_tcp_server()
   {
-    while(!m_queue.isEmpty())
-      {
-	QPointer<QSslSocket> socket = m_queue.dequeue();
-
-	if(socket)
-	  socket->deleteLater();
-      }
-  }
-
-  QPointer<QSslSocket> nextConnection(void)
-  {
-    if(m_queue.isEmpty())
-      return 0;
-    else
-      return m_queue.dequeue();
   }
 
 #if QT_VERSION < 0x050000
@@ -70,16 +55,12 @@ class spoton_web_server_tcp_server: public QTcpServer
   void incomingConnection(qintptr socketDescriptor);
 #endif
 
- private:
-  QQueue<QPointer<QSslSocket> > m_queue;
-
  protected:
   QByteArray m_certificate;
   QByteArray m_privateKey;
 
  signals:
-  void modeChanged(QSslSocket::SslMode mode);
-  void newConnection(void);
+  void newConnection(const qint64 socketDescriptor);
 };
 
 class spoton_web_server: public spoton_web_server_tcp_server
@@ -93,29 +74,26 @@ class spoton_web_server: public spoton_web_server_tcp_server
 
  private:
 #if QT_VERSION < 0x050000
-  QHash<int, QByteArray> m_webSocketData;
   QHash<int, QFuture<void> > m_futures;
 #else
-  QHash<qintptr, QByteArray> m_webSocketData;
   QHash<qintptr, QFuture<void> > m_futures;
 #endif
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
-  void process(QPointer<QSslSocket> socket,
+  void process(const QPair<QByteArray, QByteArray> &credentials,
+	       const qint64 socketDescriptor);
+  void process(QSslSocket *socket,
 	       const QByteArray &data,
 	       const QPair<QString, QString> &address);
-  void processLocal(QPointer<QSslSocket> socket, const QByteArray &data);
+  void processLocal(QSslSocket *socket, const QByteArray &data);
 
  private slots:
-  void slotClientConnected(void);
-  void slotClientDisconnected(void);
-  void slotFinished(QPointer<QSslSocket> socket, const QByteArray &data);
-  void slotModeChanged(QSslSocket::SslMode mode);
-  void slotReadyRead(void);
+  void slotClientConnected(const qint64 socketDescriptor);
+  void slotFinished(const qint64 socketDescriptor);
   void slotTimeout(void);
 
  signals:
-  void finished(QPointer<QSslSocket> socket, const QByteArray &data);
+  void finished(const qint64 socketDescriptor);
 };
 
 #endif

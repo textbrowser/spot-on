@@ -37,6 +37,9 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
+static int s_waitForBytesWritten = 3500;
+static int s_waitForEncrypted = 5500;
+static int s_waitForReadyRead = 5500;
 static quint64 s_urlLimit = 10;
 
 #if QT_VERSION < 0x050000
@@ -45,73 +48,7 @@ void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 {
-  QPointer<QSslSocket> socket;
-
-  try
-    {
-      socket = new QSslSocket(this);
-
-      if(socket->setSocketDescriptor(socketDescriptor))
-	{
-	  socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
-	  connect(socket,
-		  SIGNAL(modeChanged(QSslSocket::SslMode)),
-		  this,
-		  SIGNAL(modeChanged(QSslSocket::SslMode)));
-
-	  QSslConfiguration configuration;
-	  QString sslCS
-	    (spoton_kernel::
-	     setting("gui/sslControlString",
-		     spoton_common::SSL_CONTROL_STRING).toString());
-
-	  configuration.setLocalCertificate(QSslCertificate(m_certificate));
-	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	  configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040806
-	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableEmptyFragments, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
-#if QT_VERSION >= 0x050501
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionPersistence, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionSharing, true);
-#endif
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionTickets, true);
-#endif
-#if QT_VERSION >= 0x050501
-	  spoton_crypt::setSslCiphers
-	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
-#else
-	  spoton_crypt::setSslCiphers
-	    (socket->supportedCiphers(), sslCS, configuration);
-#endif
-	  socket->setSslConfiguration(configuration);
-	  socket->startServerEncryption();
-	  m_queue.enqueue(socket);
-	  emit newConnection();
-	}
-      else
-	{
-	  socket->deleteLater();
-	  spoton_misc::closeSocket(socketDescriptor);
-	}
-    }
-  catch(...)
-    {
-      m_queue.removeOne(socket);
-
-      if(socket)
-	socket->deleteLater();
-
-      spoton_misc::closeSocket(socketDescriptor);
-      spoton_misc::logError
-	("spoton_web_server_tcp_server::incomingConnection(): socket deleted.");
-    }
+  emit newConnection(static_cast<qint64> (socketDescriptor));
 }
 
 spoton_web_server::spoton_web_server(QObject *parent):
@@ -127,13 +64,13 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
-	  SIGNAL(finished(QPointer<QSslSocket>, const QByteArray &)),
+	  SIGNAL(finished(const qint64)),
 	  this,
-	  SLOT(slotFinished(QPointer<QSslSocket>, const QByteArray &)));
+	  SLOT(slotFinished(const qint64)));
   connect(this,
-	  SIGNAL(newConnection(void)),
+	  SIGNAL(newConnection(const qint64)),
 	  this,
-	  SLOT(slotClientConnected(void)));
+	  SLOT(slotClientConnected(const qint64)));
   m_generalTimer.start(2500);
 }
 
@@ -154,7 +91,6 @@ spoton_web_server::~spoton_web_server()
     }
 
   m_generalTimer.stop();
-  m_webSocketData.clear();
 }
 
 QSqlDatabase spoton_web_server::database(void) const
@@ -212,10 +148,127 @@ QSqlDatabase spoton_web_server::database(void) const
 
 int spoton_web_server::clientCount(void) const
 {
-  return m_webSocketData.size();
+  return m_futures.size();
 }
 
-void spoton_web_server::process(QPointer<QSslSocket> socket,
+void spoton_web_server::process
+(const QPair<QByteArray, QByteArray> &credentials,
+ const qint64 socketDescriptor)
+{
+  QScopedPointer<QSslSocket> socket(new QSslSocket());
+
+  if(!socket->setSocketDescriptor(socketDescriptor))
+    {
+      emit finished(socketDescriptor);
+      spoton_misc::closeSocket(socketDescriptor);
+      return;
+    }
+
+  /*
+  ** Prepare the socket!
+  */
+
+  socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+
+  QSslConfiguration configuration;
+  QString sslCS
+    (spoton_kernel::setting("gui/sslControlString",
+			    spoton_common::SSL_CONTROL_STRING).toString());
+
+  configuration.setLocalCertificate(QSslCertificate(credentials.first));
+  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+  configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
+#if QT_VERSION >= 0x040806
+  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
+  configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
+  configuration.setSslOption(QSsl::SslOptionDisableLegacyRenegotiation, true);
+#if QT_VERSION >= 0x050501
+  configuration.setSslOption(QSsl::SslOptionDisableSessionPersistence, true);
+  configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
+#endif
+  configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
+#endif
+#if QT_VERSION >= 0x050501
+  spoton_crypt::setSslCiphers
+    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
+#else
+  spoton_crypt::setSslCiphers(socket->supportedCiphers(), sslCS, configuration);
+#endif
+  socket->setSslConfiguration(configuration);
+  socket->startServerEncryption();
+  socket->waitForEncrypted(s_waitForEncrypted);
+
+  /*
+  ** Read the socket data!
+  */
+
+  socket->waitForReadyRead(s_waitForReadyRead);
+
+  QByteArray data;
+
+  while(socket->bytesAvailable() > 0)
+    {
+      data.append(socket->readAll().toLower());
+
+      if(data.length() >
+	 spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
+	break;
+    }
+
+  if(data.endsWith("\r\n\r\n") &&
+     data.simplified().trimmed().startsWith("get / http/1."))
+    {
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+      socket->write(s_search);
+      socket->waitForBytesWritten(s_waitForBytesWritten);
+    }
+  else if(data.endsWith("\r\n\r\n") &&
+	  data.simplified().trimmed().startsWith("get /current="))
+    {
+      data = data.simplified().trimmed().mid(5); // get /c <- c
+      data = data.mid(0, data.indexOf(' '));
+
+      QPair<QString, QString> address (socket->localAddress().toString(),
+				       QString::number(socket->localPort()));
+
+      process(socket.data(), data, address);
+    }
+  else if(data.endsWith("\r\n\r\n") &&
+	  data.simplified().trimmed().startsWith("get /local-"))
+    {
+      if(spoton_kernel::
+	 setting("gui/web_server_serve_local_content", false).toBool())
+	{
+	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
+	  data = data.mid(0, data.indexOf(' '));
+	  processLocal(socket.data(), data);
+	}
+      else
+	{
+	  socket->write
+	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	     "charset=utf-8\r\n\r\n");
+	  socket->write(s_search);
+	  socket->waitForBytesWritten(s_waitForBytesWritten);
+	}
+    }
+  else if(data.simplified().startsWith("post / http/1.") ||
+	  data.simplified().startsWith("post /current="))
+    {
+      data = data.simplified().trimmed();
+      data = data.mid(data.lastIndexOf("current="));
+
+      QPair<QString, QString> address (socket->localAddress().toString(),
+				       QString::number(socket->localPort()));
+
+      process(socket.data(), data, address);
+    }
+
+  emit finished(socketDescriptor);
+}
+
+void spoton_web_server::process(QSslSocket *socket,
 				const QByteArray &data,
 				const QPair<QString, QString> &address)
 {
@@ -223,7 +276,15 @@ void spoton_web_server::process(QPointer<QSslSocket> socket,
 
   if(list.size() != 4)
     {
-      emit finished(socket, QByteArray());
+      if(socket)
+	{
+	  socket->write
+	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	     "charset=utf-8\r\n\r\n");
+	  socket->write(s_search);
+	  socket->waitForBytesWritten(s_waitForBytesWritten);
+	}
+
       return;
     }
 
@@ -245,7 +306,11 @@ void spoton_web_server::process(QPointer<QSslSocket> socket,
 
   if(current > pages)
     {
-      emit finished(socket, QByteArray());
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	 "charset=utf-8\r\n\r\n");
+      socket->write(s_search);
+      socket->waitForBytesWritten(s_waitForBytesWritten);
       return;
     }
 
@@ -255,7 +320,11 @@ void spoton_web_server::process(QPointer<QSslSocket> socket,
 
   if(!crypt)
     {
-      emit finished(socket, QByteArray());
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	 "charset=utf-8\r\n\r\n");
+      socket->write(s_search);
+      socket->waitForBytesWritten(s_waitForBytesWritten);
       return;
     }
 
@@ -670,11 +739,11 @@ void spoton_web_server::process(QPointer<QSslSocket> socket,
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  emit finished(socket, html.toUtf8());
+  socket->write(html.toUtf8());
+  socket->waitForBytesWritten(s_waitForBytesWritten);
 }
 
-void spoton_web_server::processLocal(QPointer<QSslSocket> socket,
-				     const QByteArray &data)
+void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
 {
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
@@ -682,7 +751,15 @@ void spoton_web_server::processLocal(QPointer<QSslSocket> socket,
 
   if(!crypt)
     {
-      emit finished(socket, QByteArray());
+      if(socket)
+	{
+	  socket->write
+	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	     "charset=utf-8\r\n\r\n");
+	  socket->write(s_search);
+	  socket->waitForBytesWritten(s_waitForBytesWritten);
+	}
+
       return;
     }
 
@@ -728,196 +805,25 @@ void spoton_web_server::processLocal(QPointer<QSslSocket> socket,
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  emit finished(socket, html);
+  socket->write(html);
+  socket->waitForBytesWritten(s_waitForBytesWritten);
 }
 
-void spoton_web_server::slotClientConnected(void)
+void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
 {
-  QPointer<QSslSocket> socket(nextConnection());
+  if(socketDescriptor < 0)
+    return;
 
-  if(socket)
-    {
-      connect(socket,
-	      SIGNAL(disconnected(void)),
-	      this,
-	      SLOT(slotClientDisconnected(void)));
-      connect(socket,
-	      SIGNAL(modeChanged(QSslSocket::SslMode)),
-	      this,
-	      SLOT(slotModeChanged(QSslSocket::SslMode)));
-      connect(socket,
-	      SIGNAL(readyRead(void)),
-	      this,
-	      SLOT(slotReadyRead(void)));
-    }
+  QPair<QByteArray, QByteArray> credentials(m_certificate, m_privateKey);
+
+  m_futures[socketDescriptor] = QtConcurrent::run
+    (this, &spoton_web_server::process, credentials, socketDescriptor);
 }
 
-void spoton_web_server::slotClientDisconnected(void)
+void spoton_web_server::slotFinished(const qint64 socketDescriptor)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
-
-  if(socket)
-    {
-      spoton_misc::logError
-	(QString("spoton_web_server::slotClientDisconnected(): "
-		 "client %1:%2 disconnected.").
-	 arg(socket->peerAddress().toString()).
-	 arg(socket->peerPort()));
-
-#if QT_VERSION < 0x050000
-      int fd = socket->socketDescriptor();
-#else
-      qintptr fd = socket->socketDescriptor();
-#endif
-
-      m_futures.remove(fd);
-      m_webSocketData.remove(fd);
-      socket->deleteLater();
-    }
-}
-
-void spoton_web_server::slotFinished(QPointer<QSslSocket> socket,
-				     const QByteArray &data)
-{
-  if(socket &&
-     socket->isEncrypted() &&
-     socket->state() == QAbstractSocket::ConnectedState)
-    {
-      if(data.isEmpty())
-	{
-	  socket->write
-	    ("HTTP/1.1 200 OK\r\n"
-	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
-	  socket->write(s_search);
-	}
-      else
-	socket->write(data);
-
-      socket->close();
-    }
-  else if(socket)
-    socket->deleteLater();
-}
-
-void spoton_web_server::slotModeChanged(QSslSocket::SslMode mode)
-{
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
-
-  if(!socket)
-    {
-      spoton_misc::logError
-	("spoton_web_server::slotModeChanged(): empty socket object.");
-      return;
-    }
-
-  if(mode == QSslSocket::UnencryptedMode)
-    {
-      spoton_misc::logError
-	(QString("spoton_web_server::slotModeChanged(): "
-		 "plaintext mode. Disconnecting socket %1:%2.").
-	 arg(socket->peerAddress().toString()).
-	 arg(socket->peerPort()));
-      socket->abort();
-    }
-}
-
-void spoton_web_server::slotReadyRead(void)
-{
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
-
-  if(!socket)
-    {
-      spoton_misc::logError
-	("spoton_web_server::slotReadyRead(): empty socket object.");
-      return;
-    }
-
-  /*
-  ** What if socketDescriptor() equals negative one?
-  */
-
-  while(socket->bytesAvailable() > 0)
-    m_webSocketData[socket->socketDescriptor()].append(socket->readAll());
-
-  QByteArray data(m_webSocketData.value(socket->socketDescriptor()).toLower());
-
-  if(data.endsWith("\r\n\r\n") &&
-     data.simplified().trimmed().startsWith("get / http/1."))
-    {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-      socket->close();
-    }
-  else if(data.endsWith("\r\n\r\n") &&
-	  data.simplified().trimmed().startsWith("get /current="))
-    {
-      data = data.simplified().trimmed().mid(5); // get /c <- c
-      data = data.mid(0, data.indexOf(' '));
-
-      QPair<QString, QString> address (socket->localAddress().toString(),
-				       QString::number(socket->localPort()));
-
-      m_futures[socket->socketDescriptor()] =
-	QtConcurrent::run(this,
-			  &spoton_web_server::process,
-			  socket,
-			  data,
-			  address);
-    }
-  else if(data.endsWith("\r\n\r\n") &&
-	  data.simplified().trimmed().startsWith("get /local-"))
-    {
-      if(spoton_kernel::
-	 setting("gui/web_server_serve_local_content", false).toBool())
-	{
-	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
-	  data = data.mid(0, data.indexOf(' '));
-	  m_futures[socket->socketDescriptor()] =
-	    QtConcurrent::run(this,
-			      &spoton_web_server::processLocal,
-			      socket,
-			      data);
-	}
-      else
-	{
-	  socket->write
-	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	     "charset=utf-8\r\n\r\n");
-	  socket->write(s_search);
-	  socket->close();
-	}
-    }
-  else if(data.simplified().startsWith("post / http/1.") ||
-	  data.simplified().startsWith("post /current="))
-    {
-      data = data.simplified().trimmed();
-      data = data.mid(data.lastIndexOf("current="));
-
-      QPair<QString, QString> address (socket->localAddress().toString(),
-				       QString::number(socket->localPort()));
-
-      m_futures[socket->socketDescriptor()] =
-	QtConcurrent::run(this,
-			  &spoton_web_server::process,
-			  socket,
-			  data,
-			  address);
-    }
-  else if(m_futures.value(socket->socketDescriptor()).isFinished())
-    socket->close();
-
-  if(m_webSocketData.value(socket->socketDescriptor()).size() >
-     spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
-    {
-      spoton_misc::logError
-	(QString("spoton_web_server::slotReadyRead(): "
-		 "container for socket %1:%2 contains too much data. "
-		 "Discarding data.").
-	 arg(socket->localAddress().toString()).
-	 arg(socket->localPort()));
-      socket->close();
-    }
+  m_futures.remove(socketDescriptor);
+  spoton_misc::closeSocket(socketDescriptor);
 }
 
 void spoton_web_server::slotTimeout(void)
