@@ -823,7 +823,6 @@ void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
 void spoton_web_server::slotFinished(const qint64 socketDescriptor)
 {
   m_futures.remove(socketDescriptor);
-  spoton_misc::closeSocket(socketDescriptor);
 }
 
 void spoton_web_server::slotTimeout(void)
@@ -834,10 +833,6 @@ void spoton_web_server::slotTimeout(void)
   if(port == 0)
     {
       close();
-
-      foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-	socket->deleteLater();
-
       m_certificate.clear();
       m_privateKey.clear();
       return;
@@ -847,10 +842,6 @@ void spoton_web_server::slotTimeout(void)
     if(port != serverPort())
       {
 	close();
-
-	foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
-	  socket->deleteLater();
-
 	m_certificate.clear();
 	m_privateKey.clear();
       }
