@@ -1,7 +1,12 @@
-Exporting the URL server.
+Public Server SSH Configuration
+
+> sudo nano /etc/ssh/sshd_config
+  GatewayPorts yes
+
+Private Server
 
 > ssh -CR 8080:192.168.178.xyz:8080 user@public-server.org
 
-Accessing via some browser.
+Accessing
 
-> https://public-server.org:8080
+https://public-server.org:8080
