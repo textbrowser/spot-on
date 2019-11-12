@@ -1,0 +1,7 @@
+Exporting the URL server.
+
+> ssh -CR 8080:192.168.178.xyz:8080 user@public-server.org
+
+Accessing via some browser.
+
+> https://public-server.org:8080
