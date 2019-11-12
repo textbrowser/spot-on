@@ -841,8 +841,6 @@ void spoton_web_server::slotReadyRead(void)
 
   QByteArray data(m_webSocketData.value(socket->socketDescriptor()).toLower());
 
-  qDebug() << data;
-
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1."))
     {
