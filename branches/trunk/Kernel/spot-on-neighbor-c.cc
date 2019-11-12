@@ -549,13 +549,9 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 		  if(m_waitforbyteswritten_msecs > 0)
 		    m_tcpSocket->waitForBytesWritten
 		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-		  else
-		    m_tcpSocket->flush();
 		}
 	      else if(m_waitforbyteswritten_msecs > 0)
 		m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
-	      else
-		m_tcpSocket->flush();
 	    }
 	}
       else if(m_udpSocket)

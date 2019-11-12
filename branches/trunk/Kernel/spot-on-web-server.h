@@ -56,7 +56,7 @@ class spoton_web_server_tcp_server: public QTcpServer
       }
   }
 
-  QSslSocket *nextPendingConnection(void)
+  QPointer<QSslSocket> nextConnection(void)
   {
     if(m_queue.isEmpty())
       return 0;
@@ -101,21 +101,21 @@ class spoton_web_server: public spoton_web_server_tcp_server
 #endif
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
-  void process(QSslSocket *socket,
+  void process(QPointer<QSslSocket> socket,
 	       const QByteArray &data,
 	       const QPair<QString, QString> &address);
-  void processLocal(QSslSocket *socket, const QByteArray &data);
+  void processLocal(QPointer<QSslSocket> socket, const QByteArray &data);
 
  private slots:
   void slotClientConnected(void);
   void slotClientDisconnected(void);
-  void slotFinished(QSslSocket *socket, const QByteArray &data);
+  void slotFinished(QPointer<QSslSocket> socket, const QByteArray &data);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotReadyRead(void);
   void slotTimeout(void);
 
  signals:
-  void finished(QSslSocket *socket, const QByteArray &data);
+  void finished(QPointer<QSslSocket> socket, const QByteArray &data);
 };
 
 #endif

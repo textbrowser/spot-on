@@ -485,6 +485,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   qRegisterMetaType<QHostAddress> ("QHostAddress");
   qRegisterMetaType<QPairByteArrayByteArray> ("QPairByteArrayByteArray");
   qRegisterMetaType<QPairByteArrayInt64List> ("QPairByteArrayInt64List");
+  qRegisterMetaType<QPointer<QSslSocket> > ("QPointerQSslSocket");
   qRegisterMetaType<QStringByteArrayHash> ("QStringByteArrayHash");
 #if QT_VERSION >= 0x050000
   qRegisterMetaType<qintptr> ("qintptr");
