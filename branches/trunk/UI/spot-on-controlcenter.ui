@@ -4463,7 +4463,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-127</y>
+                 <y>0</y>
                  <width>746</width>
                  <height>709</height>
                 </rect>
@@ -5383,7 +5383,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>912</width>
+             <width>882</width>
              <height>1261</height>
             </rect>
            </property>
@@ -7661,6 +7661,9 @@
                 </property>
                 <property name="openExternalLinks">
                  <bool>true</bool>
+                </property>
+                <property name="textInteractionFlags">
+                 <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                 </property>
                </widget>
               </item>

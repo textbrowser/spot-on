@@ -5062,7 +5062,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>614</width>
-             <height>452</height>
+             <height>393</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5137,7 +5137,7 @@ color: rgb(255, 255, 255);
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-133</y>
+                 <y>0</y>
                  <width>706</width>
                  <height>707</height>
                 </rect>
@@ -6326,7 +6326,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>882</width>
+             <width>912</width>
              <height>1349</height>
             </rect>
            </property>
@@ -7799,8 +7799,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
-             <height>1053</height>
+             <width>493</width>
+             <height>1091</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9196,6 +9196,9 @@ color: rgb(255, 255, 255);
                 </property>
                 <property name="openExternalLinks">
                  <bool>true</bool>
+                </property>
+                <property name="textInteractionFlags">
+                 <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                 </property>
                </widget>
               </item>
