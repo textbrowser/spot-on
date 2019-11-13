@@ -334,12 +334,14 @@ void spoton_web_server::process(QSslSocket *socket,
 
   if(db.isOpen())
     {
+      QElapsedTimer elapsed;
       QString link(list.value(1).toLower());
       QString querystr("");
       QString search("");
       QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
 
+      elapsed.start();
       search = list.value(3);
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
@@ -549,6 +551,10 @@ void spoton_web_server::process(QSslSocket *socket,
 	  html.append(s_search);
 	  html.replace("value=\"\"", QString("value=\"%1\"").arg(search));
 	  html.remove("</html>");
+	  html.append("<p><font color=\"#696969\" size=2>");
+	  html.append
+	    (QString("Query completed in %1 second(s).</font></p>").
+	     arg(qAbs(static_cast<double> (elapsed.elapsed())) / 1000.0));
 	  html.append("<div id=\"footer\">");
 
 	  while(query.next())

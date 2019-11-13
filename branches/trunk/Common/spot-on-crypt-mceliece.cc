@@ -110,7 +110,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
     return QByteArray();
 
   QByteArray bytes;
-  spoton_mceliece *mceliece = new spoton_mceliece(publicKey);
+  QScopedPointer<spoton_mceliece> mceliece(new spoton_mceliece(publicKey));
   std::stringstream ciphertext;
 
   if(mceliece->encrypt(data.constData(),
@@ -129,7 +129,6 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
   if(bytes.isEmpty())
     spoton_misc::logError("spoton_crypt::publicKeyEncryptMcEliece(): failure.");
 
-  delete mceliece;
   return bytes;
 #else
   Q_UNUSED(data);
@@ -146,8 +145,8 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
   if(!data.startsWith("mceliece-public-key-"))
     return keySize;
 
-  spoton_mceliece *mceliece = new spoton_mceliece
-    (qCompress(data)); // A compressed key is expected.
+  QScopedPointer<spoton_mceliece> mceliece
+    (new spoton_mceliece(qCompress(data))); // A compressed key is expected.
 
   if(data.startsWith("mceliece-public-key-000"))
     keySize = QString("m%1t%2").arg(mceliece->m()).arg(mceliece->t());
@@ -157,8 +156,6 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
   else
     keySize = QString("m%1t%2-fujisaki-okamoto-b").
       arg(mceliece->m()).arg(mceliece->t());
-
-  delete mceliece;
 #else
   Q_UNUSED(data);
 #endif
@@ -244,7 +241,8 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
   else
     return;
 
-  spoton_mceliece *mceliece = new spoton_mceliece(conversion, m, t);
+  QScopedPointer<spoton_mceliece> mceliece
+    (new spoton_mceliece(conversion, m, t));
 
   if(mceliece->generatePrivatePublicKeys())
     {
@@ -268,8 +266,6 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
 	if(ok)
 	  *ok = true;
     }
-
-  delete mceliece;
 #else
   Q_UNUSED(keySize);
   Q_UNUSED(privateKey);
