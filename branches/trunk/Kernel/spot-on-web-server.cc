@@ -76,6 +76,9 @@ spoton_web_server::spoton_web_server(QObject *parent):
 
 spoton_web_server::~spoton_web_server()
 {
+  close();
+  m_generalTimer.stop();
+
 #if QT_VERSION < 0x050000
   QMutableHashIterator<int, QFuture<void> > it(m_futures);
 #else
@@ -89,8 +92,6 @@ spoton_web_server::~spoton_web_server()
       it.value().waitForFinished();
       it.remove();
     }
-
-  m_generalTimer.stop();
 }
 
 QSqlDatabase spoton_web_server::database(void) const
@@ -745,7 +746,17 @@ void spoton_web_server::process(QSslSocket *socket,
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  socket->write(html.toUtf8());
+
+  if(html.isEmpty())
+    {
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	 "charset=utf-8\r\n\r\n");
+      socket->write(s_search);
+    }
+  else
+    socket->write(html.toUtf8());
+
   socket->waitForBytesWritten(s_waitForBytesWritten);
 }
 
@@ -811,7 +822,17 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
-  socket->write(html);
+
+  if(html.isEmpty())
+    {
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
+	 "charset=utf-8\r\n\r\n");
+      socket->write(s_search);
+    }
+  else
+    socket->write(html);
+
   socket->waitForBytesWritten(s_waitForBytesWritten);
 }
 
@@ -822,8 +843,11 @@ void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
 
   QPair<QByteArray, QByteArray> credentials(m_certificate, m_privateKey);
 
-  m_futures[socketDescriptor] = QtConcurrent::run
-    (this, &spoton_web_server::process, credentials, socketDescriptor);
+  m_futures.insert
+    (socketDescriptor,
+     QtConcurrent::run(this,
+		       &spoton_web_server::process,
+		       credentials, socketDescriptor));
 }
 
 void spoton_web_server::slotFinished(const qint64 socketDescriptor)

@@ -74,9 +74,9 @@ class spoton_web_server: public spoton_web_server_tcp_server
 
  private:
 #if QT_VERSION < 0x050000
-  QHash<int, QFuture<void> > m_futures;
+  QMultiHash<int, QFuture<void> > m_futures;
 #else
-  QHash<qintptr, QFuture<void> > m_futures;
+  QMultiHash<qintptr, QFuture<void> > m_futures;
 #endif
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
