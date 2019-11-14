@@ -255,6 +255,7 @@ void spoton_web_server::process
     {
       data = data.simplified().trimmed();
       data = data.mid(data.lastIndexOf("current="));
+      data = data.mid(0, data.indexOf(' '));
 
       QPair<QString, QString> address (socket->localAddress().toString(),
 				       QString::number(socket->localPort()));
@@ -654,6 +655,9 @@ void spoton_web_server::process(QSslSocket *socket,
 		  count += 1;
 		}
 	    }
+
+	  if(count == 0)
+	    count = 1;
 
 	  if(link == "n")
 	    {
