@@ -79,11 +79,7 @@ spoton_web_server::~spoton_web_server()
   close();
   m_generalTimer.stop();
 
-#if QT_VERSION < 0x050000
-  QMutableHashIterator<int, QFuture<void> > it(m_futures);
-#else
-  QMutableHashIterator<qintptr, QFuture<void> > it(m_futures);
-#endif
+  QMutableHashIterator<qint64, QFuture<void> > it(m_futures);
 
   while(it.hasNext())
     {
@@ -852,7 +848,11 @@ void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
 
 void spoton_web_server::slotFinished(const qint64 socketDescriptor)
 {
-  m_futures.remove(socketDescriptor);
+  QList<QFuture<void> > list(m_futures.values(socketDescriptor));
+
+  for(int i = 0; i < list.size(); i++)
+    if(list.at(i).isFinished())
+      m_futures.remove(socketDescriptor, list.at(i));
 }
 
 void spoton_web_server::slotTimeout(void)

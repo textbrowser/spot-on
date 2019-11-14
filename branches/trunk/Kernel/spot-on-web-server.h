@@ -73,11 +73,7 @@ class spoton_web_server: public spoton_web_server_tcp_server
   int clientCount(void) const;
 
  private:
-#if QT_VERSION < 0x050000
-  QMultiHash<int, QFuture<void> > m_futures;
-#else
-  QMultiHash<qintptr, QFuture<void> > m_futures;
-#endif
+  QMultiHash<qint64, QFuture<void> > m_futures;
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
   void process(const QPair<QByteArray, QByteArray> &credentials,
