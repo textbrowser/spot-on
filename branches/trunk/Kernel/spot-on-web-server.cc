@@ -37,9 +37,6 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static int s_waitForBytesWritten = 5500;
-static int s_waitForEncrypted = 5500;
-static int s_waitForReadyRead = 5500;
 static quint64 s_urlLimit = 10;
 
 #if QT_VERSION < 0x050000
@@ -54,6 +51,8 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):
   spoton_web_server_tcp_server(parent)
 {
+  m_abort = 0;
+
   QFile file(":/search.html");
 
   file.open(QFile::ReadOnly);
@@ -77,6 +76,7 @@ spoton_web_server::spoton_web_server(QObject *parent):
 spoton_web_server::~spoton_web_server()
 {
   close();
+  m_abort.fetchAndStoreOrdered(1);
   m_generalTimer.stop();
 
   QMutableHashIterator<qint64, QFuture<void> > it(m_futures);
@@ -193,13 +193,18 @@ void spoton_web_server::process
 #endif
   socket->setSslConfiguration(configuration);
   socket->startServerEncryption();
-  socket->waitForEncrypted(s_waitForEncrypted);
+
+  for(int i = 1; i <= 30; i++)
+    if(m_abort.fetchAndAddOrdered(0) || socket->waitForEncrypted(1000))
+      break;
 
   /*
   ** Read the socket data!
   */
 
-  socket->waitForReadyRead(s_waitForReadyRead);
+  for(int i = 1; i <= 30; i++)
+    if(m_abort.fetchAndAddOrdered(0) || socket->waitForReadyRead(1000))
+      break;
 
   QByteArray data;
 
@@ -210,6 +215,8 @@ void spoton_web_server::process
       if(data.length() >
 	 spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
 	break;
+
+      socket->waitForReadyRead(250);
     }
 
   if(data.endsWith("\r\n\r\n") &&
@@ -218,7 +225,10 @@ void spoton_web_server::process
       socket->write
 	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
       socket->write(s_search);
-      socket->waitForBytesWritten(s_waitForBytesWritten);
+
+      for(int i = 1; i <= 30; i++)
+	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	  break;
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
@@ -247,7 +257,11 @@ void spoton_web_server::process
 	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
 	     "charset=utf-8\r\n\r\n");
 	  socket->write(s_search);
-	  socket->waitForBytesWritten(s_waitForBytesWritten);
+
+	  for(int i = 1; i <= 30; i++)
+	    if(m_abort.fetchAndAddOrdered(0) ||
+	       socket->waitForBytesWritten(1000))
+	      break;
 	}
     }
   else if(data.simplified().startsWith("post / http/1.") ||
@@ -280,7 +294,11 @@ void spoton_web_server::process(QSslSocket *socket,
 	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
 	     "charset=utf-8\r\n\r\n");
 	  socket->write(s_search);
-	  socket->waitForBytesWritten(s_waitForBytesWritten);
+
+	  for(int i = 1; i <= 30; i++)
+	    if(m_abort.fetchAndAddOrdered(0) ||
+	       socket->waitForBytesWritten(1000))
+	      break;
 	}
 
       return;
@@ -308,7 +326,11 @@ void spoton_web_server::process(QSslSocket *socket,
 	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
 	 "charset=utf-8\r\n\r\n");
       socket->write(s_search);
-      socket->waitForBytesWritten(s_waitForBytesWritten);
+
+      for(int i = 1; i <= 30; i++)
+	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	  break;
+
       return;
     }
 
@@ -322,7 +344,11 @@ void spoton_web_server::process(QSslSocket *socket,
 	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
 	 "charset=utf-8\r\n\r\n");
       socket->write(s_search);
-      socket->waitForBytesWritten(s_waitForBytesWritten);
+
+      for(int i = 1; i <= 30; i++)
+	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	  break;
+
       return;
     }
 
@@ -757,7 +783,9 @@ void spoton_web_server::process(QSslSocket *socket,
   else
     socket->write(html.toUtf8());
 
-  socket->waitForBytesWritten(s_waitForBytesWritten);
+  for(int i = 1; i <= 30; i++)
+    if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+      break;
 }
 
 void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
@@ -774,7 +802,11 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
 	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
 	     "charset=utf-8\r\n\r\n");
 	  socket->write(s_search);
-	  socket->waitForBytesWritten(s_waitForBytesWritten);
+
+	  for(int i = 1; i <= 30; i++)
+	    if(m_abort.fetchAndAddOrdered(0) ||
+	       socket->waitForBytesWritten(1000))
+	      break;
 	}
 
       return;
@@ -833,7 +865,9 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
   else
     socket->write(html);
 
-  socket->waitForBytesWritten(s_waitForBytesWritten);
+  for(int i = 1; i <= 30; i++)
+    if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+      break;
 }
 
 void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)

@@ -73,6 +73,7 @@ class spoton_web_server: public spoton_web_server_tcp_server
   int clientCount(void) const;
 
  private:
+  QAtomicInt m_abort;
   QMultiHash<qint64, QFuture<void> > m_futures;
   QTimer m_generalTimer;
   QSqlDatabase database(void) const;
