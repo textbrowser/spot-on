@@ -857,6 +857,16 @@ void spoton_web_server::slotFinished(const qint64 socketDescriptor)
 
 void spoton_web_server::slotTimeout(void)
 {
+  QMutableHashIterator<qint64, QFuture<void> > it(m_futures);
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value().isFinished())
+	it.remove();
+    }
+
   quint16 port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
