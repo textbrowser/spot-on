@@ -37,7 +37,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
-static int s_waitForBytesWritten = 3500;
+static int s_waitForBytesWritten = 5500;
 static int s_waitForEncrypted = 5500;
 static int s_waitForReadyRead = 5500;
 static quint64 s_urlLimit = 10;
