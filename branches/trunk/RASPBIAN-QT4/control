@@ -4,7 +4,7 @@ Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
 Section: Science
-Version: 2019.11.11
+Version: 2019.11.25
 Description: Spot-On
  Welcome to Spot-On on ARM!
  A spot-on.desktop file will also be installed in /usr/share/applications/.

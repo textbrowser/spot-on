@@ -32,4 +32,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2019.11.11_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2019.11.25_amd64.deb
