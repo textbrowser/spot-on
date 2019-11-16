@@ -448,7 +448,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>746</width>
+                <width>436</width>
                 <height>504</height>
                </rect>
               </property>
@@ -2071,8 +2071,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>717</width>
+             <height>452</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2750,7 +2750,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>271</width>
+                     <width>281</width>
                      <height>1510</height>
                     </rect>
                    </property>
@@ -3232,8 +3232,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>757</width>
+             <height>263</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4387,8 +4387,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>630</width>
+             <height>448</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4464,7 +4464,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>746</width>
+                 <width>726</width>
                  <height>709</height>
                 </rect>
                </property>
@@ -5582,7 +5582,7 @@
                  <item>
                   <widget class="QLabel" name="label_35">
                    <property name="text">
-                    <string>The below cryptographic algorithms will be applied to the various communication protocols. Some protocols, however, may have additional restrictions.</string>
+                    <string>The below cryptographic algorithms will be applied to the various communication protocols. Some protocols may have additional restrictions.</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
@@ -6485,7 +6485,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>756</width>
+             <width>636</width>
              <height>727</height>
             </rect>
            </property>
@@ -7524,8 +7524,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>756</width>
-             <height>763</height>
+             <width>702</width>
+             <height>764</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8188,8 +8188,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>292</width>
+             <height>166</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
