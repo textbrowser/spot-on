@@ -205,6 +205,7 @@ Completed Items
 147.   The data stored in shared.db is not authenticated. Uniqueness
        is not properly defined. Dooble integration separated.
 148.   Allow selection of Web link in URLs.
+149.   URLs statistics.
 
 Ignored Items
 
@@ -217,7 +218,7 @@ Ignored Items
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
 6.     Allow for other ciphers besides AES for e-mail.
-7.     URLs statistics.
+7.     Per-participant permissions.
 8.     Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
 9.     Database entries containing hashes can be maliciously twisted. Encrypt?
@@ -237,7 +238,6 @@ Ignored Items
 20.    Weather feeds.
 21.    Create a user's configuration database. Store key types too.
 22.    C++11, unique_ptr and malloc().
-23.    Per-participant permissions.
 
 Remaining Items
 
