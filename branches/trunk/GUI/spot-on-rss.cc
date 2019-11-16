@@ -192,6 +192,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotPurgeDaysChanged(int)));
+  connect(m_ui.record_notices,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotRecordNotices(bool)));
   connect(m_ui.refresh_timeline,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -292,6 +296,8 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   m_ui.download_interval->setValue(dvalue);
   m_ui.periodic_import->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
+  m_ui.record_notices->setChecked
+    (settings.value("gui/rss_record_notices", false).toBool());
   ivalue = qBound
     (m_ui.purge_days->minimum(),
      settings.value("gui/rss_purge_days", 1).toInt(),
@@ -2387,7 +2393,7 @@ void spoton_rss::slotImport(void)
 
 void spoton_rss::slotLogError(const QString &error)
 {
-  if(error.trimmed().isEmpty())
+  if(error.trimmed().isEmpty() || !m_ui.record_notices->isChecked())
     return;
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -2474,6 +2480,13 @@ void spoton_rss::slotPurgeDaysChanged(int value)
   QSettings settings;
 
   settings.setValue("gui/rss_purge_days", value);
+}
+
+void spoton_rss::slotRecordNotices(bool state)
+{
+  QSettings settings;
+
+  settings.value("gui/rss_record_notices", state);
 }
 
 void spoton_rss::slotRefreshTimeline(void)
