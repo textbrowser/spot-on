@@ -2811,7 +2811,7 @@ void spoton::slotExternalIp(int index)
 	m_externalAddressDiscovererTimer.start(60000);
       else
 	{
-	  m_externalAddress.clear();
+	  m_externalAddress->clear();
 	  m_externalAddressDiscovererTimer.stop();
 	}
     }

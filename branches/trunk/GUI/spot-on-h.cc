@@ -846,6 +846,19 @@ void spoton::slotPrepareContextMenuMirrors(void)
   prepareContextMenuMirrors();
 }
 
+void spoton::slotSaveExternalIPUrl(void)
+{
+  m_optionsUi.external_ip_url->setText
+    (m_optionsUi.external_ip_url->text().trimmed());
+  m_optionsUi.external_ip_url->selectAll();
+  m_settings["gui/external_ip_url"] = m_optionsUi.external_ip_url->text();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/external_ip_url", m_optionsUi.external_ip_url->text());
+}
+
 void spoton::slotSetSocketOptions(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());

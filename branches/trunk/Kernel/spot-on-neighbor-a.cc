@@ -204,7 +204,10 @@ spoton_neighbor::spoton_neighbor
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
-  m_externalAddress = new spoton_external_address(this);
+  m_externalAddress = new spoton_external_address
+    (QUrl::fromUserInput(spoton_kernel::setting("gui/external_ip_url", "").
+			 toString()),
+     this);
   m_id = -1; /*
 	     ** This neighbor was created by a listener. We must
 	     ** obtain a valid id at some point (setId())!
@@ -589,7 +592,10 @@ spoton_neighbor::spoton_neighbor
   m_bytesRead = 0;
   m_bytesWritten = 0;
   m_echoMode = echoMode;
-  m_externalAddress = new spoton_external_address(this);
+  m_externalAddress = new spoton_external_address
+    (QUrl::fromUserInput(spoton_kernel::setting("gui/external_ip_url", "").
+			 toString()),
+     this);
   m_id = id;
   m_ipAddress = ipAddress;
   m_isUserDefined = userDefined;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>700</width>
     <height>550</height>
    </rect>
   </property>
@@ -34,9 +34,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>741</width>
-         <height>3785</height>
+         <y>-988</y>
+         <width>670</width>
+         <height>3756</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -833,6 +833,27 @@
                </layout>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <item>
+                 <widget class="QLabel" name="label_28">
+                  <property name="text">
+                   <string>External IP URL</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="external_ip_url">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please specify a valid URL. The URL must return an IP address only. Press the Enter key to save.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>https://api.ipify.org</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_70">
                 <property name="spacing">
                  <number>5</number>
@@ -1435,14 +1456,17 @@
               <item>
                <widget class="QCheckBox" name="chatOpenLinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser
+as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="chatSignMessages">
                 <property name="text">
-                 <string>&amp;Sign forward secrecy replies and requests, geminis, messages, and status bulletins.</string>
+                 <string>&amp;Sign forward secrecy replies
+and requests, geminis, messages,
+and status bulletins.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1558,7 +1582,8 @@
               <item>
                <widget class="QCheckBox" name="coAcceptSigned">
                 <property name="text">
-                 <string>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</string>
+                 <string>&amp;Reject C/O letters without signatures. The setting
+does not apply to data destined for institutions.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1833,7 +1858,8 @@
               <item>
                <widget class="QCheckBox" name="openlinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser
+as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
@@ -1900,7 +1926,8 @@
                  <string>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</string>
                 </property>
                 <property name="text">
-                 <string>&amp;Share private authentication and encryption keys with the kernel process.</string>
+                 <string>&amp;Share private authentication and encryption keys
+with the kernel process.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -2443,8 +2470,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>31</height>
+     <width>700</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -2493,6 +2520,7 @@
   <tabstop>geoipPath4</tabstop>
   <tabstop>selectGeoIP4</tabstop>
   <tabstop>geoipPath6</tabstop>
+  <tabstop>external_ip_url</tabstop>
   <tabstop>selectGeoIP6</tabstop>
   <tabstop>guiExternalIpFetch</tabstop>
   <tabstop>guiSecureMemoryPool</tabstop>

@@ -228,7 +228,10 @@ spoton_listener::spoton_listener
   m_echoMode = echoMode;
 
   if(m_transport != "bluetooth")
-    m_externalAddress = new spoton_external_address(this);
+    m_externalAddress = new spoton_external_address
+      (QUrl::fromUserInput(spoton_kernel::setting("gui/external_ip_url", "").
+			   toString()),
+       this);
   else
     m_externalAddress = 0;
 

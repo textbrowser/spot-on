@@ -701,6 +701,8 @@ spoton::spoton(void):QMainWindow()
 
   m_addParticipantWindow = 0;
 #endif
+  m_externalAddress = new spoton_external_address
+    (QUrl::fromUserInput(m_settings.value("gui/external_ip_url").toString()));
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);
   m_statisticsWindow = new QMainWindow(0);
@@ -1180,6 +1182,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnableChatEmoticons(bool)));
+  connect(m_optionsUi.external_ip_url,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveExternalIPUrl(void)));
   connect(m_optionsUi.forceRegistration,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2619,6 +2625,9 @@ spoton::spoton(void):QMainWindow()
   m_ui.username->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.receiveNova->setMaxLength
     (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
+  m_optionsUi.external_ip_url->setText
+    (m_settings.value("gui/external_ip_url",
+		      "https://api.ipify.org").toString());
   m_optionsUi.sslControlString->setText
     (m_settings.value("gui/sslControlString",
 		      spoton_common::SSL_CONTROL_STRING).toString());
@@ -3229,7 +3238,7 @@ spoton::spoton(void):QMainWindow()
   if(m_optionsUi.guiExternalIpFetch->currentIndex() !=
      m_optionsUi.guiExternalIpFetch->count() - 1)
     {
-      m_externalAddress.discover();
+      m_externalAddress->discover();
 
       if(m_optionsUi.guiExternalIpFetch->currentIndex() == 0)
 	m_externalAddressDiscovererTimer.start(30000);
@@ -4150,7 +4159,7 @@ void spoton::slotAddListener(void)
       QHostAddress address;
 
       if(m_ui.recordIPAddress->isChecked())
-	address = m_externalAddress.address();
+	address = m_externalAddress->address();
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_sb.status->setText
@@ -4187,7 +4196,7 @@ void spoton::slotAddListener(void)
 	  QHostAddress address;
 
 	  if(m_ui.recordIPAddress->isChecked())
-	    address = m_externalAddress.address();
+	    address = m_externalAddress->address();
 
 	  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	  m_sb.status->setText
@@ -5869,7 +5878,7 @@ void spoton::slotDisconnectNeighbor(void)
 
 void spoton::slotDiscoverExternalAddress(void)
 {
-  m_externalAddress.discover();
+  m_externalAddress->discover();
 }
 
 void spoton::slotFavoritesActivated(int index)
@@ -6075,8 +6084,8 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       m_sb.status->setText
 	(tr("External IP: %1.").
-	 arg(m_externalAddress.address().isNull() ?
-	     "unknown" : m_externalAddress.address().toString()));
+	 arg(m_externalAddress->address().isNull() ?
+	     "unknown" : m_externalAddress->address().toString()));
       m_sb.status->repaint();
     }
 

@@ -574,7 +574,7 @@ class spoton: public QMainWindow
   spoton_documentation *m_releaseNotes;
   spoton_echo_key_share *m_echoKeyShare;
   spoton_encryptfile m_encryptFile;
-  spoton_external_address m_externalAddress;
+  spoton_external_address *m_externalAddress;
   spoton_logviewer m_logViewer;
   spoton_rosetta m_rosetta;
   spoton_rss *m_rss;
@@ -985,6 +985,7 @@ class spoton: public QMainWindow
   void slotSaveCustomStatus(void);
   void slotSaveDestination(void);
   void slotSaveEmailName(void);
+  void slotSaveExternalIPUrl(void);
   void slotSaveGeoIPPath(void);
   void slotSaveKernelPath(void);
   void slotSaveMOTD(void);

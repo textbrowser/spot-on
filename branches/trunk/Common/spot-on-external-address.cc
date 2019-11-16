@@ -29,15 +29,25 @@
 
 #include <QNetworkRequest>
 
-spoton_external_address::spoton_external_address(QObject *parent):
+spoton_external_address::spoton_external_address(const QUrl &url,
+						 QObject *parent):
   QNetworkAccessManager(parent)
 {
   m_address = QHostAddress();
+  m_url = url;
+
+  if(m_url.isEmpty() || !m_url.isValid())
+    m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
-spoton_external_address::spoton_external_address(void):QNetworkAccessManager(0)
+spoton_external_address::spoton_external_address(const QUrl &url):
+  QNetworkAccessManager(0)
 {
   m_address = QHostAddress();
+  m_url = url;
+
+  if(m_url.isEmpty() || !m_url.isValid())
+    m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
 QHostAddress spoton_external_address::address(void) const
@@ -54,7 +64,7 @@ void spoton_external_address::discover(void)
 {
   QNetworkReply *reply = 0;
 
-  reply = get(QNetworkRequest(QUrl::fromUserInput("https://api.ipify.org")));
+  reply = get(QNetworkRequest(m_url));
 
   if(!reply)
     return;

@@ -37,14 +37,15 @@ class spoton_external_address: public QNetworkAccessManager
   Q_OBJECT
 
  public:
-  spoton_external_address(QObject *parent);
-  spoton_external_address(void);
+  spoton_external_address(const QUrl &url, QObject *parent);
+  spoton_external_address(const QUrl &url);
   QHostAddress address(void) const;
   void clear(void);
   void discover(void);
 
  private:
   QHostAddress m_address;
+  QUrl m_url;
 
  private slots:
   void slotError(QNetworkReply::NetworkError error);
