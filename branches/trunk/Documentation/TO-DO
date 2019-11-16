@@ -206,6 +206,8 @@ Completed Items
        is not properly defined. Dooble integration separated.
 148.   Allow selection of Web link in URLs.
 149.   URLs statistics.
+150.   Compare random credentials with previously-established credentials.
+       Should two-way calling verify that credentials are distinct? No.
 
 Ignored Items
 
@@ -251,6 +253,4 @@ Remaining Items
 7.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 8.     Separate NTRU implementation.
-9.     Compare random credentials with previously-established credentials.
-       Should two-way calling verify that credentials are distinct?
-10.    Remove obsolete includes.
+9.     Remove obsolete includes.
