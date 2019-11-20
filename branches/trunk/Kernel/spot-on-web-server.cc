@@ -51,7 +51,7 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):
   spoton_web_server_tcp_server(parent)
 {
-  m_abort = 0;
+  m_abort = new QAtomicInt(0);
 
   QFile file(":/search.html");
 
@@ -63,10 +63,6 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(this,
-	  SIGNAL(finished(const qint64)),
-	  this,
-	  SLOT(slotFinished(const qint64)));
-  connect(this,
 	  SIGNAL(newConnection(const qint64)),
 	  this,
 	  SLOT(slotClientConnected(const qint64)));
@@ -76,21 +72,17 @@ spoton_web_server::spoton_web_server(QObject *parent):
 spoton_web_server::~spoton_web_server()
 {
   close();
-  m_abort.fetchAndStoreOrdered(1);
+  m_abort->fetchAndStoreOrdered(1);
   m_generalTimer.stop();
 
-  QMutableHashIterator<qint64, QFuture<void> > it(m_futures);
+  foreach(spoton_web_server_thread *thread,
+	  findChildren<spoton_web_server_thread *> ())
+    thread->wait();
 
-  while(it.hasNext())
-    {
-      it.next();
-      it.value().cancel();
-      it.value().waitForFinished();
-      it.remove();
-    }
+  delete m_abort;
 }
 
-QSqlDatabase spoton_web_server::database(void) const
+QSqlDatabase spoton_web_server_thread::database(void) const
 {
   QSqlDatabase db;
   QString connectionName(spoton_misc::databaseName());
@@ -145,10 +137,94 @@ QSqlDatabase spoton_web_server::database(void) const
 
 int spoton_web_server::clientCount(void) const
 {
-  return m_futures.size();
+  return findChildren<spoton_web_server_thread *> ().size();
 }
 
-void spoton_web_server::process
+void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
+{
+  if(socketDescriptor < 0)
+    return;
+
+  QPair<QByteArray, QByteArray> credentials(m_certificate, m_privateKey);
+  spoton_web_server_thread *thread = new spoton_web_server_thread
+    (m_abort, this, credentials, socketDescriptor);
+
+  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
+  thread->start();
+}
+
+void spoton_web_server::slotTimeout(void)
+{
+  quint16 port = static_cast<quint16>
+    (spoton_kernel::setting("gui/web_server_port", 0).toInt());
+
+  if(port == 0)
+    {
+      close();
+      m_certificate.clear();
+      m_privateKey.clear();
+      return;
+    }
+
+  if(isListening())
+    if(port != serverPort())
+      {
+	close();
+	m_certificate.clear();
+	m_privateKey.clear();
+      }
+
+  if(m_certificate.isEmpty() || m_privateKey.isEmpty())
+    {
+      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+      if(crypt)
+	{
+	  QString connectionName("");
+
+	  {
+	    QSqlDatabase db = spoton_misc::database(connectionName);
+
+	    db.setDatabaseName(spoton_misc::homePath() +
+			       QDir::separator() +
+			       "kernel_web_server.db");
+
+	    if(db.open())
+	      {
+		QSqlQuery query(db);
+
+		query.setForwardOnly(true);
+
+		if(query.exec("SELECT certificate, private_key "
+			      "FROM kernel_web_server"))
+		  while(query.next())
+		    {
+		      bool ok = true;
+
+		      m_certificate = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(0).toByteArray()),
+			 &ok);
+		      m_privateKey = crypt->decryptedAfterAuthenticated
+			(QByteArray::fromBase64(query.value(1).toByteArray()),
+			 &ok);
+		    }
+	      }
+
+	    db.close();
+	  }
+
+	  QSqlDatabase::removeDatabase(connectionName);
+	}
+    }
+
+  if(!isListening())
+    if(!listen(spoton_misc::localAddressIPv4(), port))
+      spoton_misc::logError
+	("spoton_web_server::slotTimeout(): listen() failure. "
+	 "This is a serious problem!");
+}
+
+void spoton_web_server_thread::process
 (const QPair<QByteArray, QByteArray> &credentials,
  const qint64 socketDescriptor)
 {
@@ -156,7 +232,6 @@ void spoton_web_server::process
 
   if(!socket->setSocketDescriptor(socketDescriptor))
     {
-      emit finished(socketDescriptor);
       spoton_misc::closeSocket(socketDescriptor);
       return;
     }
@@ -195,7 +270,7 @@ void spoton_web_server::process
   socket->startServerEncryption();
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort.fetchAndAddOrdered(0) || socket->waitForEncrypted(1000))
+    if(m_abort->fetchAndAddOrdered(0) || socket->waitForEncrypted(1000))
       break;
 
   /*
@@ -203,7 +278,7 @@ void spoton_web_server::process
   */
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort.fetchAndAddOrdered(0) || socket->waitForReadyRead(1000))
+    if(m_abort->fetchAndAddOrdered(0) || socket->waitForReadyRead(1000))
       break;
 
   QByteArray data;
@@ -227,7 +302,7 @@ void spoton_web_server::process
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
 	  break;
     }
   else if(data.endsWith("\r\n\r\n") &&
@@ -259,7 +334,7 @@ void spoton_web_server::process
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort.fetchAndAddOrdered(0) ||
+	    if(m_abort->fetchAndAddOrdered(0) ||
 	       socket->waitForBytesWritten(1000))
 	      break;
 	}
@@ -276,13 +351,11 @@ void spoton_web_server::process
 
       process(socket.data(), data, address);
     }
-
-  emit finished(socketDescriptor);
 }
 
-void spoton_web_server::process(QSslSocket *socket,
-				const QByteArray &data,
-				const QPair<QString, QString> &address)
+void spoton_web_server_thread::process(QSslSocket *socket,
+				       const QByteArray &data,
+				       const QPair<QString, QString> &address)
 {
   QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
@@ -296,7 +369,7 @@ void spoton_web_server::process(QSslSocket *socket,
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort.fetchAndAddOrdered(0) ||
+	    if(m_abort->fetchAndAddOrdered(0) ||
 	       socket->waitForBytesWritten(1000))
 	      break;
 	}
@@ -328,7 +401,7 @@ void spoton_web_server::process(QSslSocket *socket,
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
 	  break;
 
       return;
@@ -346,7 +419,7 @@ void spoton_web_server::process(QSslSocket *socket,
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
 	  break;
 
       return;
@@ -784,11 +857,12 @@ void spoton_web_server::process(QSslSocket *socket,
     socket->write(html.toUtf8());
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+    if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
       break;
 }
 
-void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
+void spoton_web_server_thread::processLocal
+(QSslSocket *socket, const QByteArray &data)
 {
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
@@ -804,7 +878,7 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort.fetchAndAddOrdered(0) ||
+	    if(m_abort->fetchAndAddOrdered(0) ||
 	       socket->waitForBytesWritten(1000))
 	      break;
 	}
@@ -866,110 +940,11 @@ void spoton_web_server::processLocal(QSslSocket *socket, const QByteArray &data)
     socket->write(html);
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort.fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+    if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
       break;
 }
 
-void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
+void spoton_web_server_thread::run(void)
 {
-  if(socketDescriptor < 0)
-    return;
-
-  QPair<QByteArray, QByteArray> credentials(m_certificate, m_privateKey);
-
-  m_futures.insert
-    (socketDescriptor, QtConcurrent::run(this,
-					 &spoton_web_server::process,
-					 credentials,
-					 socketDescriptor));
-}
-
-void spoton_web_server::slotFinished(const qint64 socketDescriptor)
-{
-  QList<QFuture<void> > list(m_futures.values(socketDescriptor));
-
-  for(int i = 0; i < list.size(); i++)
-    if(list.at(i).isFinished())
-      m_futures.remove(socketDescriptor, list.at(i));
-}
-
-void spoton_web_server::slotTimeout(void)
-{
-  QMutableHashIterator<qint64, QFuture<void> > it(m_futures);
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value().isFinished())
-	it.remove();
-    }
-
-  quint16 port = static_cast<quint16>
-    (spoton_kernel::setting("gui/web_server_port", 0).toInt());
-
-  if(port == 0)
-    {
-      close();
-      m_certificate.clear();
-      m_privateKey.clear();
-      return;
-    }
-
-  if(isListening())
-    if(port != serverPort())
-      {
-	close();
-	m_certificate.clear();
-	m_privateKey.clear();
-      }
-
-  if(m_certificate.isEmpty() || m_privateKey.isEmpty())
-    {
-      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-      if(crypt)
-	{
-	  QString connectionName("");
-
-	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
-
-	    db.setDatabaseName(spoton_misc::homePath() +
-			       QDir::separator() +
-			       "kernel_web_server.db");
-
-	    if(db.open())
-	      {
-		QSqlQuery query(db);
-
-		query.setForwardOnly(true);
-
-		if(query.exec("SELECT certificate, private_key "
-			      "FROM kernel_web_server"))
-		  while(query.next())
-		    {
-		      bool ok = true;
-
-		      m_certificate = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(0).toByteArray()),
-			 &ok);
-		      m_privateKey = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(1).toByteArray()),
-			 &ok);
-		    }
-	      }
-
-	    db.close();
-	  }
-
-	  QSqlDatabase::removeDatabase(connectionName);
-	}
-    }
-
-  if(!isListening())
-    if(!listen(spoton_misc::localAddressIPv4(), port))
-      spoton_misc::logError
-	("spoton_web_server::slotTimeout(): listen() failure. "
-	 "This is a serious problem!");
+  process(m_credentials, m_socketDescriptor);
 }

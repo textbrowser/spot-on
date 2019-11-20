@@ -28,12 +28,12 @@
 #ifndef _spoton_web_server_h_
 #define _spoton_web_server_h_
 
-#include <QFuture>
 #include <QPointer>
 #include <QQueue>
 #include <QSqlDatabase>
 #include <QSslSocket>
 #include <QTcpServer>
+#include <QThread>
 #include <QTimer>
 
 class spoton_web_server_tcp_server: public QTcpServer
@@ -63,6 +63,8 @@ class spoton_web_server_tcp_server: public QTcpServer
   void newConnection(const qint64 socketDescriptor);
 };
 
+class spoton_web_server_tcp_server;
+
 class spoton_web_server: public spoton_web_server_tcp_server
 {
   Q_OBJECT
@@ -73,9 +75,36 @@ class spoton_web_server: public spoton_web_server_tcp_server
   int clientCount(void) const;
 
  private:
-  QAtomicInt m_abort;
-  QMultiHash<qint64, QFuture<void> > m_futures;
+  QAtomicInt *m_abort;
   QTimer m_generalTimer;
+
+ private slots:
+  void slotClientConnected(const qint64 socketDescriptor);
+  void slotTimeout(void);
+};
+
+class spoton_web_server_thread: public QThread
+{
+  Q_OBJECT
+
+ public:
+  spoton_web_server_thread(QAtomicInt *atomicInt,
+			   QObject *parent,
+			   const QPair<QByteArray, QByteArray> &credentials,
+			   const qint64 socketDescriptor):QThread(parent)
+  {
+    m_abort = atomicInt;
+    m_credentials = credentials;
+    m_socketDescriptor = socketDescriptor;
+  }
+
+ protected:
+  void run(void);
+
+ private:
+  QAtomicInt *m_abort;
+  QPair<QByteArray, QByteArray> m_credentials;
+  qint64 m_socketDescriptor;
   QSqlDatabase database(void) const;
   void process(const QPair<QByteArray, QByteArray> &credentials,
 	       const qint64 socketDescriptor);
@@ -83,14 +112,6 @@ class spoton_web_server: public spoton_web_server_tcp_server
 	       const QByteArray &data,
 	       const QPair<QString, QString> &address);
   void processLocal(QSslSocket *socket, const QByteArray &data);
-
- private slots:
-  void slotClientConnected(const qint64 socketDescriptor);
-  void slotFinished(const qint64 socketDescriptor);
-  void slotTimeout(void);
-
- signals:
-  void finished(const qint64 socketDescriptor);
 };
 
 #endif
