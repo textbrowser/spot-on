@@ -880,7 +880,8 @@ void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
   m_futures.insert
     (socketDescriptor, QtConcurrent::run(this,
 					 &spoton_web_server::process,
-					 credentials, socketDescriptor));
+					 credentials,
+					 socketDescriptor));
 }
 
 void spoton_web_server::slotFinished(const qint64 socketDescriptor)
