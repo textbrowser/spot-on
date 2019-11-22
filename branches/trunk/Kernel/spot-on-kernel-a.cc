@@ -2709,6 +2709,7 @@ void spoton_kernel::prepareNeighbors(void)
 			{
 			  connectSignalsToNeighbor(neighbor);
 			  m_neighbors.insert(id, neighbor);
+			  neighbor->start();
 			}
 		    }
 		}
