@@ -547,7 +547,6 @@ spoton_neighbor::spoton_neighbor
   m_keepAliveTimer.start(15000);
   m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MS);
   m_timer.start(2500);
-  start(priority);
 }
 
 spoton_neighbor::spoton_neighbor
@@ -992,7 +991,6 @@ spoton_neighbor::spoton_neighbor
   m_keepAliveTimer.setInterval(15000);
   m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MS);
   m_timer.start(2500);
-  start(priority);
 }
 
 spoton_neighbor::~spoton_neighbor()

@@ -2709,7 +2709,8 @@ void spoton_kernel::prepareNeighbors(void)
 			{
 			  connectSignalsToNeighbor(neighbor);
 			  m_neighbors.insert(id, neighbor);
-			  neighbor->start();
+			  neighbor->start
+			    (QThread::Priority(list.value(24).toInt()));
 			}
 		    }
 		}

@@ -1213,7 +1213,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       neighbor->setId(id);
       emit newNeighbor(neighbor);
       spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
-      neighbor->start();
+      neighbor->start(QThread::HighPriority);
       updateConnectionCount();
     }
   else
@@ -1707,7 +1707,7 @@ void spoton_listener::slotNewConnection(void)
       neighbor->setId(id);
       emit newNeighbor(neighbor);
       spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
-      neighbor->start();
+      neighbor->start(QThread::HighPriority);
       updateConnectionCount();
     }
   else
