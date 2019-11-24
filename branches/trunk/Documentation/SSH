@@ -1,12 +1,12 @@
-Public Server SSH Configuration
+1. Public Server SSH Configuration
 
 > sudo nano /etc/ssh/sshd_config
   GatewayPorts yes
 
-Private Server
+2. Private Server
 
 > ssh -CR 8080:192.168.178.xyz:8080 user@public-server.org
 
-Accessing
+3. Accessing
 
 https://public-server.org:8080
