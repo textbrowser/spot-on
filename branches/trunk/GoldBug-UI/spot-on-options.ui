@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>745</width>
-    <height>600</height>
+    <width>700</width>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -35,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>741</width>
-         <height>3785</height>
+         <width>670</width>
+         <height>3952</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -259,7 +268,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -290,7 +308,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -451,7 +478,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -529,7 +565,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -590,7 +635,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -664,7 +718,16 @@
               <string>Search</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_19">
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -775,7 +838,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -827,6 +899,27 @@
                  <widget class="QPushButton" name="selectGeoIP6">
                   <property name="text">
                    <string>Select...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <item>
+                 <widget class="QLabel" name="label_28">
+                  <property name="text">
+                   <string>External IP URL</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="external_ip_url">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please specify a valid URL. The URL must return an IP address only. Press the Enter key to save.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>https://api.ipify.org</string>
                   </property>
                  </widget>
                 </item>
@@ -1075,7 +1168,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1338,7 +1440,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1360,7 +1471,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1435,14 +1555,17 @@
               <item>
                <widget class="QCheckBox" name="chatOpenLinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser
+as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="chatSignMessages">
                 <property name="text">
-                 <string>&amp;Sign forward secrecy replies and requests, geminis, messages, and status bulletins.</string>
+                 <string>&amp;Sign forward secrecy replies
+and requests, geminis, messages,
+and status bulletins.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1461,7 +1584,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1558,7 +1690,8 @@
               <item>
                <widget class="QCheckBox" name="coAcceptSigned">
                 <property name="text">
-                 <string>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</string>
+                 <string>&amp;Reject C/O letters without signatures. The setting
+does not apply to data destined for institutions.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1612,7 +1745,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1696,7 +1838,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1827,13 +1978,23 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
                <widget class="QCheckBox" name="openlinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser
+as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
@@ -1849,7 +2010,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -1861,7 +2031,7 @@
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enable this option if you would like to force kernel registration. By forcing kernel registration, an existing kernel process that GoldBug is aware of will be deactivated. You may wish to use this option if a kernel was not deactivated properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enable this option if you would like to force kernel registration. By forcing kernel registration, an existing kernel process that Spot-On is aware of will be deactivated. You may wish to use this option if a kernel was not deactivated properly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="text">
                  <string>&amp;Force kernel registration.</string>
@@ -1900,7 +2070,8 @@
                  <string>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</string>
                 </property>
                 <property name="text">
-                 <string>&amp;Share private authentication and encryption keys with the kernel process.</string>
+                 <string>&amp;Share private authentication and encryption keys
+with the kernel process.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -1972,7 +2143,16 @@
               <property name="spacing">
                <number>5</number>
               </property>
-              <property name="margin">
+              <property name="leftMargin">
+               <number>5</number>
+              </property>
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="rightMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
                <number>5</number>
               </property>
               <item>
@@ -2443,8 +2623,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>745</width>
-     <height>31</height>
+     <width>700</width>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -2493,6 +2673,7 @@
   <tabstop>geoipPath4</tabstop>
   <tabstop>selectGeoIP4</tabstop>
   <tabstop>geoipPath6</tabstop>
+  <tabstop>external_ip_url</tabstop>
   <tabstop>selectGeoIP6</tabstop>
   <tabstop>guiExternalIpFetch</tabstop>
   <tabstop>guiSecureMemoryPool</tabstop>

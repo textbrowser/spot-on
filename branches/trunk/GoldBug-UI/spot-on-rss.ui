@@ -41,7 +41,16 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -478,8 +487,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>804</width>
-             <height>507</height>
+             <width>381</width>
+             <height>226</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -499,58 +508,7 @@
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLabel" name="label_4">
-                <property name="text">
-                 <string>&amp;Find</string>
-                </property>
-                <property name="buddy">
-                 <cstring>find</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="find">
-                <property name="toolTip">
-                 <string>Please press the Enter key after providing the search text.</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="purge">
-                <property name="text">
-                 <string>Purge</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_9">
-                <property name="text">
-                 <string>links that are older than</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="purge_days">
-                <property name="minimum">
-                 <number>0</number>
-                </property>
-                <property name="maximum">
-                 <number>30</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>&amp;day(s).</string>
-                </property>
-                <property name="buddy">
-                 <cstring>purge_days</cstring>
-                </property>
-               </widget>
-              </item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
               <item>
                <widget class="QComboBox" name="timeline_filter">
                 <property name="currentIndex">
@@ -615,6 +573,91 @@
                 </property>
                </widget>
               </item>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QPushButton" name="purge">
+                <property name="text">
+                 <string>Purge</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_9">
+                <property name="text">
+                 <string>links that are older than</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="purge_days">
+                <property name="minimum">
+                 <number>0</number>
+                </property>
+                <property name="maximum">
+                 <number>30</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_10">
+                <property name="text">
+                 <string>&amp;day(s).</string>
+                </property>
+                <property name="buddy">
+                 <cstring>purge_days</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>&amp;Find</string>
+                </property>
+                <property name="buddy">
+                 <cstring>find</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="find">
+                <property name="toolTip">
+                 <string>Please press the Enter key after providing the search text.</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>
@@ -645,6 +688,13 @@
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QCheckBox" name="record_notices">
+            <property name="text">
+             <string>&amp;Record Notices</string>
+            </property>
+           </widget>
+          </item>
           <item>
            <spacer name="horizontalSpacer_3">
             <property name="orientation">
@@ -679,7 +729,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -865,13 +915,14 @@
   <tabstop>add</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>timeline</tabstop>
-  <tabstop>find</tabstop>
-  <tabstop>purge</tabstop>
-  <tabstop>purge_days</tabstop>
   <tabstop>timeline_filter</tabstop>
   <tabstop>clear</tabstop>
   <tabstop>refresh_timeline</tabstop>
+  <tabstop>purge</tabstop>
+  <tabstop>purge_days</tabstop>
+  <tabstop>find</tabstop>
   <tabstop>errors</tabstop>
+  <tabstop>record_notices</tabstop>
   <tabstop>clear_errors</tabstop>
  </tabstops>
  <resources>
