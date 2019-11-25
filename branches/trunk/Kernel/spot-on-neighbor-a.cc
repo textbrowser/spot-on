@@ -76,10 +76,6 @@ spoton_neighbor::spoton_neighbor
  QObject *parent):QThread(parent)
 {
   m_abort = 0;
-  m_kernelInterfaces = spoton_kernel::interfaces();
-  m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
-		       laneWidth,
-		       spoton_common::LANE_WIDTH_MAXIMUM);
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothSocket = socket;
 
@@ -88,6 +84,10 @@ spoton_neighbor::spoton_neighbor
 #else
   m_bluetoothSocket = 0;
 #endif
+  m_kernelInterfaces = spoton_kernel::interfaces();
+  m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
+		       laneWidth,
+		       spoton_common::LANE_WIDTH_MAXIMUM);
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
   m_privateApplicationSequences.first = m_privateApplicationSequences.second =
