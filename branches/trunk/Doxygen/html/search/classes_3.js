@@ -56,5 +56,6 @@ var searchData=
   ['spoton_5futilities',['spoton_utilities',['../classspoton__utilities.html',1,'']]],
   ['spoton_5fvirtual_5fkeyboard',['spoton_virtual_keyboard',['../classspoton__virtual__keyboard.html',1,'']]],
   ['spoton_5fweb_5fserver',['spoton_web_server',['../classspoton__web__server.html',1,'']]],
-  ['spoton_5fweb_5fserver_5ftcp_5fserver',['spoton_web_server_tcp_server',['../classspoton__web__server__tcp__server.html',1,'']]]
+  ['spoton_5fweb_5fserver_5ftcp_5fserver',['spoton_web_server_tcp_server',['../classspoton__web__server__tcp__server.html',1,'']]],
+  ['spoton_5fweb_5fserver_5fthread',['spoton_web_server_thread',['../classspoton__web__server__thread.html',1,'']]]
 ];

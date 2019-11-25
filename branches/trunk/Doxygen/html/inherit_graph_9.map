@@ -1,5 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classspoton__fireshare.html" title="spoton_fireshare" alt="" coords="147,5,265,32"/>
-<area shape="rect" id="node3" href="$classspoton__neighbor.html" title="spoton_neighbor" alt="" coords="147,56,265,83"/>
-<area shape="rect" id="node4" href="$classspoton__starbeam__writer.html" title="spoton_starbeam_writer" alt="" coords="125,107,287,133"/>
+<area shape="rect" id="node2" href="$classspoton__fireshare.html" title="spoton_fireshare" alt="" coords="155,5,274,32"/>
+<area shape="rect" id="node3" href="$classspoton__neighbor.html" title="spoton_neighbor" alt="" coords="156,56,273,83"/>
+<area shape="rect" id="node4" href="$classspoton__starbeam__writer.html" title="spoton_starbeam_writer" alt="" coords="134,107,295,133"/>
+<area shape="rect" id="node5" href="$classspoton__web__server__thread.html" title="spoton_web_server_thread" alt="" coords="125,157,304,184"/>
 </map>
