@@ -75,6 +75,7 @@ spoton_neighbor::spoton_neighbor
 #endif
  QObject *parent):QThread(parent)
 {
+  Q_UNUSED(priority);
   m_abort = 0;
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   m_bluetoothSocket = socket;
@@ -580,6 +581,7 @@ spoton_neighbor::spoton_neighbor
  const QString &socketOptions,
  QObject *parent):QThread(parent)
 {
+  Q_UNUSED(priority);
   m_abort = 0;
   m_accountAuthenticated = 0;
   m_accountName = accountName;
