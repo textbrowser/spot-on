@@ -513,11 +513,15 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	      if(remaining - sent >
 		 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
 		{
-		  if(m_waitforbyteswritten_msecs > 0)
+		  if(m_bluetoothSocket->state() ==
+		     QBluetoothSocket::ConnectedState &&
+		     m_waitforbyteswritten_msecs > 0)
 		    m_bluetoothSocket->waitForBytesWritten
 		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 		}
-	      else if(m_waitforbyteswritten_msecs > 0)
+	      else if(m_bluetoothSocket->state() ==
+		      QBluetoothSocket::ConnectedState &&
+		      m_waitforbyteswritten_msecs > 0)
 		m_bluetoothSocket->waitForBytesWritten
 		  (m_waitforbyteswritten_msecs);
 	    }
@@ -546,11 +550,14 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    {
 	      if(remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
 		{
-		  if(m_waitforbyteswritten_msecs > 0)
+		  if(m_tcpSocket->state() == QAbstractSocket::ConnectedState &&
+		     m_waitforbyteswritten_msecs > 0)
 		    m_tcpSocket->waitForBytesWritten
 		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 		}
-	      else if(m_waitforbyteswritten_msecs > 0)
+	      else if(m_tcpSocket->state() ==
+		      QAbstractSocket::ConnectedState &&
+		      m_waitforbyteswritten_msecs > 0)
 		m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 	    }
 	}
@@ -587,11 +594,14 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 	    {
 	      if(remaining - sent > udpMinimum)
 		{
-		  if(m_waitforbyteswritten_msecs > 0)
+		  if(m_udpSocket->state() == QAbstractSocket::ConnectedState &&
+		     m_waitforbyteswritten_msecs > 0)
 		    m_udpSocket->waitForBytesWritten
 		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 		}
-	      else if(m_waitforbyteswritten_msecs > 0)
+	      else if(m_udpSocket->state() ==
+		      QAbstractSocket::ConnectedState &&
+		      m_waitforbyteswritten_msecs > 0)
 		m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 	    }
 

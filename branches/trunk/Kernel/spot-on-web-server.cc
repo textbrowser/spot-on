@@ -270,7 +270,9 @@ void spoton_web_server_thread::process
   socket->startServerEncryption();
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort->fetchAndAddOrdered(0) || socket->waitForEncrypted(1000))
+    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					  QAbstractSocket::ConnectedState &&
+					  socket->waitForEncrypted(1000)))
       break;
 
   /*
@@ -278,7 +280,9 @@ void spoton_web_server_thread::process
   */
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort->fetchAndAddOrdered(0) || socket->waitForReadyRead(1000))
+    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					  QAbstractSocket::ConnectedState &&
+					  socket->waitForReadyRead(1000)))
       break;
 
   QByteArray data;
@@ -291,7 +295,8 @@ void spoton_web_server_thread::process
 	 spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
 	break;
 
-      socket->waitForReadyRead(250);
+      if(socket->state() == QAbstractSocket::ConnectedState)
+	socket->waitForReadyRead(250);
     }
 
   if(data.endsWith("\r\n\r\n") &&
@@ -302,7 +307,10 @@ void spoton_web_server_thread::process
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					      QAbstractSocket::ConnectedState &&
+					      socket->
+					      waitForBytesWritten(1000)))
 	  break;
     }
   else if(data.endsWith("\r\n\r\n") &&
@@ -334,8 +342,11 @@ void spoton_web_server_thread::process
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) ||
-	       socket->waitForBytesWritten(1000))
+	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+						  QAbstractSocket::
+						  ConnectedState &&
+						  socket->
+						  waitForBytesWritten(1000)))
 	      break;
 	}
     }
@@ -369,8 +380,11 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) ||
-	       socket->waitForBytesWritten(1000))
+	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+						  QAbstractSocket::
+						  ConnectedState &&
+						  socket->
+						  waitForBytesWritten(1000)))
 	      break;
 	}
 
@@ -401,7 +415,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					      QAbstractSocket::ConnectedState &&
+					      socket->
+					      waitForBytesWritten(1000)))
 	  break;
 
       return;
@@ -419,7 +436,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
       socket->write(s_search);
 
       for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					      QAbstractSocket::ConnectedState &&
+					      socket->
+					      waitForBytesWritten(1000)))
 	  break;
 
       return;
@@ -857,7 +877,9 @@ void spoton_web_server_thread::process(QSslSocket *socket,
     socket->write(html.toUtf8());
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					  QAbstractSocket::ConnectedState &&
+					  socket->waitForBytesWritten(1000)))
       break;
 }
 
@@ -878,8 +900,11 @@ void spoton_web_server_thread::processLocal
 	  socket->write(s_search);
 
 	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) ||
-	       socket->waitForBytesWritten(1000))
+	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+						  QAbstractSocket::
+						  ConnectedState &&
+						  socket->
+						  waitForBytesWritten(1000)))
 	      break;
 	}
 
@@ -940,7 +965,9 @@ void spoton_web_server_thread::processLocal
     socket->write(html);
 
   for(int i = 1; i <= 30; i++)
-    if(m_abort->fetchAndAddOrdered(0) || socket->waitForBytesWritten(1000))
+    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					  QAbstractSocket::ConnectedState &&
+					  socket->waitForBytesWritten(1000)))
       break;
 }
 
