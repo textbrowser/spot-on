@@ -51,6 +51,9 @@ QString spoton_neighbor::findMessageType
   ** symmetricKeys[3]: Hash Type
   */
 
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
   /*
   ** Do not attempt to locate a Buzz key if an interface is not
   ** attached to the kernel.
@@ -58,9 +61,6 @@ QString spoton_neighbor::findMessageType
 
   if(interfaces > 0 && (list.size() == 2 || list.size() == 3))
     {
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
       symmetricKeys = spoton_kernel::findBuzzKey(list.value(0), list.value(1));
 
       if(!symmetricKeys.isEmpty())
@@ -100,9 +100,6 @@ QString spoton_neighbor::findMessageType
      s_crypt &&
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
       QPair<QByteArray, QByteArray> gemini
 	(spoton_misc::
 	 findGeminiInCosmos(list.value(0), list.value(1), s_crypt));
@@ -147,9 +144,6 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3 && s_crypt)
     {
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
       symmetricKeys = spoton_misc::findEchoKeys
 	(list.value(0), list.value(1), type, s_crypt);
 
@@ -173,9 +167,6 @@ QString spoton_neighbor::findMessageType
     if(!spoton_misc::allParticipantsHaveGeminis())
       if(spoton_misc::participantCount("chat", s_crypt) > 0)
 	{
-	  for(int i = 0; i < list.size(); i++)
-	    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
 	  QByteArray data;
 	  bool ok = true;
 
@@ -209,9 +200,6 @@ QString spoton_neighbor::findMessageType
 				     spoton_kernel::s_crypts.
 				     value("email", 0)) > 0)
       {
-	for(int i = 0; i < list.size(); i++)
-	  list.replace(i, QByteArray::fromBase64(list.at(i)));
-
 	if(list.size() == 3)
 	  symmetricKeys = spoton_kernel::findInstitutionKey
 	    (list.value(0), list.value(1));
@@ -239,9 +227,6 @@ QString spoton_neighbor::findMessageType
     if((s_crypt = spoton_kernel::s_crypts.value("email", 0)))
       if(spoton_misc::participantCount("email", s_crypt) > 0)
 	{
-	  for(int i = 0; i < list.size(); i++)
-	    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
 	  QByteArray data;
 	  bool ok = true;
 
@@ -271,9 +256,6 @@ QString spoton_neighbor::findMessageType
     if((s_crypt = spoton_kernel::s_crypts.value("url", 0)))
       if(spoton_misc::participantCount("url", s_crypt) > 0)
 	{
-	  for(int i = 0; i < list.size(); i++)
-	    list.replace(i, QByteArray::fromBase64(list.at(i)));
-
 	  QByteArray data;
 	  bool ok = true;
 
@@ -322,81 +304,71 @@ QString spoton_neighbor::findMessageType
 	}
 
   if(interfaces > 0 && list.size() == 4)
-    {
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
+    for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
+      {
+	QString keyType(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
-      for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
-	{
-	  QString keyType(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
+	s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
-	  s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
+	if(!s_crypt)
+	  continue;
 
-	  if(!s_crypt)
-	    continue;
+	if(spoton_misc::participantCount(keyType, s_crypt) <= 0)
+	  continue;
 
-	  if(spoton_misc::participantCount(keyType, s_crypt) <= 0)
-	    continue;
+	QByteArray data;
+	bool ok = true;
 
-	  QByteArray data;
-	  bool ok = true;
+	data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
 
-	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	if(ok)
+	  {
+	    QByteArray a;
+	    QDataStream stream(&data, QIODevice::ReadOnly);
 
-	  if(ok)
-	    {
-	      QByteArray a;
-	      QDataStream stream(&data, QIODevice::ReadOnly);
+	    stream >> a;
 
-	      stream >> a;
+	    if(stream.status() == QDataStream::Ok)
+	      type = a;
 
-	      if(stream.status() == QDataStream::Ok)
-		type = a;
+	    if(type == "0091a" || type == "0091b" || type == "0092")
+	      {
+		QList<QByteArray> list;
 
-	      if(type == "0091a" || type == "0091b" || type == "0092")
-		{
-		  QList<QByteArray> list;
+		for(int i = 0; i < 4; i++)
+		  {
+		    stream >> a;
 
-		  for(int i = 0; i < 4; i++)
-		    {
-		      stream >> a;
+		    if(stream.status() != QDataStream::Ok)
+		      {
+			list.clear();
+			type.clear();
+			break;
+		      }
+		    else
+		      list.append(a);
+		  }
 
-		      if(stream.status() != QDataStream::Ok)
-			{
-			  list.clear();
-			  type.clear();
-			  break;
-			}
-		      else
-			list.append(a);
-		    }
-
-		  if(!type.isEmpty())
-		    {
-		      symmetricKeys.append(list.value(0));
-		      symmetricKeys.append(list.value(2));
-		      symmetricKeys.append(list.value(1));
-		      symmetricKeys.append(list.value(3));
-		      goto done_label;
-		    }
-		}
-	      else
-		type.clear();
-	    }
-	}
-    }
+		if(!type.isEmpty())
+		  {
+		    symmetricKeys.append(list.value(0));
+		    symmetricKeys.append(list.value(2));
+		    symmetricKeys.append(list.value(1));
+		    symmetricKeys.append(list.value(3));
+		    goto done_label;
+		  }
+	      }
+	    else
+	      type.clear();
+	  }
+      }
 
   if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("email", 0)))
-    {
-      for(int i = 0; i < list.size(); i++)
-	list.replace(i, QByteArray::fromBase64(list.at(i)));
-
-      symmetricKeys = spoton_misc::findForwardSecrecyKeys
-	(list.value(0),
-	 list.value(1),
-	 type,
-	 s_crypt);
-    }
+    symmetricKeys = spoton_misc::findForwardSecrecyKeys
+      (list.value(0),
+       list.value(1),
+       type,
+       s_crypt);
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair
@@ -3703,7 +3675,9 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		 "large time delta (%1).").arg(secsTo));
       return;
     }
-  else if(spoton_kernel::duplicateGeminis(publicKeyHash +
+  else if(!gemini.isEmpty() && // Terminate call.
+	  !geminiHashKey.isEmpty() && // Terminate call.
+	  spoton_kernel::duplicateGeminis(publicKeyHash +
 					  gemini +
 					  geminiHashKey))
     {
