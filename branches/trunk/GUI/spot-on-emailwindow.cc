@@ -54,6 +54,7 @@ spoton_emailwindow::spoton_emailwindow
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setVisible(false);
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");
+  m_ui.email_fs_gb->setCurrentIndex(2); // Normal
   m_ui.goldbug->setEnabled(false);
   m_ui.outgoingMessage->append(message);
   m_ui.outgoingSubject->setText(subject);
@@ -120,8 +121,7 @@ void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
   m_ui.emailSecrets->menu()->clear();
 
   QMapIterator<QString, QByteArray> it
-    (m_parent->
-     SMPWindowStreams(QStringList() << "e-mail" << "poptastic"));
+    (m_parent->SMPWindowStreams(QStringList() << "e-mail" << "poptastic"));
 
   while(it.hasNext())
     {
