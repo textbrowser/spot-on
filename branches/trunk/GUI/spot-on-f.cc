@@ -1452,7 +1452,7 @@ void spoton::slotLock(void)
   m_releaseNotes->close();
   m_rosetta.close();
   m_rss->close();
-  m_smpWindow.close();
+  m_smpWindow->close();
   m_statisticsWindow->close();
   m_ui.tab->setCurrentIndex(m_ui.tab->count() - 1);
 

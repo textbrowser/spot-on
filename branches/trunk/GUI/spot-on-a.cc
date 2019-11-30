@@ -475,6 +475,7 @@ spoton::spoton(void):QMainWindow()
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(this);
+  m_smpWindow = new spoton_smpwindow(this);
   m_starbeamDigestInterrupt = 0;
   m_starbeamReceivedModel = new QStandardItemModel(this);
   m_statisticsModel = new QStandardItemModel(this);
@@ -881,16 +882,16 @@ spoton::spoton(void):QMainWindow()
 				     const int &)));
   connect(this,
 	  SIGNAL(participantAdded(const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotRefresh(void)));
   connect(this,
 	  SIGNAL(participantDeleted(const QString &, const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
   connect(this,
 	  SIGNAL(participantNameChanged(const QByteArray &,
 					const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotParticipantNameChanged(const QByteArray &,
 					  const QString &)));
   connect(this,
@@ -907,7 +908,7 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(slotPQUrlDatabaseFaulty(void)));
   connect(this,
 	  SIGNAL(smpMessageReceivedFromKernel(const QByteArrayList &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotSMPMessageReceivedFromKernel(const QByteArrayList &)));
   m_optionsUi.guiSecureMemoryPool->setProperty
     ("original_stylesheet", m_optionsUi.guiSecureMemoryPool->styleSheet());
@@ -991,16 +992,16 @@ spoton::spoton(void):QMainWindow()
 	  SLOT(slotPopulateParticipants(void)));
   connect(&m_rosetta,
 	  SIGNAL(participantAdded(const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotRefresh(void)));
   connect(&m_rosetta,
 	  SIGNAL(participantDeleted(const QString &, const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
   connect(&m_rosetta,
 	  SIGNAL(participantNameChanged(const QByteArray &,
 					const QString &)),
-	  &m_smpWindow,
+	  m_smpWindow,
 	  SLOT(slotParticipantNameChanged(const QByteArray &,
 					  const QString &)));
   connect(&m_starbeamUpdateTimer,
@@ -3610,6 +3611,7 @@ void spoton::cleanup(void)
   m_optionsWindow->deleteLater();
   m_releaseNotes->deleteLater();
   m_rss->deleteLater();
+  m_smpWindow->deleteLater();
   m_statisticsWindow->deleteLater();
   delete m_urlCommonCrypt;
   m_urlCommonCrypt = 0;
@@ -9505,7 +9507,7 @@ void spoton::slotSetPassphrase(void)
 	    }
 
 	  QApplication::setOverrideCursor(Qt::WaitCursor);
-	  m_smpWindow.populateSecrets();
+	  m_smpWindow->populateSecrets();
 	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
 	  populateNovas();
@@ -10544,7 +10546,7 @@ void spoton::slotValidatePassphrase(void)
 	    sendBuzzKeysToKernel();
 	    QApplication::restoreOverrideCursor();
 	    m_rss->prepareAfterAuthentication();
-	    m_smpWindow.populateSecrets();
+	    m_smpWindow->populateSecrets();
 	    m_ui.tab->setCurrentIndex
 	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	       toInt());

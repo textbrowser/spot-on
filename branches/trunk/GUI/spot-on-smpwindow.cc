@@ -35,9 +35,9 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 
-spoton_smpwindow::spoton_smpwindow(void):QMainWindow()
+spoton_smpwindow::spoton_smpwindow(spoton *parent):QMainWindow()
 {
-  m_parent = 0;
+  m_parent = parent;
   m_ui.setupUi(this);
   m_ui.participants->setColumnHidden
     (m_ui.participants->columnCount() - 1, true); // OID

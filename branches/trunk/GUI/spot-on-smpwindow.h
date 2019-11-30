@@ -64,7 +64,7 @@ class spoton_smpwindow: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_smpwindow(void);
+  spoton_smpwindow(spoton *parent);
   ~spoton_smpwindow();
   QMap<QString, QByteArray> streams(const QStringList &keyTypes) const;
   void populateSecrets(void);

@@ -121,7 +121,7 @@ void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
   m_ui.emailSecrets->menu()->clear();
 
   QMapIterator<QString, QByteArray> it
-    (m_parent->SMPWindowStreams(QStringList() << "e-mail" << "poptastic"));
+    (m_parent->SMPWindowStreams(QStringList() << "email" << "poptastic"));
 
   while(it.hasNext())
     {

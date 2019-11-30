@@ -367,8 +367,7 @@ void spoton::slotAboutToShowChatSecretsMenu(void)
   m_ui.chatSecrets->menu()->clear();
 
   QMapIterator<QString, QByteArray> it
-    (m_smpWindow.streams(QStringList() << "chat"
-			               << "poptastic"));
+    (m_smpWindow->streams(QStringList() << "chat" << "poptastic"));
 
   while(it.hasNext())
     {
@@ -402,8 +401,7 @@ void spoton::slotAboutToShowEmailSecretsMenu(void)
   m_ui.emailSecrets->menu()->clear();
 
   QMapIterator<QString, QByteArray> it
-    (m_smpWindow.streams(QStringList() << "e-mail"
-			               << "poptastic"));
+    (m_smpWindow->streams(QStringList() << "email" << "poptastic"));
 
   while(it.hasNext())
     {
@@ -2070,8 +2068,8 @@ void spoton::slotShowSMPWindow(void)
   menuBar()->repaint();
   repaint();
   QApplication::processEvents();
-  m_smpWindow.show(this);
-  spoton_utilities::centerWidget(&m_smpWindow, this);
+  m_smpWindow->show(this);
+  spoton_utilities::centerWidget(m_smpWindow, this);
 }
 
 void spoton::slotUnifyBuzz(void)

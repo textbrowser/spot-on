@@ -578,7 +578,7 @@ class spoton: public QMainWindow
   spoton_logviewer m_logViewer;
   spoton_rosetta m_rosetta;
   spoton_rss *m_rss;
-  spoton_smpwindow m_smpWindow;
+  spoton_smpwindow *m_smpWindow;
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
   QByteArray copyMyChatPublicKey(void) const;
   QByteArray copyMyEmailPublicKey(void) const;

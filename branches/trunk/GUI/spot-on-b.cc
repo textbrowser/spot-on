@@ -4194,8 +4194,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 	QMapIterator<QString, QByteArray> it
-	  (m_smpWindow.streams(QStringList() << "e-mail"
-			                     << "poptastic"));
+	  (m_smpWindow->streams(QStringList() << "email" << "poptastic"));
 
 	while(it.hasNext())
 	  {

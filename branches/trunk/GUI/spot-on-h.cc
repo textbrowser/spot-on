@@ -47,7 +47,7 @@
 QMap<QString, QByteArray> spoton::SMPWindowStreams
 (const QStringList &keyTypes) const
 {
-  return m_smpWindow.streams(keyTypes);
+  return m_smpWindow->streams(keyTypes);
 }
 
 QString spoton::listenerTransport(void) const
