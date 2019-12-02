@@ -46,6 +46,8 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 
+static char s_user_agent[] = "Spot-On";
+
 spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 {
   m_cancelImport = 0;
@@ -1776,8 +1778,12 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    emit logError(error);
 	    reply->deleteLater();
-	    reply = m_contentNetworkAccessManager.get
-	      (QNetworkRequest(redirectUrl));
+
+	    QNetworkRequest request(redirectUrl);
+
+	    request.setRawHeader("Accept", "text/html");
+	    request.setRawHeader("User-Agent", s_user_agent);
+	    reply = m_contentNetworkAccessManager.get(request);
 
 	    if(!reply)
 	      {
@@ -2119,8 +2125,12 @@ void spoton_rss::slotDownloadContent(void)
 
       emit logError(error);
 
-      QNetworkReply *reply = m_contentNetworkAccessManager.get
-	(QNetworkRequest(url));
+      QNetworkRequest request(url);
+
+      request.setRawHeader("Accept", "text/html");
+      request.setRawHeader("User-Agent", s_user_agent);
+
+      QNetworkReply *reply = m_contentNetworkAccessManager.get(request);
 
       if(!reply)
 	{
@@ -2150,8 +2160,11 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
   if(!imageUrl.isEmpty() && imageUrl.isValid() &&
      !url.isEmpty() && url.isValid())
     {
-      QNetworkReply *reply = m_feedNetworkAccessManager.get
-	(QNetworkRequest(imageUrl));
+      QNetworkRequest request(imageUrl);
+
+      request.setRawHeader("User-Agent", s_user_agent);
+
+      QNetworkReply *reply = m_feedNetworkAccessManager.get(request);
 
       if(!reply)
 	{
@@ -2206,8 +2219,12 @@ void spoton_rss::slotDownloadTimeout(void)
       return;
     }
 
-  QNetworkReply *reply = m_feedNetworkAccessManager.get
-    (QNetworkRequest(item->text()));
+  QNetworkRequest request(item->text());
+
+  request.setRawHeader("Accept", "text/html");
+  request.setRawHeader("User-Agent", s_user_agent);
+
+  QNetworkReply *reply = m_feedNetworkAccessManager.get(request);
 
   if(!reply)
     {
@@ -2300,8 +2317,12 @@ void spoton_rss::slotFeedReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
 	    emit logError(error);
-	    reply = m_feedNetworkAccessManager.get
-	      (QNetworkRequest(redirectUrl));
+
+	    QNetworkRequest request(redirectUrl);
+
+	    request.setRawHeader("Accept", "text/html");
+	    request.setRawHeader("User-Agent", s_user_agent);
+	    reply = m_feedNetworkAccessManager.get(request);
 
 	    if(!reply)
 	      {
