@@ -2393,8 +2393,11 @@ void spoton_rss::slotImport(void)
 
 void spoton_rss::slotLogError(const QString &error)
 {
-  if(error.trimmed().isEmpty() || !m_ui.record_notices->isChecked())
+  if(error.trimmed().isEmpty())
     return;
+  else if(!m_ui.record_notices->isChecked())
+    if(!error.contains("scheduled for an update"))
+      return;
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
   m_ui.errors->append(error.trimmed().append("<br>"));
