@@ -2486,7 +2486,7 @@ void spoton_rss::slotRecordNotices(bool state)
 {
   QSettings settings;
 
-  settings.value("gui/rss_record_notices", state);
+  settings.setValue("gui/rss_record_notices", state);
 }
 
 void spoton_rss::slotRefreshTimeline(void)
