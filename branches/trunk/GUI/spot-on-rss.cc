@@ -429,8 +429,11 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	   ucc.data());
 
 	if(!error.isEmpty())
-	  emit logError(error);
-	else
+	  {
+	    if(m_ui.record_notices->isChecked())
+	      emit logError(error);
+	  }
+	else if(m_ui.record_notices->isChecked())
 	  emit logError
 	    (QString("The URL <a href=\"%1\">%1</a> has been imported.").
 	     arg(spoton_misc::urlToEncoded(url).constData()));
@@ -535,8 +538,10 @@ void spoton_rss::import(const int maximumKeywords)
 
   if(!crypt)
     {
-      emit logError("Import failure. Invalid spoton_crypt object. "
-		    "This is a fatal flaw.");
+      if(m_ui.record_notices->isChecked())
+	emit logError("Import failure. Invalid spoton_crypt object. "
+		      "This is a fatal flaw.");
+
       return;
     }
 
@@ -1123,7 +1128,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      error,
      ucc.data());
 
-  if(!error.isEmpty())
+  if(!error.isEmpty() && m_ui.record_notices->isChecked())
     emit logError(error);
 }
 
@@ -1774,17 +1779,21 @@ void spoton_rss::slotContentReplyFinished(void)
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 	    QUrl originalUrl(reply->property("original-url").toUrl());
 
-	    emit logError(error);
+	    if(m_ui.record_notices->isChecked())
+	      emit logError(error);
+
 	    reply->deleteLater();
 	    reply = m_contentNetworkAccessManager.get
 	      (QNetworkRequest(redirectUrl));
 
 	    if(!reply)
 	      {
-		emit logError
-		  (QString("QNetworkAccessManager::get() failure on "
-			   "<a href=\"%1\">%1</a>.").
-		   arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+		if(m_ui.record_notices->isChecked())
+		  emit logError
+		    (QString("QNetworkAccessManager::get() failure on "
+			     "<a href=\"%1\">%1</a>.").
+		     arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+
 		return;
 	      }
 
@@ -1812,12 +1821,15 @@ void spoton_rss::slotContentReplyFinished(void)
 	  return;
 	}
 
-      QString error
-	(QString("The content of URL <a href=\"%1\">%1</a> has "
-		 "been downloaded.").
-	 arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+      if(m_ui.record_notices->isChecked())
+	{
+	  QString error
+	    (QString("The content of URL <a href=\"%1\">%1</a> has "
+		     "been downloaded.").
+	     arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 
-      emit logError(error);
+	  emit logError(error);
+	}
 
       QByteArray data(reply->readAll());
       QString connectionName("");
@@ -1853,15 +1865,18 @@ void spoton_rss::slotContentReplyFinished(void)
 
 		if(data.isEmpty())
 		  {
-		    QString error
-		      (QString("The URL <a href=\"%1\">%1</a> "
-			       "does not have data.").
-		       arg(spoton_misc::urlToEncoded(reply->url()).
-			   constData()));
+		    if(m_ui.record_notices->isChecked())
+		      {
+			QString error
+			  (QString("The URL <a href=\"%1\">%1</a> "
+				   "does not have data.").
+			   arg(spoton_misc::urlToEncoded(reply->url()).
+			       constData()));
 
-		    emit logError(error);
+			emit logError(error);
+		      }
 		  }
-		else
+		else if(m_ui.record_notices->isChecked())
 		  {
 		    QString error
 		      (QString("The URL <a href=\"%1\">%1</a> "
@@ -1888,7 +1903,7 @@ void spoton_rss::slotContentReplyFinished(void)
 	    if(ok)
 	      ok = query.exec();
 
-	    if(!ok)
+	    if(m_ui.record_notices->isChecked() && !ok)
 	      {
 		QString error
 		  (QString("The content of URL <a href=\"%1\">%1</a> was "
@@ -2113,21 +2128,26 @@ void spoton_rss::slotDownloadContent(void)
 
   if(!url.isEmpty() && url.isValid())
     {
-      QString error
-	(QString("Fetching the URL <a href=\"%1\">%1</a>.").
-	 arg(spoton_misc::urlToEncoded(url).constData()));
+      if(m_ui.record_notices->isChecked())
+	{
+	  QString error
+	    (QString("Fetching the URL <a href=\"%1\">%1</a>.").
+	     arg(spoton_misc::urlToEncoded(url).constData()));
 
-      emit logError(error);
+	  emit logError(error);
+	}
 
       QNetworkReply *reply = m_contentNetworkAccessManager.get
 	(QNetworkRequest(url));
 
       if(!reply)
 	{
-	  emit logError
-	    (QString("QNetworkAccessManager::get() failure on "
-		     "<a href=\"%1\">%1</a>.").
-	     arg(spoton_misc::urlToEncoded(url).constData()));
+	  if(m_ui.record_notices->isChecked())
+	    emit logError
+	      (QString("QNetworkAccessManager::get() failure on "
+		       "<a href=\"%1\">%1</a>.").
+	       arg(spoton_misc::urlToEncoded(url).constData()));
+
 	  return;
 	}
 
@@ -2155,10 +2175,12 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 
       if(!reply)
 	{
-	  emit logError
-	    (QString("QNetworkAccessManager::get() failure on "
-		     "<a href=\"%1\">%1</a>.").
-	     arg(spoton_misc::urlToEncoded(imageUrl).constData()));
+	  if(m_ui.record_notices->isChecked())
+	    emit logError
+	      (QString("QNetworkAccessManager::get() failure on "
+		       "<a href=\"%1\">%1</a>.").
+	       arg(spoton_misc::urlToEncoded(imageUrl).constData()));
+
 	  return;
 	}
 
@@ -2211,11 +2233,13 @@ void spoton_rss::slotDownloadTimeout(void)
 
   if(!reply)
     {
-      emit logError
-	(QString("QNetworkAccessManager::get() failure on "
-		 "<a href=\"%1\">%1</a>.").
-	 arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
-	     constData()));
+      if(m_ui.record_notices->isChecked())
+	emit logError
+	  (QString("QNetworkAccessManager::get() failure on "
+		   "<a href=\"%1\">%1</a>.").
+	   arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
+	       constData()));
+
       return;
     }
 
@@ -2232,8 +2256,10 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SIGNAL(readyRead(void)),
 	  this,
 	  SLOT(slotFeedReplyReadyRead(void)));
-  emit logError(QString("Downloading the feed <a href=\"%1\">%1</a>.").
-		arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+
+  if(m_ui.record_notices->isChecked())
+    emit logError(QString("Downloading the feed <a href=\"%1\">%1</a>.").
+		  arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }
 
 void spoton_rss::slotFeedImageReplyFinished(void)
@@ -2293,22 +2319,28 @@ void spoton_rss::slotFeedReplyFinished(void)
       if(!redirectUrl.isEmpty())
 	if(redirectUrl.isValid())
 	  {
-	    QString error
-	      (QString("The feed URL <a href=\"%1\">%1</a> "
-		       "is being redirected to <a href=\"%2\">%2</a>.").
-	       arg(spoton_misc::urlToEncoded(url).constData()).
-	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+	    if(m_ui.record_notices->isChecked())
+	      {
+		QString error
+		  (QString("The feed URL <a href=\"%1\">%1</a> "
+			   "is being redirected to <a href=\"%2\">%2</a>.").
+		   arg(spoton_misc::urlToEncoded(url).constData()).
+		   arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
 
-	    emit logError(error);
+		emit logError(error);
+	      }
+
 	    reply = m_feedNetworkAccessManager.get
 	      (QNetworkRequest(redirectUrl));
 
 	    if(!reply)
 	      {
-		emit logError
-		  (QString("QNetworkAccessManager::get() failure on "
-			   "<a href=\"%1\">%1</a>.").
-		   arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+		if(m_ui.record_notices->isChecked())
+		  emit logError
+		    (QString("QNetworkAccessManager::get() failure on "
+			     "<a href=\"%1\">%1</a>.").
+		     arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
+
 		return;
 	      }
 
@@ -2330,13 +2362,17 @@ void spoton_rss::slotFeedReplyFinished(void)
     }
   else if(reply)
     {
-      QString error
-	(QString("The URL <a href=\"%1\">%1</a> "
-		 "could not be accessed correctly (%2).").
-	 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
-	 arg(reply->errorString()));
+      if(m_ui.record_notices->isChecked())
+	{
+	  QString error
+	    (QString("The URL <a href=\"%1\">%1</a> "
+		     "could not be accessed correctly (%2).").
+	     arg(spoton_misc::urlToEncoded(reply->url()).constData()).
+	     arg(reply->errorString()));
 
-      emit logError(error);
+	  emit logError(error);
+	}
+
       reply->deleteLater();
     }
 
@@ -2393,7 +2429,7 @@ void spoton_rss::slotImport(void)
 
 void spoton_rss::slotLogError(const QString &error)
 {
-  if(error.trimmed().isEmpty() || !m_ui.record_notices->isChecked())
+  if(error.trimmed().isEmpty())
     return;
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -2802,7 +2838,8 @@ void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
   else
     error = QString("A QNetworkReply error (%1) occurred.").arg(code);
 
-  emit logError(error);
+  if(m_ui.record_notices->isChecked())
+    emit logError(error);
 }
 
 void spoton_rss::slotSaveProxy(void)
