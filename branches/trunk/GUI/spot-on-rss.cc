@@ -2162,6 +2162,7 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
     {
       QNetworkRequest request(imageUrl);
 
+      request.setRawHeader("Accept", "text/html");
       request.setRawHeader("User-Agent", s_user_agent);
 
       QNetworkReply *reply = m_feedNetworkAccessManager.get(request);
