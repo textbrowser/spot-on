@@ -240,6 +240,8 @@ void spoton_web_server_thread::process
   ** Prepare the socket!
   */
 
+  socket->setReadBufferSize
+    (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE);
   socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
   QSslConfiguration configuration;
@@ -297,6 +299,8 @@ void spoton_web_server_thread::process
 
       if(socket->state() == QAbstractSocket::ConnectedState)
 	socket->waitForReadyRead(250);
+      else
+	break;
     }
 
   if(data.endsWith("\r\n\r\n") &&
