@@ -270,7 +270,7 @@ void spoton_neighborstatistics::show(void)
 
 void spoton_neighborstatistics::slotFinished(void)
 {
-  if(m_future.resultCount() > 0)
+  if(m_future.resultCount() > 0 && m_future.results().value(0).size() > 0)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_ui.table->setSortingEnabled(false);
