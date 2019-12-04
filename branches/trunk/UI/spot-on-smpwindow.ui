@@ -38,9 +38,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>697</width>
-             <height>935</height>
+             <y>-77</y>
+             <width>701</width>
+             <height>947</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -64,6 +64,9 @@
                   </property>
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -262,6 +265,9 @@
                    </property>
                    <property name="selectionBehavior">
                     <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                   <property name="verticalScrollMode">
+                    <enum>QAbstractItemView::ScrollPerPixel</enum>
                    </property>
                    <property name="horizontalScrollMode">
                     <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -541,7 +547,7 @@
      <x>0</x>
      <y>0</y>
      <width>753</width>
-     <height>31</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

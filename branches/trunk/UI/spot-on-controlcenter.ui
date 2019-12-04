@@ -19,7 +19,16 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
@@ -56,7 +65,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -72,15 +90,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>493</height>
+             <width>772</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -417,7 +444,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -432,7 +468,16 @@
            <property name="spacing">
             <number>5</number>
            </property>
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <item>
@@ -448,15 +493,24 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>436</width>
-                <height>504</height>
+                <width>742</width>
+                <height>501</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -477,7 +531,16 @@
                      <property name="spacing">
                       <number>5</number>
                      </property>
-                     <property name="margin">
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
                       <number>5</number>
                      </property>
                      <item>
@@ -533,7 +596,16 @@
                      <property name="spacing">
                       <number>5</number>
                      </property>
-                     <property name="margin">
+                     <property name="leftMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="topMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="rightMargin">
+                      <number>5</number>
+                     </property>
+                     <property name="bottomMargin">
                       <number>5</number>
                      </property>
                      <item>
@@ -694,6 +766,9 @@
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
                        </property>
+                       <property name="verticalScrollMode">
+                        <enum>QAbstractItemView::ScrollPerPixel</enum>
+                       </property>
                        <property name="horizontalScrollMode">
                         <enum>QAbstractItemView::ScrollPerPixel</enum>
                        </property>
@@ -852,7 +927,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -868,15 +952,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>895</width>
-             <height>701</height>
+             <width>885</width>
+             <height>674</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -1075,6 +1168,9 @@
                        </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                       <property name="verticalScrollMode">
+                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                        </property>
                        <property name="horizontalScrollMode">
                         <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -1389,6 +1485,9 @@
                           <property name="selectionBehavior">
                            <enum>QAbstractItemView::SelectRows</enum>
                           </property>
+                          <property name="verticalScrollMode">
+                           <enum>QAbstractItemView::ScrollPerPixel</enum>
+                          </property>
                           <property name="horizontalScrollMode">
                            <enum>QAbstractItemView::ScrollPerPixel</enum>
                           </property>
@@ -1649,7 +1748,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -1702,6 +1810,9 @@
                   </property>
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -1788,7 +1899,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -1806,6 +1926,9 @@
                        </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                       <property name="verticalScrollMode">
+                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                        </property>
                        <property name="horizontalScrollMode">
                         <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -1886,7 +2009,16 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -1921,7 +2053,16 @@
                          <property name="spacing">
                           <number>5</number>
                          </property>
-                         <property name="margin">
+                         <property name="leftMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="topMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="rightMargin">
+                          <number>5</number>
+                         </property>
+                         <property name="bottomMargin">
                           <number>5</number>
                          </property>
                          <item>
@@ -2055,7 +2196,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -2071,15 +2221,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>717</width>
-             <height>452</height>
+             <width>772</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -2161,6 +2320,9 @@
                   </property>
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -2318,7 +2480,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -2734,7 +2905,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -2749,16 +2929,25 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>281</width>
-                     <height>1510</height>
+                     <y>-1132</y>
+                     <width>265</width>
+                     <height>1580</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -2770,7 +2959,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -2780,6 +2978,9 @@
                          </property>
                          <property name="selectionBehavior">
                           <enum>QAbstractItemView::SelectRows</enum>
+                         </property>
+                         <property name="verticalScrollMode">
+                          <enum>QAbstractItemView::ScrollPerPixel</enum>
                          </property>
                          <property name="horizontalScrollMode">
                           <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -2895,7 +3096,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -2921,6 +3131,9 @@
                          </property>
                          <property name="selectionBehavior">
                           <enum>QAbstractItemView::SelectRows</enum>
+                         </property>
+                         <property name="verticalScrollMode">
+                          <enum>QAbstractItemView::ScrollPerPixel</enum>
                          </property>
                          <property name="horizontalScrollMode">
                           <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -3077,7 +3290,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -3087,6 +3309,9 @@
                          </property>
                          <property name="selectionBehavior">
                           <enum>QAbstractItemView::SelectRows</enum>
+                         </property>
+                         <property name="verticalScrollMode">
+                          <enum>QAbstractItemView::ScrollPerPixel</enum>
                          </property>
                          <property name="horizontalScrollMode">
                           <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -3146,7 +3371,16 @@
                        <property name="spacing">
                         <number>5</number>
                        </property>
-                       <property name="margin">
+                       <property name="leftMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="topMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="rightMargin">
+                        <number>5</number>
+                       </property>
+                       <property name="bottomMargin">
                         <number>5</number>
                        </property>
                        <item>
@@ -3216,7 +3450,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -3232,8 +3475,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>757</width>
-             <height>263</height>
+             <width>772</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3385,6 +3628,9 @@
                   </property>
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
+                  </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -3633,9 +3879,9 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>0</y>
-                  <width>766</width>
-                  <height>531</height>
+                  <y>-251</y>
+                  <width>740</width>
+                  <height>545</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -3658,7 +3904,16 @@
                         <property name="spacing">
                          <number>5</number>
                         </property>
-                        <property name="margin">
+                        <property name="leftMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
                          <number>5</number>
                         </property>
                         <item>
@@ -4043,7 +4298,16 @@
                            <property name="spacing">
                             <number>5</number>
                            </property>
-                           <property name="margin">
+                           <property name="leftMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>5</number>
+                           </property>
+                           <property name="bottomMargin">
                             <number>5</number>
                            </property>
                            <item>
@@ -4253,7 +4517,16 @@
                         <property name="spacing">
                          <number>5</number>
                         </property>
-                        <property name="margin">
+                        <property name="leftMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>5</number>
+                        </property>
+                        <property name="bottomMargin">
                          <number>5</number>
                         </property>
                         <item>
@@ -4371,7 +4644,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -4387,15 +4669,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>630</width>
-             <height>448</height>
+             <width>772</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -4463,16 +4754,25 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>726</width>
-                 <height>709</height>
+                 <y>-595</y>
+                 <width>742</width>
+                 <height>751</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -4497,7 +4797,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -4628,7 +4937,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -4818,7 +5136,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -5172,7 +5499,16 @@
                <property name="spacing">
                 <number>5</number>
                </property>
-               <property name="margin">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
                 <number>5</number>
                </property>
                <item>
@@ -5367,7 +5703,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -5382,16 +5727,25 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-849</y>
              <width>882</width>
-             <height>1261</height>
+             <height>1317</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -5408,7 +5762,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -5777,7 +6140,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6047,7 +6419,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6066,6 +6447,9 @@
                    </property>
                    <property name="selectionBehavior">
                     <enum>QAbstractItemView::SelectRows</enum>
+                   </property>
+                   <property name="verticalScrollMode">
+                    <enum>QAbstractItemView::ScrollPerPixel</enum>
                    </property>
                    <property name="horizontalScrollMode">
                     <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -6397,7 +6781,16 @@
                  <property name="spacing">
                   <number>5</number>
                  </property>
-                 <property name="margin">
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
                   <number>5</number>
                  </property>
                  <item>
@@ -6420,14 +6813,17 @@
                    <property name="selectionBehavior">
                     <enum>QAbstractItemView::SelectRows</enum>
                    </property>
+                   <property name="verticalScrollMode">
+                    <enum>QAbstractItemView::ScrollPerPixel</enum>
+                   </property>
                    <property name="horizontalScrollMode">
                     <enum>QAbstractItemView::ScrollPerPixel</enum>
                    </property>
-                   <attribute name="horizontalHeaderDefaultSectionSize">
-                    <number>200</number>
-                   </attribute>
                    <attribute name="horizontalHeaderMinimumSectionSize">
                     <number>150</number>
+                   </attribute>
+                   <attribute name="horizontalHeaderDefaultSectionSize">
+                    <number>200</number>
                    </attribute>
                    <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
@@ -6469,7 +6865,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -6485,15 +6890,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>636</width>
-             <height>727</height>
+             <width>752</width>
+             <height>716</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -6509,7 +6923,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -6573,6 +6996,9 @@
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
                   </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
+                  </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
@@ -6611,7 +7037,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -6724,7 +7159,16 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <property name="margin">
+                      <property name="leftMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>5</number>
+                      </property>
+                      <property name="bottomMargin">
                        <number>5</number>
                       </property>
                       <item>
@@ -6844,7 +7288,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -6860,7 +7313,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -6880,6 +7342,9 @@
                       </property>
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -6940,7 +7405,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7057,6 +7531,9 @@
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
                       </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
+                      </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
@@ -7135,7 +7612,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7215,6 +7701,9 @@
                        </property>
                        <property name="selectionBehavior">
                         <enum>QAbstractItemView::SelectRows</enum>
+                       </property>
+                       <property name="verticalScrollMode">
+                        <enum>QAbstractItemView::ScrollPerPixel</enum>
                        </property>
                        <property name="horizontalScrollMode">
                         <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -7329,6 +7818,9 @@
                     <property name="selectionBehavior">
                      <enum>QAbstractItemView::SelectRows</enum>
                     </property>
+                    <property name="verticalScrollMode">
+                     <enum>QAbstractItemView::ScrollPerPixel</enum>
+                    </property>
                     <property name="horizontalScrollMode">
                      <enum>QAbstractItemView::ScrollPerPixel</enum>
                     </property>
@@ -7342,7 +7834,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7355,6 +7856,9 @@
                       </property>
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -7508,7 +8012,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -7524,15 +8037,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>702</width>
-             <height>764</height>
+             <width>752</width>
+             <height>794</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -7695,7 +8217,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7789,6 +8320,9 @@
                   <property name="selectionBehavior">
                    <enum>QAbstractItemView::SelectRows</enum>
                   </property>
+                  <property name="verticalScrollMode">
+                   <enum>QAbstractItemView::ScrollPerPixel</enum>
+                  </property>
                   <property name="horizontalScrollMode">
                    <enum>QAbstractItemView::ScrollPerPixel</enum>
                   </property>
@@ -7833,7 +8367,16 @@
                 <property name="spacing">
                  <number>5</number>
                 </property>
-                <property name="margin">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>5</number>
+                </property>
+                <property name="rightMargin">
+                 <number>5</number>
+                </property>
+                <property name="bottomMargin">
                  <number>5</number>
                 </property>
                 <item>
@@ -7859,7 +8402,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7885,6 +8437,9 @@
                       </property>
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -7917,7 +8472,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -7943,6 +8507,9 @@
                       </property>
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -7975,7 +8542,16 @@
                     <property name="spacing">
                      <number>5</number>
                     </property>
-                    <property name="margin">
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
                      <number>5</number>
                     </property>
                     <item>
@@ -8001,6 +8577,9 @@
                       </property>
                       <property name="selectionBehavior">
                        <enum>QAbstractItemView::SelectRows</enum>
+                      </property>
+                      <property name="verticalScrollMode">
+                       <enum>QAbstractItemView::ScrollPerPixel</enum>
                       </property>
                       <property name="horizontalScrollMode">
                        <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -8039,7 +8618,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
-                   <property name="margin">
+                   <property name="leftMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>5</number>
+                   </property>
+                   <property name="bottomMargin">
                     <number>5</number>
                    </property>
                    <item>
@@ -8172,7 +8760,16 @@
         <property name="spacing">
          <number>5</number>
         </property>
-        <property name="margin">
+        <property name="leftMargin">
+         <number>5</number>
+        </property>
+        <property name="topMargin">
+         <number>5</number>
+        </property>
+        <property name="rightMargin">
+         <number>5</number>
+        </property>
+        <property name="bottomMargin">
          <number>5</number>
         </property>
         <item>
@@ -8188,15 +8785,24 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>292</width>
-             <height>166</height>
+             <width>772</width>
+             <height>488</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
             <property name="spacing">
              <number>5</number>
             </property>
-            <property name="margin">
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
              <number>5</number>
             </property>
             <item>
@@ -8410,7 +9016,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

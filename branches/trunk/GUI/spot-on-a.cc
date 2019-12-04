@@ -8719,12 +8719,9 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 	  SIGNAL(itemChanged(QTableWidgetItem *)),
 	  this,
 	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
-  m_ui.emailParticipants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
-  m_ui.participants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
-  m_ui.urlParticipants->setSelectionMode
-    (QAbstractItemView::MultiSelection);
+  m_ui.emailParticipants->setSelectionMode(QAbstractItemView::MultiSelection);
+  m_ui.participants->setSelectionMode(QAbstractItemView::MultiSelection);
+  m_ui.urlParticipants->setSelectionMode(QAbstractItemView::MultiSelection);
 
   while(!rows.isEmpty())
     m_ui.participants->selectRow(rows.takeFirst());
@@ -8739,26 +8736,22 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
     (QAbstractItemView::ExtendedSelection);
   m_ui.emailParticipants->setSortingEnabled(true);
   m_ui.emailParticipants->resizeColumnToContents(0);
-  m_ui.emailParticipants->horizontalHeader()->
-    setStretchLastSection(true);
+  m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
   m_ui.participants->resizeColumnToContents
     (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
   m_ui.participants->resizeColumnToContents
     (m_ui.participants->columnCount() - 2); // Gemini Hash Key.
-  m_ui.participants->setSelectionMode
-    (QAbstractItemView::ExtendedSelection);
+  m_ui.participants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.participants->setSortingEnabled(true);
   m_ui.participants->horizontalHeader()->setStretchLastSection(true);
   m_ui.participants->horizontalScrollBar()->setValue(hval);
   m_ui.participants->verticalScrollBar()->setValue(vval);
-  m_ui.urlParticipants->setSelectionMode
-    (QAbstractItemView::ExtendedSelection);
+  m_ui.urlParticipants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.urlParticipants->setSortingEnabled(true);
   m_ui.urlParticipants->resizeColumnToContents(0);
-  m_ui.urlParticipants->horizontalHeader()->
-    setStretchLastSection(true);
+  m_ui.urlParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
   m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
 

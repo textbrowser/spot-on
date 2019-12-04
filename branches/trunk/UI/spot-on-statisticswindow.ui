@@ -30,6 +30,9 @@
       <property name="selectionBehavior">
        <enum>QAbstractItemView::SelectRows</enum>
       </property>
+      <property name="verticalScrollMode">
+       <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
       <property name="horizontalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
@@ -46,7 +49,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

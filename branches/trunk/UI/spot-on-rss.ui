@@ -41,7 +41,16 @@
            <bool>false</bool>
           </property>
           <layout class="QGridLayout" name="gridLayout_5">
-           <property name="margin">
+           <property name="leftMargin">
+            <number>5</number>
+           </property>
+           <property name="topMargin">
+            <number>5</number>
+           </property>
+           <property name="rightMargin">
+            <number>5</number>
+           </property>
+           <property name="bottomMargin">
             <number>5</number>
            </property>
            <property name="spacing">
@@ -382,7 +391,7 @@
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
           <property name="verticalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
+           <enum>QAbstractItemView::ScrollPerItem</enum>
           </property>
           <property name="horizontalScrollMode">
            <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -478,8 +487,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>610</width>
-             <height>527</height>
+             <width>618</width>
+             <height>534</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -720,7 +729,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>26</height>
+     <height>32</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

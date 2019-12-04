@@ -41,6 +41,7 @@ spoton_neighborstatistics::spoton_neighborstatistics(spoton *parent):
 {
   m_parent = parent;
   m_ui.setupUi(this);
+  m_ui.table->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
   connect(&m_futureWatcher,
 	  SIGNAL(finished(void)),
 	  this,
@@ -118,29 +119,21 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 				text.append
 				  (tr("Cert. Effective Date: %1\n"
 				      "Cert. Expiration Date: %2\n"
-				      "Cert. Issuer Organization: "
-				      "%3\n"
-				      "Cert. Issuer Common Name: "
-				      "%4\n"
-				      "Cert. Issuer Locality Name: "
-				      "%5\n"
+				      "Cert. Issuer Organization: %3\n"
+				      "Cert. Issuer Common Name: %4\n"
+				      "Cert. Issuer Locality Name: %5\n"
 				      "Cert. Issuer Organizational Unit "
 				      "Name: %6\n"
-				      "Cert. Issuer Country Name: %7"
-				      "\n"
+				      "Cert. Issuer Country Name: %7\n"
 				      "Cert. Issuer State or Province "
 				      "Name: %8\n"
 				      "Cert. Serial Number: %9\n"
-				      "Cert. Subject Organization: "
-				      "%10\n"
-				      "Cert. Subject Common Name: "
-				      "%11\n"
-				      "Cert. Subject Locality Name: "
-				      "%12\n"
+				      "Cert. Subject Organization: %10\n"
+				      "Cert. Subject Common Name: %11\n"
+				      "Cert. Subject Locality Name: %12\n"
 				      "Cert. Subject Organizational Unit "
 				      "Name: %13\n"
-				      "Cert. Subject Country Name: "
-				      "%14\n"
+				      "Cert. Subject Country Name: %14\n"
 				      "Cert. Subject State or Province "
 				      "Name: %15\n"
 				      "Cert. Version: %16").
@@ -237,7 +230,6 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 				       value(0)).
 #endif
 				   arg(certificate.version().constData()));
-			      text.append("</html>");
 			    }
 			  else
 			    text = bytes;
@@ -281,8 +273,16 @@ void spoton_neighborstatistics::slotFinished(void)
   if(m_future.resultCount() > 0)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      m_ui.table->setSortingEnabled(false);
 
       QList<QPair<QString, QString> > list(m_future.results().value(0));
+      QString fieldName("");
+      int hval = m_ui.table->horizontalScrollBar()->value();
+      int vval = m_ui.table->verticalScrollBar()->value();
+
+      if(!m_ui.table->selectionModel()->selectedRows(0).isEmpty())
+	fieldName = m_ui.table->selectionModel()->selectedRows(0).at(0).
+	  data().toString();
 
       m_ui.table->setRowCount(list.size());
 
@@ -299,8 +299,14 @@ void spoton_neighborstatistics::slotFinished(void)
 	  item->setText(list.at(i).second);
 	  item->setToolTip(QString("<html>%1</html>").arg(item->text()));
 	  m_ui.table->setItem(i, 1, item);
+
+	  if(fieldName == list.at(i).first)
+	    m_ui.table->selectRow(i);
 	}
 
+      m_ui.table->setSortingEnabled(true);
+      m_ui.table->horizontalScrollBar()->setValue(hval);
+      m_ui.table->verticalScrollBar()->setValue(vval);
       QApplication::restoreOverrideCursor();
     }
   else
