@@ -47,10 +47,10 @@ class spoton_neighborstatistics: public QMainWindow
   void show(void);
 
  private:
-  QFuture<QString> m_future;
-  QFutureWatcher<QString> m_futureWatcher;
+  QFuture<QList<QPair<QString, QString> > > m_future;
+  QFutureWatcher<QList<QPair<QString, QString> > > m_futureWatcher;
   QTimer m_timer;
-  QString query(void);
+  QList<QPair<QString, QString> > query(void);
   Ui_spoton_neighbor_statistics m_ui;
   spoton *m_parent;
   void closeEvent(QCloseEvent *event);

@@ -63,9 +63,9 @@ spoton_neighborstatistics::~spoton_neighborstatistics()
   m_future.waitForFinished();
 }
 
-QString spoton_neighborstatistics::query(void)
+QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 {
-  QString text("");
+  QList<QPair<QString, QString> > list;
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(crypt)
@@ -87,171 +87,168 @@ QString spoton_neighborstatistics::query(void)
 	    query.bindValue(0, objectName());
 
 	    if(query.exec() && query.next())
-	      {
-		text.append("<html>");
+	      for(int i = 0; i < query.record().count(); i++)
+		{
+		  QByteArray bytes
+		    (QByteArray::fromBase64(query.value(i).toByteArray()));
+		  QPair<QString, QString> pair;
+		  QString text("");
 
-		for(int i = 0; i < query.record().count(); i++)
-		  {
-		    QByteArray bytes
-		      (QByteArray::fromBase64(query.value(i).toByteArray()));
+		  pair.first = query.record().fieldName(i);
 
-		    text.append(QString("<b>%1:</b> ").
-				arg(query.record().fieldName(i)));
+		  if(query.record().field(i).type() != QVariant::ByteArray &&
+		     query.record().field(i).type() != QVariant::String)
+		    text = query.value(i).toString();
+		  else
+		    {
+		      bool ok = true;
 
-		    if(query.record().field(i).type() != QVariant::ByteArray &&
-		       query.record().field(i).type() != QVariant::String)
-		      text.append(query.value(i).toString());
-		    else
-		      {
-			bool ok = true;
+		      bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
 
-			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
+		      if(ok)
+			{
+			  if(query.record().field(i).name() == "certificate")
+			    {
+			      text = bytes;
+			      text.append("\n");
 
-			if(ok)
-			  {
-			    if(query.record().field(i).name() == "certificate")
-			      {
-				text.append(bytes);
-				text.append("<br>");
+			      QSslCertificate certificate(bytes);
 
-				QSslCertificate certificate(bytes);
-
-				if(!certificate.isNull())
-				  text.append
-				    (tr("<b>Cert. Effective Date:</b> %1<br>"
-					"<b>Cert. Expiration Date:</b> %2<br>"
-					"<b>Cert. Issuer Organization:</b> "
-					"%3<br>"
-					"<b>Cert. Issuer Common Name:</b> "
-					"%4<br>"
-					"<b>Cert. Issuer Locality Name:</b> "
-					"%5<br>"
-					"<b>Cert. Issuer Organizational Unit "
-					"Name:</b> %6<br>"
-					"<b>Cert. Issuer Country Name:</b> %7"
-					"<br>"
-					"<b>Cert. Issuer State or Province "
-					"Name:</b> %8<br>"
-					"<b>Cert. Serial Number:</b> %9<br>"
-					"<b>Cert. Subject Organization:</b> "
-					"%10<br>"
-					"<b>Cert. Subject Common Name:</b> "
-					"%11<br>"
-					"<b>Cert. Subject Locality Name:</b> "
-					"%12<br>"
-					"<b>Cert. Subject Organizational Unit "
-					"Name:</b> %13<br>"
-					"<b>Cert. Subject Country Name:</b> "
-					"%14<br>"
-					"<b>Cert. Subject State or Province "
-					"Name:</b> %15<br>"
-					"<b>Cert. Version:</b> %16").
-				     arg(certificate.effectiveDate().
-					 toString("MM/dd/yyyy")).
-				     arg(certificate.expiryDate().
-					 toString("MM/dd/yyyy")).
+			      if(!certificate.isNull())
+				text.append
+				  (tr("Cert. Effective Date: %1\n"
+				      "Cert. Expiration Date: %2\n"
+				      "Cert. Issuer Organization: "
+				      "%3\n"
+				      "Cert. Issuer Common Name: "
+				      "%4\n"
+				      "Cert. Issuer Locality Name: "
+				      "%5\n"
+				      "Cert. Issuer Organizational Unit "
+				      "Name: %6\n"
+				      "Cert. Issuer Country Name: %7"
+				      "\n"
+				      "Cert. Issuer State or Province "
+				      "Name: %8\n"
+				      "Cert. Serial Number: %9\n"
+				      "Cert. Subject Organization: "
+				      "%10\n"
+				      "Cert. Subject Common Name: "
+				      "%11\n"
+				      "Cert. Subject Locality Name: "
+				      "%12\n"
+				      "Cert. Subject Organizational Unit "
+				      "Name: %13\n"
+				      "Cert. Subject Country Name: "
+				      "%14\n"
+				      "Cert. Subject State or Province "
+				      "Name: %15\n"
+				      "Cert. Version: %16").
+				   arg(certificate.effectiveDate().
+				       toString("MM/dd/yyyy")).
+				   arg(certificate.expiryDate().
+				       toString("MM/dd/yyyy")).
 #if QT_VERSION < 0x050000
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    Organization)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    CommonName)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    LocalityName)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    OrganizationalUnitName)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    CountryName)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    StateOrProvinceName)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  Organization)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  CommonName)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  LocalityName)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  OrganizationalUnitName)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  CountryName)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  StateOrProvinceName)).
 #else
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    Organization).value(0)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    CommonName).value(0)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    LocalityName).value(0)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    OrganizationalUnitName).
-					 value(0)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    CountryName).value(0)).
-				     arg(certificate.
-					 issuerInfo(QSslCertificate::
-						    StateOrProvinceName).
-					 value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  Organization).value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  CommonName).value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  LocalityName).value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  OrganizationalUnitName).
+				       value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  CountryName).value(0)).
+				   arg(certificate.
+				       issuerInfo(QSslCertificate::
+						  StateOrProvinceName).
+				       value(0)).
 #endif
-				     arg(certificate.serialNumber().
-					 constData()).
+				   arg(certificate.serialNumber().
+				       constData()).
 #if QT_VERSION < 0x050000
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     Organization)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     CommonName)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     LocalityName)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     OrganizationalUnitName)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     CountryName)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     StateOrProvinceName)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   Organization)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   CommonName)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   LocalityName)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   OrganizationalUnitName)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   CountryName)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   StateOrProvinceName)).
 #else
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     Organization).
-					 value(0)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     CommonName).
-					 value(0)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     LocalityName).
-					 value(0)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     OrganizationalUnitName).
-					 value(0)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     CountryName).
-					 value(0)).
-				     arg(certificate.
-					 subjectInfo(QSslCertificate::
-						     StateOrProvinceName).
-					 value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   Organization).
+				       value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   CommonName).
+				       value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   LocalityName).
+				       value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   OrganizationalUnitName).
+				       value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   CountryName).
+				       value(0)).
+				   arg(certificate.
+				       subjectInfo(QSslCertificate::
+						   StateOrProvinceName).
+				       value(0)).
 #endif
-				     arg(certificate.version().constData()));
-			      }
-			    else
-			      text.append(bytes);
-			  }
-			else
-			  text.append(query.value(i).toString());
-		      }
+				   arg(certificate.version().constData()));
+			      text.append("</html>");
+			    }
+			  else
+			    text = bytes;
+			}
+		      else
+			text = query.value(i).toString();
+		    }
 
-		    text.append("<br>");
-		  }
-
-		text.append("</html>");
-	      }
+		  pair.second = text;
+		  list << pair;
+		}
 	  }
 
 	db.close();
@@ -260,7 +257,7 @@ QString spoton_neighborstatistics::query(void)
       QSqlDatabase::removeDatabase(connectionName);
     }
 
-  return text;
+  return list;
 }
 
 void spoton_neighborstatistics::closeEvent(QCloseEvent *event)
@@ -281,22 +278,30 @@ void spoton_neighborstatistics::show(void)
 
 void spoton_neighborstatistics::slotFinished(void)
 {
-  if(m_future.results().value(0).length() > 0)
+  if(m_future.resultCount() > 0)
     {
-      QPair<int, int> s(m_ui.textBrowser->textCursor().selectionStart(),
-			m_ui.textBrowser->textCursor().selectionEnd());
-      int h = m_ui.textBrowser->horizontalScrollBar()->value();
-      int v = m_ui.textBrowser->verticalScrollBar()->value();
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      m_ui.textBrowser->setHtml(m_future.results().value(0));
+      QList<QPair<QString, QString> > list(m_future.results().value(0));
 
-      QTextCursor cursor(m_ui.textBrowser->textCursor());
+      m_ui.table->setRowCount(list.size());
 
-      cursor.setPosition(s.first);
-      cursor.setPosition(s.second, QTextCursor::KeepAnchor);
-      m_ui.textBrowser->setTextCursor(cursor);
-      m_ui.textBrowser->horizontalScrollBar()->setValue(h);
-      m_ui.textBrowser->verticalScrollBar()->setValue(v);
+      for(int i = 0; i < list.size(); i++)
+	{
+	  QTableWidgetItem *item = 0;
+
+	  item = new QTableWidgetItem();
+	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	  item->setText(list.at(i).first);
+	  m_ui.table->setItem(i, 0, item);
+	  item = new QTableWidgetItem();
+	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	  item->setText(list.at(i).second);
+	  item->setToolTip(QString("<html>%1</html>").arg(item->text()));
+	  m_ui.table->setItem(i, 1, item);
+	}
+
+      QApplication::restoreOverrideCursor();
     }
   else
     deleteLater();
