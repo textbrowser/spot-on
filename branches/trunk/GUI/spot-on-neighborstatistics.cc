@@ -83,8 +83,7 @@ QString spoton_neighborstatistics::query(void)
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.prepare("SELECT * FROM neighbors WHERE "
-			  "oid = ?");
+	    query.prepare("SELECT * FROM neighbors WHERE oid = ?");
 	    query.bindValue(0, objectName());
 
 	    if(query.exec() && query.next())
@@ -251,7 +250,7 @@ QString spoton_neighborstatistics::query(void)
 		    text.append("<br>");
 		  }
 
-		text.append("</html");
+		text.append("</html>");
 	      }
 	  }
 
