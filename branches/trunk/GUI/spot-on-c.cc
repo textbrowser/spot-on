@@ -562,10 +562,15 @@ void spoton::populateNovas(void)
 void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 {
   QWidget *focusWidget = QApplication::focusWidget();
+  QString setting("");
   int activeListeners = 0;
   int activeNeighbors = 0;
   int row = 0;
   int totalRows = list.size();
+
+  if(!m_statisticsUi.view->selectionModel()->selectedRows(0).isEmpty())
+    setting = m_statisticsUi.view->selectionModel()->selectedRows(0).at(0).
+      data().toString().trimmed();
 
   m_statisticsUi.view->setSortingEnabled(false);
   m_ui.statistics->setSortingEnabled(false);
@@ -574,11 +579,11 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QStandardItem *item = new QStandardItem(list.at(i).first);
+      QStandardItem *item = new QStandardItem(list.at(i).first.trimmed());
 
       item->setEditable(false);
       m_statisticsModel->setItem(row, 0, item);
-      item = new QStandardItem(list.at(i).second.toString());
+      item = new QStandardItem(list.at(i).second.toString().trimmed());
       item->setEditable(false);
       item->setToolTip(item->text());
       m_statisticsModel->setItem(row, 1, item);
@@ -638,6 +643,14 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
   m_ui.statistics->resizeColumnToContents(0);
   m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
   m_ui.statistics->sortByColumn(0, Qt::AscendingOrder);
+
+  for(int i = 0; i < m_statisticsModel->rowCount(); i++)
+    if(m_statisticsModel->item(i, 0) &&
+       m_statisticsModel->item(i, 0)->text() == setting)
+      {
+	m_statisticsUi.view->selectRow(i);
+	break;
+      }
 
   if(focusWidget)
     focusWidget->setFocus();

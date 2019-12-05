@@ -282,7 +282,7 @@ void spoton_neighborstatistics::slotFinished(void)
 
       if(!m_ui.table->selectionModel()->selectedRows(0).isEmpty())
 	fieldName = m_ui.table->selectionModel()->selectedRows(0).at(0).
-	  data().toString();
+	  data().toString().trimmed();
 
       m_ui.table->setRowCount(list.size());
 
@@ -292,7 +292,7 @@ void spoton_neighborstatistics::slotFinished(void)
 
 	  item = new QTableWidgetItem();
 	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	  item->setText(list.at(i).first);
+	  item->setText(list.at(i).first.trimmed());
 	  m_ui.table->setItem(i, 0, item);
 	  item = new QTableWidgetItem();
 	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
