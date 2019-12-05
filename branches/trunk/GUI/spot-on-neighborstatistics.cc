@@ -296,14 +296,18 @@ void spoton_neighborstatistics::slotFinished(void)
 	  m_ui.table->setItem(i, 0, item);
 	  item = new QTableWidgetItem();
 	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	  item->setText(list.at(i).second);
-	  item->setToolTip(QString("<html>%1</html>").arg(item->text()));
+	  item->setText(list.at(i).second.trimmed());
+
+	  if(!item->text().isEmpty())
+	    item->setToolTip(QString("<html>%1</html>").arg(item->text()));
+
 	  m_ui.table->setItem(i, 1, item);
 
 	  if(fieldName == list.at(i).first)
 	    m_ui.table->selectRow(i);
 	}
 
+      m_ui.table->resizeRowsToContents();
       m_ui.table->setSortingEnabled(true);
       m_ui.table->horizontalScrollBar()->setValue(hval);
       m_ui.table->verticalScrollBar()->setValue(vval);
