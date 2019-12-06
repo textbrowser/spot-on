@@ -220,7 +220,7 @@ Ignored Items
 5.     Allow user to bookmark search results. Also allow searching of
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries.
-6.     Allow for other ciphers besides AES for e-mail.
+6.     Allow for other ciphers besides AES for e-mail Gold Bugs.
 7.     Per-participant permissions.
 8.     Account credentials should not be recorded via reversible encryption.
        Derive keys? I really like the two-step mutual authentication.
