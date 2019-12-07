@@ -209,6 +209,7 @@ Completed Items
 150.   Compare random credentials with previously-established credentials.
        Should two-way calling verify that credentials are distinct? No.
 151.   Allow custom addresses for spoton_external_address.
+152.   Limit the congestion database size via the max_page_count pragma.
 
 Ignored Items
 
@@ -254,4 +255,3 @@ Remaining Items
        E-mail remains.
 8.     Separate NTRU implementation.
 9.     Remove obsolete includes.
-10.    Limit the congestion database size via the max_page_count pragma.

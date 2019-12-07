@@ -50,6 +50,12 @@ spoton_external_address::spoton_external_address(const QUrl &url):
     m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
+spoton_external_address::spoton_external_address(void):QNetworkAccessManager(0)
+{
+  m_address = QHostAddress();
+  m_url = QUrl::fromUserInput("https://api.ipify.org");
+}
+
 QHostAddress spoton_external_address::address(void) const
 {
   return m_address;
@@ -81,6 +87,14 @@ void spoton_external_address::discover(void)
 	  SIGNAL(sslErrors(const QList<QSslError> &)),
 	  this,
 	  SLOT(slotSslErrors(const QList<QSslError> &)));
+}
+
+void spoton_external_address::setUrl(const QUrl &url)
+{
+  m_url = url;
+
+  if(m_url.isEmpty() || !m_url.isValid())
+    m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
 void spoton_external_address::slotError(QNetworkReply::NetworkError error)

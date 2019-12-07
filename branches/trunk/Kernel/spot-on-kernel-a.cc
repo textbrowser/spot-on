@@ -2132,6 +2132,10 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    QSqlQuery query(db);
 
 	    query.exec("PRAGMA journal_mode = OFF");
+	    query.exec
+	      (QString("PRAGMA max_page_count = %1").
+	       arg(setting("gui/congestion_control_max_page_count",
+			   100000).toInt()));
 	    query.exec("PRAGMA synchronous = OFF");
 	    query.prepare("INSERT INTO congestion_control "
 			  "(date_time_inserted, hash) VALUES (?, ?)");

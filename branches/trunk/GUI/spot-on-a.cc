@@ -697,8 +697,7 @@ spoton::spoton(void):QMainWindow()
 
   m_addParticipantWindow = 0;
 #endif
-  m_externalAddress = new spoton_external_address
-    (QUrl::fromUserInput(m_settings.value("gui/external_ip_url").toString()));
+  m_externalAddress = new spoton_external_address();
   m_notificationsWindow = new QMainWindow(0);
   m_optionsWindow = new QMainWindow(0);
   m_statisticsWindow = new QMainWindow(0);
@@ -2119,6 +2118,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveSecondaryStorage(bool)));
+  connect(m_ui.secondary_storage_maximum_page_count,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSetCongestionMaxPageCount(int)));
   connect(m_ui.selectAttachment,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2330,6 +2333,8 @@ spoton::spoton(void):QMainWindow()
 
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
+  m_externalAddress->setUrl
+    (QUrl::fromUserInput(m_settings.value("gui/external_ip_url").toString()));
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
   m_ui.action_Buzz->setChecked
@@ -2344,6 +2349,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/showStarBeamPage", true).toBool());
   m_ui.action_Urls->setChecked
     (m_settings.value("gui/showUrlsPage", true).toBool());
+  m_ui.secondary_storage_maximum_page_count->setValue
+    (m_settings.value("gui/congestion_control_max_page_count", 10000).toInt());
   m_ui.web_server_port->blockSignals(true);
   m_ui.web_server_port->setValue
     (m_settings.value("gui/web_server_port", 0).toInt());

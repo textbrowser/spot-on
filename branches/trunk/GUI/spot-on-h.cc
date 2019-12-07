@@ -859,6 +859,15 @@ void spoton::slotSaveExternalIPUrl(void)
     ("gui/external_ip_url", m_optionsUi.external_ip_url->text());
 }
 
+void spoton::slotSetCongestionMaxPageCount(int value)
+{
+  m_settings["gui/congestion_control_max_page_count"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/congestion_control_max_page_count", value);
+}
+
 void spoton::slotSetSocketOptions(void)
 {
   QAction *action = qobject_cast<QAction *> (sender());

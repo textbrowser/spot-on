@@ -1013,6 +1013,7 @@ class spoton: public QMainWindow
   void slotSendMessage(void);
   void slotSeparateBuzzPage(void);
   void slotSetAETokenInformation(void);
+  void slotSetCongestionMaxPageCount(int value);
   void slotSetIconSize(int index);
   void slotSetIcons(int index);
   void slotSetListenerSSLControlString(void);

@@ -493,7 +493,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>742</width>
+                <width>419</width>
                 <height>501</height>
                </rect>
               </property>
@@ -2221,8 +2221,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>488</height>
+             <width>684</width>
+             <height>442</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2929,8 +2929,8 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>-1132</y>
-                     <width>265</width>
+                     <y>0</y>
+                     <width>275</width>
                      <height>1580</height>
                     </rect>
                    </property>
@@ -3475,8 +3475,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>488</height>
+             <width>747</width>
+             <height>226</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3879,7 +3879,7 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>-251</y>
+                  <y>0</y>
                   <width>740</width>
                   <height>545</height>
                  </rect>
@@ -4669,8 +4669,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>488</height>
+             <width>625</width>
+             <height>412</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4754,8 +4754,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-595</y>
-                 <width>742</width>
+                 <y>0</y>
+                 <width>713</width>
                  <height>751</height>
                 </rect>
                </property>
@@ -5727,9 +5727,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-849</y>
+             <y>0</y>
              <width>882</width>
-             <height>1317</height>
+             <height>1358</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6125,6 +6125,46 @@
                       </property>
                      </item>
                     </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_48">
+                   <item>
+                    <widget class="QLabel" name="label_103">
+                     <property name="text">
+                      <string>Secondary Storage Maximum Page Count</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="secondary_storage_maximum_page_count">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The maximum page count along with the page size determine the maximum size of the congestion_control.db SQLite database. The page size is usually 4096 bytes. Therefore, a maximum page count of 100,000 will result in an approximate maximum database size of 391 MiB.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="suffix">
+                      <string> Pages</string>
+                     </property>
+                     <property name="maximum">
+                      <number>999999999</number>
+                     </property>
+                     <property name="value">
+                      <number>100000</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_21">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
                    </item>
                   </layout>
                  </item>
@@ -6890,8 +6930,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>752</width>
-             <height>716</height>
+             <width>647</width>
+             <height>717</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8037,7 +8077,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>752</width>
+             <width>697</width>
              <height>794</height>
             </rect>
            </property>
@@ -8785,8 +8825,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>488</height>
+             <width>293</width>
+             <height>172</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9581,6 +9621,7 @@
   <tabstop>secondary_storage</tabstop>
   <tabstop>kernelLogEvents</tabstop>
   <tabstop>kernelKeySize</tabstop>
+  <tabstop>secondary_storage_maximum_page_count</tabstop>
   <tabstop>cipherType</tabstop>
   <tabstop>hashType</tabstop>
   <tabstop>iterationCount</tabstop>
