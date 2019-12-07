@@ -254,3 +254,4 @@ Remaining Items
        E-mail remains.
 8.     Separate NTRU implementation.
 9.     Remove obsolete includes.
+10.    Limit the congestion database size via the max_page_count pragma.
