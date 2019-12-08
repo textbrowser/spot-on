@@ -18,7 +18,16 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="margin">
+   <property name="leftMargin">
+    <number>5</number>
+   </property>
+   <property name="topMargin">
+    <number>5</number>
+   </property>
+   <property name="rightMargin">
+    <number>5</number>
+   </property>
+   <property name="bottomMargin">
     <number>5</number>
    </property>
    <item>
@@ -42,6 +51,9 @@
         <widget class="QCheckBox" name="ssltls">
          <property name="text">
           <string>&amp;SSL/TLS</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -157,6 +169,9 @@
       <widget class="QLineEdit" name="connection_options">
        <property name="toolTip">
         <string>Please separate options with semicolons.</string>
+       </property>
+       <property name="text">
+        <string>sslcompression=1;sslmode=verify-full</string>
        </property>
       </widget>
      </item>

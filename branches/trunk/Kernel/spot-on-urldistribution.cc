@@ -248,6 +248,10 @@ void spoton_urldistribution::run(void)
     else
       {
 	QByteArray password;
+	QString connectionOptions
+	(spoton_kernel::setting("gui/postgresql_connection_options",
+				"sslcompression=1;sslmode=verify-full").
+	 toString().trimmed());
 	QString database
 	  (spoton_kernel::setting("gui/postgresql_database", "").
 	   toString().trimmed());
@@ -261,8 +265,10 @@ void spoton_urldistribution::run(void)
 	bool ok = true;
 	bool ssltls = spoton_kernel::setting
 	  ("gui/postgresql_ssltls", false).toBool();
-	int port = spoton_kernel::setting
-	  ("gui/postgresql_port", 5432).toInt();
+	int port = spoton_kernel::setting("gui/postgresql_port", 5432).toInt();
+
+	if(!connectionOptions.isEmpty())
+	  str.append(";").append(connectionOptions);
 
 	password = s_crypt1->decryptedAfterAuthenticated
 	  (QByteArray::

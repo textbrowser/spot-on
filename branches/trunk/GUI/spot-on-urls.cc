@@ -1380,7 +1380,8 @@ void spoton::slotPostgreSQLConnect(void)
     (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
   ui.connection_options->setText
     (settings.
-     value("gui/postgresql_connection_options", "").toString().trimmed());
+     value("gui/postgresql_connection_options",
+	   "sslcompression=1;sslmode=verify-full").toString().trimmed());
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());
   ui.database->selectAll();
@@ -1395,7 +1396,7 @@ void spoton::slotPostgreSQLConnect(void)
 
   ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
   ui.ssltls->setChecked
-    (settings.value("gui/postgresql_ssltls", false).toBool());
+    (settings.value("gui/postgresql_ssltls", true).toBool());
 
   do
     {

@@ -199,9 +199,12 @@ void spoton_kernel::importUrls(void)
     else
       {
 	QByteArray password;
-	QString database
-	  (setting("gui/postgresql_database", "").
+	QString connectionOptions
+	  (spoton_kernel::setting("gui/postgresql_connection_options",
+				  "sslcompression=1;sslmode=verify-full").
 	   toString().trimmed());
+	QString database
+	  (setting("gui/postgresql_database", "").toString().trimmed());
 	QString host
 	  (setting("gui/postgresql_host", "localhost").toString().trimmed());
 	QString name
@@ -210,6 +213,9 @@ void spoton_kernel::importUrls(void)
 	bool ok = true;
 	bool ssltls = setting("gui/postgresql_ssltls", false).toBool();
 	int port = setting("gui/postgresql_port", 5432).toInt();
+
+	if(!connectionOptions.isEmpty())
+	  str.append(";").append(connectionOptions);
 
 	password = s_crypt->decryptedAfterAuthenticated
 	  (QByteArray::

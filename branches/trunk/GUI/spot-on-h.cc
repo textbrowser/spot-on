@@ -312,7 +312,8 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
   QSqlDatabase db;
   QString connectionName(spoton_misc::databaseName());
   QString options
-    (settings.value("gui/postgresql_connection_options", "").
+    (settings.value("gui/postgresql_connection_options",
+		    "sslcompression=1;sslmode=verify-full").
      toString().trimmed());
   QString str("connect_timeout=5");
 
@@ -322,7 +323,7 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
       str.append(options);
     }
 
-  if(settings.value("gui/postgresql_ssltls", false).toBool())
+  if(settings.value("gui/postgresql_ssltls", true).toBool())
     str.append(";requiressl=1");
 
   db = QSqlDatabase::addDatabase("QPSQL", connectionName);
@@ -746,7 +747,8 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.connection_options->setEnabled(false);
   ui.connection_options->setText
     (settings.
-     value("gui/postgresql_connection_options", "").toString().trimmed());
+     value("gui/postgresql_connection_options",
+	   "sslcompression=1;sslmode=verify-full").toString().trimmed());
   ui.database->setEnabled(false);
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());
@@ -764,7 +766,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.port->setEnabled(false);
   ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
   ui.ssltls->setChecked
-    (settings.value("gui/postgresql_ssltls", false).toBool());
+    (settings.value("gui/postgresql_ssltls", true).toBool());
   ui.ssltls->setEnabled(false);
 
   do

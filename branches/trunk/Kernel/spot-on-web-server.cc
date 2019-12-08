@@ -97,6 +97,10 @@ QSqlDatabase spoton_web_server_thread::database(void) const
   else
     {
       QByteArray password;
+      QString connectionOptions
+	(spoton_kernel::setting("gui/postgresql_connection_options",
+				"sslcompression=1;sslmode=verify-full").
+	 toString().trimmed());
       QString database
 	(spoton_kernel::setting("gui/postgresql_database", "").
 	 toString().trimmed());
@@ -109,9 +113,12 @@ QSqlDatabase spoton_web_server_thread::database(void) const
       QString str("connect_timeout=10");
       bool ok = true;
       bool ssltls = spoton_kernel::setting
-	("gui/postgresql_ssltls", false).toBool();
+	("gui/postgresql_ssltls", true).toBool();
       int port = spoton_kernel::setting("gui/postgresql_port", 5432).toInt();
       spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+      if(!connectionOptions.isEmpty())
+	str.append(";").append(connectionOptions);
 
       if(crypt)
 	password = crypt->decryptedAfterAuthenticated
