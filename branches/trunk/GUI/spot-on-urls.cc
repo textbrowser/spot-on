@@ -954,9 +954,9 @@ void spoton::slotGatherUrlStatistics(void)
     }
 
   QProgressDialog progress(this);
+  double size = 0.0;
   qint64 keywords_count = 0;
   qint64 urls_count = 0;
-  qint64 size = 0;
 
   progress.setLabelText(tr("Gathering URL statistics. Please be patient."));
   progress.setMaximum(0);
@@ -1007,14 +1007,14 @@ void spoton::slotGatherUrlStatistics(void)
 				  "('\"spot_on_urls_%1%2\"')").
 			  arg(c1).arg(c2)))
 	      if(query.next())
-		size += query.value(0).toLongLong();
+		size += qMax(1.0, query.value(0).toDouble() / 1024.0);
 	  }
 	else
 	  {
 	    if(query.exec(QString("SELECT LENGTH(content) FROM "
 				  "spot_on_urls_%1%2").arg(c1).arg(c2)))
 	      if(query.next())
-		size += query.value(0).toLongLong();
+		size += qMax(1.0, query.value(0).toDouble() / 1024.0);
 	  }
       }
 
@@ -1023,15 +1023,28 @@ void spoton::slotGatherUrlStatistics(void)
   QApplication::processEvents();
 
   QLocale locale;
+  QString units("KiB");
+
+  if(size >= 1024.0 * 1024.0)
+    {
+      size /= 1024.0 * 1024.0;
+      units = "GiB";
+    }
+  else if(size >= 1024.0)
+    {
+      size /= 1024.0;
+      units = "MiB";
+    }
 
   QMessageBox::information
     (this, tr("%1: Information").
      arg(SPOTON_APPLICATION_NAME),
-     tr("Approximate URLs: %1. "
-	"Approximate content size: %2. "
-	"Approximate keywords: %3.").
+     tr("Approximate URLs: %1.\n"
+	"Approximate content size: %2 %3.\n"
+	"Approximate keywords: %4.").
      arg(locale.toString(urls_count)).
-     arg(locale.toString(size)).
+     arg(locale.toString(size, 'f', 2)).
+     arg(units).
      arg(locale.toString(keywords_count)));
   QApplication::processEvents();
 }
