@@ -3609,17 +3609,17 @@ int spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
 	   SIOCOUTQ,
 	   &count) == -1)
     count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_MACOS)
+#elif defined(Q_OS_MAC)
   socklen_t length = (socklen_t) sizeof(count);
 
-  if(getsockopt(static_cast<int> (m_remote_socket->socketDescriptor()),
+  if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
 		SOL_SOCKET,
 		SO_NWRITE,
 		&count,
 		&length) == -1)
     count = tcpSocket->bytesToWrite();
 #elif defined(Q_OS_OPENBSD)
-  if(ioctl(static_cast<int> (m_remote_socket->socketDescriptor()),
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
 	   TIOCOUTQ,
 	   &count) == -1)
     count = tcpSocket->bytesToWrite();
