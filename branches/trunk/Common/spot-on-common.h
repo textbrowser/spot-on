@@ -126,7 +126,7 @@ class spoton_common
 					      ** than the content length.
 					      */
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
-    MAXIMUM_NEIGHBOR_BUFFER_SIZE;
+    MAXIMUM_NEIGHBOR_BUFFER_SIZE / 10;
   static const qint64 MAXIMUM_SCTP_PACKET_SIZE = 4096;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 2500000;
   static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096;

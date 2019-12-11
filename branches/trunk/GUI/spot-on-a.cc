@@ -7184,7 +7184,6 @@ void spoton::slotPopulateListeners(void)
 
 			box->setCorrectionMode
 			  (QAbstractSpinBox::CorrectToNearestValue);
-			box->setWrapping(true);
 			box->setMaximumWidth
 			  (box->fontMetrics().
 			   width(QString::
@@ -7194,9 +7193,12 @@ void spoton::slotPopulateListeners(void)
 			  ("field_name", query.record().fieldName(i));
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
-			box->setToolTip(tooltip);
+			box->setToolTip
+			  (QString("[%1, %2]").
+			   arg(box->minimum()).arg(box->maximum()));
 			box->setValue
 			  (static_cast<int> (query.value(i).toLongLong()));
+			box->setWrapping(true);
 			connect(box,
 				SIGNAL(valueChanged(int)),
 				this,
@@ -7860,7 +7862,6 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	      box->setCorrectionMode
 		(QAbstractSpinBox::CorrectToNearestValue);
-	      box->setWrapping(true);
 	      box->setMaximumWidth
 		(box->fontMetrics().
 		 width(QString::
@@ -7870,9 +7871,11 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		("field_name", query->record().fieldName(i));
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip(tooltip);
+	      box->setToolTip
+		(QString("[%1, %2]").arg(box->minimum()).arg(box->maximum()));
 	      box->setValue
 		(static_cast<int> (query->value(i).toLongLong()));
+	      box->setWrapping(true);
 	      connect(box,
 		      SIGNAL(valueChanged(int)),
 		      this,
@@ -8015,13 +8018,14 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		(box->fontMetrics().
 		 width(QString::
 		       number(spoton_common::
-			      WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM))
-		 + 50);
+			      WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM)) +
+		 50);
 	      box->setMinimum(0);
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
 	      box->setToolTip
-		(tr("A positive value may pause the kernel."));
+		(tr("A positive value ([%1, %2]) may pause the kernel.").
+		 arg(box->minimum()).arg(box->maximum()));
 	      box->setValue
 		(static_cast<int> (query->value(i).toInt()));
 	      box->setWrapping(true);
