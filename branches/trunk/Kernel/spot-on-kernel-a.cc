@@ -92,6 +92,16 @@ QMultiHash<qint64,
 QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
+QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
+						      << 20000
+                                                      << 25000
+                                                      << 50000
+                                                      << 75000
+						      << 100000
+						      << 2097152
+						      << 5242880
+						      << 10485760
+						      << 20971520;
 QPair<quint64, quint64> spoton_kernel::s_totalNeighborsBytesReadWritten =
   QPair<quint64, quint64> (0, 0);
 QPair<quint64, quint64> spoton_kernel::s_totalUiBytesReadWritten =
@@ -106,21 +116,7 @@ QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
 QReadWriteLock spoton_kernel::s_totalNeighborsBytesReadWrittenMutex;
 QReadWriteLock spoton_kernel::s_totalUiBytesReadWrittenMutex;
-
-/*
-** Not pleasant! Please avoid this solution!
-*/
-
-QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
-						      << 20000
-                                                      << 25000
-                                                      << 50000
-                                                      << 75000
-						      << 100000
-						      << 2097152
-						      << 5242880
-						      << 10485760
-						      << 20971520;
+QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS = "sslmode=verify-full";
 QString spoton_common::SSL_CONTROL_STRING =
   "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =

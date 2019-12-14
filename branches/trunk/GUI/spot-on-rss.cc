@@ -384,7 +384,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	QByteArray password;
 	QString connectionOptions
 	  (settings.value("gui/postgresql_connection_options",
-			  "sslcompression=1;sslmode=verify-full").
+			  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
 	   toString().trimmed());
 	QString database
 	  (settings.value("gui/postgresql_database", "").

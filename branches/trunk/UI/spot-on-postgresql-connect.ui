@@ -171,7 +171,7 @@
         <string>Please separate options with semicolons.</string>
        </property>
        <property name="text">
-        <string>sslcompression=1;sslmode=verify-full</string>
+        <string>sslmode=verify-full</string>
        </property>
       </widget>
      </item>

@@ -1394,7 +1394,7 @@ void spoton::slotPostgreSQLConnect(void)
   ui.connection_options->setText
     (settings.
      value("gui/postgresql_connection_options",
-	   "sslcompression=1;sslmode=verify-full").toString().trimmed());
+	   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).toString().trimmed());
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());
   ui.database->selectAll();

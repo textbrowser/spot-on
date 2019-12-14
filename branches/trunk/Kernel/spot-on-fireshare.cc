@@ -265,7 +265,7 @@ void spoton_fireshare::slotTimeout(void)
 	QByteArray password;
 	QString connectionOptions
 	  (spoton_kernel::setting("gui/postgresql_connection_options",
-				  "sslcompression=1;sslmode=verify-full").
+				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
 	   toString().trimmed());
 	QString database
 	  (spoton_kernel::setting("gui/postgresql_database", "").

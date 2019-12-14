@@ -313,7 +313,7 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
   QString connectionName(spoton_misc::databaseName());
   QString options
     (settings.value("gui/postgresql_connection_options",
-		    "sslcompression=1;sslmode=verify-full").
+		    spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
      toString().trimmed());
   QString str("connect_timeout=5");
 
@@ -748,7 +748,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.connection_options->setText
     (settings.
      value("gui/postgresql_connection_options",
-	   "sslcompression=1;sslmode=verify-full").toString().trimmed());
+	   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).toString().trimmed());
   ui.database->setEnabled(false);
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());

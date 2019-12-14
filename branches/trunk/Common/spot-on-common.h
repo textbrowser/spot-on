@@ -44,6 +44,7 @@ class spoton_common
 {
  public:
   static QList<int> LANE_WIDTHS;
+  static QString POSTGRESQL_CONNECTION_OPTIONS;
   static QString SSL_CONTROL_STRING;
   static QStringList ACCEPTABLE_URL_SCHEMES;
   static QStringList SPOTON_ENCRYPTION_KEY_NAMES;
