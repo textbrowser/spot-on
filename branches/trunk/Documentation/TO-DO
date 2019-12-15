@@ -255,3 +255,4 @@ Remaining Items
        E-mail remains.
 8.     Separate NTRU implementation.
 9.     Remove obsolete includes.
+10.    If possible, include all Web server resources into the binary.
