@@ -545,6 +545,11 @@ spoton_threefish::spoton_threefish(void)
 spoton_threefish::~spoton_threefish()
 {
   delete []m_tweak;
+
+  if(m_key)
+    for(size_t i = 0; i < m_keyLength; i++)
+      m_key[i] = 0;
+
   gcry_free(m_key);
 }
 
