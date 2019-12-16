@@ -249,6 +249,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 
 spoton_mceliece_private_key::~spoton_mceliece_private_key()
 {
+  reset(true);
 }
 
 bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
@@ -537,6 +538,7 @@ spoton_mceliece_public_key::spoton_mceliece_public_key
 
 spoton_mceliece_public_key::~spoton_mceliece_public_key()
 {
+  reset(true);
 }
 
 bool spoton_mceliece_public_key::prepareGcar(const NTL::mat_GF2 &G,
