@@ -1692,6 +1692,10 @@ void spoton::slotSavePoptasticAccount(void)
 	  m_poptasticRetroPhoneSettingsUi.account->clear();
 	  m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
 	  m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
+	  m_poptasticRetroPhoneSettingsUi.in_password->setToolTip
+	    (m_poptasticRetroPhoneSettingsUi.in_password->text());
+	  m_poptasticRetroPhoneSettingsUi.out_password->setToolTip
+	    (m_poptasticRetroPhoneSettingsUi.out_password->text());
 
 	  for(int i = 0; i < list.size(); i++)
 	    {
