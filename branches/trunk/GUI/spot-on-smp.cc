@@ -1648,6 +1648,10 @@ void spoton_smp::initialize(void)
 
 void spoton_smp::reset(void)
 {
+  if(m_guessWhirl)
+    for(size_t i = 0; i < m_guessWhirlLength; i++)
+      m_guessWhirl[i] = 0;
+
   gcry_free(m_guessWhirl);
   gcry_mpi_release(m_a2);
   gcry_mpi_release(m_a3);
@@ -1669,6 +1673,7 @@ void spoton_smp::reset(void)
   m_g3a = 0;
   m_g3b = 0;
   m_guess = 0;
+  m_guessString.replace(0, m_guessString.length(), '0');
   m_guessString.clear();
   m_guessWhirl = 0;
   m_guessWhirlLength = 0;

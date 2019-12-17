@@ -175,6 +175,8 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 
 spoton_buzzpage::~spoton_buzzpage()
 {
+  m_key.replace(0, m_key.length(), 0);
+  m_key.clear();
   m_statusTimer.stop();
 
   if(m_kernelSocket &&

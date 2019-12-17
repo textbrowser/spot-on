@@ -253,6 +253,9 @@ class spoton_crypt
   unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);
+  void freeHashKey(void);
+  void freePrivateKey(void);
+  void freeSymmetricKey(void);
   void init(const QString &cipherType,
 	    const QString &hashType,
 	    const QByteArray &passphrase,

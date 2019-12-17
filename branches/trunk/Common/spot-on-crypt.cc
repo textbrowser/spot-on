@@ -230,14 +230,21 @@ spoton_crypt::~spoton_crypt()
   delete m_threefish;
   m_publicKey.clear();
   gcry_cipher_close(m_cipherHandle);
-  gcry_free(m_hashKey);
+
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_hashKey);
+  else
+    freeHashKey();
 
   if(s_hasSecureMemory.fetchAndAddOrdered(0))
     gcry_free(m_privateKey);
   else
-    free(m_privateKey);
+    freePrivateKey();
 
-  gcry_free(m_symmetricKey);
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_symmetricKey);
+  else
+    freeSymmetricKey();
 }
 
 QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
@@ -496,7 +503,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if(s_hasSecureMemory.fetchAndAddOrdered(0))
 	gcry_free(m_privateKey);
       else
-	free(m_privateKey);
+	freePrivateKey();
 
       m_privateKey = 0;
       m_privateKeyLength = 0;
@@ -544,7 +551,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if(s_hasSecureMemory.fetchAndAddOrdered(0))
 	gcry_free(m_privateKey);
       else
-	free(m_privateKey);
+	freePrivateKey();
 
       m_privateKey = 0;
       m_privateKeyLength = 0;
@@ -1339,7 +1346,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       if(s_hasSecureMemory.fetchAndAddOrdered(0))
 	gcry_free(m_privateKey);
       else
-	free(m_privateKey);
+	freePrivateKey();
 
       m_privateKey = 0;
       m_privateKeyLength = 0;
@@ -1387,7 +1394,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       if(s_hasSecureMemory.fetchAndAddOrdered(0))
 	gcry_free(m_privateKey);
       else
-	free(m_privateKey);
+	freePrivateKey();
 
       m_privateKey = 0;
       m_privateKeyLength = 0;
@@ -2055,8 +2062,7 @@ QByteArray spoton_crypt::symmetricKey(void)
   QReadLocker locker(&m_symmetricKeyMutex);
 
   if(m_symmetricKey && m_symmetricKeyLength > 0)
-    return QByteArray
-      (m_symmetricKey, static_cast<int> (m_symmetricKeyLength));
+    return QByteArray(m_symmetricKey, static_cast<int> (m_symmetricKeyLength));
   else
     return QByteArray();
 }
@@ -2482,7 +2488,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   if(s_hasSecureMemory.fetchAndAddOrdered(0))
     gcry_free(m_privateKey);
   else
-    free(m_privateKey);
+    freePrivateKey();
 
   m_privateKey = 0;
   m_privateKeyLength = 0;
@@ -2747,8 +2753,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   privateKey.replace
     (0, privateKey.length(), QByteArray(privateKey.length(), 0));
   privateKey.clear();
-  publicKey.replace
-    (0, publicKey.length(), QByteArray(publicKey.length(), 0));
+  publicKey.replace(0, publicKey.length(), QByteArray(publicKey.length(), 0));
   publicKey.clear();
   free(buffer);
   gcry_free(key_t);
@@ -3492,6 +3497,72 @@ size_t spoton_crypt::ivLength(const QString &cipherType)
 {
   return gcry_cipher_get_algo_blklen
     (gcry_cipher_map_name(cipherType.toLatin1().constData()));
+}
+
+void spoton_crypt::freeHashKey(void)
+{
+  bool locked = m_hashKeyMutex.tryLockForWrite();
+
+  if(!m_hashKey)
+    {
+      if(locked)
+	m_hashKeyMutex.unlock();
+
+      return;
+    }
+
+  for(size_t i = 0; i < m_hashKeyLength; i++)
+    m_hashKey[i] = 0;
+
+  free(m_hashKey);
+  m_hashKey = 0;
+
+  if(locked)
+    m_hashKeyMutex.unlock();
+}
+
+void spoton_crypt::freePrivateKey(void)
+{
+  bool locked = m_privateKeyMutex.tryLockForWrite();
+
+  if(!m_privateKey)
+    {
+      if(locked)
+	m_privateKeyMutex.unlock();
+
+      return;
+    }
+
+  for(size_t i = 0; i < m_privateKeyLength; i++)
+    m_privateKey[i] = 0;
+
+  free(m_privateKey);
+  m_privateKey = 0;
+
+  if(locked)
+    m_privateKeyMutex.unlock();
+}
+
+void spoton_crypt::freeSymmetricKey(void)
+{
+  bool locked = m_symmetricKeyMutex.tryLockForWrite();
+
+  if(!m_symmetricKey)
+    {
+      if(locked)
+	m_symmetricKeyMutex.unlock();
+
+      return;
+    }
+
+  for(size_t i = 0; i < m_symmetricKeyLength; i++)
+    m_symmetricKey[i] = 0;
+
+  free(m_symmetricKey);
+  m_symmetricKey = 0;
+
+  if(locked)
+    m_symmetricKeyMutex.unlock();
 }
 
 void spoton_crypt::generateCertificate(RSA *rsa,
@@ -4367,7 +4438,7 @@ void spoton_crypt::purgePrivatePublicKeys(void)
   if(s_hasSecureMemory.fetchAndAddOrdered(0))
     gcry_free(m_privateKey);
   else
-    free(m_privateKey);
+    freePrivateKey();
 
   m_privateKey = 0;
   m_privateKeyLength = 0;
@@ -4623,7 +4694,11 @@ void spoton_crypt::setHashKey(const QByteArray &hashKey)
 {
   QWriteLocker locker(&m_hashKeyMutex);
 
-  gcry_free(m_hashKey);
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_hashKey);
+  else
+    freeHashKey();
+
   m_hashKey = 0;
   m_hashKeyLength = static_cast<size_t> (hashKey.length());
 
