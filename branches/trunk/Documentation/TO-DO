@@ -210,6 +210,7 @@ Completed Items
        Should two-way calling verify that credentials are distinct? No.
 151.   Allow custom addresses for spoton_external_address.
 152.   Limit the congestion database size via the max_page_count pragma.
+153.   Clean sensitive memory, if possible.
 
 Ignored Items
 
@@ -256,4 +257,3 @@ Remaining Items
 8.     Separate NTRU implementation.
 9.     Remove obsolete includes.
 10.    If possible, include all Web server resources into the binary.
-11.    Clean sensitive memory, if possible.
