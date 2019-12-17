@@ -846,8 +846,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 	*ok = false;
 
       logError
-	("spoton_misc::poptasticSettings(): crypt "
-	 "is zero.");
+	("spoton_misc::poptasticSettings(): crypt is zero.");
       return QList<QHash<QString, QVariant> > ();
     }
 
