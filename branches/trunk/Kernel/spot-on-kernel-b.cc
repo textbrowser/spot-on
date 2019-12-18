@@ -373,8 +373,9 @@ void spoton_kernel::popPoptastic(void)
   QHash<QByteArray, char> cache;
   QString method(hash.value("in_method").toString().toUpper().trimmed());
   int limit = setting("gui/poptasticNumberOfMessages", 15).toInt();
+  qint64 uid = 0;
 
-  for(int i = 1; i <= limit; i++)
+  for(int ii = 1; ii <= limit + 1; ii++)
     {
       if(curl == 0)
 	curl = curl_easy_init();
@@ -430,19 +431,25 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
-	      removeUrl = QString("imaps://%1:%2/INBOX").
+	      removeUrl = QString("imaps://%1:%2/INBOX/;UID=").
 		arg(hash.value("in_server_address").toString().trimmed()).
 		arg(hash.value("in_server_port").toString().trimmed());
-	      url = QString("imaps://%1:%2/INBOX/;UID=%3").
-		arg(hash.value("in_server_address").toString().trimmed()).
-		arg(hash.value("in_server_port").toString().trimmed()).
-		arg(i);
+
+	      if(ii == 1)
+		url = QString("imaps://%1:%2").
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
+	      else
+		url = QString("imaps://%1:%2/INBOX/;UID=%3").
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed()).
+		  arg(uid);
 	    }
 	  else
 	    url = QString("pop3s://%1:%2/%3").
 	      arg(hash.value("in_server_address").toString().trimmed()).
 	      arg(hash.value("in_server_port").toString().trimmed()).
-	      arg(i);
+	      arg(ii);
 
 	  long int verify = static_cast<long int>
 	    (hash.value("in_verify_host").toInt());
@@ -473,22 +480,32 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(method == "IMAP")
 	    {
-	      removeUrl = QString("imap://%1:%2/INBOX").
+	      removeUrl = QString("imap://%1:%2/INBOX/;UID=").
 		arg(hash.value("in_server_address").toString().trimmed()).
 		arg(hash.value("in_server_port").toString().trimmed());
-	      url = QString("imap://%1:%2/INBOX/;UID=%3").
-		arg(hash.value("in_server_address").toString().trimmed()).
-		arg(hash.value("in_server_port").toString().trimmed()).
-		arg(i);
+
+	      if(ii == 1)
+		url = QString("imap://%1:%2").
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed());
+	      else
+		url = QString("imap://%1:%2/INBOX/;UID=%3").
+		  arg(hash.value("in_server_address").toString().trimmed()).
+		  arg(hash.value("in_server_port").toString().trimmed()).
+		  arg(uid);
 	    }
 	  else
 	    url = QString("pop3://%1:%2/%3").
 	      arg(hash.value("in_server_address").toString().trimmed()).
 	      arg(hash.value("in_server_port").toString().trimmed()).
-	      arg(i);
+	      arg(ii);
 	}
 
       curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, 128L); // cURL sometimes dies.
+
+      if(ii == 1 && method == "IMAP")
+	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
+
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
       curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
@@ -499,15 +516,44 @@ void spoton_kernel::popPoptastic(void)
 	{
 	  if(!curl_receive_data.isEmpty())
 	    {
-	      QByteArray hash;
-	      bool ok = true;
-
-	      hash = s_crypt->keyedHash(curl_receive_data, &ok);
-
-	      if(!cache.contains(hash))
+	      if(ii == 1 && method == "IMAP")
 		{
-		  emit poppedMessage(curl_receive_data);
-		  cache[hash] = 0;
+		  QList<QByteArray> list(curl_receive_data.split('\n'));
+		  qint64 exists = 0;
+		  qint64 uidnext = 0;
+
+		  for(int i = 0; i < list.size(); i++)
+		    {
+		      QString str(list.at(i).toLower().trimmed());
+
+		      if(str.contains("exists"))
+			exists = str.remove(QRegExp("[^\\d]")).
+			  toLongLong();
+		      else if(str.contains("uidnext"))
+			uidnext = str.remove(QRegExp("[^\\d]")).
+			  toLongLong();
+		    }
+
+		  if(uidnext > exists)
+		    uid = uidnext - exists;
+		  else
+		    uid = 1;
+		}
+	      else
+		{
+		  QByteArray hash;
+		  bool ok = true;
+
+		  hash = s_crypt->keyedHash(curl_receive_data, &ok);
+
+		  if(!cache.contains(hash))
+		    {
+		      emit poppedMessage(curl_receive_data);
+		      cache[hash] = 0;
+		    }
+
+		  removeUrl.append(QString::number(uid));
+		  uid += 1;
 		}
 	    }
 	}
@@ -515,7 +561,7 @@ void spoton_kernel::popPoptastic(void)
       if(m_poptasticPopFuture.isCanceled())
 	break;
 
-      if(hash.value("in_remove_remote", true).toBool())
+      if(hash.value("in_remove_remote", true).toBool() && ii > 1 && uid > 0)
 	if(method == "IMAP" && rc == CURLE_OK)
 	  {
 	    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
@@ -524,26 +570,25 @@ void spoton_kernel::popPoptastic(void)
 	    curl_easy_setopt
 	      (curl, CURLOPT_CUSTOMREQUEST,
 	       QString("STORE %1 +Flags \\Deleted").
-	       arg(i).toLatin1().constData());
+	       arg(1).toLatin1().constData());
 
 	    CURLcode rc = CURLE_OK;
 
 	    if((rc = curl_easy_perform(curl)) != CURLE_OK)
-	      {
-		spoton_misc::logError
-		  (QString("spoton_kernel::popPoptastic(): "
-			   "curl_easy_perform(STORE) failure (%1).").
-		   arg(rc));
-		curl_easy_setopt
-		  (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
-		rc = curl_easy_perform(curl);
+	      spoton_misc::logError
+		(QString("spoton_kernel::popPoptastic(): "
+			 "curl_easy_perform(STORE) failure (%1).").
+		 arg(rc));
 
-		if(rc != CURLE_OK)
-		  spoton_misc::logError
-		    (QString("spoton_kernel::popPoptastic(): "
-			     "curl_easy_perform(EXPUNGE) failure (%1).").
-		     arg(rc));
-	      }
+	    curl_easy_setopt
+	      (curl, CURLOPT_CUSTOMREQUEST, "EXPUNGE");
+	    rc = curl_easy_perform(curl);
+
+	    if(rc != CURLE_OK)
+	      spoton_misc::logError
+		(QString("spoton_kernel::popPoptastic(): "
+			 "curl_easy_perform(EXPUNGE) failure (%1).").
+		 arg(rc));
 	  }
 
       if(m_poptasticPopFuture.isCanceled())
