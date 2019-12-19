@@ -169,9 +169,9 @@ void spoton::importNeighbors(const QString &filePath)
 		   split('&'));
 		bool fine = true;
 
-		while(!list.isEmpty())
+		for(int i = 0; i < list.size(); i++)
 		  {
-		    QByteArray token(list.takeFirst().trimmed());
+		    QByteArray token(list.at(i).trimmed());
 
 		    if(token.startsWith("connect="))
 		      {
@@ -3060,9 +3060,9 @@ void spoton::slotImportPublicKeys(void)
 
       QList<QByteArray> list(bytes.split('\n'));
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
-	  QByteArray bytes(list.takeFirst().trimmed());
+	  QByteArray bytes(list.at(i).trimmed());
 
 	  if(bytes.isEmpty())
 	    continue;
@@ -4055,9 +4055,9 @@ void spoton::slotRemoveUrlParticipants(void)
 	   selectedRows(1)); // OID
 	QSqlQuery query(db);
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QVariant data(list.takeFirst().data());
+	    QVariant data(list.at(i).data());
 
 	    if(!data.isNull() && data.isValid())
 	      {

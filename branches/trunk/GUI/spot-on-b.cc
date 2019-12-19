@@ -2025,12 +2025,12 @@ void spoton::populateMail(void)
 	int vValue = m_ui.mail->verticalScrollBar()->value();
 	int totalRows = 0;
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    if(list.first().row() == m_ui.mail->currentRow())
-	      cRow[list.first().data().toString()] = false;
+	    if(list.at(i).row() == m_ui.mail->currentRow())
+	      cRow[list.at(i).data().toString()] = false;
 
-	    QVariant data(list.takeFirst().data());
+	    QVariant data(list.at(i).data());
 
 	    if(!data.isNull() && data.isValid())
 	      oids.append(data.toString());
@@ -2251,8 +2251,8 @@ void spoton::populateMail(void)
 	if(cRow.values().value(0))
 	  m_ui.mailMessage->setHtml(html);
 
-	while(!rows.isEmpty())
-	  m_ui.mail->selectRow(rows.takeFirst());
+	for(int i = 0; i < rows.size(); i++)
+	  m_ui.mail->selectRow(rows.at(i));
 
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::ExtendedSelection);
@@ -2287,9 +2287,9 @@ void spoton::prepareListenerIPCombo(void)
 
       QList<QBluetoothHostInfo> devices(QBluetoothLocalDevice::allDevices());
 
-      while(!devices.isEmpty())
+      for(int i = 0; i < devices.size(); i++)
 	{
-	  QBluetoothHostInfo hostInfo = devices.takeFirst();
+	  QBluetoothHostInfo hostInfo(devices.at(i));
 	  QString string(hostInfo.address().toString());
 
 	  if(hash.contains(string))
@@ -2308,9 +2308,9 @@ void spoton::prepareListenerIPCombo(void)
       QHash<QString, char> hash;
       QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
 
-      while(!interfaces.isEmpty())
+      for(int i = 0; i < interfaces.size(); i++)
 	{
-	  QNetworkInterface interface(interfaces.takeFirst());
+	  QNetworkInterface interface(interfaces.at(i));
 
 	  if(!interface.isValid() || !(interface.flags() &
 				       QNetworkInterface::IsUp))
@@ -2318,12 +2318,11 @@ void spoton::prepareListenerIPCombo(void)
 
 	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
 
-	  while(!addresses.isEmpty())
+	  for(int i = 0; i < addresses.size(); i++)
 	    {
 	      QHostAddress address;
-	      QNetworkAddressEntry entry;
+	      QNetworkAddressEntry entry(addresses.at(i));
 
-	      entry = addresses.takeFirst();
 	      address = entry.ip();
 
 	      if(m_ui.ipv4Listener->isChecked())
@@ -2790,11 +2789,11 @@ void spoton::slotAddFriendsKey(void)
     {
       QList<QByteArray> list(key.split('\n'));
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
 	  QByteArray bytes("K");
 
-	  bytes.append(list.takeFirst());
+	  bytes.append(list.at(i));
 	  bytes.remove(0, 1);
 	  addFriendsKey(bytes, "K", parent);
 	}
@@ -3674,9 +3673,9 @@ void spoton::slotDeleteMail(void)
       {
 	QSqlQuery query(db);
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QString oid(list.takeFirst().data().toString());
+	    QString oid(list.at(i).data().toString());
 	    bool ok = true;
 
 	    if(m_ui.folder->currentIndex() == 2) // Trash
@@ -4670,9 +4669,9 @@ void spoton::slotReceivedKernelMessage(void)
 
       m_kernelSocketData.remove(0, m_kernelSocketData.lastIndexOf("\n"));
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
-	  QByteArray data(list.takeFirst());
+	  QByteArray data(list.at(i));
 
 	  if(data.startsWith("authentication_requested_"))
 	    {
@@ -5528,9 +5527,9 @@ void spoton::slotRemoveEmailParticipants(void)
 	   selectedRows(1)); // OID
 	QSqlQuery query(db);
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QVariant data(list.takeFirst().data());
+	    QVariant data(list.at(i).data());
 
 	    if(!data.isNull() && data.isValid())
 	      {
@@ -5784,9 +5783,8 @@ void spoton::slotResetAll(void)
        << "urls_distillers_information.db"
        << "urls_key_information.db";
 
-  while(!list.isEmpty())
-    QFile::remove
-      (spoton_misc::homePath() + QDir::separator() + list.takeFirst());
+  for(int i = 0; i < list.size(); i++)
+    QFile::remove(spoton_misc::homePath() + QDir::separator() + list.at(i));
 
   deleteAllUrls();
 
@@ -5953,9 +5951,9 @@ void spoton::slotSendMail(void)
       QLocale locale;
       QStringList files(m_ui.attachment->toPlainText().split("\n"));
 
-      while(!files.isEmpty())
+      for(int i = 0; i < files.size(); i++)
 	{
-	  QString fileName(files.takeFirst());
+	  QString fileName(files.at(i));
 
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
@@ -6157,16 +6155,15 @@ void spoton::slotSendMail(void)
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(4); // Forward Secrecy Information
 
-	while(!list.isEmpty())
-	  forwardSecrecyCredentials.append
-	    (list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  forwardSecrecyCredentials.append(list.at(i).data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(0); // Participant
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QModelIndex index(list.takeFirst());
+	    QModelIndex index(list.at(i));
 
 	    isTraditionalEmailAccounts.append
 	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
@@ -6179,14 +6176,14 @@ void spoton::slotSendMail(void)
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(1); // OID
 
-	while(!list.isEmpty())
-	  oids.append(list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  oids.append(list.at(i).data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(3); // public_key_hash
 
-	while(!list.isEmpty())
-	  publicKeyHashes.append(list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  publicKeyHashes.append(list.at(i).data().toString());
 
 	while(!forwardSecrecyCredentials.isEmpty() &&
 	      !isTraditionalEmailAccounts.isEmpty() &&

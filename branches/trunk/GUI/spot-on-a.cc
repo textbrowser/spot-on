@@ -3585,9 +3585,9 @@ void spoton::cleanup(void)
   m_pqUrlDatabaseFuture.waitForFinished();
   m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
-  while(!m_starbeamDigestFutures.isEmpty())
+  for(int i = 0; i < m_starbeamDigestFutures.size(); i++)
     {
-      QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+      QFuture<void> future(m_starbeamDigestFutures.at(i));
 
       future.cancel();
       future.waitForFinished();
@@ -3652,12 +3652,11 @@ void spoton::closeEvent(QCloseEvent *event)
 
 void spoton::demagnetize(void)
 {
-  QStringList list
-    (m_ui.demagnetize->text().remove("magnet:?").split("&"));
+  QStringList list(m_ui.demagnetize->text().remove("magnet:?").split("&"));
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(str.startsWith("rn="))
 	{
@@ -7224,8 +7223,8 @@ void spoton::slotPopulateListeners(void)
 			list = set.toList();
 			std::sort(list.begin(), list.end());
 
-			while(!list.isEmpty())
-			  box->addItem(QString::number(list.takeFirst()));
+			for(int j = 0; j < list.size(); j++)
+			  box->addItem(QString::number(list.at(j)));
 
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
@@ -7958,8 +7957,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      list = set.toList();
 	      std::sort(list.begin(), list.end());
 
-	      while(!list.isEmpty())
-		box->addItem(QString::number(list.takeFirst()));
+	      for(int j = 0; j < list.size(); j++)
+		box->addItem(QString::number(list.at(j)));
 
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
@@ -8266,25 +8265,25 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   int vvalE = m_ui.emailParticipants->verticalScrollBar()->value();
   int vvalU = m_ui.urlParticipants->verticalScrollBar()->value();
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QVariant data(list.takeFirst().data());
+      QVariant data(list.at(i).data());
 
       if(!data.isNull() && data.isValid())
 	hashes.append(data.toString());
     }
 
-  while(!listE.isEmpty())
+  for(int i = 0; i < listE.size(); i++)
     {
-      QVariant data(listE.takeFirst().data());
+      QVariant data(listE.at(i).data());
 
       if(!data.isNull() && data.isValid())
 	hashesE.append(data.toString());
     }
 
-  while(!listU.isEmpty())
+  for(int i = 0; i < listU.size(); i++)
     {
-      QVariant data(listU.takeFirst().data());
+      QVariant data(listU.at(i).data());
 
       if(!data.isNull() && data.isValid())
 	hashesU.append(data.toString());
@@ -8735,14 +8734,14 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   m_ui.participants->setSelectionMode(QAbstractItemView::MultiSelection);
   m_ui.urlParticipants->setSelectionMode(QAbstractItemView::MultiSelection);
 
-  while(!rows.isEmpty())
-    m_ui.participants->selectRow(rows.takeFirst());
+  for(int i = 0; i < rows.size(); i++)
+    m_ui.participants->selectRow(rows.at(i));
 
-  while(!rowsE.isEmpty())
-    m_ui.emailParticipants->selectRow(rowsE.takeFirst());
+  for(int i = 0; i < rowsE.size(); i++)
+    m_ui.emailParticipants->selectRow(rowsE.at(i));
 
-  while(!rowsU.isEmpty())
-    m_ui.urlParticipants->selectRow(rowsU.takeFirst());
+  for(int i = 0; i < rowsU.size(); i++)
+    m_ui.urlParticipants->selectRow(rowsU.at(i));
 
   m_ui.emailParticipants->setSelectionMode
     (QAbstractItemView::ExtendedSelection);

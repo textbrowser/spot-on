@@ -790,10 +790,12 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
     }
   else
     {
-      while(!items.isEmpty()) // Counterfeit IDs.
+      for(int i = 0; i < list.size(); i++) // Counterfeit IDs.
 	{
-	  QTableWidgetItem *item = ui.clients->item
-	    (items.takeFirst()->row(), 0);
+	  if(!items.at(i))
+	    continue;
+
+	  QTableWidgetItem *item = ui.clients->item(items.at(i)->row(), 0);
 
 	  if(item)
 	    {

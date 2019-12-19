@@ -759,14 +759,14 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
       /*
       ** Now retrieve the given community's information.
       */
 
       QHash<QString, QByteArray> hash
-	(spoton_misc::retrieveEchoShareInformation(list.takeFirst(), eCrypt));
+	(spoton_misc::retrieveEchoShareInformation(list.at(i), eCrypt));
 
       if(!hash.isEmpty())
 	{

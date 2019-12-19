@@ -106,9 +106,9 @@ QStringList spoton::parseAEMagnet(const QString &magnet) const
   QStringList list1(QString(magnet).remove("magnet:?").split("&"));
   QStringList list2;
 
-  while(!list1.isEmpty())
+  for(int i = 0; i < list1.size(); i++)
     {
-      QString str(list1.takeFirst());
+      QString str(list1.at(i).trimmed());
 
       if(str.startsWith("ct="))
 	{
@@ -261,10 +261,9 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
 		      attachments.clear();
 		    }
 
-		  while(!attachments.isEmpty())
+		  for(int i = 0; i < attachments.size(); i++)
 		    {
-		      QPair<QByteArray, QByteArray> pair
-			(attachments.takeFirst());
+		      QPair<QByteArray, QByteArray> pair(attachments.at(i));
 		      QSqlQuery query(db);
 
 		      query.prepare("INSERT INTO folders_attachment "
@@ -762,9 +761,9 @@ void spoton::slotAddAttachment(void)
 
       std::sort(list.begin(), list.end());
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
-	  QFileInfo fileInfo(list.takeFirst());
+	  QFileInfo fileInfo(list.at(i));
 
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
@@ -984,9 +983,9 @@ void spoton::slotAddMagnet(void)
       QStringList list
 	(url.toString().remove("magnet:?").split("&"));
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
-	  QString str(list.takeFirst());
+	  QString str(list.at(i).trimmed());
 
 	  if(str.startsWith("rn="))
 	    {
@@ -1896,9 +1895,9 @@ void spoton::slotResendMail(void)
       {
 	QSqlQuery query(db);
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QString oid(list.takeFirst().data().toString());
+	    QString oid(list.at(i).data().toString());
 	    bool ok = true;
 
 	    query.prepare("UPDATE folders SET folder_index = 1, "
