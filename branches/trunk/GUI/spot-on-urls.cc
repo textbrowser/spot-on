@@ -795,10 +795,10 @@ void spoton::slotDeleteUrlDistillers(void)
 		       "urls_distillers_information.db");
 
     if(db.open())
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
 	  QSqlQuery query(db);
-	  QString str(list.takeFirst().data().toString());
+	  QString str(list.at(i).data().toString());
 	  bool ok = true;
 
 	  query.exec("PRAGMA secure_delete = ON");

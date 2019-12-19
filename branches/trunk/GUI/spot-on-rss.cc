@@ -768,8 +768,8 @@ void spoton_rss::import(const int maximumKeywords)
 
   QList<bool> imported;
 
-  while(!lists.isEmpty() && !m_importFuture.isCanceled())
-    imported << importUrl(lists.takeFirst(), maximumKeywords);
+  for(int i = 0; i < lists.size() && !m_importFuture.isCanceled(); i++)
+    imported << importUrl(lists.at(i), maximumKeywords);
 
   if(m_importFuture.isCanceled())
     return;

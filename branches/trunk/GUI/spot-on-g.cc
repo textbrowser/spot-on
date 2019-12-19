@@ -194,9 +194,9 @@ void spoton::joinBuzzChannel(const QUrl &url)
   QStringList list(url.toString().remove("magnet:?").split("&"));
   unsigned long int iterationCount = 0;
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(str.startsWith("rn="))
 	{
@@ -1381,11 +1381,11 @@ void spoton::slotRemoveAttachment(const QUrl &url)
 
   m_ui.attachment->clear();
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
-      if(str != url.toString())
+      if(str != url.toString() && str.length() > 0)
 	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
     }
 
