@@ -501,20 +501,18 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 {
   QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
 
-  while(!interfaces.isEmpty())
+  for(int i = 0; i < interfaces.size(); i++)
     {
-      QNetworkInterface interface(interfaces.takeFirst());
+      QNetworkInterface interface(interfaces.at(i));
 
       if(!interface.isValid() || !(interface.flags() & QNetworkInterface::IsUp))
 	continue;
 
       QList<QNetworkAddressEntry> addresses(interface.addressEntries());
 
-      while(!addresses.isEmpty())
+      for(int i = 0; i < addresses.size(); i++)
 	{
-	  QNetworkAddressEntry entry;
-
-	  entry = addresses.takeFirst();
+	  QNetworkAddressEntry entry(addresses.at(i));
 
 	  if(entry.ip() != QHostAddress::LocalHost &&
 	     entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
@@ -2287,9 +2285,9 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 	 << "xs="
 	 << "xt=";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(starts.contains("ct=") && str.startsWith("ct="))
 	{
@@ -2515,9 +2513,9 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
 	 << "ek="
 	 << "xt=";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QByteArray str(list.takeFirst());
+      QByteArray str(list.at(i).trimmed());
 
       if(starts.contains("aa=") && str.startsWith("aa="))
 	{
@@ -2613,9 +2611,9 @@ bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
 	 << "pa="
 	 << "xt=";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(starts.contains("in=") && str.startsWith("in="))
 	{
@@ -2720,9 +2718,9 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 
   starts << "xt=";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(str.startsWith("value="))
 	{
@@ -2814,9 +2812,9 @@ bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
 	 << "mk="
 	 << "xt=";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
       if(starts.contains("ct=") && str.startsWith("ct="))
 	{
@@ -3530,10 +3528,10 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 			  if(stream.status() != QDataStream::Ok)
 			    attachments.clear();
 
-			  while(!attachments.isEmpty())
+			  for(int i = 0; i < attachments.size(); i++)
 			    {
 			      QPair<QByteArray, QByteArray> pair
-				(attachments.takeFirst());
+				(attachments.at(i));
 			      QSqlQuery query(db);
 
 			      query.prepare("INSERT INTO folders_attachment "
@@ -3750,9 +3748,9 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
   spoton_crypt *crypt = 0;
   unsigned long int ic = 0;
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QByteArray bytes(list.takeFirst());
+      QByteArray bytes(list.at(i).trimmed());
 
       if(bytes.startsWith("ct="))
 	{
@@ -6329,14 +6327,14 @@ void spoton_misc::vacuumAllDatabases(void)
        << "urls_distillers_information.db"
        << "urls_key_information.db";
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
       QString connectionName("");
 
       {
 	QSqlDatabase db = database(connectionName);
 
-	db.setDatabaseName(homePath() + QDir::separator() + list.takeFirst());
+	db.setDatabaseName(homePath() + QDir::separator() + list.at(i));
 
 	if(db.open())
 	  {
