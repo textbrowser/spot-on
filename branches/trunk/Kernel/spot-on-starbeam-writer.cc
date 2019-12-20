@@ -692,9 +692,9 @@ void spoton_starbeam_writer::slotReadKeys(void)
 		(data.remove(0, static_cast<int> (qstrlen("magnet:?"))).
 		 split('&'));
 
-	      while(!list.isEmpty())
+	      for(int i = 0; i < list.size(); i++)
 		{
-		  QByteArray bytes(list.takeFirst());
+		  QByteArray bytes(list.at(i).trimmed());
 
 		  if(bytes.startsWith("ct=")) // Cipher Type
 		    {

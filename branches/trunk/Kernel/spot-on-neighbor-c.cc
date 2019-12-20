@@ -3126,12 +3126,12 @@ void spoton_neighbor::processData(void)
 
   useAccounts = m_useAccounts.fetchAndAddOrdered(0);
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
       if(m_abort.fetchAndAddOrdered(0))
 	return;
 
-      QByteArray data(list.takeFirst());
+      QByteArray data(list.at(i));
       QByteArray originalData(data);
       int index = -1;
       int length = 0;
@@ -4601,10 +4601,10 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			    attachments << QPair<QByteArray, QByteArray>
 			      (data, data);
 
-			  while(!attachments.isEmpty())
+			  for(int i = 0; i < attachments.size(); i++)
 			    {
 			      QPair<QByteArray, QByteArray> pair
-				(attachments.takeFirst());
+				(attachments.at(i));
 			      QSqlQuery query(db);
 
 			      query.prepare("INSERT INTO folders_attachment "

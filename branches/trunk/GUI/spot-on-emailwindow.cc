@@ -169,9 +169,9 @@ void spoton_emailwindow::slotAddAttachment(void)
 
       std::sort(list.begin(), list.end());
 
-      while(!list.isEmpty())
+      for(int i = 0; i < list.size(); i++)
 	{
-	  QFileInfo fileInfo(list.takeFirst());
+	  QFileInfo fileInfo(list.at(i));
 
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
@@ -508,11 +508,11 @@ void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
 
   m_ui.attachment->clear();
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.takeFirst());
+      QString str(list.at(i).trimmed());
 
-      if(str != url.toString())
+      if(str != url.toString() && str.length() > 0)
 	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
     }
 
@@ -551,9 +551,9 @@ void spoton_emailwindow::slotSendMail(void)
       QLocale locale;
       QStringList files(m_ui.attachment->toPlainText().split("\n"));
 
-      while(!files.isEmpty())
+      for(int i = 0; i < files.size(); i++)
 	{
-	  QString fileName(files.takeFirst());
+	  QString fileName(files.at(i));
 
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
@@ -756,16 +756,15 @@ void spoton_emailwindow::slotSendMail(void)
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(4); // Forward Secrecy Information
 
-	while(!list.isEmpty())
-	  forwardSecrecyCredentials.append
-	    (list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  forwardSecrecyCredentials.append(list.at(i).data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(0); // Participant
 
-	while(!list.isEmpty())
+	for(int i = 0; i < list.size(); i++)
 	  {
-	    QModelIndex index(list.takeFirst());
+	    QModelIndex index(list.at(i));
 
 	    isTraditionalEmailAccounts.append
 	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
@@ -778,14 +777,14 @@ void spoton_emailwindow::slotSendMail(void)
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(1); // OID
 
-	while(!list.isEmpty())
-	  oids.append(list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  oids.append(list.at(i).data().toString());
 
 	list = m_ui.emailParticipants->selectionModel()->
 	  selectedRows(3); // public_key_hash
 
-	while(!list.isEmpty())
-	  publicKeyHashes.append(list.takeFirst().data().toString());
+	for(int i = 0; i < list.size(); i++)
+	  publicKeyHashes.append(list.at(i).data().toString());
 
 	while(!forwardSecrecyCredentials.isEmpty() &&
 	      !isTraditionalEmailAccounts.isEmpty() &&

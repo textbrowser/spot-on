@@ -3341,9 +3341,9 @@ void spoton_kernel::purgeMessagingCache(void)
 		QList<QByteArray> values
 		  (s_messagingCacheLookup.values(it3.key()));
 
-		while(!values.isEmpty())
+		for(int i = 0; i < values.size(); i++)
 		  {
-		    s_messagingCache.remove(values.takeFirst());
+		    s_messagingCache.remove(values.at(i));
 
 		    if(m_future.isCanceled())
 		      return;

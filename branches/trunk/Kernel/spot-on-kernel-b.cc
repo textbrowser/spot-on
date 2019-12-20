@@ -2040,10 +2040,10 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 				      QPair<QByteArray, QByteArray>
 				      (data, data);
 
-				  while(!attachments.isEmpty())
+				  for(int i = 0; i < attachments.size(); i++)
 				    {
 				      QPair<QByteArray, QByteArray> pair
-					(attachments.takeFirst());
+					(attachments.at(i));
 				      QSqlQuery query(db);
 
 				      query.prepare

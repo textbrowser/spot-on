@@ -493,9 +493,9 @@ void spoton_gui_server::slotReadyRead(void)
       else
 	m_guiSocketData.insert(socket->socketDescriptor(), data);
 
-      while(!messages.isEmpty())
+      for(int i = 0; i < messages.size(); i++)
 	{
-	  QByteArray message(messages.takeFirst());
+	  QByteArray message(messages.at(i));
 
 	  if(message.startsWith("addbuzz_") &&
 	     m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
