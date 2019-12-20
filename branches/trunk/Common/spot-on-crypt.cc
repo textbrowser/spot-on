@@ -2133,9 +2133,9 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	    << "TlsV1_0";
 #endif
 
-  while(!protocols.isEmpty())
+  for(int i = 0; i < protocols.size(); i++)
     {
-      QString protocol(protocols.takeFirst());
+      QString protocol(protocols.at(i));
 
       index = 0;
       next = 0;

@@ -796,14 +796,15 @@ void spoton::slotDeleteKey(void)
       m_generalFuture.waitForFinished();
       m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
 
-      while(!m_starbeamDigestFutures.isEmpty())
+      for(int i = 0; i < m_starbeamDigestFutures.size(); i++)
 	{
-	  QFuture<void> future(m_starbeamDigestFutures.takeFirst());
+	  QFuture<void> future(m_starbeamDigestFutures.at(i));
 
 	  future.cancel();
 	  future.waitForFinished();
 	}
 
+      m_starbeamDigestFutures.clear();
       QApplication::restoreOverrideCursor();
     }
 

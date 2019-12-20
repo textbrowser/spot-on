@@ -1100,10 +1100,12 @@ spoton_neighbor::~spoton_neighbor()
       QSqlDatabase::removeDatabase(connectionName);
     }
 
-  while(!m_privateApplicationFutures.isEmpty())
+  for(int i = 0; i < m_privateApplicationFutures.size(); i++)
     {
-      m_privateApplicationFutures.first().cancel();
-      m_privateApplicationFutures.takeFirst().waitForFinished();
+      QFuture<void> future(m_privateApplicationFutures.at(i));
+
+      future.cancel();
+      future.waitForFinished();
     }
 
   close();
