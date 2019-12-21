@@ -5323,24 +5323,20 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
        << SIGSEGV
        << SIGTERM;
 
-  while(!list.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
       act.sa_handler = signal_handler;
       sigemptyset(&act.sa_mask);
       act.sa_flags = 0;
 
-      if(sigaction(list.first(), &act, 0))
+      if(sigaction(list.at(i), &act, 0))
 	logError(QString("spoton_misc::prepareSignalHandler(): "
-			 "sigaction() failure for %1.").arg(list.first()));
-
-      list.removeFirst();
+			 "sigaction() failure for %1.").arg(list.at(i)));
 #else
-      if(signal(list.first(), signal_handler) == SIG_ERR)
+      if(signal(list.at(i), signal_handler) == SIG_ERR)
 	logError(QString("spoton_misc::prepareSignalHandler(): "
-			 "signal() failure for %1.").arg(list.first()));
-
-      list.removeFirst();
+			 "signal() failure for %1.").arg(list.at(i)))
 #endif
     }
 }
