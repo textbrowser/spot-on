@@ -439,7 +439,7 @@ void spoton_kernel::popPoptastic(void)
 		url = QString("imaps://%1:%2").
 		  arg(hash.value("in_server_address").toString().trimmed()).
 		  arg(hash.value("in_server_port").toString().trimmed());
-	      else
+	      else if(uid > 0)
 		url = QString("imaps://%1:%2/INBOX/;UID=%3").
 		  arg(hash.value("in_server_address").toString().trimmed()).
 		  arg(hash.value("in_server_port").toString().trimmed()).
@@ -488,7 +488,7 @@ void spoton_kernel::popPoptastic(void)
 		url = QString("imap://%1:%2").
 		  arg(hash.value("in_server_address").toString().trimmed()).
 		  arg(hash.value("in_server_port").toString().trimmed());
-	      else
+	      else if(uid > 0)
 		url = QString("imap://%1:%2/INBOX/;UID=%3").
 		  arg(hash.value("in_server_address").toString().trimmed()).
 		  arg(hash.value("in_server_port").toString().trimmed()).
@@ -534,10 +534,15 @@ void spoton_kernel::popPoptastic(void)
 			  toLongLong();
 		    }
 
-		  if(uidnext > exists)
-		    uid = uidnext - exists;
+		  if(exists > 0)
+		    {
+		      if(uidnext > 1) // UIDs must be greater than zero!
+			uid = uidnext - 1; // Latest.
+		      else
+			uid = 1;
+		    }
 		  else
-		    uid = 1;
+		    uid = 0;
 		}
 	      else
 		{
@@ -553,7 +558,6 @@ void spoton_kernel::popPoptastic(void)
 		    }
 
 		  removeUrl.append(QString::number(uid));
-		  uid += 1;
 		}
 	    }
 	}

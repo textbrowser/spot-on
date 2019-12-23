@@ -211,6 +211,13 @@ Completed Items
 151.   Allow custom addresses for spoton_external_address.
 152.   Limit the congestion database size via the max_page_count pragma.
 153.   Clean sensitive memory, if possible.
+154.   Retrieve only the latest e-mails from IMAP/POP3. Retrieval of IMAP
+       messages is now performed as follows: issue an examination of the
+       inbox, determine the exists and uidnext values,
+       retrieve the (uidnext - 1) message if exists is greater than zero.
+       This will download only the latest messages.
+       (http://www.faqs.org/rfcs/rfc3501.html)
+       As for POP3, messages are popped.
 
 Ignored Items
 
@@ -247,13 +254,13 @@ Remaining Items
 
 1.     Audible.
 2.     Open Library.
-3.     Retrieve only the latest e-mails from IMAP/POP3.
-4.     Temporary queues. Will avoid dropped packets.
-5.     Which key types to export and import? A new selection dialog.
-6.     Random sequences for random data
+3.     Temporary queues. Will avoid dropped packets.
+4.     Which key types to export and import? A new selection dialog.
+5.     Random sequences for random data
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
-7.     Bind the recipient's identity into all hybrid encryption schemes.
+6.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
-8.     Separate NTRU implementation.
-9.     Remove obsolete includes.
-10.    If possible, include all Web server resources into the binary.
+7.     Separate NTRU implementation.
+8.     Remove obsolete includes.
+9.     If possible, include all Web server resources into the binary.
+10.    IMAP and optional removal of messages; retrieve latest.
