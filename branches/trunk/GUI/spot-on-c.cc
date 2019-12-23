@@ -3538,17 +3538,17 @@ void spoton::slotPopulateStars(void)
 							     hash))
 		    {
 		      item3->setBackground(QBrush(QColor("lightgreen")));
-		      item3->setToolTip(tr("The computed file digest "
+		      item3->setToolTip(tr("<html>The computed file digest "
 					   "is identical to the expected "
-					   "file digest."));
+					   "file digest.</html>"));
 		      item4->setBackground(QBrush(QColor("lightgreen")));
 		    }
 		  else
 		    {
 		      item3->setBackground(QBrush(QColor(240, 128, 128)));
-		      item3->setToolTip(tr("The computed file digest "
+		      item3->setToolTip(tr("<html>The computed file digest "
 					   "does not equal the expected "
-					   "file digest."));
+					   "file digest.</html>"));
 		      item4->setBackground(QBrush(QColor(240, 128, 128)));
 		    }
 		}

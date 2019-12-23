@@ -356,10 +356,10 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
-	setToolTip(tr("Participant %1 is requesting forward secrecy "
-		      "credentials.").arg(str.mid(0, 16) +
-					  "..." +
-					  str.right(16)));
+	setToolTip(tr("<html>Participant %1 is requesting forward secrecy "
+		      "credentials.</html>").arg(str.mid(0, 16) +
+						 "..." +
+						 str.right(16)));
       m_sb.forward_secrecy_request->setVisible(true);
     }
 }
@@ -382,10 +382,10 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
-	setToolTip(tr("Participant %1 is requesting forward secrecy "
-		      "credentials.").arg(str.mid(0, 16) +
-					  "..." +
-					  str.right(16)));
+	setToolTip(tr("<html>Participant %1 is requesting forward secrecy "
+		      "credentials.</html>").arg(str.mid(0, 16) +
+						 "..." +
+						 str.right(16)));
     }
 }
 

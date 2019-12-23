@@ -707,20 +707,16 @@ spoton::spoton(void):QMainWindow()
 #ifndef SPOTON_LINKED_WITH_LIBGEOIP
   m_optionsUi.geoipPath4->setEnabled(false);
   m_optionsUi.geoipPath4->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1 was configured without libGeoIP.").arg(SPOTON_APPLICATION_NAME));
   m_optionsUi.geoipPath6->setEnabled(false);
   m_optionsUi.geoipPath6->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1 was configured without libGeoIP.").arg(SPOTON_APPLICATION_NAME));
   m_optionsUi.selectGeoIP4->setEnabled(false);
   m_optionsUi.selectGeoIP4->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1 was configured without libGeoIP.").arg(SPOTON_APPLICATION_NAME));
   m_optionsUi.selectGeoIP6->setEnabled(false);
   m_optionsUi.selectGeoIP6->setToolTip
-    (tr("%1 was configured without "
-	"libGeoIP.").arg(SPOTON_APPLICATION_NAME));
+    (tr("%1 was configured without libGeoIP.").arg(SPOTON_APPLICATION_NAME));
 #endif
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
@@ -2235,7 +2231,8 @@ spoton::spoton(void):QMainWindow()
   m_ui.question_authenticate->setEnabled(false);
   m_ui.resend->setEnabled(false);
   m_sb.kernelstatus->setToolTip
-    (tr("The interface is not connected to the kernel. Is the kernel active?"));
+    (tr("<html>The interface is not connected to the kernel. "
+	"Is the kernel active?</html>"));
   m_sb.listeners->setToolTip(tr("Listeners are offline."));
   m_sb.neighbors->setToolTip(tr("Neighbors are offline."));
   menu = new QMenu(this);
@@ -2811,8 +2808,8 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
   m_optionsUi.play_sounds->setToolTip
-    (tr("Please place the Sounds directory in the directory which "
-	"houses the %1 executable.").arg(SPOTON_APPLICATION_NAME));
+    (tr("<html>Please place the Sounds directory in the directory which "
+	"houses the %1 executable.</html>").arg(SPOTON_APPLICATION_NAME));
 #else
   m_optionsUi.play_sounds->setChecked(false);
   m_optionsUi.play_sounds->setEnabled(false);
@@ -6220,16 +6217,15 @@ void spoton::slotKernelSocketState(void)
 			  arg(cipher.usedBits()));
 
 	      m_sb.kernelstatus->setToolTip
-		(tr("Connected to the kernel on port %1 "
-		    "from local port %2 via cipher %3.").
+		(tr("<html>Connected to the kernel on port %1 "
+		    "from local port %2 via cipher %3.</html>").
 		 arg(m_kernelSocket.peerPort()).
 		 arg(m_kernelSocket.localPort()).
 		 arg(str));
 	    }
 	  else
 	    m_sb.kernelstatus->setToolTip
-	      (tr("Connected to the kernel on port %1 "
-		  "from local port %2.").
+	      (tr("Connected to the kernel on port %1 from local port %2.").
 	       arg(m_kernelSocket.peerPort()).
 	       arg(m_kernelSocket.localPort()));
 	}
@@ -6253,8 +6249,8 @@ void spoton::slotKernelSocketState(void)
 	      "UI server has been disabled.</html>"));
       else
 	m_sb.kernelstatus->setToolTip
-	  (tr("The interface is not connected to the kernel. Is the kernel "
-	      "active?"));
+	  (tr("<html>The interface is not connected to the kernel. "
+	      "Is the kernel active?</html>"));
     }
 }
 
@@ -6895,21 +6891,21 @@ void spoton::slotPopulateListeners(void)
 						 &ok)).toUpper();
 
 		tooltip = QString
-		  (tr("Status: %1\n"
-		      "Bluetooth Flags / SSL Key Size: %2\n"
-		      "Local IP: %3 Local Port: %4 Scope ID: %5\n"
-		      "External IP: %6\n"
-		      "Connections: %7\n"
-		      "Echo Mode: %8\n"
-		      "Use Accounts: %9\n"
-		      "Transport: %10\n"
-		      "Share Address: %11\n"
-		      "Orientation: %12\n"
-		      "SSL Control String: %13\n"
-		      "Lane Width: %14\n"
-		      "Passthrough: %15\n"
-		      "Source of Randomness: %16\n"
-		      "Socket Options: %17")).
+		  (tr("<html>Status: %1<br>"
+		      "Bluetooth Flags / SSL Key Size: %2<br>"
+		      "Local IP: %3 Local Port: %4 Scope ID: %5<br>"
+		      "External IP: %6<br>"
+		      "Connections: %7<br>"
+		      "Echo Mode: %8<br>"
+		      "Use Accounts: %9<br>"
+		      "Transport: %10<br>"
+		      "Share Address: %11<br>"
+		      "Orientation: %12<br>"
+		      "SSL Control String: %13<br>"
+		      "Lane Width: %14<br>"
+		      "Passthrough: %15<br>"
+		      "Source of Randomness: %16<br>"
+		      "Socket Options: %17</html>")).
 		  arg(query.value(1).toString().toLower()).
 		  arg(query.value(2).toString()).
 		  arg(crypt->
@@ -7627,33 +7623,33 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	}
 
       tooltip =
-	(tr("UUID: %1\n"
-	    "Status: %2\n"
-	    "SSL Key Size: %3\n"
-	    "Local IP: %4 Local Port: %5\n"
-	    "External IP: %6\n"
+	(tr("<html>UUID: %1<br>"
+	    "Status: %2<br>"
+	    "SSL Key Size: %3<br>"
+	    "Local IP: %4 Local Port: %5<br>"
+	    "External IP: %6<br>"
 	    "Country: %7 Remote IP: %8 Remote Port: %9 "
-	    "Scope ID: %10\n"
-	    "Proxy Hostname: %11 Proxy Port: %12\n"
-	    "Echo Mode: %13\n"
-	    "Communications Mode: %14\n"
-	    "Uptime: %15 Minutes\n"
-	    "Allow Certificate Exceptions: %16\n"
-	    "Bytes Read: %17\n"
-	    "Bytes Written: %18\n"
-	    "SSL Session Cipher: %19\n"
-	    "Account Name: %20\n"
-	    "Account Authenticated: %21\n"
-	    "Transport: %22\n"
-	    "Orientation: %23\n"
-	    "SSL Control String: %24\n"
-	    "Priority: %25\n"
-	    "Lane Width: %26\n"
-	    "Passthrough: %27\n"
-	    "Wait-For-Bytes-Written: %28\n"
-	    "Silence Time: %29\n"
-	    "Socket Options: %30\n"
-	    "Buffered Content: %31")).
+	    "Scope ID: %10<br>"
+	    "Proxy Hostname: %11 Proxy Port: %12<br>"
+	    "Echo Mode: %13<br>"
+	    "Communications Mode: %14<br>"
+	    "Uptime: %15 Minutes<br>"
+	    "Allow Certificate Exceptions: %16<br>"
+	    "Bytes Read: %17<br>"
+	    "Bytes Written: %18<br>"
+	    "SSL Session Cipher: %19<br>"
+	    "Account Name: %20<br>"
+	    "Account Authenticated: %21<br>"
+	    "Transport: %22<br>"
+	    "Orientation: %23<br>"
+	    "SSL Control String: %24<br>"
+	    "Priority: %25<br>"
+	    "Lane Width: %26<br>"
+	    "Passthrough: %27<br>"
+	    "Wait-For-Bytes-Written: %28<br>"
+	    "Silence Time: %29<br>"
+	    "Socket Options: %30<br>"
+	    "Buffered Content: %31</html>")).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
 					fromBase64(query->

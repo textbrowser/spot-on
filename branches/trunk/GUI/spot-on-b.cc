@@ -1679,8 +1679,8 @@ void spoton::authenticationRequested(const QByteArray &data)
 	m_sb.authentication_request->setProperty
 	  ("data", data);
 	m_sb.authentication_request->
-	  setToolTip(tr("Remote peer %1 is requesting authentication "
-			"credentials.").arg(data.constData()));
+	  setToolTip(tr("<html>Remote peer %1 is requesting authentication "
+			"credentials.</html>").arg(data.constData()));
 	m_sb.authentication_request->setVisible(true);
 	QTimer::singleShot(7500, m_sb.authentication_request,
 			   SLOT(hide(void)));
@@ -2077,6 +2077,7 @@ void spoton::populateMail(void)
 		totalRows += 1;
 
 		QByteArray goldbug;
+		QString tooltip("<html>");
 		bool ok = true;
 
 		goldbug = m_crypts.value("email")->
@@ -2116,6 +2117,12 @@ void spoton::populateMail(void)
 				      (QString::fromUtf8(bytes.constData(),
 							 bytes.length()).
 				       trimmed());
+				    tooltip.append
+				      (m_ui.mail->
+				       horizontalHeaderItem(i)->text());
+				    tooltip.append(": ");
+				    tooltip.append(item->text());
+				    tooltip.append("<br>");
 				  }
 				else
 				  {
@@ -2131,6 +2138,16 @@ void spoton::populateMail(void)
 				      (QString::fromUtf8(bytes.constData(),
 							 bytes.length()).
 				       trimmed());
+
+				    if(i != 2 && i <= 3)
+				      {
+					tooltip.append
+					  (m_ui.mail->
+					   horizontalHeaderItem(i)->text());
+					tooltip.append(": ");
+					tooltip.append(item->text());
+					tooltip.append("<br>");
+				      }
 				  }
 
 				if(!ok)
@@ -2196,6 +2213,12 @@ void spoton::populateMail(void)
 				      item->setBackground
 					(QBrush(QColor("lightgreen")));
 #endif
+				    tooltip.append
+				      (m_ui.mail->
+				       horizontalHeaderItem(i)->text());
+				    tooltip.append(": ");
+				    tooltip.append(item->text());
+				    tooltip.append("<br>");
 				  }
 			      }
 			    else
@@ -2219,6 +2242,11 @@ void spoton::populateMail(void)
 				item = new QTableWidgetItem("0");
 				item->setData(Qt::UserRole, 0);
 			      }
+
+			    tooltip.append
+			      (m_ui.mail->horizontalHeaderItem(i)->text());
+			    tooltip.append(": ");
+			    tooltip.append(item->text());
 			  }
 			else
 			  {
@@ -2235,6 +2263,19 @@ void spoton::populateMail(void)
 		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		    m_ui.mail->setItem(row - 1, i, item);
 		  }
+
+		tooltip.append("</html>");
+
+		if(tooltip != "<html></html>")
+		  for(int i = 0; i < 5; i++)
+		    {
+		      QTableWidgetItem *item = m_ui.mail->item(row - 1, i);
+
+		      if(!item)
+			continue;
+
+		      item->setToolTip(tooltip);
+		    }
 
 		if(cRow.contains(query.value(11).toString()))
 		  cRow[query.value(11).toString()] = true;
