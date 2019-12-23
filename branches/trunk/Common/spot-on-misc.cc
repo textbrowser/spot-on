@@ -2039,8 +2039,7 @@ bool spoton_misc::isAcceptedIP(const QString &address,
   {
     QSqlDatabase db = database(connectionName);
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -2051,9 +2050,8 @@ bool spoton_misc::isAcceptedIP(const QString &address,
 	query.prepare("SELECT EXISTS(SELECT 1 FROM listeners_allowed_ips "
 		      "WHERE ip_address_hash IN (?, ?) AND "
 		      "listener_oid = ?)");
-	query.bindValue(0, crypt->keyedHash(address.
-					    toLatin1(), &ok).
-			toBase64());
+	query.bindValue
+	  (0, crypt->keyedHash(address.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue(1, crypt->keyedHash("Any", &ok).toBase64());
@@ -2152,15 +2150,12 @@ bool spoton_misc::isIpBlocked(const QString &address, spoton_crypt *crypt)
 {
   if(address.isEmpty())
     {
-      logError
-	("spoton_misc::isIpBlocked(): address is empty.");
+      logError("spoton_misc::isIpBlocked(): address is empty.");
       return true;
     }
   else if(!crypt)
     {
-      logError
-	("spoton_misc::isIpBlocked(): crypt "
-	 "is zero.");
+      logError("spoton_misc::isIpBlocked(): crypt is zero.");
       return true;
     }
 
@@ -2182,8 +2177,7 @@ bool spoton_misc::isIpBlocked(const QString &address, spoton_crypt *crypt)
 		      "remote_ip_address_hash = ? AND "
 		      "status_control = 'blocked')");
 	query.bindValue
-	  (0, crypt->
-	   keyedHash(address.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(address.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  if(query.exec())
