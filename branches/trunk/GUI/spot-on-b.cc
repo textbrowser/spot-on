@@ -770,7 +770,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::WindowModal);
 	  mb.setWindowTitle
-		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+	    (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    {
@@ -5711,11 +5711,19 @@ void spoton::slotReply(void)
     return;
 
   if(item->text() != "0")
-    /*
-    ** How can we reply to an encrypted message?
-    */
+    {
+      /*
+      ** How can we reply to an encrypted message?
+      */
 
-    return;
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+			    tr("Cannot reply to an encrypted message. "
+			       "Please decrypt the message by providing "
+			       "the correct Gold Bug."));
+      QApplication::processEvents();
+      return;
+    }
 
   item = m_ui.mail->item(row, 6); // Message
 
@@ -5747,8 +5755,7 @@ void spoton::slotReply(void)
 
   if(m_ui.richtext->isChecked())
     {
-      message = "<br><span style=\"font-size:large;\">" +
-	message + "</span>";
+      message = "<br><span style=\"font-size:large;\">" + message + "</span>";
       m_ui.outgoingMessage->setHtml(message);
     }
   else
@@ -5762,17 +5769,58 @@ void spoton::slotReply(void)
 
   m_ui.emailParticipants->selectionModel()->clear();
 
+  bool found = false;
+
   for(int i = 0; i < m_ui.emailParticipants->rowCount(); i++)
     {
       QTableWidgetItem *item = m_ui.emailParticipants->
 	item(i, 3); // public_key_hash
 
+      if(item && item->text() == receiverSenderHash)
+	{
+	  found = true;
+	  m_ui.emailParticipants->selectRow(i);
+	  break;
+	}
+    }
+
+  if(!found)
+    {
+      QTableWidgetItem *item = m_ui.mail->item(row, 1); // From / To
+
       if(item)
-	if(item->text() == receiverSenderHash)
-	  {
-	    m_ui.emailParticipants->selectRow(i);
-	    break;
-	  }
+	{
+	  QString str(item->text());
+	  int index1 = str.indexOf('.');
+	  int index2 = str.indexOf('@');
+
+	  if(index1 > 0 && index1 < str.length() - 1 &&
+	     index2 > 0 && index2 < str.length() - 1)
+	    {
+	      QMessageBox mb(this);
+
+	      mb.setIcon(QMessageBox::Question);
+	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	      mb.setText
+		(tr("Would you like to save the e-mail address %1?").arg(str));
+	      mb.setWindowIcon(windowIcon());
+	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowTitle
+		(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+	      if(mb.exec() == QMessageBox::Yes)
+		{
+		  QApplication::processEvents();
+		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+		  addFriendsKey(str.toLatin1(), "E", this);
+		  m_emailAddressAdded = str;
+		  slotPopulateParticipants();
+		  QApplication::restoreOverrideCursor();
+		}
+
+	      QApplication::processEvents();
+	    }
+	}
     }
 
   m_ui.outgoingMessage->moveCursor(QTextCursor::Start);

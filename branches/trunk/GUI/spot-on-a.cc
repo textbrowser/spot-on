@@ -7815,8 +7815,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		  if(i == 1) // uuid
 		    {
 		      if(bytes.isEmpty())
-			bytes =
-			  "{00000000-0000-0000-0000-000000000000}";
+			bytes = "{00000000-0000-0000-0000-000000000000}";
 		    }
 		  else if(i == 3) // SSL Key Size
 		    {
@@ -8308,8 +8307,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       QString statusText("");
       bool ok = true;
       bool publicKeyContainsPoptastic = false;
-      bool temporary =
-	query->value(2).toLongLong() == -1 ? false : true;
+      bool temporary = query->value(2).toLongLong() == -1 ? false : true;
 
       keyType = crypt->decryptedAfterAuthenticated
 	(QByteArray::fromBase64(query->value(8).toByteArray()), &ok);
@@ -8386,8 +8384,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  item = new QTableWidgetItem(name);
 
 		  if(keyType == "poptastic")
-		    item->setBackground
-		      (QBrush(QColor(137, 207, 240)));
+		    item->setBackground(QBrush(QColor(137, 207, 240)));
 		}
 	      else if(i == 4) // Status
 		{
@@ -8433,11 +8430,9 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		    }
 		}
 	      else
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
+		item = new QTableWidgetItem(query->value(i).toString());
 
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	      if(i == 0) // Name
 		{
@@ -8536,7 +8531,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		{
 		  /*
 		  ** This may be a plain Poptastic participant.
-		  ** It will only be displayed in the E-Mail tab.
+		  ** It will only be displayed in the E-Mail page.
 		  */
 
 		  delete item;
@@ -8595,8 +8590,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		    }
 		}
 	      else if(i == 1 || i == 2 || i == 3)
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
+		item = new QTableWidgetItem(query->value(i).toString());
 	      else if(i == 4)
 		{
 		  if(keyType == "poptastic" && publicKeyContainsPoptastic)
@@ -8715,8 +8709,14 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       if(hashes.contains(query->value(3).toString()))
 	rows.append(row - 1);
 
-      if(hashesE.contains(query->value(3).toString()))
-	rowsE.append(rowE - 1);
+      if(hashesE.contains(query->value(3).toString()) ||
+	 m_emailAddressAdded == name)
+	{
+	  if(m_emailAddressAdded == name)
+	    m_emailAddressAdded.clear();
+
+	  rowsE.append(rowE - 1);
+	}
 
       if(hashesU.contains(query->value(3).toString()))
 	rowsU.append(rowU - 1);
