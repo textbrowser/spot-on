@@ -5817,8 +5817,8 @@ void spoton::slotReply(void)
 		  slotPopulateParticipants();
 		  QApplication::restoreOverrideCursor();
 		}
-
-	      QApplication::processEvents();
+	      else
+		QApplication::processEvents();
 	    }
 	}
     }
