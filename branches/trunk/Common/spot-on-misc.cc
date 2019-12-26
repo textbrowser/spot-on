@@ -5301,9 +5301,7 @@ void spoton_misc::prepareDatabases(void)
 void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
 {
   QList<int> list;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-  struct sigaction act;
-#endif
+
   list << SIGABRT
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
        << SIGBUS
@@ -5320,9 +5318,11 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
   for(int i = 0; i < list.size(); i++)
     {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+      struct sigaction act;
+
+      act.sa_flags = 0;
       act.sa_handler = signal_handler;
       sigemptyset(&act.sa_mask);
-      act.sa_flags = 0;
 
       if(sigaction(list.at(i), &act, 0))
 	logError(QString("spoton_misc::prepareSignalHandler(): "
