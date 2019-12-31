@@ -379,27 +379,17 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       if(m_socketNotifier)
 	m_socketNotifier->deleteLater();
 
-      m_socketNotifier = 0;
+      m_socketNotifier = new (std::nothrow) QSocketNotifier
+	(m_socketDescriptor, QSocketNotifier::Read, this);
 
-      try
+      if(Q_LIKELY(m_socketNotifier))
 	{
-          m_socketNotifier = new QSocketNotifier
-	    (m_socketDescriptor, QSocketNotifier::Read, this);
 	  connect(m_socketNotifier,
 		  SIGNAL(activated(int)),
 		  this,
 		  SLOT(slotActivated(int)));
-        }
-      catch(...)
-	{
-	  if(m_socketNotifier)
-	    m_socketNotifier->deleteLater();
-
-	  m_socketNotifier = 0;
-        }
-
-      if(Q_LIKELY(m_socketNotifier))
-	m_socketNotifier->setEnabled(true);
+	  m_socketNotifier->setEnabled(true);
+	}
       else
 	{
 	  m_errorString = "listen()::listen()::memory allocation failure";
