@@ -1417,26 +1417,21 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 
 		  try
 		    {
-		      crypt = new spoton_crypt
-			(setting("gui/cipherType",
-				 "aes256").toString(),
-			 setting("gui/hashType",
-				 "sha512").toString(),
+		      crypt = new (std::nothrow) spoton_crypt
+			(setting("gui/cipherType", "aes256").toString(),
+			 setting("gui/hashType", "sha512").toString(),
 			 QByteArray(),
 			 keys.first,
 			 keys.second,
 			 setting("gui/saltLength", 512).toInt(),
 			 static_cast
-			 <unsigned long int> (setting("gui/"
-						      "iterationCount",
-						      10000).
-					      toInt()),
+			 <unsigned long int> (setting("gui/iterationCount",
+						      10000).toInt()),
 			 list.at(i));
 
-		      if(!altered)
+		      if(!altered && crypt)
 			{
-			  spoton_misc::alterDatabasesAfterAuthentication
-			    (crypt);
+			  spoton_misc::alterDatabasesAfterAuthentication(crypt);
 			  altered = true;
 			}
 		    }
@@ -2349,7 +2344,7 @@ void spoton_kernel::prepareListeners(void)
 
 			  try
 			    {
-			      listener = new spoton_listener
+			      listener = new (std::nothrow) spoton_listener
 				(list.value(0).constData(),
 				 list.value(1).constData(),
 				 list.value(2).constData(),
@@ -2657,7 +2652,7 @@ void spoton_kernel::prepareNeighbors(void)
 
 			  try
 			    {
-			      neighbor = new spoton_neighbor
+			      neighbor = new (std::nothrow) spoton_neighbor
 				(proxy,
 				 list.value(0).toByteArray().constData(),
 				 list.value(1).toByteArray().constData(),
@@ -2803,20 +2798,8 @@ void spoton_kernel::prepareStarbeamReaders(void)
 
 		  if(!m_starbeamReaders.contains(id))
 		    {
-		      try
-			{
-			  starbeam = new spoton_starbeam_reader
-			    (id, readInterval, this);
-			}
-		      catch(...)
-			{
-			  if(starbeam)
-			    starbeam->deleteLater();
-
-			  spoton_misc::logError
-			    ("spoton_misc::prepareStarbeamReaders(): "
-			     "critical failure.");
-			}
+		      starbeam = new (std::nothrow) spoton_starbeam_reader
+			(id, readInterval, this);
 
 		      if(Q_LIKELY(starbeam))
 			{

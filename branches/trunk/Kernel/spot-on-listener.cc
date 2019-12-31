@@ -813,7 +813,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_transport,
 	 static_cast<qint64> (socketDescriptor),
 	 0);
-      neighbor = new spoton_neighbor
+      neighbor = new (std::nothrow) spoton_neighbor
 	(socketDescriptor,
 	 m_certificate,
 	 m_privateKey,
@@ -851,34 +851,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
     {
       if(neighbor)
 	neighbor->deleteLater();
-      else if(m_transport == "sctp")
-	{
-	  spoton_sctp_socket socket(this);
-
-	  if(socket.setSocketDescriptor(static_cast<int> (socketDescriptor)))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-	}
-      else if(m_transport == "tcp")
-	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-	}
-      else if(m_transport == "udp")
-	{
-	  QAbstractSocket socket(QAbstractSocket::UdpSocket, this);
-
-	  if(socket.
-	     setSocketDescriptor(socketDescriptor, QAbstractSocket::BoundState))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-	}
 
       spoton_misc::closeSocket(socketDescriptor); // Force close.
       return;
@@ -1395,7 +1367,7 @@ void spoton_listener::slotNewConnection(void)
 
   try
     {
-      neighbor = new spoton_neighbor
+      neighbor = new (std::nothrow) spoton_neighbor
 	(-1,
 	 m_certificate,
 	 m_privateKey,
@@ -1427,7 +1399,7 @@ void spoton_listener::slotNewConnection(void)
 	("spoton_listener::slotNewConnection(): critical failure.");
     }
 
-  if(Q_UNLIKELY(!error.isEmpty()))
+  if(Q_UNLIKELY(!error.isEmpty() || !neighbor))
     {
       if(neighbor)
 	neighbor->deleteLater();

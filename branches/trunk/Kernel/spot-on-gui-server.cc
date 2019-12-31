@@ -67,9 +67,9 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 
       try
 	{
-	  socket = new QSslSocket(this);
+	  socket = new (std::nothrow) QSslSocket(this);
 
-	  if(socket->setSocketDescriptor(socketDescriptor))
+	  if(socket && socket->setSocketDescriptor(socketDescriptor))
 	    {
 	      socket->setSocketOption
 		(QAbstractSocket::LowDelayOption,
@@ -133,7 +133,9 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 	    }
 	  else
 	    {
-	      socket->deleteLater();
+	      if(socket)
+		socket->deleteLater();
+
 	      spoton_misc::closeSocket(socketDescriptor);
 	    }
 	}
@@ -151,13 +153,7 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
     }
   else
     {
-      QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-      if(socket.setSocketDescriptor(socketDescriptor))
-	socket.abort();
-      else
-	spoton_misc::closeSocket(socketDescriptor);
-
+      spoton_misc::closeSocket(socketDescriptor);
       spoton_misc::logError
 	(QString("spoton_gui_server_tcp_server::"
 		 "incomingConnection(): "
@@ -703,7 +699,7 @@ void spoton_gui_server::slotReadyRead(void)
 
 		      try
 			{
-			  crypt = new spoton_crypt
+			  crypt = new (std::nothrow) spoton_crypt
 			    (spoton_kernel::setting("gui/cipherType",
 						    "aes256").toString(),
 			     spoton_kernel::setting("gui/hashType",
