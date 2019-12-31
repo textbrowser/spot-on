@@ -127,7 +127,6 @@ spoton_neighbor::spoton_neighbor
 		  SIGNAL(readyRead(void)),
 		  this,
 		  SLOT(slotReadyRead(void)));
-	  socket->setParent(this);
 	}
 #endif
     }
