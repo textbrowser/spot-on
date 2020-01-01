@@ -4912,7 +4912,8 @@ void spoton_misc::prepareDatabases(void)
 		   "port TEXT NOT NULL, "
 		   "scope_id TEXT, "
 		   "source_of_randomness INTEGER NOT NULL DEFAULT 0 "
-		   "CHECK (source_of_randomness >= 0), "
+		   "CHECK (source_of_randomness >= 0 AND "
+		   "source_of_randomness <= %5), "
 		   "protocol TEXT NOT NULL, "
 		   "status TEXT NOT NULL DEFAULT 'offline' "
 		   "CHECK (status IN ('deleted', 'offline', 'online')), "
@@ -4960,7 +4961,8 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
-	   arg(spoton_common::SSL_CONTROL_STRING));
+	   arg(spoton_common::SSL_CONTROL_STRING).
+	   arg(std::numeric_limits<unsigned short>::max()));
 	query.exec("CREATE TABLE IF NOT EXISTS listeners_accounts ("
 		   "account_name TEXT NOT NULL, "
 		   "account_name_hash TEXT NOT NULL, " // Keyed hash.
