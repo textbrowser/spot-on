@@ -5119,7 +5119,7 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
-	   arg(std::numeric_limits<int>::max()));
+	   arg(999999999));
       }
 
     db.close();
