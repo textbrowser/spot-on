@@ -642,7 +642,7 @@ spoton_neighbor::spoton_neighbor
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
   m_sctpSocket = 0;
-  m_silenceTime = qBound(5, silenceTime, std::numeric_limits<int>::max());
+  m_silenceTime = qBound(0, silenceTime, std::numeric_limits<int>::max());
   m_socketOptions = socketOptions;
   m_sourceOfRandomness = 0;
   m_sslControlString = sslControlString.trimmed();
@@ -2447,7 +2447,8 @@ void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
 
 void spoton_neighbor::slotTimeout(void)
 {
-  if(qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= m_silenceTime)
+  if(m_silenceTime > 0 &&
+     qAbs(m_lastReadTime.secsTo(QDateTime::currentDateTime())) >= m_silenceTime)
     {
       emit notification
 	(QString("The neighbor %1:%2 generated a fatal error (%3).").
@@ -2676,7 +2677,7 @@ void spoton_neighbor::slotTimeout(void)
 
 		    m_passthrough = query.value(12).toInt();
 		    m_silenceTime = qBound
-		      (5,
+		      (0,
 		       query.value(15).toInt(),
 		       std::numeric_limits<int>::max());
 		    m_sslControlString = query.value(9).toString();

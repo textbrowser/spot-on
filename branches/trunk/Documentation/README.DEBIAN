@@ -32,7 +32,7 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.01.01_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.01.05_amd64.deb
 
 Preparing Spot-On-x_armh.deb:
 
@@ -42,4 +42,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN-ARM spot-on-debian/DEBIAN
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.01.01_armh.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.01.05_armh.deb

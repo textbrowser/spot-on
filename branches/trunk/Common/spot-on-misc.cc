@@ -5111,7 +5111,7 @@ void spoton_misc::prepareDatabases(void)
 		   "CHECK (waitforbyteswritten_msecs >= 0 AND "
 		   "waitforbyteswritten_msecs <= %4), "
 		   "silence_time INTEGER NOT NULL DEFAULT 90 "
-		   "CHECK (silence_time >= 5 AND silence_time <= %6), "
+		   "CHECK (silence_time >= 0 AND silence_time <= %6), "
 		   "buffered_content INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (buffered_content >= 0))").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).

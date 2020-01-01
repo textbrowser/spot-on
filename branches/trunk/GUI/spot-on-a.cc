@@ -8045,14 +8045,15 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	      box->setCorrectionMode
 		(QAbstractSpinBox::CorrectToNearestValue);
-	      box->setMaximum(std::numeric_limits<int>::max());
+	      box->setMaximum(999999999);
 	      box->setMaximumWidth
 		(box->fontMetrics().
 		 width(QString::number(box->maximum())) + 50);
-	      box->setMinimum(5);
+	      box->setMinimum(0);
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
-	      box->setToolTip(tooltip);
+	      box->setToolTip
+		(QString("[%1, %2]").arg(box->minimum()).arg(box->maximum()));
 	      box->setValue
 		(static_cast<int> (query->value(i).toInt()));
 	      box->setWrapping(true);
@@ -8068,7 +8069,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	      item->setFlags
 		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-	      item->setToolTip(tooltip);
+	      item->setToolTip
+		(tr("<html>A value of 0 will prevent the neighbor "
+		    "from terminating itself if data has not "
+		    "been received for some time.</html>"));
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
 	  else
