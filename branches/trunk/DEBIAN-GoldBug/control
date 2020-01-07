@@ -4,7 +4,7 @@ Maintainer: textbrowser@gmail.com
 Package: GoldBug
 Priority: optional
 Section: Science
-Version: 2020.01.05
+Version: 2020.01.20
 Description: GoldBug
  Welcome to GoldBug!
  A goldbug.desktop file will also be installed in /usr/share/applications/.
