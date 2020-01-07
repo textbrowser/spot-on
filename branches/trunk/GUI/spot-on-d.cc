@@ -1167,6 +1167,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 
   ui.ip->setText(remoteIP);
+  ui.ip->selectAll();
   ui.port->setValue(remotePort.toInt());
   ui.scope->setText(scopeId);
 
