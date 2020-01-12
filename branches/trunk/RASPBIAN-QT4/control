@@ -1,5 +1,5 @@
 Architecture: armhf
-Depends: libcurl3-gnutls (>= 4.4.0), libgcrypt20 (>= 1.6.5), libgpg-error0 (>= 0.17.0), libgeoip1 (>= 1.6.9), libpq5 (>= 5.8), libqt4-network (>= 4.8.7), libqt4-sql (>= 4.8.7), libqt4-sql-psql (>= 4.8.7), libqt4-sql-sqlite (>= 4.8.7), libqtcore4 (>= 4.8.7), libqtgui4 (>= 4.8.7), libssl1.0.0 (>= 1.0.1)
+Depends: libcurl3-gnutls (>= 4.4.0), libgcrypt20 (>= 1.6.5), libgpg-error0 (>= 0.17.0), libgeoip1 (>= 1.6.5), libpq5 (>= 5.5), libqt4-network (>= 4.8.5), libqt4-sql (>= 4.8.5), libqt4-sql-psql (>= 4.8.5), libqt4-sql-sqlite (>= 4.8.5), libqtcore4 (>= 4.8.5), libqtgui4 (>= 4.8.5), libssl1.0.0 (>= 1.0.1)
 Maintainer: textbrowser@gmail.com
 Package: Spot-On
 Priority: optional
