@@ -31,7 +31,7 @@ unzip -d tmp.d -o tmp.d/$openssl.zip
 mv tmp.d/libeay32.dll libOpenSSL/Libraries.win32/.
 mv tmp.d/ssleay32.dll libOpenSSL/Libraries.win32/.
 chmod +w,-x libOpenSSL/Libraries.win32/*.dll
-rm -f tmp.d
+rm -fr tmp.d
 
 # OpenSSL 1.1.1
 
