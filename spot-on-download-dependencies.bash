@@ -17,7 +17,23 @@ mv curl-temporary.d/*/include/curl/*.h libcURL/Win32.d/include/curl/.
 rm -f $curl.zip
 rm -fr curl-temporary.d
 
-# OpenSSL
+# OpenSSL 1.0.2
+
+openssl=openssl-1.0.2u-i386-win32
+
+mkdir tmp.d
+rm -f $openssl.zip
+rm -fr $openssl
+wget --output-document=tmp.d/$openssl.zip \
+     --progress=bar \
+     https://indy.fulgan.com/SSL/$openssl.zip
+unzip -d tmp.d -o tmp.d/$openssl.zip
+mv tmp.d/libeay32.dll libOpenSSL/Libraries.win32/.
+mv tmp.d/ssleay32.dll libOpenSSL/Libraries.win32/.
+chmod +w,-x libOpenSSL/Libraries.win32/*.dll
+rm -f tmp.d
+
+# OpenSSL 1.1.1
 
 openssl=openssl-1.1.1d-win32-mingw
 
