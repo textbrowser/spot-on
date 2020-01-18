@@ -2747,6 +2747,18 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
     settings.remove("gui/poptasticNameEmail");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_name", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/postgresql_name",
+       newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/postgresql_name");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_password", "").
 			    toByteArray()), &ok);
 
@@ -2757,6 +2769,18 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
   if(!ok)
     settings.remove("gui/postgresql_password");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_web_name", "").
+			    toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/postgresql_web_name",
+       newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/postgresql_web_name");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_web_password", "").

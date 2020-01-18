@@ -247,6 +247,7 @@ void spoton_urldistribution::run(void)
       }
     else
       {
+	QByteArray name;
 	QByteArray password;
 	QString connectionOptions
 	(spoton_kernel::setting("gui/postgresql_connection_options",
@@ -258,9 +259,6 @@ void spoton_urldistribution::run(void)
 	QString host
 	  (spoton_kernel::setting("gui/postgresql_host", "localhost").
 	   toString().trimmed());
-	QString name
-	  (spoton_kernel::setting("gui/postgresql_name", "").toString().
-	   trimmed());
 	QString str("connect_timeout=10");
 	bool ok = true;
 	bool ssltls = spoton_kernel::setting
@@ -270,10 +268,16 @@ void spoton_urldistribution::run(void)
 	if(!connectionOptions.isEmpty())
 	  str.append(";").append(connectionOptions);
 
-	password = s_crypt1->decryptedAfterAuthenticated
+	name = s_crypt1->decryptedAfterAuthenticated
 	  (QByteArray::
-	   fromBase64(spoton_kernel::setting("gui/postgresql_password", "").
+	   fromBase64(spoton_kernel::setting("gui/postgresql_name", "").
 		      toByteArray()), &ok);
+
+	if(ok)
+	  password = s_crypt1->decryptedAfterAuthenticated
+	    (QByteArray::
+	     fromBase64(spoton_kernel::setting("gui/postgresql_password", "").
+			toByteArray()), &ok);
 
 	if(ssltls)
 	  str.append(";requiressl=1");

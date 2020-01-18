@@ -381,6 +381,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
       }
     else
       {
+	QByteArray name;
 	QByteArray password;
 	QString connectionOptions
 	  (settings.value("gui/postgresql_connection_options",
@@ -392,8 +393,6 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	QString host
 	  (settings.value("gui/postgresql_host", "localhost").
 	   toString().trimmed());
-	QString name
-	  (settings.value("gui/postgresql_name", "").toString().trimmed());
 	QString str("connect_timeout=10");
 	bool ok = true;
 	bool ssltls = settings.value("gui/postgresql_ssltls", true).toBool();
@@ -402,10 +401,16 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	if(!connectionOptions.isEmpty())
 	  str.append(";").append(connectionOptions);
 
-	password = crypt->decryptedAfterAuthenticated
+	name = crypt->decryptedAfterAuthenticated
 	  (QByteArray::
-	   fromBase64(settings.value("gui/postgresql_password", "").
+	   fromBase64(settings.value("gui/postgresql_name", "").
 		      toByteArray()), &ok);
+
+	if(ok)
+	  password = crypt->decryptedAfterAuthenticated
+	    (QByteArray::
+	     fromBase64(settings.value("gui/postgresql_password", "").
+			toByteArray()), &ok);
 
 	if(ssltls)
 	  str.append(";requiressl=1");

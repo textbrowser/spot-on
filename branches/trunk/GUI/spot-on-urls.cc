@@ -1379,15 +1379,22 @@ void spoton::slotPostgreSQLConnect(void)
       return;
     }
 
+  QByteArray name;
   QByteArray password;
   QDialog dialog(this);
   QSettings settings;
   Ui_spoton_postgresqlconnect ui;
   bool ok = true;
 
-  password = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(settings.value("gui/postgresql_password", "").
+  name = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_name", "").
 			    toByteArray()), &ok);
+
+  if(ok)
+    password = crypt->decryptedAfterAuthenticated
+      (QByteArray::fromBase64(settings.value("gui/postgresql_password", "").
+			      toByteArray()), &ok);
+
   ui.setupUi(&dialog);
   dialog.setWindowTitle
     (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
@@ -1401,8 +1408,9 @@ void spoton::slotPostgreSQLConnect(void)
   ui.database->setFocus();
   ui.host->setText
     (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
-  ui.name->setText
-    (settings.value("gui/postgresql_name", "").toString().trimmed());
+
+  if(ok)
+    ui.name->setText(name);
 
   if(ok)
     ui.password->setText(password);
@@ -1470,9 +1478,16 @@ void spoton::slotPostgreSQLConnect(void)
 				ui.connection_options->text().trimmed());
 	      settings.setValue("gui/postgresql_database", ui.database->text());
 	      settings.setValue("gui/postgresql_host", ui.host->text());
-	      settings.setValue("gui/postgresql_name", ui.name->text());
 
 	      bool ok = true;
+
+	      settings.setValue
+		("gui/postgresql_name",
+		 crypt->encryptedThenHashed(ui.name->text().toUtf8(),
+					    &ok).toBase64());
+
+	      if(!ok)
+		settings.remove("gui/postgresql_name");
 
 	      settings.setValue
 		("gui/postgresql_password",

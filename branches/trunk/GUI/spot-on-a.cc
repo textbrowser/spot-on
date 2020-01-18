@@ -6128,18 +6128,25 @@ void spoton::slotGeneralTimerTimeout(void)
 
 	    if(crypt)
 	      {
+		QByteArray name;
 		QByteArray password;
 		QSettings settings;
 		bool ok = true;
 
-		password = crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(settings.
-					  value("gui/postgresql_password", "").
-					  toByteArray()), &ok);
+		name = crypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(settings.value("gui/postgresql_name", "").
+			      toByteArray()), &ok);
+
+		if(ok)
+		  password = crypt->decryptedAfterAuthenticated
+		    (QByteArray::
+		     fromBase64(settings.value("gui/postgresql_password", "").
+				toByteArray()), &ok);
 
 		if(ok)
 		  m_pqUrlDatabaseFuture = QtConcurrent::run
-		    (this, &spoton::inspectPQUrlDatabase, password);
+		    (this, &spoton::inspectPQUrlDatabase, name, password);
 	      }
 	  }
 }

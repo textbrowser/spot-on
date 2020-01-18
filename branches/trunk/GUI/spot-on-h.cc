@@ -306,7 +306,8 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
     }
 }
 
-void spoton::inspectPQUrlDatabase(const QByteArray &password)
+void spoton::inspectPQUrlDatabase(const QByteArray &name,
+				  const QByteArray &password)
 {
   QSettings settings;
   QSqlDatabase db;
@@ -334,8 +335,7 @@ void spoton::inspectPQUrlDatabase(const QByteArray &password)
     (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
   db.setPort(settings.value("gui/postgresql_port", 5432).toInt());
 
-  if(!db.open(settings.value("gui/postgresql_name", "").toString().trimmed(),
-	      password))
+  if(!db.open(name, password))
     {
       QString error(db.lastError().text().toLower());
 
@@ -732,15 +732,22 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
       return;
     }
 
+  QByteArray name;
   QByteArray password;
   QDialog dialog(this);
   QSettings settings;
   Ui_spoton_postgresqlconnect ui;
   bool ok = true;
 
-  password = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(settings.value("gui/postgresql_web_password", "").
+  name = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(settings.value("gui/postgresql_web_name", "").
 			    toByteArray()), &ok);
+
+  if(ok)
+    password = crypt->decryptedAfterAuthenticated
+      (QByteArray::fromBase64(settings.value("gui/postgresql_web_password", "").
+			      toByteArray()), &ok);
+
   ui.setupUi(&dialog);
   dialog.setWindowTitle
     (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
@@ -757,8 +764,9 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.host->setEnabled(false);
   ui.host->setText
     (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
-  ui.name->setText
-    (settings.value("gui/postgresql_web_name", "").toString().trimmed());
+
+  if(ok)
+    ui.name->setText(name);
 
   if(ok)
     ui.password->setText(password);
@@ -819,9 +827,15 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 	      if(QSqlDatabase::contains("URLDatabaseWeb"))
 		QSqlDatabase::removeDatabase("URLDatabaseWeb");
 
-	      settings.setValue("gui/postgresql_web_name", ui.name->text());
-
 	      bool ok = true;
+
+	      settings.setValue
+		("gui/postgresql_web_name",
+		 crypt->encryptedThenHashed(ui.name->text().toUtf8(),
+					    &ok).toBase64());
+
+	      if(!ok)
+		settings.remove("gui/postgresql_web_name");
 
 	      settings.setValue
 		("gui/postgresql_web_password",
