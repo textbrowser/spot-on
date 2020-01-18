@@ -185,7 +185,8 @@ QString spoton::saveCommonUrlCredentials
     QSqlDatabase db = spoton_misc::database(connectionName);
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "urls_key_information.db");
 
     if(db.open())
