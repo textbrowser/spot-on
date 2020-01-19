@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>305</width>
-    <height>343</height>
+    <width>450</width>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -18,16 +18,7 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="leftMargin">
-    <number>5</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>5</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>5</number>
    </property>
    <item>
@@ -171,7 +162,7 @@
         <string>Please separate options with semicolons.</string>
        </property>
        <property name="text">
-        <string>sslmode=verify-full</string>
+        <string>connect_timeout=10;sslmode=verify-full</string>
        </property>
       </widget>
      </item>

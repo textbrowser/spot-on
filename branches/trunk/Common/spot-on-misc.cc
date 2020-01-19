@@ -1044,6 +1044,25 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
   return gemini;
 }
 
+QString spoton_misc::adjustPQConnectOptions(const QString &s)
+{
+  QString str(s.trimmed());
+
+  while(str.indexOf(";;") > 0)
+    str.replace(";;", ";");
+
+  if(str.endsWith(";"))
+    str = str.mid(0, str.length() - 1);
+
+  if(str.startsWith(";"))
+    str = str.mid(1);
+
+  if(str == ";")
+    return "";
+  else
+    return str;
+}
+
 QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
 {
   const char *code = 0;

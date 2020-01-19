@@ -98,25 +98,24 @@ QSqlDatabase spoton_web_server_thread::database(void) const
     {
       QByteArray name;
       QByteArray password;
-      QString connectionOptions
-	(spoton_kernel::setting("gui/postgresql_connection_options",
-				spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
-	 toString().trimmed());
       QString database
 	(spoton_kernel::setting("gui/postgresql_database", "").
 	 toString().trimmed());
       QString host
 	(spoton_kernel::setting("gui/postgresql_host", "localhost").
 	 toString().trimmed());
-      QString str("connect_timeout=10");
+      QString options
+	(spoton_kernel::setting("gui/postgresql_web_connection_options",
+				spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	 toString().trimmed());
       bool ok = true;
       bool ssltls = spoton_kernel::setting
 	("gui/postgresql_ssltls", true).toBool();
       int port = spoton_kernel::setting("gui/postgresql_port", 5432).toInt();
       spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
 
-      if(!connectionOptions.isEmpty())
-	str.append(";").append(connectionOptions);
+      if(!options.contains("connect_timeout="))
+	options.append(";connect_timeout=10");
 
       if(crypt)
 	{
@@ -135,10 +134,10 @@ QSqlDatabase spoton_web_server_thread::database(void) const
 	}
 
       if(ssltls)
-	str.append(";requiressl=1");
+	options.append(";requiressl=1");
 
       db = QSqlDatabase::addDatabase("QPSQL", connectionName);
-      db.setConnectOptions(str);
+      db.setConnectOptions(spoton_misc::adjustPQConnectOptions(options));
       db.setDatabaseName(database);
       db.setHostName(host);
       db.setPort(port);

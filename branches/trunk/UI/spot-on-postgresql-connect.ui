@@ -18,16 +18,7 @@
    <property name="spacing">
     <number>5</number>
    </property>
-   <property name="leftMargin">
-    <number>5</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>5</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>5</number>
    </property>
    <item>
@@ -171,7 +162,7 @@
         <string>Please separate options with semicolons.</string>
        </property>
        <property name="text">
-        <string>sslmode=verify-full</string>
+        <string>connect_timeout=10;sslmode=verify-full</string>
        </property>
       </widget>
      </item>

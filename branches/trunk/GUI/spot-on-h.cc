@@ -316,19 +316,15 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
     (settings.value("gui/postgresql_connection_options",
 		    spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
      toString().trimmed());
-  QString str("connect_timeout=5");
 
-  if(!options.isEmpty())
-    {
-      str.append(";");
-      str.append(options);
-    }
+  if(!options.contains("connect_timeout="))
+    options.append(";connect_timeout=5");
 
   if(settings.value("gui/postgresql_ssltls", true).toBool())
-    str.append(";requiressl=1");
+    options.append(";requiressl=1");
 
   db = QSqlDatabase::addDatabase("QPSQL", connectionName);
-  db.setConnectOptions(str);
+  db.setConnectOptions(spoton_misc::adjustPQConnectOptions(options));
   db.setDatabaseName
     (settings.value("gui/postgresql_database", "").toString().trimmed());
   db.setHostName
@@ -751,10 +747,9 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.setupUi(&dialog);
   dialog.setWindowTitle
     (tr("%1: PostgreSQL Connect").arg(SPOTON_APPLICATION_NAME));
-  ui.connection_options->setEnabled(false);
   ui.connection_options->setText
     (settings.
-     value("gui/postgresql_connection_options",
+     value("gui/postgresql_web_connection_options",
 	   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).toString().trimmed());
   ui.database->setEnabled(false);
   ui.database->setText
@@ -789,16 +784,18 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 
 	  QSqlDatabase db = QSqlDatabase::addDatabase
 	    ("QPSQL", "URLDatabaseWeb");
+	  QString options(ui.connection_options->text().trimmed());
 
-	  QString str("connect_timeout=10");
-
-	  if(!ui.connection_options->text().trimmed().isEmpty())
-	    str.append(";").append(ui.connection_options->text().trimmed());
+	  if(!options.contains("connect_timeout="))
+	    options.append(";connect_timeout=10");
 
 	  if(ui.ssltls->isChecked())
-	    str.append(";requiressl=1");
+	    db.setConnectOptions
+	      (spoton_misc::adjustPQConnectOptions(options + ";requiressl=1"));
+	  else
+	    db.setConnectOptions
+	      (spoton_misc::adjustPQConnectOptions(options));
 
-	  db.setConnectOptions(str);
 	  db.setHostName(ui.host->text());
 	  db.setDatabaseName(ui.database->text());
 	  db.setPort(ui.port->value());
@@ -829,6 +826,9 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 
 	      bool ok = true;
 
+	      settings.setValue
+		("gui/postgresql_web_connection_options",
+		 spoton_misc::adjustPQConnectOptions(options));
 	      settings.setValue
 		("gui/postgresql_web_name",
 		 crypt->encryptedThenHashed(ui.name->text().toUtf8(),

@@ -113,6 +113,7 @@ class spoton_misc
   static QPair<QByteArray, QByteArray> findGeminiInCosmos
     (const QByteArray &data, const QByteArray &hash, spoton_crypt *crypt);
   static QSqlDatabase database(QString &connectionName);
+  static QString adjustPQConnectOptions(const QString &s);
   static QString countryCodeFromIPAddress(const QString &ipAddress);
   static QString countryNameFromIPAddress(const QString &ipAddress);
   static QString databaseName(void);

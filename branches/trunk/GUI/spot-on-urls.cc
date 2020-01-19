@@ -1434,17 +1434,20 @@ void spoton::slotPostgreSQLConnect(void)
 
 	  m_urlDatabase = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
 
-	  QString str("connect_timeout=10");
+	  QString options(ui.connection_options->text().trimmed());
 
-	  if(!ui.connection_options->text().trimmed().isEmpty())
-	    str.append(";").append(ui.connection_options->text().trimmed());
+	  if(!options.contains("connect_timeout="))
+	    options.append(";connect_timeout=10");
 
 	  if(ui.ssltls->isChecked())
-	    str.append(";requiressl=1");
+	    m_urlDatabase.setConnectOptions
+	      (spoton_misc::adjustPQConnectOptions(options + ";requiressl=1"));
+	  else
+	    m_urlDatabase.setConnectOptions
+	      (spoton_misc::adjustPQConnectOptions(options));
 
-	  m_urlDatabase.setConnectOptions(str);
-	  m_urlDatabase.setHostName(ui.host->text());
 	  m_urlDatabase.setDatabaseName(ui.database->text());
+	  m_urlDatabase.setHostName(ui.host->text());
 	  m_urlDatabase.setPort(ui.port->value());
 	  m_urlDatabase.open(ui.name->text(), ui.password->text());
 	  QApplication::restoreOverrideCursor();

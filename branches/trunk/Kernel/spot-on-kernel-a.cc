@@ -116,7 +116,8 @@ QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
 QReadWriteLock spoton_kernel::s_totalNeighborsBytesReadWrittenMutex;
 QReadWriteLock spoton_kernel::s_totalUiBytesReadWrittenMutex;
-QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS = "sslmode=verify-full";
+QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS =
+  "connect_timeout=10;sslmode=verify-full";
 QString spoton_common::SSL_CONTROL_STRING =
   "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =

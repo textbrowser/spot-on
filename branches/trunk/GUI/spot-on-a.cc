@@ -88,7 +88,8 @@ QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 5242880
 						      << 10485760
 						      << 20971520;
-QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS = "sslmode=verify-full";
+QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS =
+  "connect_timeout=10;sslmode=verify-full";
 QString spoton_common::SSL_CONTROL_STRING =
   "HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH";
 QStringList spoton_common::ACCEPTABLE_URL_SCHEMES =
