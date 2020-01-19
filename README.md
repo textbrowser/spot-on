@@ -12,6 +12,7 @@ Summary of Spot-On
 <li>Debian packages.</li>
 <li>Distributed URL system.</li>
 <li>Distributed e-mail.</li>
+<li>Dooble, Firefox, Lynx, etc. support for custom search engine.</li>
 <li>E-mail (IMAP, POP, Spot-On).</li>
 <li>Echo public-key distribution system.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
