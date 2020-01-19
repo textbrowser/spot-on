@@ -1,1 +1,8 @@
-Spot-On is an interstellar fruit-propelled science vessel sailing on the winds of chaos.
+Summary of Spot-On
+
+<ul>
+<li>E-mail (IMAP, POP, Spot-On).</li>
+<li>Messaging.</li>
+</ul>
+
+
