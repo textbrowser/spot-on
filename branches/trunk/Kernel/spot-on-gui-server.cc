@@ -739,7 +739,7 @@ void spoton_gui_server::slotReadyRead(void)
 		    }
 
 		  m_guiIsAuthenticated[socket->socketDescriptor()] =
-		    count == 2 * names.size() && names.size() > 0 ?
+		    count == 2 * names.size() && !names.isEmpty() ?
 		    true : false;
 
 		  if(!m_guiIsAuthenticated.value(socket->socketDescriptor(),

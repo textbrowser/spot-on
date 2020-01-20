@@ -503,7 +503,7 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 
   for(int i = 0; i < interfaces.size(); i++)
     {
-      QNetworkInterface interface(interfaces.at(i));
+      const QNetworkInterface &interface(interfaces.at(i));
 
       if(!interface.isValid() || !(interface.flags() & QNetworkInterface::IsUp))
 	continue;
@@ -512,7 +512,7 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 
       for(int i = 0; i < addresses.size(); i++)
 	{
-	  QNetworkAddressEntry entry(addresses.at(i));
+	  const QNetworkAddressEntry &entry(addresses.at(i));
 
 	  if(entry.ip() != QHostAddress::LocalHost &&
 	     entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
@@ -941,7 +941,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 }
 
 QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
-(const QPair<QByteArray, QByteArray> pair, spoton_crypt *crypt)
+(const QPair<QByteArray, QByteArray> &pair, spoton_crypt *crypt)
 {
   if(!crypt)
     {
@@ -4522,7 +4522,7 @@ void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
 	    ** 2: url
 	    */
 
-	    QList<QVariant> variants(list.at(i));
+	    const QList<QVariant> &variants(list.at(i));
 	    bool ok = true;
 
 	    query.bindValue
@@ -6192,7 +6192,6 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	    if(transport == "tcp")
 	      {
 		QSettings settings;
-		QString error("");
 		bool ok = true;
 		int keySize = 2048;
 

@@ -86,6 +86,7 @@ spoton_neighbor::spoton_neighbor
   m_bluetoothSocket = 0;
 #endif
   m_kernelInterfaces = spoton_kernel::interfaces();
+  m_keySize = 0;
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);

@@ -2135,7 +2135,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 
   for(int i = 0; i < protocols.size(); i++)
     {
-      QString protocol(protocols.at(i));
+      const QString &protocol(protocols.at(i));
 
       index = 0;
       next = 0;

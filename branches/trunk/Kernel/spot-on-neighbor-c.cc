@@ -2340,12 +2340,12 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	{
 	  if(s_crypt)
 	    {
-	      QByteArray hash(list.at(0));
 	      QByteArray name;
 	      QByteArray newHash;
 	      QByteArray password;
 	      QByteArray salt(list.at(1).trimmed());
 	      bool ok = true;
+	      const QByteArray &hash(list.at(0));
 
 	      QReadLocker locker1(&m_accountNameMutex);
 

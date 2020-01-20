@@ -515,7 +515,6 @@ void spoton_mailer::slotTimeout(void)
 
 	      if(ok)
 		{
-		  QByteArray publicKeyHash;
 		  QSqlQuery query(db2);
 
 		  query.setForwardOnly(true);
@@ -642,7 +641,7 @@ void spoton_mailer::slotTimeout(void)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QVector<QVariant> vector(list.at(i));
+      const QVector<QVariant> &vector(list.at(i));
 
       /*
       ** So many parameters.

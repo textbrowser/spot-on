@@ -109,7 +109,7 @@ class spoton_kernel: public QObject
   static void messagingCacheAdd(const QByteArray &data,
 				const bool do_not_hash = false,
 				const int add_msecs = 0);
-  static void removeBuzzKey(const QByteArray &data);
+  static void removeBuzzKey(const QByteArray &key);
   bool acceptRemoteBluetoothConnection(const QString &localAddress,
 				       const QString &peerAddress) const;
   bool acceptRemoteConnection(const QHostAddress &localAddress,
@@ -205,7 +205,7 @@ class spoton_kernel: public QObject
   void cleanupListenersDatabase(const QSqlDatabase &db);
   void cleanupNeighborsDatabase(const QSqlDatabase &db);
   void cleanupStarbeamsDatabase(const QSqlDatabase &db);
-  void connectSignalsToNeighbor(QPointer<spoton_neighbor> neighbor);
+  void connectSignalsToNeighbor(const QPointer<spoton_neighbor> &neighbor);
   void importUrls(void);
   void popPoptastic(void);
   void postPoptastic(void);

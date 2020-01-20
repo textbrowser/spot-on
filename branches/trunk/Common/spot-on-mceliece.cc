@@ -30,15 +30,11 @@
 */
 
 #ifdef SPOTON_MCELIECE_ENABLED
-extern "C"
-{
-#include <math.h>
-}
-
 #include <QByteArray>
 #include <QtMath>
 
 #include <bitset>
+#include <cmath>
 #include <map>
 #include <stdexcept>
 
@@ -249,7 +245,13 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 
 spoton_mceliece_private_key::~spoton_mceliece_private_key()
 {
-  reset(true);
+  try
+    {
+      reset(true);
+    }
+  catch(...)
+    {
+    }
 }
 
 bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)

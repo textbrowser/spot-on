@@ -1706,7 +1706,7 @@ void spoton_kernel::clearBuzzKeysContainer(void)
 }
 
 void spoton_kernel::connectSignalsToNeighbor
-(QPointer<spoton_neighbor> neighbor)
+(const QPointer<spoton_neighbor> &neighbor)
 {
   if(!neighbor)
     return;

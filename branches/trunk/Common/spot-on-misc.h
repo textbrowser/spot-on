@@ -109,7 +109,7 @@ class spoton_misc
   static QList<QHash<QString, QVariant> > poptasticSettings
     (const QString &in_username, spoton_crypt *crypt, bool *ok);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
-    (const QPair<QByteArray, QByteArray>, spoton_crypt *crypt);
+    (const QPair<QByteArray, QByteArray> &pair, spoton_crypt *crypt);
   static QPair<QByteArray, QByteArray> findGeminiInCosmos
     (const QByteArray &data, const QByteArray &hash, spoton_crypt *crypt);
   static QSqlDatabase database(QString &connectionName);

@@ -80,7 +80,8 @@ static size_t curl_write_memory_callback(void *contents,
   if(!contents || nmemb == 0 || size == 0)
     return 0;
 
-  curl_receive_data.append((char *) contents, nmemb *size);
+  curl_receive_data.append
+    ((const char *) contents, static_cast<int> (nmemb *size));
   return nmemb * size;
 }
 
@@ -2445,7 +2446,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		      if(variant.isValid())
 			{
-			  QByteArray data(attachment);
+			  const QByteArray &data(attachment);
 
 			  if(!data.isEmpty())
 			    {
