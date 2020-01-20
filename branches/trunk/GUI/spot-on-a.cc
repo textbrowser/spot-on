@@ -3766,7 +3766,6 @@ void spoton::removeFavorite(const bool removeAll)
 
     if(db.open())
       {
-	QByteArray data;
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
@@ -6098,7 +6097,7 @@ void spoton::slotGeneralTimerTimeout(void)
   if(isKernelActive())
     if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
        m_kernelSocket.write("\n", 1) != 1)
-      if(m_crypts.size() > 0)
+      if(!m_crypts.isEmpty())
 	{
 	  /*
 	  ** We'll need something here.
@@ -7510,8 +7509,6 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
      qMin(m_ui.neighbors_maximum_items_displayed->currentText().toInt(), size));
 
   QLocale locale;
-  QString localIp("");
-  QString localPort("");
   int row = 0;
   int totalRows = 0;
 

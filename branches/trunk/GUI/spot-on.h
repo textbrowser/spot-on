@@ -892,7 +892,7 @@ class spoton: public QMainWindow
   void slotMediaError(QMediaPlayer::Error error);
   void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);
 #endif
-  void slotMessagesAnchorClicked(const QUrl &url);
+  void slotMessagesAnchorClicked(const QUrl &link);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotMonitorEvents(bool state);
   void slotNeighborChanged(QTableWidgetItem *item);
@@ -945,7 +945,7 @@ class spoton: public QMainWindow
   void slotProxyTypeChanged(int index);
   void slotPublicizeAllListenersPlaintext(void);
   void slotPublicizeListenerPlaintext(void);
-  void slotPublishPeriodicallyToggled(bool sate);
+  void slotPublishPeriodicallyToggled(bool state);
   void slotPublishedKeySizeChanged(const QString &text);
   void slotPurgeEphemeralKeyPair(void);
   void slotPurgeEphemeralKeys(void);

@@ -2362,7 +2362,7 @@ void spoton::prepareListenerIPCombo(void)
 	  for(int i = 0; i < addresses.size(); i++)
 	    {
 	      QHostAddress address;
-	      QNetworkAddressEntry entry(addresses.at(i));
+	      const QNetworkAddressEntry &entry(addresses.at(i));
 
 	      address = entry.ip();
 
@@ -4908,13 +4908,13 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  if(spoton_misc::isValidBuzzMagnet(list.value(2)))
 		    {
-		      QByteArray hash
+		      QDateTime now(QDateTime::currentDateTime());
+		      QString msg("");
+		      const QByteArray &hash
 			(list.at(0)); /*
 				      ** SHA-512 hash of the sender's
 				      ** public key.
 				      */
-		      QDateTime now(QDateTime::currentDateTime());
-		      QString msg("");
 
 		      msg.append
 			(QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
@@ -5681,9 +5681,7 @@ void spoton::slotRemoveParticipants(void)
 		spoton_smp *smp = m_smps.value(hash.toString(), 0);
 
 		m_smps.remove(hash.toString());
-
-		if(smp)
-		  delete smp;
+		delete smp;
 	      }
 	  }
 

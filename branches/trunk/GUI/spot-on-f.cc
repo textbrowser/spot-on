@@ -1713,7 +1713,7 @@ void spoton::slotReplayMessages(void)
 
   for(int i = 0; i < queue1.size(); i++)
     {
-      QString msg(queue1.at(i));
+      const QString &msg(queue1.at(i));
 
       m_ui.messages->append(msg);
       m_ui.messages->verticalScrollBar()->setValue
@@ -1727,7 +1727,7 @@ void spoton::slotReplayMessages(void)
 
   for(int i = 0; i < queue2.size(); i++)
     {
-      QByteArray message(queue2.at(i));
+      const QByteArray &message(queue2.at(i));
 
       if(!writeKernelSocketData(message))
 	spoton_misc::logError

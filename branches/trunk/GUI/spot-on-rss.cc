@@ -3030,7 +3030,6 @@ void spoton_rss::slotStatisticsTimeout(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QList<QVariant> list;
   QString connectionName("");
 
   {

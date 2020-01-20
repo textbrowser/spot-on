@@ -94,8 +94,6 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   if(m_key.isEmpty())
     m_key = "unknown";
 
-  QString error("");
-
   m_hashKeyGenerated = spoton_crypt::derivedSha1Key
     (spoton_crypt::sha512Hash(m_hashKey + m_hashType, 0),
      m_hashKey,

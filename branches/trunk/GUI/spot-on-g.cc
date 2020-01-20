@@ -1255,11 +1255,9 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
     {
       QApplication::processEvents();
       m_wizardHash["shown"] = true;
+      delete m_wizardUi;
 
       QDialog dialog(this);
-
-      if(m_wizardUi)
-	delete m_wizardUi;
 
       m_ui.setPassphrase->setVisible(false);
       m_wizardUi = new Ui_spoton_wizard;
