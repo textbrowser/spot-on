@@ -5351,7 +5351,7 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
 #else
       if(signal(list.at(i), signal_handler) == SIG_ERR)
 	logError(QString("spoton_misc::prepareSignalHandler(): "
-			 "signal() failure for %1.").arg(list.at(i)))
+			 "signal() failure for %1.").arg(list.at(i)));
 #endif
     }
 }
