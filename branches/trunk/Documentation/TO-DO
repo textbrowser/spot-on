@@ -264,3 +264,4 @@ Remaining Items
 8.     Remove obsolete includes.
 9.     If possible, include all Web server resources into the binary.
 10.    IMAP and optional removal of messages; retrieve latest.
+11.    Web sockets.
