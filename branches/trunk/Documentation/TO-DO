@@ -218,6 +218,7 @@ Completed Items
        This will download only the latest messages.
        (http://www.faqs.org/rfcs/rfc3501.html)
        As for POP3, messages are popped.
+155.   Key pools via SMP.
 
 Ignored Items
 
@@ -245,10 +246,9 @@ Ignored Items
 16.    1-N SCTP support.
 17.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-18.    Key pools.
-19.    The libgcrypt library supports GCRY_KDF_SCRYPT.
-20.    Weather feeds.
-21.    Create a user's configuration database. Store key types too.
+18.    The libgcrypt library supports GCRY_KDF_SCRYPT.
+19.    Weather feeds.
+20.    Create a user's configuration database. Store key types too.
 
 Remaining Items
 
