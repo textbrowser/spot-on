@@ -249,6 +249,7 @@ Ignored Items
        followed by process() routines.
 18.    The libgcrypt library supports GCRY_KDF_SCRYPT.
 19.    Weather feeds.
+20.    Separate NTRU implementation.
 
 Remaining Items
 
@@ -260,8 +261,8 @@ Remaining Items
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
 6.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
-7.     Separate NTRU implementation.
-8.     Remove obsolete includes.
-9.     If possible, include all Web server resources into the binary.
-10.    IMAP and optional removal of messages; retrieve latest.
-11.    Web sockets.
+7.     Remove obsolete includes.
+8.     If possible, include all Web server resources into the binary.
+9.     IMAP and optional removal of messages; retrieve latest.
+10.    Web sockets.
+11.    Research proxies.

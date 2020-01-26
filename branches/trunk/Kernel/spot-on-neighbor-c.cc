@@ -306,7 +306,8 @@ QString spoton_neighbor::findMessageType
   if(interfaces > 0 && list.size() == 4)
     for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
       {
-	QString keyType(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
+	const QString &keyType
+	  (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
 	s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
 
