@@ -2330,8 +2330,8 @@ void spoton::prepareListenerIPCombo(void)
 
       for(int i = 0; i < devices.size(); i++)
 	{
-	  QBluetoothHostInfo hostInfo(devices.at(i));
-	  QString string(hostInfo.address().toString());
+	  const QBluetoothHostInfo &hostInfo(devices.at(i));
+	  const QString &string(hostInfo.address().toString());
 
 	  if(hash.contains(string))
 	    continue;
@@ -2351,7 +2351,7 @@ void spoton::prepareListenerIPCombo(void)
 
       for(int i = 0; i < interfaces.size(); i++)
 	{
-	  QNetworkInterface interface(interfaces.at(i));
+	  const QNetworkInterface &interface(interfaces.at(i));
 
 	  if(!interface.isValid() || !(interface.flags() &
 				       QNetworkInterface::IsUp))
@@ -4970,17 +4970,18 @@ void spoton::slotReceivedKernelMessage(void)
 		  else if(spoton_misc::isValidSMPMagnet(list.value(2),
 							values))
 		    {
-		      QByteArray hash
+		      QDateTime now(QDateTime::currentDateTime());
+		      QList<QTableWidgetItem *> items;
+		      QString keyType("");
+		      QString msg("");
+		      QString smpName("");
+		      const QByteArray &hash
 			(list.at(0)); /*
 				      ** SHA-512 hash of the sender's
 				      ** public key.
 				      */
-		      QDateTime now(QDateTime::currentDateTime());
-		      QList<QTableWidgetItem *> items
-			(findItems(m_ui.participants, hash.toBase64(), 3));
-		      QString keyType("");
-		      QString msg("");
-		      QString smpName("");
+
+		      items = findItems(m_ui.participants, hash.toBase64(), 3);
 
 		      if(!items.isEmpty() && items.at(0))
 			{

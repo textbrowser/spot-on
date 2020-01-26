@@ -454,8 +454,8 @@ void spoton::slotAddDistiller(void)
 	for(int i = 0; i < list.size(); i++)
 	  {
 	    QByteArray permission("accept");
-	    QString direction(list.at(i));
 	    bool ok = true;
+	    const QString &direction(list.at(i));
 
 	    query.prepare("INSERT INTO distillers "
 			  "(direction, "
@@ -1976,7 +1976,7 @@ void spoton::slotShowUrlSettings(bool state)
 void spoton::slotUrlLinkClicked(const QUrl &u)
 {
   QString scheme(u.scheme().toLower().trimmed());
-  QUrl url(u);
+  const QUrl &url(u);
 
   if(scheme.startsWith("delete-"))
     {
