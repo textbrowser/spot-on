@@ -1099,6 +1099,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveBuzzAutoJoin(bool)));
+  connect(m_optionsUi.buzz_maximum_lines,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSaveLineLimits(int)));
   connect(m_optionsUi.chatAcceptSigned,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1131,6 +1135,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotAllowFSRequest(bool)));
+  connect(m_optionsUi.chat_maximum_lines,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSaveLineLimits(int)));
   connect(m_optionsUi.coAcceptSigned,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2374,8 +2382,12 @@ spoton::spoton(void):QMainWindow()
   if(m_ui.urls_db_type->currentIndex() == 1)
     m_ui.showUrlSettings->setChecked(false);
 
+  m_optionsUi.buzz_maximum_lines->setValue
+    (m_settings.value("gui/buzz_maximum_lines", -1).toInt());
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
+  m_optionsUi.chat_maximum_lines->setValue
+    (m_settings.value("gui/chat_maximum_lines", -1).toInt());
   m_emailRetrievalTimer.setInterval
     (m_settings.value("gui/emailRetrievalInterval", 5 * 60 * 1000).toInt());
   m_optionsUi.kernelCacheInterval->setValue

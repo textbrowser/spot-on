@@ -281,6 +281,14 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
     (QString("<font color=blue>%1: </font>").
      arg(QString::fromUtf8(name.constData(), name.length())));
   msg.append(QString::fromUtf8(message.constData(), message.length()));
+
+  QSettings settings;
+  int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
+
+  if(lines >= 0)
+    if(lines <= ui.messages->document()->blockCount())
+      ui.messages->clear();
+
   ui.messages->append(msg);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
@@ -652,8 +660,7 @@ void spoton_buzzpage::slotSendStatus(void)
 void spoton_buzzpage::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
-		  toLower());
+  QString iconSet(settings.value("gui/iconSet", "nouve").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -704,6 +711,15 @@ void spoton_buzzpage::slotStatusTimeout(void)
 			     arg(item->text()).
 			     arg(QString::fromUtf8(m_channel.constData(),
 						   m_channel.length())));
+
+		  QSettings settings;
+		  int lines = settings.value
+		    ("gui/buzz_maximum_lines", -1).toInt();
+
+		  if(lines >= 0)
+		    if(lines <= ui.messages->document()->blockCount())
+		      ui.messages->clear();
+
 		  ui.messages->append(msg);
 		  ui.messages->verticalScrollBar()->setValue
 		    (ui.messages->verticalScrollBar()->maximum());
@@ -781,6 +797,14 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 		 arg(QString::fromUtf8(name.constData(), name.length())).
 		 arg(QString::fromUtf8(m_channel.constData(),
 				       m_channel.length())));
+
+      QSettings settings;
+      int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
+
+      if(lines >= 0)
+	if(lines <= ui.messages->document()->blockCount())
+	  ui.messages->clear();
+
       ui.messages->append(msg);
       ui.messages->verticalScrollBar()->setValue
 	(ui.messages->verticalScrollBar()->maximum());
@@ -818,6 +842,15 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 			     arg(item->text()).
 			     arg(QString::fromUtf8(name.constData(),
 						   name.length())));
+
+		  QSettings settings;
+		  int lines = settings.value
+		    ("gui/buzz_maximum_lines", -1).toInt();
+
+		  if(lines >= 0)
+		    if(lines <= ui.messages->document()->blockCount())
+		      ui.messages->clear();
+
 		  ui.messages->append(msg);
 		  ui.messages->verticalScrollBar()->setValue
 		    (ui.messages->verticalScrollBar()->maximum());

@@ -875,6 +875,22 @@ void spoton::slotSaveExternalIPUrl(void)
     ("gui/external_ip_url", m_optionsUi.external_ip_url->text());
 }
 
+void spoton::slotSaveLineLimits(int value)
+{
+  QSettings settings;
+
+  if(m_optionsUi.buzz_maximum_lines == sender())
+    {
+      m_settings["gui/buzz_maximum_lines"] = value;
+      settings.setValue("gui/buzz_maximum_lines", value);
+    }
+  else
+    {
+      m_settings["gui/chat_maximum_lines"] = value;
+      settings.setValue("gui/chat_maximum_lines", value);
+    }
+}
+
 void spoton::slotSetCongestionMaxPageCount(int value)
 {
   m_settings["gui/congestion_control_max_page_count"] = value;
