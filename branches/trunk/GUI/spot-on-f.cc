@@ -1706,6 +1706,13 @@ void spoton::slotReplayMessages(void)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   msg.append(tr("<i>Replay activated.</i>"));
+
+  int lines = m_settings.value("gui/chat_maximum_lines", -1).toInt();
+
+  if(lines >= 0)
+    if(lines <= m_ui.messages->document()->blockCount())
+      m_ui.messages->clear();
+
   m_ui.messages->append(msg);
 
   if(chat)
@@ -1714,6 +1721,10 @@ void spoton::slotReplayMessages(void)
   for(int i = 0; i < queue1.size(); i++)
     {
       const QString &msg(queue1.at(i));
+
+      if(lines >= 0)
+	if(lines <= m_ui.messages->document()->blockCount())
+	  m_ui.messages->clear();
 
       m_ui.messages->append(msg);
       m_ui.messages->verticalScrollBar()->setValue

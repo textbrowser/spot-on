@@ -4824,6 +4824,13 @@ void spoton::slotReceivedKernelMessage(void)
 			}
 		    }
 
+		  int lines = m_settings.value
+		    ("gui/chat_maximum_lines", -1).toInt();
+
+		  if(lines >= 0)
+		    if(lines <= m_ui.messages->document()->blockCount())
+		      m_ui.messages->clear();
+
 		  m_ui.messages->append(msg);
 		  m_ui.messages->verticalScrollBar()->setValue
 		    (m_ui.messages->verticalScrollBar()->maximum());
@@ -4943,6 +4950,13 @@ void spoton::slotReceivedKernelMessage(void)
 #endif
 			}
 
+		      int lines = m_settings.value
+			("gui/chat_maximum_lines", -1).toInt();
+
+		      if(lines >= 0)
+			if(lines <= m_ui.messages->document()->blockCount())
+			  m_ui.messages->clear();
+
 		      m_ui.messages->append(msg);
 		      m_ui.messages->verticalScrollBar()->setValue
 			(m_ui.messages->verticalScrollBar()->maximum());
@@ -5016,6 +5030,13 @@ void spoton::slotReceivedKernelMessage(void)
 #endif
 			}
 
+		      int lines = m_settings.value
+			("gui/chat_maximum_lines", -1).toInt();
+
+		      if(lines >= 0)
+			if(lines <= m_ui.messages->document()->blockCount())
+			  m_ui.messages->clear();
+
 		      m_ui.messages->append(msg);
 		      m_ui.messages->verticalScrollBar()->setValue
 			(m_ui.messages->verticalScrollBar()->maximum());
@@ -5062,6 +5083,13 @@ void spoton::slotReceivedKernelMessage(void)
 				chat->activateWindow();
 #endif
 			    }
+
+			  int lines = m_settings.value
+			    ("gui/chat_maximum_lines", -1).toInt();
+
+			  if(lines >= 0)
+			    if(lines <= m_ui.messages->document()->blockCount())
+			      m_ui.messages->clear();
 
 			  m_ui.messages->append(msg);
 			  m_ui.messages->verticalScrollBar()->setValue
@@ -5149,6 +5177,13 @@ void spoton::slotReceivedKernelMessage(void)
 			       arg(smpName).
 			       arg(hash.toBase64().mid(0, 16).constData()).
 			       arg(hash.toBase64().right(16).constData()));
+
+			  int lines = m_settings.value
+			    ("gui/chat_maximum_lines", -1).toInt();
+
+			  if(lines >= 0)
+			    if(lines <= m_ui.messages->document()->blockCount())
+			      m_ui.messages->clear();
 
 			  m_ui.messages->append(msg);
 			  m_ui.messages->verticalScrollBar()->setValue
@@ -5362,6 +5397,13 @@ void spoton::slotReceivedKernelMessage(void)
 			chat->activateWindow();
 #endif
 		    }
+
+		  int lines = m_settings.value
+		    ("gui/chat_maximum_lines", -1).toInt();
+
+		  if(lines >= 0)
+		    if(lines <= m_ui.messages->document()->blockCount())
+		      m_ui.messages->clear();
 
 		  m_ui.messages->append(msg);
 		  m_ui.messages->verticalScrollBar()->setValue

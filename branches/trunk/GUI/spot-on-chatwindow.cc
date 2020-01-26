@@ -170,6 +170,13 @@ QString spoton_chatwindow::id(void) const
 
 void spoton_chatwindow::append(const QString &text)
 {
+  QSettings settings;
+  int lines = settings.value("gui/chat_maximum_lines", -1).toInt();
+
+  if(lines >= 0)
+    if(lines <= ui.messages->document()->blockCount())
+      ui.messages->clear();
+
   ui.messages->append(text);
   ui.messages->verticalScrollBar()->setValue
     (ui.messages->verticalScrollBar()->maximum());
