@@ -89,7 +89,7 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
 #endif
   m_state = UnconnectedState;
 #ifdef SPOTON_SCTP_ENABLED
-  m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
+  m_readBufferSize = spoton_common::MAXIMUM_SCTP_PACKET_SIZE;
   m_timer.setInterval(100);
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
