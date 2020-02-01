@@ -612,7 +612,16 @@ int spoton_neighbor::write(const char *data, const int size)
 	addToBytesWritten(sent);
 
       if(sent <= 0 || sent > static_cast<qint64> (size))
-	break;
+	{
+	  if(m_sctpSocket && sent == 0)
+	    /*
+	    ** Would block.
+	    */
+
+	    continue;
+	  else
+	    break;
+	}
 
       data += static_cast<size_t> (sent);
       remaining -= sent;
