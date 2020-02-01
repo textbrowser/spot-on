@@ -486,6 +486,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotAuthenticationTimerTimeout(void)));
+  connect(&m_droppedTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotWriteDropped(void)));
   connect(&m_externalAddressDiscovererTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -545,6 +549,7 @@ spoton_neighbor::spoton_neighbor
       }
 
   QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
+  m_droppedTimer.start(1500);
   m_keepAliveTimer.start(15000);
   m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MS);
   m_timer.start(2500);
@@ -956,6 +961,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotAuthenticationTimerTimeout(void)));
+  connect(&m_droppedTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotWriteDropped(void)));
   connect(&m_externalAddressDiscovererTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -981,6 +990,7 @@ spoton_neighbor::spoton_neighbor
     (spoton_kernel::
      setting("kernel/server_account_verification_window_msecs",
 	     15000).toInt());
+  m_droppedTimer.start(1500);
 
   if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() == 30)
     m_externalAddressDiscovererTimer.setInterval(30000);
@@ -1009,6 +1019,7 @@ spoton_neighbor::~spoton_neighbor()
   m_accountTimer.stop();
   m_authenticationTimer.stop();
   m_externalAddressDiscovererTimer.stop();
+  m_droppedTimer.stop();
   m_keepAliveTimer.stop();
   m_lifetime.stop();
   m_timer.stop();

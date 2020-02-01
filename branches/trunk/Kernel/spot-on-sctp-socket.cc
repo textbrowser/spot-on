@@ -89,7 +89,7 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
 #endif
   m_state = UnconnectedState;
 #ifdef SPOTON_SCTP_ENABLED
-  m_readBufferSize = spoton_common::MAXIMUM_SCTP_PACKET_SIZE;
+  m_readBufferSize = spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE;
   m_timer.setInterval(100);
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
@@ -1048,7 +1048,8 @@ void spoton_sctp_socket::slotTimeout(void)
   else if(m_state != ConnectedState)
     return;
 
-  QByteArray data(static_cast<int> (m_readBufferSize), 0);
+  QByteArray data
+    (static_cast<int> (spoton_common::MAXIMUM_SCTP_PACKET_SIZE), 0);
   qint64 rc = read(data.data(), data.length());
 
   if(rc > 0)

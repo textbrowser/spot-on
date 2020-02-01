@@ -264,8 +264,8 @@ class spoton_neighbor: public QThread
   QUuid receivedUuid(void);
   bool isEncrypted(void) const;
   bool writeMessage006X(const QByteArray &data, const QString &messageType);
+  int write(const char *data, const int size);
   qint64 id(void) const;
-  qint64 write(const char *data, qint64 size);
   quint16 peerPort(void) const;
   void abort(void);
   void close(void);
@@ -328,11 +328,13 @@ class spoton_neighbor: public QThread
   QString m_transport;
   QTimer m_accountTimer;
   QTimer m_authenticationTimer;
+  QTimer m_droppedTimer;
   QTimer m_externalAddressDiscovererTimer;
   QTimer m_keepAliveTimer;
   QTimer m_lifetime;
   QTimer m_timer;
   QUuid m_receivedUuid;
+  QVector<QByteArray> m_droppedVector;
   bool m_allowExceptions;
   bool m_isUserDefined;
   bool m_requireSsl;
@@ -541,6 +543,7 @@ class spoton_neighbor: public QThread
   void slotWrite(const QByteArray &data,
 		 const qint64 id,
 		 const QPairByteArrayByteArray &adaptiveEchoPair);
+  void slotWriteDropped(void);
   void slotWriteParsedApplicationData(const QByteArray &data);
   void slotWriteURLs(const QByteArray &data);
 

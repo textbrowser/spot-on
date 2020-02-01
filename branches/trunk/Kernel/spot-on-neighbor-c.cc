@@ -455,22 +455,18 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   return ok;
 }
 
-qint64 spoton_neighbor::id(void) const
-{
-  return m_id;
-}
-
-qint64 spoton_neighbor::write(const char *data, const qint64 size)
+int spoton_neighbor::write(const char *data, const int size)
 {
   if(!data || size < 0)
     return -1;
   else if(size == 0)
     return 0;
 
-  qint64 remaining = size;
+  const char *d = data;
+  qint64 remaining = static_cast<qint64> (size);
   qint64 sent = 0;
-  qint64 udpMinimum = qMin
-    (static_cast<qint64> (spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE), size);
+  qint64 udpMinimum = static_cast<qint64>
+    (qMin(spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE, size));
 
   while(remaining > 0)
     {
@@ -541,7 +537,9 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
-		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
+		  (m_udpSocket,
+		   QByteArray(data,
+			      static_cast<int> (qMin(remaining, udpMinimum))));
 	      else
 #endif
 		sent = m_udpSocket->write(data, qMin(remaining, udpMinimum));
@@ -551,7 +549,9 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
-		  (m_udpSocket, QByteArray(data, qMin(remaining, udpMinimum)));
+		  (m_udpSocket,
+		   QByteArray(data,
+			      static_cast<int> (qMin(remaining, udpMinimum))));
 	      else
 #endif
 		{
@@ -611,21 +611,30 @@ qint64 spoton_neighbor::write(const char *data, const qint64 size)
       if(sent > 0)
 	addToBytesWritten(sent);
 
-      if(sent <= 0 || sent > size)
+      if(sent <= 0 || sent > static_cast<qint64> (size))
 	break;
 
-      data += sent;
+      data += static_cast<size_t> (sent);
       remaining -= sent;
     }
 
   if(remaining > 0)
     {
-      QWriteLocker locker(&m_bytesDiscardedOnWriteMutex);
+      {
+	QWriteLocker locker(&m_bytesDiscardedOnWriteMutex);
 
-      m_bytesDiscardedOnWrite += remaining;
+	m_bytesDiscardedOnWrite += remaining;
+      }
+
+      m_droppedVector << QByteArray(d, size);
     }
 
-  return size - remaining;
+  return static_cast<int> (static_cast<qint64> (size) - remaining);
+}
+
+qint64 spoton_neighbor::id(void) const
+{
+  return m_id;
 }
 
 void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
@@ -4289,6 +4298,17 @@ void spoton_neighbor::saveStatus(const QString &status)
 void spoton_neighbor::setId(const qint64 id)
 {
   m_id = id;
+}
+
+void spoton_neighbor::slotWriteDropped(void)
+{
+  if(!m_droppedVector.isEmpty())
+    {
+      const QByteArray &bytes(m_droppedVector.at(0));
+
+      if(write(bytes.constData(), bytes.length()) == bytes.length())
+	m_droppedVector.remove(0);
+    }
 }
 
 void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,

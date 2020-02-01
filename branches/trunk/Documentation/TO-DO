@@ -220,6 +220,7 @@ Completed Items
        As for POP3, messages are popped.
 155.   Key pools via SMP.
 156.   Auto-clear textedit widgets that contain too much data.
+157.   Temporary containers. Will avoid dropped packets.
 
 Ignored Items
 
@@ -255,7 +256,7 @@ Remaining Items
 
 1.     Audible.
 2.     Open Library.
-3.     Temporary queues. Will avoid dropped packets.
+3.     Research proxies.
 4.     Which key types to export and import? A new selection dialog.
 5.     Random sequences for random data
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
@@ -265,4 +266,3 @@ Remaining Items
 8.     If possible, include all Web server resources into the binary.
 9.     IMAP and optional removal of messages; retrieve latest.
 10.    Web sockets.
-11.    Research proxies.
