@@ -178,7 +178,8 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 	    {
 	      Q_IPV6ADDR temp;
 
-	      memcpy(&temp.c, &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
+	      memcpy(&temp.c,
+		     &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
 		     qMin(sizeof(sockaddr->sockaddr_in6.sin6_addr.s6_addr),
 			  sizeof(temp.c)));
 	      address.setAddress(temp);
@@ -366,8 +367,7 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
   if(rc == -1)
     {
       QString errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
-			       "errno=%1").
-		       arg(errno));
+			       "errno=%1").arg(errno));
 
       emit error(errorstr, UnknownSocketError);
       return -1;
@@ -378,8 +378,7 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
   if(rc == -1)
     {
       QString errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
-			       "errno=%1").
-		       arg(errno));
+			       "errno=%1").arg(errno));
 
       emit error(errorstr, UnknownSocketError);
       return -1;
@@ -428,8 +427,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
   if(select(m_socketDescriptor + 1, &rfds, &wfds, &efds, &tv) > 0)
     {
       if(FD_ISSET(m_socketDescriptor, &rfds))
-	rc = recv
-	  (m_socketDescriptor, data, static_cast<size_t> (size), 0);
+	rc = recv(m_socketDescriptor, data, static_cast<size_t> (size), 0);
       else
 #if defined(Q_OS_WIN)
 	WSASetLastError(WSAEWOULDBLOCK);
@@ -471,8 +469,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
 	emit error(errorstr, ConnectionRefusedError);
       else if(errno == ECONNRESET)
 	emit error(errorstr, RemoteHostClosedError);
-      else if(errno == ENOBUFS ||
-	      errno == ENOMEM)
+      else if(errno == ENOBUFS || errno == ENOMEM)
 	emit error(errorstr, SocketResourceError);
       else if(errno == ENOTCONN)
 	emit error(errorstr, NetworkError);
@@ -516,13 +513,13 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
   */
 
 #if defined(Q_OS_WIN)
-  sent = send
-    (m_socketDescriptor, data,
-     static_cast<size_t> (qMin(size, writeSize)), 0);
+  sent = send(m_socketDescriptor,
+	      data,
+	      static_cast<size_t> (qMin(size, writeSize)), 0);
 #else
-  sent = send
-    (m_socketDescriptor, data,
-     static_cast<size_t> (qMin(size, writeSize)), MSG_DONTWAIT);
+  sent = send(m_socketDescriptor,
+	      data,
+	      static_cast<size_t> (qMin(size, writeSize)), MSG_DONTWAIT);
 #endif
 
   if(sent == -1)
@@ -550,8 +547,10 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 	emit error(errorstr, RemoteHostClosedError);
       else if(errno == EMSGSIZE || errno == ENOBUFS || errno == ENOMEM)
 	emit error(errorstr, SocketResourceError);
-      else if(errno == EHOSTUNREACH || errno == ENETDOWN ||
-	      errno == ENETUNREACH || errno == ENOTCONN)
+      else if(errno == EHOSTUNREACH ||
+	      errno == ENETDOWN ||
+	      errno == ENETUNREACH ||
+	      errno == ENOTCONN)
 	emit error(errorstr, NetworkError);
       else if(errno == EOPNOTSUPP)
 	emit error(errorstr, UnsupportedSocketOperationError);
@@ -701,8 +700,10 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 	emit error(errorstr, SocketAccessError);
       else if(errno == EAFNOSUPPORT || errno == EPROTONOSUPPORT)
 	emit error(errorstr, UnsupportedSocketOperationError);
-      else if(errno == EISCONN || errno == EMFILE ||
-	      errno == ENFILE || errno == ENOBUFS ||
+      else if(errno == EISCONN ||
+	      errno == EMFILE ||
+	      errno == ENFILE ||
+	      errno == ENOBUFS ||
 	      errno == ENOMEM)
 	emit error(errorstr, SocketResourceError);
       else
@@ -739,7 +740,10 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
 #if defined(Q_OS_WIN)
       rc = WSAStringToAddressA((LPSTR) m_ipAddress.toLatin1().data(),
-			       AF_INET, 0, (LPSOCKADDR) &serveraddr, &length);
+			       AF_INET,
+			       0,
+			       (LPSOCKADDR) &serveraddr,
+			       &length);
 
       if(rc != 0)
 	{
@@ -754,7 +758,8 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
       serveraddr.sin_port = htons(m_connectToPeerPort);
 #else
-      rc = inet_pton(AF_INET, m_ipAddress.toLatin1().constData(),
+      rc = inet_pton(AF_INET,
+		     m_ipAddress.toLatin1().constData(),
 		     &serveraddr.sin_addr);
 
       if(rc != 1)
@@ -808,7 +813,10 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
 #if defined(Q_OS_WIN)
       rc = WSAStringToAddressA((LPSTR) m_ipAddress.toLatin1().data(),
-			       AF_INET6, 0, (LPSOCKADDR) &serveraddr, &length);
+			       AF_INET6,
+			       0,
+			       (LPSOCKADDR) &serveraddr,
+			       &length);
 
       if(rc != 0)
 	{
@@ -823,7 +831,8 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
       serveraddr.sin6_port = htons(m_connectToPeerPort);
 #else
-      rc = inet_pton(AF_INET6, m_ipAddress.toLatin1().constData(),
+      rc = inet_pton(AF_INET6,
+		     m_ipAddress.toLatin1().constData(),
 		     &serveraddr.sin6_addr);
 
       if(rc != 1)
@@ -900,12 +909,14 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 	socklen_t optlen = sizeof(optval);
 
 #if defined(Q_OS_WIN)
-	rc = setsockopt
-	  (m_socketDescriptor, SOL_SOCKET,
-	   SO_KEEPALIVE, (const char *) &optval, (int) optlen);
+	rc = setsockopt(m_socketDescriptor,
+			SOL_SOCKET,
+			SO_KEEPALIVE,
+			(const char *) &optval,
+			(int) optlen);
 #else
-	rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE,
-			&optval, optlen);
+	rc = setsockopt
+	  (m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen);
 #endif
 
 	if(rc != 0)
@@ -922,12 +933,17 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 	socklen_t optlen = sizeof(optval);
 
 #if defined(Q_OS_WIN)
-	rc = setsockopt
-	  (m_socketDescriptor, IPPROTO_SCTP,
-	   SCTP_NODELAY, (const char *) &optval, (int) optlen);
+	rc = setsockopt(m_socketDescriptor,
+			IPPROTO_SCTP,
+			SCTP_NODELAY,
+			(const char *) &optval,
+			(int) optlen);
 #else
-	rc = setsockopt(m_socketDescriptor, IPPROTO_SCTP, SCTP_NODELAY,
-			&optval, optlen);
+	rc = setsockopt(m_socketDescriptor,
+			IPPROTO_SCTP,
+			SCTP_NODELAY,
+			&optval,
+			optlen);
 #endif
 
 	if(rc != 0)
@@ -985,7 +1001,7 @@ void spoton_sctp_socket::slotTimeout(void)
       FD_SET(m_socketDescriptor, &rfds);
       FD_SET(m_socketDescriptor, &wfds);
       tv.tv_sec = 0;
-      tv.tv_usec = 250000; // 250 milliseconds.
+      tv.tv_usec = 500000; // 500 milliseconds.
 
       if(select(m_socketDescriptor + 1, &rfds, &wfds, 0, &tv) > 0)
 	{
@@ -997,22 +1013,24 @@ void spoton_sctp_socket::slotTimeout(void)
 	      socklen_t length = (socklen_t) sizeof(errorcode);
 
 #if defined(Q_OS_WIN)
-	      rc = getsockopt
-		(m_socketDescriptor, SOL_SOCKET,
-		 SO_ERROR, (char *) &errorcode, &length);
+	      rc = getsockopt(m_socketDescriptor,
+			      SOL_SOCKET,
+			      SO_ERROR,
+			      (char *) &errorcode,
+			      &length);
 #else
-	      rc = getsockopt
-		(m_socketDescriptor, SOL_SOCKET,
-		 SO_ERROR, &errorcode, &length);
+	      rc = getsockopt(m_socketDescriptor,
+			      SOL_SOCKET,
+			      SO_ERROR,
+			      &errorcode,
+			      &length);
 #endif
 
-	      if(rc == 0)
-		if(errorcode == 0)
-		  if(m_state == ConnectingState)
-		    {
-		      m_state = ConnectedState;
-		      emit connected();
-		    }
+	      if(errorcode == 0 && m_state == ConnectingState && rc == 0)
+		{
+		  m_state = ConnectedState;
+		  emit connected();
+		}
 	    }
 	  else
 	    close();
