@@ -538,8 +538,7 @@ void spoton_sctp_server::slotTimeout(void)
 	      return;
 	    }
 
-	  address.setAddress
-	    (ntohl(clientaddr.sin_addr.s_addr));
+	  address.setAddress(ntohl(clientaddr.sin_addr.s_addr));
 	  port = ntohs(clientaddr.sin_port);
 
 	  if(spoton_kernel::instance() &&
@@ -620,12 +619,9 @@ void spoton_sctp_server::slotTimeout(void)
 	{
 #if defined(Q_OS_WIN)
 	  m_errorString = QString
-	    ("run()::accept()::error=%1").
-	    arg(WSAGetLastError());
+	    ("run()::accept()::error=%1").arg(WSAGetLastError());
 #else
-	  m_errorString = QString
-	    ("run()::accept()::errno=%1").
-	    arg(errno);
+	  m_errorString = QString("run()::accept()::errno=%1").arg(errno);
 #endif
 	  close();
 	}
@@ -669,8 +665,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  memcpy(&temp.c, &clientaddr.sin6_addr.s6_addr,
 		 qMin(sizeof(clientaddr.sin6_addr.s6_addr), sizeof(temp.c)));
 	  address.setAddress(temp);
-	  address.setScopeId
-	    (QString::number(clientaddr.sin6_scope_id));
+	  address.setScopeId(QString::number(clientaddr.sin6_scope_id));
 	  port = ntohs(clientaddr.sin6_port);
 
 	  if(spoton_kernel::instance() &&
