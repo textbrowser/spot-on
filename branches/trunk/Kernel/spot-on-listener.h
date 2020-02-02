@@ -268,7 +268,7 @@ class spoton_listener: public QObject
   void slotTimeout(void);
 
  signals:
-  void newNeighbor(QPointer<spoton_neighbor> neighbor);
+  void newNeighbor(const QPointer<spoton_neighbor> &neighbor);
 };
 
 #endif

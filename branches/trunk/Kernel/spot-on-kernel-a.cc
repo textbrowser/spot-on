@@ -2395,9 +2395,13 @@ void spoton_kernel::prepareListeners(void)
 			{
 			  connect
 			    (listener,
-			     SIGNAL(newNeighbor(QPointer<spoton_neighbor>)),
+			     SIGNAL
+			     (newNeighbor(const
+					  QPointer<spoton_neighbor> &)),
 			     this,
-			     SLOT(slotNewNeighbor(QPointer<spoton_neighbor>)));
+			     SLOT
+			     (slotNewNeighbor(const
+					      QPointer<spoton_neighbor> &)));
 			  m_listeners.insert(id, listener);
 			}
 		    }
@@ -4500,7 +4504,7 @@ void spoton_kernel::slotMessagingCachePurge(void)
       (this, &spoton_kernel::purgeMessagingCache);
 }
 
-void spoton_kernel::slotNewNeighbor(QPointer<spoton_neighbor> neighbor)
+void spoton_kernel::slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor)
 {
   if(neighbor)
     {

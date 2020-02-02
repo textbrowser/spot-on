@@ -269,7 +269,7 @@ class spoton_kernel: public QObject
 				 const QByteArray &utcDate,
 				 const QString &keyType);
   void slotMessagingCachePurge(void);
-  void slotNewNeighbor(QPointer<spoton_neighbor> neighbor);
+  void slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor);
   void slotPollDatabase(void);
   void slotPoppedMessage(const QByteArray &message);
   void slotPoptasticPop(void);
