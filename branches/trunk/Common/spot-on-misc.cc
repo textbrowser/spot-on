@@ -424,7 +424,7 @@ QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
   QByteArray bytes(length, 0);
 
   for(int i = 0; i < length; i++)
-    bytes[i] = a[i] ^ b[i];
+    bytes[i] = static_cast<char> (a[i] ^ b[i]);
 
   return bytes;
 }

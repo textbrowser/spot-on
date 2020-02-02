@@ -31,6 +31,7 @@ extern "C"
 #include <libpq-fe.h>
 }
 
+#include <QtGlobal>
 #include <iostream>
 
 #ifdef Q_OS_MAC
@@ -390,6 +391,10 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  m_urlCurrentPage = 1;
+  m_urlLimit = 10;
+  m_urlOffset = 0;
+  m_urlPages = 0;
   m_wizardUi = 0;
   s_publicKeySizes["dsa"] = QStringList() << "3072";
   s_publicKeySizes["ecdsa"] = QStringList() << "224"
