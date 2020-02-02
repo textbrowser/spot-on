@@ -453,10 +453,7 @@ spoton_listener::~spoton_listener()
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-
-  if(m_networkInterface)
-    delete m_networkInterface;
-
+  delete m_networkInterface;
   spoton_kernel::s_connectionCounts.remove(m_id);
 }
 
