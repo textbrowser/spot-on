@@ -73,10 +73,10 @@ rm -fr pgsql
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3300100.zip
+sqlite=sqlite-dll-win32-x86-3310100.zip
 
 rm -f $sqlite
-wget --progress=bar https://sqlite.org/2019/$sqlite
+wget --progress=bar https://sqlite.org/2020/$sqlite
 unzip -o $sqlite
 mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
 chmod +w,-x libSpotOn/Libraries.win32/*.d*
@@ -84,14 +84,14 @@ rm -f $sqlite
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3300100.zip
+sqlite=sqlite-amalgamation-3310100.zip
 
 rm -f $sqlite
-wget --progress=bar https://sqlite.org/2019/$sqlite
+wget --progress=bar https://sqlite.org/2020/$sqlite
 unzip -o $sqlite
 rm -f $sqlite
 
-sqlite=sqlite-amalgamation-3300100
+sqlite=sqlite-amalgamation-3310100
 
 mv $sqlite/*.h libSpotOn/Include.win32/.
 rm -fr $sqlite
