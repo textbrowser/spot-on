@@ -658,6 +658,9 @@ void spoton_echo_key_share::resetWidgets(void)
 
 void spoton_echo_key_share::shareSelected(const QString &keyType)
 {
+  ui.menu->menu()->repaint();
+  repaint();
+
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
   spoton_crypt *sCrypt = m_parent ?
     m_parent->crypts().value(keyType + "-signature", 0) : 0;
