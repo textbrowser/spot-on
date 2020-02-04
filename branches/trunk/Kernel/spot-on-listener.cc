@@ -212,6 +212,9 @@ spoton_listener::spoton_listener
   m_tcpServer = 0;
   m_transport = transport.toLower().trimmed();
   m_udpServer = 0;
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  m_webSocketServer = 0;
+#endif
 
   if(m_transport == "bluetooth")
     {
@@ -222,6 +225,10 @@ spoton_listener::spoton_listener
     m_tcpServer = new spoton_listener_tcp_server(id, this);
   else if(m_transport == "udp")
     m_udpServer = new spoton_listener_udp_server(id, this);
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_transport == "websocket")
+    m_webSocketServer = new spoton_listener_websocket_server(id, this);
+#endif
 
   m_address = ipAddress;
   m_certificate = certificate;
@@ -359,6 +366,13 @@ spoton_listener::spoton_listener
 	    SLOT(slotNewConnection(const qintptr,
 				   const QHostAddress &,
 				   const quint16)));
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    connect(m_webSocketServer,
+	    SIGNAL(newConnection(void)),
+	    this,
+	    SLOT(slotNewWebSocketConnection(void)));
+#endif
 #endif
 
   if(m_externalAddress)
@@ -378,6 +392,10 @@ spoton_listener::spoton_listener
     m_tcpServer->setMaxPendingConnections(m_maximumClients);
   else if(m_udpServer)
     m_udpServer->setMaxPendingConnections(m_maximumClients);
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    m_webSocketServer->setMaxPendingConnections(m_maximumClients);
+#endif
 
   connect(&m_externalAddressDiscovererTimer,
 	  SIGNAL(timeout(void)),
@@ -413,6 +431,10 @@ spoton_listener::~spoton_listener()
     m_tcpServer->close();
   else if(m_udpServer)
     m_udpServer->close();
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    m_webSocketServer->close();
+#endif
 
   QString connectionName("");
 
@@ -477,6 +499,10 @@ QString spoton_listener::errorString(void) const
     return m_tcpServer->errorString();
   else if(m_udpServer)
     return m_udpServer->errorString();
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    return m_webSocketServer->errorString();
+#endif
   else
     return "";
 }
@@ -508,6 +534,10 @@ bool spoton_listener::isListening(void) const
     return m_tcpServer->isListening();
   else if(m_udpServer)
     return m_udpServer->state() == QAbstractSocket::BoundState;
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    return m_webSocketServer->isListening();
+#endif
   else
     return false;
 }
@@ -519,6 +549,13 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
       m_address = address;
       m_port = port;
     }
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    {
+      m_address = address;
+      m_port = port;
+    }
+#endif
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
@@ -641,6 +678,10 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
       return m_udpServer->bind(QHostAddress(address), port, flags);
     }
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    return m_webSocketServer->listen(QHostAddress(address), port);
+#endif
   else
     return false;
 }
@@ -657,6 +698,10 @@ int spoton_listener::maxPendingConnections(void) const
     return m_tcpServer->maxPendingConnections();
   else if(m_udpServer)
     return m_udpServer->maxPendingConnections();
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    return m_webSocketServer->maxPendingConnections();
+#endif
   else
     return 0;
 }
@@ -704,6 +749,10 @@ void spoton_listener::close(void)
     m_tcpServer->close();
   else if(m_udpServer)
     m_udpServer->close();
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  else if(m_webSocketServer)
+    m_webSocketServer->close();
+#endif
 }
 
 void spoton_listener::saveExternalAddress(const QHostAddress &address,
@@ -1257,6 +1306,23 @@ void spoton_listener::prepareNetworkInterface(void)
 		  break;
 	      }
 	  }
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+	else if(m_webSocketServer)
+	  {
+	    if(addresses.at(j).ip() == m_webSocketServer->serverAddress())
+	      {
+		m_networkInterface = new QNetworkInterface(list.at(i));
+
+		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
+		  {
+		    delete m_networkInterface;
+		    m_networkInterface = 0;
+		  }
+		else
+		  break;
+	      }
+	  }
+#endif
 	else
 	  break;
 
@@ -2027,6 +2093,12 @@ void spoton_listener::slotTimeout(void)
 	deleteLater();
       }
 }
+
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+void spoton_listener::slotNewWebSocketConnection(void)
+{
+}
+#endif
 
 void spoton_listener::updateConnectionCount(void)
 {
