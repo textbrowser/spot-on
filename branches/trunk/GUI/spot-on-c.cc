@@ -280,7 +280,8 @@ void spoton::importNeighbors(const QString &filePath)
 			if(!(token == "bluetooth" ||
 			     token == "sctp" ||
 			     token == "tcp" ||
-			     token == "udp"))
+			     token == "udp" ||
+			     token == "websocket"))
 			  fine = false;
 			else
 			  hash["transport"] = token;
@@ -436,12 +437,19 @@ void spoton::importNeighbors(const QString &filePath)
 		    if(ok)
 		      query.bindValue
 			(18, crypt->
-			 encryptedThenHashed
-			 (hash.value("echo_mode"), &ok).toBase64());
+			 encryptedThenHashed(hash.value("echo_mode"), &ok).
+			 toBase64());
 
 		    if(hash.value("transport") == "tcp")
-		      query.bindValue
-			(19, hash.value("ssl_key_size").toInt());
+		      query.bindValue(19, hash.value("ssl_key_size").toInt());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		    else if(hash.value("transport") == "udp")
+		      query.bindValue(19, hash.value("ssl_key_size").toInt());
+#endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		    else if(hash.value("transport") == "websocket")
+		      query.bindValue(19, hash.value("ssl_key_size").toInt());
+#endif
 		    else
 		      query.bindValue(19, 0);
 
@@ -455,6 +463,14 @@ void spoton::importNeighbors(const QString &filePath)
 
 		    if(hash.value("transport") == "tcp")
 		      query.bindValue(22, 1);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+		    else if(hash.value("transport") == "udp")
+		      query.bindValue(22, 1);
+#endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		    else if(hash.value("transport") == "websocket")
+		      query.bindValue(22, 1);
+#endif
 		    else
 		      query.bindValue(22, 0);
 

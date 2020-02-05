@@ -787,6 +787,13 @@ spoton::spoton(void):QMainWindow()
   m_ui.neighborTransport->model()->setData
     (m_ui.neighborTransport->model()->index(1, 0), 0, Qt::UserRole - 1);
 #endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+#else
+  m_ui.listenerTransport->model()->setData
+    (m_ui.listenerTransport->model()->index(4, 0), 0, Qt::UserRole - 1);
+  m_ui.neighborTransport->model()->setData
+    (m_ui.neighborTransport->model()->index(4, 0), 0, Qt::UserRole - 1);
+#endif
 #if SPOTON_GOLDBUG == 1
   m_optionsUi.position->model()->setData
     (m_optionsUi.position->model()->index(1, 0), 0, Qt::UserRole - 1);
@@ -4306,6 +4313,11 @@ void spoton::slotAddListener(void)
 	      transport = "udp";
 	      break;
 	    }
+	  case 4:
+	    {
+	      transport = "websocket";
+	      break;
+	    }
 	  default:
 	    {
 	      break;
@@ -4463,6 +4475,12 @@ void spoton::slotAddListener(void)
 		(11, crypt->encryptedThenHashed("udp", &ok).toBase64());
 	      break;
 	    }
+	  case 4:
+	    {
+	      query.bindValue
+		(11, crypt->encryptedThenHashed("websocket", &ok).toBase64());
+	      break;
+	    }
 	  default:
 	    {
 	      break;
@@ -4483,7 +4501,8 @@ void spoton::slotAddListener(void)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
-					     transport == "udp"))
+					     transport == "udp" ||
+					     transport == "websocket"))
 	  {
 	    if(sslCS.isEmpty())
 	      sslCS = spoton_common::SSL_CONTROL_STRING;
@@ -4491,7 +4510,8 @@ void spoton::slotAddListener(void)
 	else
 	  sslCS = "N/A";
 #else
-	if(m_ui.sslListener->isChecked() && transport == "tcp")
+	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
+					     transport == "websocket"))
 	  {
 	    if(sslCS.isEmpty())
 	      sslCS = spoton_common::SSL_CONTROL_STRING;
@@ -4653,6 +4673,11 @@ void spoton::slotAddNeighbor(void)
 	  case 3:
 	    {
 	      transport = "udp";
+	      break;
+	    }
+	  case 4:
+	    {
+	      transport = "websocket";
 	      break;
 	    }
 	  default:
@@ -4894,9 +4919,12 @@ void spoton::slotAddNeighbor(void)
 	    else if(m_ui.neighborTransport->currentIndex() == 2)
 	      query.bindValue
 		(25, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	    else
+	    else if(m_ui.neighborTransport->currentIndex() == 3)
 	      query.bindValue
 		(25, crypt->encryptedThenHashed("udp", &ok).toBase64());
+	    else
+	      query.bindValue
+		(25, crypt->encryptedThenHashed("websocket", &ok).toBase64());
 	  }
 
 	if(ok)
@@ -4911,7 +4939,8 @@ void spoton::slotAddNeighbor(void)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
         if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
-					    transport == "udp"))
+					    transport == "udp" ||
+					    transport == "websocket"))
 	  {
 	    if(sslCS.isEmpty())
 	      sslCS = spoton_common::SSL_CONTROL_STRING;
@@ -4919,7 +4948,8 @@ void spoton::slotAddNeighbor(void)
 	else
 	  sslCS = "N/A";
 #else
-        if(m_ui.requireSsl->isChecked() && transport == "tcp")
+        if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
+					    transport == "websocket"))
 	  {
 	    if(sslCS.isEmpty())
 	      sslCS = spoton_common::SSL_CONTROL_STRING;
