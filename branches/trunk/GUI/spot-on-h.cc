@@ -975,6 +975,9 @@ void spoton::slotSetSocketOptions(void)
     ui.nodelay->setEnabled(false);
 #endif
 
+  if(transport == "WEBSOCKET")
+    ui.nodelay->setEnabled(false);
+
   if(!ui.nodelay->isEnabled())
     ui.nodelay->setToolTip(tr("SCTP, if available, and TCP only."));
 
@@ -984,6 +987,9 @@ void spoton::slotSetSocketOptions(void)
   if(transport == "SCTP")
     ui.so_keepalive->setEnabled(false);
 #endif
+
+  if(transport == "WEBSOCKET")
+    ui.so_keepalive->setEnabled(false);
 
   if(!ui.so_keepalive->isEnabled())
     ui.so_keepalive->setToolTip(tr("SCTP, if available, and TCP only."));
@@ -995,6 +1001,9 @@ void spoton::slotSetSocketOptions(void)
     ui.so_linger->setEnabled(false);
 #endif
 
+  if(transport == "WEBSOCKET")
+    ui.so_linger->setEnabled(false);
+
   if(!ui.so_linger->isEnabled())
     ui.so_linger->setToolTip(tr("SCTP, if available, and TCP only."));
 
@@ -1003,6 +1012,9 @@ void spoton::slotSetSocketOptions(void)
 
 #if defined(SO_TIMESTAMPING)
   ui.so_timestamping->setEnabled(transport != "BLUETOOTH");
+
+  if(transport == "WEBSOCKET")
+    ui.so_timestamping->setEnabled(false);
 
   if(!ui.so_timestamping->isEnabled())
     ui.so_timestamping->setToolTip
@@ -1036,7 +1048,7 @@ void spoton::slotSetSocketOptions(void)
 
   if(type == "listeners")
     {
-      if(transport != "BLUETOOTH")
+      if(transport != "BLUETOOTH" && transport != "WEBSOCKET")
 	{
 	  ui.so_rcvbuf->setEnabled(true);
 	  ui.so_sndbuf->setEnabled(true);
@@ -1051,7 +1063,7 @@ void spoton::slotSetSocketOptions(void)
     }
   else
     {
-      if(transport != "BLUETOOTH")
+      if(transport != "BLUETOOTH" && transport != "WEBSOCKET")
 	{
 	  ui.so_rcvbuf->setEnabled(true);
 	  ui.so_sndbuf->setEnabled(true);
