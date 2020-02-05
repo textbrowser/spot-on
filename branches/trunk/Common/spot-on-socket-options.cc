@@ -120,7 +120,8 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
   foreach(QString string, list)
     if(string.startsWith("nodelay=") && (transport == "sctp" ||
-					 transport == "tcp"))
+					 transport == "tcp" ||
+					 transport == "websocket"))
       {
 	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
 
@@ -137,7 +138,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    int v = qBound(0, string.toInt(), 1);
 	    socklen_t length = (socklen_t) sizeof(v);
 
-	    if(transport == "tcp")
+	    if(transport == "tcp" || transport == "websocket")
 	      {
 		level = IPPROTO_TCP;
 		option = TCP_NODELAY;
@@ -163,7 +164,8 @@ void spoton_socket_options::setSocketOptions(const QString &options,
       }
     else if(string.
 	    startsWith("so_keepalive=") && (transport == "sctp" ||
-					    transport == "tcp"))
+					    transport == "tcp" ||
+					    transport == "websocket"))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
@@ -274,9 +276,11 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	      }
 	  }
       }
-    else if(string.startsWith("so_timestamping=") && (transport == "sctp" ||
-						      transport == "tcp" ||
-						      transport == "udp"))
+    else if(string.
+	    startsWith("so_timestamping=") && (transport == "sctp" ||
+					       transport == "tcp" ||
+					       transport == "websocket" ||
+					       transport == "udp"))
       {
 #if defined(SO_TIMESTAMPING)
 	string = string.mid(static_cast<int> (qstrlen("so_timestamping=")));

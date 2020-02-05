@@ -36,4 +36,5 @@ Summary of Spot-On
 <li>Threefish CBC.</li>
 <li>UDP unicast, multicast.</li>
 <li>Ultra StarBeam file sharing.</li>
+<li>WebSockets.</li>
 </ul>

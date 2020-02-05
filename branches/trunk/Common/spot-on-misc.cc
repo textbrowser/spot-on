@@ -6024,13 +6024,21 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
     }
 
   QString connectionName("");
-  QString transport(p_transport.toLower());
+  QString transport(p_transport.toLower().trimmed());
 
-#ifdef SPOTON_SCTP_ENABLED
-  if(!(transport == "sctp" || transport == "tcp" || transport == "udp"))
+  if(!(transport == "sctp" ||
+       transport == "tcp" ||
+       transport == "udp" ||
+       transport == "websocket"))
     transport = "tcp";
-#else
-  if(!(transport == "tcp" || transport == "udp"))
+
+#ifndef SPOTON_SCTP_ENABLED
+  if(transport == "sctp")
+    transport = "tcp";
+#endif
+
+#ifndef SPOTON_WEBSOCKETS_ENABLED
+  if(transport == "websocket")
     transport = "tcp";
 #endif
 
@@ -6224,21 +6232,9 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	    (23, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
-	  {
-#ifdef SPOTON_SCTP_ENABLED
-	    if(transport == "sctp" ||
-	       transport == "tcp" ||
-	       transport == "udp")
-#else
-	    if(transport == "tcp" || transport == "udp")
-#endif
-	      query.bindValue
-		(24, crypt->encryptedThenHashed(transport.toLatin1(), &ok).
-		 toBase64());
-	    else
-	      query.bindValue
-		(24, crypt->encryptedThenHashed("tcp", &ok).toBase64());
-	  }
+	  query.bindValue
+	    (24,
+	     crypt->encryptedThenHashed(transport.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  {
