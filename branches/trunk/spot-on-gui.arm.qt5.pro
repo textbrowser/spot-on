@@ -13,7 +13,7 @@ libspoton.depends =
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
 QT		+= bluetooth concurrent gui multimedia network printsupport \
-		   sql widgets
+		   sql websockets widgets
 
 # The function gcry_kdf_derive() is available in version
 # 1.5.0 of the gcrypt library.
@@ -24,7 +24,8 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
-           SPOTON_SCTP_ENABLED
+           SPOTON_SCTP_ENABLED \
+	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL, libNTRU, and libSpotOn.

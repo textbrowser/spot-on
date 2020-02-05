@@ -33,7 +33,7 @@
 #include <QSqlDatabase>
 #include <QTcpServer>
 #include <QTimer>
-#ifdef SPOTON_WEBSOCKETS_ENABLED
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 #include <QWebSocketServer>
 #endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
@@ -166,7 +166,7 @@ class spoton_listener_udp_server: public QUdpSocket
 		   const quint16 port);
 };
 
-#ifdef SPOTON_WEBSOCKETS_ENABLED
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 class spoton_listener_websocket_server: public QWebSocketServer
 {
  public:
@@ -266,7 +266,7 @@ class spoton_listener: public QObject
   spoton_external_address *m_externalAddress;
   spoton_listener_tcp_server *m_tcpServer;
   spoton_listener_udp_server *m_udpServer;
-#ifdef SPOTON_WEBSOCKETS_ENABLED
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   spoton_listener_websocket_server *m_webSocketServer;
 #endif
   spoton_sctp_server *m_sctpServer;
@@ -295,7 +295,7 @@ class spoton_listener: public QObject
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotNewConnection(void);
 #endif
-#ifdef SPOTON_WEBSOCKETS_ENABLED
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   void slotNewWebSocketConnection(void);
 #endif
   void slotTimeout(void);

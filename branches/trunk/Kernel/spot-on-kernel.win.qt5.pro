@@ -11,7 +11,7 @@ purge.commands = del /F *~
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
-QT		+= concurrent network sql
+QT		+= concurrent network sql websockets
 QT              -= gui
 
 # The function gcry_kdf_derive() is available in version
@@ -20,7 +20,8 @@ QT              -= gui
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_MCELIECE_ENABLED
+                   SPOTON_MCELIECE_ENABLED \
+		   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.

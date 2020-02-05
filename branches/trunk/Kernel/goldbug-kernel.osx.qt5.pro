@@ -10,7 +10,7 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on app_bundle
 LANGUAGE	= C++
-QT		+= bluetooth concurrent network sql
+QT		+= bluetooth concurrent network sql websockets
 QT              -= gui
 TEMPLATE	= app
 
@@ -22,7 +22,8 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
 	   SPOTON_MCELIECE_ENABLED \
-	   SPOTON_SCTP_ENABLED
+	   SPOTON_SCTP_ENABLED \
+	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.

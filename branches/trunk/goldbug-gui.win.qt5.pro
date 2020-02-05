@@ -10,7 +10,7 @@ libspoton.depends =
 TEMPLATE	= app
 LANGUAGE	= C++
 QT		+= concurrent gui multimedia network printsupport sql \
-		   widgets
+		   websockets widgets
 CONFIG		+= qt release warn_on
 
 # The function gcry_kdf_derive() is available in version
@@ -20,7 +20,8 @@ DEFINES         += SPOTON_GOLDBUG \
 		   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
-		   SPOTON_MCELIECE_ENABLED
+		   SPOTON_MCELIECE_ENABLED \
+		   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
