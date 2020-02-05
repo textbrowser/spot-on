@@ -496,6 +496,7 @@ class spoton_neighbor: public QThread
 				const QByteArray &name,
 				const QByteArray &password);
   void slotAuthenticationTimerTimeout(void);
+  void slotBinaryFrameReceived(const QByteArray &fame, bool isLastFrame);
   void slotBinaryMessageReceived(const QByteArray &message);
   void slotCallParticipant(const QByteArray &data, const QString &messageType);
   void slotConnected(void);

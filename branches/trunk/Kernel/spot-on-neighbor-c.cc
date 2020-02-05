@@ -4390,6 +4390,17 @@ void spoton_neighbor::setId(const qint64 id)
   m_id = id;
 }
 
+void spoton_neighbor::slotBinaryFrameReceived
+(const QByteArray &frame, bool isLastFrame)
+{
+  Q_UNUSED(isLastFrame);
+
+  if(m_abort.fetchAndAddOrdered(0))
+    return;
+
+  slotBinaryMessageReceived(frame);
+}
+
 void spoton_neighbor::slotBinaryMessageReceived(const QByteArray &message)
 {
   if(m_abort.fetchAndAddOrdered(0))
@@ -4400,8 +4411,7 @@ void spoton_neighbor::slotBinaryMessageReceived(const QByteArray &message)
   m_bytesRead += static_cast<quint64> (data.length());
 
   {
-    QWriteLocker locker
-      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
+    QWriteLocker locker(&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
 
     spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
       static_cast<quint64> (data.length());

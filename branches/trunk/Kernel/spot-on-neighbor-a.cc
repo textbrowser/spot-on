@@ -153,6 +153,10 @@ spoton_neighbor::spoton_neighbor
       if(m_webSocket)
 	{
 	  connect(m_webSocket,
+		  SIGNAL(binaryFrameReceived(const QByteArray &, bool)),
+		  this,
+		  SLOT(slotBinaryFrameReceived(const QByteArray &, bool)));
+	  connect(m_webSocket,
 		  SIGNAL(binaryMessageReceived(const QByteArray &)),
 		  this,
 		  SLOT(slotBinaryMessageReceived(const QByteArray &)));
@@ -1060,6 +1064,10 @@ spoton_neighbor::spoton_neighbor
   else if(m_webSocket)
     {
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      connect(m_webSocket,
+	      SIGNAL(binaryFrameReceived(const QByteArray &, bool)),
+	      this,
+	      SLOT(slotBinaryFrameReceived(const QByteArray &, bool)));
       connect(m_webSocket,
 	      SIGNAL(binaryMessageReceived(const QByteArray &)),
 	      this,
