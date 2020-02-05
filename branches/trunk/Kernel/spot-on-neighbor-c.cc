@@ -3303,6 +3303,22 @@ void spoton_neighbor::processData(void)
 		       arg(m_udpSocket->peerPort()).
 		   arg(m_udpSocket->peerAddress().scopeId()));
 		}
+	      else if(m_webSocket)
+		{
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		  if(m_webSocket->peerAddress().scopeId().isEmpty())
+		    emit authenticationRequested
+		      (QString("%1:%2").
+		       arg(m_webSocket->peerAddress().toString()).
+		       arg(m_webSocket->peerPort()));
+		  else
+		    emit authenticationRequested
+		      (QString("%1:%2:%3").
+		       arg(m_webSocket->peerAddress().toString()).
+		       arg(m_webSocket->peerPort()).
+		       arg(m_webSocket->peerAddress().scopeId()));
+#endif
+		}
 	    }
 	}
 
@@ -3548,15 +3564,71 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		}
 	    }
 	}
+      else if(m_webSocket)
+	{
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  if(m_peerCertificate.isNull() &&
+	     !m_webSocket->sslConfiguration().peerCertificate().isNull())
+	    {
+	      certificate = m_peerCertificate = m_webSocket->
+		sslConfiguration().peerCertificate();
+	      save = true;
+	    }
+	  else if(!m_allowExceptions)
+	    {
+	      if(m_webSocket->sslConfiguration().peerCertificate().isNull())
+		{
+		  emit notification
+		    (QString("The neighbor %1:%2 generated a fatal "
+			     "error (%3).").
+		     arg(m_address).arg(m_port).arg("empty peer certificate"));
+		  spoton_misc::logError
+		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
+			     "null peer certificate for %1:%2. Aborting.").
+		     arg(m_address).
+		     arg(m_port));
+		  deleteLater();
+		  return;
+		}
+	      else if(!spoton_crypt::
+		      memcmp(m_peerCertificate.toPem(),
+			     m_webSocket->sslConfiguration().
+			     peerCertificate().toPem()))
+		{
+		  emit notification
+		    (QString("The neighbor %1:%2 generated a fatal "
+			     "error (%3).").
+		     arg(m_address).arg(m_port).arg("certificate mismatch"));
+		  spoton_misc::logError
+		    (QString("spoton_neighbor::recordCertificateOrAbort(): "
+			     "the stored certificate does not match "
+			     "the peer's certificate for %1:%2. This is a "
+			     "serious problem! Aborting.").
+		     arg(m_address).
+		     arg(m_port));
+		  deleteLater();
+		  return;
+		}
+	    }
+#endif
+	}
     }
   else
     {
       if(m_tcpSocket)
 	certificate = m_tcpSocket->sslConfiguration().localCertificate();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       else if(m_udpSocket)
-	certificate = m_udpSslConfiguration.localCertificate();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	{
+	  certificate = m_udpSslConfiguration.localCertificate();
 #endif
+	}
+      else if(m_webSocket)
+	{
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  certificate = m_webSocket->sslConfiguration().localCertificate();
+#endif
+	}
 
       save = true;
     }
