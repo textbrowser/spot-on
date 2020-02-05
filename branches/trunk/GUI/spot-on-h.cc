@@ -124,12 +124,23 @@ bool spoton::listenerSupportsSslTls(void) const
       QTableWidgetItem *item2 = m_ui.listeners->item(row, 15);
 
       if(item1 && item2)
-	return item1->text().toInt() > 0 &&
-	  (item2->text().toLower().trimmed() == "tcp"
+	{
+	  QString string(item2->text().toLower().trimmed());
+	  int integer = item1->text().toInt();
+
+	  if(integer > 0 && string == "tcp")
+	    return true;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	  || item2->text().toLower().trimmed() == "udp"
+	  if(integer > 0 && string == "udp")
+	    return true;
 #endif
-	   );
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  if(integer > 0 && string == "websocket")
+	    return true;
+#endif
+	}
     }
 
   return false;
@@ -145,12 +156,23 @@ bool spoton::neighborSupportsSslTls(void) const
       QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27);
 
       if(item1 && item2)
-	return item1->text().toInt() > 0 &&
-	  (item2->text().toLower().trimmed() == "tcp"
+	{
+	  QString string(item2->text().toLower().trimmed());
+	  int integer = item1->text().toInt();
+
+	  if(integer > 0 && string == "tcp")
+	    return true;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || item2->text().toLower().trimmed() == "udp"
+	  if(integer > 0 && string == "udp")
+	    return true;
 #endif
-	   );
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  if(integer > 0 && string == "websocket")
+	    return true;
+#endif
+	}
     }
 
   return false;
