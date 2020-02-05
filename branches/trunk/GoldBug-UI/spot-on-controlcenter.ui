@@ -3330,6 +3330,11 @@ color: rgb(255, 255, 255);</string>
                        <string>UDP</string>
                       </property>
                      </item>
+                     <item>
+                      <property name="text">
+                       <string>WebSocket</string>
+                      </property>
+                     </item>
                     </widget>
                    </item>
                    <item row="7" column="1" colspan="2">
@@ -4740,6 +4745,11 @@ color: rgb(255, 255, 255);</string>
                             <string>UDP</string>
                            </property>
                           </item>
+                          <item>
+                           <property name="text">
+                            <string>WebSocket</string>
+                           </property>
+                          </item>
                          </widget>
                         </item>
                         <item>
@@ -5278,7 +5288,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>610</width>
-             <height>791</height>
+             <height>359</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6605,7 +6615,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>882</width>
+             <width>922</width>
              <height>1432</height>
             </rect>
            </property>
@@ -8181,8 +8191,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>1054</height>
+             <width>493</width>
+             <height>1092</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9531,7 +9541,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
+             <width>582</width>
              <height>839</height>
             </rect>
            </property>
