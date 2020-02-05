@@ -29,6 +29,7 @@
 #include <QNetworkInterface>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QSslKey>
 
 #include <limits>
 
@@ -694,7 +695,45 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
     }
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   else if(m_webSocketServer)
-    return m_webSocketServer->listen(QHostAddress(address), port);
+    {
+      if(m_keySize > 0)
+	{
+	  QSslConfiguration configuration;
+
+	  configuration.setLocalCertificate(QSslCertificate(m_certificate));
+
+	  if(!configuration.localCertificate().isNull())
+	    {
+	      configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
+
+	      if(!configuration.privateKey().isNull())
+		{
+		  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableCompression, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableEmptyFragments, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionTickets, true);
+#if QT_VERSION >= 0x050501
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionPersistence, true);
+		  configuration.setSslOption
+		    (QSsl::SslOptionDisableSessionSharing, true);
+#endif
+		  spoton_crypt::setSslCiphers
+		    (configuration.supportedCiphers(), m_sslControlString,
+		     configuration);
+		}
+
+	      m_webSocketServer->setSslConfiguration(configuration);
+	    }
+	}
+
+      return m_webSocketServer->listen(QHostAddress(address), port);
+    }
 #endif
 
   return false;

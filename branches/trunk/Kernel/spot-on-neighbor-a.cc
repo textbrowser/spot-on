@@ -348,7 +348,7 @@ spoton_neighbor::spoton_neighbor
 
   if(m_useSsl)
     {
-      if(m_tcpSocket || m_udpSocket || m_webSocket)
+      if(m_tcpSocket || m_udpSocket)
 	{
 	  QSslConfiguration configuration;
 
@@ -407,11 +407,6 @@ spoton_neighbor::spoton_neighbor
 
 		  if(m_tcpSocket)
 		    m_tcpSocket->setSslConfiguration(configuration);
-
-#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-		  if(m_webSocket)
-		    m_webSocket->setSslConfiguration(configuration);
-#endif
 		}
 	      else
 		{
