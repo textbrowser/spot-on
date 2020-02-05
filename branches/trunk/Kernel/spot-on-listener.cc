@@ -227,7 +227,11 @@ spoton_listener::spoton_listener
     m_udpServer = new spoton_listener_udp_server(id, this);
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   else if(m_transport == "websocket")
-    m_webSocketServer = new spoton_listener_websocket_server(id, this);
+    m_webSocketServer = new spoton_listener_websocket_server
+      (keySize > 0 ?
+       QWebSocketServer::SecureMode : QWebSocketServer::NonSecureMode,
+       id,
+       this);
 #endif
 
   m_address = ipAddress;

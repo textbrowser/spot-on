@@ -4178,7 +4178,8 @@ void spoton::slotAddListener(void)
   QByteArray publicKey;
   QString error("");
 
-  if(m_ui.listenerTransport->currentIndex() == 2 && // TCP
+  if((m_ui.listenerTransport->currentIndex() == 2 ||  // TCP
+      m_ui.listenerTransport->currentIndex() == 4) && // WebSocket
      m_ui.sslListener->isChecked())
     {
       QHostAddress address;
@@ -4423,12 +4424,11 @@ void spoton::slotAddListener(void)
 		(6, crypt->encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-	if((m_ui.listenerTransport->currentIndex() == 2        // TCP
+	if((m_ui.listenerTransport->currentIndex() == 2 ||  // TCP
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	    || m_ui.listenerTransport->currentIndex() == 3) && // UDP
-#else
-	   ) &&
+	    m_ui.listenerTransport->currentIndex() == 3 ||  // UDP
 #endif
+	    m_ui.listenerTransport->currentIndex() == 4) && // WebSocket
 	   m_ui.sslListener->isChecked())
 	  query.bindValue(7, m_ui.listenerKeySize->currentText().toInt());
 	else
@@ -4861,12 +4861,11 @@ void spoton::slotAddNeighbor(void)
 		 encryptedThenHashed("half", &ok).toBase64());
 	  }
 
-	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
+	if(m_ui.neighborTransport->currentIndex() == 2 || // TCP
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
-#else
-	  )
+	   m_ui.neighborTransport->currentIndex() == 3 || // UDP
 #endif
+	   m_ui.neighborTransport->currentIndex() == 4)   // WebSocket
 	  {
 	    if(m_ui.requireSsl->isChecked())
 	      query.bindValue
@@ -4878,7 +4877,8 @@ void spoton::slotAddNeighbor(void)
 	  query.bindValue(19, 0);
 
 	if(m_ui.addException->isChecked() &&
-	   m_ui.neighborTransport->currentIndex() == 2) // TCP
+	   (m_ui.neighborTransport->currentIndex() == 2 || // TCP
+	    m_ui.neighborTransport->currentIndex() == 4))  // WebSocket
 	  query.bindValue(20, 1);
 	else
 	  query.bindValue(20, 0);
@@ -4888,12 +4888,11 @@ void spoton::slotAddNeighbor(void)
 	    (21, crypt->encryptedThenHashed(QByteArray(),
 					    &ok).toBase64());
 
-	if(m_ui.neighborTransport->currentIndex() == 2     // TCP
+	if(m_ui.neighborTransport->currentIndex() == 2 || // TCP
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-	   || m_ui.neighborTransport->currentIndex() == 3) // UDP
-#else
-	  )
+	   m_ui.neighborTransport->currentIndex() == 3 || // UDP
 #endif
+	   m_ui.neighborTransport->currentIndex() == 4)   // WebSocket
 	  query.bindValue(22, m_ui.requireSsl->isChecked() ? 1 : 0);
 	else
 	  query.bindValue(22, 0);

@@ -170,8 +170,10 @@ class spoton_listener_udp_server: public QUdpSocket
 class spoton_listener_websocket_server: public QWebSocketServer
 {
  public:
-  spoton_listener_websocket_server(const qint64 id, QObject *parent):
-    QWebSocketServer(QString::number(id), QWebSocketServer::SecureMode, parent)
+  spoton_listener_websocket_server(const QWebSocketServer::SslMode sslMode,
+				   const qint64 id,
+				   QObject *parent):
+    QWebSocketServer(QString::number(id), sslMode, parent)
   {
     m_id = id;
   }
