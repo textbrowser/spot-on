@@ -71,14 +71,17 @@ spoton_neighbor::spoton_neighbor
  const int sourceOfRandomness,
  const QByteArray &privateApplicationCredentials,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
- QBluetoothSocket *socket,
+ QBluetoothSocket *bluetooth_socket,
+#endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+ QWebSocket *web_socket,
 #endif
  QObject *parent):QThread(parent)
 {
   Q_UNUSED(priority);
   m_abort = 0;
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  m_bluetoothSocket = socket;
+  m_bluetoothSocket = bluetooth_socket;
 
   if(m_bluetoothSocket)
     m_bluetoothSocket->setParent(this);
@@ -90,6 +93,10 @@ spoton_neighbor::spoton_neighbor
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);
+  m_maximumBufferSize =
+    qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
+	   maximumBufferSize,
+	   spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
   m_passthrough = passthrough;
   m_privateApplicationCredentials = privateApplicationCredentials;
   m_privateApplicationSequences.first = m_privateApplicationSequences.second =
@@ -101,15 +108,18 @@ spoton_neighbor::spoton_neighbor
      static_cast<int> (std::numeric_limits<unsigned short>::max()));
   m_tcpSocket = 0;
   m_udpSocket = 0;
-  m_maximumBufferSize =
-    qBound(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH,
-	   maximumBufferSize,
-	   spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE);
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  m_webSocket = web_socket;
+
+  if(m_webSocket)
+    m_webSocket->setParent(this);
+#else
+  m_webSocket = 0;
+#endif
 
   if(transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-
       if(m_bluetoothSocket)
 	{
 	  connect(m_bluetoothSocket,
@@ -137,6 +147,34 @@ spoton_neighbor::spoton_neighbor
     m_tcpSocket = new spoton_neighbor_tcp_socket(this);
   else if(transport == "udp")
     m_udpSocket = new spoton_neighbor_udp_socket(this);
+  else if(transport == "websocket")
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      if(m_webSocket)
+	{
+	  connect(m_webSocket,
+		  SIGNAL(binaryMessageReceived(const QByteArray &)),
+		  this,
+		  SLOT(slotBinaryMessageReceived(const QByteArray &)));
+	  connect(m_webSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SIGNAL(disconnected(void)));
+	  connect(m_webSocket,
+		  SIGNAL(disconnected(void)),
+		  this,
+		  SLOT(slotDisconnected(void)));
+	  connect(m_webSocket,
+		  SIGNAL(error(QAbstractSocket::SocketError)),
+		  this,
+		  SLOT(slotError(QAbstractSocket::SocketError)));
+	  connect(m_webSocket,
+		  SIGNAL(sslErrors(const QList<QSslError> &)),
+		  this,
+		  SLOT(slotSslErrors(const QList<QSslError> &)));
+	}
+#endif
+    }
 
   if(m_bluetoothSocket)
     {
@@ -1124,6 +1162,106 @@ spoton_neighbor::~spoton_neighbor()
   wait();
 }
 
+void spoton_neighbor::readyRead(const QByteArray &data)
+{
+  if(!data.isEmpty())
+    if(m_passthrough)
+      {
+	/*
+	** A private application may not be able to authenticate.
+	*/
+
+	if(!m_privateApplicationCredentials.isEmpty())
+	  {
+	    if(m_isUserDefined)
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.first;
+
+		m_privateApplicationSequences.first += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+	    else
+	      {
+		QMutexLocker locker(&m_privateApplicationMutex);
+		quint64 sequence = m_privateApplicationSequences.second;
+
+		m_privateApplicationSequences.second += 1;
+		locker.unlock();
+		m_privateApplicationFutures << QtConcurrent::run
+		  (this,
+		   &spoton_neighbor::bundlePrivateApplicationData,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+	      }
+
+	    return;
+	  }
+
+	bool ok = true;
+
+	if(m_useAccounts.fetchAndAddOrdered(0))
+	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
+	    ok = false;
+
+	if(ok)
+	  {
+	    /*
+	    ** We cannot safely inspect duplicate bytes.
+	    ** For example, an 'a' followed by another 'a' may
+	    ** be acceptable.
+	    */
+
+	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
+	    emit resetKeepAlive();
+	    return;
+	  }
+      }
+
+  if(!data.isEmpty() || m_udpSocket)
+    {
+      QReadLocker locker1(&m_maximumBufferSizeMutex);
+      qint64 maximumBufferSize = m_maximumBufferSize;
+
+      locker1.unlock();
+
+      QWriteLocker locker2(&m_dataMutex);
+      int length = static_cast<int> (maximumBufferSize) - m_data.length();
+
+      if(length > 0)
+	m_data.append(data.mid(0, length));
+
+      if(!m_data.isEmpty())
+	{
+	  locker2.unlock();
+	  emit newData();
+	}
+    }
+  else
+    {
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).
+	 arg("zero data received on ready-read signal"));
+      spoton_misc::logError
+	(QString("spoton_neighbor::readyRead(): "
+		 "Did not receive data. Closing connection for "
+		 "%1:%2.").
+	 arg(m_address).
+	 arg(m_port));
+      deleteLater();
+    }
+}
+
 void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 					       const QByteArray &name,
 					       const QByteArray &password)
@@ -1906,110 +2044,13 @@ void spoton_neighbor::slotReadyRead(void)
       data.clear();
       spoton_misc::logError
 	(QString("spoton_neighbor::slotReadyRead(): "
-		 "m_useSsl is true, however, isEncrypted() "
-		 "is false "
-		 "for %1:%2. "
-		 "Purging read data.").
+		 "m_useSsl is true, however, isEncrypted() is false "
+		 "for %1:%2. Purging read data.").
 	 arg(m_address).
 	 arg(m_port));
     }
 
-  if(!data.isEmpty())
-    if(m_passthrough)
-      {
-	/*
-	** A private application may not be able to authenticate.
-	*/
-
-	if(!m_privateApplicationCredentials.isEmpty())
-	  {
-	    if(m_isUserDefined)
-	      {
-		QMutexLocker locker(&m_privateApplicationMutex);
-		quint64 sequence = m_privateApplicationSequences.first;
-
-		m_privateApplicationSequences.first += 1;
-		locker.unlock();
-		m_privateApplicationFutures << QtConcurrent::run
-		  (this,
-		   &spoton_neighbor::bundlePrivateApplicationData,
-		   data,
-		   m_privateApplicationCredentials,
-		   m_id,
-		   sequence);
-	      }
-	    else
-	      {
-		QMutexLocker locker(&m_privateApplicationMutex);
-		quint64 sequence = m_privateApplicationSequences.second;
-
-		m_privateApplicationSequences.second += 1;
-		locker.unlock();
-		m_privateApplicationFutures << QtConcurrent::run
-		  (this,
-		   &spoton_neighbor::bundlePrivateApplicationData,
-		   data,
-		   m_privateApplicationCredentials,
-		   m_id,
-		   sequence);
-	      }
-
-	    return;
-	  }
-
-	bool ok = true;
-
-	if(m_useAccounts.fetchAndAddOrdered(0))
-	  if(!m_accountAuthenticated.fetchAndAddOrdered(0))
-	    ok = false;
-
-	if(ok)
-	  {
-	    /*
-	    ** We cannot safely inspect duplicate bytes.
-	    ** For example, an 'a' followed by another 'a' may
-	    ** be acceptable.
-	    */
-
-	    emit receivedMessage(data, m_id, QPair<QByteArray, QByteArray> ());
-	    emit resetKeepAlive();
-	    return;
-	  }
-      }
-
-  if(!data.isEmpty() || m_udpSocket)
-    {
-      QReadLocker locker1(&m_maximumBufferSizeMutex);
-      qint64 maximumBufferSize = m_maximumBufferSize;
-
-      locker1.unlock();
-
-      QWriteLocker locker2(&m_dataMutex);
-      int length = static_cast<int> (maximumBufferSize) - m_data.length();
-
-      if(length > 0)
-	m_data.append(data.mid(0, length));
-
-      if(!m_data.isEmpty())
-	{
-	  locker2.unlock();
-	  emit newData();
-	}
-    }
-  else
-    {
-      emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
-	 arg(m_address).arg(m_port).
-	 arg("zero data received on ready-read signal"));
-      spoton_misc::logError
-	(QString("spoton_neighbor::slotReadyRead(): "
-		 "Did not receive data. Closing connection for "
-		 "%1:%2.").
-	 arg(m_address).
-	 arg(m_port));
-      deleteLater();
-    }
+  readyRead(data);
 }
 
 void spoton_neighbor::slotResetKeepAlive(void)

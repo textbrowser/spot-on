@@ -895,6 +895,9 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0,
 #endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	 0,
+#endif
 	 this);
     }
   catch(...)
@@ -1475,6 +1478,7 @@ void spoton_listener::slotNewConnection(void)
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
 	 socket,
+	 0, // WebSocket.
 	 this);
     }
   catch(...)

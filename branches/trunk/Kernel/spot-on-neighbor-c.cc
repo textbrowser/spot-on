@@ -4309,6 +4309,37 @@ void spoton_neighbor::setId(const qint64 id)
   m_id = id;
 }
 
+void spoton_neighbor::slotBinaryMessageReceived(const QByteArray &message)
+{
+  if(m_abort.fetchAndAddOrdered(0))
+    return;
+
+  QByteArray data(message);
+
+  m_bytesRead += static_cast<quint64> (data.length());
+
+  {
+    QWriteLocker locker
+      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
+
+    spoton_kernel::s_totalNeighborsBytesReadWritten.first +=
+      static_cast<quint64> (data.length());
+  }
+
+  if(!data.isEmpty() && !isEncrypted() && m_useSsl)
+    {
+      data.clear();
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotBinaryMessageReceived(): "
+		 "m_useSsl is true, however, isEncrypted() is false "
+		 "for %1:%2. Purging read data.").
+	 arg(m_address).
+	 arg(m_port));
+    }
+
+  readyRead(data);
+}
+
 void spoton_neighbor::slotWriteDropped(void)
 {
   if(!m_droppedVector.isEmpty())

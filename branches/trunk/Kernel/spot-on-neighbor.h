@@ -46,6 +46,9 @@
 #include <QTimer>
 #include <QUdpSocket>
 #include <QUuid>
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+#include <QWebSocket>
+#endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothsocket.h>
 #endif
@@ -247,7 +250,10 @@ class spoton_neighbor: public QThread
 		  const int sourceOfRandomness,
 		  const QByteArray &privateApplicationCredentials,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-		  QBluetoothSocket *socket,
+		  QBluetoothSocket *bluetooth_socket,
+#endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		  QWebSocket *web_socket,
 #endif
 		  QObject *parent);
   ~spoton_neighbor();
@@ -299,6 +305,11 @@ class spoton_neighbor: public QThread
 #endif
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
   QPointer<QDtls> m_dtls;
+#endif
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  QPointer<QWebSocket> m_webSocket;
+#else
+  QPointer<QObject> m_webSocket;
 #endif
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
@@ -433,6 +444,7 @@ class spoton_neighbor: public QThread
 		   const QList<QByteArray> &symmetricKeys);
   void process0095a(int length, const QByteArray &data);
   void process0095b(int length, const QByteArray &data);
+  void readyRead(const QByteArray &data);
   void recordCertificateOrAbort(void);
   void run(void);
   void saveExternalAddress(const QHostAddress &address,
@@ -484,6 +496,7 @@ class spoton_neighbor: public QThread
 				const QByteArray &name,
 				const QByteArray &password);
   void slotAuthenticationTimerTimeout(void);
+  void slotBinaryMessageReceived(const QByteArray &message);
   void slotCallParticipant(const QByteArray &data, const QString &messageType);
   void slotConnected(void);
   void slotDisconnected(void);
