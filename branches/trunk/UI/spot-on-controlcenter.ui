@@ -448,7 +448,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>436</width>
+                <width>746</width>
                 <height>504</height>
                </rect>
               </property>
@@ -2342,7 +2342,7 @@
                    <item>
                     <widget class="QLabel" name="label_21">
                      <property name="text">
-                      <string>The uniqueness of a listener is defined by its local IP, local port, scope ID, and transport.</string>
+                      <string>The uniqueness of a listener is defined by its local IP, local port, scope ID, and transport. TCP and WebSocket sockets are governed by the TCP protocol.</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -3669,7 +3669,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>766</width>
+                  <width>777</width>
                   <height>531</height>
                  </rect>
                 </property>
@@ -3699,7 +3699,7 @@
                         <item>
                          <widget class="QLabel" name="label_23">
                           <property name="text">
-                           <string>The uniqueness of a neighbor is defined by its proxy hostname, proxy port, remote IP, remote port, scope ID, and transport.</string>
+                           <string>The uniqueness of a neighbor is defined by its proxy hostname, proxy port, remote IP, remote port, scope ID, and transport. TCP and WebSocket sockets are governed by the TCP protocol.</string>
                           </property>
                           <property name="wordWrap">
                            <bool>true</bool>

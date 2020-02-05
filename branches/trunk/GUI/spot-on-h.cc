@@ -178,6 +178,32 @@ bool spoton::neighborSupportsSslTls(void) const
   return false;
 }
 
+bool spoton::nodeExists(const QSqlDatabase &db,
+			const QString &identifier,
+			const QString &table) const
+{
+  spoton_crypt *crypt = m_crypts.value("chat", 0);
+
+  if(!crypt)
+    return true;
+
+  QByteArray hash(crypt->keyedHash(identifier.toLatin1(), 0));
+
+  if(hash.isEmpty())
+    return true;
+
+  QSqlQuery query(db);
+
+  query.prepare
+    (QString("SELECT EXISTS(SELECT 1 FROM %1 WHERE hash = ?)").arg(table));
+  query.addBindValue(hash.toBase64());
+
+  if(query.exec())
+    return query.next() && query.value(0).toBool();
+  else
+    return true;
+}
+
 bool spoton::writeKernelSocketData(const QByteArray &bytes)
 {
   return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());

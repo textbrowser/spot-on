@@ -4250,8 +4250,7 @@ void spoton::slotAddListener(void)
     {
       ok = false;
       spoton_misc::logError
-	(QString("spoton::"
-		 "slotAddListener(): "
+	(QString("spoton::slotAddListener(): "
 		 "generateSslKeys() failure (%1).").arg(error));
       goto done_label;
     }
@@ -4280,6 +4279,7 @@ void spoton::slotAddListener(void)
 	QString sslCS(m_ui.listenersSslControlString->text().trimmed());
 	QString status("online");
 	QString transport("tcp");
+	QString transportUniqueness("");
 	QSqlQuery query(db);
 
 	if(m_ui.listenerTransport->currentIndex() == 0) // Bluetooth
@@ -4297,32 +4297,49 @@ void spoton::slotAddListener(void)
 	  case 0:
 	    {
 	      transport = "bluetooth";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 1:
 	    {
 	      transport = "sctp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 2:
 	    {
 	      transport = "tcp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 3:
 	    {
 	      transport = "udp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 4:
 	    {
 	      transport = "websocket";
+	      transportUniqueness = "tcp";
 	      break;
 	    }
 	  default:
 	    {
 	      break;
 	    }
+	  }
+
+	if(nodeExists(db,
+		      ip +
+		      port +
+		      scopeId +
+		      transportUniqueness,
+		      "listeners"))
+	  {
+	    error = tr("The specified listener already exists.");
+	    ok = false;
+	    goto close_db_label;
 	  }
 
 	query.prepare("INSERT INTO listeners "
@@ -4564,6 +4581,8 @@ void spoton::slotAddListener(void)
     db.close();
   }
 
+ close_db_label:
+
   QSqlDatabase::removeDatabase(connectionName);
 
  done_label:
@@ -4639,6 +4658,7 @@ void spoton::slotAddNeighbor(void)
 	QString sslCS(m_ui.neighborsSslControlString->text().trimmed());
 	QString status("connected");
 	QString transport("tcp");
+	QString transportUniqueness("");
 	QSqlQuery query(db);
 
 	if(m_ui.neighborTransport->currentIndex() == 0)
@@ -4658,32 +4678,51 @@ void spoton::slotAddNeighbor(void)
 	  case 0:
 	    {
 	      transport = "bluetooth";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 1:
 	    {
 	      transport = "sctp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 2:
 	    {
 	      transport = "tcp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 3:
 	    {
 	      transport = "udp";
+	      transportUniqueness = transport;
 	      break;
 	    }
 	  case 4:
 	    {
 	      transport = "websocket";
+	      transportUniqueness = "tcp";
 	      break;
 	    }
 	  default:
 	    {
 	      break;
 	    }
+	  }
+
+	if(nodeExists(db,
+		      proxyHostName +
+		      proxyPort +
+		      ip +
+		      port +
+		      scopeId +
+		      transportUniqueness,
+		      "neighbors"))
+	  {
+	    error = tr("The specified neighbor already exists.");
+	    ok = false;
+	    goto close_db_label;
 	  }
 
 	query.prepare("INSERT INTO neighbors "
@@ -4975,6 +5014,8 @@ void spoton::slotAddNeighbor(void)
 
     db.close();
   }
+
+ close_db_label:
 
   QSqlDatabase::removeDatabase(connectionName);
 

@@ -609,6 +609,9 @@ class spoton: public QMainWindow
   bool isKernelActive(void) const;
   bool listenerSupportsSslTls(void) const;
   bool neighborSupportsSslTls(void) const;
+  bool nodeExists(const QSqlDatabase &db,
+		  const QString &identifier,
+		  const QString &table) const;
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);
