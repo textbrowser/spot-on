@@ -254,15 +254,22 @@ spoton_listener::spoton_listener
 	m_keySize = QBluetooth::NoSecurity;
 #endif
     }
-  else if(m_transport == "tcp" || m_transport == "udp")
+  else if(m_transport == "tcp" ||
+	  m_transport == "udp" ||
+	  m_transport == "websocket")
     {
       if(m_keySize != 0)
-	if(!(m_keySize == 2048 || m_keySize == 3072 ||
-	     m_keySize == 4096))
+	if(!(m_keySize == 2048 || m_keySize == 3072 || m_keySize == 4096))
 	  m_keySize = 2048;
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
       if(m_transport == "udp")
+	m_keySize = 0;
+#endif
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+#else
+      if(m_transport == "websocket")
 	m_keySize = 0;
 #endif
     }
@@ -1189,6 +1196,17 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		query.bindValue(30, "N/A");
 #endif
 	      }
+	    else if(m_transport == "websocket")
+	      {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		if(m_keySize > 0)
+		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
+		else
+		  query.bindValue(30, "N/A");
+#else
+		query.bindValue(30, "N/A");
+#endif
+	      }
 	    else
 	      query.bindValue(30, "N/A");
 
@@ -1862,6 +1880,13 @@ void spoton_listener::slotTimeout(void)
 			    SSL_CONTROL_STRING;
 			else if(m_transport == "udp")
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+			  m_sslControlString = spoton_common::
+			    SSL_CONTROL_STRING;
+#else
+			  m_sslControlString = "N/A";
+#endif
+			else if(m_transport == "websocket")
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 			  m_sslControlString = spoton_common::
 			    SSL_CONTROL_STRING;
 #else

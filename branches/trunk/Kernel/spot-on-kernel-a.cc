@@ -2601,8 +2601,10 @@ void spoton_kernel::prepareNeighbors(void)
 			  ** list[8] - Proxy Username
 			  */
 
-			  if(list.value(7) == "HTTP" ||
-			     list.value(7) == "Socks5")
+			  QString type(list.value(7).toString().
+				       toLower().trimmed());
+
+			  if(type == "http" || type == "socks5")
 			    {
 			      proxy.setCapabilities
 				(QNetworkProxy::HostNameLookupCapability |
@@ -2618,7 +2620,7 @@ void spoton_kernel::prepareNeighbors(void)
 							 ** on failure.
 							 */
 
-			      if(list.value(7) == "HTTP")
+			      if(type == "http")
 				proxy.setType(QNetworkProxy::HttpProxy);
 			      else
 				proxy.setType(QNetworkProxy::Socks5Proxy);
@@ -2626,30 +2628,40 @@ void spoton_kernel::prepareNeighbors(void)
 			      proxy.setUser(list.value(8).toByteArray().
 					    constData());
 			    }
-			  else if(list.value(7) == "System")
+			  else if(type == "system")
 			    {
 			      QNetworkProxyQuery proxyQuery;
+			      QString transport(list.value(20).toString().
+						toLower().trimmed());
 
-			      if(list.value(20).toString().toLower().
-				 trimmed() == "tcp")
+			      if(transport == "tcp" ||
+				 transport == "websocket")
 				proxyQuery.setQueryType
 				  (QNetworkProxyQuery::TcpSocket);
-			      else
+			      else if(transport == "udp")
 				proxyQuery.setQueryType
 				  (QNetworkProxyQuery::UdpSocket);
+			      else
+				proxy.setType(QNetworkProxy::NoProxy);
 
-			      QList<QNetworkProxy> proxies
-				(QNetworkProxyFactory::
-				 systemProxyForQuery(proxyQuery));
-
-			      if(!proxies.isEmpty())
+			      if(transport == "tcp" ||
+				 transport == "udp" ||
+				 transport == "websocket")
 				{
-				  proxy = proxies.at(0);
-				  proxy.setPassword
-				    (list.value(5).toByteArray().
-				     constData());
-				  proxy.setUser(list.value(8).toByteArray().
-						constData());
+				  QList<QNetworkProxy> proxies
+				    (QNetworkProxyFactory::
+				     systemProxyForQuery(proxyQuery));
+
+				  if(!proxies.isEmpty())
+				    {
+				      proxy = proxies.at(0);
+				      proxy.setPassword
+					(list.value(5).toByteArray().
+					 constData());
+				      proxy.setUser
+					(list.value(8).toByteArray().
+					 constData());
+				    }
 				}
 			    }
 			  else

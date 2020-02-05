@@ -6011,48 +6011,38 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 {
   if(address.isNull())
     {
-      logError
-	("spoton_misc::savePublishedNeighbor(): address is empty.");
+      logError("spoton_misc::savePublishedNeighbor(): address is empty.");
       return;
     }
   else if(!crypt)
     {
-      logError
-	("spoton_misc::savePublishedNeighbor(): crypt "
-	 "is zero.");
+      logError("spoton_misc::savePublishedNeighbor(): crypt is zero.");
       return;
     }
 
-  QString connectionName("");
   QString transport(p_transport.toLower().trimmed());
 
   if(!(transport == "sctp" ||
        transport == "tcp" ||
        transport == "udp" ||
        transport == "websocket"))
-    transport = "tcp";
+    return;
 
-#ifndef SPOTON_SCTP_ENABLED
-  if(transport == "sctp")
-    transport = "tcp";
-#endif
+  /*
+  ** We are not concerned with availability of particular protocols here.
+  */
 
-#ifndef SPOTON_WEBSOCKETS_ENABLED
-  if(transport == "websocket")
-    transport = "tcp";
-#endif
+  QString connectionName("");
 
   {
     QSqlDatabase db = database(connectionName);
 
-    db.setDatabaseName
-      (homePath() + QDir::separator() + "neighbors.db");
+    db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString country
-	  (countryNameFromIPAddress(address.toString()));
+	QString country(countryNameFromIPAddress(address.toString()));
 	bool ok = true;
 
 	query.prepare
@@ -6091,12 +6081,10 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	if(address.protocol() == QAbstractSocket::IPv4Protocol)
 	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed("IPv4", &ok).toBase64());
+	    (2, crypt->encryptedThenHashed("IPv4", &ok).toBase64());
 	else
 	  query.bindValue
-	    (2, crypt->
-	     encryptedThenHashed("IPv6", &ok).toBase64());
+	    (2, crypt->encryptedThenHashed("IPv6", &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -6197,7 +6185,9 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	if(ok)
 	  {
-	    if(transport == "tcp")
+	    if(transport == "tcp" ||
+	       transport == "udp" ||
+	       transport == "websocket")
 	      {
 		QSettings settings;
 		bool ok = true;
@@ -6247,7 +6237,9 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 		(25, crypt->encryptedThenHashed("packet", &ok).toBase64());
 	  }
 
-	if(transport == "tcp")
+	if(transport == "tcp" ||
+	   transport == "udp" ||
+	   transport == "websocket")
 	  query.bindValue(26, spoton_common::SSL_CONTROL_STRING);
 	else
 	  query.bindValue(26, "N/A");
