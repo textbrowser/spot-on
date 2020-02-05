@@ -35,7 +35,6 @@ QAbstractSocket::SocketState spoton_neighbor::state(void) const
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return QAbstractSocket::SocketState(m_bluetoothSocket->state());
 #endif
-      return QAbstractSocket::UnconnectedState;
     }
   else if(m_sctpSocket)
     return QAbstractSocket::SocketState(m_sctpSocket->state());
@@ -43,8 +42,14 @@ QAbstractSocket::SocketState spoton_neighbor::state(void) const
     return m_tcpSocket->state();
   else if(m_udpSocket)
     return m_udpSocket->state();
-  else
-    return QAbstractSocket::UnconnectedState;
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      return m_webSocket->state();
+#endif
+    }
+
+  return QAbstractSocket::UnconnectedState;
 }
 
 QString spoton_neighbor::localAddress(void) const
@@ -53,8 +58,6 @@ QString spoton_neighbor::localAddress(void) const
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->localAddress().toString();
-#else
-      return "";
 #endif
     }
   else if(m_sctpSocket)
@@ -63,8 +66,14 @@ QString spoton_neighbor::localAddress(void) const
     return m_tcpSocket->localAddress().toString();
   else if(m_udpSocket)
     return m_udpSocket->localAddress().toString();
-  else
-    return "";
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      return m_webSocket->localAddress().toString();
+#endif
+    }
+
+  return "";
 }
 
 QString spoton_neighbor::peerAddress(void) const
@@ -73,8 +82,6 @@ QString spoton_neighbor::peerAddress(void) const
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
       return m_bluetoothSocket->peerAddress().toString();
-#else
-      return "";
 #endif
     }
   else if(m_sctpSocket)
@@ -83,8 +90,14 @@ QString spoton_neighbor::peerAddress(void) const
     return m_tcpSocket->peerAddress().toString();
   else if(m_udpSocket)
     return m_udpSocket->peerAddress().toString();
-  else
-    return "";
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      return m_webSocket->peerAddress().toString();
+#endif
+    }
+
+  return "";
 }
 
 QString spoton_neighbor::transport(void) const
@@ -101,14 +114,17 @@ bool spoton_neighbor::isEncrypted(void) const
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       if(m_dtls)
 	return m_dtls->isConnectionEncrypted();
-      else
-	return false;
-#else
-      return false;
 #endif
     }
-  else
-    return false;
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      return m_webSocket->requestUrl().scheme() == "wss" &&
+	m_webSocket->state() == QAbstractSocket::ConnectedState;
+#endif
+    }
+
+  return false;
 }
 
 quint16 spoton_neighbor::peerPort(void) const
@@ -119,8 +135,14 @@ quint16 spoton_neighbor::peerPort(void) const
     return m_tcpSocket->peerPort();
   else if(m_udpSocket)
     return m_udpSocket->peerPort();
-  else
-    return 0;
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      return m_webSocket->peerPort();
+#endif
+    }
+
+  return 0;
 }
 
 void spoton_neighbor::abort(void)
@@ -145,6 +167,12 @@ void spoton_neighbor::abort(void)
 
       if(m_udpSocket->multicastSocket())
 	m_udpSocket->multicastSocket()->abort();
+    }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_webSocket->abort();
+#endif
     }
 }
 
@@ -218,6 +246,12 @@ void spoton_neighbor::close(void)
 
       if(m_udpSocket->multicastSocket())
 	m_udpSocket->multicastSocket()->close();
+    }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_webSocket->close();
+#endif
     }
 }
 
