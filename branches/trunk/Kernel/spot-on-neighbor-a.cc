@@ -221,6 +221,12 @@ spoton_neighbor::spoton_neighbor
       m_udpSocket->setPeerAddress(QHostAddress(ipAddress));
       m_udpSocket->setPeerPort(port.toUShort());
     }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_webSocket->setReadBufferSize(m_maximumBufferSize);
+#endif
+    }
   else if(socketDescriptor != -1)
     spoton_misc::closeSocket(socketDescriptor);
 
@@ -236,6 +242,12 @@ spoton_neighbor::spoton_neighbor
     m_address = m_tcpSocket->peerAddress().toString();
   else if(m_udpSocket)
     m_address = ipAddress.trimmed();
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_address = m_webSocket->peerAddress().toString();
+#endif
+    }
 
   m_accountAuthenticated = 0;
   m_allowExceptions = false;
@@ -274,6 +286,12 @@ spoton_neighbor::spoton_neighbor
     m_port = m_tcpSocket->peerPort();
   else if(m_udpSocket)
     m_port = port.toUShort();
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_port = m_webSocket->peerPort();
+#endif
+    }
 
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_silenceTime = spoton_common::NEIGHBOR_SILENCE_TIME;
@@ -297,6 +315,8 @@ spoton_neighbor::spoton_neighbor
       m_requireSsl = false;
 #endif
     }
+  else if(m_transport == "websocket")
+    m_requireSsl = true;
   else
     m_requireSsl = false;
 
@@ -315,12 +335,20 @@ spoton_neighbor::spoton_neighbor
       m_useSsl = false;
 #endif
     }
+  else if(m_transport == "websocket")
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_useSsl = true;
+#else
+      m_useSsl = false;
+#endif
+    }
 
   m_waitforbyteswritten_msecs = 0;
 
   if(m_useSsl)
     {
-      if(m_tcpSocket || m_udpSocket)
+      if(m_tcpSocket || m_udpSocket || m_webSocket)
 	{
 	  QSslConfiguration configuration;
 
@@ -379,6 +407,11 @@ spoton_neighbor::spoton_neighbor
 
 		  if(m_tcpSocket)
 		    m_tcpSocket->setSslConfiguration(configuration);
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		  if(m_webSocket)
+		    m_webSocket->setSslConfiguration(configuration);
+#endif
 		}
 	      else
 		{
