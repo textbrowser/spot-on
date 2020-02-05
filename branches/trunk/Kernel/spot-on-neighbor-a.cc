@@ -679,7 +679,7 @@ spoton_neighbor::spoton_neighbor
   m_kernelInterfaces = spoton_kernel::interfaces();
   m_keySize = qAbs(keySize);
 
-  if(transport == "tcp" || transport == "udp")
+  if(transport == "tcp" || transport == "udp" || transport == "websocket")
     {
       if(m_keySize != 0)
 	if(!(m_keySize == 2048 || m_keySize == 3072 ||
@@ -688,6 +688,12 @@ spoton_neighbor::spoton_neighbor
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
       if(m_transport == "udp")
+	m_keySize = 0;
+#endif
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+#else
+      if(m_transport == "websocket")
 	m_keySize = 0;
 #endif
     }
@@ -732,6 +738,7 @@ spoton_neighbor::spoton_neighbor
   m_tcpSocket = 0;
   m_transport = transport;
   m_udpSocket = 0;
+  m_webSocket = 0;
   m_waitforbyteswritten_msecs =
     qBound(0,
 	   waitforbyteswritten_msecs,
@@ -776,6 +783,17 @@ spoton_neighbor::spoton_neighbor
       m_useSsl = false;
 #endif
     }
+  else if(m_transport == "websocket")
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      if(m_keySize != 0)
+	m_useSsl = true;
+      else
+	m_useSsl = false;
+#else
+      m_useSsl = false;
+#endif
+    }
   else
     m_useSsl = false;
 
@@ -788,6 +806,13 @@ spoton_neighbor::spoton_neighbor
     m_tcpSocket = new spoton_neighbor_tcp_socket(this);
   else if(m_transport == "udp")
     m_udpSocket = new spoton_neighbor_udp_socket(this);
+  else if(m_transport == "websocket")
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_webSocket = new QWebSocket
+	("", QWebSocketProtocol::VersionLatest, this);
+#endif
+    }
 
   if(m_sctpSocket)
     m_sctpSocket->setReadBufferSize(m_maximumBufferSize);
@@ -798,13 +823,22 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_udpSocket)
     m_udpSocket->setProxy(proxy);
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      m_webSocket->setProxy(proxy);
+      m_webSocket->setReadBufferSize(m_maximumBufferSize);
+#endif
+    }
 
   QByteArray certificate;
   QByteArray privateKey;
   QByteArray publicKey;
   QString error("");
 
-  if((m_transport == "tcp" || m_transport == "udp") && m_useSsl)
+  if((m_transport == "tcp" ||
+      m_transport == "udp" ||
+      m_transport == "websocket") && m_useSsl)
     {
       spoton_crypt::generateSslKeys
 	(m_keySize,
@@ -827,7 +861,7 @@ spoton_neighbor::spoton_neighbor
 
   if(!privateKey.isEmpty())
     {
-      if(m_tcpSocket || m_udpSocket)
+      if(m_tcpSocket || m_udpSocket || m_webSocket)
 	{
 	  QSslConfiguration configuration;
 
@@ -872,6 +906,11 @@ spoton_neighbor::spoton_neighbor
 #endif
 	      if(m_tcpSocket)
 		m_tcpSocket->setSslConfiguration(configuration);
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	      if(m_webSocket)
+		m_webSocket->setSslConfiguration(configuration);
+#endif
 	    }
 	  else
 	    {
@@ -1022,6 +1061,41 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(readyRead(void)),
 	      this,
 	      SLOT(slotReadyRead(void)));
+    }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      connect(m_webSocket,
+	      SIGNAL(binaryMessageReceived(const QByteArray &)),
+	      this,
+	      SLOT(slotBinaryMessageReceived(const QByteArray &)));
+      connect(m_webSocket,
+	      SIGNAL(connected(void)),
+	      this,
+	      SLOT(slotConnected(void)));
+      connect(m_webSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SIGNAL(disconnected(void)));
+      connect(m_webSocket,
+	      SIGNAL(disconnected(void)),
+	      this,
+	      SLOT(slotDisconnected(void)));
+      connect(m_webSocket,
+	      SIGNAL(error(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+      connect(m_webSocket,
+	      SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &,
+						 QAuthenticator *)),
+	      this,
+	      SLOT(slotProxyAuthenticationRequired(const QNetworkProxy &,
+						   QAuthenticator *)));
+      connect(m_webSocket,
+	      SIGNAL(sslErrors(const QList<QSslError> &)),
+	      this,
+	      SLOT(slotSslErrors(const QList<QSslError> &)));
+#endif
     }
 
   connect(&m_accountTimer,
@@ -1494,20 +1568,26 @@ void spoton_neighbor::slotConnected(void)
 		  country = spoton_misc::countryNameFromIPAddress
 		    (m_sctpSocket->peerAddress().isNull() ?
 		     m_sctpSocket->peerName() :
-		     m_sctpSocket->peerAddress().
-		     toString());
+		     m_sctpSocket->peerAddress().toString());
 		else if(m_tcpSocket)
 		  country = spoton_misc::countryNameFromIPAddress
 		    (m_tcpSocket->peerAddress().isNull() ?
 		     m_tcpSocket->peerName() :
-		     m_tcpSocket->peerAddress().
-		     toString());
+		     m_tcpSocket->peerAddress().toString());
 		else if(m_udpSocket)
 		  country = spoton_misc::countryNameFromIPAddress
 		    (m_udpSocket->peerAddress().isNull() ?
 		     m_udpSocket->peerName() :
-		     m_udpSocket->peerAddress().
-		     toString());
+		     m_udpSocket->peerAddress().toString());
+		else if(m_webSocket)
+		  {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		    country = spoton_misc::countryNameFromIPAddress
+		      (m_webSocket->peerAddress().isNull() ?
+		       m_webSocket->peerName() :
+		       m_webSocket->peerAddress().toString());
+#endif
+		  }
 
 		bool ok = true;
 
@@ -1548,6 +1628,14 @@ void spoton_neighbor::slotConnected(void)
 		    query.bindValue
 		      (2, m_udpSocket->localAddress().toString());
 		    query.bindValue(3, m_udpSocket->localPort());
+		  }
+		else if(m_webSocket)
+		  {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+		    query.bindValue
+		      (2, m_webSocket->localAddress().toString());
+		    query.bindValue(3, m_webSocket->localPort());
+#endif
 		  }
 
 		if(ok)
@@ -1653,8 +1741,21 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 	      (QString("spoton_neighbor::slotError(): socket error "
 		       "(%1) for "
 		       "%2:%3. "
-		       "Disabling SSL.").arg(m_tcpSocket->errorString()).
+		       "Disabling SSL.").
+	       arg(m_tcpSocket->errorString()).
 	       arg(m_address).arg(m_port));
+	  else if(m_webSocket)
+	    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	      spoton_misc::logError
+		(QString("spoton_neighbor::slotError(): socket error "
+			 "(%1) for "
+			 "%2:%3. "
+			 "Disabling SSL.").
+		 arg(m_webSocket->errorString()).
+		 arg(m_address).arg(m_port));
+#endif
+	    }
 
 	  return;
 	}
@@ -1668,7 +1769,8 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").arg(m_tcpSocket->errorString()).
+		 "Aborting socket.").
+	 arg(m_tcpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
     }
@@ -1680,9 +1782,25 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").arg(m_udpSocket->errorString()).
+		 "Aborting socket.").
+	 arg(m_udpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
+    }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      emit notification
+	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	 arg(m_address).arg(m_port).arg(m_webSocket->errorString()));
+      spoton_misc::logError
+	(QString("spoton_neighbor::slotError(): "
+		 "socket error (%1) for %2:%3. "
+		 "Aborting socket.").
+	 arg(m_webSocket->errorString()).
+	 arg(m_address).
+	 arg(m_port));
+#endif
     }
   else
     emit notification
@@ -1895,6 +2013,13 @@ void spoton_neighbor::slotProxyAuthenticationRequired
 	{
 	  authenticator->setPassword(m_udpSocket->proxy().password());
 	  authenticator->setUser(m_udpSocket->proxy().user());
+	}
+      else if(m_webSocket)
+	{
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  authenticator->setPassword(m_webSocket->proxy().password());
+	  authenticator->setUser(m_webSocket->proxy().user());
+#endif
 	}
       else
 	*authenticator = QAuthenticator();
@@ -2934,6 +3059,27 @@ void spoton_neighbor::slotTimeout(void)
 		       arg(m_port));
 #endif
 	      }
+	  }
+	else if(m_webSocket)
+	  {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	    if(m_webSocket->state() == QAbstractSocket::UnconnectedState)
+	      {
+		saveStatus("connecting");
+
+		QUrl url;
+
+		url.setHost(m_address);
+		url.setPort(m_port);
+
+		if(m_useSsl)
+		  url.setScheme("wss");
+		else
+		  url.setScheme("ws");
+
+		m_webSocket->open(url);
+	      }
+#endif
 	  }
       }
 
