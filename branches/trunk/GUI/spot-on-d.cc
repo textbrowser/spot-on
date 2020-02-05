@@ -2349,13 +2349,22 @@ void spoton::slotSetListenerSSLControlString(void)
   if(keySize <= 0 || oid.isEmpty())
     return;
 
+  if(transport == "TCP")
+    goto continue_label;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(!(transport == "TCP" || transport == "UDP"))
-    return;
-#else
-  if(transport != "TCP")
-    return;
+  if(transport == "UDP")
+    goto continue_label;
 #endif
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  if(transport == "WEBSOCKET")
+    goto continue_label;
+#endif
+
+  return;
+
+ continue_label:
 
   bool ok = true;
 
@@ -2433,13 +2442,22 @@ void spoton::slotSetNeighborSSLControlString(void)
   if(keySize <= 0 || oid.isEmpty())
     return;
 
+  if(transport == "TCP")
+    goto continue_label;
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
-  if(!(transport == "TCP" || transport == "UDP"))
-    return;
-#else
-  if(transport != "TCP")
-    return;
+  if(transport == "UDP")
+    goto continue_label;
 #endif
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  if(transport == "WEBSOCKET")
+    goto continue_label;
+#endif
+
+  return;
+
+ continue_label:
 
   bool ok = true;
 

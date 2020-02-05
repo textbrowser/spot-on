@@ -4885,6 +4885,7 @@ void spoton::slotTransportChanged(int index)
   ** 1 - SCTP
   ** 2 - TCP
   ** 3 - UDP
+  ** 4 - WebSocket
   */
 
   if(m_ui.listenerTransport == sender())
@@ -4899,6 +4900,14 @@ void spoton::slotTransportChanged(int index)
 #else
       m_ui.days_valid->setEnabled(index == 2);
 #endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.days_valid->setEnabled(true);
+#else
+        m_ui.days_valid->setEnabled(false);
+#endif
+
       m_ui.ipv4Listener->setEnabled(index != 0);
       m_ui.ipv6Listener->setEnabled(index != 0);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
@@ -4907,6 +4916,14 @@ void spoton::slotTransportChanged(int index)
 #else
       m_ui.listenerKeySize->setEnabled(index == 2);
 #endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.listenerKeySize->setEnabled(true);
+#else
+        m_ui.listenerKeySize->setEnabled(false);
+#endif
+
 #if defined(Q_OS_WIN)
       m_ui.listenerShareAddress->setEnabled(false);
 #else
@@ -4922,6 +4939,19 @@ void spoton::slotTransportChanged(int index)
       m_ui.recordIPAddress->setEnabled(index == 2);
 #endif
 
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	{
+	  m_ui.listenersSslControlString->setEnabled(true);
+	  m_ui.recordIPAddress->setEnabled(true);
+	}
+#else
+        {
+	  m_ui.listenersSslControlString->setEnabled(false);
+	  m_ui.recordIPAddress->setEnabled(false);
+	}
+#endif
+
       if(m_ui.ipv6Listener->isChecked())
 	m_ui.listenerScopeId->setEnabled(index != 0);
       else
@@ -4932,6 +4962,13 @@ void spoton::slotTransportChanged(int index)
 				   index == 3);  // UDP
 #else
       m_ui.sslListener->setEnabled(index == 2);
+#endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.sslListener->setEnabled(true);
+#else
+        m_ui.sslListener->setEnabled(false);
 #endif
     }
   else if(m_ui.neighborTransport == sender())
@@ -4950,6 +4987,13 @@ void spoton::slotTransportChanged(int index)
       m_ui.neighborKeySize->setEnabled(index == 2);
 #endif
 
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.neighborKeySize->setEnabled(true);
+#else
+        m_ui.neighborKeySize->setEnabled(false);
+#endif
+
       if(m_ui.ipv6Neighbor->isChecked())
 	m_ui.neighborScopeId->setEnabled(index != 0);
       else
@@ -4960,6 +5004,13 @@ void spoton::slotTransportChanged(int index)
 						 index == 3);  // UDP
 #else
       m_ui.neighborsSslControlString->setEnabled(index == 2);
+#endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.neighborsSslControlString->setEnabled(true);
+#else
+        m_ui.neighborsSslControlString->setEnabled(false);
 #endif
 
       if(index == 0 || index == 1)
@@ -4975,6 +5026,19 @@ void spoton::slotTransportChanged(int index)
 #else
       m_ui.requireSsl->setEnabled(index == 2);
       m_ui.sslKeySizeLabel->setEnabled(index == 2);
+#endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	{
+	  m_ui.requireSsl->setEnabled(true);
+	  m_ui.sslKeySizeLabel->setEnabled(true);
+	}
+#else
+        {
+	  m_ui.requireSsl->setEnabled(false);
+	  m_ui.sslKeySizeLabel->setEnabled(false);
+	}
 #endif
     }
 }
