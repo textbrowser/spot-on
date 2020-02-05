@@ -605,6 +605,15 @@ int spoton_neighbor::write(const char *data, const int size)
 		}
 	    }
 	}
+      else if(m_webSocket)
+	{
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  qint64 minimum = spoton_common::MAXIMUM_TCP_PACKET_SIZE;
+
+	  sent = m_webSocket->sendBinaryMessage
+	    (QByteArray(data, static_cast<int> (qMin(minimum, remaining))));
+#endif
+	}
       else
 	sent = 0;
 
