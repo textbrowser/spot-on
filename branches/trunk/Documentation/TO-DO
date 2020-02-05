@@ -221,6 +221,7 @@ Completed Items
 155.   Key pools via SMP.
 156.   Auto-clear textedit widgets that contain too much data.
 157.   Temporary containers. Will avoid dropped packets.
+158.   WebSockets.
 
 Ignored Items
 
@@ -265,4 +266,3 @@ Remaining Items
 7.     Remove obsolete includes.
 8.     If possible, include all Web server resources into the binary.
 9.     IMAP and optional removal of messages; retrieve latest.
-10.    Web sockets.
