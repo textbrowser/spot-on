@@ -3618,8 +3618,8 @@ void spoton_neighbor::recordCertificateOrAbort(void)
       if(m_tcpSocket)
 	certificate = m_tcpSocket->sslConfiguration().localCertificate();
       else if(m_udpSocket)
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	  certificate = m_udpSslConfiguration.localCertificate();
 #endif
 	}
