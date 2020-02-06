@@ -49,10 +49,22 @@
 class spoton_mceliece_private_key
 {
  public:
+  enum Conversions
+  {
+   FOA = 0,
+   FOB,
+   ZZZ
+  };
+
   spoton_mceliece_private_key(const char *privateKey,
 			      const size_t privateKeyLength);
   spoton_mceliece_private_key(const size_t m, const size_t t);
   ~spoton_mceliece_private_key();
+
+  Conversions conversion(void) const
+  {
+    return m_conversion;
+  }
 
   NTL::GF2EX X(void) const
   {
@@ -92,11 +104,6 @@ class spoton_mceliece_private_key
   NTL::vec_GF2E L(void) const
   {
     return m_L;
-  }
-
-  QByteArray conversion(void) const
-  {
-    return m_conversion;
   }
 
   bool ok(void) const
@@ -144,6 +151,7 @@ class spoton_mceliece_private_key
   void swapSwappingColumns(const long int i, const long int j);
 
  private:
+  Conversions m_conversion;
   NTL::GF2EX m_X;
   NTL::GF2EX m_gZ;
   NTL::mat_GF2 m_G;
@@ -152,7 +160,6 @@ class spoton_mceliece_private_key
   NTL::mat_GF2 m_S;
   NTL::mat_GF2 m_Sinv;
   NTL::vec_GF2E m_L;
-  QByteArray m_conversion;
   bool m_ok;
   size_t m_k;
   size_t m_m;
@@ -281,11 +288,12 @@ class spoton_mceliece
   void publicKeyParameters(QByteArray &publicKey) const;
 
  private:
-  QByteArray m_conversion; /*
-			   ** 000 - None
-			   ** foa - Fujisaki-Okamoto Model A
-			   ** fob - Fujisaki-Okamoto Model B
-			   */
+  spoton_mceliece_private_key::Conversions
+  m_conversion; /*
+		** 000 - None
+		** foa - Fujisaki-Okamoto Model A
+		** fob - Fujisaki-Okamoto Model B
+		*/
   spoton_mceliece_private_key *m_privateKey;
   spoton_mceliece_public_key *m_publicKey;
   size_t m_k;
