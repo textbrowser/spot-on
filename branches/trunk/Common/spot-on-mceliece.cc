@@ -826,8 +826,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       */
 
       NTL::GF2EX syndrome = NTL::GF2EX::zero();
+      const std::vector<NTL::GF2EX> &v(m_privateKey->preSynTab());
       long int n = static_cast<long int> (m_n);
-      std::vector<NTL::GF2EX> v(m_privateKey->preSynTab());
 
       for(long int i = 0; i < n; i++)
 	if(ccar[i] != 0)
@@ -924,7 +924,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	}
 
       NTL::vec_GF2 e;
-      NTL::vec_GF2E L = m_privateKey->L();
+      const NTL::vec_GF2E &L(m_privateKey->L());
 
       e.SetLength(n);
 
@@ -937,7 +937,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       NTL::vec_GF2 m;
       NTL::vec_GF2 mcar;
       NTL::vec_GF2 vec_GF2;
-      std::vector<long int> swappingColumns(m_privateKey->swappingColumns());
+      const std::vector<long int> &swappingColumns
+	(m_privateKey->swappingColumns());
 
       vec_GF2.SetLength(n);
 
@@ -1482,9 +1483,9 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       ** Create the parity-check matrix H.
       */
 
-      NTL::GF2EX gZ = m_privateKey->gZ();
       NTL::mat_GF2 H;
-      NTL::vec_GF2E L = m_privateKey->L();
+      const NTL::GF2EX &gZ(m_privateKey->gZ());
+      const NTL::vec_GF2E &L(m_privateKey->L());
       long int m = static_cast<long int> (m_m);
       long int n = static_cast<long int> (m_n);
       long int t = static_cast<long int> (m_t);
@@ -1589,7 +1590,8 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 	  }
 
       NTL::mat_GF2 mat_GF2;
-      std::vector<long int> swappingColumns(m_privateKey->swappingColumns());
+      const std::vector<long int> &swappingColumns
+	(m_privateKey->swappingColumns());
 
       mat_GF2.SetDims(H.NumRows(), H.NumCols());
 
@@ -1656,13 +1658,12 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey) const
 	<< m_privateKey->gZ();
 
       NTL::vec_long v;
+      const std::vector<long int> &swappingColumns
+	(m_privateKey->swappingColumns());
 
-      v.SetLength
-	(static_cast<long int> (m_privateKey->swappingColumns().size()));
+      v.SetLength(static_cast<long int> (swappingColumns.size()));
 
-      std::vector<long int> swappingColumns(m_privateKey->swappingColumns());
-
-      for(size_t i = 0; i < m_privateKey->swappingColumns().size(); i++)
+      for(size_t i = 0; i < swappingColumns.size(); i++)
 	v[static_cast<long int> (i)] = swappingColumns[i];
 
       s << v;
