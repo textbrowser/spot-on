@@ -796,6 +796,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    if(salt2.length() != 32)
 	      throw std::runtime_error("salt2.length() mismatch");
+
 	    break;
 	  }
 	case spoton_mceliece_private_key::FOB:
@@ -1229,7 +1230,8 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	{
 	  std::bitset<CHAR_BIT> b(plaintext[i]);
 
-	  for(long int j = 0; j < static_cast<long int> (b.size()) && k < m_k;
+	  for(long int j = 0;
+	      j < static_cast<long int> (b.size()) && k < m_k;
 	      j++, k++)
 	    m[static_cast<long int> (k)] = b[static_cast<size_t> (j)];
 	}
