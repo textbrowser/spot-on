@@ -394,7 +394,7 @@ QUuid spoton_neighbor::receivedUuid(void)
   return m_receivedUuid;
 }
 
-bool spoton_neighbor::readyToWrite(void)
+bool spoton_neighbor::readyToWrite(void) const
 {
   if(!(state() == QAbstractSocket::BoundState ||
        state() == QAbstractSocket::ConnectedState))
@@ -455,7 +455,9 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   return ok;
 }
 
-int spoton_neighbor::write(const char *data, const int size)
+int spoton_neighbor::write(const char *data,
+			   const int size,
+			   const bool emitDropped)
 {
   if(!data || size < 0)
     return -1;
@@ -644,7 +646,8 @@ int spoton_neighbor::write(const char *data, const int size)
 	m_bytesDiscardedOnWrite += remaining;
       }
 
-      emit dropped(QByteArray(d, size));
+      if(emitDropped)
+	emit dropped(QByteArray(d, size));
     }
 
   return static_cast<int> (static_cast<qint64> (size) - remaining);

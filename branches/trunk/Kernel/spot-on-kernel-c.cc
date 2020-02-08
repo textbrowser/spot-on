@@ -292,11 +292,13 @@ void spoton_kernel::slotDroppedTimeout(void)
 
   if(!neighbor)
     m_droppedPackets.remove(key);
-  else
+  else if(neighbor->readyToWrite())
     {
       const QByteArray &data(m_droppedPackets.value(key));
 
-      if(neighbor->write(data.constData(), data.length()) == data.length())
+      if(neighbor->write(data.constData(),
+			 data.length(),
+			 false) == data.length())
 	m_droppedPackets.remove(key);
     }
 

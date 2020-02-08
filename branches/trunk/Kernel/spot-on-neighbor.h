@@ -269,8 +269,9 @@ class spoton_neighbor: public QThread
   QString transport(void) const;
   QUuid receivedUuid(void);
   bool isEncrypted(void) const;
+  bool readyToWrite(void) const;
   bool writeMessage006X(const QByteArray &data, const QString &messageType);
-  int write(const char *data, const int size);
+  int write(const char *data, const int size, const bool emitDropped = true);
   qint64 id(void) const;
   quint16 peerPort(void) const;
   void abort(void);
@@ -280,10 +281,8 @@ class spoton_neighbor: public QThread
 
  private:
   QAtomicInt m_abort;
-  QAtomicInt m_accountAuthenticated;
   QAtomicInt m_kernelInterfaces;
   QAtomicInt m_passthrough;
-  QAtomicInt m_useAccounts;
   QAtomicInt m_waitforbyteswritten_msecs;
   QByteArray m_accountClientSentSalt;
   QByteArray m_accountName;
@@ -352,6 +351,8 @@ class spoton_neighbor: public QThread
   int m_laneWidth;
   int m_silenceTime;
   int m_sourceOfRandomness;
+  mutable QAtomicInt m_accountAuthenticated;
+  mutable QAtomicInt m_useAccounts;
   qint64 m_id;
   qint64 m_listenerOid;
   qint64 m_maximumBufferSize;
@@ -368,7 +369,6 @@ class spoton_neighbor: public QThread
     (const QByteArray &data,
      QList<QByteArray> &symmetricKeys,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
-  bool readyToWrite(void);
   void addToBytesWritten(const qint64 bytesWritten);
   void bundlePrivateApplicationData
     (const QByteArray &data,
