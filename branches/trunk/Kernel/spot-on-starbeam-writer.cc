@@ -162,6 +162,8 @@ void spoton_starbeam_writer::processData
     list.replace(i, QByteArray::fromBase64(list.at(i)));
 
   bool ok = true;
+  const int expectedEntries0060 = 12;
+  const int expectedEntries0061 = 4;
   spoton_crypt crypt(magnet.value("ct").constData(),
 		     magnet.value("ht").constData(),
 		     QByteArray(),
@@ -170,8 +172,6 @@ void spoton_starbeam_writer::processData
 		     0,
 		     0,
 		     "");
-  static const int expectedEntries0060 = 12;
-  static const int expectedEntries0061 = 4;
 
   data = crypt.decrypted(list.value(0), &ok);
 

@@ -3572,10 +3572,10 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   X509_NAME *subject = 0;
   X509_NAME_ENTRY *commonNameEntry = 0;
   char *buffer = 0;
-  int length = 0;
-  static const unsigned char *organization =
+  const unsigned char *organization =
     reinterpret_cast<const unsigned char *>
     ("Spot-On Origami Self-Signed Certificate");
+  int length = 0;
   unsigned char *commonName = 0;
 
   if(!error.isEmpty())

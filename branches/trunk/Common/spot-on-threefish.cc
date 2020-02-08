@@ -218,7 +218,7 @@ static void threefish_decrypt_implementation(char *D,
   */
 
   bool error = false;
-  static const uint64_t C240 = 0x1bd11bdaa9fc1a22;
+  const uint64_t C240 = 0x1bd11bdaa9fc1a22;
   uint64_t *f = new (std::nothrow) uint64_t[Nw];
   uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
@@ -389,7 +389,7 @@ static void threefish_encrypt_implementation(char *E,
   */
 
   bool error = false;
-  static const uint64_t C240 = 0x1bd11bdaa9fc1a22;
+  const uint64_t C240 = 0x1bd11bdaa9fc1a22;
   uint64_t *f = new (std::nothrow) uint64_t[Nw];
   uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
