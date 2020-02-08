@@ -1258,17 +1258,6 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		query.bindValue(30, "N/A");
 #endif
 	      }
-	    else if(m_transport == "websocket")
-	      {
-#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-		if(m_keySize > 0)
-		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
-		else
-		  query.bindValue(30, "N/A");
-#else
-		query.bindValue(30, "N/A");
-#endif
-	      }
 	    else
 	      query.bindValue(30, "N/A");
 
@@ -2379,9 +2368,21 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	    query.bindValue(0, m_address);
 	    query.bindValue(1, m_port);
-	    query.bindValue
-	      (2, s_crypt->
-	       encryptedThenHashed(QByteArray(), &ok).toBase64());
+
+	    if(QHostAddress(m_address).protocol() ==
+	       QAbstractSocket::IPv4Protocol)
+	      query.bindValue
+		(2, s_crypt->
+		 encryptedThenHashed("IPv4", &ok).toBase64());
+	    else if(QHostAddress(m_address).protocol() ==
+		    QAbstractSocket::IPv6Protocol)
+	      query.bindValue
+		(2, s_crypt->
+		 encryptedThenHashed("IPv6", &ok).toBase64());
+	    else
+	      query.bindValue
+		(2, s_crypt->
+		 encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
@@ -2490,8 +2491,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(19, s_crypt->encryptedThenHashed
-		 (proxyUsername.toUtf8(), &ok).
+		(19, s_crypt->encryptedThenHashed(proxyUsername.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
