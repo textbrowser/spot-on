@@ -395,8 +395,9 @@ spoton_listener::spoton_listener
 
   m_maximumClients = maximumClients;
 
-  if(m_maximumClients <= 0)
-    m_maximumClients = std::numeric_limits<int>::max();
+  if(m_maximumClients <= 0 ||
+     m_maximumClients >= spoton_common::MAXIMUM_PENDING_CONNECTIONS)
+    m_maximumClients = spoton_common::MAXIMUM_PENDING_CONNECTIONS;
 
   if(m_sctpServer)
     m_sctpServer->setMaxPendingConnections(m_maximumClients);
@@ -2050,7 +2051,13 @@ void spoton_listener::slotTimeout(void)
 			    }
 			  else
 			    maximumPendingConnections =
-			      std::numeric_limits<int>::max();
+			      spoton_common::MAXIMUM_PENDING_CONNECTIONS;
+
+			  if(maximumPendingConnections <= 0 ||
+			     maximumPendingConnections >=
+			     spoton_common::MAXIMUM_PENDING_CONNECTIONS)
+			    maximumPendingConnections =
+			      spoton_common::MAXIMUM_PENDING_CONNECTIONS;
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 			  if(m_bluetoothServer)
