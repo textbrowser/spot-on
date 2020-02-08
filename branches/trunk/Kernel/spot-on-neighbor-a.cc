@@ -1483,26 +1483,34 @@ void spoton_neighbor::slotConnected(void)
        static_cast<qint64> (m_tcpSocket->socketDescriptor()),
        0);
   else if(m_udpSocket)
-    if(m_isUserDefined)
-      {
-	spoton_socket_options::setSocketOptions
-	  (m_socketOptions,
-	   m_transport,
-	   static_cast<qint64> (m_udpSocket->socketDescriptor()),
-	   0);
+    {
+      if(m_isUserDefined)
+	{
+	  spoton_socket_options::setSocketOptions
+	    (m_socketOptions,
+	     m_transport,
+	     static_cast<qint64> (m_udpSocket->socketDescriptor()),
+	     0);
 
-	QHostAddress address(m_address);
+	  QHostAddress address(m_address);
 
-	address.setScopeId(m_scopeId);
-	m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
+	  address.setScopeId(m_scopeId);
+	  m_udpSocket->initializeMulticast(address, m_port, m_socketOptions);
 
-	if(m_udpSocket->multicastSocket())
-	  connect(m_udpSocket->multicastSocket(),
-		  SIGNAL(readyRead(void)),
-		  this,
-		  SLOT(slotReadyRead(void)),
-		  Qt::UniqueConnection);
-      }
+	  if(m_udpSocket->multicastSocket())
+	    connect(m_udpSocket->multicastSocket(),
+		    SIGNAL(readyRead(void)),
+		    this,
+		    SLOT(slotReadyRead(void)),
+		    Qt::UniqueConnection);
+	}
+    }
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      recordCertificateOrAbort();
+#endif
+    }
 
   /*
   ** The local address is the address of the proxy. Unfortunately,

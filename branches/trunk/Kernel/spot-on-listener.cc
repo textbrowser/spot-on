@@ -2503,8 +2503,11 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(22, s_crypt->encryptedThenHashed
-		 (QByteArray(), &ok).toBase64());
+		(22,
+		 s_crypt->encryptedThenHashed(m_webSocketServer->
+					      sslConfiguration().
+					      localCertificate().toPem(),
+					      &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
