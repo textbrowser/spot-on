@@ -83,7 +83,7 @@ typedef _ntl_limb_t *_ntl_limb_t_ptr;
 
 
 
-#if (NTL_ZZ_NBITS >= NTL_BITS_PER_LONG)
+#if (NTL_ZZ_NBITS > NTL_BITS_PER_LONG-2)
 
 static inline double 
 DBL(_ntl_limb_t x)
@@ -357,7 +357,31 @@ _ntl_mpn_sub (_ntl_limb_t *rp, const _ntl_limb_t *ap, long an, const  _ntl_limb_
 
 #ifndef NTL_HAVE_LL_TYPE
 
+
 // (t, a) = b*d + a + t
+#if 0
+// This is true to the original LIP spirit, and should
+// still work assuming we have something close to the correct
+// relative precision.  However, I find that on both haswell and skylake,
+// it makes multiplication about twice as slow, which is a bit surprising
+// I think the main issue is the extra int to double conversion.
+static inline void
+_ntl_addmulp(_ntl_limb_t& a, _ntl_limb_t b, _ntl_limb_t d, _ntl_limb_t& t) 
+{
+   _ntl_limb_t t1 = b * d; 
+   _ntl_limb_t t2 = a + t;
+   _ntl_limb_t t3 = CLIP(t1+t2);
+
+   double d1 = DBL(b) * DBL(d);
+   double d2 = d1 + double( _ntl_signed_limb_t(t2) - _ntl_signed_limb_t(t3) 
+                         + _ntl_signed_limb_t(NTL_ZZ_RADIX/2) );
+   double d3 = d2 * NTL_ZZ_FRADIX_INV;
+
+   t = _ntl_signed_limb_t(d3);
+   a = t3;
+}
+
+#else
 #if (NTL_NAIL_BITS == 2)
 static inline void
 _ntl_addmulp(_ntl_limb_t& a, _ntl_limb_t b, _ntl_limb_t d, _ntl_limb_t& t) 
@@ -378,6 +402,7 @@ _ntl_addmulp(_ntl_limb_t& a, _ntl_limb_t b, _ntl_limb_t d, _ntl_limb_t& t)
    t = t2 + ( (t1 - (t2 << NTL_ZZ_NBITS)) >> NTL_ZZ_NBITS ); 
    a = CLIP(t1);
 }
+#endif
 #endif
 
 // (t, a) = b*b + a

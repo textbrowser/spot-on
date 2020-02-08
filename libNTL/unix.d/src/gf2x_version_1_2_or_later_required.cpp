@@ -1,11 +1,9 @@
-#include <cstdlib>
-#include <cstdio>
 #include <NTL/config.h>
-
-using namespace std;
 
 #if (defined(NTL_GF2X_LIB) && defined(NTL_THREADS))
 // we require v1.2 or later
+
+#include <gf2x.h>
 
 #ifndef GF2X_VERSION_MAJOR
 // versions after v1.2 should define GF2X_VERSION_MAJOR

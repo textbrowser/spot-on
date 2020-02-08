@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/ntl-11.4.1/doc/ZZ.cpp.html</title>
+<title>~/ntl-11.4.2/doc/ZZ.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -292,7 +292,7 @@ ZZ GCD(<span class="Type">const</span> ZZ&amp; a, <span class="Type">const</span
 <span class="Comment">// adjusted according to the signs of a and b.</span>
 
 <span class="Comment">// The implementation may or may not Euclid's algorithm,</span>
-<span class="Comment">// but the coefficients a and t are always computed as if </span>
+<span class="Comment">// but the coefficients s and t are always computed as if </span>
 <span class="Comment">// it did.</span>
 
 <span class="Comment">// In particular, the following inequalties should hold:</span>
@@ -421,7 +421,7 @@ ZZ PowerMod(<span class="Type">const</span> ZZ&amp; a, <span class="Type">long</
 <span class="Comment">//   mulmod_t ninv = PrepMulMod(n);</span>
 
 mulmod_t PrepMulMod(<span class="Type">long</span> n);
-<span class="Comment">// Prepare auxilliary data for MulMod.</span>
+<span class="Comment">// Prepare auxiliary data for MulMod.</span>
 
 <span class="Type">long</span> MulModPrecon(<span class="Type">long</span> a, <span class="Type">long</span> b, <span class="Type">long</span> n, mulmod_precon_t bninv);
 <span class="Comment">// return (a*b)%n.  </span>
@@ -435,7 +435,7 @@ mulmod_t PrepMulMod(<span class="Type">long</span> n);
 
 mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="Type">long</span> n);
 mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="Type">long</span> n, mulmod_t ninv);
-<span class="Comment">// Prepare auxilliary data for MulModPrecon.</span>
+<span class="Comment">// Prepare auxiliary data for MulModPrecon.</span>
 <span class="Comment">// In the second version, ninv = PrepMulMod(n).</span>
 
 
@@ -464,7 +464,7 @@ mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="
 <span class="Comment">// bninv = MulModPrecon(b, n)</span>
 
 
-<span class="Comment">// The following is provided for lagacy support, but is not generally </span>
+<span class="Comment">// The following is provided for legacy support, but is not generally </span>
 <span class="Comment">// recommended:</span>
 
 <span class="Type">long</span> MulDivRem(<span class="Type">long</span>&amp; q, <span class="Type">long</span> a, <span class="Type">long</span> b, <span class="Type">long</span> n, muldivrem_t bninv);
@@ -477,7 +477,7 @@ mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="
 
  muldivrem_t PrepMulDivRem(<span class="Type">long</span> b, <span class="Type">long</span> n);
  muldivrem_t PrepMulDivRem(<span class="Type">long</span> b, <span class="Type">long</span> n, mulmod_t ninv);
-<span class="Comment">// Prepare auxilliary data for MulDivRem.</span>
+<span class="Comment">// Prepare auxiliary data for MulDivRem.</span>
 <span class="Comment">// In the second version, ninv = PrepMulMod(n).</span>
 
 <span class="Comment">// NOTE: despite the similarity in the interface to MulModPrecon,</span>
@@ -508,7 +508,7 @@ mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="
 <span class="Comment">// It is highly recommended that old client codes be updated.  However, one may</span>
 <span class="Comment">// build NTL with the configuration option NTL_LEGACY_SP_MULMOD=on, which will</span>
 <span class="Comment">// cause the interfaces and implementations to revert to their pre-v9.0</span>
-<span class="Comment">// definitions.  This option will also make the following (obslete) function</span>
+<span class="Comment">// definitions.  This option will also make the following (obsolete) function</span>
 <span class="Comment">// visible:</span>
 
     <span class="Type">long</span> MulMod2(<span class="Type">long</span> a, <span class="Type">long</span> b, <span class="Type">long</span> n, <span class="Type">double</span> bninv);
@@ -527,7 +527,7 @@ mulmod_precon_t PrepMulModPrecon(<span class="Type">long</span> b, <span class="
 <span class="Comment">// precision hardware on x86 machines.  This also allows for 60-bit moduli on</span>
 <span class="Comment">// 64-bit machines.</span>
 
-<span class="Comment">// If 128-bit integer types are not avalable, or if you build NTL with the</span>
+<span class="Comment">// If 128-bit integer types are not available, or if you build NTL with the</span>
 <span class="Comment">// NTL_DISABLE_LONGLONG=on flag, NTL will attempt to use the extended double</span>
 <span class="Comment">// precision hardware to still allow 60-bit moduli.  If that is not possible,</span>
 <span class="Comment">// or if you build NTL with the NTL_DISABLE_LONGDOUBLE=on flag, then NTL will</span>
@@ -916,7 +916,7 @@ ZZ GenPrime_ZZ(<span class="Type">long</span> l, <span class="Type">long</span> 
 
 <span class="Comment">// Note that RandomPrime and GenPrime are thread boosted.</span>
 <span class="Comment">// Nevertheless, their behavior is independent of the number of</span>
-<span class="Comment">// avalable threads and any indeterminacy arising from </span>
+<span class="Comment">// available threads and any indeterminacy arising from </span>
 <span class="Comment">// concurrent computation.</span>
 
 <span class="Type">void</span> GenGermainPrime(ZZ&amp; n, <span class="Type">long</span> l, <span class="Type">long</span> err = <span class="Constant">80</span>);
@@ -932,7 +932,7 @@ ZZ GenGermainPrime_ZZ(<span class="Type">long</span> l, <span class="Type">long<
 
 <span class="Comment">// Note that GenGermainPrime is thread boosted.</span>
 <span class="Comment">// Nevertheless, its behavior is independent of the number of</span>
-<span class="Comment">// avalable threads and any indeterminacy arising from </span>
+<span class="Comment">// available threads and any indeterminacy arising from </span>
 <span class="Comment">// concurrent computation.</span>
 
 <span class="Type">long</span> ProbPrime(<span class="Type">const</span> ZZ&amp; n, <span class="Type">long</span> NumTrials = <span class="Constant">10</span>);
@@ -1061,7 +1061,7 @@ ostream&amp; <span class="Statement">operator</span>&lt;&lt;(ostream&amp; s, <sp
 <span class="Comment">// &quot;wide single-precision&quot; numbers are meant to be used in conjunction</span>
 <span class="Comment">//  with the ZZ arithmetic routines for optimal efficiency.</span>
 
-<span class="Comment">// The following auxilliary macros are also defined</span>
+<span class="Comment">// The following auxiliary macros are also defined</span>
 
 <span class="PreProc">#define NTL_FRADIX (...) </span><span class="Comment">// double-precision value of 2^NTL_ZZ_NBITS</span>
 
@@ -1069,7 +1069,7 @@ ostream&amp; <span class="Statement">operator</span>&lt;&lt;(ostream&amp; s, <sp
 <span class="PreProc">#define NTL_WSP_BOUND (</span><span class="Constant">1L</span><span class="PreProc"> &lt;&lt; NTL_WSP_NBITS)</span>
 
 
-<span class="Comment">// Backward compatability notes:</span>
+<span class="Comment">// Backward compatibility notes:</span>
 <span class="Comment">//</span>
 <span class="Comment">// Prior to version 5.0, the macro NTL_NBITS was defined,</span>
 <span class="Comment">// along with the macro NTL_RADIX defined to be (1L &lt;&lt; NTL_NBITS).</span>

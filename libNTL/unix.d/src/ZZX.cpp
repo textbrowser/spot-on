@@ -968,4 +968,144 @@ void KarSqr(ZZX& c, const ZZX& a)
    c.normalize();
 }
 
+
+// specialized versions for ZZ_pX, with lower overhead
+// for memory allocations...used mainly for testing purposes
+
+void KarSqr(ZZ_pX& c, const ZZ_pX& a)
+{
+   if (IsZero(a)) {
+      clear(c);
+      return;
+   }
+
+
+   long sa = a.rep.length();
+
+   long xover = 2;
+
+   if (sa < xover) {
+      PlainSqr(c, a);
+      return;
+   }
+
+
+   ZZ *ap;
+   ZZ *cp;
+   
+   ZZVec a_elts;
+   a_elts.SetSize(sa, ZZ_p::ModulusSize());
+   ap = a_elts.elts();
+   for (long i = 0; i < sa; i++) ap[i] = rep(a.rep[i]);
+
+
+   long sc = sa + sa - 1;
+
+   ZZVec c_elts;
+   c_elts.SetSize(sc, ZZ_p::ExtendedModulusSize());
+   cp = c_elts.elts();
+
+
+   long maxa, maxb;
+
+   maxa = maxb = NumBits(ZZ_p::modulus());
+
+   long n, hn, sp, depth;
+
+   n = sa;
+   sp = 0;
+   depth = 0;
+   do {
+      hn = (n+1) >> 1;
+      sp += (hn << 2) - 1;
+      n = hn;
+      depth++;
+   } while (n >= xover);
+
+   ZZVec stk;
+   stk.SetSize(sp, 
+      ((maxa + maxb + NumBits(sa) + 2*depth + 10) 
+       + NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS);
+
+   KarSqr(cp, ap, sa, stk.elts());
+
+   c.rep.SetLength(sc);
+   for (long i = 0; i < sc; i++) conv(c.rep[i], cp[i]);
+   c.normalize();
+}
+
+
+void KarMul(ZZ_pX& c, const ZZ_pX& a, const ZZ_pX& b)
+{
+   if (IsZero(a) || IsZero(b)) {
+      clear(c);
+      return;
+   }
+
+   if (&a == &b) {
+      KarSqr(c, a);
+      return;
+   }
+
+   long sa = a.rep.length();
+   long sb = b.rep.length();
+
+   long xover = 2;
+
+   if (sa < xover || sb < xover) {
+      PlainMul(c, a, b);
+      return;
+   }
+
+
+   ZZ *ap, *bp;
+   ZZ *cp;
+   
+   ZZVec a_elts;
+   a_elts.SetSize(sa, ZZ_p::ModulusSize());
+   ap = a_elts.elts();
+   for (long i = 0; i < sa; i++) ap[i] = rep(a.rep[i]);
+
+   ZZVec b_elts;
+   b_elts.SetSize(sb, ZZ_p::ModulusSize());
+   bp = b_elts.elts();
+   for (long i = 0; i < sb; i++) bp[i] = rep(b.rep[i]);
+
+   long sc = sa + sb - 1;
+
+   ZZVec c_elts;
+   c_elts.SetSize(sc, ZZ_p::ExtendedModulusSize());
+   cp = c_elts.elts();
+
+
+   long maxa, maxb;
+
+   maxa = maxb = NumBits(ZZ_p::modulus());
+
+   long n, hn, sp, depth;
+
+   n = max(sa, sb);
+   sp = 0;
+   depth = 0;
+   do {
+      hn = (n+1) >> 1;
+      sp += (hn << 2) - 1;
+      n = hn;
+      depth++;
+   } while (n >= xover);
+
+   ZZVec stk;
+   stk.SetSize(sp, 
+      ((maxa + maxb + NumBits(min(sa, sb)) + 2*depth + 10) 
+       + NTL_ZZ_NBITS-1)/NTL_ZZ_NBITS);
+
+   KarMul(cp, ap, sa, bp, sb, stk.elts());
+
+   c.rep.SetLength(sc);
+   for (long i = 0; i < sc; i++) conv(c.rep[i], cp[i]);
+   c.normalize();
+}
+
+
+
 NTL_END_IMPL

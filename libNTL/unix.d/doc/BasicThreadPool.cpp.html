@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<title>~/ntl-11.4.1/doc/BasicThreadPool.cpp.html</title>
+<title>~/ntl-11.4.2/doc/BasicThreadPool.cpp.html</title>
 <meta name="Generator" content="Vim/8.0">
 <meta name="plugin-version" content="vim7.4_v2">
 <meta name="syntax" content="cpp">
@@ -209,7 +209,65 @@ body { font-family: monospace; color: #000000; background-color: #ffffff; }
 <span class="Comment">// execution could cause incorrect behavior.  See below for details.</span>
 
 
+<span class="Comment">// ********************** Other useful patterns *************************</span>
+<span class="Comment">//</span>
+<span class="Comment">// You can use these tools together with some other elements of the</span>
+<span class="Comment">// C++11 standard library to implement some other useful patterns.</span>
+<span class="Comment">//</span>
+<span class="Comment">// ****** Accumulation:</span>
+<span class="Comment">//</span>
+<span class="Comment">// Consider again the example above of computing an inner product.</span>
+<span class="Comment">// This can be implemented more easily as follows:</span>
 
+   ZZ InnerProd(<span class="Type">const</span> ZZ *a, <span class="Type">const</span> ZZ *b, <span class="Type">long</span> n)
+   {
+      ZZ sum;
+      sum = <span class="Constant">0</span>;
+
+      std::mutex sum_mutex;
+
+      NTL_EXEC_RANGE(n, first, last)
+
+         ZZ acc;
+         acc = <span class="Constant">0</span>;
+
+         <span class="Statement">for</span> (<span class="Type">long</span> i = first; i &lt; last; i++)
+             MulAddTo(acc, a[i], b[i]);
+
+         std::lock_guard&lt;std::mutex&gt; guard(sum_mutex);
+         sum += acc;
+
+      NTL_EXEC_RANGE_END
+
+      <span class="Statement">return</span> sum;
+   }
+
+<span class="Comment">// There is some extra run-time overead, but in many cases this is negligible.</span>
+<span class="Comment">// Also, unlike the code above for computing an inner product, this code will</span>
+<span class="Comment">// require C++11.</span>
+
+<span class="Comment">// ****** dynamic scheduling</span>
+<span class="Comment">//</span>
+<span class="Comment">// Suppose you need to perform parallel tasks i = 0..n-1, but the tasks may</span>
+<span class="Comment">// vary greatly in their run time.   A more efficient approach than a simple</span>
+<span class="Comment">// NTL_EXEC_RANGE is as follows:</span>
+
+   <span class="Type">long</span> nt = AvailableThreads();
+   std::atomic&lt;<span class="Type">long</span>&gt; counter(n);
+
+   NTL_EXEC_INDEX(nt, index)
+
+      <span class="Type">long</span> i;
+      <span class="Statement">while</span> ((i = --counter) &gt;= <span class="Constant">0</span>) {
+         <span class="Comment">// perform task i</span>
+
+         ...
+      }
+
+   NTL_EXEC_INDEX_END
+
+<span class="Comment">// Each time the body of the loop is executed, a different task i = 0..n-1 is</span>
+<span class="Comment">// performed.</span>
 
 
 <span class="Comment">// ********************** Simple parallel divide and conquer ************</span>

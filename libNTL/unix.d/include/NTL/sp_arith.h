@@ -482,7 +482,7 @@ inline wide_double PrepMulDivRem(long b, long n, wide_double ninv)
 inline 
 long MulMod(long a, long b, long n, wide_double ninv)
 {
-   long q  = (long) ((((wide_double) a) * ((wide_double) b)) * ninv); 
+   long q = long( wide_double(a) * (wide_double(b) * ninv) );
    unsigned long rr = cast_unsigned(a)*cast_unsigned(b) - 
                       cast_unsigned(q)*cast_unsigned(n);
    long r = sp_CorrectDeficit(rr, n);
@@ -563,6 +563,9 @@ typedef sp_inverse mulmod_t;
 #define NTL_PRE_SHIFT2 (2*NTL_SP_NBITS+2)
 
 #else
+
+// DIRT: This assumes NTL_BITS_PER_LONG == NTL_SP_NBITS+2.
+// There are checks in lip.h to verify this.
 
 #define NTL_PRE_SHIFT1 (0)
 #define NTL_POST_SHIFT (1)

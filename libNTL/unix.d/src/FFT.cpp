@@ -1489,7 +1489,7 @@ void new_fft_short(umint_t* xp, long yn, long xn, long lgN,
 
 static
 void new_fft_short_notab(umint_t* xp, long yn, long xn, long lgN, 
-                   const new_mod_t& mod, mint_t w, mint_t wqinv)
+                   const new_mod_t& mod, mint_t w, mulmod_precon_t wqinv)
 // This version assumes that we only have tables up to level lgN-1,
 // and w generates the values at level lgN.
 // DIRT: requires xn even

@@ -147,6 +147,30 @@ long _ntl_gdigit(_ntl_gbigint a, long i);
 #endif
 
 
+// Some sanity checks on NTL_SP_NBITS...
+
+// First check that NTL_SP_NBITS >= 30, as the documentation
+// guarantees this.  This should only be a problem if GMP
+// uses some really funny nail bits.
+
+#if (NTL_SP_NBITS < 30)
+#error "NTL_SP_NBITS too small"
+#endif
+
+// Second, check that NTL_BITS_PER_LONG-NTL_SP_NBITS == 2 or 
+// NTL_BITS_PER_LONG-NTL_SP_NBITS >= 4.
+// Some code in sp_arith.h seems to rely on this assumption.
+// Again, this should only be a problem if GMP
+// uses some really funny nail bits.
+
+#if (NTL_BITS_PER_LONG-NTL_SP_NBITS != 2 && NTL_BITS_PER_LONG-NTL_SP_NBITS < 4)
+#error "NTL_SP_NBITS is invalid"
+#endif
+
+
+
+
+
 
 // DIRT: These are copied from lip.cpp file
 

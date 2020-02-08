@@ -178,7 +178,65 @@ which facilitite simple parallel for loops.
 // execution could cause incorrect behavior.  See below for details.
 
 
+// ********************** Other useful patterns *************************
+//
+// You can use these tools together with some other elements of the
+// C++11 standard library to implement some other useful patterns.
+//
+// ****** Accumulation:
+//
+// Consider again the example above of computing an inner product.
+// This can be implemented more easily as follows:
 
+   ZZ InnerProd(const ZZ *a, const ZZ *b, long n) 
+   {
+      ZZ sum;
+      sum = 0;
+
+      std::mutex sum_mutex;
+
+      NTL_EXEC_RANGE(n, first, last)
+    
+         ZZ acc;
+         acc = 0;
+
+         for (long i = first; i < last; i++)
+             MulAddTo(acc, a[i], b[i]);
+
+         std::lock_guard<std::mutex> guard(sum_mutex);
+         sum += acc;
+
+      NTL_EXEC_RANGE_END
+
+      return sum;
+   }
+
+// There is some extra run-time overead, but in many cases this is negligible.
+// Also, unlike the code above for computing an inner product, this code will
+// require C++11.
+
+// ****** dynamic scheduling
+//
+// Suppose you need to perform parallel tasks i = 0..n-1, but the tasks may
+// vary greatly in their run time.   A more efficient approach than a simple
+// NTL_EXEC_RANGE is as follows:
+
+   long nt = AvailableThreads();
+   std::atomic<long> counter(n);
+
+   NTL_EXEC_INDEX(nt, index)
+
+      long i;
+      while ((i = --counter) >= 0) {
+         // perform task i
+
+         ...
+      }
+
+   NTL_EXEC_INDEX_END
+
+// Each time the body of the loop is executed, a different task i = 0..n-1 is
+// performed.
 
 
 // ********************** Simple parallel divide and conquer ************

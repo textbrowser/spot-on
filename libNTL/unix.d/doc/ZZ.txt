@@ -260,7 +260,7 @@ void XGCD(ZZ& d, ZZ& s, ZZ& t, const ZZ& a, const ZZ& b);
 // adjusted according to the signs of a and b.
 
 // The implementation may or may not Euclid's algorithm,
-// but the coefficients a and t are always computed as if 
+// but the coefficients s and t are always computed as if 
 // it did.
 
 // In particular, the following inequalties should hold:
@@ -389,7 +389,7 @@ long MulMod(long a, long b, long n, mulmod_t ninv);
 //   mulmod_t ninv = PrepMulMod(n);
 
 mulmod_t PrepMulMod(long n);
-// Prepare auxilliary data for MulMod.
+// Prepare auxiliary data for MulMod.
 
 long MulModPrecon(long a, long b, long n, mulmod_precon_t bninv);
 // return (a*b)%n.  
@@ -403,7 +403,7 @@ long MulModPrecon(long a, long b, long n, mulmod_precon_t bninv);
 
 mulmod_precon_t PrepMulModPrecon(long b, long n);
 mulmod_precon_t PrepMulModPrecon(long b, long n, mulmod_t ninv);
-// Prepare auxilliary data for MulModPrecon.
+// Prepare auxiliary data for MulModPrecon.
 // In the second version, ninv = PrepMulMod(n).
 
 
@@ -432,7 +432,7 @@ void VectorMulModPrecon(long k, long *x, const long *a, long b, long n,
 // bninv = MulModPrecon(b, n)
 
 
-// The following is provided for lagacy support, but is not generally 
+// The following is provided for legacy support, but is not generally 
 // recommended:
 
 long MulDivRem(long& q, long a, long b, long n, muldivrem_t bninv);
@@ -445,7 +445,7 @@ long MulDivRem(long& q, long a, long b, long n, muldivrem_t bninv);
 
  muldivrem_t PrepMulDivRem(long b, long n);
  muldivrem_t PrepMulDivRem(long b, long n, mulmod_t ninv);
-// Prepare auxilliary data for MulDivRem.
+// Prepare auxiliary data for MulDivRem.
 // In the second version, ninv = PrepMulMod(n).
 
 // NOTE: despite the similarity in the interface to MulModPrecon,
@@ -476,7 +476,7 @@ long MulDivRem(long& q, long a, long b, long n, muldivrem_t bninv);
 // It is highly recommended that old client codes be updated.  However, one may
 // build NTL with the configuration option NTL_LEGACY_SP_MULMOD=on, which will
 // cause the interfaces and implementations to revert to their pre-v9.0
-// definitions.  This option will also make the following (obslete) function
+// definitions.  This option will also make the following (obsolete) function
 // visible:
 
     long MulMod2(long a, long b, long n, double bninv);
@@ -495,7 +495,7 @@ long MulDivRem(long& q, long a, long b, long n, muldivrem_t bninv);
 // precision hardware on x86 machines.  This also allows for 60-bit moduli on
 // 64-bit machines.
 
-// If 128-bit integer types are not avalable, or if you build NTL with the
+// If 128-bit integer types are not available, or if you build NTL with the
 // NTL_DISABLE_LONGLONG=on flag, NTL will attempt to use the extended double
 // precision hardware to still allow 60-bit moduli.  If that is not possible,
 // or if you build NTL with the NTL_DISABLE_LONGDOUBLE=on flag, then NTL will
@@ -884,7 +884,7 @@ long GenPrime_long(long l, long err = 80);
 
 // Note that RandomPrime and GenPrime are thread boosted.
 // Nevertheless, their behavior is independent of the number of
-// avalable threads and any indeterminacy arising from 
+// available threads and any indeterminacy arising from 
 // concurrent computation.
 
 void GenGermainPrime(ZZ& n, long l, long err = 80);
@@ -900,7 +900,7 @@ long GenGermainPrime_long(long l, long err = 80);
 
 // Note that GenGermainPrime is thread boosted.
 // Nevertheless, its behavior is independent of the number of
-// avalable threads and any indeterminacy arising from 
+// available threads and any indeterminacy arising from 
 // concurrent computation.
 
 long ProbPrime(const ZZ& n, long NumTrials = 10);
@@ -1029,7 +1029,7 @@ ostream& operator<<(ostream& s, const ZZ& a);
 // "wide single-precision" numbers are meant to be used in conjunction
 //  with the ZZ arithmetic routines for optimal efficiency.
 
-// The following auxilliary macros are also defined
+// The following auxiliary macros are also defined
 
 #define NTL_FRADIX (...) // double-precision value of 2^NTL_ZZ_NBITS
 
@@ -1037,7 +1037,7 @@ ostream& operator<<(ostream& s, const ZZ& a);
 #define NTL_WSP_BOUND (1L << NTL_WSP_NBITS)
 
 
-// Backward compatability notes:
+// Backward compatibility notes:
 //
 // Prior to version 5.0, the macro NTL_NBITS was defined,
 // along with the macro NTL_RADIX defined to be (1L << NTL_NBITS).
