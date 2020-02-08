@@ -222,6 +222,7 @@ Completed Items
 156.   Auto-clear textedit widgets that contain too much data.
 157.   Temporary containers. Will avoid dropped packets.
 158.   WebSockets.
+159.   If possible, bundle all Web server resources into the binary.
 
 Ignored Items
 
@@ -264,5 +265,4 @@ Remaining Items
 6.     Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 7.     Remove obsolete includes.
-8.     If possible, include all Web server resources into the binary.
-9.     IMAP and optional removal of messages; retrieve latest.
+8.     IMAP and optional removal of messages; retrieve latest.
