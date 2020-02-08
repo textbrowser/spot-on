@@ -339,13 +339,11 @@ class spoton_neighbor: public QThread
   QString m_transport;
   QTimer m_accountTimer;
   QTimer m_authenticationTimer;
-  QTimer m_droppedTimer;
   QTimer m_externalAddressDiscovererTimer;
   QTimer m_keepAliveTimer;
   QTimer m_lifetime;
   QTimer m_timer;
   QUuid m_receivedUuid;
-  QVector<QByteArray> m_droppedVector;
   bool m_allowExceptions;
   bool m_isUserDefined;
   bool m_requireSsl;
@@ -557,7 +555,6 @@ class spoton_neighbor: public QThread
   void slotWrite(const QByteArray &data,
 		 const qint64 id,
 		 const QPairByteArrayByteArray &adaptiveEchoPair);
-  void slotWriteDropped(void);
   void slotWriteParsedApplicationData(const QByteArray &data);
   void slotWriteURLs(const QByteArray &data);
 
@@ -582,6 +579,7 @@ class spoton_neighbor: public QThread
 		       const QByteArray &gemini,
 		       const QByteArray &geminiHashKey);
   void disconnected(void);
+  void dropped(const QByteArray &data);
   void forwardSecrecyRequest(const QByteArrayList &list);
   void newData(void);
   void newEMailArrived(void);

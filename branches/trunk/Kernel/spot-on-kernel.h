@@ -135,6 +135,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
+  QHash<QPair<QByteArray, qint64>, QByteArray> m_droppedPackets;
   QHash<QByteArray, QPair<QByteArray, QByteArray> > m_forwardSecrecyKeys;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
@@ -147,6 +148,7 @@ class spoton_kernel: public QObject
   QReadWriteLock m_urlListMutex;
   QReadWriteLock m_urlsProcessedMutex;
   QTimer m_controlDatabaseTimer;
+  QTimer m_droppedTimer;
   QTimer m_impersonateTimer;
   QTimer m_messagingCachePurgeTimer;
   QTimer m_poptasticPopTimer;
@@ -259,6 +261,8 @@ class spoton_kernel: public QObject
 				      const qint64 oid);
   void slotDetachNeighbors(const qint64 listenerOid);
   void slotDisconnectNeighbors(const qint64 listenerOid);
+  void slotDropped(const QByteArray &data);
+  void slotDroppedTimeout(void);
   void slotForwardSecrecyInformationReceivedFromUI(const QByteArrayList &list);
   void slotForwardSecrecyResponseReceivedFromUI(const QByteArrayList &list);
   void slotImpersonateTimeout(void);

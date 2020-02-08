@@ -644,7 +644,7 @@ int spoton_neighbor::write(const char *data, const int size)
 	m_bytesDiscardedOnWrite += remaining;
       }
 
-      m_droppedVector << QByteArray(d, size);
+      emit dropped(QByteArray(d, size));
     }
 
   return static_cast<int> (static_cast<qint64> (size) - remaining);
@@ -4429,17 +4429,6 @@ void spoton_neighbor::slotBinaryMessageReceived(const QByteArray &message)
     }
 
   readyRead(data);
-}
-
-void spoton_neighbor::slotWriteDropped(void)
-{
-  if(!m_droppedVector.isEmpty())
-    {
-      const QByteArray &bytes(m_droppedVector.at(0));
-
-      if(write(bytes.constData(), bytes.length()) == bytes.length())
-	m_droppedVector.remove(0);
-    }
 }
 
 void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,

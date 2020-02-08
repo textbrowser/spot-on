@@ -31,6 +31,7 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on-kernel.h"
+#include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
 
 bool spoton_kernel::hasStarBeamReaderId(const qint64 id) const
@@ -252,6 +253,55 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
       else
 	emit callParticipant(data, "0000d");
     }
+}
+
+void spoton_kernel::slotDropped(const QByteArray &data)
+{
+  if(data.isEmpty())
+    return;
+
+  spoton_neighbor *neighbor = qobject_cast<spoton_neighbor *> (sender());
+
+  if(!neighbor)
+    return;
+
+  QByteArray hash(spoton_crypt::sha512Hash(data, 0));
+  QPair<QByteArray, qint64> pair(hash, neighbor->id());
+
+  if(m_droppedPackets.contains(pair))
+    return;
+
+  m_droppedPackets[pair] = data;
+
+  if(!m_droppedTimer.isActive())
+    m_droppedTimer.start();
+}
+
+void spoton_kernel::slotDroppedTimeout(void)
+{
+  if(m_droppedPackets.isEmpty())
+    {
+      m_droppedTimer.stop();
+      return;
+    }
+
+  QPointer<spoton_neighbor> neighbor;
+  const QPair<QByteArray, qint64> &key(m_droppedPackets.begin().key());
+
+  neighbor = m_neighbors.value(key.second);
+
+  if(!neighbor)
+    m_droppedPackets.remove(key);
+  else
+    {
+      const QByteArray &data(m_droppedPackets.value(key));
+
+      if(neighbor->write(data.constData(), data.length()) == data.length())
+	m_droppedPackets.remove(key);
+    }
+
+  if(m_droppedPackets.isEmpty())
+    m_droppedTimer.stop();
 }
 
 void spoton_kernel::slotPrepareObjects(void)

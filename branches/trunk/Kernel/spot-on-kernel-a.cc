@@ -638,6 +638,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPollDatabase(void)));
+  connect(&m_droppedTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotDroppedTimeout(void)));
   connect(&m_impersonateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -687,6 +691,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  this,
 	  SLOT(slotTerminate(const bool)));
   m_controlDatabaseTimer.start(2500);
+  m_droppedTimer.setInterval(1500);
   m_impersonateTimer.setInterval(2500);
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
@@ -946,6 +951,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 spoton_kernel::~spoton_kernel()
 {
   m_controlDatabaseTimer.stop();
+  m_droppedTimer.stop();
   m_impersonateTimer.stop();
   m_messagingCachePurgeTimer.stop();
   m_poptasticPopTimer.stop();
@@ -1816,6 +1822,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotCallParticipant(const QByteArray &,
 				   const QByteArray &,
 				   const QByteArray &)),
+	  Qt::UniqueConnection);
+  connect(neighbor,
+	  SIGNAL(dropped(const QByteArray &)),
+	  this,
+	  SLOT(slotDropped(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
 	  SIGNAL(publicizeListenerPlaintext(const QByteArray &,
