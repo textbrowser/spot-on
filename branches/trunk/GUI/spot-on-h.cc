@@ -1024,7 +1024,16 @@ void spoton::slotSetSocketOptions(void)
 #endif
 
   if(transport == "WEBSOCKET")
-    ui.nodelay->setEnabled(false);
+    {
+      if(type == "listeners")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	ui.nodelay->setEnabled(true);
+#else
+        ui.nodelay->setEnabled(false);
+#endif
+      else
+	ui.nodelay->setEnabled(false);
+    }
 
   if(!ui.nodelay->isEnabled())
     ui.nodelay->setToolTip(tr("SCTP, if available, and TCP only."));
@@ -1037,7 +1046,16 @@ void spoton::slotSetSocketOptions(void)
 #endif
 
   if(transport == "WEBSOCKET")
-    ui.so_keepalive->setEnabled(false);
+    {
+      if(type == "listeners")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	ui.so_keepalive->setEnabled(true);
+#else
+        ui.so_keepalive->setEnabled(false);
+#endif
+      else
+	ui.so_keepalive->setEnabled(false);
+    }
 
   if(!ui.so_keepalive->isEnabled())
     ui.so_keepalive->setToolTip(tr("SCTP, if available, and TCP only."));
@@ -1050,7 +1068,16 @@ void spoton::slotSetSocketOptions(void)
 #endif
 
   if(transport == "WEBSOCKET")
-    ui.so_linger->setEnabled(false);
+    {
+      if(type == "listeners")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	ui.so_linger->setEnabled(true);
+#else
+        ui.so_linger->setEnabled(false);
+#endif
+      else
+	ui.so_linger->setEnabled(false);
+    }
 
   if(!ui.so_linger->isEnabled())
     ui.so_linger->setToolTip(tr("SCTP, if available, and TCP only."));
@@ -1062,7 +1089,16 @@ void spoton::slotSetSocketOptions(void)
   ui.so_timestamping->setEnabled(transport != "BLUETOOTH");
 
   if(transport == "WEBSOCKET")
-    ui.so_timestamping->setEnabled(false);
+    {
+      if(type == "listeners")
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	ui.so_timestamping->setEnabled(true);
+#else
+        ui.so_timestamping->setEnabled(false);
+#endif
+      else
+	ui.so_timestamping->setEnabled(false);
+    }
 
   if(!ui.so_timestamping->isEnabled())
     ui.so_timestamping->setToolTip
@@ -1081,7 +1117,9 @@ void spoton::slotSetSocketOptions(void)
 	    "after the socket is created. SCTP peers will also "
 	    "inherit some options. "
 	    "TCP and UDP socket options will be applied to "
-	    "peer sockets after connections are established."));
+	    "peer sockets after connections are established. "
+	    "For a WebSocket listener, the socket options will be applied "
+	    "after the server has successfully listened."));
     }
   else
     {
@@ -1108,6 +1146,16 @@ void spoton::slotSetSocketOptions(void)
 	  ui.so_sndbuf->setEnabled(false);
 	  ui.so_sndbuf->setToolTip(tr("SCTP, TCP, UDP listeners only."));
 	}
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      if(transport == "WEBSOCKET")
+	{
+	  ui.so_rcvbuf->setEnabled(true);
+	  ui.so_rcvbuf->setToolTip("");
+	  ui.so_sndbuf->setEnabled(true);
+	  ui.so_sndbuf->setToolTip("");
+	}
+#endif
     }
   else
     {

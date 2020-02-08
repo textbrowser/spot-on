@@ -732,7 +732,17 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	    }
 	}
 
-      return m_webSocketServer->listen(QHostAddress(address), port);
+      if(m_webSocketServer->listen(QHostAddress(address), port))
+	{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	  spoton_socket_options::setSocketOptions
+	    (m_socketOptions,
+	     m_transport,
+	     static_cast<qint64> (m_webSocketServer->nativeDescriptor()),
+	     0);
+#endif
+	  return true;
+	}
     }
 #endif
 
