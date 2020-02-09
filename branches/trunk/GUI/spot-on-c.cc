@@ -4628,6 +4628,16 @@ void spoton::slotTransmit(void)
 
 	    if(ok)
 	      ok = query.exec();
+
+	    if(query.lastError().isValid())
+	      error = query.lastError().text();
+
+	    if(!error.isEmpty() || !ok)
+	      {
+		db.close();
+		QApplication::restoreOverrideCursor();
+		goto done_label;
+	      }
 	  }
 
 	QByteArray mosaic
@@ -4697,6 +4707,16 @@ void spoton::slotTransmit(void)
 	if(ok)
 	  ok = query.exec();
 
+	if(query.lastError().isValid())
+	  error = query.lastError().text();
+
+	if(!error.isEmpty() || !ok)
+	  {
+	    db.close();
+	    QApplication::restoreOverrideCursor();
+	    goto done_label;
+	  }
+
 	for(int i = 0; i < magnets.size(); i++)
 	  {
 	    query.prepare("INSERT INTO transmitted_magnets "
@@ -4717,43 +4737,42 @@ void spoton::slotTransmit(void)
 
 	    if(ok)
 	      ok = query.exec();
-	    else
-	      break;
 
 	    if(query.lastError().isValid())
-	      {
-		error = query.lastError().text();
-		break;
-	      }
+	      error = query.lastError().text();
+
+	    if(!error.isEmpty() || !ok)
+	      break;
 
 	    query.exec("PRAGMA secure_delete = ON");
 	    query.prepare("DELETE FROM magnets WHERE "
 			  "magnet_hash = ? and one_time_magnet = 1");
-	    query.addBindValue
-	      (crypt->keyedHash(magnets.at(i), &ok).toBase64());
+	    query.addBindValue(crypt->keyedHash(magnets.at(i), 0).toBase64());
 
-	    if(ok)
-	      ok = query.exec();
+	    /*
+	    ** It's fine if this query fails.
+	    */
+
+	    query.exec();
 	  }
 
 	QApplication::restoreOverrideCursor();
       }
 
     if(db.lastError().isValid())
-      error = tr("A database error (%1) occurred.").
-	arg(db.lastError().text());
+      error = tr("A database error (%1) occurred.").arg(db.lastError().text());
     else if(!error.isEmpty())
-      error = tr("A database error (%1) occurred.").
-	arg(error);
+      error = tr("A database error (%1) occurred.").arg(error);
     else if(!ok)
       error = tr("An error occurred within spoton_crypt.");
 
     db.close();
   }
 
-  QSqlDatabase::removeDatabase(connectionName);
-
  done_label:
+
+  if(!connectionName.isEmpty())
+    QSqlDatabase::removeDatabase(connectionName);
 
   if(!error.isEmpty())
     {
