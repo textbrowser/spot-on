@@ -3211,7 +3211,10 @@ void spoton::slotPopulateEtpMagnets(void)
 		QTableWidgetItem *item = 0;
 
 		if(ok)
-		  item = new QTableWidgetItem(QString(bytes));
+		  {
+		    item = new QTableWidgetItem(QString(bytes));
+		    item->setToolTip("<html>" + item->text() + "</html>");
+		  }
 		else
 		  item = new QTableWidgetItem(tr("error"));
 
@@ -3228,7 +3231,11 @@ void spoton::slotPopulateEtpMagnets(void)
 		checkBox = new QCheckBox();
 
 		if(ok)
-		  checkBox->setText(bytes.replace("&", "&&"));
+		  {
+		    checkBox->setText(bytes.replace("&", "&&"));
+		    checkBox->setToolTip
+		      ("<html>" + checkBox->text() + "</html>");
+		  }
 		else
 		  checkBox->setText(tr("error"));
 
@@ -4829,6 +4836,8 @@ void spoton::slotTransmittedSelected(void)
   if(!crypt)
     return;
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString oid("");
   int row = -1;
 
@@ -4886,8 +4895,13 @@ void spoton::slotTransmittedSelected(void)
 
 	    std::sort(magnets.begin(), magnets.end());
 
-	    if(!magnets.isEmpty())
-	      m_ui.transmittedMagnets->addItems(magnets);
+	    for(int i = 0; i < magnets.size(); i++)
+	      {
+		QListWidgetItem *item = new QListWidgetItem(magnets.at(i));
+
+		item->setToolTip("<html>" + item->text() + "</html>");
+		m_ui.transmittedMagnets->addItem(item);
+	      }
 	  }
       }
 
@@ -4895,6 +4909,7 @@ void spoton::slotTransmittedSelected(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotTransportChanged(int index)
