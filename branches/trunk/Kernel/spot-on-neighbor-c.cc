@@ -3570,6 +3570,9 @@ void spoton_neighbor::recordCertificateOrAbort(void)
       else if(m_webSocket)
 	{
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  if(m_webSocket->requestUrl().scheme() == "ws")
+	    return;
+
 	  if(m_peerCertificate.isNull() &&
 	     !m_webSocket->sslConfiguration().peerCertificate().isNull())
 	    {
@@ -3619,21 +3622,27 @@ void spoton_neighbor::recordCertificateOrAbort(void)
   else
     {
       if(m_tcpSocket)
-	certificate = m_tcpSocket->sslConfiguration().localCertificate();
+	{
+	  certificate = m_tcpSocket->sslConfiguration().localCertificate();
+	  save = true;
+	}
       else if(m_udpSocket)
 	{
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	  certificate = m_udpSslConfiguration.localCertificate();
+	  save = true;
 #endif
 	}
       else if(m_webSocket)
 	{
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-	  certificate = m_webSocket->sslConfiguration().localCertificate();
+	  if(m_webSocket->requestUrl().scheme() == "wss")
+	    {
+	      certificate = m_webSocket->sslConfiguration().localCertificate();
+	      save = true;
+	    }
 #endif
 	}
-
-      save = true;
     }
 
   if(!save)
