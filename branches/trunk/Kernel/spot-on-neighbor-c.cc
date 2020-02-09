@@ -4291,6 +4291,12 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 #endif
   if(m_tcpSocket)
     cipher = m_tcpSocket->sessionCipher();
+  else if(m_webSocket)
+    {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+      cipher = m_webSocket->sslConfiguration().sessionCipher();
+#endif
+    }
 
   qint64 seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
 
