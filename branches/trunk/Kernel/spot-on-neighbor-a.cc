@@ -2152,12 +2152,19 @@ void spoton_neighbor::slotReadyRead(void)
 	  else
 	    {
 	      if(!m_dtls->doHandshake(m_udpSocket, data))
-		spoton_misc::logError
-		  (QString("spoton_neighbor::slotReadyRead(): "
-			   "DTLS error (%1) for %2:%3.").
-		   arg(m_dtls->dtlsErrorString()).
-		   arg(m_address).
-		   arg(m_port));
+		{
+		  if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
+		       m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
+		    {
+		      spoton_misc::logError
+			(QString("spoton_neighbor::slotReadyRead(): "
+				 "DTLS error (%1) for %2:%3. Aborting.").
+			 arg(m_dtls->dtlsErrorString()).
+			 arg(m_address).
+			 arg(m_port));
+		      deleteLater();
+		    }
+		}
 	      else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
 		recordCertificateOrAbort();
 
