@@ -3567,6 +3567,61 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		}
 	    }
 	}
+      else if(m_udpSocket)
+	{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+	  if(m_dtls)
+	    {
+	      if(m_peerCertificate.isNull() &&
+		 !m_dtls->dtlsConfiguration().peerCertificate().isNull())
+		{
+		  certificate = m_peerCertificate = m_dtls->
+		    dtlsConfiguration().peerCertificate();
+		  save = true;
+		}
+	      else if(!m_allowExceptions)
+		{
+		  if(m_dtls->dtlsConfiguration().peerCertificate().isNull())
+		    {
+		      emit notification
+			(QString("The neighbor %1:%2 generated a fatal "
+				 "error (%3).").
+			 arg(m_address).arg(m_port).
+			 arg("empty peer certificate"));
+		      spoton_misc::logError
+			(QString("spoton_neighbor::"
+				 "recordCertificateOrAbort(): "
+				 "null peer certificate for %1:%2. Aborting.").
+			 arg(m_address).
+			 arg(m_port));
+		      deleteLater();
+		      return;
+		    }
+		  else if(!spoton_crypt::
+			  memcmp(m_peerCertificate.toPem(),
+				 m_dtls->dtlsConfiguration().
+				 peerCertificate().toPem()))
+		    {
+		      emit notification
+			(QString("The neighbor %1:%2 generated a fatal "
+				 "error (%3).").
+			 arg(m_address).arg(m_port).
+			 arg("certificate mismatch"));
+		      spoton_misc::logError
+			(QString("spoton_neighbor::"
+				 "recordCertificateOrAbort(): "
+				 "the stored certificate does not match "
+				 "the peer's certificate for %1:%2. "
+				 "This is a serious problem! Aborting.").
+			 arg(m_address).
+			 arg(m_port));
+		      deleteLater();
+		      return;
+		    }
+		}
+	    }
+#endif
+	}
       else if(m_webSocket)
 	{
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
