@@ -4276,8 +4276,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
     }
   else if(m_id == -1)
     {
-      spoton_misc::logError
-	("spoton_neighbor::saveStatistics(): m_id is -1.");
+      spoton_misc::logError("spoton_neighbor::saveStatistics(): m_id is -1.");
       return;
     }
 
