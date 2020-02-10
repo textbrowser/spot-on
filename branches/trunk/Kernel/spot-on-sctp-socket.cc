@@ -658,6 +658,7 @@ void spoton_sctp_socket::connectToHost(const QString &hostName,
 #else
   Q_UNUSED(hostName);
   Q_UNUSED(port);
+  Q_UNUSED(socketOptions);
 #endif
 }
 
