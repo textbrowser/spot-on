@@ -28,10 +28,13 @@
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
 
+extern "C"
+{
+#include <limits.h>
+}
+
 #include <QHash>
 #include <QStringList>
-
-#include <limits>
 
 #define SPOTON_VERSION_STR "2020.02.10"
 
@@ -82,13 +85,12 @@ class spoton_common
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
 #ifdef SPOTON_MCELIECE_ENABLED
-    std::numeric_limits<int>::max();
+    INT_MAX;
 #else
     CHAR_BIT * 1024 * 1024;
 #endif
   static const int MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE = 4096;
-  static const int MAXIMUM_PENDING_CONNECTIONS =
-    std::numeric_limits<unsigned short>::max();
+  static const int MAXIMUM_PENDING_CONNECTIONS = USHRT_MAX;
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
   static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 262144;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
