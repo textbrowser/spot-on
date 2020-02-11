@@ -223,6 +223,8 @@ Completed Items
 157.   Temporary containers. Will avoid dropped packets.
 158.   WebSockets.
 159.   If possible, bundle all Web server resources into the binary.
+160.   EPKS: share group (category) and individual (community). Not necessary.
+       Provide guidance through text.
 
 Ignored Items
 
@@ -266,5 +268,4 @@ Remaining Items
        E-mail remains.
 7.     Remove obsolete includes.
 8.     IMAP and optional removal of messages; retrieve latest.
-9.     EPKS: share group (category) and individual (community).
-10.    DTLS cookies.
+9.     DTLS cookies.
