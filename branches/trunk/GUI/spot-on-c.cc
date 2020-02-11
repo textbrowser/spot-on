@@ -1560,6 +1560,7 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   QString connectionName("");
   QString error("");
   QString magnet("");
+  QString origin(tr("StarBeam"));
   QStringList list;
   bool ok = true;
   spoton_crypt *crypt = m_crypts.value("chat", 0);
@@ -1577,7 +1578,10 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
       if(text.isEmpty())
 	magnet = m_ui.etpMagnet->toPlainText();
       else
-	magnet = text;
+	{
+	  origin = tr("Buzz / Chat");
+	  magnet = text;
+	}
     }
   else
     magnet = QString("magnet:?"
@@ -1623,8 +1627,7 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->encryptedThenHashed(tr("StarBeam").toUtf8(), &ok).
-	     toBase64());
+	    (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
