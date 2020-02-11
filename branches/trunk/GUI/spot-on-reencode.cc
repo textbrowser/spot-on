@@ -2171,8 +2171,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2180,37 +2180,40 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT magnet, magnet_hash FROM magnets"))
+	if(query.exec("SELECT magnet, magnet_hash, origin FROM magnets"))
 	  while(query.next())
 	    {
 	      QByteArray magnet;
+	      QByteArray origin;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
 	      updateQuery.prepare("UPDATE magnets "
 				  "SET magnet = ?, "
-				  "magnet_hash = ? "
+				  "magnet_hash = ?, "
+				  "origin = ? "
 				  "WHERE magnet_hash = ?");
 	      magnet = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(ok)
+		origin = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		updateQuery.bindValue
-		  (0, newCrypt->encryptedThenHashed(magnet,
-						    &ok).toBase64());
+		  (0, newCrypt->encryptedThenHashed(magnet, &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (1,
-		   newCrypt->keyedHash(magnet,
-				       &ok).toBase64());
+		  (1, newCrypt->keyedHash(magnet, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.bindValue
+		  (2, newCrypt->encryptedThenHashed(origin, &ok).toBase64());
 
 	      updateQuery.bindValue
-		(2, query.value(1));
+		(3, query.value(1));
 
 	      if(ok)
 		updateQuery.exec();

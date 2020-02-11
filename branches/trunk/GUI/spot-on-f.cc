@@ -861,22 +861,26 @@ void spoton::slotDuplicateTransmittedMagnet(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("INSERT OR REPLACE INTO "
-		      "magnets (magnet, magnet_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(magnet.toLatin1(),
-						      &ok).toBase64());
+	query.prepare("INSERT OR REPLACE INTO magnets "
+		      "(magnet, magnet_hash, origin) "
+		      "VALUES (?, ?, ?)");
+	query.addBindValue
+	  (crypt->encryptedThenHashed(magnet.toLatin1(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, crypt->keyedHash(magnet.toLatin1(),
-					      &ok).toBase64());
+	  query.addBindValue
+	    (crypt->keyedHash(magnet.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->encryptedThenHashed(tr("Clone").toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -2115,8 +2119,8 @@ void spoton::slotStarBeamFragmented(bool state)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {

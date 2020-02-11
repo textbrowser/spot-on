@@ -529,8 +529,8 @@ void spoton::populateNovas(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -1604,22 +1604,27 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
-	query.prepare("INSERT OR REPLACE INTO "
-		      "magnets (magnet, magnet_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(magnet.toLatin1(),
-						      &ok).toBase64());
+	query.prepare("INSERT OR REPLACE INTO magnets "
+		      "(magnet, magnet_hash, origin) "
+		      "VALUES (?, ?, ?)");
+	query.addBindValue
+	  (crypt->encryptedThenHashed(magnet.toLatin1(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, crypt->keyedHash(magnet.toLatin1(),
-					      &ok).toBase64());
+	  query.addBindValue
+	    (crypt->keyedHash(magnet.toLatin1(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->encryptedThenHashed(tr("StarBeam").toUtf8(), &ok).
+	     toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -1695,8 +1700,8 @@ void spoton::slotAddReceiveNova(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if((ok = db.open()))
       {
@@ -2030,7 +2035,7 @@ void spoton::slotCopyEtpMagnet(void)
 
   if((row = m_ui.etpMagnets->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.etpMagnets->item(row, 1); // Magnet
+      QTableWidgetItem *item = m_ui.etpMagnets->item(row, 2); // Magnet
 
       if(item)
 	clipboard->setText(item->text());
@@ -2360,8 +2365,8 @@ void spoton::slotDeleteAllReceived(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2384,8 +2389,8 @@ void spoton::slotDeleteAllTransmitted(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2417,8 +2422,8 @@ void spoton::slotDeleteEtpAllMagnets(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2508,8 +2513,8 @@ void spoton::slotDeleteNova(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2570,8 +2575,8 @@ void spoton::slotDeleteReceived(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2612,8 +2617,8 @@ void spoton::slotDeleteTransmitted(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -3131,8 +3136,8 @@ void spoton::slotPopulateEtpMagnets(void)
   if(!crypt)
     return;
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "starbeam.db");
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
   if(fileInfo.exists())
     {
@@ -3191,7 +3196,7 @@ void spoton::slotPopulateEtpMagnets(void)
 	      m_ui.etpMagnets->setRowCount(query.value(0).toInt());
 	    }
 
-	if(query.exec("SELECT magnet, one_time_magnet, "
+	if(query.exec("SELECT magnet, one_time_magnet, origin, "
 		      "OID FROM magnets"))
 	  {
 	    int row = 0;
@@ -3202,6 +3207,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		totalRows += 1;
 
 		QByteArray bytes;
+		QByteArray origin;
 		bool ok = true;
 
 		bytes = crypt->decryptedAfterAuthenticated
@@ -3213,6 +3219,19 @@ void spoton::slotPopulateEtpMagnets(void)
 		if(ok)
 		  {
 		    item = new QTableWidgetItem(QString(bytes));
+		    item->setToolTip("<html>" + item->text() + "</html>");
+		  }
+		else
+		  item = new QTableWidgetItem(tr("error"));
+
+		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		m_ui.etpMagnets->setItem(row, 2, item);
+		origin = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
+
+		if(ok)
+		  {
+		    item = new QTableWidgetItem(QString(origin));
 		    item->setToolTip("<html>" + item->text() + "</html>");
 		  }
 		else
@@ -3246,7 +3265,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		item = new QTableWidgetItem
 		  (query.value(query.record().count() - 1).toString());
 		item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		m_ui.etpMagnets->setItem(row, 2, item);
+		m_ui.etpMagnets->setItem(row, 3, item);
 		m_ui.addTransmittedMagnets->setItem(row, 1, item->clone());
 		row += 1;
 	      }
@@ -3281,8 +3300,8 @@ void spoton::slotPopulateStars(void)
   if(!crypt)
     return;
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "starbeam.db");
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
   if(fileInfo.exists())
     {
@@ -4325,8 +4344,8 @@ void spoton::slotRewindFile(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -4518,8 +4537,8 @@ void spoton::slotStarOTMCheckChange(bool state)
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
 	if(db.open())
 	  {
@@ -4611,8 +4630,8 @@ void spoton::slotTransmit(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -4808,8 +4827,8 @@ void spoton::slotTransmittedPaused(bool state)
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
 	if(db.open())
 	  {
@@ -4855,8 +4874,8 @@ void spoton::slotTransmittedSelected(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {

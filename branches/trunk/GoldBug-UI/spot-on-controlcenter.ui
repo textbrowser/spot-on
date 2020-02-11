@@ -1236,7 +1236,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>680</width>
-             <height>801</height>
+             <height>648</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2768,7 +2768,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
+             <width>558</width>
              <height>1994</height>
             </rect>
            </property>
@@ -3984,7 +3984,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>653</width>
-             <height>801</height>
+             <height>617</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5072,7 +5072,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>614</width>
-             <height>801</height>
+             <height>393</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6336,7 +6336,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>882</width>
+             <width>912</width>
              <height>1388</height>
             </rect>
            </property>
@@ -7958,6 +7958,11 @@ color: rgb(255, 255, 255);</string>
                   <column>
                    <property name="text">
                     <string>One-Time-Magnet</string>
+                   </property>
+                  </column>
+                  <column>
+                   <property name="text">
+                    <string>Origin</string>
                    </property>
                   </column>
                   <column>

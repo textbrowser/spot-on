@@ -5245,7 +5245,8 @@ void spoton_misc::prepareDatabases(void)
 	query.exec("CREATE TABLE IF NOT EXISTS magnets ("
 		   "magnet BLOB NOT NULL, "
 		   "magnet_hash TEXT PRIMARY KEY NOT NULL, " // Keyed hash.
-		   "one_time_magnet INTEGER NOT NULL DEFAULT 0)");
+		   "one_time_magnet INTEGER NOT NULL DEFAULT 0, "
+		   "origin TEXT NOT NULL)");
 	query.exec("CREATE TABLE IF NOT EXISTS received ("
 		   "expected_file_hash TEXT, "
 		   "expected_sha3_512_hash TEXT, "

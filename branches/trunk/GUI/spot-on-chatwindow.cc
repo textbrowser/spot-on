@@ -640,8 +640,8 @@ void spoton_chatwindow::slotShareStarBeam(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -651,13 +651,24 @@ void spoton_chatwindow::slotShareStarBeam(void)
 	   toBase64());
 	QSqlQuery query(db);
 
-	query.prepare("INSERT OR REPLACE INTO "
-		      "magnets (magnet, magnet_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+	query.prepare("INSERT OR REPLACE INTO magnets "
+		      "(magnet, magnet_hash, origin) "
+		      "VALUES (?, ?, ?)");
+	query.addBindValue(crypt->encryptedThenHashed(magnet, &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, crypt->keyedHash(magnet, &ok).toBase64());
+	  query.addBindValue(crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  {
+	    QString origin;
+
+	    origin = QString("%1 (%2)").
+	      arg(ui.name->text()).
+	      arg(m_publicKeyHash);
+	    query.addBindValue
+	      (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
+	  }
 
 	if(ok)
 	  ok = query.exec();

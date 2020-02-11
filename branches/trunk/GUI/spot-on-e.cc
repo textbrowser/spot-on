@@ -329,8 +329,8 @@ void spoton::computeFileDigests(const QString &fileName,
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "starbeam.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
 	if(db.open())
 	  {
@@ -772,8 +772,8 @@ void spoton::setSBField(const QString &oid,
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2007,13 +2007,15 @@ void spoton::slotShareStarBeam(void)
   if(row < 0)
     return;
 
-  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item1 = m_ui.participants->item(row, 0); // Participant
+  QTableWidgetItem *item2 = m_ui.participants->item(row, 1); // OID
+  QTableWidgetItem *item3 = m_ui.participants->item(row, 3); // Public Key Hash
 
-  if(!item)
+  if(!item1 || !item2 || !item3)
     return;
-  else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
+  else if(item2->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
-  else if(item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+  else if(item2->data(Qt::ItemDataRole(Qt::UserRole + 1)).
 	  toString() == "poptastic")
     return;
 
@@ -2127,8 +2129,8 @@ void spoton::slotShareStarBeam(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -2138,13 +2140,22 @@ void spoton::slotShareStarBeam(void)
 	   toBase64());
 	QSqlQuery query(db);
 
-	query.prepare("INSERT OR REPLACE INTO "
-		      "magnets (magnet, magnet_hash) "
-		      "VALUES (?, ?)");
-	query.bindValue(0, crypt->encryptedThenHashed(magnet, &ok).toBase64());
+	query.prepare("INSERT OR REPLACE INTO magnets "
+		      "(magnet, magnet_hash, origin) "
+		      "VALUES (?, ?, ?)");
+	query.addBindValue(crypt->encryptedThenHashed(magnet, &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, crypt->keyedHash(magnet, &ok).toBase64());
+	  query.addBindValue(crypt->keyedHash(magnet, &ok).toBase64());
+
+	if(ok)
+	  {
+	    QString origin;
+
+	    origin = QString("%1 (%2)").arg(item1->text()).arg(item3->text());
+	    query.addBindValue
+	      (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
+	  }
 
 	if(ok)
 	  ok = query.exec();
