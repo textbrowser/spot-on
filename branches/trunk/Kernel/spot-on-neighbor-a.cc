@@ -398,9 +398,9 @@ spoton_neighbor::spoton_neighbor
 		    {
 		      m_udpSslConfiguration = configuration;
 		      m_udpSslConfiguration.
-			setDtlsCookieVerificationEnabled(false);
+			setDtlsCookieVerificationEnabled(true);
 		      m_udpSslConfiguration.setPeerVerifyMode
-			(QSslSocket::VerifyNone);
+			(QSslSocket::QueryPeer);
 		      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
 		    }
 #endif
@@ -2150,7 +2150,17 @@ void spoton_neighbor::slotReadyRead(void)
 	  m_bytesRead += static_cast<quint64> (data.length());
 
 	  if(m_dtls->isConnectionEncrypted())
-	    data = m_dtls->decryptDatagram(m_udpSocket, data);
+	    {
+	      data = m_dtls->decryptDatagram(m_udpSocket, data);
+
+	      if(m_dtls->dtlsError() == QDtlsError::RemoteClosedConnectionError)
+		{
+		  deleteLater();
+		  return;
+		}
+	      else
+		m_lastReadTime = QDateTime::currentDateTime();
+	    }
 	  else
 	    {
 	      if(!m_dtls->doHandshake(m_udpSocket, data))

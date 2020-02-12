@@ -611,9 +611,45 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
   if(m_dtls)
     {
       if(m_dtls->isConnectionEncrypted())
-	datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);
+	{
+	  datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);
+
+	  if(m_dtls->dtlsError() == QDtlsError::RemoteClosedConnectionError)
+	    {
+	      deleteLater();
+	      return;
+	    }
+	  else
+	    m_lastReadTime = QDateTime::currentDateTime();
+	}
       else
 	{
+	  if(!m_udpClients.
+	     contains(QPair<QHostAddress, quint16> (address, port)))
+	    {
+	      if(m_dtlsClientVerifier.verifyClient(m_udpSocket,
+						   datagram,
+						   address,
+						   port))
+		// Verified!
+
+		m_udpClients[QPair<QHostAddress, quint16> (address, port)] =
+		  0;
+	      else if(m_dtlsClientVerifier.dtlsError() != QDtlsError::NoError)
+		{
+		  spoton_misc::logError
+		    (QString("spoton_neighbor::slotNewDatagram(): "
+			     "verify-client error (%1) for %2:%3. Aborting.").
+		     arg(m_dtls->dtlsErrorString()).
+		     arg(m_address).
+		     arg(m_port));
+		  deleteLater();
+		  return;
+		}
+	      else // Not verified.
+		return;
+	    }
+
 	  /*
 	  ** Complete TLS.
 	  */
