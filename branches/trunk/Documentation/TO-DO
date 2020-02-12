@@ -225,6 +225,7 @@ Completed Items
 159.   If possible, bundle all Web server resources into the binary.
 160.   EPKS: share group (category) and individual (community). Not necessary.
        Provide guidance through text.
+161.   DTLS cookies.
 
 Ignored Items
 
@@ -268,4 +269,3 @@ Remaining Items
        E-mail remains.
 7.     Remove obsolete includes.
 8.     IMAP and optional removal of messages; retrieve latest.
-9.     DTLS cookies.
