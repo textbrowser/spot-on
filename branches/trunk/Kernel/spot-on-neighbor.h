@@ -294,8 +294,8 @@ class spoton_neighbor: public QThread
   QDateTime m_startTime;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
   QDtlsClientVerifier m_dtlsClientVerifier;
+  QHash<QPair<QHostAddress, quint16>, char> m_verifiedUdpClients;
 #endif
-  QHash<QPair<QHostAddress, quint16>, char> m_udpClients;
   QList<QFuture<void> > m_privateApplicationFutures;
   QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QMap<quint64, QByteArray> m_privateApplicationMap;

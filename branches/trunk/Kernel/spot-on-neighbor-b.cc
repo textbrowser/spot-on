@@ -616,6 +616,11 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 
 	  if(m_dtls->dtlsError() == QDtlsError::RemoteClosedConnectionError)
 	    {
+	      spoton_misc::logError
+		(QString("spoton_neighbor::slotNewDatagram(): "
+			 "%1:%2 closed the connection. Aborting.").
+		 arg(m_address).
+		 arg(m_port));	      
 	      deleteLater();
 	      return;
 	    }
@@ -624,7 +629,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	}
       else
 	{
-	  if(!m_udpClients.
+	  if(!m_verifiedUdpClients.
 	     contains(QPair<QHostAddress, quint16> (address, port)))
 	    {
 	      if(m_dtlsClientVerifier.verifyClient(m_udpSocket,
@@ -633,8 +638,8 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 						   port))
 		// Verified!
 
-		m_udpClients[QPair<QHostAddress, quint16> (address, port)] =
-		  0;
+		m_verifiedUdpClients
+		  [QPair<QHostAddress, quint16> (address, port)] = 0;
 	      else if(m_dtlsClientVerifier.dtlsError() != QDtlsError::NoError)
 		{
 		  spoton_misc::logError

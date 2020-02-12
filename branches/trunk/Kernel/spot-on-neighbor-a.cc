@@ -2155,6 +2155,11 @@ void spoton_neighbor::slotReadyRead(void)
 
 	      if(m_dtls->dtlsError() == QDtlsError::RemoteClosedConnectionError)
 		{
+		  spoton_misc::logError
+		    (QString("spoton_neighbor::slotReadyRead(): "
+			     "%1:%2 closed the connection. Aborting.").
+		     arg(m_address).
+		     arg(m_port));
 		  deleteLater();
 		  return;
 		}
