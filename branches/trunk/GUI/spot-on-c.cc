@@ -5029,11 +5029,23 @@ void spoton::slotTransportChanged(int index)
     }
   else if(m_ui.neighborTransport == sender())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+      m_ui.addException->setEnabled(index == 2 || // TCP
+				    index == 3);  // UDP
+#endif
+
+      if(index == 4) // WebSocket
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	m_ui.addException->setEnabled(true);
+#else
+        m_ui.addException->setEnabled(false);
+#endif
+
+      m_ui.dynamicdns->setEnabled(index != 0);
+
       if(index == 0)
 	m_ui.ipv4Neighbor->setChecked(true);
 
-      m_ui.addException->setEnabled(index == 2);
-      m_ui.dynamicdns->setEnabled(index != 0);
       m_ui.ipv4Neighbor->setEnabled(index != 0);
       m_ui.ipv6Neighbor->setEnabled(index != 0);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
