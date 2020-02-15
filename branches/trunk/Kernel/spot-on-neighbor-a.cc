@@ -2994,6 +2994,8 @@ void spoton_neighbor::slotTimeout(void)
       {
 	if(m_transport == "bluetooth")
 	  {
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+#ifndef Q_OS_MAC
 	    QList<QBluetoothServiceInfo> list;
 
 	    if(m_bluetoothServiceDiscoveryAgent && !m_bluetoothSocket)
@@ -3004,10 +3006,14 @@ void spoton_neighbor::slotTimeout(void)
 		  m_bluetoothServiceDiscoveryAgent->start
 		    (QBluetoothServiceDiscoveryAgent::FullDiscovery);
 	      }
+#endif
 
+#ifdef Q_OS_MAC
+	    for(int i = 0; i < 1; i++)
+#else
 	    for(int i = 0; i < list.size(); i++)
+#endif
 	      {
-#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 		if(m_bluetoothSocket)
 		  break;
 
@@ -3023,7 +3029,9 @@ void spoton_neighbor::slotTimeout(void)
 		serviceUuid.append("-0000-0000-");
 		serviceUuid.append(QString(m_address).remove(":"));
 
+#ifndef Q_OS_MAC
 		if(QBluetoothUuid(serviceUuid) == serviceInfo.serviceUuid())
+#endif
 		  {
 		    m_bluetoothSocket = new QBluetoothSocket
 		      (QBluetoothServiceInfo::RfcommProtocol, this);
