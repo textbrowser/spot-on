@@ -29,6 +29,10 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSslKey>
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+#include <qbluetoothhostinfo.h>
+#include <qbluetoothlocaldevice.h>
+#endif
 
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
@@ -796,8 +800,14 @@ spoton_neighbor::spoton_neighbor
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      m_bluetoothServiceDiscoveryAgent = new QBluetoothServiceDiscoveryAgent
-	(this);
+      QList<QBluetoothHostInfo> list(QBluetoothLocalDevice::allDevices());
+
+      if(list.isEmpty())
+	m_bluetoothServiceDiscoveryAgent =
+	  new QBluetoothServiceDiscoveryAgent(this);
+      else
+	m_bluetoothServiceDiscoveryAgent =
+	  new QBluetoothServiceDiscoveryAgent(list.at(0).address(), this);
 #endif
     }
   else if(m_transport == "sctp")
@@ -2988,8 +2998,7 @@ void spoton_neighbor::slotTimeout(void)
 
 	    if(m_bluetoothServiceDiscoveryAgent && !m_bluetoothSocket)
 	      {
-		list = m_bluetoothServiceDiscoveryAgent->
-		  discoveredServices();
+		list = m_bluetoothServiceDiscoveryAgent->discoveredServices();
 
 		if(!m_bluetoothServiceDiscoveryAgent->isActive())
 		  m_bluetoothServiceDiscoveryAgent->start
@@ -3006,7 +3015,7 @@ void spoton_neighbor::slotTimeout(void)
 		QByteArray bytes;
 		QString serviceUuid;
 
-		bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+		bytes.append(QByteArray::number(m_port).toHex());
 		bytes = bytes.rightJustified(12, '0');
 		serviceUuid.append(bytes.mid(0, 8));
 		serviceUuid.append("-");

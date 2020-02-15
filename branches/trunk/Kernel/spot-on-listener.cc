@@ -601,7 +601,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QByteArray bytes;
 	  QString serviceUuid;
 
-	  bytes.append(QString("%1").arg(m_port).toLatin1().toHex());
+	  bytes.append(QByteArray::number(m_port).toHex());
 	  bytes = bytes.rightJustified(12, '0');
 	  serviceUuid.append(bytes.mid(0, 8));
 	  serviceUuid.append("-");
