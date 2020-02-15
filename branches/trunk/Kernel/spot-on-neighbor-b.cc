@@ -266,26 +266,31 @@ void spoton_neighbor::deleteLater(void)
       */
 
       m_abort.fetchAndStoreOrdered(1);
-      disconnect(m_bluetoothSocket,
-		 SIGNAL(connected(void)),
-		 this,
-		 SLOT(slotConnected(void)));
-      disconnect(m_bluetoothSocket,
-		 SIGNAL(disconnected(void)),
-		 this,
-		 SIGNAL(disconnected(void)));
-      disconnect(m_bluetoothSocket,
-		 SIGNAL(disconnected(void)),
-		 this,
-		 SLOT(slotDisconnected(void)));
-      disconnect(m_bluetoothSocket,
-		 SIGNAL(error(QBluetoothSocket::SocketError)),
-		 this,
-		 SLOT(slotError(QBluetoothSocket::SocketError)));
-      disconnect(m_bluetoothSocket,
-		 SIGNAL(readyRead(void)),
-		 this,
-		 SLOT(slotReadyRead(void)));
+
+      if(m_bluetoothSocket)
+	{
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(connected(void)),
+		     this,
+		     SLOT(slotConnected(void)));
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(disconnected(void)),
+		     this,
+		     SIGNAL(disconnected(void)));
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(disconnected(void)),
+		     this,
+		     SLOT(slotDisconnected(void)));
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(error(QBluetoothSocket::SocketError)),
+		     this,
+		     SLOT(slotError(QBluetoothSocket::SocketError)));
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(readyRead(void)),
+		     this,
+		     SLOT(slotReadyRead(void)));
+	}
+
       disconnect(this,
 		 SIGNAL(accountAuthenticated(const QByteArray &,
 					     const QByteArray &,
