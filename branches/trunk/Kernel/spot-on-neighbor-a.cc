@@ -30,8 +30,10 @@
 #include <QSqlQuery>
 #include <QSslKey>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+#ifndef Q_OS_MAC
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
+#endif
 #endif
 
 #include "spot-on-kernel.h"
@@ -800,6 +802,7 @@ spoton_neighbor::spoton_neighbor
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+#ifndef Q_OS_MAC
       QList<QBluetoothHostInfo> list(QBluetoothLocalDevice::allDevices());
 
       if(list.isEmpty())
@@ -808,6 +811,7 @@ spoton_neighbor::spoton_neighbor
       else
 	m_bluetoothServiceDiscoveryAgent =
 	  new QBluetoothServiceDiscoveryAgent(list.at(0).address(), this);
+#endif
 #endif
     }
   else if(m_transport == "sctp")
