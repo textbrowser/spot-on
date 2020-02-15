@@ -598,7 +598,6 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
       if(ok)
 	{
-	  QBluetoothServiceInfo::Sequence classId;
 	  QByteArray bytes;
 	  QString serviceUuid;
 
@@ -609,26 +608,27 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  serviceUuid.append(bytes.mid(8));
 	  serviceUuid.append("-0000-0000-");
 	  serviceUuid.append(QString(m_address).remove(":"));
-	  classId << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
 
 	  if(!m_bluetoothServiceInfo)
 	    m_bluetoothServiceInfo = new QBluetoothServiceInfo();
 
+	  QBluetoothServiceInfo::Sequence classId;
+
+	  classId << QVariant::fromValue
+	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
 	  m_bluetoothServiceInfo->setAttribute
-	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList,
-	     classId);
+	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
 	  classId.prepend(QVariant::fromValue(QBluetoothUuid(serviceUuid)));
-	  m_bluetoothServiceInfo->setAttribute
-	    (QBluetoothServiceInfo::ServiceClassIds, classId);
 	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
 	  m_bluetoothServiceInfo->setAttribute
-	    (QBluetoothServiceInfo::ServiceName,
+	    (QBluetoothServiceInfo::ServiceClassIds, classId);
+	  m_bluetoothServiceInfo->setAttribute
+	    (QBluetoothServiceInfo::ServiceDescription,
 	     QString("Spot-On-Bluetooth-Server-%1:%2").
 	     arg(m_address).arg(m_port));
 	  m_bluetoothServiceInfo->setAttribute
-	    (QBluetoothServiceInfo::ServiceDescription,
+	    (QBluetoothServiceInfo::ServiceName,
 	     QString("Spot-On-Bluetooth-Server-%1:%2").
 	     arg(m_address).arg(m_port));
 	  m_bluetoothServiceInfo->setAttribute
@@ -640,8 +640,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  publicBrowse << QVariant::fromValue
 	    (QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
 	  m_bluetoothServiceInfo->setAttribute
-	    (QBluetoothServiceInfo::BrowseGroupList,
-	     publicBrowse);
+	    (QBluetoothServiceInfo::BrowseGroupList, publicBrowse);
 
 	  QBluetoothServiceInfo::Sequence protocol;
 	  QBluetoothServiceInfo::Sequence protocolDescriptorList;
