@@ -36,7 +36,7 @@ extern "C"
 #include <QHash>
 #include <QStringList>
 
-#define SPOTON_VERSION_STR "2020.02.15"
+#define SPOTON_VERSION_STR "2020.02.20"
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
