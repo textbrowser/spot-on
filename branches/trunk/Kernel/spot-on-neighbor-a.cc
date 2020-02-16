@@ -3021,9 +3021,6 @@ void spoton_neighbor::slotTimeout(void)
 		if(m_bluetoothSocket)
 		  break;
 
-#ifndef Q_OS_MAC
-		QBluetoothServiceInfo serviceInfo(list.at(i));
-#endif
 		QByteArray bytes;
 		QString serviceUuid;
 
@@ -3036,7 +3033,7 @@ void spoton_neighbor::slotTimeout(void)
 		serviceUuid.append(QString(m_address).remove(":"));
 
 #ifndef Q_OS_MAC
-		if(QBluetoothUuid(serviceUuid) == serviceInfo.serviceUuid())
+		if(QBluetoothUuid(serviceUuid) == list.at(i).serviceUuid())
 #endif
 		  {
 		    m_bluetoothSocket = new QBluetoothSocket
@@ -3061,13 +3058,9 @@ void spoton_neighbor::slotTimeout(void)
 			    SIGNAL(readyRead(void)),
 			    this,
 			    SLOT(slotReadyRead(void)));
-#ifdef Q_OS_MAC
 		    m_bluetoothSocket->connectToService
 		      (QBluetoothAddress(m_address),
 		       QBluetoothUuid(serviceUuid));
-#else
-		    m_bluetoothSocket->connectToService(serviceInfo);
-#endif
 		    saveStatus("connecting");
 		    break;
 		  }
