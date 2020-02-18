@@ -2269,7 +2269,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	 m_passthrough,
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
-#ifdef SPOTON_BLUETOOTH_ENABLED
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	 0, // Bluetooth.
 #endif
 	 socket,
