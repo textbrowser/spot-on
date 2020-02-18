@@ -1521,7 +1521,9 @@ void spoton_listener::slotNewConnection(void)
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
 	 socket,
+#ifdef SPOTON_WEBSOCKETS_ENABLED
 	 0, // WebSocket.
+#endif
 	 this);
     }
   catch(...)
@@ -2267,7 +2269,9 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	 m_passthrough,
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
+#ifdef SPOTON_BLUETOOTH_ENABLED
 	 0, // Bluetooth.
+#endif
 	 socket,
 	 this);
     }
