@@ -41,7 +41,7 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mabi=altivec -mpowerpc -mtune=powerpc \
                           -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
-			  -Wextra \
+			  -Wextra -Wno-unused-parameter \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5 \
                           -std=c++11
