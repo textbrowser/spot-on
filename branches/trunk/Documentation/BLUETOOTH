@@ -1,1 +1,3 @@
 Qt 5.5.1 or newer is required. Qt added BT support in 5.2.0.
+
+Windows requires Qt 5.14.1.
