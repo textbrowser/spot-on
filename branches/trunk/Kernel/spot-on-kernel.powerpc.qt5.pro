@@ -35,7 +35,8 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mabi=altivec -mpowerpc -mtune=powerpc \
 			  -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
-			  -Werror -Wextra -Wl,-z,relro \
+                          -Werror -Wextra -Wl,-z,relro \
+                          -Wno-unused-value \
 			  -Woverloaded-virtual -Wpointer-arith \
                           -Wstack-protector -Wstrict-overflow=5
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
