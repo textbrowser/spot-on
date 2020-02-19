@@ -35,10 +35,10 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
 			  -mabi=altivec -mpowerpc -mtune=powerpc \
 			  -pie -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
-                          -Werror -Wextra -Wl,-z,relro \
-                          -Wno-unused-value \
+                          -Wextra -Wl,-z,relro \
 			  -Woverloaded-virtual -Wpointer-arith \
-                          -Wstack-protector -Wstrict-overflow=5
+                          -Wstack-protector -Wstrict-overflow=5 \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_LFLAGS_RELEASE   += -Wl,-rpath,/usr/local/spot-on/Lib
