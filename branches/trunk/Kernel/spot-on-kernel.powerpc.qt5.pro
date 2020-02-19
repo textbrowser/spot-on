@@ -40,7 +40,7 @@ QMAKE_CLEAN            += ../Spot-On-Kernel \
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
                           -mabi=altivec -mpowerpc -mtune=powerpc \
-			  -mtune=native -pie -std=c++11 -O3 \
+			  -pie -std=c++11 -O3 \
 			  -Wall -Wcast-align -Wcast-qual \
                           -Wextra -Wl,-z,relro -Wno-unused \
 			  -Woverloaded-virtual -Wpointer-arith \
