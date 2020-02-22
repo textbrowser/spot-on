@@ -61,7 +61,6 @@ $(function() {
   <div class="summary">
 <a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classspoton__web__server__tcp__server-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">spoton_web_server_tcp_server Class Reference</div>  </div>
@@ -79,6 +78,8 @@ Inheritance diagram for spoton_web_server_tcp_server:</div>
 Collaboration diagram for spoton_web_server_tcp_server:</div>
 <div class="dyncontent">
 <div class="center"><img src="classspoton__web__server__tcp__server__coll__graph.png" border="0" usemap="#spoton__web__server__tcp__server_coll__map" alt="Collaboration graph"/></div>
+<map name="spoton__web__server__tcp__server_coll__map" id="spoton__web__server__tcp__server_coll__map">
+</map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
@@ -92,18 +93,24 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a77fda9ac56f103c4a8dfbcc8830c1501"><td class="memItemLeft" align="right" valign="top"><a id="a77fda9ac56f103c4a8dfbcc8830c1501"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>spoton_web_server_tcp_server</b> (QObject *parent)</td></tr>
 <tr class="separator:a77fda9ac56f103c4a8dfbcc8830c1501"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa336559ef858ec43c6c060058fcc4eea"><td class="memItemLeft" align="right" valign="top"><a id="aa336559ef858ec43c6c060058fcc4eea"></a>
+QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>certificate</b> (void) const</td></tr>
+<tr class="separator:aa336559ef858ec43c6c060058fcc4eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2193358294c8011dfa648f8b942afcd"><td class="memItemLeft" align="right" valign="top"><a id="aa2193358294c8011dfa648f8b942afcd"></a>
+QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>privateKey</b> (void) const</td></tr>
+<tr class="separator:aa2193358294c8011dfa648f8b942afcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb486703b6a70c77b9be589b0b492b9b"><td class="memItemLeft" align="right" valign="top"><a id="acb486703b6a70c77b9be589b0b492b9b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>clear</b> (void)</td></tr>
+<tr class="separator:acb486703b6a70c77b9be589b0b492b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b30500d018e2c06197a5519be9c9c5a"><td class="memItemLeft" align="right" valign="top"><a id="a3b30500d018e2c06197a5519be9c9c5a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>incomingConnection</b> (int socketDescriptor)</td></tr>
 <tr class="separator:a3b30500d018e2c06197a5519be9c9c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:a37573e40f33f79d1ffd129293067fa11"><td class="memItemLeft" align="right" valign="top"><a id="a37573e40f33f79d1ffd129293067fa11"></a>
-QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>m_certificate</b></td></tr>
-<tr class="separator:a37573e40f33f79d1ffd129293067fa11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0aa729229c006713c3223192e9bbae9e"><td class="memItemLeft" align="right" valign="top"><a id="a0aa729229c006713c3223192e9bbae9e"></a>
-QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>m_privateKey</b></td></tr>
-<tr class="separator:a0aa729229c006713c3223192e9bbae9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac99761be3c2f86f86a19cbdb86a8757b"><td class="memItemLeft" align="right" valign="top"><a id="ac99761be3c2f86f86a19cbdb86a8757b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setCertificate</b> (const QByteArray &amp;certificate)</td></tr>
+<tr class="separator:ac99761be3c2f86f86a19cbdb86a8757b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae539935137fa23c0b02d574ffde6f362"><td class="memItemLeft" align="right" valign="top"><a id="ae539935137fa23c0b02d574ffde6f362"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setPrivateKey</b> (const QByteArray &amp;privateKey)</td></tr>
+<tr class="separator:ae539935137fa23c0b02d574ffde6f362"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>Kernel/<a class="el" href="spot-on-web-server_8h_source.html">spot-on-web-server.h</a></li>
