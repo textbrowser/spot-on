@@ -174,7 +174,12 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 
 void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 {
-  if(socketDescriptor < 0)
+  if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
+    {
+      spoton_misc::closeSocket(socketDescriptor);
+      return;
+    }
+  else if(socketDescriptor < 0)
     return;
 
   QPair<QByteArray, QByteArray> credentials
