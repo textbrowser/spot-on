@@ -3193,13 +3193,30 @@ void spoton_neighbor::slotTimeout(void)
   */
 
   QSet<QPair<QByteArray, QByteArray> > a;
-  QSet<QPair<QByteArray, QByteArray> > b
-    (spoton_kernel::adaptiveEchoTokens().toSet());
   QWriteLocker locker2(&m_learnedAdaptiveEchoPairsMutex);
 
-  a = m_learnedAdaptiveEchoPairs.toSet();
-  m_learnedAdaptiveEchoPairs =
-    QList<QPair<QByteArray, QByteArray> >::fromSet(a.intersect(b));
+  for(int i = 0; i < m_learnedAdaptiveEchoPairs.size(); i++)
+    a.insert(m_learnedAdaptiveEchoPairs.at(i));
+
+  locker2.unlock();
+
+  QSet<QPair<QByteArray, QByteArray> > b;
+  const QList<QPair<QByteArray, QByteArray> > &list
+    (spoton_kernel::adaptiveEchoTokens());
+
+  for(int i = 0; i < list.size(); i++)
+    b.insert(list.at(i));
+
+  a.intersect(b);
+  locker2.relock();
+  m_learnedAdaptiveEchoPairs.clear();
+
+  QSetIterator<QPair<QByteArray, QByteArray> > it(a);
+
+  while(it.hasNext())
+    m_learnedAdaptiveEchoPairs.append(it.next());
+
+  locker2.unlock();
 
   if(!m_isUserDefined &&
      !m_passthrough &&

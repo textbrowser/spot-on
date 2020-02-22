@@ -7223,8 +7223,14 @@ void spoton::slotPopulateListeners(void)
 			      box->addItem(QString::number(5 * j));
 
 			    box->addItem(tr("Unlimited"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+			    box->setMaximumWidth
+			      (box->fontMetrics().
+			       horizontalAdvance(tr("Unlimited")) + 50);
+#else
 			    box->setMaximumWidth
 			      (box->fontMetrics().width(tr("Unlimited")) + 50);
+#endif
 			    m_ui.listeners->setCellWidget(row, i, box);
 
 			    if(query.value(i).toLongLong() <= 0)
@@ -7248,8 +7254,14 @@ void spoton::slotPopulateListeners(void)
 			else
 			  {
 			    box->addItem(tr("Unlimited"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+			    box->setMaximumWidth
+			      (box->fontMetrics().
+			       horizontalAdvance(tr("Unlimited")) + 50);
+#else
 			    box->setMaximumWidth
 			      (box->fontMetrics().width(tr("Unlimited")) + 50);
+#endif
 			    box->setEnabled(false);
 			    m_ui.listeners->setCellWidget(row, i, box);
 			  }
@@ -7274,11 +7286,20 @@ void spoton::slotPopulateListeners(void)
 
 			box->setCorrectionMode
 			  (QAbstractSpinBox::CorrectToNearestValue);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   horizontalAdvance
+			   (QString::
+			    number(spoton_common::
+				   MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+#else
 			box->setMaximumWidth
 			  (box->fontMetrics().
 			   width(QString::
 				 number(spoton_common::
 					MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+#endif
 			box->setProperty
 			  ("field_name", query.record().fieldName(i));
 			box->setProperty
@@ -7300,17 +7321,17 @@ void spoton::slotPopulateListeners(void)
 		    else if(i == 20) // Lane Width
 		      {
 			QComboBox *box = new QComboBox();
-			QList<int> list;
-			QSet<int> set;
+			QList<int> list(spoton_common::LANE_WIDTHS);
 
-			for(int j = 0;
-			    j < spoton_common::LANE_WIDTHS.size(); j++)
-			  set << spoton_common::LANE_WIDTHS.at(j);
+			if(!list.contains(spoton_common::LANE_WIDTH_DEFAULT))
+			  list << spoton_common::LANE_WIDTH_DEFAULT;
 
-			set << spoton_common::LANE_WIDTH_MINIMUM
-			    << spoton_common::LANE_WIDTH_DEFAULT
-			    << spoton_common::LANE_WIDTH_MAXIMUM;
-			list = set.toList();
+			if(!list.contains(spoton_common::LANE_WIDTH_MAXIMUM))
+			  list << spoton_common::LANE_WIDTH_MAXIMUM;
+
+			if(!list.contains(spoton_common::LANE_WIDTH_MINIMUM))
+			  list << spoton_common::LANE_WIDTH_MINIMUM;
+
 			std::sort(list.begin(), list.end());
 
 			for(int j = 0; j < list.size(); j++)
@@ -7355,10 +7376,17 @@ void spoton::slotPopulateListeners(void)
 
 			box->setMaximum(std::numeric_limits<unsigned short>::
 					max());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+			box->setMaximumWidth
+			  (box->fontMetrics().
+			   horizontalAdvance(QString::
+					     number(box->maximum())) + 50);
+#else
 			box->setMaximumWidth
 			  (box->fontMetrics().
 			   width(QString::
 				 number(box->maximum())) + 50);
+#endif
 			box->setMinimum(0);
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
@@ -7949,11 +7977,19 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	      box->setCorrectionMode
 		(QAbstractSpinBox::CorrectToNearestValue);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 horizontalAdvance(QString::
+				   number(spoton_common::
+					  MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+#else
 	      box->setMaximumWidth
 		(box->fontMetrics().
 		 width(QString::
 		       number(spoton_common::
 			      MAXIMUM_NEIGHBOR_BUFFER_SIZE)) + 50);
+#endif
 	      box->setProperty
 		("field_name", query->record().fieldName(i));
 	      box->setProperty
@@ -8031,17 +8067,17 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 36) // Lane Width
 	    {
 	      QComboBox *box = new QComboBox();
-	      QList<int> list;
-	      QSet<int> set;
+	      QList<int> list(spoton_common::LANE_WIDTHS);
 
-	      for(int j = 0;
-		  j < spoton_common::LANE_WIDTHS.size(); j++)
-		set << spoton_common::LANE_WIDTHS.at(j);
+	      if(!list.contains(spoton_common::LANE_WIDTH_DEFAULT))
+		list << spoton_common::LANE_WIDTH_DEFAULT;
 
-	      set << spoton_common::LANE_WIDTH_MINIMUM
-		  << spoton_common::LANE_WIDTH_DEFAULT
-		  << spoton_common::LANE_WIDTH_MAXIMUM;
-	      list = set.toList();
+	      if(!list.contains(spoton_common::LANE_WIDTH_MAXIMUM))
+		list << spoton_common::LANE_WIDTH_MAXIMUM;
+
+	      if(!list.contains(spoton_common::LANE_WIDTH_MINIMUM))
+		list << spoton_common::LANE_WIDTH_MINIMUM;
+
 	      std::sort(list.begin(), list.end());
 
 	      for(int j = 0; j < list.size(); j++)
@@ -8101,12 +8137,21 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      box->setMaximum
 		(spoton_common::
 		 WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 horizontalAdvance
+		 (QString::
+		  number(spoton_common::
+			 WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM)) + 50);
+#else
 	      box->setMaximumWidth
 		(box->fontMetrics().
 		 width(QString::
 		       number(spoton_common::
 			      WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM)) +
 		 50);
+#endif
 	      box->setMinimum(0);
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));
@@ -8138,9 +8183,15 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      box->setCorrectionMode
 		(QAbstractSpinBox::CorrectToNearestValue);
 	      box->setMaximum(999999999);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
+	      box->setMaximumWidth
+		(box->fontMetrics().
+		 horizontalAdvance(QString::number(box->maximum())) + 50);
+#else
 	      box->setMaximumWidth
 		(box->fontMetrics().
 		 width(QString::number(box->maximum())) + 50);
+#endif
 	      box->setMinimum(0);
 	      box->setProperty
 		("oid", query->value(query->record().count() - 1));

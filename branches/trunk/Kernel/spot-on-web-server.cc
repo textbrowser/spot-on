@@ -549,10 +549,15 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	      if(bundle.isEmpty())
 		break;
 
-	      originalSearch.remove(s, e - s + 1);
-	      keywords = bundle.split
-		     (QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
+	      keywords.clear();
 	      keywordsearch.clear();
+	      originalSearch.remove(s, e - s + 1);
+
+	      QStringList list
+		(bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
+
+	      for(int i = 0; i < list.size(); i++)
+		keywords.insert(list.at(i));
 
 	      QSetIterator<QString> it(keywords);
 
@@ -581,9 +586,15 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	    }
 	  while(true);
 
-	  keywords = originalSearch.toLower().trimmed().
-	    split(QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
+	  keywords.clear();
 	  keywordsearch.clear();
+
+	  QStringList list
+	    (originalSearch.toLower().trimmed().
+	     split(QRegExp("\\W+"),QString::SkipEmptyParts));
+
+	  for(int i = 0; i < list.size(); i++)
+	    keywords.insert(list.at(i));
 
 	  QSetIterator<QString> it(keywords);
 

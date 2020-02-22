@@ -624,8 +624,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	      spoton_misc::logError
 		(QString("spoton_neighbor::slotNewDatagram(): "
 			 "%1:%2 closed the connection. Aborting.").
-		 arg(m_address).
-		 arg(m_port));	      
+		 arg(m_address).arg(m_port));
 	      deleteLater();
 	      return;
 	    }

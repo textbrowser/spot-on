@@ -176,8 +176,8 @@ void spoton::discoverUrls(void)
       keywordsearch.clear();
 
       QStringList list
-	(search.toLower().trimmed().split(QRegExp("\\W+"),
-					  QString::SkipEmptyParts));
+	(search.toLower().trimmed().
+	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
 
       for(int i = 0; i < list.size(); i++)
 	keywords.insert(list.at(i));

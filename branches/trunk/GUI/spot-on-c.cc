@@ -2671,7 +2671,7 @@ void spoton::slotExportListeners(void)
 
   QFileDialog dialog(this);
 
-  dialog.setConfirmOverwrite(true);
+  dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
     (tr("%1: Select Listeners Export File").
      arg(SPOTON_APPLICATION_NAME));
@@ -2747,7 +2747,7 @@ void spoton::slotExportPublicKeys(void)
 
   QFileDialog dialog(this);
 
-  dialog.setConfirmOverwrite(true);
+  dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
     (tr("%1: Select Public Keys Export File").
      arg(SPOTON_APPLICATION_NAME));
