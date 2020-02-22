@@ -119,10 +119,15 @@ void spoton::discoverUrls(void)
 	  if(!keywords.isEmpty())
 	    searchfor.append(" <b>OR</b> ");
 
-	  search.remove(s, e - s + 1);
-	  keywords = bundle.split(QRegExp("\\W+"),
-				  QString::SkipEmptyParts).toSet();
+	  keywords.clear();
 	  keywordsearch.clear();
+	  search.remove(s, e - s + 1);
+
+	  QStringList list
+	    (bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
+
+	  for(int i = 0; i < list.size(); i++)
+	    keywords.insert(list.at(i));
 
 	  if(!keywords.isEmpty())
 	    searchfor.append("(");
@@ -167,9 +172,15 @@ void spoton::discoverUrls(void)
 	}
       while(true);
 
-      keywords = search.toLower().trimmed().
-	split(QRegExp("\\W+"), QString::SkipEmptyParts).toSet();
+      keywords.clear();
       keywordsearch.clear();
+
+      QStringList list
+	(search.toLower().trimmed().split(QRegExp("\\W+"),
+					  QString::SkipEmptyParts));
+
+      for(int i = 0; i < list.size(); i++)
+	keywords.insert(list.at(i));
 
       if(intersect)
 	if(!keywords.isEmpty())
