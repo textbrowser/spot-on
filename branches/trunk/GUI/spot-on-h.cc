@@ -1350,9 +1350,11 @@ void spoton::slotWebServerInformationTimeout(void)
     {
       m_ui.web_server_information_label->setText
 	(tr("The Spot-On Search Engine may be accessed via "
-	    "<a href=\"https://%1:%2\">https://%1:%2</a>.").
+	    "<a href=\"http://%1:%2\">http://%1:%2</a> and "
+	    "<a href=\"https://%1:%3\">https://%1:%3</a>.").
 	 arg(spoton_misc::localAddressIPv4().toString()).
-	 arg(m_ui.web_server_port->value()));
+	 arg(m_ui.web_server_port->value()).
+	 arg(m_ui.web_server_port->value() + 5));
       m_ui.web_server_information_label->setVisible(true);
     }
 }

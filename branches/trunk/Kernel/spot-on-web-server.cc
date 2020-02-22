@@ -48,10 +48,11 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
   emit newConnection(static_cast<qint64> (socketDescriptor));
 }
 
-spoton_web_server::spoton_web_server(QObject *parent):
-  spoton_web_server_tcp_server(parent)
+spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
 {
   m_abort = new QAtomicInt(0);
+  m_http = new spoton_web_server_tcp_server(this);
+  m_https = new spoton_web_server_tcp_server(this);
 
   QFile file(":/search.html");
 
@@ -62,18 +63,23 @@ spoton_web_server::spoton_web_server(QObject *parent):
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
-  connect(this,
+  connect(m_http,
 	  SIGNAL(newConnection(const qint64)),
 	  this,
-	  SLOT(slotClientConnected(const qint64)));
+	  SLOT(slotHttpClientConnected(const qint64)));
+  connect(m_https,
+	  SIGNAL(newConnection(const qint64)),
+	  this,
+	  SLOT(slotHttpsClientConnected(const qint64)));
   m_generalTimer.start(2500);
 }
 
 spoton_web_server::~spoton_web_server()
 {
-  close();
   m_abort->fetchAndStoreOrdered(1);
   m_generalTimer.stop();
+  m_http->close();
+  m_https->close();
 
   foreach(spoton_web_server_thread *thread,
 	  findChildren<spoton_web_server_thread *> ())
@@ -154,12 +160,25 @@ int spoton_web_server::clientCount(void) const
   return findChildren<spoton_web_server_thread *> ().size();
 }
 
-void spoton_web_server::slotClientConnected(const qint64 socketDescriptor)
+void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 {
   if(socketDescriptor < 0)
     return;
 
-  QPair<QByteArray, QByteArray> credentials(m_certificate, m_privateKey);
+  spoton_web_server_thread *thread = new spoton_web_server_thread
+    (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
+
+  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
+  thread->start();
+}
+
+void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
+{
+  if(socketDescriptor < 0)
+    return;
+
+  QPair<QByteArray, QByteArray> credentials
+    (m_https->certificate(), m_https->privateKey());
   spoton_web_server_thread *thread = new spoton_web_server_thread
     (m_abort, this, credentials, socketDescriptor);
 
@@ -174,21 +193,22 @@ void spoton_web_server::slotTimeout(void)
 
   if(port == 0)
     {
-      close();
-      m_certificate.clear();
-      m_privateKey.clear();
+      m_http->close();
+      m_https->clear();
+      m_https->close();
       return;
     }
 
-  if(isListening())
-    if(port != serverPort())
+  if(m_http->isListening() || m_https->isListening())
+    if(port != m_http->serverPort() ||
+       port + 5 != m_https->serverPort())
       {
-	close();
-	m_certificate.clear();
-	m_privateKey.clear();
+	m_http->close();
+	m_https->clear();
+	m_https->close();
       }
 
-  if(m_certificate.isEmpty() || m_privateKey.isEmpty())
+  if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
     {
       spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
 
@@ -213,14 +233,18 @@ void spoton_web_server::slotTimeout(void)
 			      "FROM kernel_web_server"))
 		  while(query.next())
 		    {
+		      QByteArray certificate;
+		      QByteArray privateKey;
 		      bool ok = true;
 
-		      m_certificate = crypt->decryptedAfterAuthenticated
+		      certificate = crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query.value(0).toByteArray()),
 			 &ok);
-		      m_privateKey = crypt->decryptedAfterAuthenticated
+		      privateKey = crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query.value(1).toByteArray()),
 			 &ok);
+		      m_https->setCertificate(certificate);
+		      m_https->setPrivateKey(privateKey);
 		    }
 	      }
 
@@ -231,10 +255,16 @@ void spoton_web_server::slotTimeout(void)
 	}
     }
 
-  if(!isListening())
-    if(!listen(spoton_misc::localAddressIPv4(), port))
+  if(!m_http->isListening())
+    if(!m_http->listen(spoton_misc::localAddressIPv4(), port))
       spoton_misc::logError
-	("spoton_web_server::slotTimeout(): listen() failure. "
+	("spoton_web_server::slotTimeout(): m_http->listen() failure. "
+	 "This is a serious problem!");
+
+  if(!m_https->isListening())
+    if(!m_https->listen(spoton_misc::localAddressIPv4(), port + 5))
+      spoton_misc::logError
+	("spoton_web_server::slotTimeout(): m_https->listen() failure. "
 	 "This is a serious problem!");
 }
 
@@ -258,38 +288,45 @@ void spoton_web_server_thread::process
     (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE);
   socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
-  QSslConfiguration configuration;
-  QString sslCS
-    (spoton_kernel::setting("gui/sslControlString",
-			    spoton_common::SSL_CONTROL_STRING).toString());
+  if(!credentials.first.isEmpty())
+    {
+      QSslConfiguration configuration;
+      QString sslCS
+	(spoton_kernel::setting("gui/sslControlString",
+				spoton_common::SSL_CONTROL_STRING).toString());
 
-  configuration.setLocalCertificate(QSslCertificate(credentials.first));
-  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-  configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
+      configuration.setLocalCertificate(QSslCertificate(credentials.first));
+      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
+      configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
 #if QT_VERSION >= 0x040806
-  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
-  configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
-  configuration.setSslOption(QSsl::SslOptionDisableLegacyRenegotiation, true);
+      configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
+      configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableLegacyRenegotiation, true);
 #if QT_VERSION >= 0x050501
-  configuration.setSslOption(QSsl::SslOptionDisableSessionPersistence, true);
-  configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableSessionPersistence, true);
+      configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
 #endif
-  configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
+      configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
 #endif
 #if QT_VERSION >= 0x050501
-  spoton_crypt::setSslCiphers
-    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
+      spoton_crypt::setSslCiphers
+	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
 #else
-  spoton_crypt::setSslCiphers(socket->supportedCiphers(), sslCS, configuration);
+      spoton_crypt::setSslCiphers
+	(socket->supportedCiphers(), sslCS, configuration);
 #endif
-  socket->setSslConfiguration(configuration);
-  socket->startServerEncryption();
+      socket->setSslConfiguration(configuration);
+      socket->startServerEncryption();
+    }
 
-  for(int i = 1; i <= 30; i++)
-    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					  QAbstractSocket::ConnectedState &&
-					  socket->waitForEncrypted(1000)))
-      break;
+  if(!credentials.first.isEmpty())
+    for(int i = 1; i <= 30; i++)
+      if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					    QAbstractSocket::ConnectedState &&
+					    socket->waitForEncrypted(1000)))
+	break;
 
   /*
   ** Read the socket data!

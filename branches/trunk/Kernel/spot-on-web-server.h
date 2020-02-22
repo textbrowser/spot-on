@@ -49,13 +49,39 @@ class spoton_web_server_tcp_server: public QTcpServer
   {
   }
 
+  QByteArray certificate(void) const
+  {
+    return m_certificate;
+  }
+
+  QByteArray privateKey(void) const
+  {
+    return m_privateKey;
+  }
+
+  void clear(void)
+  {
+    m_certificate.clear();
+    m_privateKey.clear();
+  }
+
 #if QT_VERSION < 0x050000
   void incomingConnection(int socketDescriptor);
 #else
   void incomingConnection(qintptr socketDescriptor);
 #endif
 
- protected:
+  void setCertificate(const QByteArray &certificate)
+  {
+    m_certificate = certificate;
+  }
+
+  void setPrivateKey(const QByteArray &privateKey)
+  {
+    m_privateKey = privateKey;
+  }
+
+ private:
   QByteArray m_certificate;
   QByteArray m_privateKey;
 
@@ -65,7 +91,7 @@ class spoton_web_server_tcp_server: public QTcpServer
 
 class spoton_web_server_tcp_server;
 
-class spoton_web_server: public spoton_web_server_tcp_server
+class spoton_web_server: public QObject
 {
   Q_OBJECT
 
@@ -77,9 +103,12 @@ class spoton_web_server: public spoton_web_server_tcp_server
  private:
   QAtomicInt *m_abort;
   QTimer m_generalTimer;
+  spoton_web_server_tcp_server *m_http;
+  spoton_web_server_tcp_server *m_https;
 
  private slots:
-  void slotClientConnected(const qint64 socketDescriptor);
+  void slotHttpClientConnected(const qint64 socketDescriptor);
+  void slotHttpsClientConnected(const qint64 socketDescriptor);
   void slotTimeout(void);
 };
 
