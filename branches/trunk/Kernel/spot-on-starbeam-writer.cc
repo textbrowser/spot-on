@@ -178,18 +178,19 @@ void spoton_starbeam_writer::processData
   if(!ok)
     return;
 
-  QList<QByteArray> novas;
   QReadLocker locker(&m_keyMutex);
+  const QList<QByteArray> &novas(m_novas);
 
-  novas = m_novas;
   locker.unlock();
 
-  QByteArray d
-    (data.mid(0, data.length() -
-	      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-  QByteArray messageCode(data.mid(d.length()));
+  QByteArray messageCode;
   QByteArray nova;
   bool found = false;
+  const QByteArray &d
+    (data.
+     mid(0, data.length() - spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+
+  messageCode = data.mid(d.length());
 
   for(int i = 0; i < novas.size(); i++)
     {
@@ -339,8 +340,8 @@ void spoton_starbeam_writer::processData
      spoton_kernel::instance()->hasStarBeamReaderId(fileId))
     return;
 
-  QByteArray hash(list.value(7));
-  QByteArray sha3_512_hash(list.value(11));
+  const QByteArray &hash(list.value(7));
+  const QByteArray &sha3_512_hash(list.value(11));
   qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
@@ -448,9 +449,7 @@ void spoton_starbeam_writer::processData
 
       if(file.seek(position))
 	{
-	  QByteArray data(list.value(5));
-
-	  data = qUncompress(data);
+	  QByteArray data(qUncompress(list.value(5)));
 
 	  if(static_cast<int> (file.write(data)) != data.length())
 	    {
@@ -472,9 +471,6 @@ void spoton_starbeam_writer::processData
     spoton_misc::logError
       ("spoton_starbeam_writer::processData(): QFile::open() failure.");
 
-#ifdef Q_OS_UNIX
-  fsync(file.handle());
-#endif
   file.close();
 
   if(!ok)
