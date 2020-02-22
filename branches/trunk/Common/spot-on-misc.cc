@@ -5291,7 +5291,7 @@ void spoton_misc::prepareDatabases(void)
 		   "position TEXT NOT NULL, "
 		   "pulse_size TEXT NOT NULL, "
 		   "read_interval REAL NOT NULL DEFAULT 1.500 "
-		   "CHECK (read_interval >= 0.100), "
+		   "CHECK (read_interval >= 0.025), "
 		   "sha3_512_hash TEXT, "
 		   "status_control TEXT NOT NULL DEFAULT 'paused' CHECK "
 		   "(status_control IN ('completed', 'deleted', 'paused', "

@@ -1986,7 +1986,7 @@ void spoton::slotSetSBReadInterval(void)
 
   rational = QInputDialog::getDouble
     (this, tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
-     tr("&Read Interval"), rational, 0.100, 60.000, 3, &ok);
+     tr("&Read Interval"), rational, 0.025, 60.000, 3, &ok);
 
   if(!ok)
     return;

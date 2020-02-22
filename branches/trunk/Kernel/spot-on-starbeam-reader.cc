@@ -56,7 +56,7 @@ spoton_starbeam_reader::spoton_starbeam_reader
   m_neighborIndex = 0;
   m_position = 0;
   m_rc = 0;
-  m_readInterval = qBound(0.100, readInterval, 60.000);
+  m_readInterval = qBound(0.025, readInterval, 60.000);
   m_timer.start(static_cast<int> (1000 * m_readInterval));
   m_ultra = true;
 }
@@ -408,7 +408,7 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 
 void spoton_starbeam_reader::setReadInterval(const double readInterval)
 {
-  m_readInterval = qBound(0.100, readInterval, 60.000);
+  m_readInterval = qBound(0.025, readInterval, 60.000);
 
   if(static_cast<int> (1000 * m_readInterval) != m_timer.interval())
     if(m_timer.isActive())
@@ -496,7 +496,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		{
 		  m_fragmented = query.value(1).toBool();
 		  m_readInterval = qBound
-		    (0.100, query.value(6).toDouble(), 60.000);
+		    (0.025, query.value(6).toDouble(), 60.000);
 		  status = query.value(8).toString().toLower();
 
 		  if(status == "completed")
@@ -570,7 +570,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 			  if(m_readFuture.isFinished() &&
 			     m_readFuture.resultCount() > 0)
 			    {
-			      QPair<QByteArray, qint64> pair
+			      const QPair<QByteArray, qint64> &pair
 				(m_readFuture.result());
 
 			      if(!pair.first.isEmpty())
