@@ -204,14 +204,14 @@ void spoton_web_server::slotTimeout(void)
       return;
     }
 
-  if(m_http->isListening() || m_https->isListening())
-    if(port != m_http->serverPort() ||
-       port + 5 != m_https->serverPort())
-      {
-	m_http->close();
-	m_https->clear();
-	m_https->close();
-      }
+  if(m_http->isListening() && m_http->serverPort() != port)
+    m_http->close();
+
+  if(m_https->isListening() && m_https->serverPort() != port + 5)
+    {
+      m_https->clear();
+      m_https->close();
+    }
 
   if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
     {
