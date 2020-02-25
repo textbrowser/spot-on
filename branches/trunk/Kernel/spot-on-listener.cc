@@ -539,8 +539,9 @@ QString spoton_listener::transport(void) const
 bool spoton_listener::isListening(void) const
 {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  if(m_bluetoothServer)
-    return m_bluetoothServer->isListening();
+  if(m_bluetoothServer && m_bluetoothServiceInfo)
+    return m_bluetoothServer->isListening() &&
+      m_bluetoothServiceInfo->isRegistered();
 #endif
 
   if(m_sctpServer)
