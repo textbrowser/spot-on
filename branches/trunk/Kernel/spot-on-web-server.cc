@@ -428,25 +428,24 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 				       const QByteArray &data,
 				       const QPair<QString, QString> &address)
 {
+  if(!socket)
+    return;
+
   QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
   if(list.size() != 4)
     {
-      if(socket)
-	{
-	  socket->write
-	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	     "charset=utf-8\r\n\r\n");
-	  socket->write(s_search);
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+      socket->write(s_search);
 
-	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-						  QAbstractSocket::
-						  ConnectedState &&
-						  socket->
-						  waitForBytesWritten(1000)))
-	      break;
-	}
+      for(int i = 1; i <= 30; i++)
+	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					      QAbstractSocket::
+					      ConnectedState &&
+					      socket->
+					      waitForBytesWritten(1000)))
+	  break;
 
       return;
     }
@@ -957,27 +956,26 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 void spoton_web_server_thread::processLocal
 (QSslSocket *socket, const QByteArray &data)
 {
+  if(!socket)
+    return;
+
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::
      retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
 
   if(!crypt)
     {
-      if(socket)
-	{
-	  socket->write
-	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	     "charset=utf-8\r\n\r\n");
-	  socket->write(s_search);
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+      socket->write(s_search);
 
-	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-						  QAbstractSocket::
-						  ConnectedState &&
-						  socket->
-						  waitForBytesWritten(1000)))
-	      break;
-	}
+      for(int i = 1; i <= 30; i++)
+	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					      QAbstractSocket::
+					      ConnectedState &&
+					      socket->
+					      waitForBytesWritten(1000)))
+	  break;
 
       return;
     }
