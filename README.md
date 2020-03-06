@@ -34,7 +34,7 @@ Summary of Spot-On
 <li>Socialist Millionaires Protocol.</li>
 <li>Sparc.</li>
 <li>Threefish CBC.</li>
-<li>UDP unicast, multicast.</li>
+<li>UDP multicast, unicast.</li>
 <li>Ultra StarBeam file sharing.</li>
 <li>WebSockets.</li>
 </ul>
