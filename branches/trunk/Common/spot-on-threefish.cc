@@ -705,8 +705,7 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
   QByteArray plaintext(bytes);
 
   if(plaintext.isEmpty())
-    plaintext = plaintext.leftJustified
-      (static_cast<int> (m_blockSize), 0);
+    plaintext = plaintext.leftJustified(static_cast<int> (m_blockSize), 0);
   else
     plaintext = plaintext.leftJustified
       (static_cast<int> (m_blockSize) *
