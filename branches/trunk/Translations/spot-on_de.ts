@@ -5747,11 +5747,11 @@ Error: %1.</source>
     </message>
     <message>
         <source>&amp;Decrypt</source>
-        <translation type="vanished">&amp;Verschlüsseln</translation>
+        <translation type="vanished">&amp;Entschlüsseln</translation>
     </message>
     <message>
         <source>&amp;Encrypt</source>
-        <translation type="vanished">&amp;Entschlüsseln</translation>
+        <translation type="vanished">&amp;Verschlüsseln</translation>
     </message>
     <message>
         <source>&amp;Cipher Type</source>
