@@ -4029,18 +4029,21 @@ void spoton::slotAbout(void)
 
   pixmap = pixmap.scaled
     (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = "<html>Please visit <a href=\"https://spot-on.sourceforge.io\">"
-    "https://spot-on.sourceforge.io</a> for more information.";
+  str = QString
+    ("<html>Spot-On Version %1<br>"
+     "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
+     "https://textbrowser.github.io/spot-on</a> for more information.").
+    arg(SPOTON_VERSION_STR);
   mb.setIconPixmap(pixmap);
 #else
-  str = "<html>GoldBug is an open source application published under "
-    "the Revised BSD License.<br>"
-    "Please visit <a href=\"https://goldbug.sourceforge.io\">"
-    "https://goldbug.sourceforge.io</a> for more information.";
+  str = QString("<html>GoldBug, version %1, is an open-source "
+		"application published under "
+		"the Revised BSD License.<br>"
+		"Please visit <a href=\"https://goldbug.sourceforge.io\">"
+		"https://goldbug.sourceforge.io</a> for more information.").
+    arg(SPOTON_VERSION_STR);
   mb.setIconPixmap(*m_ui.logo->pixmap());
 #endif
-  str.append("<br><br>");
-  str.append(m_ui.buildInformation->text());
   str.append("</html>");
   mb.setStandardButtons(QMessageBox::Ok);
   mb.setText(str);
