@@ -18,7 +18,6 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
 	   SPOTON_MCELIECE_ENABLED \
-	   SPOTON_SCTP_ENABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -52,7 +51,7 @@ LIBS		  += -L../../../libNTRU -lntru \
                      -L/usr/local/opt/openssl/lib \
                      -lGeoIP \
                      -lcrypto -lcurl -lgcrypt -lgmp \
-                     -lgpg-error -lntl -lpq -lssl -lusrsctp \
+                     -lgpg-error -lntl -lpq -lssl \
                      -framework Cocoa
 MOC_DIR           = temp/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h

@@ -32,7 +32,6 @@ Homebrew is required for OS X.
 brew install curl
 brew install geoip
 brew install libgcrypt
-brew install libusrsctp
 brew install ntl
 brew install openssl
 brew install postgresql
