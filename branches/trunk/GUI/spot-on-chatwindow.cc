@@ -211,6 +211,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   QSettings settings;
   QString error("");
   QString msg("");
+  QString to(ui.name->text());
 
   if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     {
@@ -245,7 +246,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  msg.append(tr("<b>me:</b> "));
+  msg.append(tr("<b>me</b> (<font color=gray>%1</font>)<b>:</b> ").arg(to));
 
   if(settings.value("gui/enableChatEmoticons", false).toBool())
     msg.append

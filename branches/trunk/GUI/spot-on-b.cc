@@ -2462,7 +2462,7 @@ void spoton::sendMessage(bool *ok)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   msg.append
-    (tr("<b>me</b> (<font color=gray>%1</font>): ").
+    (tr("<b>me</b> (<font color=gray>%1</font>)<b>:</b> ").
      arg(to.mid(0, to.length() - 2)));
 
   if(m_settings.value("gui/enableChatEmoticons", false).toBool())
