@@ -229,6 +229,7 @@ Completed Items
 162.   Allow user to bookmark search results. Also allow searching of
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries. Browser bookmarks.
+163.   List addressee in Chat.
 
 Ignored Items
 
@@ -273,4 +274,3 @@ Remaining Items
 10.    Windows NTL.
 11.    McEliece on PowerPC Qt 5.
 12.    StarBeam ETA.
-13.    List addressee in Chat.

@@ -2411,12 +2411,15 @@ void spoton::prepareListenerIPCombo(void)
 void spoton::sendMessage(bool *ok)
 {
   QDateTime now(QDateTime::currentDateTime());
-  QModelIndexList list(m_ui.participants->selectionModel()->
-		       selectedRows(1)); // OID
-  QModelIndexList publicKeyHashes(m_ui.participants->selectionModel()->
-				  selectedRows(3)); // public_key_hash
+  QModelIndexList list
+    (m_ui.participants->selectionModel()->selectedRows(1)); // OID
+  QModelIndexList names
+    (m_ui.participants->selectionModel()->selectedRows(0)); // Participant
+  QModelIndexList publicKeyHashes
+    (m_ui.participants->selectionModel()->selectedRows(3)); // public_key_hash
   QString error("");
   QString msg("");
+  QString to("");
 
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
@@ -2445,6 +2448,11 @@ void spoton::sendMessage(bool *ok)
       goto done_label;
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  for(int i = 0; i < names.size(); i++)
+    to.append(names.at(i).data().toString()).append(", ");
+
   msg.append
     (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
@@ -2453,7 +2461,9 @@ void spoton::sendMessage(bool *ok)
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  msg.append(tr("<b>me:</b> "));
+  msg.append
+    (tr("<b>me</b> (<font color=gray>%1</font>): ").
+     arg(to.mid(0, to.length() - 2)));
 
   if(m_settings.value("gui/enableChatEmoticons", false).toBool())
     msg.append(mapIconToEmoticon(m_ui.message->toPlainText()));
@@ -2464,10 +2474,10 @@ void spoton::sendMessage(bool *ok)
   m_ui.messages->verticalScrollBar()->setValue
     (m_ui.messages->verticalScrollBar()->maximum());
 
-  while(!list.isEmpty() && !publicKeyHashes.isEmpty())
+  for(int i = 0; i < list.size(); i++)
     {
-      QModelIndex index(list.takeFirst());
-      QString publicKeyHash(publicKeyHashes.takeFirst().data().toString());
+      QModelIndex index(list.at(i));
+      QString publicKeyHash(publicKeyHashes.value(i).data().toString());
       QString keyType
 	(index.data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
       QVariant data(index.data());
@@ -2534,6 +2544,7 @@ void spoton::sendMessage(bool *ok)
     }
 
   m_ui.message->clear();
+  QApplication::restoreOverrideCursor();
 
  done_label:
 
