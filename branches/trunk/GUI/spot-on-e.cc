@@ -2058,6 +2058,9 @@ void spoton::slotShareStarBeam(void)
       return;
     }
 
+  QString participant(item1->text());
+  QString publicKeyHash(item3->text());
+
   /*
   ** Select a file.
   */
@@ -2152,7 +2155,7 @@ void spoton::slotShareStarBeam(void)
 	  {
 	    QString origin;
 
-	    origin = QString("%1 (%2)").arg(item1->text()).arg(item3->text());
+	    origin = QString("%1 (%2)").arg(participant).arg(publicKeyHash);
 	    query.addBindValue
 	      (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
 	  }
