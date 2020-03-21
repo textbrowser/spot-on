@@ -707,7 +707,7 @@ void spoton_buzzpage::slotStatusTimeout(void)
 		     arg(now.toString("hh")).
 		     arg(now.toString("mm")).
 		     arg(now.toString("ss")));
-		  msg.append(tr("<i>%1 has left %2.</i>").
+		  msg.append(tr("<i>%1 has left (timeout) %2.</i>").
 			     arg(item->text()).
 			     arg(QString::fromUtf8(m_channel.constData(),
 						   m_channel.length())));
