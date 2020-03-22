@@ -937,20 +937,16 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   if(type == "chat")
     {
-      names =
-	m_ui.participants->selectionModel()->
+      names = m_ui.participants->selectionModel()->
 	selectedRows(0); // Participant
-      publicKeyHashes =
-	m_ui.participants->selectionModel()->
+      publicKeyHashes = m_ui.participants->selectionModel()->
 	selectedRows(3); // public_key_hash
     }
   else
     {
-      names =
-	m_ui.emailParticipants->selectionModel()->
+      names = m_ui.emailParticipants->selectionModel()->
 	selectedRows(0); // Participant
-      publicKeyHashes =
-	m_ui.emailParticipants->selectionModel()->
+      publicKeyHashes = m_ui.emailParticipants->selectionModel()->
 	selectedRows(3); // public_key_hash
     }
 
