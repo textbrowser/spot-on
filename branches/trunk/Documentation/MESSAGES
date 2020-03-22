@@ -179,10 +179,12 @@ Encryption Key 2
 	EOL
 	5 - Attachment Data (Optional Gold Bug) (Base-64)
 	EOL
-	6 - Signature (0001b Group Items and Previous Six Items)
-	    (Optional Gold Bug) (Base-64)
+	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Gold Bug Used? (Base-64)
+	7 - Recipient's SHA-512 Digest (Not Distributed)
+	EOL
+	8 - Signature (0001b Group Items and Previous Eight Items)
+	    (Optional Gold Bug) (Base-64)
 }
 EOL
 {
@@ -228,10 +230,12 @@ Encryption Key
 	EOL
 	5 - Attachment Data (Optional Gold Bug) (Base-64)
 	EOL
-	6 - Signature (First Group Items and Previous Six Items)
-	    (Optional Gold Bug) (Base-64)
+	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Gold Bug Used? (Base-64)
+	7 - Recipient's SHA-512 Digest (Not Distributed)
+	EOL
+	8 - Signature (First Group Items and Previous Eight Items)
+	    (Optional Gold Bug) (Base-64)
 }
 EOL
 {

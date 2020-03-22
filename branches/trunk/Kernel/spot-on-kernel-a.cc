@@ -5342,19 +5342,27 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  QByteArray signature;
 
 			  if(sign)
-			    signature = s_crypt2->digitalSignature
-			      ("0001b" +
-			       symmetricKey +
-			       hashKey +
-			       symmetricKeyAlgorithm +
-			       hashType +
-			       myPublicKeyHash +
-			       items.value(0) + // Name
-			       items.value(1) + // Subject
-			       items.value(2) + // Message
-			       items.value(3) + // Date
-			       items.value(4),  // Attachment Data
-			       &ok);
+			    {
+			      QByteArray recipientDigest
+				(spoton_crypt::sha512Hash(publicKey, &ok));
+
+			      if(ok)
+				signature = s_crypt2->digitalSignature
+				  ("0001b" +
+				   symmetricKey +
+				   hashKey +
+				   symmetricKeyAlgorithm +
+				   hashType +
+				   myPublicKeyHash +
+				   items.value(0) + // Name
+				   items.value(1) + // Subject
+				   items.value(2) + // Message
+				   items.value(3) + // Date
+				   items.value(4) + // Attachment Data
+				   QByteArray::number(goldbugUsed) +
+				   recipientDigest,
+				   &ok);
+			    }
 
 			  if(ok)
 			    items << crypt->encryptedThenHashed
@@ -5367,22 +5375,32 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    {
 		      if(sign)
 			{
-			  QByteArray signature;
+			  QByteArray recipientDigest
+			    (spoton_crypt::sha512Hash(publicKey, &ok));
 
-			  signature = s_crypt2->digitalSignature
-			    ("0001b" +
-			     symmetricKey +
-			     hashKey +
-			     symmetricKeyAlgorithm +
-			     hashType +
-			     myPublicKeyHash +
-			     items.value(0) + // Name
-			     items.value(1) + // Subject
-			     items.value(2) + // Message
-			     items.value(3) + // Date
-			     items.value(4),  // Attachment Data
-			     &ok);
-			  items << signature;
+			  if(ok)
+			    {
+			      QByteArray signature;
+
+			      signature = s_crypt2->digitalSignature
+				("0001b" +
+				 symmetricKey +
+				 hashKey +
+				 symmetricKeyAlgorithm +
+				 hashType +
+				 myPublicKeyHash +
+				 items.value(0) + // Name
+				 items.value(1) + // Subject
+				 items.value(2) + // Message
+				 items.value(3) + // Date
+				 items.value(4) + // Attachment Data
+				 QByteArray::number(goldbugUsed) +
+				 recipientDigest,
+				 &ok);
+
+			      if(ok)
+				items << signature;
+			    }
 			}
 		    }
 		}
@@ -5659,19 +5677,27 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  QByteArray signature;
 
 			  if(sign)
-			    signature = s_crypt2->digitalSignature
-			      ("0001b" +
-			       symmetricKey +
-			       hashKey2 +
-			       cipherType +
-			       hashType +
-			       myPublicKeyHash +
-			       items.value(0) + // Name
-			       items.value(1) + // Subject
-			       items.value(2) + // Message
-			       items.value(3) + // Date
-			       items.value(4),  // Attachment Data
-			       &ok);
+			    {
+			      QByteArray recipientDigest
+				(spoton_crypt::sha512Hash(publicKey, &ok));
+
+			      if(ok)
+				signature = s_crypt2->digitalSignature
+				  ("0001b" +
+				   symmetricKey +
+				   hashKey2 +
+				   cipherType +
+				   hashType +
+				   myPublicKeyHash +
+				   items.value(0) + // Name
+				   items.value(1) + // Subject
+				   items.value(2) + // Message
+				   items.value(3) + // Date
+				   items.value(4) + // Attachment Data
+				   QByteArray::number(goldbugUsed) +
+				   recipientDigest,
+				   &ok);
+			    }
 
 			  if(ok)
 			    items << crypt->encryptedThenHashed
@@ -5684,22 +5710,32 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    {
 		      if(sign)
 			{
-			  QByteArray signature;
+			  QByteArray recipientDigest
+			    (spoton_crypt::sha512Hash(publicKey, &ok));
 
-			  signature = s_crypt2->digitalSignature
-			    ("0001b" +
-			     symmetricKey +
-			     hashKey2 +
-			     cipherType +
-			     hashType +
-			     myPublicKeyHash +
-			     items.value(0) + // Name
-			     items.value(1) + // Subject
-			     items.value(2) + // Message
-			     items.value(3) + // Date
-			     items.value(4),  // Attachment Data
-			     &ok);
-			  items << signature;
+			  if(ok)
+			    {
+			      QByteArray signature;
+
+			      signature = s_crypt2->digitalSignature
+				("0001b" +
+				 symmetricKey +
+				 hashKey2 +
+				 cipherType +
+				 hashType +
+				 myPublicKeyHash +
+				 items.value(0) + // Name
+				 items.value(1) + // Subject
+				 items.value(2) + // Message
+				 items.value(3) + // Date
+				 items.value(4) + // Attachment Data
+				 QByteArray::number(goldbugUsed) +
+				 recipientDigest,
+				 &ok);
+
+			      if(ok)
+				items << signature;
+			    }
 			}
 		    }
 		}

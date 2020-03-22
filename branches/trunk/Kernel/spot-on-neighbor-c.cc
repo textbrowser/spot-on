@@ -4540,25 +4540,41 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   if(!goldbugUsed &&
      spoton_kernel::setting("gui/emailAcceptSignedMessagesOnly",
 			    true).toBool())
-    if(!spoton_misc::
-       isValidSignature("0001b" +
-			symmetricKey +
-			hashKey +
-			symmetricKeyAlgorithm +
-			hashKeyAlgorithm +
-			senderPublicKeyHash +
-			name +
-			subject +
-			message +
-			date +
-			attachmentData,
-			senderPublicKeyHash,
-			signature, s_crypt))
-      {
-	spoton_misc::logError
-	  ("spoton_neighbor::storeLetter(): invalid signature.");
-	return;
-      }
+    {
+      QByteArray recipientDigest;
+      bool ok = true;
+
+      if(s_crypt)
+	recipientDigest = s_crypt->publicKey(&ok);
+      else
+	ok = false;
+
+      if(ok)
+	recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+
+      if(!ok ||
+	 !spoton_misc::
+	 isValidSignature("0001b" +
+			  symmetricKey +
+			  hashKey +
+			  symmetricKeyAlgorithm +
+			  hashKeyAlgorithm +
+			  senderPublicKeyHash +
+			  name +
+			  subject +
+			  message +
+			  date +
+			  attachmentData +
+			  QByteArray::number(goldbugUsed) +
+			  recipientDigest,
+			  senderPublicKeyHash,
+			  signature, s_crypt))
+	{
+	  spoton_misc::logError
+	    ("spoton_neighbor::storeLetter(): invalid signature.");
+	  return;
+	}
+    }
 
   /*
   ** We need to remember that the information here may have been
@@ -4653,26 +4669,22 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      if(crypt)
 			{
 			  attachmentData_l = crypt->
-			    decryptedAfterAuthenticated(attachmentData_l,
-							&ok);
+			    decryptedAfterAuthenticated(attachmentData_l, &ok);
 
 			  if(ok)
-			    date_l = crypt->
-			      decryptedAfterAuthenticated
+			    date_l = crypt->decryptedAfterAuthenticated
 			      (date_l, &ok);
 
 			  if(ok)
-			    message_l = crypt->
-			      decryptedAfterAuthenticated
+			    message_l = crypt->decryptedAfterAuthenticated
 			      (message_l, &ok);
 
 			  if(ok)
-			    name_l = crypt->
-			      decryptedAfterAuthenticated(name_l, &ok);
+			    name_l = crypt->decryptedAfterAuthenticated
+			      (name_l, &ok);
 
 			  if(ok)
-			    subject_l = crypt->
-			      decryptedAfterAuthenticated
+			    subject_l = crypt->decryptedAfterAuthenticated
 			      (subject_l, &ok);
 
 			  if(ok)

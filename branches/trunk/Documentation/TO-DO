@@ -230,6 +230,8 @@ Completed Items
        bookmarked entries. Perhaps provide a means of searching the
        global databases as well as bookmarked entries. Browser bookmarks.
 163.   List addressee in Chat.
+164.   Bind the recipient's identity into all hybrid encryption schemes.
+       E-mail remains.
 
 Ignored Items
 
@@ -266,12 +268,10 @@ Remaining Items
 4.     Which key types to export and import? A new selection dialog.
 5.     Random sequences for random data
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
-6.     Bind the recipient's identity into all hybrid encryption schemes.
-       E-mail remains.
-7.     Remove obsolete includes.
-8.     IMAP and optional removal of messages; retrieve latest.
-9.     Windows BT.
-10.    Windows NTL.
-11.    McEliece on PowerPC Qt 5.
-12.    StarBeam ETA.
-13.    Participant groups.
+6.     Remove obsolete includes.
+7.     IMAP and optional removal of messages; retrieve latest.
+8.     Windows BT.
+9.     Windows NTL.
+10.    McEliece on PowerPC Qt 5.
+11.    StarBeam ETA.
+12.    Participant groups.
