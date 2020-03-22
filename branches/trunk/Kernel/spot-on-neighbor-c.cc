@@ -1011,9 +1011,9 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 			      attachmentData =
 				QByteArray::fromBase64(list.value(5));
 			      signature =
-				QByteArray::fromBase64(list.value(6));
+				QByteArray::fromBase64(list.value(7));
 			      goldbugUsed = QVariant
-				(QByteArray::fromBase64(list.value(7))).
+				(QByteArray::fromBase64(list.value(6))).
 				toBool();
 			    }
 			  else
