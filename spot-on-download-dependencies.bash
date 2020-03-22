@@ -4,12 +4,12 @@
 
 # CURL
 
-curl=curl-7.69.0-win32-mingw
+curl=curl-7.69.1-win32-mingw
 
 rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
-     https://curl.haxx.se/windows/dl-7.69.0/curl-7.69.0-win32-mingw.zip
+     https://curl.haxx.se/windows/dl-7.69.1/curl-7.69.1-win32-mingw.zip
 unzip $curl.zip -d curl-temporary.d
 mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
 mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
