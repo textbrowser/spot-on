@@ -1751,14 +1751,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  QByteArray subject;
 	  bool goldbugUsed = false;
 
-	  senderPublicKeyHash = list.value(0);
-	  name = list.value(1);
-	  subject = list.value(2);
-	  message = list.value(3);
 	  attachmentData = list.value(5);
 	  date = list.value(4);
-	  signature = list.value(6);
-	  goldbugUsed = QVariant(list.value(7)).toBool();
+	  goldbugUsed = QVariant(list.value(6)).toBool();
+	  message = list.value(3);
+	  name = list.value(1);
+	  senderPublicKeyHash = list.value(0);
+	  signature = list.value(7);
+	  subject = list.value(2);
 
 	  if(!goldbugUsed && setting("gui/emailAcceptSignedMessagesOnly",
 				     true).toBool())

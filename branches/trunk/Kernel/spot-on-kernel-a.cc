@@ -5423,8 +5423,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		     items.value(2).toBase64() + "\n" + // Message
 		     items.value(3).toBase64() + "\n" + // Date
 		     items.value(4).toBase64() + "\n" + // Attachment Data
-		     items.value(5).toBase64() + "\n" + // Signature
-		     QVariant(goldbugUsed).toByteArray().toBase64(),
+		     QVariant(goldbugUsed).toByteArray().toBase64() + "\n" +
+		     items.value(5).toBase64(),         // Signature
 		     &ok);
 
 		  if(ok)
@@ -5757,8 +5757,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		     items.value(2).toBase64() + "\n" + // Message
 		     items.value(3).toBase64() + "\n" + // Date
 		     items.value(4).toBase64() + "\n" + // Attachment Data
-		     items.value(5).toBase64() + "\n" + // Signature
-		     QVariant(goldbugUsed).toByteArray().toBase64(),
+		     QVariant(goldbugUsed).toByteArray().toBase64() + "\n" +
+		     items.value(5).toBase64(),         // Signature
 		     &ok);
 
 		  if(ok)

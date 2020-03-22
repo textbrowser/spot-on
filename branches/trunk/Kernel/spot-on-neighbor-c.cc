@@ -1218,8 +1218,8 @@ void spoton_neighbor::process0001b(int length,
 				 list.value(3),  // Message
 				 list.value(4),  // Date
 				 list.value(5),  // Attachment Data
-				 list.value(6),  // Signature
-				 QVariant(list.value(7)).
+				 list.value(7),  // Signature
+				 QVariant(list.value(6)).
 				 toBool());      // Gold Bug Used?
 			    }
 			  else
