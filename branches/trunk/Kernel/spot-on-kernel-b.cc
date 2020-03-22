@@ -1766,10 +1766,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	      QByteArray recipientDigest;
 	      bool ok = true;
 
-	      if(s_crypt)
-		recipientDigest = s_crypt->publicKey(&ok);
-	      else
-		ok = false;
+	      recipientDigest = s_crypt->publicKey(&ok);
 
 	      if(ok)
 		recipientDigest = spoton_crypt::
