@@ -1455,12 +1455,9 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
   if(!crypt || salt.length() < spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE)
     {
       if(!crypt)
-	logError
-	  ("spoton_misc::authenticateAccount(): crypt "
-	   "is zero.");
+	logError("spoton_misc::authenticateAccount(): crypt is zero.");
       else
-	logError
-	  ("spoton_misc::authenticateAccount(): salt is peculiar.");
+	logError("spoton_misc::authenticateAccount(): salt is peculiar.");
 
       name.clear();
       password.clear();
