@@ -995,13 +995,18 @@ void spoton::prepareContextMenuMirrors(void)
 			       this, SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "listeners");
       menu->addSeparator();
-      menu->addAction(tr("&Copy Private Application Magnet"),
+      action = menu->addAction
+	(tr("&Copy Private Application Magnet"),
 	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
-      menu->addAction(tr("&Set Private Application Information..."),
-		      this, SLOT(slotSetPrivateApplicationInformation(void)));
-      menu->addAction
+      action->setProperty("type", "listeners");
+      action = menu->addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
+      action = menu->addAction
 	(tr("&Reset Private Application Information"),
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "listeners");
       menu->addSeparator();
       menu->addAction
 	(tr("&Prepare New One-Year Certificate"),
@@ -1138,6 +1143,19 @@ void spoton::prepareContextMenuMirrors(void)
 		      this, SLOT(slotNeighborFullEcho(void)));
       menu->addAction(tr("&Half Echo"),
 		      this, SLOT(slotNeighborHalfEcho(void)));
+      menu->addSeparator();
+      action = menu->addAction
+	(tr("&Copy Private Application Magnet"),
+	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+      action->setProperty("type", "neighbors");
+      action = menu->addAction
+	(tr("&Set Private Application Information..."),
+	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
+      action = menu->addAction
+	(tr("&Reset Private Application Information"),
+	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+      action->setProperty("type", "neighbors");
       menu->addSeparator();
       action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
 			       this, SLOT(slotCopyAEMagnet(void)));
