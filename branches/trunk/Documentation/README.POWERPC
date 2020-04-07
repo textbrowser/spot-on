@@ -32,4 +32,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN-POWERPC spot-on-debian/DEBIAN
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.04.04_powerpc.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.05.05_powerpc.deb

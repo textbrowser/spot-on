@@ -5,7 +5,7 @@ sudo mkdir -p /usr/local/spot-on-qt4/Lib
 sudo mkdir -p /usr/local/spot-on-qt4/SQL
 sudo mkdir -p /usr/local/spot-on-qt4/Translations
 cd ~/spot-on.d/branches/trunk
-qmake -o Makefile spot-on.pro && make -j 4
+qmake -o Makefile spot-on.powerpc.pro && make -j 4
 sudo cp -p ../../libNTRU/libntru.so /usr/local/spot-on-qt4/Lib/.
 sudo cp -p ../../libSpotOn/libspoton.so /usr/local/spot-on-qt4/Lib/.
 sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/spot-on-qt4/.
@@ -21,12 +21,12 @@ sudo chmod -x /usr/local/spot-on-qt4/Lib/lib*
 sudo chown -Rh root:staff /usr/local/spot-on-qt4
 sudo find /usr/local/spot-on-qt4 -type f -exec chmod g+w {} \;
 
-Preparing Spot-On-x_qt4_amd64.deb:
+Preparing Spot-On-x_qt4_powerpc.deb:
 
 cd
 mkdir -p spot-on-debian/usr/local
 mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-debian/usr/share/applications/.
-cp -pr ./spot-on.d/branches/trunk/DEBIAN-QT4 spot-on-debian/DEBIAN
+cp -pr ./spot-on.d/branches/trunk/DEBIAN-POWERPC-QT4 spot-on-debian/DEBIAN
 cp -r /usr/local/spot-on-qt4 spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.04.04_qt4_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-0000.00.00_qt4_powerpc.deb
