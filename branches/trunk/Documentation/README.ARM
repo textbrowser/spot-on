@@ -6,7 +6,7 @@ sudo mkdir -p /usr/local/spot-on/SQL
 sudo mkdir -p /usr/local/spot-on/Sounds
 sudo mkdir -p /usr/local/spot-on/Translations
 cd ~/spot-on.d/branches/trunk
-qmake -o Makefile spot-on.qt5.pro && make -j 4
+qmake -o Makefile spot-on.arm.qt5.pro && make -j 4
 sudo cp -p ../../libNTL/unix.d/src/.libs/libntl.so* /usr/local/spot-on/Lib/.
 sudo cp -p ../../libNTRU/libntru.so /usr/local/spot-on/Lib/.
 sudo cp -p ../../libSpotOn/libspoton.so /usr/local/spot-on/Lib/.
@@ -24,12 +24,12 @@ sudo chmod -x /usr/local/spot-on/Lib/lib*
 sudo chown -Rh root:staff /usr/local/spot-on
 sudo find /usr/local/spot-on -type f -exec chmod g+w {} \;
 
-Preparing Spot-On-x_amd64.deb:
+Preparing Spot-On-x_armh.deb:
 
 cd
 mkdir -p spot-on-debian/usr/local
 mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
-cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
+cp -pr ./spot-on.d/branches/trunk/DEBIAN-ARM spot-on-debian/DEBIAN
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.05.05_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.05.05_armh.deb
