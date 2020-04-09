@@ -96,6 +96,10 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 			     "mceliece-private-key-fob",
 			     offset - 7) == 0)
 		m_conversion = FOB;
+	      else if(memcmp(privateKey,
+			     "mceliece-private-key-pca",
+			     offset - 7) == 0)
+		m_conversion = PCA;
 
 	      memset(c, 0, privateKeyLength - offset + 1);
 	      memcpy(c, privateKey + offset, privateKeyLength - offset);
@@ -611,6 +615,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
 	m_conversion = spoton_mceliece_private_key::FOA;
       else if(publicKey.startsWith("mceliece-public-key-fob"))
 	m_conversion = spoton_mceliece_private_key::FOB;
+      else if(publicKey.startsWith("mceliece-public-key-pca"))
+	m_conversion = spoton_mceliece_private_key::PCA;
 
       m_k = m_publicKey->k();
       m_n = m_publicKey->n();
@@ -643,6 +649,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
     m_conversion = spoton_mceliece_private_key::FOA;
   else if(c == "fob")
     m_conversion = spoton_mceliece_private_key::FOB;
+  else if(c == "pca")
+    m_conversion = spoton_mceliece_private_key::PCA;
   else
     m_conversion = spoton_mceliece_private_key::ZZZ;
 
@@ -806,6 +814,10 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    if(c2.length() != static_cast<long int> (m_k))
 	      throw std::runtime_error("c2.length() mismatch");
 
+	    break;
+	  }
+	case spoton_mceliece_private_key::PCA:
+	  {
 	    break;
 	  }
 	default:
@@ -1158,6 +1170,10 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	      }
 
 	    plaintext.write(p, plaintext_size);
+	    break;
+	  }
+	case spoton_mceliece_private_key::PCA:
+	  {
 	    break;
 	  }
 	case spoton_mceliece_private_key::ZZZ:
