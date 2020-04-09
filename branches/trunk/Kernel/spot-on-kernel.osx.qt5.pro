@@ -41,14 +41,14 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 ICON		  =
 INCLUDEPATH	  += . ../. ../../../. \
+                     /usr/local/Cellar/openssl/1.0.2t/include \
                      /usr/local/include /usr/local/opt \
-                     /usr/local/opt/curl/include \
-                     /usr/local/opt/openssl/include
+                     /usr/local/opt/curl/include
 LIBS		  += -L../../../libNTRU -lntru \
                      -L../../../libSpotOn -lspoton \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
-                     -L/usr/local/opt/openssl/lib \
+                     -L/usr/local/Cellar/openssl/1.0.2t/lib \
                      -lGeoIP \
                      -lcrypto -lcurl -lgcrypt -lgmp \
                      -lgpg-error -lntl -lpq -lssl \
@@ -70,8 +70,11 @@ QMAKE_STRIP	= echo
 
 copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On_Qt5.d/.
+copyssl.path                = /Applications/Spot-On_Qt5.d
+copyssl.path                = /Applications/Spot-On_Qt5.d
+copyssl.extra               = cp /usr/local/Cellar/openssl/1.0.2t/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/.
 install_name_tool.path      = .
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2m/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.0.0.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2t/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.0.0.dylib
 libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libntru_install.path        = .
@@ -86,6 +89,7 @@ preinstall.extra            = rm -rf /Applications/Spot-On_Qt5.d/Spot-On-Kernel.
 INSTALLS	= preinstall \
                   copyspoton \
                   macdeployqt \
+                  copyssl \
                   install_name_tool \
                   libgeoip_data_install \
                   libntru_install \

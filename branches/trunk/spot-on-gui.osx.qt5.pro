@@ -42,15 +42,16 @@ QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 INCLUDEPATH	  += . ../../. GUI \
-                     /usr/local/include /usr/local/opt \
-                     /usr/local/opt/curl/include \
-                     /usr/local/opt/openssl/include
+                     /usr/local/Cellar/openssl/1.0.2t/include \
+                     /usr/local/include \
+                     /usr/local/opt \
+                     /usr/local/opt/curl/include
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU -lntru \
                      -L../../libSpotOn -lspoton \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
-                     -L/usr/local/opt/openssl/lib -lGeoIP \
+                     -L/usr/local/Cellar/openssl/1.0.2t/lib -lGeoIP \
                      -lcrypto -lcurl -lgcrypt -lgmp \
                      -lgpg-error -lntl -lpq -lssl \
                      -framework AppKit -framework Cocoa
@@ -71,10 +72,12 @@ QMAKE_STRIP	= echo
 
 copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On_Qt5.d/.
+copyssl.path                = /Applications/Spot-On_Qt5.d
+copyssl.extra               = cp /usr/local/Cellar/openssl/1.0.2t/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/.
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = /Applications/Spot-On_Qt5.d
 install_name_tool.path      = .
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2m/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libssl.1.0.0.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2t/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libssl.1.0.0.dylib
 libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libntru_install.path        = .
@@ -103,6 +106,7 @@ INSTALLS	= preinstall \
                   sounds \
                   translations \
                   macdeployqt \
+                  copyssl \
                   install_name_tool \
                   libntru_install \
                   libspoton_install
