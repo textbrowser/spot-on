@@ -1144,6 +1144,14 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("&Half Echo"),
 		      this, SLOT(slotNeighborHalfEcho(void)));
       menu->addSeparator();
+      action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
+			       this, SLOT(slotCopyAEMagnet(void)));
+      action->setProperty("from", "neighbors");
+      menu->addAction(tr("&Set Adaptive Echo Token Information..."),
+		      this, SLOT(slotSetAETokenInformation(void)));
+      menu->addAction(tr("&Reset Adaptive Echo Token Information"),
+		      this, SLOT(slotResetAETokenInformation(void)));
+      menu->addSeparator();
       action = menu->addAction
 	(tr("&Copy Private Application Magnet"),
 	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
@@ -1156,14 +1164,6 @@ void spoton::prepareContextMenuMirrors(void)
 	(tr("&Reset Private Application Information"),
 	 this, SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "neighbors");
-      menu->addSeparator();
-      action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
-			       this, SLOT(slotCopyAEMagnet(void)));
-      action->setProperty("from", "neighbors");
-      menu->addAction(tr("&Set Adaptive Echo Token Information..."),
-		      this, SLOT(slotSetAETokenInformation(void)));
-      menu->addAction(tr("&Reset Adaptive Echo Token Information"),
-		      this, SLOT(slotResetAETokenInformation(void)));
       menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetNeighborSSLControlString(void)))->
