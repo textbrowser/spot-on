@@ -410,7 +410,6 @@ spoton::spoton(void):QMainWindow()
   s_publicKeySizes["mceliece"] = QStringList() << "m11t51"
 					       << "m11t51-fujisaki-okamoto-a"
 					       << "m11t51-fujisaki-okamoto-b"
-					       << "m11t51-pointcheval"
 					       << "m12t68"
     					       << "m12t68-fujisaki-okamoto-a"
 					       << "m12t68-fujisaki-okamoto-b";

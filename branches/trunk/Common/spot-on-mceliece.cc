@@ -69,7 +69,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	{
 	  if((c = new (std::nothrow) char[privateKeyLength - offset + 1]))
 	    {
-	      int m = 11;
+	      long int m = 11;
 
 	      if(memcmp(privateKey,
 			"mceliece-private-key-foa-m12t68",
@@ -79,14 +79,12 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 			offset) == 0)
 		m = 12;
 
-	      NTL::GF2E::init
-		(NTL::
-		 BuildIrred_GF2X(static_cast<long int> (m))); /*
-							      ** Initialize
-							      ** some NTL
-							      ** internal
-							      ** object(s).
-							      */
+	      NTL::GF2E::init(NTL::BuildIrred_GF2X(m)); /*
+							** Initialize
+							** some NTL
+							** internal
+							** object(s).
+							*/
 
 	      if(memcmp(privateKey,
 			"mceliece-private-key-foa",
@@ -1450,6 +1448,10 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	      m[i] = (h[i] == 0 ? 0 : 1) ^ (m[i] == 0 ? 0 : 1);
 
 	    ciphertext << m;
+	    break;
+	  }
+	case spoton_mceliece_private_key::PCA:
+	  {
 	    break;
 	  }
 	default:
