@@ -1987,7 +1987,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 							   */
 
 		  spoton_misc::savePublishedNeighbor
-		    (address, port, transport, "connected", orientation,
+		    (address,
+		     port,
+		     transport,
+		     "connected",
+		     orientation,
 		     s_crypt);
 		}
 

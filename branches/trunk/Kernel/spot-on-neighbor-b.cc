@@ -640,10 +640,17 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 						   datagram,
 						   address,
 						   port))
-		// Verified!
+		{
+		  // Verified!
 
-		m_verifiedUdpClients
-		  [QPair<QHostAddress, quint16> (address, port)] = 0;
+		  m_verifiedUdpClients
+		    [QPair<QHostAddress, quint16> (address, port)] = 0;
+		  spoton_misc::logError
+		    (QString("spoton_neighbor::slotNewDatagram(): "
+			     "client verified for %1:%2.").
+		     arg(m_address).
+		     arg(m_port));
+		}
 	      else if(m_dtlsClientVerifier.dtlsError() != QDtlsError::NoError)
 		{
 		  spoton_misc::logError
@@ -660,7 +667,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	    }
 
 	  /*
-	  ** Complete TLS.
+	  ** Complete DTLS.
 	  */
 
 	  if(!m_dtls->doHandshake(m_udpSocket, datagram))
