@@ -2191,6 +2191,7 @@ void spoton_neighbor::slotReadyRead(void)
 		  if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
 		       m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
 		    {
+		      m_dtls->abortHandshake(m_udpSocket);
 		      spoton_misc::logError
 			(QString("spoton_neighbor::slotReadyRead(): "
 				 "DTLS error (%1) for %2:%3. Aborting.").
@@ -3121,13 +3122,20 @@ void spoton_neighbor::slotTimeout(void)
 
 		if(m_dtls)
 		  if(!m_dtls->doHandshake(m_udpSocket))
-		    spoton_misc::logError
-		      (QString("spoton_neighbor::slotTimeout(): "
-			       "DTLS error (%1) failure for "
-			       "%2:%3.").
-		       arg(m_dtls->dtlsErrorString()).
-		       arg(m_address).
-		       arg(m_port));
+		    if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
+			 m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
+		      {
+			m_dtls->abortHandshake(m_udpSocket);
+			spoton_misc::logError
+			  (QString("spoton_neighbor::slotTimeout(): "
+				   "DTLS error (%1) failure for "
+				   "%2:%3. Aborting.").
+			   arg(m_dtls->dtlsErrorString()).
+			   arg(m_address).
+			   arg(m_port));
+			deleteLater();
+			return;
+		      }
 #endif
 	      }
 	  }

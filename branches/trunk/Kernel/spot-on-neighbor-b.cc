@@ -675,6 +675,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	      if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
 		   m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
 		{
+		  m_dtls->abortHandshake(m_udpSocket);
 		  spoton_misc::logError
 		    (QString("spoton_neighbor::slotNewDatagram(): "
 			     "DTLS error (%1) for %2:%3. Aborting.").
