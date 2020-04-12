@@ -1775,6 +1775,10 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 	}
     }
 
+  spoton_misc::logError
+    (QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
+     arg(error).arg(m_address).arg(m_port));
+
   if(m_tcpSocket)
     {
       emit notification
