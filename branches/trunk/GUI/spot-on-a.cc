@@ -8239,7 +8239,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		  else
 		    item->setBackground(QBrush());
 
-		  if(isEncrypted)
+		  if(isEncrypted && status == "connected")
 		    item->setIcon
 		      (QIcon(QString(":/%1/lock.png").
 			     arg(m_settings.
