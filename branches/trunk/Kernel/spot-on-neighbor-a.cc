@@ -1789,7 +1789,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").
+		 "Aborting TCP socket.").
 	 arg(m_tcpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
@@ -1802,7 +1802,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").
+		 "Aborting UDP socket.").
 	 arg(m_udpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
@@ -1816,7 +1816,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
 		 "socket error (%1) for %2:%3. "
-		 "Aborting socket.").
+		 "Aborting WebSockets socket.").
 	 arg(m_webSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
