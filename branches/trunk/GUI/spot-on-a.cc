@@ -8243,9 +8243,10 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    item->setIcon
 		      (QIcon(QString(":/%1/lock.png").
 			     arg(m_settings.
-				 value("gui/iconSet",
-				       "nouve").toString().
+				 value("gui/iconSet", "nouve").toString().
 				 toLower())));
+		  else
+		    item->setIcon(QIcon());
 		}
 
 	      if(item->toolTip().isEmpty())

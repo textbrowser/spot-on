@@ -1823,15 +1823,13 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 {
   if(m_bluetoothSocket)
     spoton_misc::logError
-      (QString("spoton_neighbor::slotError(): "
-	       "socket error (%1) for %2:%3.").
+      (QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
        arg(m_bluetoothSocket->errorString()).
        arg(m_address).
        arg(m_port));
 
   spoton_misc::logError
-    (QString("spoton_neighbor::slotError(): "
-	     "socket error (%1) for %2:%3.").
+    (QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
      arg(error).
      arg(m_address).
      arg(m_port));
