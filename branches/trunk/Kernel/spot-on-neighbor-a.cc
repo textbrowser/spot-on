@@ -1759,9 +1759,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 	  if(m_tcpSocket)
 	    spoton_misc::logError
 	      (QString("spoton_neighbor::slotError(): socket error "
-		       "(%1) for "
-		       "%2:%3. "
-		       "Disabling SSL.").
+		       "(%1) for %2:%3. Disabling SSL.").
 	       arg(m_tcpSocket->errorString()).
 	       arg(m_address).arg(m_port));
 	  else if(m_webSocket)
@@ -1769,9 +1767,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 	      spoton_misc::logError
 		(QString("spoton_neighbor::slotError(): socket error "
-			 "(%1) for "
-			 "%2:%3. "
-			 "Disabling SSL.").
+			 "(%1) for %2:%3. Disabling SSL.").
 		 arg(m_webSocket->errorString()).
 		 arg(m_address).arg(m_port));
 #endif
@@ -1784,12 +1780,10 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
   if(m_tcpSocket)
     {
       emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	(QString("The neighbor %1:%2 generated an error (%3).").
 	 arg(m_address).arg(m_port).arg(m_tcpSocket->errorString()));
       spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. "
-		 "Aborting TCP socket.").
+	(QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
 	 arg(m_tcpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
@@ -1797,12 +1791,10 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
   else if(m_udpSocket)
     {
       emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	(QString("The neighbor %1:%2 generated an error (%3).").
 	 arg(m_address).arg(m_port).arg(m_udpSocket->errorString()));
       spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. "
-		 "Aborting UDP socket.").
+	(QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
 	 arg(m_udpSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
@@ -1811,12 +1803,10 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
     {
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
       emit notification
-	(QString("The neighbor %1:%2 generated a fatal error (%3).").
+	(QString("The neighbor %1:%2 generated an error (%3).").
 	 arg(m_address).arg(m_port).arg(m_webSocket->errorString()));
       spoton_misc::logError
-	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. "
-		 "Aborting WebSockets socket.").
+	(QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
 	 arg(m_webSocket->errorString()).
 	 arg(m_address).
 	 arg(m_port));
@@ -1824,10 +1814,8 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
     }
   else
     emit notification
-      (QString("The neighbor %1:%2 generated a fatal error (%3).").
+      (QString("The neighbor %1:%2 generated an error (%3).").
        arg(m_address).arg(m_port).arg(error));
-
-  deleteLater();
 }
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
