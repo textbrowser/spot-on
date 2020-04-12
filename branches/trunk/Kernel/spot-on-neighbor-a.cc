@@ -1743,7 +1743,8 @@ void spoton_neighbor::slotEncrypted(void)
 
 void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 {
-  if(error == QAbstractSocket::DatagramTooLargeError)
+  if(error == QAbstractSocket::DatagramTooLargeError ||
+     error == QAbstractSocket::TemporaryError)
     return;
   else if(error == QAbstractSocket::SslHandshakeFailedError)
     {
