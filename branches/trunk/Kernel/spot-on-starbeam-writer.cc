@@ -471,6 +471,7 @@ void spoton_starbeam_writer::processData
     spoton_misc::logError
       ("spoton_starbeam_writer::processData(): QFile::open() failure.");
 
+  file.flush();
   file.close();
 
   if(!ok)
