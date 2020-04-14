@@ -113,7 +113,15 @@ bool spoton_neighbor::isEncrypted(void) const
     {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
       if(m_dtls)
-	return m_dtls->isConnectionEncrypted();
+	{
+	  if(m_isUserDefined)
+	    return m_dtls->isConnectionEncrypted();
+	  else
+	    return m_dtls->isConnectionEncrypted() &&
+	      m_verifiedUdpClients.contains
+	      (QPair<QHostAddress, quint16> (m_udpSocket->peerAddress(),
+					     m_udpSocket->peerPort()));
+	}
 #endif
     }
   else if(m_webSocket)
