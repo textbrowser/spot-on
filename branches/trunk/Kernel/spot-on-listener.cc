@@ -479,6 +479,7 @@ spoton_listener::~spoton_listener()
 		   "(SELECT OID FROM listeners)");
 	query.prepare("UPDATE listeners SET connections = 0, "
 		      "external_ip_address = NULL, "
+		      "external_port = NULL, "
 		      "status = 'offline' WHERE OID = ?");
 	query.bindValue(0, m_id);
 	query.exec();
@@ -864,7 +865,9 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
     }
   else
     {
-      query.prepare("UPDATE listeners SET external_ip_address = NULL "
+      query.prepare("UPDATE listeners SET "
+		    "external_ip_address = NULL, "
+		    "external_port = NULL "
 		    "WHERE OID = ? AND external_ip_address IS NOT NULL");
       query.bindValue(0, m_id);
     }

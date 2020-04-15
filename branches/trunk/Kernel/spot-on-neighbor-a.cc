@@ -1251,6 +1251,7 @@ spoton_neighbor::~spoton_neighbor()
 			  "bytes_read = 0, "
 			  "bytes_written = 0, "
 			  "external_ip_address = NULL, "
+			  "external_port = NULL, "
 			  "is_encrypted = 0, "
 			  "local_ip_address = NULL, "
 			  "local_port = NULL, "

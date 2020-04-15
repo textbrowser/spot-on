@@ -3794,7 +3794,9 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
     }
   else if(state == QAbstractSocket::UnconnectedState)
     {
-      query.prepare("UPDATE neighbors SET external_ip_address = NULL "
+      query.prepare("UPDATE neighbors SET "
+		    "external_ip_address = NULL, "
+		    "external_port = NULL "
 		    "WHERE OID = ? AND external_ip_address IS NOT NULL");
       query.bindValue(0, m_id);
     }

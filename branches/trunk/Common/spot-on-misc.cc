@@ -4036,6 +4036,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 		   "(SELECT OID FROM listeners)");
 	query.exec("UPDATE listeners SET connections = 0, "
 		   "external_ip_address = NULL, "
+		   "external_port = NULL, "
 		   "status = 'offline'");
       }
 
@@ -4069,6 +4070,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 		   "bytes_read = 0, "
 		   "bytes_written = 0, "
 		   "external_ip_address = NULL, "
+		   "external_port = NULL, "
 		   "is_encrypted = 0, "
 		   "local_ip_address = NULL, "
 		   "local_port = NULL, "
