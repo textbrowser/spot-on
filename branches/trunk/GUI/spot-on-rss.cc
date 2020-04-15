@@ -2280,8 +2280,8 @@ void spoton_rss::slotFeedImageReplyFinished(void)
 
       reply->deleteLater();
 
-      QList<QTableWidgetItem *> list(m_ui.feeds->findItems(url.toString(),
-							   Qt::MatchExactly));
+      QList<QTableWidgetItem *> list
+	(m_ui.feeds->findItems(url.toString(), Qt::MatchExactly));
 
       if(!list.isEmpty())
 	{
