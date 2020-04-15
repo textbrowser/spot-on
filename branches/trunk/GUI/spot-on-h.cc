@@ -270,6 +270,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 		       "(SELECT OID FROM listeners)");
 	    query.exec("UPDATE listeners SET connections = 0, "
 		       "external_ip_address = NULL, "
+		       "external_port = NULL, "
 		       "status = 'offline' WHERE "
 		       "connections > 0 OR status = 'online'");
 	  }
@@ -306,6 +307,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	       "bytes_read = 0, "
 	       "bytes_written = 0, "
 	       "external_ip_address = NULL, "
+	       "external_port = NULL, "
 	       "is_encrypted = 0, "
 	       "local_ip_address = NULL, "
 	       "local_port = NULL, "

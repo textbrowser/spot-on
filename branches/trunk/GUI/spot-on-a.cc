@@ -7055,17 +7055,16 @@ void spoton::slotPopulateListeners(void)
 		  {
 		    QTableWidgetItem *item = 0;
 
-		    if(i == 0 || i == 12)
+		    if(i == 0 || i == 12) // status_control, use_accounts
 		      {
-			item = new QTableWidgetItem();
+			item = new spoton_table_widget_item();
 			item->setFlags(Qt::ItemIsEnabled |
 				       Qt::ItemIsSelectable |
 				       Qt::ItemIsUserCheckable);
 
 			if(i == 0)
 			  {
-			    if(query.value(0).toString().
-			       toLower() == "online")
+			    if(query.value(0).toString().toLower() == "online")
 			      item->setCheckState(Qt::Checked);
 			    else
 			      item->setCheckState(Qt::Unchecked);
@@ -7078,7 +7077,7 @@ void spoton::slotPopulateListeners(void)
 			      item->setCheckState(Qt::Unchecked);
 			  }
 		      }
-		    else if(i == 2)
+		    else if(i == 2) // ssl_key_size
 		      {
 			if(transport.toLower() == "bluetooth")
 			  {
@@ -7185,8 +7184,8 @@ void spoton::slotPopulateListeners(void)
 				    this,
 				    SLOT(slotBluetoothSecurityChanged(int)));
 			    m_ui.listeners->setCellWidget(row, i, box);
-#else
-			    item = new QTableWidgetItem
+#endif
+			    item = new spoton_table_widget_item
 			      (query.value(i).toString());
 
 			    if(item->text().toInt() == 0)
@@ -7194,25 +7193,27 @@ void spoton::slotPopulateListeners(void)
 				(QBrush(QColor(240, 128, 128)));
 			    else
 			      item->setBackground(QBrush());
-#endif
 			  }
 			else
 			  {
 			    if(query.value(i).toLongLong() == 0)
 			      {
-				item = new QTableWidgetItem("0");
+				item = new spoton_table_widget_item("0");
 				item->setBackground
 				  (QBrush(QColor(240, 128, 128)));
 			      }
 			    else
 			      {
-				item = new QTableWidgetItem
+				item = new spoton_table_widget_item
 				  (query.value(i).toString());
 				item->setBackground(QBrush());
 			      }
 			  }
 		      }
-		    else if(i == 10)
+		    else if(i == 9) // connections
+		      item = new spoton_table_widget_item
+			(query.value(i).toString());
+		    else if(i == 10) // maximum_clients
 		      {
 			QComboBox *box = new QComboBox();
 
@@ -7268,6 +7269,9 @@ void spoton::slotPopulateListeners(void)
 			    box->setEnabled(false);
 			    m_ui.listeners->setCellWidget(row, i, box);
 			  }
+
+			item = new spoton_table_widget_item
+			  (query.value(i).toString());
 		      }
 		    else if(i == 13 || i == 14)
 		      {
@@ -7313,15 +7317,20 @@ void spoton::slotPopulateListeners(void)
 			box->setValue
 			  (static_cast<int> (query.value(i).toLongLong()));
 			box->setWrapping(true);
+			item = new spoton_table_widget_item
+			  (query.value(i).toString());
 			connect(box,
 				SIGNAL(valueChanged(int)),
 				this,
 				SLOT(slotListenerMaximumChanged(int)));
 			m_ui.listeners->setCellWidget(row, i, box);
 		      }
-		    else if(i == 17) // Certificate Digest
+		    else if(i == 16) // share_udp_address
+		      item = new spoton_table_widget_item
+			(query.value(i).toString());
+		    else if(i == 17) // certificate
 		      item = new QTableWidgetItem(QString(certificateDigest));
-		    else if(i == 20) // Lane Width
+		    else if(i == 20) // lane_width
 		      {
 			QComboBox *box = new QComboBox();
 			QList<int> list(spoton_common::LANE_WIDTHS);
@@ -7360,10 +7369,12 @@ void spoton::slotPopulateListeners(void)
 				SIGNAL(currentIndexChanged(int)),
 				this,
 				SLOT(slotLaneWidthChanged(int)));
+			item = new spoton_table_widget_item
+			  (query.value(i).toString());
 		      }
-		    else if(i == 21) // Passthrough
+		    else if(i == 21) // passthrough
 		      {
-			item = new QTableWidgetItem();
+			item = new spoton_table_widget_item();
 			item->setFlags(Qt::ItemIsEnabled |
 				       Qt::ItemIsSelectable |
 				       Qt::ItemIsUserCheckable);
@@ -7373,7 +7384,7 @@ void spoton::slotPopulateListeners(void)
 			else
 			  item->setCheckState(Qt::Unchecked);
 		      }
-		    else if(i == 22) // Source of Randomness
+		    else if(i == 22) // source_of_randomness
 		      {
 			QSpinBox *box = new QSpinBox();
 
@@ -7395,6 +7406,8 @@ void spoton::slotPopulateListeners(void)
 			  ("oid", query.value(query.record().count() - 1));
 			box->setToolTip(tooltip);
 			box->setValue(query.value(i).toInt());
+			item = new spoton_table_widget_item
+			  (query.value(i).toString());
 			connect
 			  (box,
 			   SIGNAL(valueChanged(int)),
@@ -7411,14 +7424,35 @@ void spoton::slotPopulateListeners(void)
 			      item = new QTableWidgetItem();
 			    else
 			      {
-				item = new QTableWidgetItem
-				  (QString(crypt->
-					   decryptedAfterAuthenticated
-					   (QByteArray::
-					    fromBase64(query.
-						       value(i).
-						       toByteArray()),
-					    &ok)));
+				switch(i)
+				  {
+				  case 3: // ip_address
+				  case 4: // port
+				  case 7: // external_ip_address
+				    {
+				      item = new spoton_table_widget_item
+					(QString(crypt->
+						 decryptedAfterAuthenticated
+						 (QByteArray::
+						  fromBase64(query.
+							     value(i).
+							     toByteArray()),
+						  &ok)));
+				      break;
+				    }
+				  default:
+				    {
+				      item = new QTableWidgetItem
+					(QString(crypt->
+						 decryptedAfterAuthenticated
+						 (QByteArray::
+						  fromBase64(query.
+							     value(i).
+							     toByteArray()),
+						  &ok)));
+				      break;
+				    }
+				  }
 
 				if(!ok)
 				  item->setText(tr("error"));
@@ -7883,7 +7917,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	arg(query->value(42).toInt());
 
       {
-	QTableWidgetItem *item = new QTableWidgetItem();
+	spoton_table_widget_item *item = new spoton_table_widget_item();
 
 	if(query->value(0).toBool())
 	  item->setCheckState(Qt::Checked);
@@ -7944,13 +7978,13 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    {
 		      if(query->value(i).toLongLong() == 0)
 			{
-			  item = new QTableWidgetItem("0");
+			  item = new spoton_table_widget_item("0");
 			  item->setBackground
 			    (QBrush(QColor(240, 128, 128)));
 			}
 		      else
 			{
-			  item = new QTableWidgetItem
+			  item = new spoton_table_widget_item
 			    (query->value(i).toString());
 			  item->setBackground(QBrush());
 			}
@@ -8008,21 +8042,20 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		      SLOT(slotNeighborMaximumChanged(int)));
 	      m_ui.neighbors->setCellWidget(row, i, box);
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      QTableWidgetItem *item = new spoton_table_widget_item
 		(QString::number(box->value()));
 
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	      item->setToolTip(tooltip);
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
 	  else if(i == 19) // uptime
-	    item = new QTableWidgetItem
+	    item = new spoton_table_widget_item
 	      (locale.toString(query->value(i).toLongLong()));
 	  else if(i == 21) // Certificate Digest
 	    item = new QTableWidgetItem(QString(certificateDigest));
 	  else if(i == 22 || i == 23) // bytes_read, bytes_written
-	    item = new QTableWidgetItem
+	    item = new spoton_table_widget_item
 	      (locale.toString(query->value(i).toLongLong()));
 	  else if(i == 24) // SSL Session Cipher
 	    item = new QTableWidgetItem(QString(sslSessionCipher));
@@ -8030,7 +8063,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    {
 	      if(!query->isNull(i))
 		{
-		  item = new QTableWidgetItem
+		  item = new spoton_table_widget_item
 		    (QString(crypt->decryptedAfterAuthenticated
 			     (QByteArray::
 			      fromBase64(query->
@@ -8053,7 +8086,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		}
 	      else
 		{
-		  item = new QTableWidgetItem("0");
+		  item = new spoton_table_widget_item("0");
 		  item->setBackground(QBrush(QColor(240, 128, 128)));
 		}
 	    }
@@ -8108,7 +8141,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		      this,
 		      SLOT(slotLaneWidthChanged(int)));
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      spoton_table_widget_item *item = new spoton_table_widget_item
 		(box->currentText());
 
 	      item->setFlags
@@ -8118,7 +8151,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    }
 	  else if(i == 37) // Passthrough
 	    {
-	      QTableWidgetItem *item = new QTableWidgetItem();
+	      spoton_table_widget_item *item = new spoton_table_widget_item();
 
 	      if(query->value(i).toBool())
 		item->setCheckState(Qt::Checked);
@@ -8171,7 +8204,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		 SLOT(slotNeighborWaitForBytesWrittenChanged(int)));
 	      m_ui.neighbors->setCellWidget(row, i, box);
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      spoton_table_widget_item *item = new spoton_table_widget_item
 		(QString::number(box->value()));
 
 	      item->setFlags
@@ -8210,7 +8243,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		 SLOT(slotNeighborSilenceTimeChanged(int)));
 	      m_ui.neighbors->setCellWidget(row, i, box);
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      spoton_table_widget_item *item = new spoton_table_widget_item
 		(QString::number(box->value()));
 
 	      item->setFlags

@@ -3212,8 +3212,7 @@ void spoton::slotPopulateEtpMagnets(void)
 	if(query.exec("SELECT COUNT(*) FROM magnets"))
 	  if(query.next())
 	    {
-	      m_ui.addTransmittedMagnets->setRowCount
-		(query.value(0).toInt());
+	      m_ui.addTransmittedMagnets->setRowCount(query.value(0).toInt());
 	      m_ui.etpMagnets->setRowCount(query.value(0).toInt());
 	    }
 
@@ -3423,7 +3422,7 @@ void spoton::slotPopulateStars(void)
 
 		  if(i == 0)
 		    {
-		      item = new QTableWidgetItem();
+		      item = new spoton_table_widget_item();
 		      item->setFlags(Qt::ItemIsEnabled |
 				     Qt::ItemIsSelectable |
 				     Qt::ItemIsUserCheckable);
@@ -3446,18 +3445,33 @@ void spoton::slotPopulateStars(void)
 
 		      if(ok)
 			{
-			  if(i == 3)
-			    item = new QTableWidgetItem
-			      (QString::fromUtf8(bytes.constData(),
-						 bytes.length()));
-			  else
-			    item = new QTableWidgetItem(QString(bytes));
+			  switch(i)
+			    {
+			    case 1:
+			    case 2:
+			      {
+				item = new spoton_table_widget_item
+				  (QString(bytes));
+				break;
+			      }
+			    case 3:
+			      {
+				item = new QTableWidgetItem
+				  (QString::fromUtf8(bytes.constData(),
+						     bytes.length()));
+				break;
+			      }
+			    default:
+			      {
+				item = new QTableWidgetItem(QString(bytes));
+				break;
+			      }
+			    }
 			}
 		      else
 			item = new QTableWidgetItem(tr("error"));
 
-		      item->setFlags(Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 		      switch(i)
 			{
@@ -3499,10 +3513,8 @@ void spoton::slotPopulateStars(void)
 		    }
 		  else if(i == query.record().count() - 1)
 		    {
-		      item = new QTableWidgetItem
-			(query.value(i).toString());
-		      item->setFlags(Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
+		      item = new QTableWidgetItem(query.value(i).toString());
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		    }
 
 		  if(item)
@@ -3573,8 +3585,7 @@ void spoton::slotPopulateStars(void)
 
 		      QTableWidgetItem *item = new QTableWidgetItem("100%");
 
-		      item->setFlags
-			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.received->setItem(row, 1, item);
 
 		      if(m_settings.value("gui/starbeamAutoVerify",
@@ -3742,14 +3753,28 @@ void spoton::slotPopulateStars(void)
 
 		      if(ok)
 			{
-			  if(i == 5)
+			  switch(i)
 			    {
-			      fileName = QString::fromUtf8
-				(bytes.constData(), bytes.length());
-			      item = new QTableWidgetItem(fileName);
+			    case 2:
+			    case 3:
+			      {
+				item = new spoton_table_widget_item
+				  (QString(bytes));
+				break;
+			      }
+			    case 5:
+			      {
+				fileName = QString::fromUtf8
+				  (bytes.constData(), bytes.length());
+				item = new QTableWidgetItem(fileName);
+				break;
+			      }
+			    default:
+			      {
+				item = new QTableWidgetItem(QString(bytes));
+				break;
+			      }
 			    }
-			  else
-			    item = new QTableWidgetItem(QString(bytes));
 			}
 		      else
 			{
@@ -3781,8 +3806,7 @@ void spoton::slotPopulateStars(void)
 		      item = new QTableWidgetItem(QString(bytes));
 		    }
 		  else if(i == 8 || i == query.record().count() - 1)
-		    item = new QTableWidgetItem
-		      (query.value(i).toString());
+		    item = new QTableWidgetItem(query.value(i).toString());
 		  else if(i == 9)
 		    {
 		      QCheckBox *checkBox = new QCheckBox();
@@ -3803,8 +3827,7 @@ void spoton::slotPopulateStars(void)
 
 		  if(item)
 		    {
-		      item->setFlags(Qt::ItemIsEnabled |
-				     Qt::ItemIsSelectable);
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.transmitted->setItem(row, i, item);
 		    }
 		}
@@ -3854,8 +3877,7 @@ void spoton::slotPopulateStars(void)
 		    {
 		      QTableWidgetItem *item = new QTableWidgetItem("100%");
 
-		      item->setFlags
-			(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.transmitted->setItem(row, 1, item);
 		    }
 		}

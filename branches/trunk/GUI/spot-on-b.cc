@@ -2231,7 +2231,7 @@ void spoton::populateMail(void)
 			  {
 			    if(query.value(i).toLongLong() > 0)
 			      {
-				item = new spoton_integer_table_widget_item
+				item = new spoton_table_widget_item
 				  (QString::
 				   number(query.value(i).toLongLong()));
 				item->setData(Qt::UserRole, 1);
@@ -2239,7 +2239,7 @@ void spoton::populateMail(void)
 			      }
 			    else
 			      {
-				item = new QTableWidgetItem("0");
+				item = new spoton_table_widget_item("0");
 				item->setData(Qt::UserRole, 0);
 			      }
 
@@ -5515,7 +5515,8 @@ void spoton::slotRefreshPostOffice(void)
 	    m_ui.postoffice->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT date_received, "
-		      "message_bundle, recipient_hash "
+		      "message_bundle, "
+		      "recipient_hash "
 		      "FROM post_office"))
 	  {
 	    int row = 0;
@@ -5554,7 +5555,7 @@ void spoton::slotRefreshPostOffice(void)
 			    &ok));
 
 			if(ok)
-			  item = new QTableWidgetItem
+			  item = new spoton_table_widget_item
 			    (QString::number(bytes.length()));
 			else
 			  item = new QTableWidgetItem(tr("error"));

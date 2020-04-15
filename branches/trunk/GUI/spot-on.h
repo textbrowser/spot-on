@@ -435,20 +435,31 @@ class spoton_forward_secrecy
   QString key_type;
 };
 
-class spoton_integer_table_widget_item: public QTableWidgetItem
+class spoton_table_widget_item: public QTableWidgetItem
 {
  public:
-  spoton_integer_table_widget_item(const QString &text):QTableWidgetItem(text)
+  spoton_table_widget_item(const QString &text):QTableWidgetItem(text)
   {
   }
 
-  bool operator<(const QTableWidgetItem &other) const
+  spoton_table_widget_item(void):QTableWidgetItem()
   {
-    /*
-    ** Ignore toLongLong() errors.
-    */
+  }
 
-    return text().toLongLong() < other.text().toLongLong();
+  bool operator < (const QTableWidgetItem &other) const
+  {
+    if(Qt::ItemIsUserCheckable & flags())
+      return checkState() < other.checkState();
+    else if(other.text().contains(QRegExp("[.:]")) ||
+	    text().contains(QRegExp("[.:]")))
+      return other.text() > text();
+    else
+      /*
+      ** Ignore toLongLong() errors.
+      */
+
+      return other.text().remove(",").toLongLong() >
+	text().remove(",").toLongLong();
   }
 };
 

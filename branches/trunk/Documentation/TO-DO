@@ -233,6 +233,7 @@ Completed Items
 164.   Bind the recipient's identity into all hybrid encryption schemes.
        E-mail remains.
 165.   McEliece on PowerPC and Qt 5.
+166.   Sort numeric table columns housing formatted text.
 
 Ignored Items
 
@@ -275,4 +276,3 @@ Remaining Items
 9.     Windows NTL.
 10.    StarBeam ETA.
 11.    Pointcheval.
-12.    Sort numeric columns.
