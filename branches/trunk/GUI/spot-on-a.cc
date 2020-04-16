@@ -6917,32 +6917,32 @@ void spoton::slotPopulateListeners(void)
 	    m_ui.listeners->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT "
-		      "status_control, "
-		      "status, "
-		      "ssl_key_size, "
-		      "ip_address, "
-		      "port, "
-		      "scope_id, "
-		      "protocol, "
-		      "external_ip_address, "
-		      "external_port, "
-		      "connections, "
-		      "maximum_clients, "
-		      "echo_mode, "
-		      "use_accounts, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "transport, "
-		      "share_udp_address, "
-		      "certificate, "
-		      "orientation, "
-		      "ssl_control_string, "
-		      "lane_width, "
-		      "passthrough, "
-		      "source_of_randomness, "
-		      "private_application_credentials, "
-		      "socket_options, "
-		      "OID "
+		      "status_control, "                  // 0
+		      "status, "                          // 1
+		      "ssl_key_size, "                    // 2
+		      "ip_address, "                      // 3
+		      "port, "                            // 4
+		      "scope_id, "                        // 5
+		      "protocol, "                        // 6
+		      "external_ip_address, "             // 7
+		      "external_port, "                   // 8
+		      "connections, "                     // 9
+		      "maximum_clients, "                 // 10
+		      "echo_mode, "                       // 11
+		      "use_accounts, "                    // 12
+		      "maximum_buffer_size, "             // 13
+		      "maximum_content_length, "          // 14
+		      "transport, "                       // 15
+		      "share_udp_address, "               // 16
+		      "certificate, "                     // 17
+		      "orientation, "                     // 18
+		      "ssl_control_string, "              // 19
+		      "lane_width, "                      // 20
+		      "passthrough, "                     // 21
+		      "source_of_randomness, "            // 22
+		      "private_application_credentials, " // 23
+		      "socket_options, "                  // 24
+		      "OID "                              // 25
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
 	    QLocale locale;
