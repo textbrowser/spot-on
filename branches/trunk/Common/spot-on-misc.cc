@@ -152,8 +152,9 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT public_key, public_key_hash FROM "
-		      "friends_public_keys WHERE "
+	if(query.exec("SELECT public_key, " // 0
+		      "public_key_hash "    // 1
+		      "FROM friends_public_keys WHERE "
 		      "neighbor_oid = -1"))
 	  while(query.next())
 	    {
@@ -456,12 +457,12 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT "
-		      "accept, "
-		      "authentication_key, "
-		      "cipher_type, "
-		      "encryption_key, "
-		      "hash_type, "
-		      "share "
+		      "accept, "             // 0
+		      "authentication_key, " // 1
+		      "cipher_type, "        // 2
+		      "encryption_key, "     // 3
+		      "hash_type, "          // 4
+		      "share "               // 5
 		      "FROM echo_key_sharing_secrets "
 		      "WHERE name_hash = ?");
 	query.bindValue
@@ -987,7 +988,8 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 	    bool ok = true;
 
 	    query.setForwardOnly(true);
-	    query.prepare("SELECT gemini, gemini_hash_key "
+	    query.prepare("SELECT gemini, "  // 0
+			  "gemini_hash_key " // 1
 			  "FROM friends_public_keys WHERE "
 			  "gemini IS NOT NULL AND "
 			  "gemini_hash_key IS NOT NULL AND "
@@ -1494,7 +1496,8 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.prepare("SELECT account_name, account_password "
+	    query.prepare("SELECT account_name, " // 0
+			  "account_password "     // 1
 			  "FROM listeners_accounts WHERE "
 			  "listener_oid = ?");
 	    query.bindValue(0, listenerOid);
@@ -3831,9 +3834,11 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT cipher_type, encryption_key, "
-		      "hash_key, hash_type FROM "
-		      "remote_key_information") && query.next())
+	if(query.exec("SELECT cipher_type, " // 0
+		      "encryption_key, "     // 1
+		      "hash_key, "           // 2
+		      "hash_type "           // 3
+		      "FROM remote_key_information") && query.next())
 	  {
 	    QByteArray encryptionKey;
 	    QByteArray hashKey;
@@ -3919,16 +3924,17 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 	       "signatures_required TEXT NOT NULL, "
 	       "PRIMARY KEY (category_oid, name_hash))");
 
-	    if(query.exec("SELECT accept, "
-			  "authentication_key, "
-			  "category_oid, "
-			  "cipher_type, "
-			  "encryption_key, "
-			  "hash_type, "
-			  "iteration_count, "
-			  "name, "
-			  "name_hash, "
-			  "share FROM echo_key_sharing_secrets"))
+	    if(query.exec("SELECT accept, "      // 0
+			  "authentication_key, " // 1
+			  "category_oid, "       // 2
+			  "cipher_type, "        // 3
+			  "encryption_key, "     // 4
+			  "hash_type, "          // 5
+			  "iteration_count, "    // 6
+			  "name, "               // 7
+			  "name_hash, "          // 8
+			  "share "               // 9
+			  "FROM echo_key_sharing_secrets"))
 	      {
 		while(query.next())
 		  {
@@ -5472,8 +5478,11 @@ void spoton_misc::retrieveSymmetricData
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT gemini, neighbor_oid, public_key, "
-		      "gemini_hash_key, name "
+	query.prepare("SELECT gemini, "   // 0
+		      "neighbor_oid, "    // 1
+		      "public_key, "      // 2
+		      "gemini_hash_key, " // 3
+		      "name "             // 4
 		      "FROM friends_public_keys WHERE "
 		      "OID = ?");
 	query.bindValue(0, oid);
