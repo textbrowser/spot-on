@@ -5116,7 +5116,8 @@ void spoton::slotBlockNeighbor(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT remote_ip_address, OID "
+	if(query.exec("SELECT remote_ip_address, " // 0
+		      "OID "                       // 1
 		      "FROM neighbors WHERE status_control NOT IN "
 		      "('blocked', 'deleted')"))
 	  while(query.next())
@@ -7953,7 +7954,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		{
 		  QByteArray bytes;
 
-		  if(i != 3) // SSL Key Size
+		  if(i != 3) // ssl_key_size
 		    {
 		      bytes = crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query->value(i).toByteArray()),
@@ -7966,30 +7967,51 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 			}
 		    }
 
-		  if(i == 1) // uuid
+		  switch(i)
 		    {
-		      if(bytes.isEmpty())
-			bytes = "{00000000-0000-0000-0000-000000000000}";
-		    }
-		  else if(i == 3) // SSL Key Size
-		    {
-		      if(query->value(i).toLongLong() == 0)
-			{
-			  item = new spoton_table_widget_item("0");
-			  item->setBackground(QBrush(QColor(240, 128, 128)));
-			}
-		      else
-			{
-			  item = new spoton_table_widget_item
-			    (query->value(i).toString());
-			  item->setBackground(QBrush());
-			}
+		    case 1: // uuid
+		      {
+			if(bytes.isEmpty())
+			  bytes = "{00000000-0000-0000-0000-000000000000}";
+
+			break;
+		      }
+		    case 3: // ssl_key_size
+		      {
+			if(query->value(i).toLongLong() == 0)
+			  {
+			    item = new spoton_table_widget_item("0");
+			    item->setBackground(QBrush(QColor(240, 128, 128)));
+			  }
+			else
+			  {
+			    item = new spoton_table_widget_item
+			      (query->value(i).toString());
+			    item->setBackground(QBrush());
+			  }
+
+			break;
+		      }
+		    case 11: // remote_port
+		    case 15: // proxy_port
+		      {
+			item = new spoton_table_widget_item
+			  (query->value(i).toString());
+			break;
+		      }
+		    default:
+		      {
+			break;
+		      }
 		    }
 
-		  if(i != 3) // SSL Key Size
-		    item = new QTableWidgetItem(QString(bytes));
+		  if(i != 3) // ssl_key_size
+		    if(!item)
+		      item = new QTableWidgetItem(QString(bytes));
 		}
 	    }
+	  else if(i == 6) // local_port
+	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else if(i >= 16 && i <= 17)
 	    {
 	      // maximum_buffer_size
@@ -8053,9 +8075,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 22 || i == 23) // bytes_read, bytes_written
 	    item = new spoton_table_widget_item
 	      (locale.toString(query->value(i).toLongLong()));
-	  else if(i == 24) // SSL Session Cipher
+	  else if(i == 24) // ssl_session_cipher
 	    item = new QTableWidgetItem(QString(sslSessionCipher));
-	  else if(i == 26) // Account Authenticated
+	  else if(i == 26) // account_authenticated
 	    {
 	      if(!query->isNull(i))
 		{
@@ -8086,17 +8108,17 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		  item->setBackground(QBrush(QColor(240, 128, 128)));
 		}
 	    }
-	  else if(i == 29) // MOTD
+	  else if(i == 29) // motd
 	    item = new QTableWidgetItem
 	      (query->value(i).toString().trimmed());
-	  else if(i == 31) // Certificate
+	  else if(i == 31) // certificate
 	    item = new QTableWidgetItem(QString(certificate));
-	  else if(i == 35) // Priority
+	  else if(i == 35) // priority
 	    {
 	      item = new QTableWidgetItem(priorityTr);
 	      item->setData(Qt::UserRole, priorityInt);
 	    }
-	  else if(i == 36) // Lane Width
+	  else if(i == 36) // lane_width
 	    {
 	      QComboBox *box = new QComboBox();
 	      QList<int> list(spoton_common::LANE_WIDTHS);
@@ -8145,7 +8167,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      item->setToolTip(tooltip);
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
-	  else if(i == 37) // Passthrough
+	  else if(i == 37) // passthrough
 	    {
 	      spoton_table_widget_item *item = new spoton_table_widget_item();
 
@@ -8160,7 +8182,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      item->setToolTip(tooltip);
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
-	  else if(i == 38) // Wait-For-Bytes-Written
+	  else if(i == 38) // wait_for_bytes_written
 	    {
 	      QSpinBox *box = new QSpinBox();
 
@@ -8208,7 +8230,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      item->setToolTip(tooltip);
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
-	  else if(i == 40) // Silence Time
+	  else if(i == 40) // silence_time
 	    {
 	      QSpinBox *box = new QSpinBox();
 
@@ -10502,7 +10524,8 @@ void spoton::slotUnblockNeighbor(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT remote_ip_address, OID "
+	if(query.exec("SELECT remote_ip_address, " // 0
+		      "OID "                       // 1
 		      "FROM neighbors WHERE status_control = 'blocked'"))
 	  while(query.next())
 	    {
