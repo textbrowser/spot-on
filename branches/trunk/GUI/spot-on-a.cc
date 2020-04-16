@@ -7956,10 +7956,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		  if(i != 3) // SSL Key Size
 		    {
 		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::
-			 fromBase64(query->
-				    value(i).
-				    toByteArray()),
+			(QByteArray::fromBase64(query->value(i).toByteArray()),
 			 &ok);
 
 		      if(!ok)
@@ -7979,8 +7976,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		      if(query->value(i).toLongLong() == 0)
 			{
 			  item = new spoton_table_widget_item("0");
-			  item->setBackground
-			    (QBrush(QColor(240, 128, 128)));
+			  item->setBackground(QBrush(QColor(240, 128, 128)));
 			}
 		      else
 			{

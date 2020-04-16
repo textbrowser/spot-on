@@ -442,50 +442,50 @@ void spoton::retrieveNeighbors(void)
 	  if(query->next())
 	    size = query->value(0).toInt();
 
-	if(query->exec("SELECT sticky, "
-		       "uuid, "
-		       "status, "
-		       "ssl_key_size, "
-		       "status_control, "
-		       "local_ip_address, "
-		       "local_port, "
-		       "external_ip_address, "
-		       "external_port, "
-		       "country, "
-		       "remote_ip_address, "
-		       "remote_port, "
-		       "scope_id, "
-		       "protocol, "
-		       "proxy_hostname, "
-		       "proxy_port, "
-		       "maximum_buffer_size, "
-		       "maximum_content_length, "
-		       "echo_mode, "
-		       "uptime, "
-		       "allow_exceptions, "
-		       "certificate, "
-		       "bytes_read, "
-		       "bytes_written, "
-		       "ssl_session_cipher, "
-		       "account_name, "
-		       "account_authenticated, "
-		       "transport, "
-		       "orientation, "
-		       "motd, "
-		       "is_encrypted, "
-		       "0, " // Certificate
-		       "ae_token, "
-		       "ae_token_type, "
-		       "ssl_control_string, "
-		       "priority, "
-		       "lane_width, "
-		       "passthrough, "
-		       "waitforbyteswritten_msecs, "
-		       "private_application_credentials, "
-		       "silence_time, "
-		       "socket_options, "
-		       "buffered_content, "
-		       "OID "
+	if(query->exec("SELECT sticky, "                   // 0
+		       "uuid, "                            // 1
+		       "status, "                          // 2
+		       "ssl_key_size, "                    // 3
+		       "status_control, "                  // 4
+		       "local_ip_address, "                // 5
+		       "local_port, "                      // 6
+		       "external_ip_address, "             // 7
+		       "external_port, "                   // 8
+		       "country, "                         // 9
+		       "remote_ip_address, "               // 10
+		       "remote_port, "                     // 11
+		       "scope_id, "                        // 12
+		       "protocol, "                        // 13
+		       "proxy_hostname, "                  // 14
+		       "proxy_port, "                      // 15
+		       "maximum_buffer_size, "             // 16
+		       "maximum_content_length, "          // 17
+		       "echo_mode, "                       // 18
+		       "uptime, "                          // 19
+		       "allow_exceptions, "                // 20
+		       "certificate, "                     // 21
+		       "bytes_read, "                      // 22
+		       "bytes_written, "                   // 23
+		       "ssl_session_cipher, "              // 24
+		       "account_name, "                    // 25
+		       "account_authenticated, "           // 26
+		       "transport, "                       // 27
+		       "orientation, "                     // 28
+		       "motd, "                            // 29
+		       "is_encrypted, "                    // 30
+		       "0, " // Certificate                // 31
+		       "ae_token, "                        // 32
+		       "ae_token_type, "                   // 33
+		       "ssl_control_string, "              // 34
+		       "priority, "                        // 35
+		       "lane_width, "                      // 36
+		       "passthrough, "                     // 37
+		       "waitforbyteswritten_msecs, "       // 38
+		       "private_application_credentials, " // 39
+		       "silence_time, "                    // 40
+		       "socket_options, "                  // 41
+		       "buffered_content, "                // 42
+		       "OID "                              // 43
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
 	    while(query->next())
