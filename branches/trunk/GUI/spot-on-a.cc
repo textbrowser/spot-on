@@ -8259,8 +8259,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	  if(item)
 	    {
-	      item->setFlags
-		(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
 	      if(i == 2)
 		{
