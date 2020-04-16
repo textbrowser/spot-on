@@ -105,7 +105,9 @@ void spoton_urldistribution::run(void)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
+	query.prepare("SELECT domain, " // 0
+		      "permission "     // 1
+		      "FROM distillers WHERE "
 		      "direction_hash = ?");
 	query.bindValue(0, s_crypt1->keyedHash(QByteArray("upload"),
 					       &ok).toBase64());
@@ -326,8 +328,12 @@ void spoton_urldistribution::run(void)
 
 	      if(i == 15 && j == 15)
 		querystr.append
-		  (QString("SELECT url, title, description, content, "
-			   "date_time_inserted, unique_id "
+		  (QString("SELECT url, "         // 0
+			   "title, "              // 1
+			   "description, "        // 2
+			   "content, "            // 3
+			   "date_time_inserted, " // 4
+			   "unique_id "           // 5
 			   "FROM spot_on_urls_%1%2 "
 			   "WHERE LENGTH(content) <= %3 AND unique_id > %4 ").
 		   arg(c1).arg(c2).
@@ -335,8 +341,12 @@ void spoton_urldistribution::run(void)
 		   arg(m_lastUniqueId));
 	      else
 		querystr.append
-		  (QString("SELECT url, title, description, content, "
-			   "date_time_inserted, unique_id "
+		  (QString("SELECT url, "         // 0
+			   "title, "              // 1
+			   "description, "        // 2
+			   "content, "            // 3
+			   "date_time_inserted, " // 4
+			   "unique_id "           // 5
 			   "FROM spot_on_urls_%1%2 "
 			   "WHERE LENGTH(content) <= %3 AND unique_id > %4 "
 			   "UNION ").

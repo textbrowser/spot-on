@@ -234,7 +234,8 @@ void spoton_web_server::slotTimeout(void)
 
 		query.setForwardOnly(true);
 
-		if(query.exec("SELECT certificate, private_key "
+		if(query.exec("SELECT certificate, " // 0
+			      "private_key "         // 1
 			      "FROM kernel_web_server"))
 		  while(query.next())
 		    {
@@ -542,19 +543,19 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
 		if(i == 15 && j == 15)
 		  querystr.append
-		    (QString("SELECT title, "
-			     "url, "
-			     "description, "
-			     "url_hash, "
-			     "date_time_inserted "
+		    (QString("SELECT title, "      // 0
+			     "url, "               // 1
+			     "description, "       // 2
+			     "url_hash, "          // 3
+			     "date_time_inserted " // 4
 			     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 		else
 		  querystr.append
-		    (QString("SELECT title, "
-			     "url, "
-			     "description, "
-			     "url_hash, "
-			     "date_time_inserted "
+		    (QString("SELECT title, "      // 0
+			     "url, "               // 1
+			     "description, "       // 2
+			     "url_hash, "          // 3
+			     "date_time_inserted " // 4
 			     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
 	      }
 
@@ -704,11 +705,11 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 		  */
 
 		  querystr.append
-		    (QString("SELECT title, "
-			     "url, "
-			     "description, "
-			     "url_hash, "
-			     "date_time_inserted "
+		    (QString("SELECT title, "      // 0
+			     "url, "               // 1
+			     "description, "       // 2
+			     "url_hash, "          // 3
+			     "date_time_inserted " // 4
 			     "FROM spot_on_urls_%1 WHERE url_hash IN (%2) ").
 		     arg(it.key()).arg(it.value()));
 
