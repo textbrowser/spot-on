@@ -8070,6 +8070,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 19) // uptime
 	    item = new spoton_table_widget_item
 	      (locale.toString(query->value(i).toLongLong()));
+	  else if(i == 20) // allow_exceptions
+	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else if(i == 21) // Certificate Digest
 	    item = new QTableWidgetItem(QString(certificateDigest));
 	  else if(i == 22 || i == 23) // bytes_read, bytes_written
@@ -8109,8 +8111,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		}
 	    }
 	  else if(i == 29) // motd
-	    item = new QTableWidgetItem
-	      (query->value(i).toString().trimmed());
+	    item = new QTableWidgetItem(query->value(i).toString().trimmed());
+	  else if(i == 30) // is_encrypted
+	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else if(i == 31) // certificate
 	    item = new QTableWidgetItem(QString(certificate));
 	  else if(i == 35) // priority
@@ -8182,7 +8185,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      item->setToolTip(tooltip);
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
-	  else if(i == 38) // wait_for_bytes_written
+	  else if(i == 38) // waitforbyteswritten_msecs
 	    {
 	      QSpinBox *box = new QSpinBox();
 
@@ -8272,6 +8275,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    "been received for some time.</html>"));
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
+	  else if(i == 42) // buffered_content
+	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else
 	    item = new QTableWidgetItem(query->value(i).toString());
 
