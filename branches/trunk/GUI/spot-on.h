@@ -338,29 +338,6 @@ class spoton_virtual_keyboard: public QDialog
   }
 };
 
-#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
-class spoton_webengine_url_request_interceptor:
-  public QWebEngineUrlRequestInterceptor
-{
-  Q_OBJECT
-
- public:
-  spoton_webengine_url_request_interceptor(QObject *parent):
-  QWebEngineUrlRequestInterceptor(parent)
-  {
-  }
-
-  ~spoton_webengine_url_request_interceptor()
-  {
-  }
-
-  void interceptRequest(QWebEngineUrlRequestInfo &info)
-  {
-    info.block(true);
-  }
-};
-#endif
-
 class spoton_lineedit: public QLineEdit
 {
   Q_OBJECT
@@ -433,34 +410,6 @@ class spoton_forward_secrecy
   QByteArray public_key;
   QByteArray public_key_hash;
   QString key_type;
-};
-
-class spoton_table_widget_item: public QTableWidgetItem
-{
- public:
-  spoton_table_widget_item(const QString &text):QTableWidgetItem(text)
-  {
-  }
-
-  spoton_table_widget_item(void):QTableWidgetItem()
-  {
-  }
-
-  bool operator < (const QTableWidgetItem &other) const
-  {
-    if(Qt::ItemIsUserCheckable & flags())
-      return checkState() < other.checkState();
-    else if(other.text().contains(QRegExp("[.:]")) ||
-	    text().contains(QRegExp("[.:]")))
-      return other.text() > text();
-    else
-      /*
-      ** Ignore toLongLong() errors.
-      */
-
-      return other.text().remove(",").toLongLong() >
-	text().remove(",").toLongLong();
-  }
 };
 
 class spoton: public QMainWindow
@@ -1142,4 +1091,53 @@ class spoton: public QMainWindow
   void updateEmailWindows(void);
 };
 
+class spoton_table_widget_item: public QTableWidgetItem
+{
+ public:
+  spoton_table_widget_item(const QString &text):QTableWidgetItem(text)
+  {
+  }
+
+  spoton_table_widget_item(void):QTableWidgetItem()
+  {
+  }
+
+  bool operator < (const QTableWidgetItem &other) const
+  {
+    if(Qt::ItemIsUserCheckable & flags())
+      return checkState() < other.checkState();
+    else if(other.text().contains(",") || text().contains(","))
+      /*
+      ** Ignore toLongLong() errors.
+      */
+
+      return other.text().remove(",").toLongLong() >
+	text().remove(",").toLongLong();
+    else
+      return other.text() > text();
+  }
+};
+
+#if QT_VERSION >= 0x050600 && defined(SPOTON_WEBENGINE_ENABLED)
+class spoton_webengine_url_request_interceptor:
+  public QWebEngineUrlRequestInterceptor
+{
+  Q_OBJECT
+
+ public:
+  spoton_webengine_url_request_interceptor(QObject *parent):
+  QWebEngineUrlRequestInterceptor(parent)
+  {
+  }
+
+  ~spoton_webengine_url_request_interceptor()
+  {
+  }
+
+  void interceptRequest(QWebEngineUrlRequestInfo &info)
+  {
+    info.block(true);
+  }
+};
+#endif
 #endif

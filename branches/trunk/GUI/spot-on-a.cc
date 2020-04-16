@@ -8042,7 +8042,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		      SLOT(slotNeighborMaximumChanged(int)));
 	      m_ui.neighbors->setCellWidget(row, i, box);
 
-	      QTableWidgetItem *item = new spoton_table_widget_item
+	      spoton_table_widget_item *item = new spoton_table_widget_item
 		(QString::number(box->value()));
 
 	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -8255,8 +8255,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	      m_ui.neighbors->setItem(row, i, item);
 	    }
 	  else
-	    item = new QTableWidgetItem
-	      (query->value(i).toString());
+	    item = new QTableWidgetItem(query->value(i).toString());
 
 	  if(item)
 	    {
