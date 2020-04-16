@@ -167,7 +167,9 @@ void spoton_mailer::slotReap(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT date_received, OID FROM post_office"))
+	if(query.exec("SELECT date_received, " // 0
+		      "OID "                   // 1
+		      "FROM post_office"))
 	  while(query.next())
 	    {
 	      QDateTime dateTime;
@@ -337,7 +339,9 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT message_bundle, OID FROM post_office "
+	query.prepare("SELECT message_bundle, " // 0
+		      "OID "                    // 1
+		      "FROM post_office "
 		      "WHERE recipient_hash = ?");
 	query.bindValue(0, publicKeyHash.toBase64());
 
@@ -518,8 +522,10 @@ void spoton_mailer::slotTimeout(void)
 		  QSqlQuery query(db2);
 
 		  query.setForwardOnly(true);
-		  query.prepare("SELECT key_type, name, public_key FROM "
-				"friends_public_keys "
+		  query.prepare("SELECT key_type, " // 0
+				"name, "            // 1
+				"public_key "       // 2
+				"FROM friends_public_keys "
 				"WHERE OID = ? AND neighbor_oid = -1");
 		  query.bindValue(0, participantOid);
 
@@ -566,7 +572,9 @@ void spoton_mailer::slotTimeout(void)
 		  QSqlQuery query(db1);
 
 		  query.setForwardOnly(true);
-		  query.prepare("SELECT data, name FROM folders_attachment "
+		  query.prepare("SELECT data, " // 0
+				"name "         // 1
+				"FROM folders_attachment "
 				"WHERE folders_oid = ?");
 		  query.bindValue(0, oid);
 

@@ -120,7 +120,9 @@ void spoton_fireshare::slotTimeout(void)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
+	query.prepare("SELECT domain, " // 0
+		      "permission "     // 1
+		      "FROM distillers WHERE "
 		      "direction_hash = ?");
 	query.bindValue(0, s_crypt1->keyedHash(QByteArray("upload"),
 					       &ok).toBase64());
@@ -347,7 +349,10 @@ void spoton_fireshare::slotTimeout(void)
 
 	    query.setForwardOnly(true);
 	    query.prepare
-	      (QString("SELECT url, title, description, content "
+	      (QString("SELECT url, "  // 0
+		       "title, "       // 1
+		       "description, " // 2
+		       "content "      // 3
 		       "FROM spot_on_urls_%1 "
 		       "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
 						 constData()));

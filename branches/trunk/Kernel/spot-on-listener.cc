@@ -1874,22 +1874,22 @@ void spoton_listener::slotTimeout(void)
 	query.bindValue(1, 120);
 	query.bindValue(2, m_id);
 	query.exec();
-	query.prepare("SELECT status_control, "
-		      "maximum_clients, "
-		      "echo_mode, "
-		      "use_accounts, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "motd, "
-		      "ssl_control_string, "
-		      "lane_width, "
-		      "passthrough, "
-		      "source_of_randomness, "
-		      "private_application_credentials, "
-		      "certificate, "
-		      "private_key, "
-		      "public_key, "
-		      "socket_options "
+	query.prepare("SELECT status_control, "           // 0
+		      "maximum_clients, "                 // 1
+		      "echo_mode, "                       // 2
+		      "use_accounts, "                    // 3
+		      "maximum_buffer_size, "             // 4
+		      "maximum_content_length, "          // 5
+		      "motd, "                            // 6
+		      "ssl_control_string, "              // 7
+		      "lane_width, "                      // 8
+		      "passthrough, "                     // 9
+		      "source_of_randomness, "            // 10
+		      "private_application_credentials, " // 11
+		      "certificate, "                     // 12
+		      "private_key, "                     // 13
+		      "public_key, "                      // 14
+		      "socket_options "                   // 15
 		      "FROM listeners WHERE OID = ?");
 	query.bindValue(0, m_id);
 

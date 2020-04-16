@@ -1160,8 +1160,11 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 	s_institutionKeys.clear();
 	locker.unlock();
 
-	if(query.exec("SELECT cipher_type, hash_type, "
-		      "name, postal_address FROM institutions"))
+	if(query.exec("SELECT cipher_type, " // 0
+		      "hash_type, "          // 1
+		      "name, "               // 2
+		      "postal_address "      // 3
+		      "FROM institutions"))
 	  while(query.next())
 	    {
 	      QByteArray cipherType;
@@ -2193,8 +2196,9 @@ void spoton_kernel::prepareListeners(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT token, token_type FROM "
-		      "listeners_adaptive_echo_tokens"))
+	if(query.exec("SELECT token, " // 0
+		      "token_type "    // 1
+		      "FROM listeners_adaptive_echo_tokens"))
 	  {
 	    QWriteLocker locker(&s_adaptiveEchoPairsMutex);
 
@@ -2809,9 +2813,9 @@ void spoton_kernel::prepareStarbeamReaders(void)
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT "
-		      "read_interval, "
-		      "status_control, "
-		      "OID "
+		      "read_interval, "  // 0
+		      "status_control, " // 1
+		      "OID "             // 2
 		      "FROM transmitted"))
 	  while(query.next())
 	    {
@@ -2972,8 +2976,10 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 	if(s_sendInitialStatus == 1)
 	  {
-	    query.prepare("SELECT gemini, public_key, "
-			  "gemini_hash_key, name "
+	    query.prepare("SELECT gemini, "   // 0
+			  "public_key, "      // 1
+			  "gemini_hash_key, " // 2
+			  "name "             // 3
 			  "FROM friends_public_keys WHERE "
 			  "key_type_hash = ? AND "
 			  "neighbor_oid = -1");
@@ -2982,8 +2988,10 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	  }
 	else
 	  {
-	    query.prepare("SELECT gemini, public_key, "
-			  "gemini_hash_key, name "
+	    query.prepare("SELECT gemini, "   // 0
+			  "public_key, "      // 1
+			  "gemini_hash_key, " // 2
+			  "name "             // 3
 			  "FROM friends_public_keys WHERE "
 			  "key_type_hash = ? AND "
 			  "ABS(strftime('%s', ?) - "
@@ -3832,8 +3840,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT gemini, public_key, "
-		      "gemini_hash_key, name "
+	query.prepare("SELECT gemini, "   // 0
+		      "public_key, "      // 1
+		      "gemini_hash_key, " // 2
+		      "name "             // 3
 		      "FROM friends_public_keys WHERE "
 		      "key_type_hash IN (?, ?) AND neighbor_oid = -1 AND "
 		      "OID = ?");
@@ -4072,8 +4082,10 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT gemini, public_key, "
-		      "gemini_hash_key, name "
+	query.prepare("SELECT gemini, "   // 0
+		      "public_key, "      // 1
+		      "gemini_hash_key, " // 2
+		      "name "             // 3
 		      "FROM friends_public_keys WHERE "
 		      "key_type_hash IN (?, ?) AND neighbor_oid = -1 AND "
 		      "OID = ?");
@@ -4795,8 +4807,11 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT cipher_type, hash_type, "
-		      "name, postal_address FROM institutions"))
+	if(query.exec("SELECT cipher_type, " // 0
+		      "hash_type, "          // 1
+		      "name, "               // 2
+		      "postal_address "      // 3
+		      "FROM institutions"))
 	  while(query.next())
 	    {
 	      QByteArray data;
@@ -5189,8 +5204,11 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	query.setForwardOnly(true);
 
 	if(keyType == "poptastic" ||
-	   query.exec("SELECT cipher_type, "
-		      "hash_type, name, postal_address FROM institutions"))
+	   query.exec("SELECT cipher_type, " // 0
+		      "hash_type, "          // 1
+		      "name, "               // 2
+		      "postal_address "      // 3
+		      "FROM institutions"))
 	  while(keyType == "poptastic" || query.next())
 	    {
 	      QByteArray cipherType

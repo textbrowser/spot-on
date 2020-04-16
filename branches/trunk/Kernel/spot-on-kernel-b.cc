@@ -124,7 +124,9 @@ void spoton_kernel::importUrls(void)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
+	query.prepare("SELECT domain, " // 0
+		      "permission "     // 1
+		      "FROM distillers WHERE "
 		      "direction_hash = ?");
 	query.bindValue(0, s_crypt->keyedHash("download", &ok).toBase64());
 
@@ -1831,11 +1833,11 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
 		    query.setForwardOnly(true);
 		    query.prepare
-		      ("SELECT forward_secrecy_authentication_algorithm, "
-		       "forward_secrecy_authentication_key, "
-		       "forward_secrecy_encryption_algorithm, "
-		       "forward_secrecy_encryption_key FROM "
-		       "friends_public_keys WHERE "
+		      ("SELECT forward_secrecy_authentication_algorithm, " // 0
+		       "forward_secrecy_authentication_key, "              // 1
+		       "forward_secrecy_encryption_algorithm, "            // 2
+		       "forward_secrecy_encryption_key "                   // 3
+		       "FROM friends_public_keys WHERE "
 		       "neighbor_oid = -1 AND "
 		       "public_key_hash = ?");
 		    query.bindValue(0, senderPublicKeyHash.toBase64());
