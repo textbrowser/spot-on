@@ -2724,22 +2724,22 @@ void spoton_neighbor::slotTimeout(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT status_control, "
-		      "sticky, "
-		      "echo_mode, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "account_name, "
-		      "account_password, "
-		      "ae_token, "
-		      "ae_token_type, "
-		      "ssl_control_string, "
-		      "priority, "
-		      "lane_width, "
-		      "passthrough, "
-		      "waitforbyteswritten_msecs, "
-		      "private_application_credentials, "
-		      "silence_time "
+	query.prepare("SELECT status_control, "           // 0
+		      "sticky, "                          // 1
+		      "echo_mode, "                       // 2
+		      "maximum_buffer_size, "             // 3
+		      "maximum_content_length, "          // 4
+		      "account_name, "                    // 5
+		      "account_password, "                // 6
+		      "ae_token, "                        // 7
+		      "ae_token_type, "                   // 8
+		      "ssl_control_string, "              // 9
+		      "priority, "                        // 10
+		      "lane_width, "                      // 11
+		      "passthrough, "                     // 12
+		      "waitforbyteswritten_msecs, "       // 13
+		      "private_application_credentials, " // 14
+		      "silence_time "                     // 15
 		      "FROM neighbors WHERE OID = ?");
 	query.bindValue(0, m_id);
 

@@ -3913,7 +3913,8 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		if(s_crypt)
 		  {
 		    query.setForwardOnly(true);
-		    query.prepare("SELECT gemini, gemini_hash_key "
+		    query.prepare("SELECT gemini, "  // 0
+				  "gemini_hash_key " // 1
 				  "FROM friends_public_keys WHERE "
 				  "neighbor_oid = -1 AND "
 				  "public_key_hash = ?");
@@ -4617,11 +4618,11 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	    query.setForwardOnly(true);
 	    query.prepare
-	      ("SELECT forward_secrecy_authentication_algorithm, "
-	       "forward_secrecy_authentication_key, "
-	       "forward_secrecy_encryption_algorithm, "
-	       "forward_secrecy_encryption_key FROM "
-	       "friends_public_keys WHERE "
+	      ("SELECT forward_secrecy_authentication_algorithm, " // 0
+	       "forward_secrecy_authentication_key, "              // 1
+	       "forward_secrecy_encryption_algorithm, "            // 2
+	       "forward_secrecy_encryption_key "                   // 3
+	       "FROM friends_public_keys WHERE "
 	       "neighbor_oid = -1 AND "
 	       "public_key_hash = ?");
 	    query.bindValue(0, senderPublicKeyHash.toBase64());

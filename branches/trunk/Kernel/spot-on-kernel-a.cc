@@ -2495,38 +2495,39 @@ void spoton_kernel::prepareNeighbors(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT remote_ip_address, "
-		      "remote_port, "
-		      "scope_id, "
-		      "status_control, "
-		      "proxy_hostname, "
-		      "proxy_password, "
-		      "proxy_port, "
-		      "proxy_type, "
-		      "proxy_username, "
-		      "user_defined, "
-		      "ssl_key_size, "
-		      "maximum_buffer_size, "
-		      "maximum_content_length, "
-		      "echo_mode, "
-		      "certificate, "
-		      "allow_exceptions, "
-		      "protocol, "
-		      "ssl_required, "
-		      "account_name, "
-		      "account_password, "
-		      "transport, "
-		      "orientation, "
-		      "motd, "
-		      "ssl_control_string, "
-		      "priority, "
-		      "lane_width, "
-		      "passthrough, "
-		      "waitforbyteswritten_msecs, "
-		      "private_application_credentials, "
-		      "silence_time, "
-		      "socket_options, "
-		      "OID FROM neighbors"))
+	if(query.exec("SELECT remote_ip_address, "        // 0
+		      "remote_port, "                     // 1
+		      "scope_id, "                        // 2
+		      "status_control, "                  // 3
+		      "proxy_hostname, "                  // 4
+		      "proxy_password, "                  // 5
+		      "proxy_port, "                      // 6
+		      "proxy_type, "                      // 7
+		      "proxy_username, "                  // 8
+		      "user_defined, "                    // 9
+		      "ssl_key_size, "                    // 10
+		      "maximum_buffer_size, "             // 11
+		      "maximum_content_length, "          // 12
+		      "echo_mode, "                       // 13
+		      "certificate, "                     // 14
+		      "allow_exceptions, "                // 15
+		      "protocol, "                        // 16
+		      "ssl_required, "                    // 17
+		      "account_name, "                    // 18
+		      "account_password, "                // 19
+		      "transport, "                       // 20
+		      "orientation, "                     // 21
+		      "motd, "                            // 22
+		      "ssl_control_string, "              // 23
+		      "priority, "                        // 24
+		      "lane_width, "                      // 25
+		      "passthrough, "                     // 26
+		      "waitforbyteswritten_msecs, "       // 27
+		      "private_application_credentials, " // 28
+		      "silence_time, "                    // 29
+		      "socket_options, "                  // 30
+		      "OID "                              // 31
+		      "FROM neighbors"))
 	  while(query.next())
 	    {
 	      QPointer<spoton_neighbor> neighbor;
