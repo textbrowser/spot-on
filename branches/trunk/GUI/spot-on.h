@@ -1104,10 +1104,11 @@ class spoton_table_widget_item: public QTableWidgetItem
 
   bool operator < (const QTableWidgetItem &other) const
   {
+    static QRegExp s_regexp("[!+.:=@A-Za-z]");
+
     if(Qt::ItemIsUserCheckable & flags())
       return checkState() < other.checkState();
-    else if(other.text().contains(QRegExp("[!.:@A-Za-z]")) ||
-	    text().contains(QRegExp("[!.:@A-Za-z]")))
+    else if(other.text().contains(s_regexp) || text().contains(s_regexp))
       return other.text() > text();
     else
       return other.text().remove(",").toLongLong() >
