@@ -573,7 +573,9 @@ void spoton_rss::import(const int maximumKeywords)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT domain, permission FROM distillers WHERE "
+	query.prepare("SELECT domain, " // 0
+		      "permission "     // 1
+		      "FROM distillers WHERE "
 		      "direction_hash = ?");
 	query.bindValue
 	  (0, crypt->keyedHash(QByteArray("shared"), &ok).toBase64());
@@ -644,8 +646,12 @@ void spoton_rss::import(const int maximumKeywords)
 
 	query.setForwardOnly(true);
 	query.prepare
-	  ("SELECT content, description, title, url, url_hash, "
-	   "url_redirected "
+	  ("SELECT content, " // 0
+	   "description, "    // 1
+	   "title, "          // 2
+	   "url, "            // 3
+	   "url_hash, "       // 4
+	   "url_redirected "  // 5
 	   "FROM rss_feeds_links WHERE imported = 0 AND visited = 1");
 
 	if(query.exec())
@@ -1167,7 +1173,10 @@ void spoton_rss::populateFeeds(void)
 	  if(query.next())
 	    m_ui.feeds->setRowCount(query.value(0).toInt());
 
-	if(query.exec("SELECT feed, feed_image, OID FROM rss_feeds"))
+	if(query.exec("SELECT feed, " // 0
+		      "feed_image, "  // 1
+		      "OID "          // 2
+		      "FROM rss_feeds"))
 	  while(query.next())
 	    {
 	      QByteArray feed;
@@ -1251,8 +1260,13 @@ void spoton_rss::prepareAfterAuthentication(void)
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
-	    query.prepare("SELECT enabled, hostname, password, port, type, "
-			  "username FROM rss_proxy");
+	    query.prepare("SELECT enabled, " // 0
+			  "hostname, "       // 1
+			  "password, "       // 2
+			  "port, "           // 3
+			  "type, "           // 4
+			  "username "        // 5
+			  "FROM rss_proxy");
 
 	    if(query.exec())
 	      if(query.next())
@@ -2091,7 +2105,9 @@ void spoton_rss::slotDownloadContent(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT url, OID FROM rss_feeds_links "
+	query.prepare("SELECT url, " // 0
+		      "OID "         // 1
+		      "FROM rss_feeds_links "
 		      "WHERE visited = 0");
 
 	if(query.exec())
@@ -2562,8 +2578,14 @@ void spoton_rss::slotRefreshTimeline(void)
 	int index = m_ui.timeline_filter->currentIndex();
 
 	query.setForwardOnly(true);
-	str2 = "SELECT content, description, hidden, publication_date, "
-	  "title, url, url_redirected FROM rss_feeds_links ";
+	str2 = "SELECT content, " // 0
+	  "description, "         // 1
+	  "hidden, "              // 2
+	  "publication_date, "    // 3
+	  "title, "               // 4
+	  "url, "                 // 5
+	  "url_redirected "       // 6
+	  "FROM rss_feeds_links ";
 
 	if(index == 1) // Failed Imports
 	  str1.append(" WHERE imported = 2 ");
@@ -3335,7 +3357,8 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT content, url_redirected "
+	query.prepare("SELECT content, " // 0
+		      "url_redirected "  // 1
 		      "FROM rss_feeds_links WHERE "
 		      "url_hash = ?");
 	query.bindValue

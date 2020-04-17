@@ -339,11 +339,11 @@ void spoton_smpwindow::populateSecrets(void)
 	    m_ui.secrets->setRowCount(query.value(0).toInt());
 
 	if(query.exec("SELECT "
-		      "generated_data, "
-		      "generated_data_hash, "
-		      "key_type, "
-		      "hint, "
-		      "OID "
+		      "generated_data, "      // 0
+		      "generated_data_hash, " // 1
+		      "key_type, "            // 2
+		      "hint, "                // 3
+		      "OID "                  // 4
 		      "FROM secrets"))
 	  while(query.next() && totalRows < m_ui.secrets->rowCount())
 	    {
@@ -1041,11 +1041,11 @@ void spoton_smpwindow::slotRefresh(void)
 	int row = 0;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT "
-		      "name, "
-		      "key_type, "
-		      "public_key, "
-		      "OID "
+	query.prepare("SELECT "      // 0
+		      "name, "       // 1
+		      "key_type, "   // 2
+		      "public_key, " // 3
+		      "OID "         // 4
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?, ?, ?)");
 	query.addBindValue
