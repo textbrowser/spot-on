@@ -4501,8 +4501,10 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT id, private_key, public_key FROM idiotes "
-		      "WHERE id_hash = ?");
+	query.prepare("SELECT id, "   // 0
+		      "private_key, " // 1
+		      "public_key "   // 2
+		      "FROM idiotes WHERE id_hash = ?");
 	query.bindValue
 	  (0, oldCrypt->keyedHash(id.toLatin1(), &ok).toBase64());
 

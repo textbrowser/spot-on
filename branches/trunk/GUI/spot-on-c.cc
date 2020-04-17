@@ -64,7 +64,9 @@ QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 
 	    query.setForwardOnly(true);
 
-	    if(query.exec("SELECT statistic, value FROM kernel_statistics "
+	    if(query.exec("SELECT statistic, " // 0
+			  "value "             // 1
+			  "FROM kernel_statistics "
 			  "ORDER BY statistic"))
 	      while(query.next())
 		list << QPair<QString, QVariant> (query.value(0).toString(),
@@ -3216,8 +3218,11 @@ void spoton::slotPopulateEtpMagnets(void)
 	      m_ui.etpMagnets->setRowCount(query.value(0).toInt());
 	    }
 
-	if(query.exec("SELECT magnet, one_time_magnet, origin, "
-		      "OID FROM magnets"))
+	if(query.exec("SELECT magnet, "   // 0
+		      "one_time_magnet, " // 1
+		      "origin, "          // 2
+		      "OID "              // 3
+		      "FROM magnets"))
 	  {
 	    int row = 0;
 

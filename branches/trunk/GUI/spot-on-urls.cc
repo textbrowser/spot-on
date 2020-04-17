@@ -1129,7 +1129,8 @@ void spoton::slotImportUrls(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT cipher_type, symmetric_key "
+	if(query.exec("SELECT cipher_type, " // 0
+		      "symmetric_key "       // 1
 		      "FROM import_key_information") &&
 	   query.next())
 	  {
@@ -1194,7 +1195,11 @@ void spoton::slotImportUrls(void)
 	  if(query.next())
 	    progress.setMaximum(query.value(0).toInt());
 
-	query.prepare("SELECT content, description, encrypted, title, url "
+	query.prepare("SELECT content, " // 0
+		      "description, "    // 1
+		      "encrypted, "      // 2
+		      "title, "          // 3
+		      "url "             // 4
 		      "FROM urls");
 
 	if(query.exec())
@@ -2105,7 +2110,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 	      query.setForwardOnly(true);
 	      query.prepare
-		(QString("SELECT content, url FROM spot_on_urls_%1 WHERE "
+		(QString("SELECT content, " // 0
+			 "url "             // 1
+			 "FROM spot_on_urls_%1 WHERE "
 			 "url_hash = ?").
 		 arg(hash.mid(0, 2)));
 	      query.addBindValue(hash);
@@ -2279,8 +2286,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 	  query.setForwardOnly(true);
 	  query.prepare
-	    (QString("SELECT content, url FROM spot_on_urls_%1 WHERE "
-		     "url_hash = ?").
+	    (QString("SELECT content, " // 0
+		     "url "             // 1
+		     "FROM spot_on_urls_%1 WHERE url_hash = ?").
 	     arg(hash.mid(0, 2)));
 	  query.bindValue(0, hash);
 

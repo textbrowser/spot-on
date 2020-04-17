@@ -90,11 +90,11 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT forward_secrecy_authentication_algorithm, "
-		      "forward_secrecy_authentication_key, "
-		      "forward_secrecy_encryption_algorithm, "
-		      "forward_secrecy_encryption_key FROM "
-		      "friends_public_keys WHERE OID = ?");
+	query.prepare("SELECT forward_secrecy_authentication_algorithm, " // 0
+		      "forward_secrecy_authentication_key, "              // 1
+		      "forward_secrecy_encryption_algorithm, "            // 2
+		      "forward_secrecy_encryption_key "                   // 3
+		      "FROM friends_public_keys WHERE OID = ?");
 	query.bindValue(0, oid);
 
 	if(query.exec())

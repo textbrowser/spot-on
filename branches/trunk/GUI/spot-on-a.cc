@@ -7054,7 +7054,7 @@ void spoton::slotPopulateListeners(void)
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    QTableWidgetItem *item = 0;
+		    spoton_table_widget_item *item = 0;
 
 		    if(i == 0 || i == 12) // status_control, use_accounts
 		      {
@@ -7330,7 +7330,8 @@ void spoton::slotPopulateListeners(void)
 		      item = new spoton_table_widget_item
 			(query.value(i).toString());
 		    else if(i == 17) // certificate
-		      item = new QTableWidgetItem(QString(certificateDigest));
+		      item = new spoton_table_widget_item
+			(QString(certificateDigest));
 		    else if(i == 20) // lane_width
 		      {
 			QComboBox *box = new QComboBox();
@@ -7422,7 +7423,7 @@ void spoton::slotPopulateListeners(void)
 			   i == 11 || i == 15 || i == 18 || i == 23)
 			  {
 			    if(query.isNull(i))
-			      item = new QTableWidgetItem();
+			      item = new spoton_table_widget_item();
 			    else
 			      {
 				switch(i)
@@ -7443,7 +7444,7 @@ void spoton::slotPopulateListeners(void)
 				    }
 				  default:
 				    {
-				      item = new QTableWidgetItem
+				      item = new spoton_table_widget_item
 					(QString(crypt->
 						 decryptedAfterAuthenticated
 						 (QByteArray::
@@ -7460,7 +7461,7 @@ void spoton::slotPopulateListeners(void)
 			      }
 			  }
 			else
-			  item = new QTableWidgetItem
+			  item = new spoton_table_widget_item
 			    (query.value(i).toString());
 		      }
 
@@ -7940,7 +7941,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
       for(int i = 1; i < query->record().count(); i++)
 	{
-	  QTableWidgetItem *item = 0;
+	  spoton_table_widget_item *item = 0;
 
 	  if(i == 1 || i == 3 ||
 	     i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
@@ -7949,7 +7950,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	     i == 32 || i == 33 || i == 39)
 	    {
 	      if(query->isNull(i))
-		item = new QTableWidgetItem();
+		item = new spoton_table_widget_item();
 	      else
 		{
 		  QByteArray bytes;
@@ -8007,7 +8008,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 		  if(i != 3) // ssl_key_size
 		    if(!item)
-		      item = new QTableWidgetItem(QString(bytes));
+		      item = new spoton_table_widget_item(QString(bytes));
 		}
 	    }
 	  else if(i == 6) // local_port
@@ -8073,12 +8074,12 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 20) // allow_exceptions
 	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else if(i == 21) // Certificate Digest
-	    item = new QTableWidgetItem(QString(certificateDigest));
+	    item = new spoton_table_widget_item(QString(certificateDigest));
 	  else if(i == 22 || i == 23) // bytes_read, bytes_written
 	    item = new spoton_table_widget_item
 	      (locale.toString(query->value(i).toLongLong()));
 	  else if(i == 24) // ssl_session_cipher
-	    item = new QTableWidgetItem(QString(sslSessionCipher));
+	    item = new spoton_table_widget_item(QString(sslSessionCipher));
 	  else if(i == 26) // account_authenticated
 	    {
 	      if(!query->isNull(i))
@@ -8111,14 +8112,15 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		}
 	    }
 	  else if(i == 29) // motd
-	    item = new QTableWidgetItem(query->value(i).toString().trimmed());
+	    item = new spoton_table_widget_item
+	      (query->value(i).toString().trimmed());
 	  else if(i == 30) // is_encrypted
 	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else if(i == 31) // certificate
-	    item = new QTableWidgetItem(QString(certificate));
+	    item = new spoton_table_widget_item(QString(certificate));
 	  else if(i == 35) // priority
 	    {
-	      item = new QTableWidgetItem(priorityTr);
+	      item = new spoton_table_widget_item(priorityTr);
 	      item->setData(Qt::UserRole, priorityInt);
 	    }
 	  else if(i == 36) // lane_width
@@ -8278,7 +8280,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  else if(i == 42) // buffered_content
 	    item = new spoton_table_widget_item(query->value(i).toString());
 	  else
-	    item = new QTableWidgetItem(query->value(i).toString());
+	    item = new spoton_table_widget_item(query->value(i).toString());
 
 	  if(item)
 	    {

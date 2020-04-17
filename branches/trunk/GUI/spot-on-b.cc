@@ -3592,7 +3592,9 @@ void spoton::slotDeleteAllBlockedNeighbors(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT remote_ip_address, OID FROM neighbors "
+	if(query.exec("SELECT remote_ip_address, " // 0
+		      "OID "                       // 1
+		      "FROM neighbors "
 		      "WHERE status_control = 'blocked' ORDER BY OID"))
 	  while(query.next())
 	    {
@@ -3662,7 +3664,9 @@ void spoton::slotDeleteAllUuids(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT uuid, OID FROM neighbors ORDER BY OID"))
+	if(query.exec("SELECT uuid, " // 0
+		      "OID "          // 1
+		      "FROM neighbors ORDER BY OID"))
 	  while(query.next())
 	    {
 	      QByteArray uuid;
@@ -5514,9 +5518,9 @@ void spoton::slotRefreshPostOffice(void)
 	  if(query.next())
 	    m_ui.postoffice->setRowCount(query.value(0).toInt());
 
-	if(query.exec("SELECT date_received, "
-		      "message_bundle, "
-		      "recipient_hash "
+	if(query.exec("SELECT date_received, " // 0
+		      "message_bundle, "       // 1
+		      "recipient_hash "        // 2
 		      "FROM post_office"))
 	  {
 	    int row = 0;

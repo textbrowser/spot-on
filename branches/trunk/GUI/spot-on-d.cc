@@ -222,7 +222,9 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
   QSqlQuery query(db);
 
   query.setForwardOnly(true);
-  query.prepare("SELECT data, OID FROM folders_attachment WHERE "
+  query.prepare("SELECT data, " // 0
+		"OID "          // 1
+		"FROM folders_attachment WHERE "
 		"folders_oid = ?");
   query.bindValue(0, folderOid);
 
@@ -402,8 +404,9 @@ void spoton::populateAETokens(void)
 	  if(query.next())
 	    m_ui.ae_tokens->setRowCount(query.value(0).toInt());
 
-	query.prepare
-	  ("SELECT token, token_type FROM listeners_adaptive_echo_tokens");
+	query.prepare("SELECT token, " // 0
+		      "token_type "    // 1
+		      "FROM listeners_adaptive_echo_tokens");
 
 	if(query.exec())
 	  while(query.next() && totalRows < m_ui.ae_tokens->rowCount())
@@ -555,8 +558,11 @@ void spoton::refreshInstitutions(void)
 	  if(query.next())
 	    m_ui.institutions->setRowCount(query.value(0).toInt());
 
-	if(query.exec("SELECT cipher_type, hash_type, "
-		      "name, postal_address FROM institutions"))
+	if(query.exec("SELECT cipher_type, " // 0
+		      "hash_type, "          // 1
+		      "name, "               // 2
+		      "postal_address "      // 3
+		      "FROM institutions"))
 	  while(query.next() && totalRows < m_ui.institutions->rowCount())
 	    {
 	      totalRows += 1;
@@ -2025,7 +2031,9 @@ void spoton::slotSaveAttachment(void)
 	  QSqlQuery query(db);
 
 	  query.setForwardOnly(true);
-	  query.prepare("SELECT data, name FROM folders_attachment "
+	  query.prepare("SELECT data, " // 0
+			"name "         // 1
+			"FROM folders_attachment "
 			"WHERE folders_oid = ?");
 	  query.bindValue(0, list.value(0).data().toString());
 

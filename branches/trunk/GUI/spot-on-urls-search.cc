@@ -72,13 +72,21 @@ void spoton::discoverUrls(void)
 
 	    if(i == 15 && j == 15)
 	      querystr.append
-		(QString("SELECT title, url, description, "
-			 "date_time_inserted, LENGTH(content), url_hash "
+		(QString("SELECT title, "       // 0
+			 "url, "                // 1
+			 "description, "        // 2
+			 "date_time_inserted, " // 3
+			 "LENGTH(content), "    // 4
+			 "url_hash "            // 5
 			 "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 	    else
 	      querystr.append
-		(QString("SELECT title, url, description, "
-			 "date_time_inserted, LENGTH(content), url_hash "
+		(QString("SELECT title, "       // 0
+			 "url, "                // 1
+			 "description, "        // 2
+			 "date_time_inserted, " // 3
+			 "LENGTH(content), "    // 4
+			 "url_hash "            // 5
 			 "FROM spot_on_urls_%1%2 UNION ").
 		 arg(c1).arg(c2));
 	  }
@@ -272,8 +280,12 @@ void spoton::discoverUrls(void)
 	      */
 
 	      querystr.append
-		(QString("SELECT title, url, description, "
-			 "date_time_inserted, LENGTH(content), url_hash "
+		(QString("SELECT title, "       // 0
+			 "url, "                // 1
+			 "description, "        // 2
+			 "date_time_inserted, " // 3
+			 "LENGTH(content), "    // 4
+			 "url_hash "            // 5
 			 "FROM spot_on_urls_%1 WHERE "
 			 "url_hash IN (%2) ").
 		 arg(it.key()).arg(it.value()));

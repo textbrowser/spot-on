@@ -517,7 +517,9 @@ void spoton_echo_key_share::populate(void)
 	query.setForwardOnly(true);
 	ui.tree->clear();
 
-	if(query.exec("SELECT category, OID FROM categories"))
+	if(query.exec("SELECT category, " // 0
+		      "OID "              // 1
+		      "FROM categories"))
 	  while(query.next())
 	    {
 	      QByteArray bytes;
@@ -543,14 +545,15 @@ void spoton_echo_key_share::populate(void)
 
 	      q.setForwardOnly(true);
 	      q.prepare("SELECT "
-			"accept, "
-			"share, "
-			"name, "
-			"cipher_type, "
-			"hash_type, "
-			"iteration_count, "
-			"signatures_required, "
-			"OID FROM echo_key_sharing_secrets "
+			"accept, "              // 0
+			"share, "               // 1
+			"name, "                // 2
+			"cipher_type, "         // 3
+			"hash_type, "           // 4
+			"iteration_count, "     // 5
+			"signatures_required, " // 6
+			"OID "                  // 7
+			"FROM echo_key_sharing_secrets "
 			"WHERE category_oid = ?");
 	      q.bindValue(0, query.value(query.record().count() - 1));
 

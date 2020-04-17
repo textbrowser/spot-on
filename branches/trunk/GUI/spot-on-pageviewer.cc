@@ -132,7 +132,8 @@ void spoton_pageviewer::setPage(const QByteArray &data,
 
       query.setForwardOnly(true);
       query.prepare
-	(QString("SELECT content_hash, date_time_inserted "
+	(QString("SELECT content_hash, " // 0
+		 "date_time_inserted "   // 1
 		 "FROM spot_on_urls_revisions_%1 WHERE url_hash = ? "
 		 "ORDER BY 2 DESC").
 	 arg(m_urlHash.mid(0, 2)));

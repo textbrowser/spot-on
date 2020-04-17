@@ -1106,15 +1106,12 @@ class spoton_table_widget_item: public QTableWidgetItem
   {
     if(Qt::ItemIsUserCheckable & flags())
       return checkState() < other.checkState();
-    else if(other.text().contains(",") || text().contains(","))
-      /*
-      ** Ignore toLongLong() errors.
-      */
-
-      return other.text().remove(",").toLongLong() >
-	text().remove(",").toLongLong();
-    else
+    else if(other.text().contains(QRegExp("[!.:@A-Za-z]")) ||
+	    text().contains(QRegExp("[!.:@A-Za-z]")))
       return other.text() > text();
+    else
+      return other.text().remove(",").toLongLong() >
+        text().remove(",").toLongLong();
   }
 };
 
