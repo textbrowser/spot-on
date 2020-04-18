@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Download dependencies for Windows.
 # Must be executed in the top-level source directory.
 
 # CURL
