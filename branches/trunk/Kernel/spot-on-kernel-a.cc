@@ -6148,6 +6148,17 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.bindValue
 	  (0, locale.toString(spoton_misc::databaseAccesses()));
 	query.exec();
+
+	{
+	  QReadLocker locker(&m_droppedPacketsMutex);
+
+	  query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
+			"(statistic, value) "
+			"VALUES ('Dropped Packets', ?)");
+	  query.bindValue(0, locale.toString(m_droppedPackets.size()));
+	  query.exec();
+	}
+
 	query.prepare("INSERT OR REPLACE INTO KERNEL_STATISTICS "
 		      "(statistic, value) "
 		      "VALUES ('Ephemeral Key Pairs', ?)");

@@ -268,10 +268,14 @@ void spoton_kernel::slotDropped(const QByteArray &data)
   QByteArray hash(spoton_crypt::sha512Hash(data, 0));
   QPair<QByteArray, qint64> pair(hash, neighbor->id());
 
-  if(m_droppedPackets.contains(pair))
-    return;
+  {
+    QWriteLocker locker(&m_droppedPacketsMutex);
 
-  m_droppedPackets[pair] = data;
+    if(m_droppedPackets.contains(pair))
+      return;
+
+    m_droppedPackets[pair] = data;
+  }
 
   if(!m_droppedTimer.isActive())
     m_droppedTimer.start();
@@ -279,19 +283,33 @@ void spoton_kernel::slotDropped(const QByteArray &data)
 
 void spoton_kernel::slotDroppedTimeout(void)
 {
-  if(m_droppedPackets.isEmpty())
-    {
-      m_droppedTimer.stop();
-      return;
-    }
+  {
+    QReadLocker locker(&m_droppedPacketsMutex);
 
+    if(m_droppedPackets.isEmpty())
+      {
+	m_droppedTimer.stop();
+	return;
+      }
+  }
+
+  QPair<QByteArray, qint64> key;
   QPointer<spoton_neighbor> neighbor;
-  const QPair<QByteArray, qint64> &key(m_droppedPackets.begin().key());
+
+  {
+    QReadLocker locker(&m_droppedPacketsMutex);
+
+    key = m_droppedPackets.begin().key();
+  }
 
   neighbor = m_neighbors.value(key.second);
 
   if(!neighbor)
-    m_droppedPackets.remove(key);
+    {
+      QWriteLocker locker(&m_droppedPacketsMutex);
+
+      m_droppedPackets.remove(key);
+    }
   else if(neighbor->readyToWrite())
     {
       const QByteArray &data(m_droppedPackets.value(key));
@@ -299,8 +317,14 @@ void spoton_kernel::slotDroppedTimeout(void)
       if(neighbor->write(data.constData(),
 			 data.length(),
 			 false) == data.length())
-	m_droppedPackets.remove(key);
+	{
+	  QWriteLocker locker(&m_droppedPacketsMutex);
+
+	  m_droppedPackets.remove(key);
+	}
     }
+
+  QReadLocker locker(&m_droppedPacketsMutex);
 
   if(m_droppedPackets.isEmpty())
     m_droppedTimer.stop();

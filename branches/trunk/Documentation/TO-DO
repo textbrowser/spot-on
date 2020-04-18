@@ -234,6 +234,7 @@ Completed Items
        E-mail remains.
 165.   McEliece on PowerPC and Qt 5.
 166.   Sort numeric table columns housing formatted text.
+167.   Dropped packets statistics.
 
 Ignored Items
 
@@ -276,6 +277,5 @@ Remaining Items
 9.     Windows NTL.
 10.    StarBeam ETA.
 11.    Pointcheval.
-12.    Dropped packets statistics.
-13.    Prevent sharing of private keys in forward-secrecy protocol.
+12.    Prevent sharing of private keys in forward-secrecy protocol.
        (Similar to permanent keys.)

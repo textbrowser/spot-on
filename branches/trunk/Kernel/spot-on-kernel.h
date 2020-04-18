@@ -143,6 +143,7 @@ class spoton_kernel: public QObject
   QList<QByteArray> m_urlList;
   QList<QHash<QString, QVariant> > m_poptasticAccounts;
   QQueue<QHash<QString, QVariant> > m_poptasticCache;
+  QReadWriteLock m_droppedPacketsMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;
   QReadWriteLock m_poptasticCacheMutex;
   QReadWriteLock m_urlListMutex;
