@@ -1402,9 +1402,16 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   if(ok)
     {
+      QVector<QVariant> vector;
+
+      vector << keys.first
+	     << keys.second
+	     << QDateTime::currentDateTime()
+	     << keyType;
+
       QWriteLocker locker(&m_forwardSecrecyKeysMutex);
 
-      m_forwardSecrecyKeys.insert(list.value(1), keys);
+      m_forwardSecrecyKeys.insert(list.value(1), vector);
     }
 }
 
@@ -2527,22 +2534,25 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
   QByteArray bundle(list.value(1));
   QByteArray data;
   QWriteLocker locker(&m_forwardSecrecyKeysMutex);
-  QMutableHashIterator<QByteArray, QPair<QByteArray, QByteArray> > it
+  QMutableHashIterator<QByteArray, QVector<QVariant> > it
     (m_forwardSecrecyKeys);
 
   while(it.hasNext())
     {
       it.next();
 
-      QPair<QByteArray, QByteArray> pair(it.value());
+      QPair<QByteArray, QByteArray> pair;
+      QVector<QVariant> vector(it.value());
       bool ok = true;
 
-      pair.first = s_crypt->decryptedAfterAuthenticated(pair.first, &ok);
+      pair.first = s_crypt->decryptedAfterAuthenticated
+	(vector.value(0).toByteArray(), &ok);
 
       if(!ok)
 	continue;
 
-      pair.second = s_crypt->decryptedAfterAuthenticated(pair.second, &ok);
+      pair.second = s_crypt->decryptedAfterAuthenticated
+	(vector.value(1).toByteArray(), &ok);
 
       if(!ok)
 	continue;

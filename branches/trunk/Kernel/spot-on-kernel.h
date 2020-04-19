@@ -136,7 +136,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_poptasticPostFuture;
   QFuture<void> m_statisticsFuture;
   QHash<QPair<QByteArray, qint64>, QByteArray> m_droppedPackets;
-  QHash<QByteArray, QPair<QByteArray, QByteArray> > m_forwardSecrecyKeys;
+  QHash<QByteArray, QVector<QVariant> > m_forwardSecrecyKeys;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
@@ -150,6 +150,7 @@ class spoton_kernel: public QObject
   QReadWriteLock m_urlsProcessedMutex;
   QTimer m_controlDatabaseTimer;
   QTimer m_droppedTimer;
+  QTimer m_forwardSecrecyKeysTimer;
   QTimer m_impersonateTimer;
   QTimer m_messagingCachePurgeTimer;
   QTimer m_poptasticPopTimer;
@@ -292,6 +293,7 @@ class spoton_kernel: public QObject
   void slotPublicizeListenerPlaintext(const qint64 oid);
   void slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash);
   void slotPurgeEphemeralKeys(void);
+  void slotPurgeEphemeralKeysTimeout(void);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
   void slotSMPMessageReceivedFromUI(const QByteArrayList &list);

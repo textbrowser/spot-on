@@ -952,6 +952,7 @@ spoton_kernel::~spoton_kernel()
 {
   m_controlDatabaseTimer.stop();
   m_droppedTimer.stop();
+  m_forwardSecrecyKeysTimer.stop();
   m_impersonateTimer.stop();
   m_messagingCachePurgeTimer.stop();
   m_poptasticPopTimer.stop();

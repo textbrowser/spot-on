@@ -352,6 +352,10 @@ void spoton_kernel::slotPurgeEphemeralKeys(void)
   m_forwardSecrecyKeys.clear();
 }
 
+void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
+{
+}
+
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 {
   if(QByteArray::fromBase64(list.value(0)) == "poptastic")
