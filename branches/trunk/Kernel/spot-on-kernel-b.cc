@@ -2527,7 +2527,6 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
   QByteArray bundle(list.value(1));
   QByteArray data;
   QWriteLocker locker(&m_forwardSecrecyKeysMutex);
-
   QMutableHashIterator<QByteArray, QPair<QByteArray, QByteArray> > it
     (m_forwardSecrecyKeys);
 
