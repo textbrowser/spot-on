@@ -354,6 +354,34 @@ void spoton_kernel::slotPurgeEphemeralKeys(void)
 
 void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
 {
+  QWriteLocker locker(&m_forwardSecrecyKeysMutex);
+  QMutableHashIterator<QByteArray, QVector<QVariant> > it
+    (m_forwardSecrecyKeys);
+  qint64 delta1 = setting("gui/forward_secrecy_time_delta", 30).
+    toLongLong() + 5;
+  qint64 delta2 = setting("gui/poptastic_forward_secrecy_time_delta", 60).
+    toLongLong() + 10;
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QDateTime dateTime(it.value().value(2).toDateTime());
+      QDateTime now(QDateTime::currentDateTime());
+      QString keyType(it.value().value(3).toString());
+      qint64 secsTo = qAbs(now.secsTo(dateTime));
+
+      if(keyType != "poptastic")
+	{
+	  if(secsTo >= delta1)
+	    it.remove();
+	}
+      else
+	{
+	  if(secsTo >= delta2)
+	    it.remove();
+	}
+    }
 }
 
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)

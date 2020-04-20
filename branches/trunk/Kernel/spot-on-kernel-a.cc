@@ -642,6 +642,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotDroppedTimeout(void)));
+  connect(&m_forwardSecrecyKeysTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPurgeEphemeralKeysTimeout(void)));
   connect(&m_impersonateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -692,6 +696,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SLOT(slotTerminate(const bool)));
   m_controlDatabaseTimer.start(2500);
   m_droppedTimer.setInterval(1500);
+  m_forwardSecrecyKeysTimer.start(2500);
   m_impersonateTimer.setInterval(2500);
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
