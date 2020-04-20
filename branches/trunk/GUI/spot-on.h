@@ -407,9 +407,10 @@ class spoton_smp;
 class spoton_forward_secrecy
 {
  public:
-  QByteArray public_key;
-  QByteArray public_key_hash;
-  QString key_type;
+  QByteArray m_public_key;
+  QByteArray m_public_key_hash;
+  QDateTime m_dateTime;
+  QString m_key_type;
 };
 
 class spoton: public QMainWindow

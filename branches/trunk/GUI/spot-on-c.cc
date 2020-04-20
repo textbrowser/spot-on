@@ -625,12 +625,20 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
       row += 1;
     }
 
-  totalRows += 3; // Display statistics!
+  totalRows += 4; // Display statistics!
   m_statisticsModel->setRowCount(totalRows);
 
   QLocale locale;
-  QStandardItem *item = new QStandardItem("Display Open Database Connections");
+  QStandardItem *item = new QStandardItem("Display Forward Secrecy Requests");
 
+  item->setEditable(false);
+  m_statisticsModel->setItem(row, 0, item);
+  item = new QStandardItem(locale.toString(m_forwardSecrecyRequests.size()));
+  item->setEditable(false);
+  item->setToolTip(item->text());
+  m_statisticsModel->setItem(row, 1, item);
+  row += 1;
+  item = new QStandardItem("Display Open Database Connections");
   item->setEditable(false);
   m_statisticsModel->setItem(row, 0, item);
   item = new QStandardItem

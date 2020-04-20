@@ -324,9 +324,10 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
     {
       spoton_forward_secrecy s;
 
-      s.key_type = keyType;
-      s.public_key = QByteArray::fromBase64(list.value(2));
-      s.public_key_hash = publicKeyHash;
+      s.m_dateTime = QDateTime::currentDateTime();
+      s.m_key_type = keyType;
+      s.m_public_key = QByteArray::fromBase64(list.value(2));
+      s.m_public_key_hash = publicKeyHash;
       m_forwardSecrecyRequests.insert(publicKeyHash, s);
     }
 
@@ -1888,13 +1889,13 @@ void spoton::slotRespondToForwardSecrecy(void)
 	name = "unknown";
     }
 
-  sfs.public_key = qUncompress(sfs.public_key);
-  aKey = spoton_crypt::publicKeyAlgorithm(sfs.public_key);
+  sfs.m_public_key = qUncompress(sfs.m_public_key);
+  aKey = spoton_crypt::publicKeyAlgorithm(sfs.m_public_key);
 
   if(aKey.isEmpty())
     aKey = "unknown";
 
-  keySize = spoton_crypt::publicKeySize(sfs.public_key);
+  keySize = spoton_crypt::publicKeySize(sfs.m_public_key);
 
   if(keySize.isEmpty())
     keySize = "unknown";
@@ -1991,13 +1992,13 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!error.isEmpty())
     goto done_label;
 
-  sfs.public_key = qCompress(sfs.public_key);
+  sfs.m_public_key = qCompress(sfs.m_public_key);
   message.append("forward_secrecy_response_");
   message.append(publicKeyHash.toBase64());
   message.append("_");
-  message.append(sfs.public_key.toBase64());
+  message.append(sfs.m_public_key.toBase64());
   message.append("_");
-  message.append(sfs.key_type.toLatin1().toBase64());
+  message.append(sfs.m_key_type.toLatin1().toBase64());
   message.append("_");
   message.append(ui.authentication_algorithm->currentText().toLatin1().
 		 toBase64());
