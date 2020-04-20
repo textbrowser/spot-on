@@ -6240,6 +6240,38 @@ void spoton::slotGeneralTimerTimeout(void)
 		    (this, &spoton::inspectPQUrlDatabase, name, password);
 	      }
 	  }
+
+  /*
+  ** Purge expired Forward Secrecy objects.
+  */
+
+  QMutableHashIterator<QByteArray, spoton_forward_secrecy> it
+    (m_forwardSecrecyRequests);
+  qint64 delta1 = m_settings.value
+    ("gui/forward_secrecy_time_delta", 30).toLongLong() + 5;
+  qint64 delta2 = m_settings.value
+    ("gui/poptastic_forward_secrecy_time_delta", 60).toLongLong() + 10;
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      QDateTime now(QDateTime::currentDateTime());
+      qint64 secsTo = qAbs(now.secsTo(it.value().m_date_time));
+
+      if(it.value().m_key_type != "poptastic")
+	{
+	  if(secsTo >= delta1)
+	    it.remove();
+	}
+      else
+	{
+	  if(secsTo >= delta2)
+	    it.remove();
+	}
+    }
+
+  popForwardSecrecyRequest(QByteArray());
 }
 
 void spoton::slotHideOfflineParticipants(bool state)

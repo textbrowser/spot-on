@@ -409,7 +409,7 @@ class spoton_forward_secrecy
  public:
   QByteArray m_public_key;
   QByteArray m_public_key_hash;
-  QDateTime m_dateTime;
+  QDateTime m_date_time;
   QString m_key_type;
 };
 

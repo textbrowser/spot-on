@@ -322,13 +322,13 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
     return;
   else
     {
-      spoton_forward_secrecy s;
+      spoton_forward_secrecy sfs;
 
-      s.m_dateTime = QDateTime::currentDateTime();
-      s.m_key_type = keyType;
-      s.m_public_key = QByteArray::fromBase64(list.value(2));
-      s.m_public_key_hash = publicKeyHash;
-      m_forwardSecrecyRequests.insert(publicKeyHash, s);
+      sfs.m_date_time = QDateTime::currentDateTime();
+      sfs.m_key_type = keyType;
+      sfs.m_public_key = QByteArray::fromBase64(list.value(2));
+      sfs.m_public_key_hash = publicKeyHash;
+      m_forwardSecrecyRequests.insert(publicKeyHash, sfs);
     }
 
   if(!m_sb.forward_secrecy_request->isVisible())
@@ -1908,6 +1908,10 @@ void spoton::slotRespondToForwardSecrecy(void)
 	"button if you would like to complete the exchange.</html>").
      arg(name).arg(str.mid(0, 16) + "..." + str.right(16)).
      arg(aKey).arg(keySize));
+
+  /*
+  ** The sfs object may be purged while the dialog is active. Acceptable event.
+  */
 
   if(dialog->exec() != QDialog::Accepted)
     {
