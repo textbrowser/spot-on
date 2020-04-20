@@ -237,6 +237,7 @@ Completed Items
 167.   Dropped packets statistics.
 168.   Prevent sharing of private keys in forward-secrecy protocol.
        (Similar to permanent keys.) PKI keys reside in memory.
+169.   Forward Secrecy ephemeral keys expiry times.
 
 Ignored Items
 
@@ -275,8 +276,7 @@ Remaining Items
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
 6.     Remove obsolete includes.
 7.     IMAP and optional removal of messages; retrieve latest.
-8.     Windows BT.
+8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    StarBeam ETA.
 11.    Pointcheval.
-12.    Forward Secrecy ephemeral keys expiry times.
