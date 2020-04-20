@@ -4892,8 +4892,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  notify(QDateTime::currentDateTime().toString());
 		  notify
 		    (tr("Participant <b>%1</b> (%2) "
-			"has completed a "
-			"forward secrecy exchange.<br>").
+			"has completed a Forward Secrecy exchange.<br>").
 		     arg(name).
 		     arg(str.mid(0, 16) + "..." + str.right(16)));
 		}

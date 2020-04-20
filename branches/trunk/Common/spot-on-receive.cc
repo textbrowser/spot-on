@@ -758,7 +758,7 @@ QList<QByteArray> spoton_receive::process0000d
       /*
       ** The method findMessageType() verified that the computed
       ** hash is identical to the provided hash during the
-      ** discovery of the forward secrecy pair. Other
+      ** discovery of the Forward Secrecy pair. Other
       ** process() methods perform redundant tests.
       */
 

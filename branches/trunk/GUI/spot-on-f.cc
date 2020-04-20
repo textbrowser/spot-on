@@ -351,14 +351,14 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
       notify(QDateTime::currentDateTime().toString());
       notify
 	(tr("Participant <b>%1</b> (%2) is "
-	    "requesting forward secrecy "
+	    "requesting Forward Secrecy "
 	    "credentials.<br>").
 	 arg(name).
 	 arg(str.mid(0, 16) + "..." + str.right(16)));
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
-	setToolTip(tr("<html>Participant %1 is requesting forward secrecy "
+	setToolTip(tr("<html>Participant %1 is requesting Forward Secrecy "
 		      "credentials.</html>").arg(str.mid(0, 16) +
 						 "..." +
 						 str.right(16)));
@@ -384,7 +384,7 @@ void spoton::popForwardSecrecyRequest(const QByteArray &publicKeyHash)
       m_sb.forward_secrecy_request->setProperty
 	("public_key_hash", publicKeyHash);
       m_sb.forward_secrecy_request->
-	setToolTip(tr("<html>Participant %1 is requesting forward secrecy "
+	setToolTip(tr("<html>Participant %1 is requesting Forward Secrecy "
 		      "credentials.</html>").arg(str.mid(0, 16) +
 						 "..." +
 						 str.right(16)));
@@ -702,7 +702,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
     }
 
   /*
-  ** Do we have forward secrecy keys?
+  ** Do we have Forward Secrecy keys?
   */
 
   slotGenerateGeminiInChat();
@@ -1902,7 +1902,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 
   ui.text_2->setText
     (tr("<html>The participant <b>%1</b> (%2) is requesting "
-	"forward secrecy credentials. The participant provided an "
+	"Forward Secrecy credentials. The participant provided an "
 	"<b>%3:%4</b> "
 	"public session key. Please press the OK "
 	"button if you would like to complete the exchange.</html>").
