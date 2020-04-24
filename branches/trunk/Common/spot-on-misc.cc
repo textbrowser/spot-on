@@ -5289,7 +5289,7 @@ void spoton_misc::prepareDatabases(void)
 		   "mosaic TEXT PRIMARY KEY NOT NULL, "
 		   "nova TEXT NOT NULL, " /*
 					  ** Please
-					  ** note that the table
+					  ** note that the nova field
 					  ** houses both encryption
 					  ** and hash keys. Apologies
 					  ** for violating some

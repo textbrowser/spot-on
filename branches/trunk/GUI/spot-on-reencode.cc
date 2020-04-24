@@ -70,7 +70,9 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT data, data_hash FROM buzz_channels"))
+	if(query.exec("SELECT data, " // 0
+		      "data_hash "    // 1
+		      "FROM buzz_channels"))
 	  while(query.next())
 	    {
 	      QByteArray data;
@@ -136,7 +138,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT "
-		      "category, OID "
+		      "category, " // 0
+		      "OID "       // 1
 		      "FROM categories"))
 	  while(query.next())
 	    {
@@ -182,17 +185,18 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    }
 
 	if(query.exec("SELECT "
-		      "accept, "
-		      "authentication_key, "
-		      "cipher_type, "
-		      "encryption_key, "
-		      "hash_type, "
-		      "iteration_count, "
-		      "name, "
-		      "share, "
-		      "signatures_required, "
-		      "category_oid, "
-		      "OID FROM echo_key_sharing_secrets"))
+		      "accept, "              // 0
+		      "authentication_key, "  // 1
+		      "cipher_type, "         // 2
+		      "encryption_key, "      // 3
+		      "hash_type, "           // 4
+		      "iteration_count, "     // 5
+		      "name, "                // 6
+		      "share, "               // 7
+		      "signatures_required, " // 8
+		      "category_oid, "        // 9
+		      "OID "                  // 10
+		      "FROM echo_key_sharing_secrets"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
