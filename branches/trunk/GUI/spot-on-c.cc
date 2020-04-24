@@ -3413,7 +3413,8 @@ void spoton::slotPopulateStars(void)
 		      "expected_file_hash, "     // 5
 		      "sha3_512_hash, "          // 6
 		      "expected_sha3_512_hash, " // 7
-		      "OID "                     // 8
+		      "estimated_time_arrival, " // 8
+		      "OID "                     // 9
 		      "FROM received");
 
 	if(query.exec())
@@ -3445,7 +3446,7 @@ void spoton::slotPopulateStars(void)
 		      else
 			item->setCheckState(Qt::Unchecked);
 		    }
-		  else if(i >= 1 && i <= 7)
+		  else if(i >= 1 && i <= 8)
 		    {
 		      QByteArray bytes;
 
@@ -3524,7 +3525,7 @@ void spoton::slotPopulateStars(void)
 			  }
 			}
 		    }
-		  else if(i == query.record().count() - 1)
+		  else
 		    {
 		      item = new QTableWidgetItem(query.value(i).toString());
 		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -3712,18 +3713,19 @@ void spoton::slotPopulateStars(void)
 	  if(query.next())
 	    m_ui.transmitted->setRowCount(query.value(0).toInt());
 
-	query.prepare("SELECT 0, "       // 0
-		      "position, "       // 1
-		      "pulse_size, "     // 2
-		      "total_size, "     // 3
-		      "status_control, " // 4
-		      "file, "           // 5
-		      "mosaic, "         // 6
-		      "hash, "           // 7
-		      "read_interval, "  // 8
-		      "fragmented, "     // 9
-		      "sha3_512_hash, "  // 10
-		      "OID "             // 11
+	query.prepare("SELECT 0, "               // 0
+		      "position, "               // 1
+		      "pulse_size, "             // 2
+		      "total_size, "             // 3
+		      "status_control, "         // 4
+		      "file, "                   // 5
+		      "mosaic, "                 // 6
+		      "hash, "                   // 7
+		      "read_interval, "          // 8
+		      "fragmented, "             // 9
+		      "sha3_512_hash, "          // 10
+		      "estimated_time_arrival, " // 11
+		      "OID "                     // 12
 		      "FROM transmitted "
 		      "WHERE status_control <> 'deleted'");
 
@@ -3750,19 +3752,22 @@ void spoton::slotPopulateStars(void)
 		    {
 		    }
 		  else if(i == 1)
-		    position = crypt->
-		      decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(i).
-					      toByteArray()),
+		    position = crypt->decryptedAfterAuthenticated
+		      (QByteArray::fromBase64(query.value(i).toByteArray()),
 		       &ok).toLongLong();
-		  else if(i == 2 || i == 3 || i == 5 || i == 7 || i == 10)
+		  else if(i == 2 ||
+			  i == 3 ||
+			  i == 5 ||
+			  i == 7 ||
+			  i == 10 ||
+			  i == 11)
 		    {
-		      QByteArray bytes
-			(crypt->
-			 decryptedAfterAuthenticated
-			 (QByteArray::fromBase64(query.value(i).
-						 toByteArray()),
-			  &ok));
+		      QByteArray bytes;
+
+		      if(!query.isNull(i))
+			bytes = crypt->decryptedAfterAuthenticated
+			  (QByteArray::fromBase64(query.value(i).
+						  toByteArray()), &ok);
 
 		      if(ok)
 			{

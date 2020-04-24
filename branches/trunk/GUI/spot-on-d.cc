@@ -1856,8 +1856,8 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
 	QString oid("");
 
 	if(m_ui.received->item(item->row(), m_ui.received->columnCount() - 1))
-	  oid = m_ui.received->item(item->row(),
-				    m_ui.received->columnCount() - 1)->text();
+	  oid = m_ui.received->item
+	    (item->row(), m_ui.received->columnCount() - 1)->text();
 
 	if(item->column() == 0)
 	  {
