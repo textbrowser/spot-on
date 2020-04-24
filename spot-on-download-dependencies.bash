@@ -36,7 +36,7 @@ rm -fr tmp.d
 
 # OpenSSL 1.1.1
 
-openssl=openssl-1.1.1f-win32-mingw
+openssl=openssl-1.1.1g-win32-mingw
 
 rm -f $openssl.zip
 rm -fr $openssl
