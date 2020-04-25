@@ -294,11 +294,19 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT date, from_account, "
-		      "goldbug, message, message_code, mode, "
-		      "participant_oid, receiver_sender, sign, signature, "
-		      "status, subject, "
-		      "OID FROM folders"))
+	if(query.exec("SELECT date, "     // 0
+		      "from_account, "    // 1
+		      "goldbug, "         // 2
+		      "message, "         // 3
+		      "message_code, "    // 4
+		      "mode, "            // 5
+		      "participant_oid, " // 6
+		      "receiver_sender, " // 7
+		      "sign, "            // 8
+		      "signature, "       // 9
+		      "status, subject, " // 10
+		      "OID "              // 11
+		      "FROM folders"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
@@ -2235,22 +2243,25 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT expected_file_hash, " // 0
-		      "expected_sha3_512_hash, "    // 1
-		      "file, "                      // 2
-		      "hash, "                      // 3
-		      "pulse_size, "                // 4
-		      "sha3_512_hash, "             // 5
-		      "total_size, "                // 6
-		      "OID "                        // 7
+	if(query.exec("SELECT "
+		      "estimated_time_arrival, " // 0
+		      "expected_file_hash, "     // 1
+		      "expected_sha3_512_hash, " // 2
+		      "file, "                   // 3
+		      "hash, "                   // 4
+		      "pulse_size, "             // 5
+		      "sha3_512_hash, "          // 6
+		      "total_size, "             // 7
+		      "OID "                     // 8
 		      "FROM received"))
 	  while(query.next())
 	    {
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
-	      updateQuery.prepare("UPDATE received "
-				  "SET expected_file_hash = ?, "
+	      updateQuery.prepare("UPDATE received SET "
+				  "estimated_time_arrival = ?, "
+				  "expected_file_hash = ?, "
 				  "expected_sha3_512_hash = ?, "
 				  "file = ?, "
 				  "file_hash = ?, "
