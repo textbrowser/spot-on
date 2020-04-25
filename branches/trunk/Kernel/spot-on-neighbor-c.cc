@@ -1074,9 +1074,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 				      s_crypt))
 		    {
 		      spoton_misc::logError
-			("spoton_neighbor::"
-			 "process0001a(): invalid "
-			 "signature.");
+			("spoton_neighbor::process0001a(): invalid signature.");
 		      return;
 		    }
 
@@ -4923,9 +4921,7 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
 	      (1, s_crypt->encryptedThenHashed(data, &ok).toBase64());
 
 	    if(ok)
-	      query.bindValue
-		(2, s_crypt->keyedHash(data, &ok).
-		 toBase64());
+	      query.bindValue(2, s_crypt->keyedHash(data, &ok).toBase64());
 	  }
 
 	query.bindValue(3, recipientHash.toBase64());

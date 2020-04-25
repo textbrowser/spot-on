@@ -953,7 +953,7 @@
              <x>0</x>
              <y>0</y>
              <width>885</width>
-             <height>674</height>
+             <height>697</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1799,6 +1799,13 @@
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_119">
+                  <property name="text">
+                   <string>Duplicate letters denote asymmetric (public key) and symmetric (institution) carriers.</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QTableWidget" name="postoffice">
