@@ -2367,22 +2367,27 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT file, "   // 0
-		      "mosaic, "        // 1
-		      "nova, "          // 2
-		      "position, "      // 3
-		      "pulse_size, "    // 4
-		      "sha3_512_hash, " // 5
-		      "total_size, "    // 6
-		      "OID "            // 7
+	if(query.exec("SELECT "
+		      "estimated_time_arrival, " // 0
+		      "file, "                   // 1
+		      "hash, "                   // 2
+		      "mosaic, "                 // 3
+		      "nova, "                   // 4
+		      "position, "               // 5
+		      "pulse_size, "             // 6
+		      "sha3_512_hash, "          // 7
+		      "total_size, "             // 8
+		      "OID "                     // 9
 		      "FROM transmitted"))
 	  while(query.next())
 	    {
+	      QByteArray file;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
-	      updateQuery.prepare("UPDATE transmitted "
-				  "SET file = ?, "
+	      updateQuery.prepare("UPDATE transmitted SET "
+				  "estimated_time_arrival = ?, "
+				  "file = ?, "
 				  "hash = ?, "
 				  "mosaic = ?, "
 				  "nova = ?, "
@@ -2396,23 +2401,27 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		{
 		  QByteArray bytes;
 
-		  if(!query.isNull(i))
+		  if(i != 2 && !query.isNull(i))
 		    bytes = oldCrypt->decryptedAfterAuthenticated
 		      (QByteArray::fromBase64(query.value(i).toByteArray()),
 		       &ok);
 
 		  if(ok)
 		    {
-		      if(query.isNull(i))
-			updateQuery.addBindValue(QVariant::String);
+		      if(i == 1)
+			file = bytes;
+		      else if(i == 2)
+			updateQuery.addBindValue
+			  (newCrypt->keyedHash(file, &ok).toBase64());
 		      else
-			updateQuery.addBindValue
-			  (newCrypt->
-			   encryptedThenHashed(bytes, &ok).toBase64());
-
-		      if(i == 1 && ok)
-			updateQuery.addBindValue
-			  (newCrypt->keyedHash(bytes, &ok).toBase64());
+			{
+			  if(query.isNull(i))
+			    updateQuery.addBindValue(QVariant::String);
+			  else
+			    updateQuery.addBindValue
+			      (newCrypt->
+			       encryptedThenHashed(bytes, &ok).toBase64());
+			}
 		    }
 		}
 
