@@ -398,7 +398,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  }
 	    }
 
-	if(query.exec("SELECT data, name, OID FROM folders_attachment"))
+	if(query.exec("SELECT data, " // 0
+		      "name, "        // 1
+		      "OID "          // 2
+		      "FROM folders_attachment"))
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
@@ -2248,14 +2251,16 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		      "expected_file_hash, "     // 1
 		      "expected_sha3_512_hash, " // 2
 		      "file, "                   // 3
-		      "hash, "                   // 4
-		      "pulse_size, "             // 5
-		      "sha3_512_hash, "          // 6
-		      "total_size, "             // 7
-		      "OID "                     // 8
+		      "file_hash, "              // 4
+		      "hash, "                   // 5
+		      "pulse_size, "             // 6
+		      "sha3_512_hash, "          // 7
+		      "total_size, "             // 8
+		      "OID "                     // 9
 		      "FROM received"))
 	  while(query.next())
 	    {
+	      QByteArray file;
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
@@ -2275,27 +2280,32 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		{
 		  QByteArray bytes;
 
-		  if(!query.isNull(i))
+		  if(i != 4 && !query.isNull(i))
 		    bytes = oldCrypt->decryptedAfterAuthenticated
 		      (QByteArray::fromBase64(query.value(i).toByteArray()),
 		       &ok);
 
 		  if(ok)
 		    {
-		      if(query.isNull(i))
-			updateQuery.addBindValue(QVariant::String);
+		      if(i == 3)
+			file = bytes;
+		      else if(i == 4)
+			updateQuery.addBindValue
+			  (newCrypt->keyedHash(file, &ok).toBase64());
 		      else
-			updateQuery.addBindValue
-			  (newCrypt->
-			   encryptedThenHashed(bytes, &ok).toBase64());
-
-		      if(i == 2 && ok)
-			updateQuery.addBindValue
-			  (newCrypt->keyedHash(bytes, &ok).toBase64());
+			{
+			  if(query.isNull(i))
+			    updateQuery.addBindValue(QVariant::String);
+			  else
+			    updateQuery.addBindValue
+			      (newCrypt->
+			       encryptedThenHashed(bytes, &ok).toBase64());
+			}
 		    }
 		}
 
-	      updateQuery.addBindValue(query.value(query.record().count() - 1));
+	      updateQuery.addBindValue
+		(query.value(query.record().count() - 1));
 
 	      if(ok)
 		updateQuery.exec();
@@ -2308,7 +2318,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
 		  deleteQuery.prepare("DELETE FROM received WHERE "
 				      "file_hash = ?");
-		  deleteQuery.bindValue(0, query.value(3));
+		  deleteQuery.bindValue(0, query.value(4));
 		  deleteQuery.exec();
 		}
 	    }
