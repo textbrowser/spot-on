@@ -1803,7 +1803,7 @@
                 <item>
                  <widget class="QLabel" name="label_119">
                   <property name="text">
-                   <string>Duplicate letters denote asymmetric (public key) and symmetric (institution) carriers.</string>
+                   <string>Duplicate letters denote institution and participant carriers.</string>
                   </property>
                  </widget>
                 </item>

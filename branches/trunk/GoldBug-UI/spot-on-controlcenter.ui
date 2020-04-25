@@ -1898,6 +1898,13 @@ QPushButton:pressed {
                  </layout>
                 </item>
                 <item>
+                 <widget class="QLabel" name="label_137">
+                  <property name="text">
+                   <string>Duplicate letters denote institution and participant carriers.</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QTableWidget" name="postoffice">
                   <property name="alternatingRowColors">
                    <bool>true</bool>
