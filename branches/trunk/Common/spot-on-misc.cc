@@ -1191,6 +1191,18 @@ QString spoton_misc::databaseName(void)
   return QString("spoton_database_%1_%2").arg(qrand()).arg(dbId);
 }
 
+QString spoton_misc::formattedSize(const qint64 size)
+{
+  if(size < 1024)
+    return QString("%1 B").arg(size);
+  else if(size < 1048576)
+    return QString("%1 KiB").arg(size / 1024.0, 0, 'f', 2);
+  else if(size < 1073741824)
+    return QString("%1 MiB").arg(size / 1048576.0, 0, 'f', 2);
+  else
+    return QString("%1 GiB").arg(size / 1073741824.0, 0, 'f', 2);
+}
+
 QString spoton_misc::homePath(void)
 {
   QByteArray homepath(qgetenv("SPOTON_HOME"));

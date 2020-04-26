@@ -52,6 +52,7 @@ class spoton_starbeam_reader: public QObject
   QFuture<QPair<QByteArray, qint64> > m_readFuture;
   QList<QByteArray> m_magnets;
   QString m_fileName;
+  QTimer m_etaTimer;
   QTimer m_expiredResponse;
   QTimer m_timer;
   bool m_fragmented;
@@ -60,7 +61,11 @@ class spoton_starbeam_reader: public QObject
   int m_neighborIndex;
   qint64 m_id;
   qint64 m_position;
+  qint64 m_previousPosition;
+  qint64 m_rate;
   qint64 m_rc;
+  qint64 m_time0;
+  QByteArray eta(void);
   QHash<QString, QByteArray> elementsFromMagnet(const QByteArray &magnet,
 						spoton_crypt *crypt);
   QPair<QByteArray, qint64> read(const QString &fileName,
@@ -81,6 +86,7 @@ class spoton_starbeam_reader: public QObject
 
  private slots:
   void slotAcknowledgePosition(const qint64 id, const qint64 position);
+  void slotETATimerTimeout(void);
   void slotExpiredResponseTimeout(void);
   void slotTimeout(void);
 };

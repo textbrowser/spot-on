@@ -41,6 +41,10 @@
 spoton_starbeam_reader::spoton_starbeam_reader
 (const qint64 id, const double readInterval, QObject *parent):QObject(parent)
 {
+  connect(&m_etaTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotETATimerTimeout(void)));
   connect(&m_expiredResponse,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -49,14 +53,18 @@ spoton_starbeam_reader::spoton_starbeam_reader
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
+  m_etaTimer.start(1000);
   m_expiredResponse.setInterval(15000);
   m_expiredResponse.setSingleShot(true);
   m_fragmented = false;
   m_id = id;
   m_neighborIndex = 0;
   m_position = 0;
+  m_previousPosition = 0;
   m_rc = 0;
+  m_rate = 0;
   m_readInterval = qBound(0.025, readInterval, 60.000);
+  m_time0 = QDateTime::currentMSecsSinceEpoch();
   m_timer.start(static_cast<int> (1000 * m_readInterval));
   m_ultra = true;
 }
@@ -85,6 +93,10 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
 		      "status_control = 'deleted'");
 	query.bindValue(0, m_id);
 	query.exec();
+	query.prepare("UPDATE transmitted SET estimated_time_arrival = NULL "
+		      "WHERE OID = ?");
+	query.bindValue(0, m_id);
+	query.exec();
 	query.exec("DELETE FROM transmitted_magnets WHERE "
 		   "transmitted_oid NOT IN "
 		   "(SELECT OID FROM transmitted)");
@@ -97,6 +109,35 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+QByteArray spoton_starbeam_reader::eta(void)
+{
+  QString eta(tr("stalled"));
+  QString rate("");
+  qint64 seconds = qAbs(QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
+
+  if(m_rate > 0)
+    eta = tr("%1 minutes(s)").
+      arg((static_cast<double> (QFileInfo(m_fileName).size() - m_position) /
+	   static_cast<double> (m_rate)) / 60.0, 0, 'f', 2);
+
+  if(seconds >= 1)
+    {
+      m_rate = static_cast<qint64>
+	(static_cast<double> (m_position - m_previousPosition) /
+	 static_cast<double> (seconds));
+
+      /*
+      ** Reset variables.
+      */
+
+      m_previousPosition = m_position;
+      m_time0 = QDateTime::currentMSecsSinceEpoch() / 1000;
+    }
+
+  rate = spoton_misc::formattedSize(m_rate) + tr(" / s");
+  return (eta + " (" + rate + ")").toLatin1();
 }
 
 QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
@@ -379,8 +420,9 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 	bool ok = true;
 
 	query.exec("PRAGMA synchronous = NORMAL");
-	query.prepare("UPDATE transmitted "
-		      "SET position = ?, "
+	query.prepare("UPDATE transmitted SET "
+		      "estimated_time_arrival = ?, "
+		      "position = ?, "
 		      "status_control = "
 		      "CASE "
 		      "WHEN status_control = 'deleted' THEN 'deleted' "
@@ -389,11 +431,15 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 		      "END "
 		      "WHERE status_control NOT IN ('deleted', 'paused') AND "
 		      "OID = ?");
-	query.bindValue
-	  (0, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
-					   &ok).toBase64());
-	query.bindValue(1, status);
-	query.bindValue(2, m_id);
+	query.bindValue(0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, s_crypt->encryptedThenHashed(QByteArray::number(m_position),
+					     &ok).toBase64());
+
+	query.bindValue(2, status);
+	query.bindValue(3, m_id);
 
 	if(ok)
 	  query.exec();
@@ -436,6 +482,48 @@ void spoton_starbeam_reader::slotAcknowledgePosition(const qint64 id,
 
       savePositionAndStatus(status);
     }
+}
+
+void spoton_starbeam_reader::slotETATimerTimeout(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+	if(!s_crypt)
+	  {
+	    spoton_misc::logError
+	      ("spoton_starbeam_reader::saveETA(): s_crypt is zero.");
+	    goto done_label;
+	  }
+
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec("PRAGMA synchronous = NORMAL");
+	query.prepare("UPDATE transmitted SET "
+		      "estimated_time_arrival = ? "
+		      "WHERE OID = ?");
+	query.bindValue(0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+	query.bindValue(1, m_id);
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+ done_label:
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_starbeam_reader::slotExpiredResponseTimeout(void)
@@ -494,7 +582,20 @@ void spoton_starbeam_reader::slotTimeout(void)
 	    if(query.exec())
 	      if(query.next())
 		{
+		  QByteArray bytes;
+		  bool ok = true;
+
+		  bytes = s_crypt->
+		    decryptedAfterAuthenticated(QByteArray::
+						fromBase64(query.
+							   value(4).
+							   toByteArray()),
+						&ok);
 		  m_fragmented = query.value(1).toBool();
+
+		  if(ok)
+		    m_position = bytes.toLongLong();
+
 		  m_readInterval = qBound
 		    (0.025, query.value(6).toDouble(), 60.000);
 		  status = query.value(8).toString().toLower();
@@ -587,8 +688,8 @@ void spoton_starbeam_reader::slotTimeout(void)
 				   s_crypt);
 
 			      m_rc = pair.second;
-			      m_readFuture =
-				QFuture<QPair<QByteArray, qint64> > ();
+			      m_readFuture = QFuture
+				<QPair<QByteArray, qint64> > ();
 			    }
 			  else if(m_readFuture.isFinished())
 			    m_readFuture = QtConcurrent::run

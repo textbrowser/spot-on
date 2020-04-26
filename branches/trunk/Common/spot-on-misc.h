@@ -117,6 +117,7 @@ class spoton_misc
   static QString countryCodeFromIPAddress(const QString &ipAddress);
   static QString countryNameFromIPAddress(const QString &ipAddress);
   static QString databaseName(void);
+  static QString formattedSize(const qint64 size);
   static QString homePath(void);
   static QString htmlEncode(const QString &string);
   static QString keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,

@@ -1873,18 +1873,11 @@ void spoton::slotComputeFileHash(void)
   if(!item)
     return;
 
-  QFile file;
-  QString fileName(item->text());
-
-  file.setFileName(fileName);
-
-  if(!file.open(QIODevice::ReadOnly))
-    return;
-
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QByteArray hash;
   QString field("");
+  QString fileName(item->text());
   QString type(action->property("hash").toString());
 
   if(type == "sha-1")
@@ -1899,8 +1892,6 @@ void spoton::slotComputeFileHash(void)
     }
 
   QApplication::restoreOverrideCursor();
-
-  file.close();
 
   QString connectionName("");
 
@@ -4416,7 +4407,9 @@ void spoton::slotRewindFile(void)
 	for(int i = 1; i <= 10; i++)
 	  {
 	    query.prepare
-	      ("UPDATE transmitted SET position = ?, "
+	      ("UPDATE transmitted SET "
+	       "estimated_time_arrival = NULL, "
+	       "position = ?, "
 	       "status_control = 'paused' "
 	       "WHERE OID = ? AND status_control <> 'deleted'");
 	    query.addBindValue
@@ -4895,7 +4888,9 @@ void spoton::slotTransmittedPaused(bool state)
 	  {
 	    QSqlQuery query(db);
 
-	    query.prepare("UPDATE transmitted SET status_control = ? "
+	    query.prepare("UPDATE transmitted SET "
+			  "estimated_time_arrival = NULL, "
+			  "status_control = ? "
 			  "WHERE OID = ? AND status_control <> 'deleted'");
 	    query.bindValue(0, state ? "paused" : "transmitting");
 	    query.bindValue(1, checkBox->property("oid"));

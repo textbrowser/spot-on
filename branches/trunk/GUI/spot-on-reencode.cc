@@ -464,8 +464,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  }
 	    }
 
-	if(query.exec("SELECT cipher_type, hash_type, name, postal_address, "
-		      "OID FROM institutions"))
+	if(query.exec("SELECT cipher_type, " // 0
+		      "hash_type, "          // 1
+		      "name, "               // 2
+		      "postal_address, "     // 3
+		      "OID "                 // 4
+		      "FROM institutions"))
 	  while(query.next())
 	    {
 	      QByteArray cipherType;
@@ -551,8 +555,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT date_received, message_bundle, "
-		      "participant_hash, OID "
+	if(query.exec("SELECT date_received, " // 0
+		      "message_bundle, "       // 1
+		      "participant_hash, "     // 2
+		      "OID "                   // 3
 		      "FROM post_office"))
 	  while(query.next())
 	    {
