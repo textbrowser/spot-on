@@ -1861,8 +1861,7 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
 
 	if(item->column() == 0)
 	  {
-	    query.prepare
-	      ("UPDATE received SET locked = ? WHERE OID = ?");
+	    query.prepare("UPDATE received SET locked = ? WHERE OID = ?");
 	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
 	    query.bindValue(1, oid);
 	    query.exec();
