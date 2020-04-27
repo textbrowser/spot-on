@@ -238,6 +238,7 @@ Completed Items
 168.   Prevent sharing of private keys in forward-secrecy protocol.
        (Similar to permanent keys.) PKI keys reside in memory.
 169.   Forward Secrecy ephemeral keys expiry times.
+170.   StarBeam ETA.
 
 Ignored Items
 
@@ -278,5 +279,4 @@ Remaining Items
 7.     IMAP and optional removal of messages; retrieve latest.
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
-10.    StarBeam ETA.
-11.    Pointcheval.
+10.    Pointcheval.
