@@ -63,8 +63,8 @@ bool spoton_starbeam_writer::append
 {
   if(data.isEmpty())
     {
-      spoton_misc::logError("spoton_starbeam_writer::append(): "
-			    "data is empty.");
+      spoton_misc::logError
+	("spoton_starbeam_writer::append(): data is empty.");
       return false;
     }
 
@@ -72,8 +72,8 @@ bool spoton_starbeam_writer::append
 
   if(!s_crypt)
     {
-      spoton_misc::logError("spoton_starbeam_writer::append(): "
-			    "s_crypt is zero.");
+      spoton_misc::logError
+	("spoton_starbeam_writer::append(): s_crypt is zero.");
       return false;
     }
 
