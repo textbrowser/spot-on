@@ -44,6 +44,11 @@ extern "C"
 
 spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QThread(parent)
 {
+  connect(&m_etaTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotETATimerTimeout(void)));
+  m_etaTimer.start(1000);
 }
 
 spoton_starbeam_writer::~spoton_starbeam_writer()
@@ -638,6 +643,10 @@ void spoton_starbeam_writer::run(void)
 	  SLOT(slotNewData(const QByteArray &,
 			   const QStringByteArrayHash &)));
   exec();
+}
+
+void spoton_starbeam_writer::slotETATimerTimeout(void)
+{
 }
 
 void spoton_starbeam_writer::slotReadKeys(void)

@@ -32,6 +32,7 @@
 #include <QPointer>
 #include <QReadWriteLock>
 #include <QThread>
+#include <QTimer>
 
 #include "Common/spot-on-common.h"
 
@@ -53,9 +54,11 @@ class spoton_starbeam_writer: public QThread
   QList<QByteArray> m_novas;
   QList<QHash<QString, QByteArray> > m_magnets;
   QReadWriteLock m_keyMutex;
+  QTimer m_etaTimer;
   void run(void);
 
  private slots:
+  void slotETATimerTimeout(void);
   void slotReadKeys(void);
 
  signals:
