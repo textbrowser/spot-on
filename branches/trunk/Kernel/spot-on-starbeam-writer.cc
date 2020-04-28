@@ -872,8 +872,8 @@ void spoton_starbeam_writer::slotReadKeys(void)
 void spoton_starbeam_writer::start(void)
 {
   /*
-  ** Magnets and nova updates from the user interface
-  ** will trigger slotReadKeys().
+  ** Magnets and nova updates from the user interface will trigger
+  ** slotReadKeys().
   */
 
   slotReadKeys();
