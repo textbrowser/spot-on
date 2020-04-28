@@ -54,7 +54,15 @@ class spoton_starbeam_writer: public QThread
   QList<QByteArray> m_novas;
   QList<QHash<QString, QByteArray> > m_magnets;
   QReadWriteLock m_keyMutex;
+  QString m_fileName;
   QTimer m_etaTimer;
+  int m_stalled;
+  qint64 m_position;
+  qint64 m_previousPosition;
+  qint64 m_rate;
+  qint64 m_time0;
+  qint64 m_totalSize;
+  QByteArray eta(void);
   void run(void);
 
  private slots:

@@ -59,6 +59,7 @@ class spoton_starbeam_reader: public QObject
   bool m_ultra;
   double m_readInterval;
   int m_neighborIndex;
+  int m_stalled;
   qint64 m_id;
   qint64 m_position;
   qint64 m_previousPosition;

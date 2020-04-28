@@ -49,12 +49,54 @@ spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QThread(parent)
 	  this,
 	  SLOT(slotETATimerTimeout(void)));
   m_etaTimer.start(1000);
+  m_position = 0;
+  m_previousPosition = 0;
+  m_rate = 0;
+  m_stalled = 0;
+  m_time0 = QDateTime::currentMSecsSinceEpoch();
+  m_totalSize = 0;
 }
 
 spoton_starbeam_writer::~spoton_starbeam_writer()
 {
   quit();
   wait();
+}
+
+QByteArray spoton_starbeam_writer::eta(void)
+{
+  QString eta(tr("stalled"));
+  QString rate("");
+  qint64 seconds = qAbs(QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
+
+  if(m_rate > 0)
+    eta = tr("%1 minutes(s)").
+      arg((static_cast<double> (m_totalSize - m_position) /
+	   static_cast<double> (m_rate)) / 60.0, 0, 'f', 2);
+
+  if(seconds >= 1)
+    {
+      qint64 rate = m_rate;
+
+      m_rate = static_cast<qint64>
+	(static_cast<double> (m_position - m_previousPosition) /
+	 static_cast<double> (seconds));
+
+      if(m_rate > 0)
+	m_stalled = 0;
+      else if(m_stalled++ <= 5)
+	m_rate = rate;
+
+      /*
+      ** Reset variables.
+      */
+
+      m_previousPosition = m_position;
+      m_time0 = QDateTime::currentMSecsSinceEpoch() / 1000;
+    }
+
+  rate = spoton_misc::formattedSize(m_rate) + tr(" / s");
+  return (eta + " (" + rate + ")").toUtf8();
 }
 
 bool spoton_starbeam_writer::append
@@ -350,9 +392,12 @@ void spoton_starbeam_writer::processData
   qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
-  qint64 position = qAbs(list.value(2).toLongLong());
   qint64 pulseSize = qAbs(list.value(6).toLongLong());
-  qint64 totalSize = qAbs(list.value(4).toLongLong());
+
+  m_position = qAbs(list.value(2).toLongLong());
+
+  if(m_totalSize == 0)
+    m_totalSize = qAbs(list.value(4).toLongLong());
 
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
@@ -368,18 +413,18 @@ void spoton_starbeam_writer::processData
 	 "dataSize > (pulseSize + pulseSize / 100 + 12).");
       return;
     }
-  else if(dataSize > maximumSize || totalSize > maximumSize)
+  else if(dataSize > maximumSize || m_totalSize > maximumSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
-	 "dataSize > maximumSize or totalSize > maximumSize.");
+	 "dataSize > maximumSize or m_totalSize > maximumSize.");
       return;
     }
-  else if(dataSize > totalSize || position >= totalSize)
+  else if(dataSize > m_totalSize || m_position >= m_totalSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
-	 "dataSize > totalSize or position >= totalSize.");
+	 "dataSize > m_totalSize or m_position >= m_totalSize.");
       return;
     }
   else if(pulseSize > maximumSize ||
@@ -399,6 +444,11 @@ void spoton_starbeam_writer::processData
      QDir::separator() +
      QString::fromUtf8(list.value(1).constData(),
 		       list.value(1).length()).replace(" ", "-"));
+
+  if(QFileInfo(fileName).size() == m_totalSize)
+    return;
+
+  QString connectionName("");
   int locked = 0;
 
   {
@@ -444,15 +494,15 @@ void spoton_starbeam_writer::processData
 
   if(file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
     {
-      if(position > file.size())
-	if(!file.resize(position))
+      if(m_position > file.size())
+	if(!file.resize(m_position))
 	  {
 	    ok = false;
 	    spoton_misc::logError
 	      ("spoton_starbeam_writer::processData(): resize() failure.");
 	  }
 
-      if(file.seek(position))
+      if(file.seek(m_position))
 	{
 	  QByteArray data(qUncompress(list.value(5)));
 
@@ -481,6 +531,8 @@ void spoton_starbeam_writer::processData
 
   if(!ok)
     return;
+  else if(m_fileName.isEmpty())
+    m_fileName = fileName;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -494,15 +546,17 @@ void spoton_starbeam_writer::processData
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO received "
-	   "(expected_file_hash, "    // 0
-	   "expected_sha3_512_hash, " // 1
-	   "file, "                   // 2
-	   "file_hash, "              // 3
-	   "hash, "                   // 4
-	   "pulse_size, "             // 5
-	   "sha3_512_hash, "          // 6
-	   "total_size) "             // 7
+	   "(estimated_time_arrival, " // 0
+	   "expected_file_hash, "      // 1
+	   "expected_sha3_512_hash, "  // 2
+	   "file, "                    // 3
+	   "file_hash, "               // 4
+	   "hash, "                    // 5
+	   "pulse_size, "              // 6
+	   "sha3_512_hash, "           // 7
+	   "total_size) "              // 8
 	   "VALUES (?, "
+	   "?, "
 	   "?, "
 	   "?, "
 	   "?, "
@@ -511,30 +565,36 @@ void spoton_starbeam_writer::processData
 	   "(SELECT sha3_512_hash FROM received WHERE file_hash = ?), "
 	   "?)");
 
-	if(hash.isEmpty())
+	if(QFileInfo(m_fileName).size() == m_totalSize)
+	  /*
+	  ** Completed?
+	  */
+
 	  query.bindValue(0, QVariant::String);
 	else
 	  query.bindValue
-	    (0, s_crypt->encryptedThenHashed(hash, &ok).toBase64());
+	    (0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+
+	if(hash.isEmpty())
+	  query.bindValue(1, QVariant::String);
+	else
+	  query.bindValue
+	    (1, s_crypt->encryptedThenHashed(hash, &ok).toBase64());
 
 	if(ok)
 	  {
 	    if(sha3_512_hash.isEmpty())
-	      query.bindValue(1, QVariant::String);
+	      query.bindValue(2, QVariant::String);
 	    else
 	      query.bindValue
-		(1,
+		(2,
 		 s_crypt->encryptedThenHashed(sha3_512_hash, &ok).toBase64());
 	  }
 
 	if(ok)
 	  query.bindValue
-	    (2,
+	    (3,
 	     s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (3, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -542,18 +602,22 @@ void spoton_starbeam_writer::processData
 
 	if(ok)
 	  query.bindValue
-	    (5, s_crypt->
+	    (5, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (6, s_crypt->
 	     encryptedThenHashed(QByteArray::number(pulseSize), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+	    (7, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (7, s_crypt->
-	     encryptedThenHashed(QByteArray::number(totalSize), &ok).
+	    (8, s_crypt->
+	     encryptedThenHashed(QByteArray::number(m_totalSize), &ok).
 	     toBase64());
 
 	if(ok)
@@ -578,7 +642,7 @@ void spoton_starbeam_writer::processData
   QDataStream stream(&bytes, QIODevice::WriteOnly);
 
   stream << QByteArray("0061")
-	 << QByteArray::number(position)
+	 << QByteArray::number(m_position)
 	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
             toLatin1()
 	 << QByteArray::number(fileId);
@@ -647,6 +711,47 @@ void spoton_starbeam_writer::run(void)
 
 void spoton_starbeam_writer::slotETATimerTimeout(void)
 {
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
+
+    if(db.open())
+      {
+	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+
+	if(!s_crypt)
+	  {
+	    spoton_misc::logError
+	      ("spoton_starbeam_writer::saveETA(): s_crypt is zero.");
+	    goto done_label;
+	  }
+
+	QSqlQuery query(db);
+	bool ok = true;
+
+	query.exec("PRAGMA synchronous = NORMAL");
+	query.prepare("UPDATE received SET "
+		      "estimated_time_arrival = ? "
+		      "WHERE file_hash = ?");
+	query.bindValue(0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+
+	if(ok)
+	  query.bindValue
+	    (1, s_crypt->keyedHash(m_fileName.toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+ done_label:
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_starbeam_writer::slotReadKeys(void)
