@@ -437,7 +437,6 @@ void spoton_starbeam_writer::processData
       return;
     }
 
-  QString connectionName("");
   QString fileName
     (spoton_kernel::setting("gui/etpDestinationPath",
 			    QDir::homePath()).toString() +
