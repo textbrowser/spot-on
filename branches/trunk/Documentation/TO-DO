@@ -239,6 +239,7 @@ Completed Items
        (Similar to permanent keys.) PKI keys reside in memory.
 169.   Forward Secrecy ephemeral keys expiry times.
 170.   StarBeam ETA.
+171.   Independent StarBeam writers. Would exhaust the kernel.
 
 Ignored Items
 
@@ -280,4 +281,3 @@ Remaining Items
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    Pointcheval.
-11.    Independent StarBeam writers.
