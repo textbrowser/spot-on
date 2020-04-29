@@ -36,6 +36,8 @@
 
 #include "Common/spot-on-common.h"
 
+class spoton_starbeam_writer_statistics;
+
 class spoton_starbeam_writer: public QThread
 {
   Q_OBJECT
@@ -51,18 +53,13 @@ class spoton_starbeam_writer: public QThread
   void stop(void);
 
  private:
+  QHash<QString, spoton_starbeam_writer_statistics> m_statistics;
   QList<QByteArray> m_novas;
   QList<QHash<QString, QByteArray> > m_magnets;
   QReadWriteLock m_keyMutex;
-  QString m_fileName;
+  QReadWriteLock m_statisticsMutex;
   QTimer m_etaTimer;
-  int m_stalled;
-  qint64 m_position;
-  qint64 m_previousPosition;
-  qint64 m_rate;
-  qint64 m_time0;
-  qint64 m_totalSize;
-  QByteArray eta(void);
+  QByteArray eta(const QString &fileName);
   void run(void);
 
  private slots:
@@ -73,6 +70,18 @@ class spoton_starbeam_writer: public QThread
   void newData(const QByteArray &data, const QStringByteArrayHash &magnet);
   void notifyStarBeamReader(const qint64 id, const qint64 position);
   void writeMessage0061(const QByteArray &data);
+};
+
+class spoton_starbeam_writer_statistics
+{
+ public:
+  QString m_fileName;
+  int m_stalled;
+  qint64 m_position;
+  qint64 m_previousPosition;
+  qint64 m_rate;
+  qint64 m_time0;
+  qint64 m_totalSize;
 };
 
 class spoton_starbeam_writer_worker: public QObject

@@ -506,7 +506,8 @@ void spoton_starbeam_reader::slotETATimerTimeout(void)
 	if(!s_crypt)
 	  {
 	    spoton_misc::logError
-	      ("spoton_starbeam_reader::saveETA(): s_crypt is zero.");
+	      ("spoton_starbeam_reader::slotETATimerTimeout(): "
+	       "s_crypt is zero.");
 	    goto done_label;
 	  }
 

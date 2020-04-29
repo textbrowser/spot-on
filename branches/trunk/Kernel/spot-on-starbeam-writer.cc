@@ -48,13 +48,7 @@ spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QThread(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotETATimerTimeout(void)));
-  m_etaTimer.start(1000);
-  m_position = 0;
-  m_previousPosition = 0;
-  m_rate = 0;
-  m_stalled = 0;
-  m_time0 = QDateTime::currentMSecsSinceEpoch();
-  m_totalSize = 0;
+  m_etaTimer.start(2500);
 }
 
 spoton_starbeam_writer::~spoton_starbeam_writer()
@@ -63,39 +57,46 @@ spoton_starbeam_writer::~spoton_starbeam_writer()
   wait();
 }
 
-QByteArray spoton_starbeam_writer::eta(void)
+QByteArray spoton_starbeam_writer::eta(const QString &fileName)
 {
+  spoton_starbeam_writer_statistics statistics;
+
+  if(m_statistics.contains(fileName))
+    statistics = m_statistics.value(fileName);
+  else
+    return tr("stalled (0 B / s)").toUtf8();
+
   QString eta(tr("stalled"));
   QString rate("");
-  qint64 seconds = qAbs(QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
+  qint64 seconds = qAbs
+    (QDateTime::currentMSecsSinceEpoch() / 1000 - statistics.m_time0);
 
-  if(m_rate > 0)
+  if(statistics.m_rate > 0)
     eta = tr("%1 minutes(s)").
-      arg((static_cast<double> (m_totalSize - m_position) /
-	   static_cast<double> (m_rate)) / 60.0, 0, 'f', 2);
+      arg((static_cast<double> (statistics.m_totalSize -
+				statistics.m_position) /
+	   static_cast<double> (statistics.m_rate)) / 60.0, 0, 'f', 2);
 
   if(seconds >= 1)
     {
-      qint64 rate = m_rate;
+      qint64 rate = statistics.m_rate;
 
-      m_rate = static_cast<qint64>
-	(static_cast<double> (m_position - m_previousPosition) /
+      statistics.m_rate = static_cast<qint64>
+	(static_cast<double> (qAbs(statistics.m_position -
+				   statistics.m_previousPosition)) /
 	 static_cast<double> (seconds));
 
-      if(m_rate > 0)
-	m_stalled = 0;
-      else if(m_stalled++ <= 5)
-	m_rate = rate;
+      if(statistics.m_rate > 0)
+	statistics.m_stalled = 0;
+      else if(statistics.m_stalled++ <= 3)
+	statistics.m_rate = rate;
 
-      /*
-      ** Reset variables.
-      */
-
-      m_previousPosition = m_position;
-      m_time0 = QDateTime::currentMSecsSinceEpoch() / 1000;
+      statistics.m_previousPosition = statistics.m_position;
+      statistics.m_time0 = QDateTime::currentMSecsSinceEpoch() / 1000;
+      m_statistics[fileName] = statistics;
     }
 
-  rate = spoton_misc::formattedSize(m_rate) + tr(" / s");
+  rate = spoton_misc::formattedSize(statistics.m_rate) + tr(" / s");
   return (eta + " (" + rate + ")").toUtf8();
 }
 
@@ -392,12 +393,9 @@ void spoton_starbeam_writer::processData
   qint64 dataSize = qAbs(list.value(3).toLongLong());
   qint64 maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
+  qint64 position = qAbs(list.value(2).toLongLong());
   qint64 pulseSize = qAbs(list.value(6).toLongLong());
-
-  m_position = qAbs(list.value(2).toLongLong());
-
-  if(m_totalSize == 0)
-    m_totalSize = qAbs(list.value(4).toLongLong());
+  qint64 totalSize = qAbs(list.value(4).toLongLong());
 
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
@@ -413,18 +411,18 @@ void spoton_starbeam_writer::processData
 	 "dataSize > (pulseSize + pulseSize / 100 + 12).");
       return;
     }
-  else if(dataSize > maximumSize || m_totalSize > maximumSize)
+  else if(dataSize > maximumSize || totalSize > maximumSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
-	 "dataSize > maximumSize or m_totalSize > maximumSize.");
+	 "dataSize > maximumSize or totalSize > maximumSize.");
       return;
     }
-  else if(dataSize > m_totalSize || m_position >= m_totalSize)
+  else if(dataSize > totalSize || position >= totalSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
-	 "dataSize > m_totalSize or m_position >= m_totalSize.");
+	 "dataSize > totalSize or position >= totalSize.");
       return;
     }
   else if(pulseSize > maximumSize ||
@@ -444,7 +442,7 @@ void spoton_starbeam_writer::processData
      QString::fromUtf8(list.value(1).constData(),
 		       list.value(1).length()).replace(" ", "-"));
 
-  if(QFileInfo(fileName).size() == m_totalSize)
+  if(QFileInfo(fileName).size() == totalSize)
     return;
 
   QString connectionName("");
@@ -493,15 +491,15 @@ void spoton_starbeam_writer::processData
 
   if(file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
     {
-      if(m_position > file.size())
-	if(!file.resize(m_position))
+      if(position > file.size())
+	if(!file.resize(position))
 	  {
 	    ok = false;
 	    spoton_misc::logError
 	      ("spoton_starbeam_writer::processData(): resize() failure.");
 	  }
 
-      if(file.seek(m_position))
+      if(file.seek(position))
 	{
 	  QByteArray data(qUncompress(list.value(5)));
 
@@ -530,8 +528,32 @@ void spoton_starbeam_writer::processData
 
   if(!ok)
     return;
-  else if(m_fileName.isEmpty())
-    m_fileName = fileName;
+  else
+    {
+      QWriteLocker lock(&m_statisticsMutex);
+
+      if(!m_statistics.contains(fileName))
+	{
+	  spoton_starbeam_writer_statistics statistics;
+
+	  statistics.m_fileName = fileName;
+	  statistics.m_stalled = 0;
+	  statistics.m_position = position;
+	  statistics.m_previousPosition = 0;
+	  statistics.m_rate = 0;
+	  statistics.m_time0 = QDateTime::currentMSecsSinceEpoch();
+	  statistics.m_totalSize = totalSize;
+	  m_statistics[fileName] = statistics;
+	}
+      else
+	{
+	  spoton_starbeam_writer_statistics statistics
+	    (m_statistics.value(fileName));
+
+	  statistics.m_position = position;
+	  m_statistics[fileName] = statistics;
+	}
+    }
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -544,8 +566,8 @@ void spoton_starbeam_writer::processData
 	QSqlQuery query(db);
 
 	query.prepare
-	  ("INSERT OR REPLACE INTO received "
-	   "(estimated_time_arrival, " // 0
+	  ("INSERT OR REPLACE INTO received ("
+	   "estimated_time_arrival, "  // 0
 	   "expected_file_hash, "      // 1
 	   "expected_sha3_512_hash, "  // 2
 	   "file, "                    // 3
@@ -564,59 +586,52 @@ void spoton_starbeam_writer::processData
 	   "(SELECT sha3_512_hash FROM received WHERE file_hash = ?), "
 	   "?)");
 
-	if(QFileInfo(m_fileName).size() == m_totalSize)
-	  /*
-	  ** Completed?
-	  */
+	{
+	  QWriteLocker lock(&m_statisticsMutex);
 
-	  query.bindValue(0, QVariant::String);
-	else
-	  query.bindValue
-	    (0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(eta(fileName), &ok).toBase64());
+	}
 
 	if(hash.isEmpty())
-	  query.bindValue(1, QVariant::String);
-	else
-	  query.bindValue
-	    (1, s_crypt->encryptedThenHashed(hash, &ok).toBase64());
+	  query.addBindValue(QVariant::String);
+	else if(ok)
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(hash, &ok).toBase64());
 
 	if(ok)
 	  {
 	    if(sha3_512_hash.isEmpty())
-	      query.bindValue(2, QVariant::String);
+	      query.addBindValue(QVariant::String);
 	    else
-	      query.bindValue
-		(2,
-		 s_crypt->encryptedThenHashed(sha3_512_hash, &ok).toBase64());
+	      query.addBindValue
+		(s_crypt->encryptedThenHashed(sha3_512_hash, &ok).toBase64());
 	  }
 
 	if(ok)
-	  query.bindValue
-	    (3,
-	     s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (4, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+	  query.addBindValue
+	    (s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (5, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+	  query.addBindValue
+	    (s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (6, s_crypt->
-	     encryptedThenHashed(QByteArray::number(pulseSize), &ok).
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(QByteArray::number(pulseSize), &ok).
 	     toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (7, s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
+	  query.addBindValue
+	    (s_crypt->keyedHash(fileName.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (8, s_crypt->
-	     encryptedThenHashed(QByteArray::number(m_totalSize), &ok).
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(QByteArray::number(totalSize), &ok).
 	     toBase64());
 
 	if(ok)
@@ -641,7 +656,7 @@ void spoton_starbeam_writer::processData
   QDataStream stream(&bytes, QIODevice::WriteOnly);
 
   stream << QByteArray("0061")
-	 << QByteArray::number(m_position)
+	 << QByteArray::number(position)
 	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
             toLatin1()
 	 << QByteArray::number(fileId);
@@ -725,25 +740,47 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 	if(!s_crypt)
 	  {
 	    spoton_misc::logError
-	      ("spoton_starbeam_writer::saveETA(): s_crypt is zero.");
+	      ("spoton_starbeam_writer::slotETATimerTimeout(): "
+	       "s_crypt is zero.");
 	    goto done_label;
 	  }
 
-	QSqlQuery query(db);
-	bool ok = true;
+	QWriteLocker lock(&m_statisticsMutex);
+	QMutableHashIterator<QString, spoton_starbeam_writer_statistics> it
+	  (m_statistics);
 
-	query.exec("PRAGMA synchronous = NORMAL");
-	query.prepare("UPDATE received SET "
-		      "estimated_time_arrival = ? "
-		      "WHERE file_hash = ?");
-	query.bindValue(0, s_crypt->encryptedThenHashed(eta(), &ok).toBase64());
+	while(it.hasNext())
+	  {
+	    it.next();
 
-	if(ok)
-	  query.bindValue
-	    (1, s_crypt->keyedHash(m_fileName.toUtf8(), &ok).toBase64());
+	    QSqlQuery query(db);
+	    bool ok = true;
+	    bool remove = false;
 
-	if(ok)
-	  query.exec();
+	    query.exec("PRAGMA synchronous = NORMAL");
+	    query.prepare("UPDATE received SET "
+			  "estimated_time_arrival = ? "
+			  "WHERE file_hash = ?");
+
+	    if(QFileInfo(it.key()).size() == it.value().m_totalSize)
+	      {
+		query.addBindValue(QVariant::String);
+		remove = true;
+	      }
+	    else
+	      query.addBindValue
+		(s_crypt->encryptedThenHashed(eta(it.key()), &ok).toBase64());
+
+	    if(ok)
+	      query.addBindValue
+		(s_crypt->keyedHash(it.key().toUtf8(), &ok).toBase64());
+
+	    if(ok)
+	      query.exec();
+
+	    if(remove)
+	      it.remove();
+	  }
       }
 
     db.close();
