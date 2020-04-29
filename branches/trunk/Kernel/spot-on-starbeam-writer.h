@@ -28,17 +28,17 @@
 #ifndef _spoton_starbeam_writer_h_
 #define _spoton_starbeam_writer_h_
 
+#include <QFuture>
 #include <QHash>
-#include <QPointer>
+#include <QQueue>
 #include <QReadWriteLock>
-#include <QThread>
 #include <QTimer>
 
 #include "Common/spot-on-common.h"
 
 class spoton_starbeam_writer_statistics;
 
-class spoton_starbeam_writer: public QThread
+class spoton_starbeam_writer: public QObject
 {
   Q_OBJECT
 
@@ -47,27 +47,28 @@ class spoton_starbeam_writer: public QThread
   ~spoton_starbeam_writer();
   bool append(const QByteArray &data,
 	      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
-  bool isActive(void) const;
   void processData(const QByteArray &data, const QStringByteArrayHash &magnet);
   void start(void);
   void stop(void);
 
  private:
+  QFuture<void> m_future;
   QHash<QString, spoton_starbeam_writer_statistics> m_statistics;
   QList<QByteArray> m_novas;
   QList<QHash<QString, QByteArray> > m_magnets;
+  QQueue<QPair<QByteArray, QHash<QString, QByteArray> > > m_queue;
   QReadWriteLock m_keyMutex;
+  QReadWriteLock m_queueMutex;
   QReadWriteLock m_statisticsMutex;
   QTimer m_etaTimer;
   QByteArray eta(const QString &fileName);
-  void run(void);
+  void processData(void);
 
  private slots:
   void slotETATimerTimeout(void);
   void slotReadKeys(void);
 
  signals:
-  void newData(const QByteArray &data, const QStringByteArrayHash &magnet);
   void notifyStarBeamReader(const qint64 id, const qint64 position);
   void writeMessage0061(const QByteArray &data);
 };
@@ -82,31 +83,6 @@ class spoton_starbeam_writer_statistics
   qint64 m_rate;
   qint64 m_time0;
   qint64 m_totalSize;
-};
-
-class spoton_starbeam_writer_worker: public QObject
-{
-  Q_OBJECT
-
- public:
-  spoton_starbeam_writer_worker(spoton_starbeam_writer *writer):QObject(0)
-  {
-    m_writer = writer;
-  }
-
-  ~spoton_starbeam_writer_worker()
-  {
-  }
-
- private:
-  QPointer<spoton_starbeam_writer> m_writer;
-
- private slots:
-  void slotNewData(const QByteArray &data, const QStringByteArrayHash &magnet)
-  {
-    if(m_writer)
-      m_writer->processData(data, magnet);
-  }
 };
 
 #endif

@@ -492,7 +492,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_initialized = false;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
   m_mailer = 0;
-  m_starbeamWriter = 0;
   m_uptime = QDateTime::currentDateTime();
   m_urlDistribution = 0;
   m_urlImportFutureInterrupt = 0;
@@ -966,6 +965,7 @@ spoton_kernel::~spoton_kernel()
   m_publishAllListenersPlaintextTimer.stop();
   m_scramblerTimer.stop();
   m_settingsTimer.stop();
+  m_starbeamWriter->stop();
   m_statusTimer.stop();
   m_urlImportTimer.stop();
 
@@ -5973,7 +5973,7 @@ void spoton_kernel::slotUpdateSettings(void)
 	m_urlDistribution->quit();
     }
 
-  if(m_starbeamWriter && !m_starbeamWriter->isActive())
+  if(m_starbeamWriter)
     m_starbeamWriter->start();
 
   if(setting("gui/impersonate", false).toBool())

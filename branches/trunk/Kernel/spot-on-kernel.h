@@ -142,6 +142,7 @@ class spoton_kernel: public QObject
   QHash<qint64, QPointer<spoton_starbeam_reader> > m_starbeamReaders;
   QList<QByteArray> m_urlList;
   QList<QHash<QString, QVariant> > m_poptasticAccounts;
+  QPointer<spoton_starbeam_writer> m_starbeamWriter;
   QQueue<QHash<QString, QVariant> > m_poptasticCache;
   QReadWriteLock m_droppedPacketsMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;
@@ -170,7 +171,6 @@ class spoton_kernel: public QObject
   spoton_fireshare *m_fireShare;
   spoton_gui_server *m_guiServer;
   spoton_mailer *m_mailer;
-  spoton_starbeam_writer *m_starbeamWriter;
   spoton_urldistribution *m_urlDistribution;
   spoton_web_server *m_webServer;
   static QByteArray s_messagingCacheKey;

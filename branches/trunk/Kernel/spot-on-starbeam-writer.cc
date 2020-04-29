@@ -35,26 +35,20 @@
 #include "spot-on-kernel.h"
 #include "spot-on-starbeam-writer.h"
 
-#ifdef Q_OS_UNIX
-extern "C"
-{
-#include <unistd.h>
-}
-#endif
-
-spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QThread(parent)
+spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QObject(parent)
 {
   connect(&m_etaTimer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotETATimerTimeout(void)));
-  m_etaTimer.start(2500);
+  m_etaTimer.setInterval(2500);
 }
 
 spoton_starbeam_writer::~spoton_starbeam_writer()
 {
-  quit();
-  wait();
+  m_etaTimer.stop();
+  m_future.cancel();
+  m_future.waitForFinished();
 }
 
 QByteArray spoton_starbeam_writer::eta(const QString &fileName)
@@ -158,37 +152,59 @@ bool spoton_starbeam_writer::append
 
   if(!magnet.isEmpty())
     {
+      {
+	QWriteLocker lock(&m_queueMutex);
+
+	m_queue.enqueue
+	  (QPair<QByteArray, QHash<QString, QByteArray> > (data, magnet));
+      }
+
       /*
       ** If the thread is not active, it should be!
       */
 
-      if(!isRunning())
-	start();
-
-      emit newData(data, magnet);
+      if(m_future.isFinished())
+	m_future = QtConcurrent::run
+	  (this, &spoton_starbeam_writer::processData);
     }
 
   return !magnet.isEmpty();
 }
 
-bool spoton_starbeam_writer::isActive(void) const
+void spoton_starbeam_writer::processData(void)
 {
-  return isRunning();
-}
+  QByteArray data;
+  QHash<QString, QByteArray> magnet;
 
-void spoton_starbeam_writer::processData
-(const QByteArray &dataIn, const QStringByteArrayHash &magnet)
-{
-  if(dataIn.isEmpty() || magnet.isEmpty())
+ start_label:
+
+  if(m_future.isCanceled())
+    return;
+
+  {
+    QWriteLocker lock(&m_queueMutex);
+
+    if(!m_queue.isEmpty())
+      {
+	QPair<QByteArray, QHash<QString, QByteArray> > pair(m_queue.dequeue());
+
+	data = pair.first.trimmed();
+	magnet = pair.second;
+      }
+    else
+      return;
+  }
+
+  if(data.isEmpty() || magnet.isEmpty())
     {
-      if(dataIn.isEmpty())
+      if(data.isEmpty())
 	spoton_misc::logError("spoton_starbeam_writer::processData(): "
-			      "dataIn is empty.");
+			      "data is empty.");
       else
 	spoton_misc::logError("spoton_starbeam_writer::processData(): "
 			      "magnet is empty.");
 
-      return;
+      goto start_label;
     }
 
   spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
@@ -200,11 +216,10 @@ void spoton_starbeam_writer::processData
       return;
     }
 
-  QByteArray data(dataIn.trimmed());
   QList<QByteArray> list(data.split('\n'));
 
   if(list.size() != 3)
-    return;
+    goto start_label;
 
   for(int i = 0; i < list.size(); i++)
     list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -224,7 +239,7 @@ void spoton_starbeam_writer::processData
   data = crypt.decrypted(list.value(0), &ok);
 
   if(!ok)
-    return;
+    goto start_label;
 
   QReadLocker locker(&m_keyMutex);
   const QList<QByteArray> &novas(m_novas);
@@ -353,7 +368,7 @@ void spoton_starbeam_writer::processData
     }
 
   if(!(list.value(0) == "0060" || list.value(0) == "0061"))
-    return;
+    goto start_label;
 
   QDateTime dateTime;
 
@@ -366,9 +381,9 @@ void spoton_starbeam_writer::processData
 
   dateTime.setTimeSpec(Qt::UTC);
 
-  if(!spoton_misc::
-     acceptableTimeSeconds(dateTime, spoton_common::STARBEAM_TIME_DELTA))
-    return;
+  if(!spoton_misc::acceptableTimeSeconds(dateTime,
+					 spoton_common::STARBEAM_TIME_DELTA))
+    goto start_label;
 
   if(list.value(0) == "0061")
     {
@@ -379,14 +394,14 @@ void spoton_starbeam_writer::processData
 
       emit notifyStarBeamReader
 	(list.value(3).toLongLong(), list.value(1).toLongLong());
-      return;
+      goto start_label;
     }
 
   qint64 fileId = list.value(9).toLongLong();
 
   if(spoton_kernel::instance() &&
      spoton_kernel::instance()->hasStarBeamReaderId(fileId))
-    return;
+    goto start_label;
 
   const QByteArray &hash(list.value(7));
   const QByteArray &sha3_512_hash(list.value(11));
@@ -402,28 +417,28 @@ void spoton_starbeam_writer::processData
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
 	 "dataSize != list.value(5).length().");
-      return;
+      goto start_label;
     }
   else if(dataSize > (pulseSize + pulseSize / 100 + 12))
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
 	 "dataSize > (pulseSize + pulseSize / 100 + 12).");
-      return;
+      goto start_label;
     }
   else if(dataSize > maximumSize || totalSize > maximumSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
 	 "dataSize > maximumSize or totalSize > maximumSize.");
-      return;
+      goto start_label;
     }
   else if(dataSize > totalSize || position >= totalSize)
     {
       spoton_misc::logError
 	("spoton_starbeam_writer::processData(): "
 	 "dataSize > totalSize or position >= totalSize.");
-      return;
+      goto start_label;
     }
   else if(pulseSize > maximumSize ||
 	  pulseSize > spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE)
@@ -432,7 +447,7 @@ void spoton_starbeam_writer::processData
 	("spoton_starbeam_writer::processData(): "
 	 "pulseSize > maximumSize or pulseSize > "
 	 "spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE.");
-      return;
+      goto start_label;
     }
 
   QString fileName
@@ -443,7 +458,7 @@ void spoton_starbeam_writer::processData
 		       list.value(1).length()).replace(" ", "-"));
 
   if(QFileInfo(fileName).size() == totalSize)
-    return;
+    goto start_label;
 
   QString connectionName("");
   int locked = 0;
@@ -475,7 +490,7 @@ void spoton_starbeam_writer::processData
   QSqlDatabase::removeDatabase(connectionName);
 
   if(locked)
-    return;
+    goto start_label;
 
   QFile file;
 
@@ -486,7 +501,7 @@ void spoton_starbeam_writer::processData
       {
 	spoton_misc::logError
 	  ("spoton_starbeam_writer::processData(): file permissions error.");
-	return;
+	goto start_label;
       }
 
   if(file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
@@ -527,7 +542,7 @@ void spoton_starbeam_writer::processData
   file.close();
 
   if(!ok)
-    return;
+    goto start_label;
   else
     {
       QWriteLocker lock(&m_statisticsMutex);
@@ -646,7 +661,7 @@ void spoton_starbeam_writer::processData
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!ok)
-    return;
+    goto start_label;
 
   /*
   ** Produce a response.
@@ -708,19 +723,13 @@ void spoton_starbeam_writer::processData
 
   if(ok)
     emit writeMessage0061(data);
-}
 
-void spoton_starbeam_writer::run(void)
-{
-  spoton_starbeam_writer_worker worker(this);
+  {
+    QReadLocker lock(&m_queueMutex);
 
-  connect(this,
-	  SIGNAL(newData(const QByteArray &,
-			 const QStringByteArrayHash &)),
-	  &worker,
-	  SLOT(slotNewData(const QByteArray &,
-			   const QStringByteArrayHash &)));
-  exec();
+    if(!m_queue.isEmpty())
+      goto start_label;
+  }
 }
 
 void spoton_starbeam_writer::slotETATimerTimeout(void)
@@ -909,21 +918,30 @@ void spoton_starbeam_writer::slotReadKeys(void)
 void spoton_starbeam_writer::start(void)
 {
   /*
-  ** Magnets and nova updates from the user interface will trigger
+  ** Magnet and nova updates from the user interface will trigger
   ** slotReadKeys().
   */
 
+  m_etaTimer.start();
   slotReadKeys();
-  QThread::start();
 }
 
 void spoton_starbeam_writer::stop(void)
 {
-  quit();
-  wait();
+  m_etaTimer.stop();
+  m_future.cancel();
+  m_future.waitForFinished();
 
-  QWriteLocker locker(&m_keyMutex);
+  {
+    QWriteLocker locker(&m_keyMutex);
 
-  m_magnets.clear();
-  m_novas.clear();
+    m_magnets.clear();
+    m_novas.clear();
+  }
+
+  {
+    QWriteLocker locker(&m_queueMutex);
+
+    m_queue.clear();
+  }
 }
