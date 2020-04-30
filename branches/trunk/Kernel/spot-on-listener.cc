@@ -206,16 +206,9 @@ spoton_listener::spoton_listener
  QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  m_bluetoothServer = 0;
   m_bluetoothServiceInfo = 0;
 #endif
-  m_sctpServer = 0;
-  m_tcpServer = 0;
   m_transport = transport.toLower().trimmed();
-  m_udpServer = 0;
-#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-  m_webSocketServer = 0;
-#endif
 
   if(m_transport == "bluetooth")
     {
@@ -244,8 +237,6 @@ spoton_listener::spoton_listener
       (QUrl::fromUserInput(spoton_kernel::setting("gui/external_ip_url", "").
 			   toString()),
        this);
-  else
-    m_externalAddress = 0;
 
   m_keySize = keySize;
 
@@ -673,7 +664,6 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	    }
 
 	  m_bluetoothServer->deleteLater();
-	  m_bluetoothServer = 0;
 	}
 
       return ok;
@@ -804,10 +794,7 @@ void spoton_listener::close(void)
     }
 
   if(m_bluetoothServer)
-    {
-      m_bluetoothServer->deleteLater();
-      m_bluetoothServer = 0;
-    }
+    m_bluetoothServer->deleteLater();
 #endif
 
   if(m_sctpServer)

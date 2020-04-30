@@ -236,7 +236,6 @@ class spoton_listener: public QObject
 
  private:
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  QBluetoothServer *m_bluetoothServer;
   QBluetoothServiceInfo *m_bluetoothServiceInfo;
 #endif
   QByteArray m_certificate;
@@ -244,6 +243,16 @@ class spoton_listener: public QObject
   QByteArray m_privateKey;
   QByteArray m_publicKey;
   QNetworkInterface *m_networkInterface;
+#if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
+  QPointer<QBluetoothServer> m_bluetoothServer;
+#endif
+  QPointer<spoton_external_address> m_externalAddress;
+  QPointer<spoton_listener_tcp_server> m_tcpServer;
+  QPointer<spoton_listener_udp_server> m_udpServer;
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  QPointer<spoton_listener_websocket_server> m_webSocketServer;
+#endif
+  QPointer<spoton_sctp_server> m_sctpServer;
   QString m_address;
   QString m_echoMode;
   QString m_motd;
@@ -265,13 +274,6 @@ class spoton_listener: public QObject
   qint64 m_maximumContentLength;
   quint16 m_externalPort;
   quint16 m_port;
-  spoton_external_address *m_externalAddress;
-  spoton_listener_tcp_server *m_tcpServer;
-  spoton_listener_udp_server *m_udpServer;
-#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-  spoton_listener_websocket_server *m_webSocketServer;
-#endif
-  spoton_sctp_server *m_sctpServer;
   unsigned int m_keySize;
   QString errorString(void) const;
   int maxPendingConnections(void) const;
