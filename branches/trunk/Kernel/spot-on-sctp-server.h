@@ -30,6 +30,7 @@
 
 #include <QHostInfo>
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#include <QPointer>
 #include <QSocketNotifier>
 #else
 #include <QTimer>
@@ -58,7 +59,7 @@ class spoton_sctp_server: public QObject
   QHostAddress m_serverAddress;
   QString m_errorString;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-  QSocketNotifier *m_socketNotifier;
+  QPointer<QSocketNotifier> m_socketNotifier;
 #else
   QTimer m_timer;
 #endif

@@ -93,7 +93,6 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #ifdef SPOTON_SCTP_ENABLED
   m_backlog = 30;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-  m_socketNotifier = 0;
 #else
   m_timer.setInterval(100);
   connect(&m_timer,
@@ -104,7 +103,6 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #else
   m_backlog = 0;
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
-  m_socketNotifier = 0;
 #endif
 #endif
 }
@@ -470,8 +468,6 @@ void spoton_sctp_server::close(void)
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
   if(m_socketNotifier)
     m_socketNotifier->deleteLater();
-
-  m_socketNotifier = 0;
 #else
   m_timer.stop();
 #endif
