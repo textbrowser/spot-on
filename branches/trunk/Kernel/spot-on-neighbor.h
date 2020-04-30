@@ -321,6 +321,10 @@ class spoton_neighbor: public QThread
 #else
   QPointer<QObject> m_webSocket;
 #endif
+  QPointer<spoton_external_address> m_externalAddress;
+  QPointer<spoton_neighbor_tcp_socket> m_tcpSocket;
+  QPointer<spoton_neighbor_udp_socket> m_udpSocket;
+  QPointer<spoton_sctp_socket> m_sctpSocket;
   QReadWriteLock m_accountClientSentSaltMutex;
   QReadWriteLock m_accountNameMutex;
   QReadWriteLock m_accountPasswordMutex;
@@ -372,10 +376,6 @@ class spoton_neighbor: public QThread
   quint64 m_bytesDiscardedOnWrite;
   quint64 m_bytesRead;
   quint64 m_bytesWritten;
-  spoton_external_address *m_externalAddress;
-  spoton_neighbor_tcp_socket *m_tcpSocket;
-  spoton_neighbor_udp_socket *m_udpSocket;
-  spoton_sctp_socket *m_sctpSocket;
   QString findMessageType
     (const QByteArray &data,
      QList<QByteArray> &symmetricKeys,

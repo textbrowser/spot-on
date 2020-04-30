@@ -94,7 +94,6 @@ spoton_neighbor::spoton_neighbor
   if(m_bluetoothSocket)
     m_bluetoothSocket->setParent(this);
 #else
-  m_bluetoothSocket = 0;
 #endif
   m_kernelInterfaces = spoton_kernel::interfaces();
   m_keySize = 0;
@@ -109,20 +108,16 @@ spoton_neighbor::spoton_neighbor
   m_privateApplicationCredentials = privateApplicationCredentials;
   m_privateApplicationSequences.first = m_privateApplicationSequences.second =
     1;
-  m_sctpSocket = 0;
   m_sourceOfRandomness = qBound
     (0,
      sourceOfRandomness,
      static_cast<int> (std::numeric_limits<unsigned short>::max()));
-  m_tcpSocket = 0;
-  m_udpSocket = 0;
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   m_webSocket = web_socket;
 
   if(m_webSocket)
     m_webSocket->setParent(this);
 #else
-  m_webSocket = 0;
 #endif
 
   if(transport == "bluetooth")
@@ -666,7 +661,6 @@ spoton_neighbor::spoton_neighbor
   m_accountPassword = accountPassword;
   m_address = ipAddress.trimmed();
   m_allowExceptions = allowExceptions;
-  m_bluetoothSocket = 0;
   m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
@@ -726,7 +720,6 @@ spoton_neighbor::spoton_neighbor
   m_protocol = protocol;
   m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
   m_requireSsl = requireSsl;
-  m_sctpSocket = 0;
   m_silenceTime = qBound(0, silenceTime, std::numeric_limits<int>::max());
   m_socketOptions = socketOptions;
   m_sourceOfRandomness = 0;
@@ -737,10 +730,7 @@ spoton_neighbor::spoton_neighbor
 
   m_startTime = QDateTime::currentDateTime();
   m_statusControl = statusControl;
-  m_tcpSocket = 0;
   m_transport = transport;
-  m_udpSocket = 0;
-  m_webSocket = 0;
   m_waitforbyteswritten_msecs =
     qBound(0,
 	   waitforbyteswritten_msecs,
