@@ -102,9 +102,9 @@ class spoton_web_server: public QObject
 
  private:
   QAtomicInt *m_abort;
+  QPointer<spoton_web_server_tcp_server> m_http;
+  QPointer<spoton_web_server_tcp_server> m_https;
   QTimer m_generalTimer;
-  spoton_web_server_tcp_server *m_http;
-  spoton_web_server_tcp_server *m_https;
 
  private slots:
   void slotHttpClientConnected(const qint64 socketDescriptor);
