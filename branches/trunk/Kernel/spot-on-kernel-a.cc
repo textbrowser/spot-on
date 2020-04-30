@@ -487,16 +487,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_activeListeners = 0;
   m_activeNeighbors = 0;
   m_activeStarbeams = 0;
-  m_fireShare = 0;
-  m_guiServer = 0;
   m_initialized = false;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_mailer = 0;
   m_uptime = QDateTime::currentDateTime();
-  m_urlDistribution = 0;
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
-  m_webServer = 0;
   s_institutionLastModificationTime = QDateTime();
   s_messagingCacheKey = spoton_crypt::weakRandomBytes
     (static_cast<size_t> (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));

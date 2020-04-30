@@ -173,9 +173,9 @@ $(function() {
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  QAtomicInt *m_abort;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  QTimer m_generalTimer;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <a class="code" href="classspoton__web__server__tcp__server.html">spoton_web_server_tcp_server</a> *m_http;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <a class="code" href="classspoton__web__server__tcp__server.html">spoton_web_server_tcp_server</a> *m_https;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  QPointer&lt;spoton_web_server_tcp_server&gt; m_http;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  QPointer&lt;spoton_web_server_tcp_server&gt; m_https;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  QTimer m_generalTimer;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; <span class="keyword">private</span> slots:</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordtype">void</span> slotHttpClientConnected(<span class="keyword">const</span> qint64 socketDescriptor);</div>
