@@ -1,4 +1,5 @@
 HEADERS		= ..\\Common\\spot-on-external-address.h \
+		  ..\\Common\\spot-on-version.h \
 		  spot-on-fireshare.h \
 		  spot-on-gui-server.h \
 		  spot-on-kernel.h \

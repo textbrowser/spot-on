@@ -61,6 +61,7 @@ extern "C"
 
 #include "Common/spot-on-architecture.h"
 #include "Common/spot-on-threefish.h"
+#include "Common/spot-on-version.h"
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
 #include "spot-on-echo-key-share.h"
