@@ -1,2 +1,1 @@
-sudo dpkg -i DEB
 sudo apt-get install -f
