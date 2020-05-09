@@ -28,6 +28,7 @@
 #ifndef _spoton_starbeam_writer_h_
 #define _spoton_starbeam_writer_h_
 
+#include <QAtomicInt>
 #include <QFuture>
 #include <QHash>
 #include <QQueue>
@@ -52,6 +53,7 @@ class spoton_starbeam_writer: public QObject
   void stop(void);
 
  private:
+  QAtomicInt m_abort;
   QFuture<void> m_future;
   QHash<QString, spoton_starbeam_writer_statistics> m_statistics;
   QList<QByteArray> m_novas;

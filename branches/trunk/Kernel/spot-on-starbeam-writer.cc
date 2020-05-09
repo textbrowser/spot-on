@@ -41,11 +41,13 @@ spoton_starbeam_writer::spoton_starbeam_writer(QObject *parent):QObject(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotETATimerTimeout(void)));
+  m_abort = 0;
   m_etaTimer.setInterval(2500);
 }
 
 spoton_starbeam_writer::~spoton_starbeam_writer()
 {
+  m_abort.fetchAndStoreOrdered(1);
   m_etaTimer.stop();
   m_future.cancel();
   m_future.waitForFinished();
@@ -98,10 +100,12 @@ bool spoton_starbeam_writer::append
 (const QByteArray &data,
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
-  if(data.isEmpty())
+  if(data.isEmpty() || m_abort.fetchAndAddOrdered(0))
     {
-      spoton_misc::logError
-	("spoton_starbeam_writer::append(): data is empty.");
+      if(data.isEmpty())
+	spoton_misc::logError
+	  ("spoton_starbeam_writer::append(): data is empty.");
+
       return false;
     }
 
@@ -178,7 +182,7 @@ void spoton_starbeam_writer::processData(void)
 
  start_label:
 
-  if(m_future.isCanceled())
+  if(m_abort.fetchAndAddOrdered(0) || m_future.isCanceled())
     return;
 
   {
@@ -922,12 +926,14 @@ void spoton_starbeam_writer::start(void)
   ** slotReadKeys().
   */
 
+  m_abort.fetchAndStoreOrdered(0);
   m_etaTimer.start();
   slotReadKeys();
 }
 
 void spoton_starbeam_writer::stop(void)
 {
+  m_abort.fetchAndStoreOrdered(1);
   m_etaTimer.stop();
   m_future.cancel();
   m_future.waitForFinished();

@@ -5969,9 +5969,6 @@ void spoton_kernel::slotUpdateSettings(void)
 	m_urlDistribution->quit();
     }
 
-  if(m_starbeamWriter)
-    m_starbeamWriter->start();
-
   if(setting("gui/impersonate", false).toBool())
     {
       if(!m_impersonateTimer.isActive())
