@@ -1,11 +1,11 @@
 cache()
 include(spot-on-gui-source.windows.pro)
-libntru.target = libntru.dll
 libntru.commands = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends =
-libspoton.target = libspoton.dll
+libntru.target = libntru.dll
 libspoton.commands = $(MAKE) -C ..\\..\\libSpotOn library
 libspoton.depends =
+libspoton.target = libspoton.dll
 
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
@@ -25,15 +25,15 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN            += Spot-On ..\\..\\libNTRU.dll \
+QMAKE_CLEAN            += Spot-On \
+                          ..\\..\\libNTRU.dll \
                           ..\\..\\libNTRU\\src\\*.o \
                           ..\\..\\libNTRU\\src\\*.s \
-                          ..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\libSpotOn\\*.o \
+                          ..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\libSpotOn\\test.exe
 QMAKE_CXXFLAGS_RELEASE += -fwrapv -mtune=generic -pie -O3 \
-			  -Wall -Wcast-align -Wcast-qual \
-			  -Wextra \
+			  -Wall -Wcast-align -Wcast-qual -Wextra \
 			  -Woverloaded-virtual -Wpointer-arith \
 			  -Wstrict-overflow=5
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -44,21 +44,20 @@ QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
 INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\PostgreSQL\\Include.win32 \
-		   ..\\..\\libSpotOn\\Include.win32 \
 		   ..\\..\\libGeoIP\\Include.win32 \
-		   ..\\..\\libOpenSSL\\Include.win32 \
 		   ..\\..\\libNTL\\windows.d\\include \
+		   ..\\..\\libOpenSSL\\Include.win32 \
+		   ..\\..\\libSpotOn\\Include.win32 \
                    ..\\..\\libcURL\\Win32.d\\include
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
+		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libNTL\\windows.d\\libraries.d \
 		   -L..\\..\\libNTRU \
-                   -L..\\..\\libSpotOn -L..\\..\\libSpotOn\\Libraries.win32 \
-		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
+                   -L..\\..\\libSpotOn -L..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\libcURL\\Win32.d\\bin \
-		   -lGeoIP-1 -lcurl -leay32 -lgcrypt-20 \
-		   -lgpg-error-0 -lntl \
-		   -lntru -lpq -lpthread -lspoton -lssl32 -lws2_32
+                   -lGeoIP-1 -lcrypto-1_1 -lcurl -lgcrypt-20 -lgpg-error-0 \
+                   -lntl -lntru -lpq -lpthread -lspoton -lssl-1_1 -lws2_32
 PRE_TARGETDEPS  = libntru.dll libspoton.dll
 PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
