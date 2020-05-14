@@ -69,7 +69,7 @@ extern "C"
 #include <QLocale>
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
-#include <QtNetwork>
+#include <QNetworkInterface>
 #else
 #include <QNetworkInterface>
 #endif
@@ -499,12 +499,11 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 
   for(int i = 0; i < interfaces.size(); i++)
     {
-      const QNetworkInterface &interface(interfaces.at(i));
-
-      if(!interface.isValid() || !(interface.flags() & QNetworkInterface::IsUp))
+      if(!interfaces.at(i).isValid() ||
+	 !(interfaces.at(i).flags() & QNetworkInterface::IsUp))
 	continue;
 
-      QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+      QList<QNetworkAddressEntry> addresses(interfaces.at(i).addressEntries());
 
       for(int i = 0; i < addresses.size(); i++)
 	{
