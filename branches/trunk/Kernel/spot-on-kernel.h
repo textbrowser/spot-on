@@ -51,7 +51,6 @@ extern "C"
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
 #endif
-#include <QtCore>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-send.h"
