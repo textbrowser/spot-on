@@ -82,7 +82,6 @@ extern "C"
 #include <QString>
 #include <QTcpSocket>
 #include <QUrl>
-#include <QtCore>
 
 #include <limits>
 #include <sstream>
@@ -2951,7 +2950,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 	{
 	  ok = false;
-	  spoton_misc::logError
+	  logError
 	    (QString("spoton_misc::joinMulticastGroup(): "
 		     "setsockopt() failure for %1:%2.").
 	     arg(address.toString()).arg(port));
@@ -2975,7 +2974,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 	    {
 	      ok = false;
-	      spoton_misc::logError
+	      logError
 		(QString("spoton_misc::joinMulticastGroup(): "
 			 "setsockopt() failure for %1:%2.").
 		 arg(address.toString()).arg(port));
@@ -3002,7 +3001,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 	{
 	  ok = false;
-	  spoton_misc::logError
+	  logError
 	    (QString("spoton_misc::joinMulticastGroup(): "
 		     "setsockopt() failure for %1:%2.").
 	     arg(address.toString()).arg(port));
@@ -3026,7 +3025,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 	    {
 	      ok = false;
-	      spoton_misc::logError
+	      logError
 		(QString("spoton_misc::joinMulticastGroup(): "
 			 "setsockopt() failure for %1:%2.").
 		 arg(address.toString()).arg(port));
