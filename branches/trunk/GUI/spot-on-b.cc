@@ -2351,13 +2351,12 @@ void spoton::prepareListenerIPCombo(void)
 
       for(int i = 0; i < interfaces.size(); i++)
 	{
-	  const QNetworkInterface &interface(interfaces.at(i));
-
-	  if(!interface.isValid() || !(interface.flags() &
-				       QNetworkInterface::IsUp))
+	  if(!interfaces.at(i).isValid() ||
+	     !(interfaces.at(i).flags() & QNetworkInterface::IsUp))
 	    continue;
 
-	  QList<QNetworkAddressEntry> addresses(interface.addressEntries());
+	  QList<QNetworkAddressEntry> addresses
+	    (interfaces.at(i).addressEntries());
 
 	  for(int i = 0; i < addresses.size(); i++)
 	    {

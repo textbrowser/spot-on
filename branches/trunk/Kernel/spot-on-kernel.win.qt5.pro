@@ -11,7 +11,7 @@ purge.commands = del /F *~
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
-QT		+= concurrent core network sql websockets
+QT		+= concurrent network sql websockets
 QT              -= gui
 
 # The function gcry_kdf_derive() is available in version
