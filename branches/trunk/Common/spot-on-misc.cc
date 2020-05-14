@@ -82,9 +82,6 @@ extern "C"
 #include <QString>
 #include <QTcpSocket>
 #include <QUrl>
-#if QT_VERSION >= 0x050000
-#include <QtConcurrent>
-#endif
 #include <QtCore>
 
 #include <limits>
@@ -114,7 +111,6 @@ static bool lengthGreaterThan(const QString &string1, const QString &string2)
 
 QAtomicInt spoton_misc::s_enableLog = 0;
 QReadWriteLock spoton_misc::s_dbMutex;
-QReadWriteLock spoton_misc::s_logMutex;
 quint64 spoton_misc::s_dbId = 0;
 
 QByteArray spoton_misc::findPublicKeyHashGivenHash
@@ -4458,17 +4454,6 @@ void spoton_misc::logError(const QString &error)
   else if(!s_enableLog.fetchAndAddOrdered(0))
     return;
 
-  QtConcurrent::run(&spoton_misc::logErrorThread, error);
-}
-
-void spoton_misc::logErrorThread(const QString &error)
-{
-  if(error.trimmed().isEmpty())
-    return;
-  else if(!s_enableLog.fetchAndAddOrdered(0))
-    return;
-
-  QWriteLocker locker(&s_logMutex);
   QFile file(homePath() + QDir::separator() + "error_log.dat");
 
   if(file.size() > spoton_common::LOG_FILE_MAXIMUM_SIZE)
