@@ -55,7 +55,7 @@
 #include <QMouseEvent>
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
-#include <QtNetwork>
+#include <QNetworkInterface>
 #else
 #include <QNetworkInterface>
 #endif
