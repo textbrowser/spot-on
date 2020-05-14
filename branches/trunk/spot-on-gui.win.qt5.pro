@@ -10,7 +10,7 @@ libspoton.target = libspoton.dll
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
-QT		+= concurrent gui multimedia network printsupport sql \
+QT		+= concurrent core gui multimedia network printsupport sql \
 		   websockets widgets
 
 # The function gcry_kdf_derive() is available in version
