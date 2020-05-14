@@ -53,8 +53,9 @@ extern "C"
 #endif
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#endif
+#else
 #include <QtCore>
+#endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif

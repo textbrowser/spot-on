@@ -33,7 +33,6 @@ extern "C"
 #include <QSettings>
 #if QT_VERSION >= 0x050000
 #include <QCoreApplication>
-#include <QtCore>
 #endif
 
 #include "spot-on-defines.h"

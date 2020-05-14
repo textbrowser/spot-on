@@ -33,7 +33,9 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QtCore/qmath.h>
+#if QT_VERSION < 0x050000
 #include <QtCore>
+#endif
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"

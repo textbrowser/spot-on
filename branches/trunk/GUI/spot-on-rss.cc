@@ -36,8 +36,9 @@
 #include <QXmlStreamReader>
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#endif
+#else
 #include <QtCore>
+#endif
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
