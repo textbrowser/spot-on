@@ -101,7 +101,11 @@ class spoton_sctp_socket: public QObject
   QString m_socketOptions;
   QTimer m_timer;
 #ifdef Q_OS_WIN
+#ifdef SPOTON_SCTP_ENABLED
   SOCKET m_socketDescriptor;
+#else
+  int m_socketDescriptor;
+#endif
 #endif
   SocketState m_state;
   int m_hostLookupId;
