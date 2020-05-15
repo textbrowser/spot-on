@@ -4212,7 +4212,7 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
   if(!ssl_library_initialized)
     {
       ssl_library_initialized = true;
-#if OPENSSL_VERSION_NUMBER < 0x10100000L
+#if OPENSSL_VERSION_NUMBER < 0x10002000L
       SSL_library_init(); // Always returns 1.
 #else
 #ifdef Q_OS_OPENBSD
