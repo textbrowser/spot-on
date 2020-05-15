@@ -70,7 +70,7 @@ INCLUDEPATH	+= . \
 		   /usr/include/postgresql
                    ../. \
                    ../../../. \
-                   ../../../libNTL/unix.d/include \
+                   ../../../libNTL/unix.d/include
 LIBS		+= -L../../../libNTL/unix.d/src/.libs \
                    -L../../../libNTRU \
                    -L../../../libSpotOn \
