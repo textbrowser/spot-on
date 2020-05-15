@@ -281,3 +281,4 @@ Remaining Items
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    Pointcheval.
+11.    SQLite silent mode; limit synchronization.
