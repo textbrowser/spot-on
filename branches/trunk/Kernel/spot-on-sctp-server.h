@@ -64,7 +64,11 @@ class spoton_sctp_server: public QObject
   QTimer m_timer;
 #endif
 #ifdef Q_OS_WIN
+#ifdef SPOTON_SCTP_ENABLED
   SOCKET m_socketDescriptor;
+#else
+  int m_socketDescriptor;
+#endif
 #endif
   bool m_isListening;
   int m_backlog;
