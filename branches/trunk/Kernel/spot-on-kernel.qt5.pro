@@ -67,7 +67,7 @@ QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
-		   /usr/include/postgresql
+		   /usr/include/postgresql \
                    ../. \
                    ../../../. \
                    ../../../libNTL/unix.d/include
