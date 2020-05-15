@@ -282,3 +282,4 @@ Remaining Items
 9.     Windows NTL.
 10.    Pointcheval.
 11.    SQLite silent mode; limit synchronization.
+12.    Remove Qt 4.x support.
