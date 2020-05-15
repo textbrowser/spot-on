@@ -47,7 +47,7 @@ INCLUDEPATH	+= . ..\\..\\. GUI \
 		   ..\\..\\libGeoIP\\Include.win32 \
 		   ..\\..\\libNTL\\windows.d\\include \
 		   ..\\..\\libOpenSSL\\Include.win32 \
-		   ..\\..\\libSpotOn\\Include.win32 \
+                   ..\\..\\libSpotOn\\Include.win32 \
                    ..\\..\\libcURL\\Win32.d\\include
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
@@ -57,7 +57,7 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\libSpotOn -L..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\libcURL\\Win32.d\\bin \
                    -lGeoIP-1 -lcrypto-1_1 -lcurl -lgcrypt-20 -lgpg-error-0 \
-                   -lntl -lntru -lpq -lpthread -lspoton -lssl-1_1 -lws2_32
+                   -lntl -lntru -lpq -lspoton -lssl-1_1 -lws2_32
 PRE_TARGETDEPS  = libntru.dll libspoton.dll
 PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
