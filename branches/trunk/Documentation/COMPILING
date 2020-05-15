@@ -1,27 +1,20 @@
-Requirements: Qt 5.x, libGeoIP, libcURL, libcrypto, libeay, libgcrypt,
-libgpg-error, libssl, libusrsctp. Qt 4.8.7 is also supported.
+Qt 5.5.1 or newer is required.
 
-If header (h) or interface (ui) files have changed, please perform
-a distclean before building Spot-On.
-
-To verify the version of Qt, issue qmake --version. Qt 5.x project files
-include qt5 in their names. qmake may be an alias for qmake-qt4 or qmake-qt5.
+Please see spot-on-download-dependencies.bash for hints
+regarding other libraries.
 
 ARM
 
-qmake or qmake-qt4 -o Makefile spot-on.arm.pro
 qmake or qmake-qt5 -o Makefile spot-on.arm.qt5.pro
 make
 
 FreeBSD
 
-qmake or qmake-qt4 -o Makefile spot-on.freebsd.pro
 qmake or qmake-qt5 -o Makefile spot-on.freebsd.qt5.pro
 gmake
 
 Linux
 
-qmake or qmake-qt4 -o Makefile spot-on.pro
 qmake or qmake-qt5 -o Makefile spot-on.qt5.pro
 make
 
@@ -29,24 +22,16 @@ OS X
 
 Homebrew is required for OS X.
 
-brew install curl
-brew install geoip
-brew install libgcrypt
-brew install ntl
-brew install openssl
-brew install postgresql
-
 qmake QMAKE_CXX=/usr/local/opt/llvm/bin/clang++ -o Makefile spot-on.osx.qt5.pro
 sudo make install
 
 OpenBSD
 
-qmake4 -o Makefile spot-on.openbsd.pro
+qmake or qmake-qt5 -o Makefile spot-on.openbsd.pro
 gmake
 
 PowerPC
 
-qmake or qmake-qt4 -o Makefile spot-on.powerpc.pro
 qmake or qmake-qt5 -o Makefile spot-on.powerpc.qt5.pro
 make
 
