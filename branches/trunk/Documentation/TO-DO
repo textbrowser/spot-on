@@ -240,6 +240,7 @@ Completed Items
 169.   Forward Secrecy ephemeral keys expiry times.
 170.   StarBeam ETA.
 171.   Independent StarBeam writers. Would exhaust the kernel.
+172.   Remove Qt 4.x support.
 
 Ignored Items
 
@@ -282,4 +283,3 @@ Remaining Items
 9.     Windows NTL.
 10.    Pointcheval.
 11.    SQLite silent mode; limit synchronization.
-12.    Remove Qt 4.x support.
