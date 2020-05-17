@@ -30,7 +30,7 @@
 
 #include <QMainWindow>
 #include <QSqlDatabase>
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineView>
 #elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebView>
@@ -45,7 +45,7 @@ class QPrinter;
 class spoton;
 class spoton_crypt;
 
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
 class spoton_webengine_page: public QWebEnginePage
 {
   Q_OBJECT
@@ -91,7 +91,7 @@ class spoton_pageviewer: public QMainWindow
   QSqlDatabase *m_database;
   QString m_hoveredLink;
   QString m_urlHash;
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   QWebEngineView *m_webView;
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebView *m_webView;

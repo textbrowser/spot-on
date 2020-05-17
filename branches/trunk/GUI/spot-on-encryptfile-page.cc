@@ -28,11 +28,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#else
-#include <QtCore>
-#endif
 
 #include "Common/spot-on-crypt.h"
 #include "spot-on-defines.h"

@@ -26,9 +26,7 @@
 */
 
 #include <QDateTime>
-#if QT_VERSION >= 0x050000
 #include <QMediaPlayer>
-#endif
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QSettings>
@@ -321,7 +319,6 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
  done_label:
 
-#if QT_VERSION >= 0x050000
   if(error.isEmpty())
     {
       QMediaPlayer *player = findChild<QMediaPlayer *> ();
@@ -349,10 +346,6 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	    }
 	}
     }
-#else
-  if(error.isEmpty())
-    QApplication::beep();
-#endif
 
   if(!error.isEmpty())
     {

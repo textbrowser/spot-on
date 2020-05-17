@@ -30,10 +30,8 @@ extern "C"
 #include <curl/curl.h>
 }
 
-#include <QSettings>
-#if QT_VERSION >= 0x050000
 #include <QCoreApplication>
-#endif
+#include <QSettings>
 
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
@@ -514,7 +512,6 @@ void spoton::initializeUrlDistillers(void)
 
 void spoton::playSound(const QString &name)
 {
-#if QT_VERSION >= 0x050000
   QMediaPlayer *player = findChild<QMediaPlayer *> ();
 
   if(player)
@@ -549,16 +546,6 @@ void spoton::playSound(const QString &name)
   player->setMedia(QUrl::fromLocalFile(str));
   player->setVolume(100);
   player->play();
-#else
-  if(m_locked)
-    return;
-
-  if(!m_optionsUi.play_sounds->isChecked())
-    return;
-
-  Q_UNUSED(name);
-  QApplication::beep();
-#endif
 }
 
 void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
@@ -1378,7 +1365,6 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
   settings.setValue("gui/launchKernelAfterAuth", state);
 }
 
-#if QT_VERSION >= 0x050000
 void spoton::slotMediaError(QMediaPlayer::Error error)
 {
   QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
@@ -1400,7 +1386,6 @@ void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
   if(status == QMediaPlayer::EndOfMedia)
     player->deleteLater();
 }
-#endif
 
 void spoton::slotOntopChatDialogs(bool state)
 {

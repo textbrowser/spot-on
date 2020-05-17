@@ -51,11 +51,7 @@ extern "C"
 #elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebSettings>
 #endif
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#else
-#include <QtCore>
-#endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetooth.h>
 #endif
@@ -168,7 +164,6 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 
-#if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,
 			       const QString &msg)
@@ -177,17 +172,6 @@ static void qt_message_handler(QtMsgType type,
   Q_UNUSED(type);
   spoton_misc::logError(QString("A UI error (%1) occurred.").arg(msg));
 }
-#else
-static void qt_message_handler(QtMsgType type, const char *msg)
-{
-  Q_UNUSED(type);
-
-  if(msg && qstrnlen(msg, std::numeric_limits<uint>::max()) > 0)
-    spoton_misc::logError(QString("A UI error (%1) occurred.").arg(msg));
-  else
-    spoton_misc::logError("Unknown UI error.");
-}
-#endif
 
 static void signal_handler(int signal_number)
 {
@@ -217,21 +201,11 @@ int main(int argc, char *argv[])
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
   curl_global_init(CURL_GLOBAL_ALL);
   libspoton_enable_sqlite_cache();
-
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-  QApplication::setStyle(new QMacStyle());
-#endif
-#endif
-#if QT_VERSION >= 0x050000
 #if defined(Q_OS_WIN)
   QApplication::addLibraryPath("plugins");
   QApplication::setStyle("fusion");
 #endif
   qInstallMessageHandler(qt_message_handler);
-#else
-  qInstallMsgHandler(qt_message_handler);
-#endif
 
   QApplication qapplication(argc, argv);
 
@@ -304,13 +278,11 @@ int main(int argc, char *argv[])
       "the main thread does not exist.";
 
 #ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000
   /*
   ** Eliminate pool errors on OS X.
   */
 
   CocoaInitializer ci;
-#endif
 #endif
 
   /*
@@ -2519,7 +2491,6 @@ spoton::spoton(void):QMainWindow()
 	  isExecutable())
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else
-#if QT_VERSION >= 0x050000
 #if SPOTON_GOLDBUG == 0
     m_ui.kernelPath->setText
       ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/"
@@ -2528,17 +2499,6 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelPath->setText
       ("/Applications/GoldBug_Qt5.d/Spot-On-Kernel.app/"
        "Contents/MacOS/Spot-On-Kernel");
-#endif
-#else
-#if SPOTON_GOLDBUG == 0
-    m_ui.kernelPath->setText
-      ("/Applications/Spot-On.d/Spot-On-Kernel.app/"
-       "Contents/MacOS/Spot-On-Kernel");
-#else
-    m_ui.kernelPath->setText
-      ("/Applications/GoldBug.d/Spot-On-Kernel.app/"
-       "Contents/MacOS/Spot-On-Kernel");
-#endif
 #endif
 #else
   if(m_settings.contains("gui/kernelPath") &&
@@ -2831,18 +2791,11 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/openChatUrl", false).toBool());
   m_optionsUi.chatTimestamps->setChecked
     (m_settings.value("gui/chatTimestamps", true).toBool());
-#if QT_VERSION >= 0x050000
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
   m_optionsUi.play_sounds->setToolTip
     (tr("<html>Please place the Sounds directory in the directory which "
 	"houses the %1 executable.</html>").arg(SPOTON_APPLICATION_NAME));
-#else
-  m_optionsUi.play_sounds->setChecked(false);
-  m_optionsUi.play_sounds->setEnabled(false);
-  m_optionsUi.play_sounds->setToolTip
-    (tr("Qt 5.x, or newer, is required for media sound."));
-#endif
 
   /*
   ** Please don't translate n/a.

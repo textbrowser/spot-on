@@ -1801,7 +1801,6 @@ void spoton::initializeKernelSocket(void)
 
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040806
 	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableEmptyFragments, true);
@@ -1815,7 +1814,6 @@ void spoton::initializeKernelSocket(void)
 #endif
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableSessionTickets, true);
-#endif
 #if QT_VERSION >= 0x050501
 	  spoton_crypt::setSslCiphers
 	    (QSslConfiguration::supportedCiphers(), sslCS, configuration);
@@ -2194,7 +2192,6 @@ void spoton::populateMail(void)
 				  item->setText(tr("error"));
 				else if(i == 0) // date
 				  {
-#if QT_VERSION >= 0x050000
 				    if(QDateTime::currentDateTime().date() ==
 				       QDateTime::fromString(item->text(),
 							     Qt::ISODate).
@@ -2205,14 +2202,7 @@ void spoton::populateMail(void)
 				       date())
 				      item->setBackground
 					(QBrush(QColor("lightgreen")));
-#else
-				    if(QDateTime::currentDateTime().date() ==
-				       QDateTime::fromString(item->text(),
-							     Qt::ISODate).
-				       date())
-				      item->setBackground
-					(QBrush(QColor("lightgreen")));
-#endif
+
 				    tooltip.append
 				      (m_ui.mail->
 				       horizontalHeaderItem(i)->text());
@@ -6400,17 +6390,10 @@ void spoton::slotSendMail(void)
 			  "status, subject, participant_oid) "
 			  "VALUES (?, ?, ?, ?, ?, ?, ?, "
 			  "?, ?, ?, ?, ?, ?, ?, ?)");
-#if QT_VERSION >= 0x050000
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::RFC2822Date).
 				   toLatin1(), &ok).toBase64());
-#else
-	    query.bindValue
-	      (0, crypt->
-	       encryptedThenHashed(now.toString(Qt::ISODate).
-				   toLatin1(), &ok).toBase64());
-#endif
 	    query.bindValue(1, 1); // Sent Folder
 
 	    /*
@@ -6455,17 +6438,10 @@ void spoton::slotSendMail(void)
 	      message = m_ui.outgoingMessage->toPlainText().toUtf8();
 
 	    if(ok)
-#if QT_VERSION >= 0x050000
 	      query.bindValue
 		(4, crypt->
 		 keyedHash(now.toString(Qt::RFC2822Date).toLatin1() +
 			   message + subject, &ok).toBase64());
-#else
-	      query.bindValue
-		(4, crypt->
-		 keyedHash(now.toString(Qt::ISODate).toLatin1() +
-			   message + subject, &ok).toBase64());
-#endif
 
 	    if(ok)
 	      query.bindValue(5, crypt->

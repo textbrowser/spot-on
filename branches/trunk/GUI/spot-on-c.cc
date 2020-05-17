@@ -29,20 +29,11 @@
 #include "spot-on.h"
 
 #include <QCheckBox>
-#if QT_VERSION < 0x050000
-#include <QDesktopServices>
-#endif
 #include <QPlainTextEdit>
 #include <QStandardItemModel>
-#if QT_VERSION >= 0x050000
 #include <QStandardPaths>
-#endif
 #include <QTableWidgetItem>
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#else
-#include <QtCore>
-#endif
 
 QList<QPair<QString, QVariant> > spoton::gatherStatistics(void) const
 {
@@ -2696,14 +2687,9 @@ void spoton::slotExportListeners(void)
     (tr("%1: Select Listeners Export File").
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::AnyFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
-							DesktopLocation));
-#else
   dialog.setDirectory(QStandardPaths::
 		      standardLocations(QStandardPaths::DesktopLocation).
 		      value(0));
-#endif
   dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
   dialog.selectFile(QString("spot-on-listeners-export-%1.txt").
@@ -2772,14 +2758,9 @@ void spoton::slotExportPublicKeys(void)
     (tr("%1: Select Public Keys Export File").
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::AnyFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
-							DesktopLocation));
-#else
   dialog.setDirectory(QStandardPaths::
 		      standardLocations(QStandardPaths::DesktopLocation).
 		      value(0));
-#endif
   dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setAcceptMode(QFileDialog::AcceptSave);
   dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
@@ -2983,15 +2964,9 @@ void spoton::slotImportNeighbors(void)
     (tr("%1: Select Neighbors Import File").
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory
-    (QDesktopServices::storageLocation(QDesktopServices::
-				       DesktopLocation));
-#else
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
-#endif
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
@@ -3043,15 +3018,9 @@ void spoton::slotImportPublicKeys(void)
     (tr("%1: Select Public Keys Import File").
      arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
-#if QT_VERSION < 0x050000
-  dialog.setDirectory
-    (QDesktopServices::storageLocation(QDesktopServices::
-				       DesktopLocation));
-#else
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
-#endif
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
 

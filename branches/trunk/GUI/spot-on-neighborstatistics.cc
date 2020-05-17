@@ -27,11 +27,7 @@
 
 #include <QFuture>
 #include <QSqlField>
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#else
-#include <QtCore>
-#endif
 
 #include "Common/spot-on-crypt.h"
 #include "spot-on-neighborstatistics.h"
@@ -142,26 +138,6 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 				       toString("MM/dd/yyyy")).
 				   arg(certificate.expiryDate().
 				       toString("MM/dd/yyyy")).
-#if QT_VERSION < 0x050000
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  Organization)).
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  CommonName)).
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  LocalityName)).
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  OrganizationalUnitName)).
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  CountryName)).
-				   arg(certificate.
-				       issuerInfo(QSslCertificate::
-						  StateOrProvinceName)).
-#else
 				   arg(certificate.
 				       issuerInfo(QSslCertificate::
 						  Organization).value(0)).
@@ -182,29 +158,8 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 				       issuerInfo(QSslCertificate::
 						  StateOrProvinceName).
 				       value(0)).
-#endif
 				   arg(certificate.serialNumber().
 				       constData()).
-#if QT_VERSION < 0x050000
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   Organization)).
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   CommonName)).
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   LocalityName)).
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   OrganizationalUnitName)).
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   CountryName)).
-				   arg(certificate.
-				       subjectInfo(QSslCertificate::
-						   StateOrProvinceName)).
-#else
 				   arg(certificate.
 				       subjectInfo(QSslCertificate::
 						   Organization).
@@ -229,7 +184,6 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 				       subjectInfo(QSslCertificate::
 						   StateOrProvinceName).
 				       value(0)).
-#endif
 				   arg(certificate.version().constData()));
 			    }
 			  else
