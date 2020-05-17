@@ -28,7 +28,7 @@
 #include <QPrintPreviewDialog>
 #include <QPrinter>
 #include <QSqlQuery>
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineProfile>
 #elif defined(SPOTON_WEBKIT_ENABLED)
 #include <QWebHitTestResult>
@@ -48,7 +48,7 @@ spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
   m_parent = parent;
   m_ui.setupUi(this);
   m_urlHash = urlHash;
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   m_webView = new QWebEngineView(this);
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setPage(new spoton_webengine_page(this));
@@ -107,7 +107,7 @@ spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
 
 spoton_pageviewer::~spoton_pageviewer()
 {
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   QWebEngineProfile::defaultProfile()->clearAllVisitedLinks();
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::clearMemoryCaches();
@@ -202,7 +202,7 @@ void spoton_pageviewer::setPage(const QByteArray &data,
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
@@ -219,7 +219,7 @@ void spoton_pageviewer::slotCopyLinkLocation(void)
 
 void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 {
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   if(m_hoveredLink.isEmpty())
     return;
 
@@ -251,7 +251,7 @@ void spoton_pageviewer::slotFind(void)
 {
   QString text(m_ui.find->text());
 
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   m_webView->findText(text);
 #elif defined(SPOTON_WEBKIT_ENABLED)
   if(!m_webView->findText(text, QWebPage::FindWrapsAroundDocument))
@@ -289,7 +289,7 @@ void spoton_pageviewer::slotLinkHovered(const QString &url)
 void spoton_pageviewer::slotLoadFinished(bool ok)
 {
   Q_UNUSED(ok);
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   /*
   ** WebEngine may attempt to load an external page regardless
   ** of all of the restrictions.
@@ -316,7 +316,7 @@ void spoton_pageviewer::slotPagePrintPreview(void)
   if(printDialog.exec() == QDialog::Accepted)
     {
       QApplication::processEvents();
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
 #elif defined(SPOTON_WEBKIT_ENABLED)
       m_webView->print(&printer);
 #else
@@ -332,7 +332,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
   if(!printer)
     return;
 
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   spoton_textbrowser textbrowser(this);
 
   textbrowser.setHtml(m_content);

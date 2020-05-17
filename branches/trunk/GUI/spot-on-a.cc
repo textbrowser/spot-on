@@ -42,7 +42,7 @@ extern "C"
 #include <QScopedPointer>
 #include <QShortcut>
 #include <QStandardItemModel>
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
 #if QT_VERSION >= 0x050600
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
   qapplication.setWindowIcon(QIcon(":/Logo/goldbug.png"));
 #endif
   QDir().mkdir(spoton_misc::homePath());
-#if QT_VERSION >= 0x050000 && defined(SPOTON_WEBENGINE_ENABLED)
+#ifdef SPOTON_WEBENGINE_ENABLED
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
   QWebEngineProfile::defaultProfile()->setCachePath
     (spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
