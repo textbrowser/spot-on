@@ -37,11 +37,7 @@
 #include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 
-#if QT_VERSION < 0x050000
-void spoton_gui_server_tcp_server::incomingConnection(int socketDescriptor)
-#else
 void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
-#endif
 {
   QByteArray certificate;
   QByteArray privateKey;
@@ -99,7 +95,6 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 		    (QSslCertificate(certificate));
 		  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 		  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-#if QT_VERSION >= 0x040806
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableCompression, true);
 		  configuration.setSslOption
@@ -114,7 +109,6 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 #endif
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableSessionTickets, true);
-#endif
 #if QT_VERSION >= 0x050501
 		  spoton_crypt::setSslCiphers
 		    (QSslConfiguration::supportedCiphers(),

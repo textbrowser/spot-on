@@ -51,9 +51,7 @@ extern "C"
 #include <unistd.h>
 #else
 #include <windows.h>
-#if QT_VERSION >= 0x050000
 #include <winsock2.h>
-#endif
 #endif
 }
 
@@ -73,9 +71,7 @@ extern "C"
 #include "spot-on-web-server.h"
 
 #ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000
 #include "Common/CocoaInitializer.h"
-#endif
 #endif
 
 QAtomicInt spoton_kernel::s_congestion_control_secondary_storage = 0;
@@ -197,7 +193,6 @@ static QPointer<spoton_kernel> s_kernel = 0;
 static char *s_congestion_control_db_path = 0; // We're not deleting.
 static char *s_kernel_db_path = 0; // We're not deleting.
 
-#if QT_VERSION >= 0x050000
 static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,
 			       const QString &msg)
@@ -206,17 +201,6 @@ static void qt_message_handler(QtMsgType type,
   Q_UNUSED(context);
   spoton_misc::logError(QString("A kernel error (%1) occurred.").arg(msg));
 }
-#else
-static void qt_message_handler(QtMsgType type, const char *msg)
-{
-  Q_UNUSED(type);
-
-  if(msg && qstrnlen(msg, std::numeric_limits<uint>::max()) > 0)
-    spoton_misc::logError(QString("A kernel error (%1) occurred.").arg(msg));
-  else
-    spoton_misc::logError("Unknown kernel error.");
-}
-#endif
 
 static void signal_handler(int signal_number)
 {
@@ -311,22 +295,16 @@ int main(int argc, char *argv[])
   if(sigaction(SIGPIPE, &act, 0))
     std::cerr << "sigaction() failure on SIGPIPE. Continuing." << std::endl;
 #endif
-#if QT_VERSION >= 0x050000
   qInstallMessageHandler(qt_message_handler);
-#else
-  qInstallMsgHandler(qt_message_handler);
-#endif
 
   QCoreApplication qapplication(argc, argv);
 
 #ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000
   /*
   ** Eliminate pool errors on OS X.
   */
 
   CocoaInitializer ci;
-#endif
 #endif
 
   QCoreApplication::setApplicationName("SpotOn");
@@ -480,9 +458,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   qRegisterMetaType<QPairByteArrayInt64List> ("QPairByteArrayInt64List");
   qRegisterMetaType<QPointer<QSslSocket> > ("QPointerQSslSocket");
   qRegisterMetaType<QStringByteArrayHash> ("QStringByteArrayHash");
-#if QT_VERSION >= 0x050000
   qRegisterMetaType<qintptr> ("qintptr");
-#endif
   qRegisterMetaType<spoton_sctp_socket::SocketError>
     ("spoton_sctp_socket::SocketError");
   m_activeListeners = 0;

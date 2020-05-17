@@ -2217,16 +2217,6 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	{
 	  if((next = SSL_get_cipher_list(ssl, index)))
 	    {
-#if QT_VERSION < 0x050000
-	      QSslCipher cipher;
-
-	      if(protocol == "SslV3")
-		cipher = QSslCipher(next, QSsl::SslV3);
-	      else if(protocol == "TlsV1_0")
-		cipher = QSslCipher(next, QSsl::TlsV1);
-	      else
-		cipher = QSslCipher(next, QSsl::UnknownProtocol);
-#else
 	      QSslCipher cipher;
 
 	      if(protocol == "SslV3")
@@ -2240,7 +2230,6 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	      else if(protocol == "TlsV1_3")
 		cipher = QSslCipher(next, QSsl::TlsV1_3OrLater);
-#endif
 #endif
 
 	      if(cipher.isNull())
@@ -4380,20 +4369,12 @@ void spoton_crypt::memcmp_test(void)
       b = "This is another test.";
       timer.restart();
       memcmp(a, b);
-#if QT_VERSION >= 0x040806
       qDebug() << "memcmp_test():" << timer.nsecsElapsed();
-#else
-      qDebug() << "memcmp_test():" << timer.elapsed();
-#endif
       a = "This is another test.";
       b = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       timer.restart();
       memcmp(a, b);
-#if QT_VERSION >= 0x040806
       qDebug() << "memcmp_test():" << timer.nsecsElapsed();
-#else
-      qDebug() << "memcmp_test():" << timer.elapsed();
-#endif
     }
 }
 

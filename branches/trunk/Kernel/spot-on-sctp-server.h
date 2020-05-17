@@ -86,15 +86,9 @@ class spoton_sctp_server: public QObject
 #endif
 
  signals:
-#if QT_VERSION < 0x050000
-  void newConnection(const int socketDescriptor,
-		     const QHostAddress &address,
-		     const quint16 port);
-#else
   void newConnection(const qintptr socketDescriptor,
 		     const QHostAddress &address,
 		     const quint16 port);
-#endif
 };
 
 #endif

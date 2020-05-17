@@ -69,25 +69,15 @@ class spoton_listener_tcp_server: public QTcpServer
     QTcpServer::setMaxPendingConnections(qMax(1, maxPendingConnections));
   }
 
-#if QT_VERSION < 0x050000
-  void incomingConnection(int socketDescriptor);
-#else
   void incomingConnection(qintptr socketDescriptor);
-#endif
 
  private:
   qint64 m_id;
 
  signals:
-#if QT_VERSION < 0x050000
-  void newConnection(const int socketDescriptor,
-		     const QHostAddress &address,
-		     const quint16 port);
-#else
   void newConnection(const qintptr socketDescriptor,
 		     const QHostAddress &address,
 		     const quint16 port);
-#endif
 };
 
 class spoton_listener_udp_server: public QUdpSocket
@@ -152,15 +142,9 @@ class spoton_listener_udp_server: public QUdpSocket
   void slotReadyRead(void);
 
  signals:
-#if QT_VERSION < 0x050000
-  void newConnection(const int socketDescriptor,
-		     const QHostAddress &address,
-		     const quint16 port);
-#else
   void newConnection(const qintptr socketDescriptor,
 		     const QHostAddress &address,
 		     const quint16 port);
-#endif
   void newDatagram(const QByteArray &datagram,
 		   const QHostAddress &address,
 		   const quint16 port);
@@ -287,15 +271,9 @@ class spoton_listener: public QObject
   void slotDiscoverExternalAddress(void);
   void slotExternalAddressDiscovered(const QHostAddress &address);
   void slotNeighborDisconnected(void);
-#if QT_VERSION < 0x050000
-  void slotNewConnection(const int socketDescriptor,
-			 const QHostAddress &address,
-			 const quint16 port);
-#else
   void slotNewConnection(const qintptr socketDescriptor,
 			 const QHostAddress &address,
 			 const quint16 port);
-#endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void slotNewConnection(void);
 #endif

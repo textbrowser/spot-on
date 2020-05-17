@@ -215,12 +215,7 @@ class spoton_misc
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
-  static void closeSocket
-#if QT_VERSION < 0x050000
-    (const int socketDescriptor);
-#else
-    (const qintptr socketDescriptor);
-#endif
+  static void closeSocket(const qintptr socketDescriptor);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void enableLog(const bool state);
   static void logError(const QString &error);

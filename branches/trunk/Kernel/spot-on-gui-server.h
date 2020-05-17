@@ -65,11 +65,7 @@ class spoton_gui_server_tcp_server: public QTcpServer
       return m_queue.dequeue();
   }
 
-#if QT_VERSION < 0x050000
-  void incomingConnection(int socketDescriptor);
-#else
   void incomingConnection(qintptr socketDescriptor);
-#endif
 
  private:
   QQueue<QPointer<QSslSocket> > m_queue;
@@ -89,13 +85,8 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 
  private:
   QFileSystemWatcher m_fileSystemWatcher;
-#if QT_VERSION < 0x050000
-  QHash<int, QByteArray> m_guiSocketData;
-  QHash<int, bool> m_guiIsAuthenticated;
-#else
   QHash<qintptr, QByteArray> m_guiSocketData;
   QHash<qintptr, bool> m_guiIsAuthenticated;
-#endif
   QTimer m_generalTimer;
   void sendMessageToUIs(const QByteArray &message);
 

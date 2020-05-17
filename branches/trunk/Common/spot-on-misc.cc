@@ -399,15 +399,7 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
 
 QByteArray spoton_misc::urlToEncoded(const QUrl &url)
 {
-#if QT_VERSION < 0x050000
-  QByteArray bytes(url.toEncoded());
-
-  bytes.replace("(", "%28");
-  bytes.replace(")", "%29");
-  return bytes;
-#else
   return url.toEncoded();
-#endif
 }
 
 QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
@@ -4122,12 +4114,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton_misc::closeSocket
-#if QT_VERSION < 0x050000
-(const int socketDescriptor)
-#else
-(const qintptr socketDescriptor)
-#endif
+void spoton_misc::closeSocket(const qintptr socketDescriptor)
 {
 #if defined(Q_OS_WIN)
   shutdown((SOCKET) socketDescriptor, SD_BOTH);

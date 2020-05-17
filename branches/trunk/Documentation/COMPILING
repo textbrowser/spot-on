@@ -1,6 +1,6 @@
 Qt 5.5.1 or newer is required.
 
-Please see spot-on-download-dependencies.bash for hints
+Please read spot-on-download-dependencies.bash for hints
 regarding other libraries.
 
 ARM
@@ -38,4 +38,4 @@ make
 Windows
 
 qmake -o Makefile spot-on.win.qt5.pro
-make or mingw32-make
+mingw32-make

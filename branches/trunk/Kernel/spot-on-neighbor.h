@@ -134,7 +134,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
        "udp",
        static_cast<qint64> (m_multicastSocket->socketDescriptor()),
        0);
-#if QT_VERSION >= 0x040806
+
     if(!m_multicastSocket->joinMulticastGroup(address))
       {
 	m_multicastSocket->deleteLater();
@@ -146,13 +146,6 @@ class spoton_neighbor_udp_socket: public QUdpSocket
     else
       m_multicastSocket->setSocketOption
 	(QAbstractSocket::MulticastLoopbackOption, 1);
-#else
-    if(!spoton_misc::joinMulticastGroup(address,
-					1, // Enable loopback.
-					m_multicastSocket->socketDescriptor(),
-					port))
-      m_multicastSocket->deleteLater();
-#endif
   }
 
   QPointer<QUdpSocket> multicastSocket(void) const
@@ -227,12 +220,7 @@ class spoton_neighbor: public QThread
   ** We're a server. Let's represent a client connection.
   */
 
-  spoton_neighbor(
-#if QT_VERSION < 0x050000
-		  const int socketDescriptor,
-#else
-		  const qintptr socketDescriptor,
-#endif
+  spoton_neighbor(const qintptr socketDescriptor,
 		  const QByteArray &certificate,
 		  const QByteArray &privateKey,
 		  const QString &echoMode,

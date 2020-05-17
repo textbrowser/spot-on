@@ -42,15 +42,8 @@
 #include <QHash>
 #include <QInputDialog>
 #include <QLocale>
-#ifdef Q_OS_MAC
-#if QT_VERSION < 0x050000
-#include <QMacStyle>
-#endif
-#endif
 #include <QMainWindow>
-#if QT_VERSION >= 0x050000
 #include <QMediaPlayer>
-#endif
 #include <QMessageBox>
 #include <QMouseEvent>
 #ifdef Q_OS_WIN
@@ -88,9 +81,7 @@ extern "C"
 }
 
 #ifdef Q_OS_MAC
-#if QT_VERSION >= 0x050000
 #include "Common/CocoaInitializer.h"
-#endif
 #endif
 
 #include "spot-on-buzzpage.h"
@@ -852,10 +843,8 @@ class spoton: public QMainWindow
   void slotMaximumClientsChanged(int index);
   void slotMaximumEmailFileSizeChanged(int value);
   void slotMaximumUrlKeywordsChanged(int value);
-#if QT_VERSION >= 0x050000
   void slotMediaError(QMediaPlayer::Error error);
   void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);
-#endif
   void slotMessagesAnchorClicked(const QUrl &link);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotMonitorEvents(bool state);

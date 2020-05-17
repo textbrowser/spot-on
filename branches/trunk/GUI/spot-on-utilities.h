@@ -44,11 +44,9 @@ class spoton_utilities
     ** From QDialog.
     */
 
-#if QT_VERSION >= 0x050000
 #ifdef Q_WS_X11
     if(X11->isSupportedByWM(ATOM(_NET_WM_FULL_PLACEMENT)))
       return;
-#endif
 #endif
 
 #ifdef Q_OS_SYMBIAN
