@@ -101,7 +101,7 @@ $(function() {
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;QMainWindow&gt;</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &lt;QSqlDatabase&gt;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050000 &amp;&amp; defined(SPOTON_WEBENGINE_ENABLED)</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#ifdef SPOTON_WEBENGINE_ENABLED</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &lt;QWebEngineView&gt;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#elif defined(SPOTON_WEBKIT_ENABLED)</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;QWebView&gt;</span></div>
@@ -116,7 +116,7 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">class </span><a class="code" href="classspoton.html">spoton</a>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">class </span><a class="code" href="classspoton__crypt.html">spoton_crypt</a>;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050000 &amp;&amp; defined(SPOTON_WEBENGINE_ENABLED)</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#ifdef SPOTON_WEBENGINE_ENABLED</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">class </span>spoton_webengine_page: <span class="keyword">public</span> QWebEnginePage</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  Q_OBJECT</div>
@@ -162,7 +162,7 @@ $(function() {
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  QSqlDatabase *m_database;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  QString m_hoveredLink;</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  QString m_urlHash;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050000 &amp;&amp; defined(SPOTON_WEBENGINE_ENABLED)</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#ifdef SPOTON_WEBENGINE_ENABLED</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  QWebEngineView *m_webView;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#elif defined(SPOTON_WEBKIT_ENABLED)</span></div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  QWebView *m_webView;</div>
