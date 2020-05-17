@@ -34,11 +34,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QXmlStreamReader>
-#if QT_VERSION >= 0x050000
 #include <QtConcurrent>
-#else
-#include <QtCore>
-#endif
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -60,12 +56,8 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   m_ui.feeds->setColumnHidden(m_ui.feeds->columnCount() - 1, true); // OID
   m_ui.feeds->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.feeds->setIconSize(QSize(16, 16));
-#if QT_VERSION >= 0x050000
   m_ui.feeds->verticalHeader()->setSectionResizeMode
     (QHeaderView::ResizeToContents);
-#else
-  m_ui.feeds->verticalHeader()->setResizeMode(QHeaderView::ResizeToContents);
-#endif
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),

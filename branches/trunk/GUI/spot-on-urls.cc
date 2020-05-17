@@ -2051,14 +2051,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       QFileDialog dialog(this);
 
       dialog.setAcceptMode(QFileDialog::AcceptSave);
-#if QT_VERSION < 0x050000
-      dialog.setDirectory(QDesktopServices::storageLocation(QDesktopServices::
-							    DesktopLocation));
-#else
       dialog.setDirectory(QStandardPaths::
 			  standardLocations(QStandardPaths::DesktopLocation).
 			  value(0));
-#endif
 
       QString fileName("");
 
