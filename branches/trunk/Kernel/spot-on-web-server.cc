@@ -39,11 +39,7 @@
 static QByteArray s_search;
 static quint64 s_urlLimit = 10;
 
-#if QT_VERSION < 0x050000
-void spoton_web_server_tcp_server::incomingConnection(int socketDescriptor)
-#else
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
-#endif
 {
   emit newConnection(static_cast<qint64> (socketDescriptor));
 }
@@ -304,7 +300,6 @@ void spoton_web_server_thread::process
       configuration.setLocalCertificate(QSslCertificate(credentials.first));
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
       configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
-#if QT_VERSION >= 0x040806
       configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
       configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
       configuration.setSslOption
@@ -315,7 +310,6 @@ void spoton_web_server_thread::process
       configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
 #endif
       configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
-#endif
 #if QT_VERSION >= 0x050501
       spoton_crypt::setSslCiphers
 	(QSslConfiguration::supportedCiphers(), sslCS, configuration);

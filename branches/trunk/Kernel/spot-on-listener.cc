@@ -41,11 +41,7 @@
 #include "spot-on-listener.h"
 #include "spot-on-sctp-server.h"
 
-#if QT_VERSION < 0x050000
-void spoton_listener_tcp_server::incomingConnection(int socketDescriptor)
-#else
 void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
-#endif
 {
   if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
     {
@@ -313,35 +309,6 @@ spoton_listener::spoton_listener
     m_sslControlString = "N/A";
 #endif
 
-#if QT_VERSION < 0x050000
-  if(m_sctpServer)
-    connect(m_sctpServer,
-	    SIGNAL(newConnection(const int,
-				 const QHostAddress &,
-				 const quint16)),
-	    this,
-	    SLOT(slotNewConnection(const int,
-				   const QHostAddress &,
-				   const quint16)));
-  else if(m_tcpServer)
-    connect(m_tcpServer,
-	    SIGNAL(newConnection(const int,
-				 const QHostAddress &,
-				 const quint16)),
-	    this,
-	    SLOT(slotNewConnection(const int,
-				   const QHostAddress &,
-				   const quint16)));
-  else if(m_udpServer)
-    connect(m_udpServer,
-	    SIGNAL(newConnection(const int,
-				 const QHostAddress &,
-				 const quint16)),
-	    this,
-	    SLOT(slotNewConnection(const int,
-				   const QHostAddress &,
-				   const quint16)));
-#else
   if(m_sctpServer)
     connect(m_sctpServer,
 	    SIGNAL(newConnection(const qintptr,
@@ -375,7 +342,6 @@ spoton_listener::spoton_listener
 	    SIGNAL(newConnection(void)),
 	    this,
 	    SLOT(slotNewWebSocketConnection(void)));
-#endif
 #endif
 
   if(m_externalAddress)
@@ -891,15 +857,9 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
   query.exec();
 }
 
-#if QT_VERSION < 0x050000
-void spoton_listener::slotNewConnection(const int socketDescriptor,
-					const QHostAddress &address,
-					const quint16 port)
-#else
 void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 					const QHostAddress &address,
 					const quint16 port)
-#endif
 {
   /*
   ** Record the IP address of the client as soon as possible.

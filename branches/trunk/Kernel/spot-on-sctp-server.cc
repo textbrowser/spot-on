@@ -598,14 +598,9 @@ void spoton_sctp_server::slotTimeout(void)
 #endif
 	    }
 	  else
-#if QT_VERSION < 0x050000
-	    emit newConnection(static_cast<int> (socketDescriptor),
+	    emit newConnection(static_cast<qintptr> (socketDescriptor),
 			       address,
 			       port);
-#else
-	    emit newConnection(static_cast<qintptr> (socketDescriptor),
-			       address, port);
-#endif
 	}
 #if defined(Q_OS_WIN)
       else if(WSAGetLastError() != WSAEWOULDBLOCK)
@@ -725,14 +720,9 @@ void spoton_sctp_server::slotTimeout(void)
 #endif
 	    }
 	  else
-#if QT_VERSION < 0x050000
-	    emit newConnection(static_cast<int> (socketDescriptor),
+	    emit newConnection(static_cast<qintptr> (socketDescriptor),
 			       address,
 			       port);
-#else
-	    emit newConnection(static_cast<qintptr> (socketDescriptor),
-			       address, port);
-#endif
 	}
 #if defined(Q_OS_WIN)
       else if(WSAGetLastError() != WSAEWOULDBLOCK)

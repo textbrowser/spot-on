@@ -52,12 +52,7 @@ extern "C"
 #include <limits>
 
 spoton_neighbor::spoton_neighbor
-(
-#if QT_VERSION < 0x050000
- const int socketDescriptor,
-#else
- const qintptr socketDescriptor,
-#endif
+(const qintptr socketDescriptor,
  const QByteArray &certificate,
  const QByteArray &privateKey,
  const QString &echoMode,
@@ -361,19 +356,12 @@ spoton_neighbor::spoton_neighbor
 
 	  configuration.setLocalCertificate(QSslCertificate(certificate));
 
-	  if(
-#if QT_VERSION < 0x050000
-	     configuration.localCertificate().isValid()
-#else
-	     !configuration.localCertificate().isNull()
-#endif
-	     )
+	  if(!configuration.localCertificate().isNull())
 	    {
 	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
 	      if(!configuration.privateKey().isNull())
 		{
-#if QT_VERSION >= 0x040806
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableCompression, true);
 		  configuration.setSslOption
@@ -388,8 +376,6 @@ spoton_neighbor::spoton_neighbor
 		  configuration.setSslOption
 		    (QSsl::SslOptionDisableSessionSharing, true);
 #endif
-#endif
-#if QT_VERSION >= 0x050000
 		  spoton_crypt::setSslCiphers
 		    (configuration.supportedCiphers(), m_sslControlString,
 		     configuration);
@@ -404,12 +390,6 @@ spoton_neighbor::spoton_neighbor
 			(QSslSocket::QueryPeer);
 		      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
 		    }
-#endif
-#else
-		  if(m_tcpSocket)
-		    spoton_crypt::setSslCiphers
-		      (m_tcpSocket->supportedCiphers(), m_sslControlString,
-		       configuration);
 #endif
 
 		  if(m_tcpSocket)
@@ -873,7 +853,6 @@ spoton_neighbor::spoton_neighbor
 
 	  if(!configuration.privateKey().isNull())
 	    {
-#if QT_VERSION >= 0x040806
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableCompression, true);
 	      configuration.setSslOption
@@ -888,9 +867,7 @@ spoton_neighbor::spoton_neighbor
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableSessionSharing, true);
 #endif
-#endif
 	      configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
-#if QT_VERSION >= 0x050000
 	      spoton_crypt::setSslCiphers
 		(configuration.supportedCiphers(), m_sslControlString,
 		 configuration);
@@ -901,12 +878,6 @@ spoton_neighbor::spoton_neighbor
 		  m_udpSslConfiguration = configuration;
 		  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
 		}
-#endif
-#else
-	      if(m_tcpSocket)
-		spoton_crypt::setSslCiphers
-		  (m_tcpSocket->supportedCiphers(), m_sslControlString,
-		   configuration);
 #endif
 	      if(m_tcpSocket)
 		m_tcpSocket->setSslConfiguration(configuration);
