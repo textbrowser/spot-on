@@ -1,19 +1,22 @@
 cache()
 include(spot-on-gui-source.pro)
-libntru.target = libntru.dylib
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
-libspoton.target = libspoton.dylib
+libntru.target = libntru.dylib
 libspoton.commands = $(MAKE) -C ../../libSpotOn library
 libspoton.depends =
+libspoton.target = libspoton.dylib
 
 CONFIG		+= app_bundle qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth concurrent multimedia network printsupport \
-		   sql websockets widgets
-
-# The function gcry_kdf_derive() is available in version
-# 1.5.0 of the gcrypt library.
+QT		+= bluetooth \
+                   concurrent \
+                   multimedia \
+                   network \
+                   printsupport \
+                   sql \
+                   websockets \
+                   widgets
 
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
@@ -25,36 +28,58 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN            += Spot-On ../../libNTRU/*.dylib ../../libNTRU/src/*.o \
+QMAKE_CLEAN            += ../../libNTRU/*.dylib \
+                          ../../libNTRU/src/*.o \
                           ../../libNTRU/src/*.s \
-                          ../../libSpotOn/*.dylib ../../libSpotOn/*.o \
-                          ../../libSpotOn/test
+                          ../../libSpotOn/*.dylib \
+                          ../../libSpotOn/*.o \
+                          ../../libSpotOn/test \
+                          Spot-On
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
-QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=generic -O3 \
-			  -Wall -Wcast-align -Wcast-qual \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
+                          -Wall \
+                          -Wcast-align \
+                          -Wcast-qual \
                           -Wextra \
-			  -Woverloaded-virtual -Wpointer-arith \
-			  -Wstack-protector -Wstrict-overflow=5
+                          -Woverloaded-virtual \
+                          -Wpointer-arith \
+                          -Wstack-protector \
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -fwrapv \
+                          -mtune=generic
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
-INCLUDEPATH	  += . ../../. GUI \
+INCLUDEPATH	  += . \
+                     ../../. \
                      /usr/local/Cellar/openssl/1.0.2t/include \
                      /usr/local/include \
                      /usr/local/opt \
                      /usr/local/opt/curl/include
+                     GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
-LIBS		  += -L../../libNTRU -lntru \
-                     -L../../libSpotOn -lspoton \
+LIBS		  += -L../../libNTRU \
+                     -L../../libSpotOn \
+                     -L/usr/local/Cellar/openssl/1.0.2t/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
-                     -L/usr/local/Cellar/openssl/1.0.2t/lib -lGeoIP \
-                     -lcrypto -lcurl -lgcrypt -lgmp \
-                     -lgpg-error -lntl -lpq -lssl \
-                     -framework AppKit -framework Cocoa
+                     -framework AppKit \
+                     -framework Cocoa \
+                     -lGeoIP \
+                     -lcrypto \
+                     -lcurl \
+                     -lgcrypt \
+                     -lgmp \
+                     -lgpg-error \
+                     -lntl \
+                     -lntru \
+                     -lpq \
+                     -lspoton \
+                     -lssl
 MOC_DIR           = temp/moc
 OBJECTIVE_HEADERS += Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += Common/CocoaInitializer.mm
