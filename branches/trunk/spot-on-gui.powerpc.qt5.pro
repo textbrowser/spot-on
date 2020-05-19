@@ -33,15 +33,15 @@ DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL, libNTRU, and libSpotOn.
 
-QMAKE_CLEAN            += Spot-On \
-                          ../../libNTL/unix.d/src/*.lo \
+QMAKE_CLEAN            += ../../libNTL/unix.d/src/*.lo \
                           ../../libNTL/unix.d/src/*.o \
                           ../../libNTRU/*.so \
                           ../../libNTRU/src/*.o \
                           ../../libNTRU/src/*.s \
                           ../../libSpotOn/*.o \
                           ../../libSpotOn/*.so \
-                          ../../libSpotOn/test
+                          ../../libSpotOn/test \
+                          Spot-On
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -fPIE \
                           -fstack-protector-all \
