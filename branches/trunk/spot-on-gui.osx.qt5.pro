@@ -95,32 +95,34 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
-copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On_Qt5.d/.
-copyssl.path                = /Applications/Spot-On_Qt5.d
+copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyssl.extra               = cp /usr/local/Cellar/openssl/1.0.2t/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/.
+copyssl.path                = /Applications/Spot-On_Qt5.d
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = /Applications/Spot-On_Qt5.d
-install_name_tool.path      = .
 install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2t/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libssl.1.0.0.dylib
-libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
+install_name_tool.path      = .
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
-libntru_install.path        = .
+libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
 libntru_install.extra       = cp ../../libNTRU/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Spot-On
-libspoton_install.path      = .
+libntru_install.path        = .
 libspoton_install.extra     = cp ../../libSpotOn/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change libspoton.dylib @executable_path/../Frameworks/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Spot-On
+libspoton_install.path      = .
 lrelease.extra              = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.osx.qt5.pro
 lrelease.path               = .
 lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.qt5.pro
 lupdate.path                = .
-macdeployqt.path            = Spot-On.app
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On_Qt5.d/Spot-On.app -executable=/Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Spot-On
-preinstall.path             = /Applications/Spot-On_Qt5.d
+macdeployqt.path            = Spot-On.app
 preinstall.extra            = rm -rf /Applications/Spot-On_Qt5.d/Spot-On.app/*
-sounds.path                 = /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Sounds
+preinstall.path             = /Applications/Spot-On_Qt5.d
 sounds.files                = Sounds/*.wav
-translations.path	    = /Applications/Spot-On_Qt5.d/Translations
+sounds.path                 = /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/MacOS/Sounds
 translations.files	    = Translations/*.qm
+translations.path	    = /Applications/Spot-On_Qt5.d/Translations
+
+# Order is important.
 
 INSTALLS	= preinstall \
                   copyspoton \
