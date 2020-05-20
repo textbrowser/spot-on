@@ -10,8 +10,14 @@ libspoton.target = libspoton.dll
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
-QT		+= concurrent gui multimedia network printsupport sql \
-		   websockets widgets
+QT		+= concurrent \
+                   gui \
+                   multimedia \
+                   network \
+                   printsupport \
+                   sql \
+                   websockets \
+                   widgets
 
 DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
@@ -29,32 +35,34 @@ QMAKE_CLEAN            += Spot-On \
                           ..\\..\\libSpotOn\\*.o \
                           ..\\..\\libSpotOn\\libspoton.dll \
                           ..\\..\\libSpotOn\\test.exe
-QMAKE_CXXFLAGS_RELEASE += -fwrapv \
-                          -mtune=generic \
-                          -pie \
-                          -O3 \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
-			  -Wstrict-overflow=5
+                          -Wstrict-overflow=5 \
+                          -fwrapv \
+                          -mtune=generic \
+                          -pie
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_DISTCLEAN        += .qmake.cache \
+QMAKE_DISTCLEAN        += -r debug \
+                          .qmake.cache \
                           .qmake.stash \
-                          -r debug \
                           object_script.Spot-On.Debug \
                           object_script.Spot-On.Release
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
-INCLUDEPATH	+= . ..\\..\\. GUI \
-		   ..\\..\\PostgreSQL\\Include.win32 \
-		   ..\\..\\libGeoIP\\Include.win32 \
-		   ..\\..\\libNTL\\windows.d\\include \
-		   ..\\..\\libOpenSSL\\Include.win32 \
+INCLUDEPATH	+= . \
+                   ..\\..\\. \
+                   ..\\..\\PostgreSQL\\Include.win32 \
+                   ..\\..\\libGeoIP\\Include.win32 \
+                   ..\\..\\libNTL\\windows.d\\include \
+                   ..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\libSpotOn\\Include.win32 \
-                   ..\\..\\libcURL\\Win32.d\\include
+                   ..\\..\\libcURL\\Win32.d\\include \
+                   GUI
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libNTL\\windows.d\\libraries.d \

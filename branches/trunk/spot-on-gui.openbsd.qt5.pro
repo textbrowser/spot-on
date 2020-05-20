@@ -12,7 +12,7 @@ QT		+= concurrent \
                    gui \
                    network \
                    printsupport \
-                   sql
+                   sql \
                    websockets \
                    widgets
 
@@ -24,30 +24,33 @@ DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN            += Spot-On \
-                          ../../libNTRU/*.so \
+QMAKE_CLEAN            += ../../libNTRU/*.so \
                           ../../libNTRU/src/*.o \
                           ../../libNTRU/src/*.s \
                           ../../libSpotOn/*.o \
                           ../../libSpotOn/*.so \
-                          ../../libSpotOn/test
+                          ../../libSpotOn/test \
+                          Spot-On
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -fPIE \
-                          -fstack-protector-all \
-                          -fwrapv \
-                          -std=c++11 \
-                          -O3 \
-			  -Wextra \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
+                          -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
-                          -Wstrict-overflow=5
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -fwrapv \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
-INCLUDEPATH	       += . ../../. GUI /usr/local/include/postgresql
+INCLUDEPATH	       += . \
+                          ../../. \
+                          /usr/local/include/postgresql \
+                          GUI
 LIBS		       += -L../../libNTRU \
                           -L../../libSpotOn \
                           -lGeoIP \
