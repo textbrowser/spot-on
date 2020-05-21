@@ -1,11 +1,11 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntru.target = libntru.dylib
 libntru.commands = $(MAKE) -C ../../../libNTRU
 libntru.depends =
-libspoton.target = libspoton.dylib
+libntru.target = libntru.dylib
 libspoton.commands = $(MAKE) -C ../../../libSpotOn library
 libspoton.depends =
+libspoton.target = libspoton.dylib
 purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on app_bundle
@@ -23,36 +23,55 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN            += ../Spot-On-Kernel ../../../libNTRU/*.dylib \
-                          ../../../libNTRU/src/*.o ../../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../../../libNTRU/*.dylib \
+                          ../../../libNTRU/src/*.o \
+                          ../../../libNTRU/src/*.s \
                           ../../../libSpotOn/*.dylib \
-                          ../../../libSpotOn/*.o ../../../libSpotOn/test
+                          ../../../libSpotOn/*.o \
+                          ../../../libSpotOn/test \
+                          ../Spot-On-Kernel
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -fPIE -fstack-protector-all -fwrapv \
-			  -mtune=generic -O3 \
-			  -Wall -Wcast-align -Wcast-qual \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
+                          -Wall \
+                          -Wcast-align \
+                          -Wcast-qual \
                           -Wextra \
-			  -Woverloaded-virtual -Wpointer-arith \
-			  -Wstack-protector -Wstrict-overflow=5
+                          -Woverloaded-virtual \
+                          -Wpointer-arith \
+                          -Wstack-protector \
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -fwrapv \
+                          -mtune=generic
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 ICON		  =
-INCLUDEPATH	  += . ../. ../../../. \
+INCLUDEPATH	  += . \
+                     ../. ../../../. \
                      /usr/local/Cellar/openssl/1.0.2t/include \
                      /usr/local/include /usr/local/opt \
                      /usr/local/opt/curl/include
-LIBS		  += -L../../../libNTRU -lntru \
-                     -L../../../libSpotOn -lspoton \
+LIBS		  += -L../../../libNTRU \
+                     -L../../../libSpotOn \
+                     -L/usr/local/Cellar/openssl/1.0.2t/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
-                     -L/usr/local/Cellar/openssl/1.0.2t/lib \
+                     -framework Cocoa \
                      -lGeoIP \
-                     -lcrypto -lcurl -lgcrypt -lgmp \
-                     -lgpg-error -lntl -lpq -lssl \
-                     -framework Cocoa
+                     -lcrypto \
+                     -lcurl \
+                     -lgcrypt \
+                     -lgmp \
+                     -lgpg-error \
+                     -lntl \
+                     -lntru \
+                     -lpq \
+                     -lspoton \
+                     -lssl
 MOC_DIR           = temp/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += ../Common/CocoaInitializer.mm
@@ -68,23 +87,25 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
-copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On_Qt5.d/.
-copyssl.path                = /Applications/Spot-On_Qt5.d
-copyssl.path                = /Applications/Spot-On_Qt5.d
+copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyssl.extra               = cp /usr/local/Cellar/openssl/1.0.2t/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/.
-install_name_tool.path      = .
+copyssl.path                = /Applications/Spot-On_Qt5.d
+copyssl.path                = /Applications/Spot-On_Qt5.d
 install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2t/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.0.0.dylib
-libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
+install_name_tool.path      = .
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
-libntru_install.path        = .
+libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
 libntru_install.extra       = cp ../../../libNTRU/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-libspoton_install.path      = .
+libntru_install.path        = .
 libspoton_install.extra     = cp ../../../libSpotOn/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change libspoton.dylib @executable_path/../Frameworks/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-macdeployqt.path            = Spot-On-Kernel.app
+libspoton_install.path      = .
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app -executable=/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-preinstall.path             = /Applications/Spot-On_Qt5.d
+macdeployqt.path            = Spot-On-Kernel.app
 preinstall.extra            = rm -rf /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/*
+preinstall.path             = /Applications/Spot-On_Qt5.d
+
+# Order is important.
 
 INSTALLS	= preinstall \
                   copyspoton \
