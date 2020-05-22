@@ -40,9 +40,12 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
-                          -Wcast-align \
                           -Wcast-qual \
                           -Wextra \
+                          -Wno-cast-align \
+                          -Wno-deprecated-copy \
+                          -Wno-gnu-inline-cpp-without-extern \
+                          -Wno-unused-parameter \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
@@ -59,7 +62,7 @@ INCLUDEPATH	  += . \
                      /usr/local/Cellar/openssl/1.0.2t/include \
                      /usr/local/include \
                      /usr/local/opt \
-                     /usr/local/opt/curl/include
+                     /usr/local/opt/curl/include \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU \

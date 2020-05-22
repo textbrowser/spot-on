@@ -4200,15 +4200,18 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 
   if(!ssl_library_initialized)
     {
+      /*
+      ** Please read https://wiki.openssl.org/index.php/Library_Initialization.
+      */
+
+#if OPENSSL_VERSION_NUMBER < 0x10100000L // OpenSSL 1.1.0.
+      SSL_library_init(); // Always returns 1.
       ssl_library_initialized = true;
-#if OPENSSL_VERSION_NUMBER < 0x1000200fL
+#elif defined(Q_OS_OPENBSD)
       SSL_library_init(); // Always returns 1.
+      ssl_library_initialized = true;
 #else
-#ifdef Q_OS_OPENBSD
-      SSL_library_init(); // Always returns 1.
-#else
-      OPENSSL_init_ssl(0, NULL);
-#endif
+      ssl_library_initialized = OPENSSL_init_ssl(0, NULL) == 1;
 #endif
     }
 }

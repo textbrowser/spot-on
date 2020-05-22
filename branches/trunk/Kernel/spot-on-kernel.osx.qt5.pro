@@ -34,9 +34,12 @@ QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
-                          -Wcast-align \
                           -Wcast-qual \
                           -Wextra \
+                          -Wno-cast-align \
+                          -Wno-deprecated-copy \
+                          -Wno-gnu-inline-cpp-without-extern \
+                          -Wno-unused-parameter \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
