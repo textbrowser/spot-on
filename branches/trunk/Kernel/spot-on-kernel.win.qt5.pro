@@ -1,11 +1,11 @@
 cache()
 include(spot-on-kernel-source.windows.pro)
-libntru.target = libntru.dll
 libntru.commands = $(MAKE) -C ..\\..\\..\\libNTRU
 libntru.depends =
-libspoton.target = libspoton.dll
+libntru.target = libntru.dll
 libspoton.commands = $(MAKE) -C ..\\..\\..\\libSpotOn library
 libspoton.depends =
+libspoton.target = libspoton.dll
 purge.commands = del /F *~
 
 CONFIG		+= qt release warn_on
@@ -31,16 +31,17 @@ QMAKE_CLEAN            += ..\\..\\..\\libNTRU\\libntru.dll \
                           ..\\..\\..\\libSpotOn\\test.exe \
                           ..\\..\\release\\Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -fwrapv \
-                          -mtune=generic \
-                          -pie \
-                          -O3 \
-                          -Wall -Wcast-align \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
+                          -Wall \
+                          -Wcast-align \
                           -Wcast-qual \
-			  -Wextra \
+                          -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
-			  -Wstrict-overflow=5
+                          -Wstrict-overflow=5 \
+                          -fwrapv \
+                          -mtune=generic \
+                          -pie
 QMAKE_DISTCLEAN        += -r debug \
                           -r release \
                           .qmake.cache \
@@ -66,8 +67,17 @@ LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
                    -L..\\..\\..\\libcURL\\Win32.d\bin \
-                   -lGeoIP-1 -lcurl -lcrypto-1_1 -lgcrypt-20 \
-                   -lgpg-error-0 -lntl -lntru -lpq -lspoton -lssl-1_1 -lws2_32
+                   -lGeoIP-1 \
+                   -lcrypto-1_1 \
+                   -lcurl \
+                   -lgcrypt-20 \
+                   -lgpg-error-0 \
+                   -lntl \
+                   -lntru \
+                   -lpq \
+                   -lspoton \
+                   -lssl-1_1 \
+                   -lws2_32
 PRE_TARGETDEPS  = libntru.dll libspoton.dll
 PROJECTNAME	= Spot-On-Kernel
 TARGET		= ..\\..\\release\\Spot-On-Kernel
