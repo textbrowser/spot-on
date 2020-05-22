@@ -31,22 +31,25 @@ QMAKE_CLEAN            += ../../../libNTRU/*.so \
                           ../../../libSpotOn/test \
                           ../Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -fPIE \
-                          -fstack-protector-all \
-                          -fwrapv \
-                          -std=c++11 \
-                          -O3 \
-			  -Wextra \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
+                          -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
-                          -Wstrict-overflow=5
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -fwrapv \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
-INCLUDEPATH	+= . ../. ../../../. /usr/local/include/postgresql
+INCLUDEPATH	+= . \
+                   ../. \
+                   ../../../. \
+                   /usr/local/include/postgresql
 LIBS		+= -L../../../libNTRU \
                    -L../../../libSpotOn \
                    -L/usr/local/lib \

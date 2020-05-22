@@ -37,15 +37,7 @@ QMAKE_CLEAN            += ../../../libNTL/unix.d/src/*.lo \
                           ../../../libSpotOn/test \
                           ../Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE += -fPIE \
-                          -fstack-protector-all \
-                          -fwrapv \
-                          -mabi=altivec \
-                          -mpowerpc \
-                          -mtune=powerpc \
-                          -pie \
-                          -std=c++11 \
-                          -O3 \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
@@ -54,7 +46,15 @@ QMAKE_CXXFLAGS_RELEASE += -fPIE \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
-                          -Wstrict-overflow=5
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -fwrapv \
+                          -mabi=altivec \
+                          -mpowerpc \
+                          -mtune=powerpc \
+                          -pie \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntl libntru libspoton purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
