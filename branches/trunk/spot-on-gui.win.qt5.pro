@@ -28,13 +28,13 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU and libSpotOn.
 
-QMAKE_CLEAN            += Spot-On \
-                          ..\\..\\libNTRU.dll \
+QMAKE_CLEAN            += ..\\..\\libNTRU.dll \
                           ..\\..\\libNTRU\\src\\*.o \
                           ..\\..\\libNTRU\\src\\*.s \
                           ..\\..\\libSpotOn\\*.o \
                           ..\\..\\libSpotOn\\libspoton.dll \
-                          ..\\..\\libSpotOn\\test.exe
+                          ..\\..\\libSpotOn\\test.exe \
+                          Spot-On
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
