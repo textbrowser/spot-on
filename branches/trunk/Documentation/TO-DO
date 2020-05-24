@@ -260,15 +260,14 @@ Ignored Items
 11.    Remote kernel termination.
 12.    Limit the number of entries that are allowed to be inserted into
        a database.
-13.    C++11, unique_ptr and malloc().
-14.    QFSFileEngine::open: No file name specified: created from
+13.    QFSFileEngine::open: No file name specified: created from
        e-mail. Missing images?
-15.    1-N SCTP support.
-16.    There is some redundant deciphering of data: findMessageType()
+14.    1-N SCTP support.
+15.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-17.    The libgcrypt library supports GCRY_KDF_SCRYPT.
-18.    Weather feeds.
-19.    Separate NTRU implementation.
+16.    The libgcrypt library supports GCRY_KDF_SCRYPT.
+17.    Weather feeds.
+18.    Separate NTRU implementation.
 
 Remaining Items
 
