@@ -12,9 +12,6 @@ LANGUAGE	= C++
 QT		+= concurrent network sql websockets
 QT		-= gui
 
-# The function gcry_kdf_derive() is available in version
-# 1.5.0 of the gcrypt library.
-
 DEFINES += SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \

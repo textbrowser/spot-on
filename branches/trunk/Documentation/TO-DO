@@ -241,6 +241,7 @@ Completed Items
 170.   StarBeam ETA.
 171.   Independent StarBeam writers. Would exhaust the kernel.
 172.   Remove Qt 4.x support.
+173.   Project file housekeeping.
 
 Ignored Items
 
@@ -283,4 +284,4 @@ Remaining Items
 9.     Windows NTL.
 10.    Pointcheval.
 11.    SQLite silent mode; limit synchronization.
-12.    Project file housekeeping.
+12.    Kernel RSS.
