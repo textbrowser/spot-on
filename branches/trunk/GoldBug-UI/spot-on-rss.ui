@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>650</height>
+    <width>725</width>
+    <height>745</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -26,6 +26,16 @@
         <string>&amp;Subscriptions</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Please note that the kernel will adhere to some of the following configuration options.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
         <item>
          <widget class="QGroupBox" name="proxy">
           <property name="title">
@@ -240,6 +250,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Ignored by the kernel.</string>
+            </property>
             <property name="text">
              <string>&amp;Active</string>
             </property>
@@ -254,7 +267,7 @@
           <item>
            <widget class="QCheckBox" name="periodic_import">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please verify that the URL database has been prepared. Please see the Search page of the main window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please verify that the URL database has been prepared. Please see the Search page of the main window. Ignored by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>&amp;Periodic Import</string>
@@ -391,7 +404,7 @@
            <enum>QAbstractItemView::SelectRows</enum>
           </property>
           <property name="verticalScrollMode">
-           <enum>QAbstractItemView::ScrollPerPixel</enum>
+           <enum>QAbstractItemView::ScrollPerItem</enum>
           </property>
           <property name="horizontalScrollMode">
            <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -487,8 +500,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>381</width>
-             <height>226</height>
+             <width>360</width>
+             <height>223</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -728,8 +741,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>650</width>
-     <height>32</height>
+     <width>725</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

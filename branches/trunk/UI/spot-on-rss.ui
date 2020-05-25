@@ -27,6 +27,16 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>Please note that the kernel will adhere to some of the following configuration options.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="proxy">
           <property name="title">
            <string>Pro&amp;xy</string>
@@ -240,6 +250,9 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="toolTip">
+             <string>Ignored by the kernel.</string>
+            </property>
             <property name="text">
              <string>&amp;Active</string>
             </property>
@@ -254,7 +267,7 @@
           <item>
            <widget class="QCheckBox" name="periodic_import">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please verify that the URL database has been prepared. Please see the Search page of the main window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please verify that the URL database has been prepared. Please see the Search page of the main window. Ignored by the kernel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>&amp;Periodic Import</string>
@@ -487,8 +500,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>680</width>
-             <height>601</height>
+             <width>693</width>
+             <height>633</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -729,7 +742,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>39</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
