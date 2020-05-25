@@ -44,7 +44,7 @@ static char s_user_agent[] = "Spot-On";
 spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 {
   m_cancelImport = 0;
-  m_currentFeed = 0;
+  m_currentFeed = -1;
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -773,7 +773,7 @@ void spoton_rss::populateFeeds(void)
 
 	    if(feeds != m_feeds)
 	      {
-		m_currentFeed = 0;
+		m_currentFeed = -1;
 		m_feeds = feeds;
 	      }
 	  }
