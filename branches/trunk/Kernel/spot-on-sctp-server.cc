@@ -547,9 +547,9 @@ void spoton_sctp_server::slotTimeout(void)
 	      ::close(socketDescriptor);
 #endif
 	    }
-	  else if(!spoton_misc::isAcceptedIP(address, m_id,
-					     spoton_kernel::s_crypts.
-					     value("chat", 0)))
+	  else if(!spoton_misc::isAcceptedIP(address,
+					     m_id,
+					     spoton_kernel::crypt("chat")))
 	    {
 #if defined(Q_OS_WIN)
 	      closesocket(socketDescriptor);
@@ -573,8 +573,7 @@ void spoton_sctp_server::slotTimeout(void)
 #endif
 	    }
 	  else if(spoton_misc::isIpBlocked(address,
-					   spoton_kernel::s_crypts.
-					   value("chat", 0)))
+					   spoton_kernel::crypt("chat")))
 	    {
 #if defined(Q_OS_WIN)
 	      closesocket(socketDescriptor);
@@ -669,9 +668,9 @@ void spoton_sctp_server::slotTimeout(void)
 	      ::close(socketDescriptor);
 #endif
 	    }
-	  else if(!spoton_misc::isAcceptedIP(address, m_id,
-					     spoton_kernel::s_crypts.
-					     value("chat", 0)))
+	  else if(!spoton_misc::isAcceptedIP(address,
+					     m_id,
+					     spoton_kernel::crypt("chat")))
 	    {
 #if defined(Q_OS_WIN)
 	      closesocket(socketDescriptor);
@@ -695,8 +694,7 @@ void spoton_sctp_server::slotTimeout(void)
 #endif
 	    }
 	  else if(spoton_misc::isIpBlocked(address,
-					   spoton_kernel::s_crypts.
-					   value("chat", 0)))
+					   spoton_kernel::crypt("chat")))
 	    {
 #if defined(Q_OS_WIN)
 	      closesocket(socketDescriptor);

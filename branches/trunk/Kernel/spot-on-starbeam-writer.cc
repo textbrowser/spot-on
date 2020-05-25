@@ -109,7 +109,7 @@ bool spoton_starbeam_writer::append
       return false;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -157,7 +157,7 @@ bool spoton_starbeam_writer::append
   if(!magnet.isEmpty())
     {
       {
-	QWriteLocker lock(&m_queueMutex);
+	QWriteLocker locker(&m_queueMutex);
 
 	m_queue.enqueue
 	  (QPair<QByteArray, QHash<QString, QByteArray> > (data, magnet));
@@ -186,7 +186,7 @@ void spoton_starbeam_writer::processData(void)
     return;
 
   {
-    QWriteLocker lock(&m_queueMutex);
+    QWriteLocker locker(&m_queueMutex);
 
     if(!m_queue.isEmpty())
       {
@@ -211,7 +211,7 @@ void spoton_starbeam_writer::processData(void)
       goto start_label;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -549,7 +549,7 @@ void spoton_starbeam_writer::processData(void)
     goto start_label;
   else
     {
-      QWriteLocker lock(&m_statisticsMutex);
+      QWriteLocker locker(&m_statisticsMutex);
 
       if(!m_statistics.contains(fileName))
 	{
@@ -606,7 +606,7 @@ void spoton_starbeam_writer::processData(void)
 	   "?)");
 
 	{
-	  QWriteLocker lock(&m_statisticsMutex);
+	  QWriteLocker locker(&m_statisticsMutex);
 
 	  query.addBindValue
 	    (s_crypt->encryptedThenHashed(eta(fileName), &ok).toBase64());
@@ -729,7 +729,7 @@ void spoton_starbeam_writer::processData(void)
     emit writeMessage0061(data);
 
   {
-    QReadLocker lock(&m_queueMutex);
+    QReadLocker locker(&m_queueMutex);
 
     if(!m_queue.isEmpty())
       goto start_label;
@@ -748,7 +748,7 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -758,7 +758,7 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 	    goto done_label;
 	  }
 
-	QWriteLocker lock(&m_statisticsMutex);
+	QWriteLocker locker(&m_statisticsMutex);
 	QMutableHashIterator<QString, spoton_starbeam_writer_statistics> it
 	  (m_statistics);
 
@@ -805,7 +805,7 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 
 void spoton_starbeam_writer::slotReadKeys(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {

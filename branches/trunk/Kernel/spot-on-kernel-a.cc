@@ -65,6 +65,7 @@ extern "C"
 #include "spot-on-listener.h"
 #include "spot-on-mailer.h"
 #include "spot-on-neighbor.h"
+#include "spot-on-rss.h"
 #include "spot-on-starbeam-reader.h"
 #include "spot-on-starbeam-writer.h"
 #include "spot-on-urldistribution.h"
@@ -105,6 +106,7 @@ QPair<quint64, quint64> spoton_kernel::s_totalUiBytesReadWritten =
   QPair<quint64, quint64> (0, 0);
 QReadWriteLock spoton_kernel::s_adaptiveEchoPairsMutex;
 QReadWriteLock spoton_kernel::s_buzzKeysMutex;
+QReadWriteLock spoton_kernel::s_cryptsMutex;
 QReadWriteLock spoton_kernel::s_emailRequestCacheMutex;
 QReadWriteLock spoton_kernel::s_geminisCacheMutex;
 QReadWriteLock spoton_kernel::s_institutionKeysMutex;
@@ -582,7 +584,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	    else
 	      {
 		std::cout << "Input validated.\n";
-		spoton_misc::cleanupDatabases(s_crypts.value("chat", 0));
+		spoton_misc::cleanupDatabases(crypt("chat"));
 	      }
 
 	    break;
@@ -695,6 +697,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
     m_guiServer = new spoton_gui_server(this);
 
   m_mailer = new spoton_mailer(this);
+  m_rss = new spoton_rss(this);
   m_starbeamWriter = new spoton_starbeam_writer(this);
   connect(m_starbeamWriter,
 	  SIGNAL(writeMessage0061(const QByteArray &)),
@@ -935,6 +938,7 @@ spoton_kernel::~spoton_kernel()
   m_poptasticPostTimer.stop();
   m_prepareTimer.stop();
   m_publishAllListenersPlaintextTimer.stop();
+  m_rss->deactivate();
   m_scramblerTimer.stop();
   m_settingsTimer.stop();
   m_starbeamWriter->stop();
@@ -979,17 +983,20 @@ spoton_kernel::~spoton_kernel()
     m_urlImportFutures[i].waitForFinished();
 
   cleanup();
-  spoton_misc::cleanupDatabases(s_crypts.value("chat", 0));
+  spoton_misc::cleanupDatabases(crypt("chat"));
 
-  QHashIterator<QString, spoton_crypt *> it(s_crypts);
+  {
+    QWriteLocker locker(&s_cryptsMutex);
+    QMutableHashIterator<QString, spoton_crypt *> it(s_crypts);
 
-  while(it.hasNext())
-    {
-      it.next();
-      delete it.value();
-    }
+    while(it.hasNext())
+      {
+	it.next();
+	delete it.value();
+	it.remove();
+      }
+  }
 
-  s_crypts.clear();
   spoton_misc::logError
     (QString("Kernel %1 about to exit.").
      arg(QCoreApplication::applicationPid()));
@@ -1037,7 +1044,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   if(hash.isEmpty())
     return QList<QByteArray> ();
 
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return QList<QByteArray> ();
@@ -1399,13 +1406,13 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	    std::sort(list.begin(), list.end());
 
 	    for(int i = 0; i < list.size(); i++)
-	      if(!s_crypts.contains(list.at(i)))
+	      if(!crypt(list.at(i)))
 		{
-		  spoton_crypt *crypt = 0;
+		  spoton_crypt *s_crypt = 0;
 
 		  try
 		    {
-		      crypt = new (std::nothrow) spoton_crypt
+		      s_crypt = new (std::nothrow) spoton_crypt
 			(setting("gui/cipherType", "aes256").toString(),
 			 setting("gui/hashType", "sha512").toString(),
 			 QByteArray(),
@@ -1417,30 +1424,30 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 						      10000).toInt()),
 			 list.at(i));
 
-		      if(!altered && crypt)
+		      if(!altered && s_crypt)
 			{
-			  spoton_misc::alterDatabasesAfterAuthentication(crypt);
+			  spoton_misc::alterDatabasesAfterAuthentication
+			    (s_crypt);
 			  altered = true;
 			}
 		    }
 		  catch(...)
 		    {
-		      delete crypt;
-		      crypt = 0;
+		      delete s_crypt;
+		      s_crypt = 0;
 		    }
 
-		  if(Q_LIKELY(crypt))
-		    s_crypts.insert(list.at(i), crypt);
+		  cryptSave(list.at(i), s_crypt);
 		}
 
 	    for(int i = 0; i < list.size(); i++)
-	      if(!s_crypts.value(list.at(i), 0))
+	      if(!crypt(list.at(i)))
 		spoton_misc::logError
 		  ("spoton_kernel::initializeSecurityContainers(): "
 		   "potential memory failure. Critical!");
 
-	    spoton_crypt::removeFlawedEntries(s_crypts.value("chat", 0));
-	    spoton_misc::prepareAuthenticationHint(s_crypts.value("chat", 0));
+	    spoton_crypt::removeFlawedEntries(crypt("chat"));
+	    spoton_misc::prepareAuthenticationHint(crypt("chat"));
 	  }
       }
 
@@ -1935,7 +1942,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
   if(adaptiveEchoPairs.isEmpty())
     return;
 
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2155,7 +2162,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 
 void spoton_kernel::prepareListeners(void)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2454,7 +2461,7 @@ void spoton_kernel::prepareListeners(void)
 
 void spoton_kernel::prepareNeighbors(void)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2889,13 +2896,12 @@ void spoton_kernel::prepareStatus(const QString &keyType)
   if(s_sendInitialStatus == 0)
     return;
 
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value
-    (QString("%1-signature").arg(keyType), 0);
+  spoton_crypt *s_crypt2 = crypt(QString("%1-signature").arg(keyType));
 
   if(!s_crypt2)
     return;
@@ -3403,7 +3409,7 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 {
   QByteArray bytes;
   bool ok = true;
-  spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+  spoton_crypt *s_crypt = crypt("poptastic");
 
   if(s_crypt)
     bytes = s_crypt->decryptedAfterAuthenticated
@@ -3578,12 +3584,12 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 					const QByteArray &gemini,
 					const QByteArray &geminiHashKey)
 {
-  spoton_crypt *s_crypt1 = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt1 = crypt("chat");
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value("chat-signature", 0);
+  spoton_crypt *s_crypt2 = crypt("chat-signature");
 
   if(!s_crypt2)
     return;
@@ -3777,13 +3783,13 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 					const qint64 oid)
 {
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value
-    (QString("%1-signature").arg(keyType.constData()), 0);
+  spoton_crypt *s_crypt2 = crypt
+    (QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
     return;
@@ -4017,13 +4023,13 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 						   const qint64 oid)
 {
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value
-    (QString("%1-signature").arg(keyType.constData()), 0);
+  spoton_crypt *s_crypt2 = crypt
+    (QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
     return;
@@ -4319,13 +4325,12 @@ void spoton_kernel::slotMessageReceivedFromUI
  const QByteArray &utcDate,
  const QString &keyType)
 {
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value
-    (QString("%1-signature").arg(keyType), 0);
+  spoton_crypt *s_crypt2 = crypt(QString("%1-signature").arg(keyType));
 
   if(!s_crypt2)
     return;
@@ -4596,7 +4601,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	   arg(neighbor->peerPort()));
       else
 	{
-	  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+	  spoton_crypt *s_crypt = crypt("chat");
 
 	  if(!s_crypt)
 	    return;
@@ -4747,7 +4752,7 @@ void spoton_kernel::slotRetrieveMail(void)
     m_poptasticPopFuture =
       QtConcurrent::run(this, &spoton_kernel::popPoptastic);
 
-  spoton_crypt *s_crypt = s_crypts.value("email-signature", 0);
+  spoton_crypt *s_crypt = crypt("email-signature");
 
   if(!s_crypt)
     return;
@@ -5126,13 +5131,13 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	}
     }
 
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = s_crypts.value
-    (QString("%1-signature").arg(keyType.constData()), 0);
+  spoton_crypt *s_crypt2 = crypt
+    (QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
     return;
@@ -5806,7 +5811,7 @@ void spoton_kernel::slotSettingsChanged(const QString &path)
 
 void spoton_kernel::slotStatusTimerExpired(void)
 {
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;

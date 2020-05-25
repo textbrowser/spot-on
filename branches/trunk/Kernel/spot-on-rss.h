@@ -42,10 +42,9 @@ class spoton_rss: public QObject
   Q_OBJECT
 
  public:
-  spoton_rss(void);
+  spoton_rss(QObject *parent);
   ~spoton_rss();
   void deactivate(void);
-  void prepareAfterAuthentication(void);
 
  private:
   QAtomicInt m_cancelImport;
@@ -58,6 +57,7 @@ class spoton_rss: public QObject
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
   QTimer m_importTimer;
+  QTimer m_populateTimer;
   QVector<QPair<QByteArray, QString> > m_feeds;
   int m_currentFeed;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
@@ -69,7 +69,6 @@ class spoton_rss: public QObject
   void saveFeedData(const QString &description,
 		    const QString &link,
 		    const QString &title);
-  void saveFeedImage(const QByteArray &data, const QString &link);
   void saveFeedLink(const QString &description,
 		    const QString &link,
 		    const QString &publicationDate,
@@ -79,9 +78,7 @@ class spoton_rss: public QObject
  private slots:
   void slotContentReplyFinished(void);
   void slotDownloadContent(void);
-  void slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url);
   void slotDownloadTimeout(void);
-  void slotFeedImageReplyFinished(void);
   void slotFeedReplyFinished(void);
   void slotFeedReplyReadyRead(void);
   void slotImport(void);
@@ -90,7 +87,6 @@ class spoton_rss: public QObject
   void slotReplyError(QNetworkReply::NetworkError code);
 
  signals:
-  void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
   void logError(const QString &error);
 };
 

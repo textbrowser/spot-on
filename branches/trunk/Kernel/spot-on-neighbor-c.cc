@@ -39,7 +39,7 @@ QString spoton_neighbor::findMessageType
   QList<QByteArray> list(data.trimmed().split('\n'));
   QString type("");
   int interfaces = m_kernelInterfaces.fetchAndAddOrdered(0);
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   /*
   ** list[0]: Data
@@ -196,9 +196,8 @@ QString spoton_neighbor::findMessageType
     ** 0002b
     */
 
-    if(spoton_misc::participantCount("email",
-				     spoton_kernel::s_crypts.
-				     value("email", 0)) > 0)
+    if(spoton_misc::
+       participantCount("email", spoton_kernel::crypt("email")) > 0)
       {
 	if(list.size() == 3)
 	  symmetricKeys = spoton_kernel::findInstitutionKey
@@ -224,7 +223,7 @@ QString spoton_neighbor::findMessageType
       }
 
   if(list.size() == 4 || list.size() == 7)
-    if((s_crypt = spoton_kernel::s_crypts.value("email", 0)))
+    if((s_crypt = spoton_kernel::crypt("email")))
       if(spoton_misc::participantCount("email", s_crypt) > 0)
 	{
 	  QByteArray data;
@@ -253,7 +252,7 @@ QString spoton_neighbor::findMessageType
 	}
 
   if(list.size() == 4)
-    if((s_crypt = spoton_kernel::s_crypts.value("url", 0)))
+    if((s_crypt = spoton_kernel::crypt("url")))
       if(spoton_misc::participantCount("url", s_crypt) > 0)
 	{
 	  QByteArray data;
@@ -309,7 +308,7 @@ QString spoton_neighbor::findMessageType
 	const QString &keyType
 	  (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
-	s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
+	s_crypt = spoton_kernel::crypt(keyType);
 
 	if(!s_crypt)
 	  continue;
@@ -364,7 +363,7 @@ QString spoton_neighbor::findMessageType
 	  }
       }
 
-  if(list.size() == 3 && (s_crypt = spoton_kernel::s_crypts.value("email", 0)))
+  if(list.size() == 3 && (s_crypt = spoton_kernel::crypt("email")))
     symmetricKeys = spoton_misc::findForwardSecrecyKeys
       (list.value(0),
        list.value(1),
@@ -431,8 +430,7 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
       QByteArray message;
       QPair<QByteArray, QByteArray> ae
 	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						spoton_kernel::s_crypts.
-						value("chat", 0)));
+						spoton_kernel::crypt("chat")));
 
       if(messageType == "0060")
 	message = spoton_send::message0060(data, ae);
@@ -676,13 +674,16 @@ void spoton_neighbor::process0000(int length,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0000(length, dataIn, symmetricKeys,
+    (spoton_receive::process0000(length,
+				 dataIn,
+				 symmetricKeys,
 				 spoton_kernel::setting("gui/chatAccept"
 							"SignedMessages"
 							"Only",
 							true).toBool(),
-				 m_address, m_port,
-				 spoton_kernel::s_crypts.value("chat", 0)));
+				 m_address,
+				 m_port,
+				 spoton_kernel::crypt("chat")));
 
   if(!list.isEmpty())
     {
@@ -710,14 +711,16 @@ void spoton_neighbor::process0000a(int length,
   */
 
   QList<QByteArray> list
-    (spoton_receive::process0000a(length, dataIn,
+    (spoton_receive::process0000a(length,
+				  dataIn,
 				  spoton_kernel::setting("gui/chatAccept"
 							 "SignedMessages"
 							 "Only",
 							 true).toBool(),
-				  m_address, m_port,
+				  m_address,
+				  m_port,
 				  messageType,
-				  spoton_kernel::s_crypts.value("chat", 0)));
+				  spoton_kernel::crypt("chat")));
 
   if(!list.isEmpty())
     saveGemini(list.value(0), list.value(1),
@@ -730,13 +733,16 @@ void spoton_neighbor::process0000b(int length,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0000b(length, dataIn, symmetricKeys,
+    (spoton_receive::process0000b(length,
+				  dataIn,
+				  symmetricKeys,
 				  spoton_kernel::setting("gui/chatAccept"
 							 "SignedMessages"
 							 "Only",
 							 true).toBool(),
-				  m_address, m_port,
-				  spoton_kernel::s_crypts.value("chat", 0)));
+				  m_address,
+				  m_port,
+				  spoton_kernel::crypt("chat")));
 
   if(!list.isEmpty())
     saveGemini(list.value(1), list.value(2),
@@ -749,9 +755,12 @@ void spoton_neighbor::process0000d(int length,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0000d(length, dataIn, symmetricKeys,
-				  m_address, m_port,
-				  spoton_kernel::s_crypts.value("chat", 0)));
+    (spoton_receive::process0000d(length,
+				  dataIn,
+				  symmetricKeys,
+				  m_address,
+				  m_port,
+				  spoton_kernel::crypt("chat")));
 
   if(!list.isEmpty())
     saveGemini(list.value(0), list.value(1),
@@ -761,7 +770,7 @@ void spoton_neighbor::process0000d(int length,
 
 void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -806,8 +815,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
-      keyInformation1 = s_crypt->
-	publicKeyDecrypt(keyInformation1, &ok);
+      keyInformation1 = s_crypt->publicKeyDecrypt(keyInformation1, &ok);
 
       if(ok)
 	{
@@ -924,8 +932,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 		 !publicKeyHash.isEmpty() && !recipientHash.isEmpty() &&
 		 spoton_crypt::memcmp(publicKeyHash, recipientHash))
 		{
-		  keyInformation2 = s_crypt->
-		    publicKeyDecrypt(keyInformation2, &ok);
+		  keyInformation2 = s_crypt->publicKeyDecrypt
+		    (keyInformation2, &ok);
 
 		  if(ok)
 		    {
@@ -1100,7 +1108,7 @@ void spoton_neighbor::process0001b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -1136,8 +1144,7 @@ void spoton_neighbor::process0001b(int length,
 	  QByteArray symmetricKeyAlgorithm;
 	  bool ok = true;
 
-	  keyInformation = s_crypt->
-	    publicKeyDecrypt(keyInformation, &ok);
+	  keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
 	  if(ok)
 	    {
@@ -1283,9 +1290,13 @@ void spoton_neighbor::process0001c(int length,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0001c(length, dataIn, symmetricKeys,
-				  m_address, m_port, "email",
-				  spoton_kernel::s_crypts.value("email", 0)));
+    (spoton_receive::process0001c(length,
+				  dataIn,
+				  symmetricKeys,
+				  m_address,
+				  m_port,
+				  "email",
+				  spoton_kernel::crypt("email")));
 
   if(!list.isEmpty())
     emit newEMailArrived();
@@ -1296,7 +1307,7 @@ void spoton_neighbor::process0002a
  const QByteArray &dataIn,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -1337,8 +1348,7 @@ void spoton_neighbor::process0002a
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
-      keyInformation = s_crypt->
-	publicKeyDecrypt(keyInformation, &ok);
+      keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
@@ -1459,7 +1469,7 @@ void spoton_neighbor::process0002b
  const QList<QByteArray> &symmetricKeys,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -1721,13 +1731,16 @@ void spoton_neighbor::process0013(int length,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0013(length, dataIn, symmetricKeys,
+    (spoton_receive::process0013(length,
+				 dataIn,
+				 symmetricKeys,
 				 spoton_kernel::setting("gui/chatAccept"
 							"SignedMessages"
 							"Only",
 							true).toBool(),
-				 m_address, m_port,
-				 spoton_kernel::s_crypts.value("chat", 0)));
+				 m_address,
+				 m_port,
+				 spoton_kernel::crypt("chat")));
 
   if(!list.isEmpty())
     saveParticipantStatus
@@ -1779,7 +1792,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
       locker.unlock();
 
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
@@ -1869,7 +1882,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
 void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2092,7 +2105,7 @@ void spoton_neighbor::process0040b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2225,8 +2238,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 					  m_listenerOid,
 					  list.at(0),
 					  list.at(1),
-					  spoton_kernel::
-					  s_crypts.value("chat", 0)))
+					  spoton_kernel::crypt("chat")))
 	{
 	  m_accountAuthenticated.fetchAndStoreOrdered(1);
 	  emit stopTimer(&m_accountTimer);
@@ -2249,7 +2261,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
       if(m_accountAuthenticated.fetchAndAddOrdered(0))
 	emit resetKeepAlive();
 
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
@@ -2356,7 +2368,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
       accountClientSentSalt = m_accountClientSentSalt;
       locker.unlock();
 
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
       if(accountClientSentSalt.length() >=
 	 spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE &&
@@ -2503,7 +2515,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
 void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2768,10 +2780,10 @@ void spoton_neighbor::process0080(int length,
 				QByteArray publicKeyHash(list.value(0));
 
 				if(!spoton_misc::
-				   isAcceptedParticipant(publicKeyHash, "url",
+				   isAcceptedParticipant(publicKeyHash,
+							 "url",
 							 spoton_kernel::
-							 s_crypts.
-							 value("url", 0)))
+							 crypt("url")))
 				  return;
 
 				if(spoton_kernel::
@@ -2781,7 +2793,7 @@ void spoton_neighbor::process0080(int length,
 				    QByteArray recipientDigest;
 				    bool ok = true;
 				    spoton_crypt *s_crypt = spoton_kernel::
-				      s_crypts.value("url", 0);
+				      crypt("url");
 
 				    if(s_crypt)
 				      recipientDigest = s_crypt->publicKey(&ok);
@@ -3698,7 +3710,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
   if(!save)
     return;
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -3769,8 +3781,7 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
 	}
       else
 	{
-	  spoton_crypt *s_crypt =
-	    spoton_kernel::s_crypts.value("chat", 0);
+	  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	  if(s_crypt)
 	    {
@@ -3901,8 +3912,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		** We may be processing a two-way call.
 		*/
 
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("chat", 0);
+		spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 		if(s_crypt)
 		  {
@@ -3957,8 +3967,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	  }
 	else
 	  {
-	    spoton_crypt *s_crypt =
-	      spoton_kernel::s_crypts.value("chat", 0);
+	    spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	    if(s_crypt)
 	      {
@@ -4085,9 +4094,12 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
 					    const QByteArray &timestamp)
 {
   spoton_misc::saveParticipantStatus
-    (name, publicKeyHash, status, timestamp,
+    (name,
+     publicKeyHash,
+     status,
+     timestamp,
      static_cast<int> (2.5 * spoton_common::STATUS_INTERVAL),
-     spoton_kernel::s_crypts.value("chat", 0));
+     spoton_kernel::crypt("chat"));
 }
 
 void spoton_neighbor::saveParticipantStatus(const QByteArray &publicKeyHash)
@@ -4132,7 +4144,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const bool signatures_required,
 				    const QString &messageType)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
 
   if(spoton_crypt::exists(publicKey, s_crypt) ||
      spoton_crypt::exists(sPublicKey, s_crypt))
@@ -4330,11 +4342,13 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 
   query.addBindValue(isEncrypted() ? 1 : 0);
 
-  if(cipher.isNull() || !spoton_kernel::s_crypts.value("chat", 0))
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+
+  if(cipher.isNull() || !s_crypt)
     query.addBindValue(QVariant::String);
   else
     query.addBindValue
-      (spoton_kernel::s_crypts.value("chat")->
+      (s_crypt->
        encryptedThenHashed(QString("%1-%2-%3-%4-%5-%6-%7").
 			   arg(cipher.name()).
 			   arg(cipher.authenticationMethod()).
@@ -4526,7 +4540,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
       return;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -4877,7 +4891,7 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
       return;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;

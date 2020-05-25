@@ -95,7 +95,7 @@ void spoton_kernel::importUrls(void)
   }
 
   spoton_crypt *crypt = 0;
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = this->crypt("chat");
 
   crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
 
@@ -337,7 +337,7 @@ void spoton_kernel::importUrls(void)
 
 void spoton_kernel::popPoptastic(void)
 {
-  spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+  spoton_crypt *s_crypt = crypt("poptastic");
 
   if(!s_crypt)
     return;
@@ -616,7 +616,7 @@ void spoton_kernel::popPoptastic(void)
 
 void spoton_kernel::postPoptastic(void)
 {
-  spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+  spoton_crypt *s_crypt = crypt("poptastic");
 
   if(!s_crypt)
     {
@@ -1130,7 +1130,7 @@ void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
 	  }
 	else
 	  {
-	    spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+	    spoton_crypt *s_crypt = crypt("chat");
 
 	    if(s_crypt)
 	      {
@@ -1236,8 +1236,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   QByteArray widgetType(list.value(5));
   bool ok = true;
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
-  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
+  spoton_crypt *s_crypt2 = crypt(keyType + "-signature");
 
   if(!s_crypt1 || !s_crypt2)
     return;
@@ -1439,8 +1439,8 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     return;
 
   bool ok = true;
-  spoton_crypt *s_crypt1 = s_crypts.value(keyType, 0);
-  spoton_crypt *s_crypt2 = s_crypts.value(keyType + "-signature", 0);
+  spoton_crypt *s_crypt1 = crypt(keyType);
+  spoton_crypt *s_crypt2 = crypt(keyType + "-signature");
 
   if(!s_crypt1 || !s_crypt2)
     return;
@@ -1640,20 +1640,23 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
   QList<QByteArray> symmetricKeys;
   QString messageType
-    (spoton_receive::findMessageType(data, symmetricKeys,
+    (spoton_receive::findMessageType(data,
+				     symmetricKeys,
 				     interfaces(),
 				     "poptastic",
-				     s_crypts.value("poptastic", 0)));
+				     crypt("poptastic")));
 
   if(messageType == "0000")
     {
       QList<QByteArray> list
 	(spoton_receive::
-	 process0000(data.length(), data, symmetricKeys,
-		     setting("gui/chatAcceptSignedMessagesOnly", true).
-		     toBool(),
-		     "127.0.0.1", 0,
-		     s_crypts.value("poptastic", 0)));
+	 process0000(data.length(),
+		     data,
+		     symmetricKeys,
+		     setting("gui/chatAcceptSignedMessagesOnly", true).toBool(),
+		     "127.0.0.1",
+		     0,
+		     crypt("poptastic")));
 
       if(!list.isEmpty())
 	{
@@ -1668,7 +1671,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	     toString("MMddyyyyhhmmss").
 	     toLatin1(),                                     // Timestamp
 	     2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
-	     s_crypts.value("poptastic", 0));
+	     crypt("poptastic"));
 	  emit receivedChatMessage
 	    ("message_" +
 	     list.value(0).toBase64() + "_" +
@@ -1684,12 +1687,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::
-	 process0000a(data.length(), data,
+	 process0000a(data.length(),
+		      data,
 		      setting("gui/chatAcceptSignedMessagesOnly", true).
 		      toBool(),
-		      "127.0.0.1", 0,
+		      "127.0.0.1",
+		      0,
 		      messageType,
-		      s_crypts.value("poptastic", 0)));
+		      crypt("poptastic")));
 
       if(!list.isEmpty())
 	saveGeminiPoptastic(list.value(0), list.value(1),
@@ -1700,40 +1705,55 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::
-	 process0000b(data.length(), data, symmetricKeys,
+	 process0000b(data.length(),
+		      data,
+		      symmetricKeys,
 		      setting("gui/chatAcceptSignedMessagesOnly", true).
 		      toBool(),
-		      "127.0.0.1", 0,
-		      s_crypts.value("poptastic", 0)));
+		      "127.0.0.1",
+		      0,
+		      crypt("poptastic")));
 
       if(!list.isEmpty())
-	saveGeminiPoptastic(list.value(1), list.value(2),
-			    list.value(3), list.value(4),
-			    list.value(5), "0000b");
+	saveGeminiPoptastic(list.value(1),
+			    list.value(2),
+			    list.value(3),
+			    list.value(4),
+			    list.value(5),
+			    "0000b");
     }
   else if(messageType == "0000d")
     {
       QList<QByteArray> list
 	(spoton_receive::
-	 process0000d(data.length(), data, symmetricKeys,
-		      "127.0.0.1", 0,
-		      s_crypts.value("poptastic", 0)));
+	 process0000d(data.length(),
+		      data,
+		      symmetricKeys,
+		      "127.0.0.1",
+		      0,
+		      crypt("poptastic")));
 
       if(!list.isEmpty())
-	saveGeminiPoptastic(list.value(0), list.value(1),
-			    list.value(2), list.value(3),
-			    QByteArray(), "0000d");
+	saveGeminiPoptastic(list.value(0),
+			    list.value(1),
+			    list.value(2),
+			    list.value(3),
+			    QByteArray(),
+			    "0000d");
     }
   else if(messageType == "0001b")
     {
       QList<QByteArray> list
-	(spoton_receive::process0001b(data.length(), data,
-				      "127.0.0.1", 0,
-				      s_crypts.value("poptastic", 0)));
+	(spoton_receive::process0001b(data.length(),
+				      data,
+				      "127.0.0.1",
+				      0,
+				      crypt("poptastic")));
 
       if(!list.isEmpty())
 	{
-	  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
+	  QFileInfo fileInfo(spoton_misc::homePath() +
+			     QDir::separator() +
 			     "email.db");
 	  qint64 maximumSize = 1048576 * setting
 	    ("gui/maximumEmailFileSize", 1024).toLongLong();
@@ -1746,7 +1766,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	      return;
 	    }
 
-	  spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+	  spoton_crypt *s_crypt = crypt("poptastic");
 
 	  if(!s_crypt)
 	    return;
@@ -2114,11 +2134,13 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
   else if(messageType == "0001c")
     {
       QList<QByteArray> list
-	(spoton_receive::process0001c(data.length(), data, symmetricKeys,
-				      "127.0.0.1", 0,
+	(spoton_receive::process0001c(data.length(),
+				      data,
+				      symmetricKeys,
+				      "127.0.0.1",
+				      0,
 				      "poptastic",
-				      spoton_kernel::s_crypts.
-				      value("email", 0)));
+				      crypt("email")));
 
       if(!list.isEmpty())
 	emit newEMailArrived();
@@ -2127,11 +2149,14 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       QList<QByteArray> list
 	(spoton_receive::
-	 process0013(data.length(), data, symmetricKeys,
+	 process0013(data.length(),
+		     data,
+		     symmetricKeys,
 		     setting("gui/chatAcceptSignedMessagesOnly", true).
 		     toBool(),
-		     "127.0.0.1", 0,
-		     s_crypts.value("poptastic", 0)));
+		     "127.0.0.1",
+		     0,
+		     crypt("poptastic")));
 
       if(!list.isEmpty())
 	spoton_misc::saveParticipantStatus
@@ -2140,7 +2165,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	   list.value(2),                                  // Status
 	   list.value(3),                                  // Timestamp
 	   2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
-	   s_crypts.value("poptastic", 0));
+	   crypt("poptastic"));
     }
   else if(messageType == "0091a")
     {
@@ -2186,7 +2211,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  return;
 	}
 
-      spoton_crypt *s_crypt = s_crypts.value("poptastic", 0);
+      spoton_crypt *s_crypt = crypt("poptastic");
 
       if(!s_crypt)
 	return;
@@ -2500,7 +2525,7 @@ void spoton_kernel::slotSaveForwardSecrecySessionKeys
   if(list.isEmpty())
     return;
 
-  spoton_crypt *s_crypt = s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;

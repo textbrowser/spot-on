@@ -144,9 +144,9 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
     {
-      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-      if(crypt)
+      if(s_crypt)
 	{
 	  QString connectionName("");
 
@@ -172,10 +172,10 @@ void spoton_web_server::slotTimeout(void)
 		      QByteArray privateKey;
 		      bool ok = true;
 
-		      certificate = crypt->decryptedAfterAuthenticated
+		      certificate = s_crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query.value(0).toByteArray()),
 			 &ok);
-		      privateKey = crypt->decryptedAfterAuthenticated
+		      privateKey = s_crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query.value(1).toByteArray()),
 			 &ok);
 		      m_https->setCertificate(certificate);
@@ -412,8 +412,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
     }
 
   QScopedPointer<spoton_crypt> crypt
-    (spoton_misc::
-     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
+    (spoton_misc::retrieveUrlCommonCredentials(spoton_kernel::crypt("chat")));
 
   if(!crypt)
     {
@@ -887,8 +886,7 @@ void spoton_web_server_thread::processLocal
     return;
 
   QScopedPointer<spoton_crypt> crypt
-    (spoton_misc::
-     retrieveUrlCommonCredentials(spoton_kernel::s_crypts.value("chat", 0)));
+    (spoton_misc::retrieveUrlCommonCredentials(spoton_kernel::crypt("chat")));
 
   if(!crypt)
     {

@@ -1346,17 +1346,15 @@ void spoton_rss::prepareAfterAuthentication(void)
 
 		      if(proxy.type() != QNetworkProxy::NoProxy)
 			{
-			  proxy.setHostName
-			    (m_ui.proxyHostname->text());
-			  proxy.setPassword
-			    (m_ui.proxyPassword->text());
+			  proxy.setHostName(m_ui.proxyHostname->text());
+			  proxy.setPassword(m_ui.proxyPassword->text());
 			  proxy.setPort
 			    (static_cast<quint16> (m_ui.proxyPort->value()));
-			  proxy.setUser
-			    (m_ui.proxyUsername->text());
-			  m_contentNetworkAccessManager.setProxy(proxy);
-			  m_feedNetworkAccessManager.setProxy(proxy);
+			  proxy.setUser(m_ui.proxyUsername->text());
 			}
+
+		      m_contentNetworkAccessManager.setProxy(proxy);
+		      m_feedNetworkAccessManager.setProxy(proxy);
 		    }
 		}
 	  }
@@ -2938,17 +2936,15 @@ void spoton_rss::slotSaveProxy(void)
 
 		if(proxy.type() != QNetworkProxy::NoProxy)
 		  {
-		    proxy.setHostName
-		      (m_ui.proxyHostname->text());
-		    proxy.setPassword
-		      (m_ui.proxyPassword->text());
+		    proxy.setHostName(m_ui.proxyHostname->text());
+		    proxy.setPassword(m_ui.proxyPassword->text());
 		    proxy.setPort
 		      (static_cast<quint16> (m_ui.proxyPort->value()));
-		    proxy.setUser
-		      (m_ui.proxyUsername->text());
-		    m_contentNetworkAccessManager.setProxy(proxy);
-		    m_feedNetworkAccessManager.setProxy(proxy);
+		    proxy.setUser(m_ui.proxyUsername->text());
 		  }
+
+		m_contentNetworkAccessManager.setProxy(proxy);
+		m_feedNetworkAccessManager.setProxy(proxy);
 	      }
 
 	    query.prepare

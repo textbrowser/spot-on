@@ -168,8 +168,7 @@ QList<QByteArray> spoton_receive::process0000
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
-      keyInformation = s_crypt->
-	publicKeyDecrypt(keyInformation, &ok);
+      keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
@@ -393,8 +392,7 @@ QList<QByteArray> spoton_receive::process0000a
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
-      keyInformation = s_crypt->
-	publicKeyDecrypt(keyInformation, &ok);
+      keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
@@ -881,8 +879,7 @@ QList<QByteArray> spoton_receive::process0001b
       QByteArray symmetricKeyAlgorithm;
       bool ok = true;
 
-      keyInformation = s_crypt->
-	publicKeyDecrypt(keyInformation, &ok);
+      keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
@@ -1240,8 +1237,7 @@ QList<QByteArray> spoton_receive::process0013
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
 
-      keyInformation = s_crypt->
-	publicKeyDecrypt(keyInformation, &ok);
+      keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
@@ -1415,7 +1411,7 @@ QList<QByteArray> spoton_receive::process0091
  const quint16 port,
  const QString &messageType)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1580,10 +1576,10 @@ QList<QByteArray> spoton_receive::process0091
 	{
 	  QByteArray recipientDigest;
 	  bool ok = true;
+	  spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
 
-	  if(spoton_kernel::s_crypts.value(keyType, 0))
-	    recipientDigest = spoton_kernel::s_crypts.value(keyType)->
-	      publicKey(&ok);
+	  if(s_crypt)
+	    recipientDigest = s_crypt->publicKey(&ok);
 	  else
 	    ok = false;
 
@@ -1604,8 +1600,7 @@ QList<QByteArray> spoton_receive::process0091
 						recipientDigest,
 						list.value(0),
 						list.value(3), // Signature
-						spoton_kernel::s_crypts.
-						value(keyType, 0)))
+						spoton_kernel::crypt(keyType)))
 		{
 		  spoton_misc::logError
 		    ("spoton_receive::process0091(): invalid signature.");
@@ -1626,8 +1621,7 @@ QList<QByteArray> spoton_receive::process0091
 						recipientDigest,
 						list.value(0),
 						list.value(3), // Signature
-						spoton_kernel::s_crypts.
-						value(keyType, 0)))
+						spoton_kernel::crypt(keyType)))
 		{
 		  spoton_misc::logError
 		    ("spoton_receive::process0091(): invalid signature.");
@@ -1688,7 +1682,7 @@ QList<QByteArray> spoton_receive::process0092
  const QString &address,
  const quint16 port)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1808,10 +1802,10 @@ QList<QByteArray> spoton_receive::process0092
 	return QList<QByteArray> ();
 
       QByteArray recipientDigest;
+      spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
 
-      if(spoton_kernel::s_crypts.value(keyType, 0))
-	recipientDigest = spoton_kernel::s_crypts.value(keyType)->
-	  publicKey(&ok);
+      if(s_crypt)
+	recipientDigest = s_crypt->publicKey(&ok);
       else
 	ok = false;
 
@@ -1830,8 +1824,7 @@ QList<QByteArray> spoton_receive::process0092
 					recipientDigest,
 					list.value(0),
 					list.value(3), // Signature
-					spoton_kernel::s_crypts.
-					value(keyType, 0)))
+					spoton_kernel::crypt(keyType)))
 	{
 	  spoton_misc::logError
 	    ("spoton_receive::process0092(): invalid signature.");
@@ -2064,8 +2057,7 @@ QString spoton_receive::findMessageType
 	  symmetricKeys.clear();
       }
 
-  if(list.size() == 3 && (s_crypt =
-			  spoton_kernel::s_crypts.value(keyType, 0)))
+  if(list.size() == 3 && (s_crypt = spoton_kernel::crypt(keyType)))
     symmetricKeys = spoton_misc::findForwardSecrecyKeys
       (QByteArray::fromBase64(list.value(0)),
        QByteArray::fromBase64(list.value(1)),

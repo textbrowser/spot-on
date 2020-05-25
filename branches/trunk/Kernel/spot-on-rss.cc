@@ -41,7 +41,7 @@
 
 static char s_user_agent[] = "Spot-On";
 
-spoton_rss::spoton_rss(void):QObject()
+spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 {
   m_cancelImport = 0;
   m_currentFeed = 0;
@@ -57,55 +57,39 @@ spoton_rss::spoton_rss(void):QObject()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotImport(void)));
-  connect(this,
-	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
+  connect(&m_populateTimer,
+	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotDownloadFeedImage(const QUrl &, const QUrl &)));
+	  SLOT(slotPopulateFeeds(void)));
   connect(this,
 	  SIGNAL(logError(const QString &)),
 	  this,
 	  SLOT(slotLogError(const QString &)));
 
-  double dvalue = 0.0;
-  int ivalue = 0;
-
-  dvalue = qBound
+  double dvalue = qBound
     (0.1,
      spoton_kernel::setting("gui/rss_download_interval", 1.50).toDouble(),
      120.0);
-  ivalue = qBound
-    (50,
-     spoton_kernel::setting("gui/rss_maximum_keywords", 50).toInt(),
-     65535);
+
   m_downloadContentTimer.setInterval(1500);
   m_downloadContentTimer.start();
   m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
   m_downloadTimer.start();
   m_importTimer.setInterval(2500);
   m_importTimer.start();
+  m_populateTimer.setInterval(2500);
+  m_populateTimer.start();
   prepareDatabases();
 }
 
 spoton_rss::~spoton_rss()
 {
-  m_cancelImport.fetchAndStoreOrdered(1);
-  m_downloadContentTimer.stop();
-  m_downloadTimer.stop();
-  m_importTimer.stop();
-  m_importFuture.cancel();
-  m_importFuture.waitForFinished();
-  m_parseXmlFuture.cancel();
-  m_parseXmlFuture.waitForFinished();
+  deactivate();
 }
 
 bool spoton_rss::importUrl(const QList<QVariant> &list,
 			   const int maximumKeywords)
 {
-  spoton_crypt *crypt =  spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!crypt)
-    return false;
-
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
 
   if(!ucc)
@@ -150,11 +134,12 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 spoton_crypt *spoton_rss::urlCommonCrypt(void) const
 {
   return spoton_misc::retrieveUrlCommonCredentials
-    (spoton_kernel::s_crypts.value("chat", 0));
+    (spoton_kernel::crypt("chat"));
 }
 
 void spoton_rss::deactivate(void)
 {
+  m_cancelImport.fetchAndStoreOrdered(1);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
@@ -162,13 +147,14 @@ void spoton_rss::deactivate(void)
   m_importFuture.waitForFinished();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
+  m_populateTimer.stop();
 }
 
 void spoton_rss::import(const int maximumKeywords)
 {
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-  if(!crypt)
+  if(!s_crypt)
     {
       emit logError
 	("Import failure. Invalid spoton_crypt object. This is a fatal flaw.");
@@ -200,7 +186,7 @@ void spoton_rss::import(const int maximumKeywords)
 		      "FROM distillers WHERE "
 		      "direction_hash = ?");
 	query.bindValue
-	  (0, crypt->keyedHash(QByteArray("shared"), &ok).toBase64());
+	  (0, s_crypt->keyedHash(QByteArray("shared"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -212,7 +198,7 @@ void spoton_rss::import(const int maximumKeywords)
 	      QByteArray permission;
 	      bool ok = true;
 
-	      domain = crypt->
+	      domain = s_crypt->
 		decryptedAfterAuthenticated(QByteArray::
 					    fromBase64(query.
 						       value(0).
@@ -220,7 +206,7 @@ void spoton_rss::import(const int maximumKeywords)
 					    &ok);
 
 	      if(ok)
-		permission = crypt->
+		permission = s_crypt->
 		  decryptedAfterAuthenticated(QByteArray::
 					      fromBase64(query.
 							 value(1).
@@ -287,7 +273,7 @@ void spoton_rss::import(const int maximumKeywords)
 	      bool ok = true;
 
 	      bytes = qUncompress
-		(crypt->
+		(s_crypt->
 		 decryptedAfterAuthenticated(QByteArray::
 					     fromBase64(query.value(0).
 							toByteArray()),
@@ -297,7 +283,7 @@ void spoton_rss::import(const int maximumKeywords)
 		list << bytes;
 
 	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
+		bytes = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(1).toByteArray()),
 		   &ok);
 
@@ -306,7 +292,7 @@ void spoton_rss::import(const int maximumKeywords)
 					  bytes.length()).trimmed();
 
 	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
+		bytes = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(2).toByteArray()),
 		   &ok);
 
@@ -315,7 +301,7 @@ void spoton_rss::import(const int maximumKeywords)
 					  bytes.length()).trimmed();
 
 	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
+		bytes = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(3).toByteArray()),
 		   &ok);
 
@@ -323,7 +309,7 @@ void spoton_rss::import(const int maximumKeywords)
 		list << QUrl::fromEncoded(bytes);
 
 	      if(ok)
-		bytes = crypt->decryptedAfterAuthenticated
+		bytes = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(5).toByteArray()),
 		   &ok);
 
@@ -447,7 +433,6 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString link(url.toString());
   QString title("");
   QString type("");
-  QUrl imageUrl;
   QXmlStreamReader reader(data);
 
   while(!reader.atEnd() && !reader.hasError())
@@ -611,43 +596,6 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 	      description = reader.text().toString().trimmed();
 	    }
 	}
-      else if(currentTag == "image")
-	{
-	  currentTag.clear();
-
-	  if(imageUrl.isEmpty())
-	    {
-	      QString tag("");
-
-	      while(true)
-		{
-		  if(m_parseXmlFuture.isCanceled())
-		    break;
-
-		  reader.readNext();
-
-		  if(reader.isEndElement())
-		    {
-		      if(reader.name().toString().toLower().
-			 trimmed() == "image")
-			break;
-		    }
-		  else if(reader.isStartElement())
-		    tag = reader.name().toString().toLower().trimmed();
-
-		  if(tag == "url")
-		    {
-		      reader.readNext();
-		      imageUrl = QUrl::fromUserInput
-			(reader.text().toString().trimmed());
-		      break;
-		    }
-
-		  if(reader.atEnd() || reader.hasError())
-		    break;
-		}
-	    }
-	}
       else if(currentTag == "item")
 	{
 	  currentTag.clear();
@@ -744,9 +692,6 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
   saveFeedData(description, link, title);
 
-  if(!imageUrl.isEmpty() && imageUrl.isValid())
-    emit downloadFeedImage(imageUrl, url);
-
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
   QSqlDatabase db(spoton_kernel::urlDatabase());
   QString connectionName(db.connectionName());
@@ -774,9 +719,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 void spoton_rss::populateFeeds(void)
 {
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-  if(!crypt)
+  if(!s_crypt)
     return;
 
   QString connectionName("");
@@ -805,7 +750,7 @@ void spoton_rss::populateFeeds(void)
 		QString oid(query.value(query.record().count() - 1).toString());
 		bool ok = true;
 
-		feed = crypt->decryptedAfterAuthenticated
+		feed = s_crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 		if(ok)
@@ -818,112 +763,97 @@ void spoton_rss::populateFeeds(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
 
-void spoton_rss::prepareAfterAuthentication(void)
-{
-  populateFeeds();
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
 
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
 
-  if(crypt)
-    {
-      QString connectionName("");
-
+    if(db.open())
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	QSqlQuery query(db);
 
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+	query.setForwardOnly(true);
+	query.prepare("SELECT enabled, " // 0
+		      "hostname, "       // 1
+		      "password, "       // 2
+		      "port, "           // 3
+		      "type, "           // 4
+		      "username "        // 5
+		      "FROM rss_proxy");
 
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
+	if(query.exec())
+	  if(query.next())
+	    {
+	      QList<QByteArray> list;
 
-	    query.setForwardOnly(true);
-	    query.prepare("SELECT enabled, " // 0
-			  "hostname, "       // 1
-			  "password, "       // 2
-			  "port, "           // 3
-			  "type, "           // 4
-			  "username "        // 5
-			  "FROM rss_proxy");
-
-	    if(query.exec())
-	      if(query.next())
+	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  QList<QByteArray> list;
+		  QByteArray bytes;
+		  bool ok = true;
 
-		  for(int i = 0; i < query.record().count(); i++)
-		    {
-		      QByteArray bytes;
-		      bool ok = true;
+		  bytes = s_crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
 
-		      bytes = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(i).
-						toByteArray()), &ok);
-
-		      if(ok)
-			list << bytes;
-		      else
-			break;
-		    }
-
-		  if(list.size() != query.record().count() ||
-		     list.value(0) == "false")
-		    {
-		    }
+		  if(ok)
+		    list << bytes;
 		  else
+		    break;
+		}
+
+	      if(list.size() != query.record().count() ||
+		 list.value(0) == "false")
+		{
+		}
+	      else
+		{
+		  QNetworkProxy proxy;
+
+		  if(list.value(4) == "HTTP")
+		    proxy.setType(QNetworkProxy::HttpProxy);
+		  else if(list.value(4) == "Socks5")
+		    proxy.setType(QNetworkProxy::Socks5Proxy);
+		  else if(list.value(4) == "System")
 		    {
-		      QNetworkProxy proxy;
+		      QNetworkProxyQuery proxyQuery;
 
-		      if(list.value(4) == "HTTP")
-			proxy.setType(QNetworkProxy::HttpProxy);
-		      else if(list.value(4) == "Socks5")
-			proxy.setType(QNetworkProxy::Socks5Proxy);
-		      else if(list.value(4) == "System")
-			{
-			  QNetworkProxyQuery proxyQuery;
+		      proxyQuery.setQueryType(QNetworkProxyQuery::UrlRequest);
 
-			  proxyQuery.setQueryType
-			    (QNetworkProxyQuery::UrlRequest);
+		      QList<QNetworkProxy> proxies
+			(QNetworkProxyFactory::systemProxyForQuery(proxyQuery));
 
-			  QList<QNetworkProxy> proxies
-			    (QNetworkProxyFactory::
-			     systemProxyForQuery(proxyQuery));
-
-			  if(!proxies.isEmpty())
-			    proxy = proxies.at(0);
-			  else
-			    proxy.setType(QNetworkProxy::NoProxy);
-			}
+		      if(!proxies.isEmpty())
+			proxy = proxies.at(0);
 		      else
 			proxy.setType(QNetworkProxy::NoProxy);
-
-		      if(proxy.type() != QNetworkProxy::NoProxy)
-			{
-			  proxy.setHostName
-			    (QString::fromUtf8(list.value(1).constData(),
-					       list.value(1).length()));
-			  proxy.setPassword
-			    (QString::fromUtf8(list.value(2).constData(),
-					       list.value(2).length()));
-			  proxy.setPort(list.value(3).toUShort());
-			  proxy.setUser
-			    (QString::fromUtf8(list.value(5).constData(),
-					       list.value(5).length()));
-			  m_contentNetworkAccessManager.setProxy(proxy);
-			  m_feedNetworkAccessManager.setProxy(proxy);
-			}
 		    }
-		}
-	  }
+		  else
+		    proxy.setType(QNetworkProxy::NoProxy);
 
-	db.close();
+		  if(proxy.type() != QNetworkProxy::NoProxy)
+		    {
+		      proxy.setHostName
+			(QString::fromUtf8(list.value(1).constData(),
+					   list.value(1).length()));
+		      proxy.setPassword
+			(QString::fromUtf8(list.value(2).constData(),
+					   list.value(2).length()));
+		      proxy.setPort(list.value(3).toUShort());
+		      proxy.setUser
+			(QString::fromUtf8(list.value(5).constData(),
+					   list.value(5).length()));
+		    }
+
+		  m_contentNetworkAccessManager.setProxy(proxy);
+		  m_feedNetworkAccessManager.setProxy(proxy);
+		}
+	    }
       }
 
-      QSqlDatabase::removeDatabase(connectionName);
-    }
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::prepareDatabases(void)
@@ -986,9 +916,9 @@ void spoton_rss::saveFeedData(const QString &d,
 			      const QString &link,
 			      const QString &t)
 {
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-  if(!crypt)
+  if(!s_crypt)
     return;
 
   QString connectionName("");
@@ -1016,56 +946,16 @@ void spoton_rss::saveFeedData(const QString &d,
 		      "feed_title = ? "
 		      "WHERE feed_hash = ?");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(description.toUtf8(),
-					 &ok).toBase64());
+	  (0, s_crypt->encryptedThenHashed(description.toUtf8(),
+					   &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+	    (1, s_crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
-	     toBase64());
-
-	if(ok)
-	  query.exec();
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton_rss::saveFeedImage(const QByteArray &data, const QString &link)
-{
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-	bool ok = true;
-
-	query.prepare("UPDATE rss_feeds "
-		      "SET feed_image = ? "
-		      "WHERE feed_hash = ?");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(data, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
+	    (2, s_crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
 	     toBase64());
 
 	if(ok)
@@ -1086,9 +976,9 @@ void spoton_rss::saveFeedLink(const QString &d,
 {
   Q_UNUSED(url);
 
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-  if(!crypt)
+  if(!s_crypt)
     return;
 
   prepareDatabases();
@@ -1123,12 +1013,12 @@ void spoton_rss::saveFeedLink(const QString &d,
 	   "title, url, url_hash, url_redirected) "
 	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(qCompress(QByteArray(), 9), &ok).
+	  (0, s_crypt->encryptedThenHashed(qCompress(QByteArray(), 9), &ok).
 	   toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->encryptedThenHashed(description.toUtf8(), &ok).
+	    (1, s_crypt->encryptedThenHashed(description.toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue
@@ -1137,23 +1027,22 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
+	    (4, s_crypt->encryptedThenHashed(title.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (5,
-	     crypt->encryptedThenHashed(spoton_misc::urlToEncoded(link), &ok).
+	     s_crypt->encryptedThenHashed(spoton_misc::urlToEncoded(link), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (6, crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
+	    (6, s_crypt->keyedHash(spoton_misc::urlToEncoded(link), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (7, crypt->encryptedThenHashed(QByteArray(), &ok).
-	     toBase64());
+	    (7, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
@@ -1222,9 +1111,9 @@ void spoton_rss::slotContentReplyFinished(void)
 
   if(reply)
     {
-      spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-      if(!crypt)
+      if(!s_crypt)
 	{
 	  reply->deleteLater();
 	  return;
@@ -1254,12 +1143,12 @@ void spoton_rss::slotContentReplyFinished(void)
 			  "SET content = ?, url_redirected = ?, visited = ? "
 			  "WHERE url_hash = ?");
 	    query.bindValue
-	      (0, crypt->
+	      (0, s_crypt->
 	       encryptedThenHashed(qCompress(data, 9), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(1, crypt->
+		(1, s_crypt->
 		 encryptedThenHashed(spoton_misc::
 				     urlToEncoded(reply->url()),
 				     &ok).toBase64());
@@ -1293,7 +1182,7 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    if(ok)
 	      query.bindValue
-		(3, crypt->
+		(3, s_crypt->
 		 keyedHash(spoton_misc::urlToEncoded(reply->
 						     property("original-url").
 						     toUrl()),
@@ -1326,9 +1215,9 @@ void spoton_rss::slotDownloadContent(void)
   if(!m_contentNetworkAccessManager.findChildren<QNetworkReply *> ().isEmpty())
     return;
 
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
-  if(!crypt)
+  if(!s_crypt)
     return;
 
   QString connectionName("");
@@ -1355,7 +1244,7 @@ void spoton_rss::slotDownloadContent(void)
 	      QByteArray bytes;
 	      bool ok = true;
 
-	      bytes = crypt->decryptedAfterAuthenticated
+	      bytes = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
 		 &ok);
 
@@ -1419,39 +1308,6 @@ void spoton_rss::slotDownloadContent(void)
     }
 }
 
-void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
-{
-  if(!imageUrl.isEmpty() && imageUrl.isValid() &&
-     !url.isEmpty() && url.isValid())
-    {
-      QNetworkRequest request(imageUrl);
-
-      request.setRawHeader("Accept", "text/html");
-      request.setRawHeader("User-Agent", s_user_agent);
-
-      QNetworkReply *reply = m_feedNetworkAccessManager.get(request);
-
-      if(!reply)
-	{
-	  emit logError
-	    (QString("QNetworkAccessManager::get() failure on %1.").
-	     arg(spoton_misc::urlToEncoded(imageUrl).constData()));
-	  return;
-	}
-
-      reply->ignoreSslErrors();
-      reply->setProperty("url", url);
-      connect(reply,
-	      SIGNAL(error(QNetworkReply::NetworkError)),
-	      this,
-	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
-      connect(reply,
-	      SIGNAL(finished(void)),
-	      this,
-	      SLOT(slotFeedImageReplyFinished(void)));
-    }
-}
-
 void spoton_rss::slotDownloadTimeout(void)
 {
   if(!m_parseXmlFuture.isFinished())
@@ -1498,22 +1354,6 @@ void spoton_rss::slotDownloadTimeout(void)
 	  SLOT(slotFeedReplyReadyRead(void)));
   emit logError(QString("Downloading the feed %1.").
 		arg(spoton_misc::urlToEncoded(reply->url()).constData()));
-}
-
-void spoton_rss::slotFeedImageReplyFinished(void)
-{
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
-
-  if(reply && reply->error() == QNetworkReply::NoError)
-    {
-      QByteArray data(reply->readAll());
-      QUrl url(reply->property("url").toUrl());
-
-      reply->deleteLater();
-      saveFeedImage(data, url.toString());
-    }
-  else if(reply)
-    reply->deleteLater();
 }
 
 void spoton_rss::slotFeedReplyFinished(void)
@@ -1605,11 +1445,6 @@ void spoton_rss::slotFeedReplyReadyRead(void)
 
 void spoton_rss::slotImport(void)
 {
-  spoton_crypt *crypt = spoton_kernel::s_crypts.value("chat", 0);
-
-  if(!crypt)
-    return;
-
   if(m_importFuture.isFinished())
     m_importFuture = QtConcurrent::run
       (this,

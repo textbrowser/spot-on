@@ -61,19 +61,19 @@ QSqlDatabase spoton_kernel::urlDatabase(void)
       bool ok = true;
       bool ssltls = setting("gui/postgresql_ssltls", true).toBool();
       int port = setting("gui/postgresql_port", 5432).toInt();
-      spoton_crypt *crypt = s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = crypt("chat");
 
       if(!options.contains("connect_timeout="))
 	options.append(";connect_timeout=10");
 
-      if(crypt)
+      if(s_crypt)
 	{
-	  name = crypt->decryptedAfterAuthenticated
+	  name = s_crypt->decryptedAfterAuthenticated
 	    (QByteArray::fromBase64(setting("gui/postgresql_web_name", "").
 				    toByteArray()), &ok);
 
 	  if(ok)
-	    password = crypt->decryptedAfterAuthenticated
+	    password = s_crypt->decryptedAfterAuthenticated
 	      (QByteArray::
 	       fromBase64(setting("gui/postgresql_web_password", "").
 			  toByteArray()), &ok);
@@ -131,7 +131,7 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 {
   data.clear();
 
-  spoton_crypt *s_crypt = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt = crypt(keyType);
 
   if(!s_crypt)
     return false;
@@ -195,10 +195,34 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   return ok;
 }
 
+spoton_crypt *spoton_kernel::crypt(const QString &key)
+{
+  QReadLocker locker(&s_cryptsMutex);
+
+  return s_crypts.value(key, 0);
+}
+
+void spoton_kernel::cryptSave(const QString &k, spoton_crypt *crypt)
+{
+  if(!crypt)
+    return;
+
+  QString key(k.trimmed());
+  QWriteLocker locker(&s_cryptsMutex);
+
+  if(s_crypts.contains(key))
+    {
+      delete s_crypts.value(key);
+      s_crypts.remove(key);
+    }
+
+  s_crypts.insert(key, crypt);
+}
+
 void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 (const QByteArray &keyType, const qint64 oid)
 {
-  spoton_crypt *s_crypt = s_crypts.value(keyType, 0);
+  spoton_crypt *s_crypt = crypt(keyType);
 
   if(!s_crypt)
     return;

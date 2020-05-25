@@ -64,7 +64,7 @@ void spoton_urldistribution::quit(void)
 
 void spoton_urldistribution::run(void)
 {
-  spoton_crypt *s_crypt1 = spoton_kernel::s_crypts.value("url", 0);
+  spoton_crypt *s_crypt1 = spoton_kernel::crypt("url");
 
   if(!s_crypt1)
     {
@@ -73,7 +73,7 @@ void spoton_urldistribution::run(void)
       return;
     }
 
-  spoton_crypt *s_crypt2 = spoton_kernel::s_crypts.value("url-signature", 0);
+  spoton_crypt *s_crypt2 = spoton_kernel::crypt("url-signature");
 
   if(!s_crypt2)
     {

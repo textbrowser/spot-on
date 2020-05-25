@@ -572,8 +572,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::message0090
     (list.value(0) + "\n" + list.value(1), ae);
@@ -791,8 +790,7 @@ void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::messageXYZ
     (list.value(2) + "\n" +
@@ -825,8 +823,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::message0091a(data, ae);
 
@@ -851,8 +848,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::message0091b(data, ae);
 

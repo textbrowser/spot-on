@@ -672,13 +672,12 @@ void spoton_gui_server::slotReadyRead(void)
 
 		  for(int i = 0; i < names.size(); i++)
 		    {
-		      spoton_crypt *crypt = spoton_kernel::s_crypts.value
-			(names.at(i), 0);
+		      spoton_crypt *s_crypt = spoton_kernel::crypt(names.at(i));
 
-		      if(crypt)
+		      if(s_crypt)
 			{
-			  if(crypt->isAuthenticated() &&
-			     spoton_misc::isAuthenticatedHint(crypt))
+			  if(s_crypt->isAuthenticated() &&
+			     spoton_misc::isAuthenticatedHint(s_crypt))
 			    count += 2;
 			  else
 			    spoton_misc::logError
@@ -693,7 +692,7 @@ void spoton_gui_server::slotReadyRead(void)
 
 		      try
 			{
-			  crypt = new (std::nothrow) spoton_crypt
+			  s_crypt = new (std::nothrow) spoton_crypt
 			    (spoton_kernel::setting("gui/cipherType",
 						    "aes256").toString(),
 			     spoton_kernel::setting("gui/hashType",
@@ -711,14 +710,14 @@ void spoton_gui_server::slotReadyRead(void)
 			}
 		      catch(...)
 			{
-			  delete crypt;
-			  crypt = 0;
+			  delete s_crypt;
+			  s_crypt = 0;
 			}
 
-		      if(Q_LIKELY(crypt))
+		      if(Q_LIKELY(s_crypt))
 			{
-			  if(crypt->isAuthenticated() &&
-			     spoton_misc::isAuthenticatedHint(crypt))
+			  if(s_crypt->isAuthenticated() &&
+			     spoton_misc::isAuthenticatedHint(s_crypt))
 			    count += 2;
 			  else
 			    spoton_misc::logError
@@ -728,7 +727,7 @@ void spoton_gui_server::slotReadyRead(void)
 				       "could not be authenticated.").
 			       arg(names.at(i)));
 
-			  spoton_kernel::s_crypts.insert(names.at(i), crypt);
+			  spoton_kernel::cryptSave(names.at(i), s_crypt);
 			}
 		    }
 
@@ -747,7 +746,7 @@ void spoton_gui_server::slotReadyRead(void)
 		       arg(names.size()));
 
 		  for(int i = 0; i < names.size(); i++)
-		    if(!spoton_kernel::s_crypts.value(names.at(i), 0))
+		    if(!spoton_kernel::crypt(names.at(i)))
 		      spoton_misc::logError
 			("spoton_gui_server::slotReadyRead(): potential "
 			 "memory failure. Critical!");

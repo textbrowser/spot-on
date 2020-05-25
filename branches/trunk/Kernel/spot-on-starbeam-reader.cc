@@ -413,7 +413,7 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -498,7 +498,7 @@ void spoton_starbeam_reader::slotETATimerTimeout(void)
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -537,7 +537,7 @@ void spoton_starbeam_reader::slotExpiredResponseTimeout(void)
 
 void spoton_starbeam_reader::slotTimeout(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {

@@ -142,7 +142,7 @@ void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
 
 void spoton_mailer::slotReap(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     {
@@ -222,8 +222,7 @@ void spoton_mailer::slotRetrieveMail
 
   QByteArray publicKey
     (spoton_misc::publicKeyFromHash(publicKeyHash,
-				    spoton_kernel::s_crypts.value("email",
-								  0)));
+				    spoton_kernel::crypt("email")));
 
   if(publicKey.isEmpty())
     {
@@ -242,7 +241,7 @@ void spoton_mailer::slotRetrieveMail
     }
 
   publicKey = spoton_misc::publicKeyFromSignaturePublicKeyHash
-    (publicKeyHash, spoton_kernel::s_crypts.value("email", 0));
+    (publicKeyHash, spoton_kernel::crypt("email"));
 
   if(publicKey.isEmpty())
     {
@@ -349,8 +348,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 	  {
 	    if(query.next())
 	      {
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("email", 0);
+		spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
 		if(s_crypt)
 		  {
@@ -408,7 +406,7 @@ void spoton_mailer::slotTimeout(void)
   ** Send mail.
   */
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     {

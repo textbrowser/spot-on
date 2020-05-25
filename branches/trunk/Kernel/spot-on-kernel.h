@@ -74,7 +74,6 @@ class spoton_kernel: public QObject
   ~spoton_kernel();
   static QAtomicInt s_congestion_control_secondary_storage;
   static QAtomicInt s_sendInitialStatus;
-  static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
   static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
@@ -95,11 +94,13 @@ class spoton_kernel: public QObject
 				     const bool do_not_hash = false);
   static int buzzKeyCount(void);
   static int interfaces(void);
+  static spoton_crypt *crypt(const QString &key);
   static void addBuzzKey(const QByteArray &key,
 			 const QByteArray &channelType,
 			 const QByteArray &hashKey,
 			 const QByteArray &hashType);
   static void clearBuzzKeysContainer(void);
+  static void cryptSave(const QString &k, spoton_crypt *crypt);
   static void discoverAdaptiveEchoPair
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
@@ -180,10 +181,12 @@ class spoton_kernel: public QObject
   static QHash<QByteArray, uint> s_emailRequestCache;
   static QHash<QByteArray, uint> s_geminisCache;
   static QHash<QString, QVariant> s_settings;
+  static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QList<QByteArray> > s_institutionKeys;
   static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
+  static QReadWriteLock s_cryptsMutex;
   static QReadWriteLock s_emailRequestCacheMutex;
   static QReadWriteLock s_geminisCacheMutex;
   static QReadWriteLock s_institutionKeysMutex;

@@ -72,8 +72,7 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else if(!spoton_misc::
-	      isAcceptedIP(peerAddress, m_id,
-			   spoton_kernel::s_crypts.value("chat", 0)))
+	      isAcceptedIP(peerAddress, m_id, spoton_kernel::crypt("chat")))
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
@@ -89,9 +88,8 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 	     arg(serverAddress().toString()).
 	     arg(serverPort()));
 	}
-      else if(spoton_misc::isIpBlocked(peerAddress,
-				       spoton_kernel::s_crypts.
-				       value("chat", 0)))
+      else if(spoton_misc::
+	      isIpBlocked(peerAddress, spoton_kernel::crypt("chat")))
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
@@ -146,17 +144,15 @@ void spoton_listener_udp_server::slotReadyRead(void)
 	{
 	}
       else if(!spoton_misc::
-	      isAcceptedIP(peerAddress, m_id,
-			   spoton_kernel::s_crypts.value("chat", 0)))
+	      isAcceptedIP(peerAddress, m_id, spoton_kernel::crypt("chat")))
 	spoton_misc::logError
 	  (QString("spoton_listener_udp_server::slotReadyRead(): "
 		   "connection from %1 denied for %2:%3.").
 	   arg(peerAddress.toString()).
 	   arg(localAddress().toString()).
 	   arg(localPort()));
-      else if(spoton_misc::isIpBlocked(peerAddress,
-				       spoton_kernel::s_crypts.
-				       value("chat", 0)))
+      else if(spoton_misc::
+	      isIpBlocked(peerAddress, spoton_kernel::crypt("chat")))
 	spoton_misc::logError
 	  (QString("spoton_listener_udp_server::slotReadyRead(): "
 		   "connection from %1 blocked for %2:%3.").
@@ -800,7 +796,7 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
 	}
       else
 	{
-	  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+	  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 	  if(s_crypt)
 	    {
@@ -954,7 +950,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	  this,
 	  SLOT(slotNeighborDisconnected(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1413,8 +1409,9 @@ void spoton_listener::slotNewConnection(void)
 	  return;
 	}
       else if(!spoton_misc::
-	      isAcceptedIP(socket->peerAddress().toString(), m_id,
-			   spoton_kernel::s_crypts.value("chat", 0)))
+	      isAcceptedIP(socket->peerAddress().toString(),
+			   m_id,
+			   spoton_kernel::crypt("chat")))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_listener::slotNewConnection(): "
@@ -1426,8 +1423,7 @@ void spoton_listener::slotNewConnection(void)
 	  return;
 	}
       else if(spoton_misc::isIpBlocked(socket->peerAddress().toString(),
-				       spoton_kernel::s_crypts.
-				       value("chat", 0)))
+				       spoton_kernel::crypt("chat")))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_listener::slotNewConnection(): "
@@ -1503,7 +1499,7 @@ void spoton_listener::slotNewConnection(void)
 	  neighbor,
 	  SLOT(deleteLater(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1847,8 +1843,7 @@ void spoton_listener::slotTimeout(void)
 		QString echoMode("");
 		QString status(query.value(0).toString().toLower());
 		bool ok = true;
-		spoton_crypt *s_crypt =
-		  spoton_kernel::s_crypts.value("chat", 0);
+		spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 		m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 				     query.value(8).toInt(),
@@ -2162,8 +2157,9 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	  return;
 	}
       else if(!spoton_misc::
-	      isAcceptedIP(socket->peerAddress().toString(), m_id,
-			   spoton_kernel::s_crypts.value("chat", 0)))
+	      isAcceptedIP(socket->peerAddress().toString(),
+			   m_id,
+			   spoton_kernel::crypt("chat")))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_listener::slotNewWebSocketConnection(): "
@@ -2175,8 +2171,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	  return;
 	}
       else if(spoton_misc::isIpBlocked(socket->peerAddress().toString(),
-				       spoton_kernel::s_crypts.
-				       value("chat", 0)))
+				       spoton_kernel::crypt("chat")))
 	{
 	  spoton_misc::logError
 	    (QString("spoton_listener::slotNewWebSocketConnection(): "
@@ -2252,7 +2247,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	  neighbor,
 	  SLOT(deleteLater(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {

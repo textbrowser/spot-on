@@ -716,7 +716,7 @@ spoton_neighbor::spoton_neighbor
 	   waitforbyteswritten_msecs,
 	   spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM);
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(s_crypt)
     {
@@ -1171,7 +1171,7 @@ spoton_neighbor::~spoton_neighbor()
 	    query.bindValue(0, m_id);
 	    query.exec();
 	    spoton_misc::purgeSignatureRelationships
-	      (db, spoton_kernel::s_crypts.value("chat", 0));
+	      (db, spoton_kernel::crypt("chat"));
 	  }
 
 	db.close();
@@ -1396,8 +1396,7 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   if(spoton_kernel::setting("gui/chatSendMethod", "Artificial_GET").
      toString().toLower() == "artificial_get")
@@ -1529,7 +1528,7 @@ void spoton_neighbor::slotConnected(void)
 
   if(m_id != -1)
     {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
@@ -2217,9 +2216,9 @@ void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
       {
 	QByteArray message;
 	QPair<QByteArray, QByteArray> ae
-	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						  spoton_kernel::s_crypts.
-						  value("chat", 0)));
+	  (spoton_misc::
+	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+				     spoton_kernel::crypt("chat")));
 
 	if(messageType == "0002a")
 	  message = spoton_send::message0002a(list.at(i), ae);
@@ -2246,7 +2245,7 @@ void spoton_neighbor::slotSendAccountInformation(void)
        state() == QAbstractSocket::ConnectedState))
     return;
 
-  spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2405,9 +2404,9 @@ void spoton_neighbor::slotSendMail(const QPairByteArrayInt64List &list,
       {
 	QByteArray message;
 	QPair<QByteArray, QByteArray> ae
-	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						  spoton_kernel::s_crypts.
-						  value("chat", 0)));
+	  (spoton_misc::
+	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+				     spoton_kernel::crypt("chat")));
 	QPair<QByteArray, qint64> pair(list.at(i));
 
 	if(messageType == "0001a")
@@ -2449,7 +2448,7 @@ void spoton_neighbor::slotSendMail(const QPairByteArrayInt64List &list,
 
   if(!oids.isEmpty())
     {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("email", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("email");
 
       spoton_mailer::moveSentMailToSentFolder(oids, s_crypt);
     }
@@ -2476,8 +2475,7 @@ void spoton_neighbor::slotSendMailFromPostOffice
       QByteArray message;
       QPair<QByteArray, QByteArray> ae
 	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						spoton_kernel::s_crypts.
-						value("chat", 0)));
+						spoton_kernel::crypt("chat")));
 
       message = spoton_send::message0001b(data, ae);
 
@@ -2503,8 +2501,7 @@ void spoton_neighbor::slotSendMessage
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::message0000(data, sendMethod, ae);
 
@@ -2528,9 +2525,9 @@ void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
       {
 	QByteArray message;
 	QPair<QByteArray, QByteArray> ae
-	  (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-						  spoton_kernel::s_crypts.
-						  value("chat", 0)));
+	  (spoton_misc::
+	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+				     spoton_kernel::crypt("chat")));
 
 	message = spoton_send::message0013(list.at(i), ae);
 
@@ -2583,7 +2580,7 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
        arg(m_port));
   else
     {
-      spoton_crypt *s_crypt = spoton_kernel::s_crypts.value("chat", 0);
+      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
       if(!s_crypt)
 	return;
@@ -2719,8 +2716,7 @@ void spoton_neighbor::slotTimeout(void)
 		  }
 		else
 		  {
-		    spoton_crypt *s_crypt =
-		      spoton_kernel::s_crypts.value("chat", 0);
+		    spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
 		    if(s_crypt)
 		      {
@@ -3244,8 +3240,7 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
   QByteArray message;
   QPair<QByteArray, QByteArray> ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
-					    spoton_kernel::s_crypts.
-					    value("chat", 0)));
+					    spoton_kernel::crypt("chat")));
 
   message = spoton_send::message0080(data, ae);
 
