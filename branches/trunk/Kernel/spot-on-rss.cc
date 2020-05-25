@@ -77,7 +77,7 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
   m_downloadTimer.start();
   m_importTimer.setInterval(2500);
   m_importTimer.start();
-  m_populateTimer.setInterval(2500);
+  m_populateTimer.setInterval(10000);
   m_populateTimer.start();
   prepareDatabases();
 }
@@ -113,7 +113,8 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
      db,
      maximumKeywords,
      spoton_kernel::
-     setting("gui/disable_ui_synchronous_sqlite_url_import", false).toBool(),
+     setting("gui/disable_kernel_synchronous_sqlite_url_download",
+	     false).toBool(),
      m_cancelImport,
      error,
      ucc.data());
