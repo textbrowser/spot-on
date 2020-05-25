@@ -201,12 +201,18 @@ static int&#160;</td><td class="memItemRight" valign="bottom"><b>buzzKeyCount</b
 <tr class="memitem:a8aff2374e03684b59dea39b88ce9bac7"><td class="memItemLeft" align="right" valign="top"><a id="a8aff2374e03684b59dea39b88ce9bac7"></a>
 static int&#160;</td><td class="memItemRight" valign="bottom"><b>interfaces</b> (void)</td></tr>
 <tr class="separator:a8aff2374e03684b59dea39b88ce9bac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1c8c88b13e99af9649eeb884193fa67"><td class="memItemLeft" align="right" valign="top"><a id="ad1c8c88b13e99af9649eeb884193fa67"></a>
+static <a class="el" href="classspoton__crypt.html">spoton_crypt</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>crypt</b> (const QString &amp;key)</td></tr>
+<tr class="separator:ad1c8c88b13e99af9649eeb884193fa67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9dda9b48817afa80860d9af560b6051"><td class="memItemLeft" align="right" valign="top"><a id="ad9dda9b48817afa80860d9af560b6051"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>addBuzzKey</b> (const QByteArray &amp;key, const QByteArray &amp;channelType, const QByteArray &amp;hashKey, const QByteArray &amp;hashType)</td></tr>
 <tr class="separator:ad9dda9b48817afa80860d9af560b6051"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e46f4fba7bc41d22c09dc18063486eb"><td class="memItemLeft" align="right" valign="top"><a id="a6e46f4fba7bc41d22c09dc18063486eb"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>clearBuzzKeysContainer</b> (void)</td></tr>
 <tr class="separator:a6e46f4fba7bc41d22c09dc18063486eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50d96d3b9824a4cace06a4a168f64aba"><td class="memItemLeft" align="right" valign="top"><a id="a50d96d3b9824a4cace06a4a168f64aba"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>cryptSave</b> (const QString &amp;k, <a class="el" href="classspoton__crypt.html">spoton_crypt</a> *crypt)</td></tr>
+<tr class="separator:a50d96d3b9824a4cace06a4a168f64aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:accee9da6d9f24b884cec8e093b92c5e2"><td class="memItemLeft" align="right" valign="top"><a id="accee9da6d9f24b884cec8e093b92c5e2"></a>
 static void&#160;</td><td class="memItemRight" valign="bottom"><b>discoverAdaptiveEchoPair</b> (const QByteArray &amp;data, QPair&lt; QByteArray, QByteArray &gt; &amp;discoveredAdaptiveEchoPair)</td></tr>
 <tr class="separator:accee9da6d9f24b884cec8e093b92c5e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -231,9 +237,6 @@ static QAtomicInt&#160;</td><td class="memItemRight" valign="bottom"><b>s_conges
 <tr class="memitem:aa962417c94de5cecdc1e7cd9116fec17"><td class="memItemLeft" align="right" valign="top"><a id="aa962417c94de5cecdc1e7cd9116fec17"></a>
 static QAtomicInt&#160;</td><td class="memItemRight" valign="bottom"><b>s_sendInitialStatus</b> = 0</td></tr>
 <tr class="separator:aa962417c94de5cecdc1e7cd9116fec17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6359cd7cb1ef6a6039a482902ba73f6d"><td class="memItemLeft" align="right" valign="top"><a id="a6359cd7cb1ef6a6039a482902ba73f6d"></a>
-static QHash&lt; QString, <a class="el" href="classspoton__crypt.html">spoton_crypt</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>s_crypts</b></td></tr>
-<tr class="separator:a6359cd7cb1ef6a6039a482902ba73f6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3743d308300a630429db2876eda6008"><td class="memItemLeft" align="right" valign="top"><a id="ac3743d308300a630429db2876eda6008"></a>
 static QList&lt; QPair&lt; QByteArray, QByteArray &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>s_adaptiveEchoPairs</b></td></tr>
 <tr class="separator:ac3743d308300a630429db2876eda6008"><td class="memSeparator" colspan="2">&#160;</td></tr>
