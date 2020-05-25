@@ -242,6 +242,10 @@ Completed Items
 171.   Independent StarBeam writers. Would exhaust the kernel.
 172.   Remove Qt 4.x support.
 173.   Project file housekeeping.
+174.   Kernel RSS.
+175.   Random sequences for random data
+       (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
+       Other devices, nodes, etc.
 
 Ignored Items
 
@@ -275,12 +279,9 @@ Remaining Items
 2.     Open Library.
 3.     Research proxies.
 4.     Which key types to export and import? A new selection dialog.
-5.     Random sequences for random data
-       (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
+5.     SQLite silent mode; limit synchronization.
 6.     Remove obsolete includes.
 7.     IMAP and optional removal of messages; retrieve latest.
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    Pointcheval.
-11.    SQLite silent mode; limit synchronization.
-12.    Kernel RSS.

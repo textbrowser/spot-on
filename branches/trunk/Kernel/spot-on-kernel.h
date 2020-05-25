@@ -59,6 +59,7 @@ class spoton_gui_server;
 class spoton_listener;
 class spoton_mailer;
 class spoton_neighbor;
+class spoton_rss;
 class spoton_starbeam_reader;
 class spoton_starbeam_writer;
 class spoton_urldistribution;
@@ -86,6 +87,7 @@ class spoton_kernel: public QObject
 					      const QByteArray &hash);
   static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
   static QPointer<spoton_kernel> instance(void);
+  static QSqlDatabase urlDatabase(void);
   static QVariant setting(const QString &name, const QVariant &defaultValue);
   static bool duplicateEmailRequests(const QByteArray &data);
   static bool duplicateGeminis(const QByteArray &data);
@@ -142,6 +144,7 @@ class spoton_kernel: public QObject
   QPointer<spoton_fireshare> m_fireShare;
   QPointer<spoton_gui_server> m_guiServer;
   QPointer<spoton_mailer> m_mailer;
+  QPointer<spoton_rss> m_rss;
   QPointer<spoton_starbeam_writer> m_starbeamWriter;
   QPointer<spoton_urldistribution> m_urlDistribution;
   QPointer<spoton_web_server> m_webServer;

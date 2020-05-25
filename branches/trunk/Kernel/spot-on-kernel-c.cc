@@ -34,6 +34,67 @@
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
 
+QSqlDatabase spoton_kernel::urlDatabase(void)
+{
+  QSqlDatabase db;
+  QString connectionName(spoton_misc::databaseName());
+
+  if(setting("gui/sqliteSearch", true).toBool())
+    {
+      db = QSqlDatabase::addDatabase("QSQLITE", connectionName);
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "urls.db");
+      db.open();
+    }
+  else
+    {
+      QByteArray name;
+      QByteArray password;
+      QString database
+	(setting("gui/postgresql_database", "").toString().trimmed());
+      QString host
+	(setting("gui/postgresql_host", "localhost").toString().trimmed());
+      QString options
+	(setting("gui/postgresql_web_connection_options",
+		 spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	 toString().trimmed());
+      bool ok = true;
+      bool ssltls = setting("gui/postgresql_ssltls", true).toBool();
+      int port = setting("gui/postgresql_port", 5432).toInt();
+      spoton_crypt *crypt = s_crypts.value("chat", 0);
+
+      if(!options.contains("connect_timeout="))
+	options.append(";connect_timeout=10");
+
+      if(crypt)
+	{
+	  name = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(setting("gui/postgresql_web_name", "").
+				    toByteArray()), &ok);
+
+	  if(ok)
+	    password = crypt->decryptedAfterAuthenticated
+	      (QByteArray::
+	       fromBase64(setting("gui/postgresql_web_password", "").
+			  toByteArray()), &ok);
+	}
+
+      if(ssltls)
+	options.append(";requiressl=1");
+
+      db = QSqlDatabase::addDatabase("QPSQL", connectionName);
+      db.setConnectOptions(spoton_misc::adjustPQConnectOptions(options));
+      db.setDatabaseName(database);
+      db.setHostName(host);
+      db.setPort(port);
+
+      if(ok)
+	db.open(name, password);
+    }
+
+  return db;
+}
+
 bool spoton_kernel::hasStarBeamReaderId(const qint64 id) const
 {
   QHashIterator<qint64, QPointer<spoton_starbeam_reader> > it

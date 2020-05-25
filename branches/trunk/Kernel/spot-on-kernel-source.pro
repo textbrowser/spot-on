@@ -5,7 +5,8 @@ HEADERS		= ../Common/spot-on-external-address.h \
 		  spot-on-kernel.h \
 		  spot-on-listener.h \
 		  spot-on-mailer.h \
-		  spot-on-neighbor.h \
+                  spot-on-neighbor.h \
+                  spot-on-rss.h \
 		  spot-on-sctp-server.h \
 		  spot-on-sctp-socket.h \
 		  spot-on-starbeam-reader.h \
@@ -35,6 +36,7 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  spot-on-neighbor-a.cc \
                   spot-on-neighbor-b.cc \
                   spot-on-neighbor-c.cc \
+                  spot-on-rss.cc \
 		  spot-on-sctp-server.cc \
 		  spot-on-sctp-socket.cc \
 		  spot-on-starbeam-reader.cc \

@@ -130,7 +130,6 @@ class spoton_web_server_thread: public QThread
   QAtomicInt *m_abort;
   QPair<QByteArray, QByteArray> m_credentials;
   qint64 m_socketDescriptor;
-  QSqlDatabase database(void) const;
   void process(const QPair<QByteArray, QByteArray> &credentials,
 	       const qint64 socketDescriptor);
   void process(QSslSocket *socket,

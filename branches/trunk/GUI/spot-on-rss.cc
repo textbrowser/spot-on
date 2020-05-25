@@ -1173,8 +1173,7 @@ void spoton_rss::populateFeeds(void)
 	  while(query.next())
 	    {
 	      QByteArray feed;
-	      QString oid(query.value(query.record().count() - 1).
-			  toString());
+	      QString oid(query.value(query.record().count() - 1).toString());
 	      QByteArray image;
 	      QTableWidgetItem *item = 0;
 	      bool ok = true;
