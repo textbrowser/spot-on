@@ -66,14 +66,14 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 	  this,
 	  SLOT(slotLogError(const QString &)));
 
-  double dvalue = qBound
+  double value = qBound
     (0.1,
      spoton_kernel::setting("gui/rss_download_interval", 1.50).toDouble(),
      120.0);
 
   m_downloadContentTimer.setInterval(1500);
   m_downloadContentTimer.start();
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
+  m_downloadTimer.setInterval(static_cast<int> (60000.0 * value));
   m_downloadTimer.start();
   m_importTimer.setInterval(2500);
   m_importTimer.start();
@@ -704,8 +704,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      spoton_misc::urlToEncoded(url),
      db,
      spoton_kernel::setting("gui/rss_maximum_keywords", 50).toInt(),
-     spoton_kernel::setting("gui/disable_ui_synchronous_sqlite_url_import",
-			    false).toBool(),
+     spoton_kernel::
+     setting("gui/disable_kernel_synchronous_sqlite_url_download",
+	     false).toBool(),
      m_cancelImport,
      error,
      ucc.data());
@@ -719,6 +720,19 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
 
 void spoton_rss::populateFeeds(void)
 {
+  int value = static_cast<int>
+    (60000.0 *
+     qBound(0.1,
+	    spoton_kernel::
+	    setting("gui/rss_download_interval", 1.50).toDouble(),
+	    120.0));
+
+  if(m_downloadTimer.interval() != value)
+    {
+      m_downloadTimer.setInterval(value);
+      m_downloadTimer.start();
+    }
+
   spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
@@ -741,8 +755,7 @@ void spoton_rss::populateFeeds(void)
 		      "OID "          // 1
 		      "FROM rss_feeds"))
 	  {
-	    m_currentFeed = 0;
-	    m_feeds.clear();
+	    QVector<QPair<QByteArray, QString> > feeds;
 
 	    while(query.next())
 	      {
@@ -754,7 +767,13 @@ void spoton_rss::populateFeeds(void)
 		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 		if(ok)
-		  m_feeds << QPair<QByteArray, QString> (feed, oid);
+		  feeds << QPair<QByteArray, QString> (feed, oid);
+	      }
+
+	    if(feeds != m_feeds)
+	      {
+		m_currentFeed = 0;
+		m_feeds = feeds;
 	      }
 	  }
       }

@@ -287,7 +287,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
     (m_ui.download_interval->minimum(),
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
      m_ui.download_interval->maximum());
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * dvalue));
+  m_downloadTimer.setInterval(static_cast<int> (60000.0 * dvalue));
   m_ui.download_interval->setValue(dvalue);
   m_ui.periodic_import->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
@@ -2211,7 +2211,7 @@ void spoton_rss::slotDownloadIntervalChanged(double value)
   QSettings settings;
 
   settings.setValue("gui/rss_download_interval", value);
-  m_downloadTimer.setInterval(static_cast<int> (60 * 1000 * value));
+  m_downloadTimer.setInterval(static_cast<int> (60000.0 * value));
 }
 
 void spoton_rss::slotDownloadTimeout(void)
@@ -2504,7 +2504,7 @@ void spoton_rss::slotPurge(void)
 	   "ABS(strftime('%s', ?) - strftime('%s', insert_date)) > ?");
 	query.bindValue
 	  (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	query.bindValue(1, 60 * 60 * 24 * m_ui.purge_days->value());
+	query.bindValue(1, 24 * 60 * 60 * m_ui.purge_days->value());
 	query.exec();
 	query.exec("VACUUM");
       }
