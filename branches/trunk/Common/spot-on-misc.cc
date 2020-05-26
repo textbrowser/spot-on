@@ -4248,7 +4248,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     integer = 5;
-  else if(integer <= 0 || integer > 15)
+  else if(integer <= 0 || integer > 50)
     integer = 5;
 
   settings.insert("gui/kernel_url_batch_size", integer);

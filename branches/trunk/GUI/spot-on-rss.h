@@ -61,7 +61,6 @@ class spoton_rss: public QMainWindow
   QNetworkAccessManager m_feedNetworkAccessManager;
   QPalette m_originalFindPalette;
   QPointer<QAction> m_scheduleAction;
-  QString removeSpecialTags(const QString &text);
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
   QTimer m_importTimer;

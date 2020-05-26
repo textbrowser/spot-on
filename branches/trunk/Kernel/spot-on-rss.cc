@@ -44,7 +44,7 @@ static char s_user_agent[] = "Spot-On";
 spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 {
   m_cancelImport = 0;
-  m_currentFeed = -1;
+  m_lastUniqueId = QPair<QByteArray, qint64> (QByteArray(), -1);
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -752,32 +752,38 @@ void spoton_rss::populateFeeds(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-
-	if(query.exec("SELECT feed, " // 0
+	query.prepare("SELECT feed, " // 0
 		      "OID "          // 1
-		      "FROM rss_feeds"))
-	  {
-	    QVector<QPair<QByteArray, QString> > feeds;
+		      "FROM rss_feeds "
+		      "WHERE OID > ? ORDER BY 1");
+	query.addBindValue(m_lastUniqueId.second);
 
-	    while(query.next())
-	      {
-		QByteArray feed;
-		QString oid(query.value(query.record().count() - 1).toString());
-		bool ok = true;
+	if(query.exec())
+	  do
+	    {
+	      if(!query.next())
+		{
+		  m_lastUniqueId = QPair<QByteArray, qint64> (QByteArray(), -1);
+		  break;
+		}
 
-		feed = s_crypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+	      QByteArray feed;
+	      bool ok = true;
 
-		if(ok)
-		  feeds << QPair<QByteArray, QString> (feed, oid);
-	      }
+	      feed = s_crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-	    if(feeds != m_feeds)
-	      {
-		m_currentFeed = -1;
-		m_feeds = feeds;
-	      }
-	  }
+	      if(ok)
+		{
+		  m_lastUniqueId = QPair<QByteArray, qint64>
+		    (feed,
+		     qMax(m_lastUniqueId.second,
+			  query.value(query.record().count() - 1).
+			  toLongLong()));
+		  break;
+		}
+	    }
+	  while(true);
       }
 
     db.close();
@@ -1336,16 +1342,11 @@ void spoton_rss::slotDownloadTimeout(void)
 
   m_feedDownloadContent.clear();
 
-  if(m_feeds.isEmpty())
+  if(m_lastUniqueId.first.isEmpty())
     return;
 
-  m_currentFeed += 1;
-
-  if(m_currentFeed >= m_feeds.count())
-    m_currentFeed = 0;
-
   QNetworkRequest request
-    (QUrl::fromUserInput(m_feeds.at(m_currentFeed).first.constData()));
+    (QUrl::fromUserInput(m_lastUniqueId.first.constData()));
 
   request.setRawHeader("Accept", "text/html");
   request.setRawHeader("User-Agent", s_user_agent);

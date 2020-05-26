@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1500</y>
          <width>719</width>
          <height>3835</height>
         </rect>
@@ -1409,7 +1409,7 @@
                    <number>1</number>
                   </property>
                   <property name="maximum">
-                   <number>15</number>
+                   <number>50</number>
                   </property>
                   <property name="value">
                    <number>5</number>
