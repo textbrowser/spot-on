@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>550</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -62,7 +62,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>31</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
