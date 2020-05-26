@@ -755,7 +755,7 @@ void spoton_rss::populateFeeds(void)
 	query.prepare("SELECT feed, " // 0
 		      "OID "          // 1
 		      "FROM rss_feeds "
-		      "WHERE OID > ? ORDER BY 1");
+		      "WHERE OID > ? ORDER BY 2");
 	query.addBindValue(m_lastUniqueId.second);
 
 	if(query.exec())
