@@ -246,6 +246,7 @@ Completed Items
 175.   Random sequences for random data
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
        Other devices, nodes, etc.
+176.   Display default Spot-On page on failed URLs.
 
 Ignored Items
 
@@ -285,4 +286,3 @@ Remaining Items
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    Pointcheval.
-11.    Display default Spot-On page on failed local URLs.
