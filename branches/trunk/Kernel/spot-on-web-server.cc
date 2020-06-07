@@ -289,18 +289,7 @@ void spoton_web_server_thread::process
 
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1."))
-    {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-
-      for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					      QAbstractSocket::ConnectedState &&
-					      socket->
-					      waitForBytesWritten(1000)))
-	  break;
-    }
+    writeDefaultPage(socket.data());
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
     {
@@ -323,21 +312,11 @@ void spoton_web_server_thread::process
 	  processLocal(socket.data(), data);
 	}
       else
-	{
-	  socket->write
-	    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	     "charset=utf-8\r\n\r\n");
-	  socket->write(s_search);
-
-	  for(int i = 1; i <= 30; i++)
-	    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-						  QAbstractSocket::
-						  ConnectedState &&
-						  socket->
-						  waitForBytesWritten(1000)))
-	      break;
-	}
+	writeDefaultPage(socket.data());
     }
+  else if(data.endsWith("\r\n\r\n") &&
+	  data.simplified().trimmed().startsWith("get /"))
+    writeDefaultPage(socket.data());
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
@@ -363,18 +342,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(list.size() != 4)
     {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-
-      for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					      QAbstractSocket::
-					      ConnectedState &&
-					      socket->
-					      waitForBytesWritten(1000)))
-	  break;
-
+      writeDefaultPage(socket);
       return;
     }
 
@@ -396,18 +364,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(current > pages)
     {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	 "charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-
-      for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					      QAbstractSocket::ConnectedState &&
-					      socket->
-					      waitForBytesWritten(1000)))
-	  break;
-
+      writeDefaultPage(socket);
       return;
     }
 
@@ -416,18 +373,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(!crypt)
     {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	 "charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-
-      for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					      QAbstractSocket::ConnectedState &&
-					      socket->
-					      waitForBytesWritten(1000)))
-	  break;
-
+      writeDefaultPage(socket);
       return;
     }
 
@@ -890,18 +836,7 @@ void spoton_web_server_thread::processLocal
 
   if(!crypt)
     {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      socket->write(s_search);
-
-      for(int i = 1; i <= 30; i++)
-	if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
-					      QAbstractSocket::
-					      ConnectedState &&
-					      socket->
-					      waitForBytesWritten(1000)))
-	  break;
-
+      writeDefaultPage(socket);
       return;
     }
 
@@ -968,4 +903,20 @@ void spoton_web_server_thread::processLocal
 void spoton_web_server_thread::run(void)
 {
   process(m_credentials, m_socketDescriptor);
+}
+
+void spoton_web_server_thread::writeDefaultPage(QSslSocket *socket)
+{
+  if(!socket)
+    return;
+
+  socket->write
+    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+  socket->write(s_search);
+
+  for(int i = 1; i <= 30; i++)
+    if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
+					  QAbstractSocket::ConnectedState &&
+					  socket->waitForBytesWritten(1000)))
+      break;
 }

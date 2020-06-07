@@ -136,6 +136,7 @@ class spoton_web_server_thread: public QThread
 	       const QByteArray &data,
 	       const QPair<QString, QString> &address);
   void processLocal(QSslSocket *socket, const QByteArray &data);
+  void writeDefaultPage(QSslSocket *socket);
 };
 
 #endif
