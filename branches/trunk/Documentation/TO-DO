@@ -247,6 +247,7 @@ Completed Items
        (http://www.fq.math.ca/Scanned/23-2/dawson.pdf).
        Other devices, nodes, etc.
 176.   Display default Spot-On page on failed URLs.
+177.   Beautiful combination boxes.
 
 Ignored Items
 
@@ -286,4 +287,3 @@ Remaining Items
 8.     Windows BT. Requires Qt 5.14.
 9.     Windows NTL.
 10.    Pointcheval.
-11.    Beautiful combination boxes.

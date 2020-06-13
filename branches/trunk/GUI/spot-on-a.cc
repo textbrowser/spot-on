@@ -7070,13 +7070,15 @@ void spoton::slotPopulateListeners(void)
 			if(transport.toLower() == "bluetooth")
 			  {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-			    QComboBox *box = new QComboBox();
+			    QComboBox *box = 0;
 			    QList<QBluetooth::Security> items;
 			    QMap<QBluetooth::Security, QString> map;
 			    QMap<QBluetooth::SecurityFlags,
 				 QString> possibilities;
 			    QMap<QString, char> values;
+			    QWidget *widget = combinationBoxForTable();
 
+			    box = widget->findChild<QComboBox *> ();
 			    items << QBluetooth::Authentication
 				  << QBluetooth::Authorization
 				  << QBluetooth::Encryption
@@ -7171,7 +7173,7 @@ void spoton::slotPopulateListeners(void)
 				    SIGNAL(currentIndexChanged(int)),
 				    this,
 				    SLOT(slotBluetoothSecurityChanged(int)));
-			    m_ui.listeners->setCellWidget(row, i, box);
+			    m_ui.listeners->setCellWidget(row, i, widget);
 #endif
 			    item = new spoton_table_widget_item
 			      (query.value(i).toString());
@@ -7203,7 +7205,10 @@ void spoton::slotPopulateListeners(void)
 			(query.value(i).toString());
 		    else if(i == 10) // maximum_clients
 		      {
-			QComboBox *box = new QComboBox();
+			QComboBox *box = 0;
+			QWidget *widget = combinationBoxForTable();
+
+			box = widget->findChild<QComboBox *> ();
 
 			if(transport != "UDP")
 			  {
@@ -7223,7 +7228,7 @@ void spoton::slotPopulateListeners(void)
 			    box->setMaximumWidth
 			      (box->fontMetrics().width(tr("Unlimited")) + 50);
 #endif
-			    m_ui.listeners->setCellWidget(row, i, box);
+			    m_ui.listeners->setCellWidget(row, i, widget);
 
 			    if(query.value(i).toLongLong() <= 0)
 			      box->setCurrentIndex(box->count() - 1);
@@ -7255,7 +7260,7 @@ void spoton::slotPopulateListeners(void)
 			      (box->fontMetrics().width(tr("Unlimited")) + 50);
 #endif
 			    box->setEnabled(false);
-			    m_ui.listeners->setCellWidget(row, i, box);
+			    m_ui.listeners->setCellWidget(row, i, widget);
 			  }
 
 			item = new spoton_table_widget_item
@@ -7321,8 +7326,11 @@ void spoton::slotPopulateListeners(void)
 			(QString(certificateDigest));
 		    else if(i == 20) // lane_width
 		      {
-			QComboBox *box = new QComboBox();
+			QComboBox *box = 0;
 			QList<int> list(spoton_common::LANE_WIDTHS);
+			QWidget *widget = combinationBoxForTable();
+
+			box = widget->findChild<QComboBox *> ();
 
 			if(!list.contains(spoton_common::LANE_WIDTH_DEFAULT))
 			  list << spoton_common::LANE_WIDTH_DEFAULT;
@@ -7341,7 +7349,7 @@ void spoton::slotPopulateListeners(void)
 			box->setProperty
 			  ("oid", query.value(query.record().count() - 1));
 			box->setProperty("table", "listeners");
-			m_ui.listeners->setCellWidget(row, i, box);
+			m_ui.listeners->setCellWidget(row, i, widget);
 
 			if(box->findText(QString::
 					 number(query.
@@ -7515,6 +7523,7 @@ void spoton::slotPopulateListeners(void)
 
 	m_ui.listeners->horizontalHeader()->setStretchLastSection(true);
 	m_ui.listeners->horizontalScrollBar()->setValue(hval);
+	m_ui.listeners->resizeRowsToContents();
 	m_ui.listeners->verticalScrollBar()->setValue(vval);
 	m_ui.listeners->setUpdatesEnabled(true);
 	connect(m_ui.listeners,
@@ -8112,8 +8121,11 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    }
 	  else if(i == 36) // lane_width
 	    {
-	      QComboBox *box = new QComboBox();
+	      QComboBox *box = 0;
 	      QList<int> list(spoton_common::LANE_WIDTHS);
+	      QWidget *widget = combinationBoxForTable();
+
+	      box = widget->findChild<QComboBox *> ();
 
 	      if(!list.contains(spoton_common::LANE_WIDTH_DEFAULT))
 		list << spoton_common::LANE_WIDTH_DEFAULT;
@@ -8133,7 +8145,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		("oid", query->value(query->record().count() - 1));
 	      box->setProperty("table", "neighbors");
 	      box->setToolTip(tooltip);
-	      m_ui.neighbors->setCellWidget(row, i, box);
+	      m_ui.neighbors->setCellWidget(row, i, widget);
 
 	      if(box->findText(QString::
 			       number(query->
@@ -8388,6 +8400,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
   m_ui.neighbors->horizontalHeader()->setStretchLastSection(true);
   m_ui.neighbors->horizontalScrollBar()->setValue(hval);
+  m_ui.neighbors->resizeRowsToContents();
   m_ui.neighbors->verticalScrollBar()->setValue(vval);
   m_ui.neighbors->setUpdatesEnabled(true);
   connect(m_ui.neighbors,
