@@ -209,10 +209,12 @@ void spoton::populateUrlDistillers(void)
 
 	      if(ok)
 		{
-		  QComboBox *box = new QComboBox();
+		  QComboBox *box = 0;
 		  QTableWidgetItem *item = new QTableWidgetItem
 		    (QString::fromUtf8(domain.constData(), domain.length()));
+		  QWidget *widget = combinationBoxForTable();
 
+		  box = widget->findChild<QComboBox *> ();
 		  box->addItem("accept");
 		  box->addItem("deny");
 		  box->setProperty
@@ -233,21 +235,21 @@ void spoton::populateUrlDistillers(void)
 		    {
 		      m_ui.downDistillers->setRowCount(dCount + 1);
 		      m_ui.downDistillers->setItem(dCount, 0, item);
-		      m_ui.downDistillers->setCellWidget(dCount, 1, box);
+		      m_ui.downDistillers->setCellWidget(dCount, 1, widget);
 		      dCount += 1;
 		    }
 		  else if(direction == "shared")
 		    {
 		      m_ui.sharedDistillers->setRowCount(sCount + 1);
 		      m_ui.sharedDistillers->setItem(sCount, 0, item);
-		      m_ui.sharedDistillers->setCellWidget(sCount, 1, box);
+		      m_ui.sharedDistillers->setCellWidget(sCount, 1, widget);
 		      sCount += 1;
 		    }
 		  else
 		    {
 		      m_ui.upDistillers->setRowCount(uCount + 1);
 		      m_ui.upDistillers->setItem(uCount, 0, item);
-		      m_ui.upDistillers->setCellWidget(uCount, 1, box);
+		      m_ui.upDistillers->setCellWidget(uCount, 1, widget);
 		      uCount += 1;
 		    }
 		}
@@ -255,10 +257,13 @@ void spoton::populateUrlDistillers(void)
 
 	m_ui.downDistillers->sortItems(0);
 	m_ui.downDistillers->resizeColumnToContents(1);
+	m_ui.downDistillers->resizeRowsToContents();
 	m_ui.sharedDistillers->sortItems(0);
 	m_ui.sharedDistillers->resizeColumnToContents(1);
+	m_ui.sharedDistillers->resizeRowsToContents();
 	m_ui.upDistillers->sortItems(0);
 	m_ui.upDistillers->resizeColumnToContents(1);
+	m_ui.upDistillers->resizeRowsToContents();
       }
 
     db.close();
@@ -1263,12 +1268,16 @@ void spoton::slotImportUrls(void)
 
 		  for(int i = 0; i < m_ui.sharedDistillers->rowCount(); i++)
 		    {
-		      QComboBox *box = qobject_cast<QComboBox *>
-			(m_ui.sharedDistillers->cellWidget(i, 1));
 		      QTableWidgetItem *item = m_ui.sharedDistillers->
 			item(i, 0);
+		      QWidget *widget = m_ui.sharedDistillers->cellWidget(i, 1);
 
-		      if(!box || !item)
+		      if(!item || !widget)
+			continue;
+
+		      QComboBox *box = widget->findChild<QComboBox *> ();
+
+		      if(!box)
 			continue;
 
 		      QString type("");

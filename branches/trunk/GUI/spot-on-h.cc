@@ -111,6 +111,23 @@ QThread::Priority spoton::neighborThreadPriority(void) const
   return QThread::HighPriority;
 }
 
+QWidget *spoton::combinationBoxForTable(void) const
+{
+  QComboBox *comboBox = new QComboBox();
+  QHBoxLayout *layout = new QHBoxLayout();
+  QSpacerItem *spacer = new QSpacerItem
+    (40, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
+  QWidget *widget = new QWidget();
+
+  comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+  comboBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
+  widget->setLayout(layout);
+  layout->addWidget(comboBox);
+  layout->addSpacerItem(spacer);
+  layout->setContentsMargins(0, 0, 0, 0);
+  return widget;
+}
+
 bool spoton::listenerSupportsSslTls(void) const
 {
   int row = -1;

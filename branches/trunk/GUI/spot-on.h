@@ -554,6 +554,7 @@ class spoton: public QMainWindow
   QString savePoptasticAccount(void);
   QStringList parseAEMagnet(const QString &magnet) const;
   QThread::Priority neighborThreadPriority(void) const;
+  QWidget *combinationBoxForTable(void) const;
   bool addFriendsKey(const QByteArray &key,
 		     const QString &type,
 		     QWidget *parent);
