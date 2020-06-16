@@ -14,7 +14,7 @@ wget --progress=bar \
      https://curl.haxx.se/windows/$dlcurl/$curl.zip
 
 if [ -r "$curl.zip" ]; then
-    unzip $curl.zip -d curl-temporary.d
+    unzip -q $curl.zip -d curl-temporary.d
     mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
     mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
     mv curl-temporary.d/*/include/curl/*.h libcURL/Win32.d/include/curl/.
@@ -36,7 +36,7 @@ wget --output-document=$openssl.zip \
      https://bintray.com/vszakats/generic/download_file?file_path=$openssl.zip
 
 if [ -r "$openssl.zip" ]; then
-    unzip -o $openssl.zip
+    unzip -q -o $openssl.zip
     mv $openssl/include/openssl libOpenSSL/Include.win32/.
     mv $openssl/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
     mv $openssl/libssl-1_1.dll libOpenSSL/Libraries.win32/.
@@ -57,7 +57,7 @@ wget --output-document=$postgresql \
      "https://get.enterprisedb.com/postgresql/postgresql-9.6.18-1-windows-binaries.zip"
 
 if [ -r $postgresql ]; then
-    unzip $postgresql
+    unzip -q $postgresql
     mv pgsql/bin/libiconv-2.dll PostgreSQL/Libraries.win32/.
     mv pgsql/bin/libintl-8.dll PostgreSQL/Libraries.win32/.
     mv pgsql/bin/libpq.dll PostgreSQL/Libraries.win32/.
@@ -82,7 +82,7 @@ rm -f $sqlite
 wget --progress=bar https://sqlite.org/2020/$sqlite
 
 if [ -r $sqlite ]; then
-    unzip -o $sqlite
+    unzip -q -o $sqlite
     mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
     chmod +w,-x libSpotOn/Libraries.win32/*.dll*
     rm -f $sqlite
@@ -98,7 +98,7 @@ rm -f $sqlite
 wget --progress=bar https://sqlite.org/2020/$sqlite
 
 if [ -r $sqlite ]; then
-    unzip -o $sqlite
+    unzip -q -o $sqlite
     rm -f $sqlite
 else
     echo "Cannot read $sqlite."
