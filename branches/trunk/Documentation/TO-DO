@@ -248,6 +248,7 @@ Completed Items
        Other devices, nodes, etc.
 176.   Display default Spot-On page on failed URLs.
 177.   Beautiful combination boxes.
+178.   Proxies. Delegated to Spot-On-Lite.
 
 Ignored Items
 
@@ -279,11 +280,10 @@ Remaining Items
 
 1.     Audible.
 2.     Open Library.
-3.     Research proxies.
-4.     Which key types to export and import? A new selection dialog.
-5.     SQLite silent mode; limit synchronization.
-6.     Remove obsolete includes.
-7.     IMAP and optional removal of messages; retrieve latest.
-8.     Windows BT. Requires Qt 5.14.
-9.     Windows NTL.
-10.    Pointcheval.
+3.     Which key types to export and import? A new selection dialog.
+4.     SQLite silent mode; limit synchronization.
+5.     Remove obsolete includes.
+6.     IMAP and optional removal of messages; retrieve latest.
+7.     Windows BT. Requires Qt 5.14.
+8.     Windows NTL.
+9.     Pointcheval.
