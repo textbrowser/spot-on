@@ -41,6 +41,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra -Wl,-z,relro \
                           -Wno-unused \
                           -Woverloaded-virtual \
