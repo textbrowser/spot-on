@@ -1554,8 +1554,8 @@ gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok) const
   gcry_fast_random_poll();
 
   gcry_mpi_t exponent = 0;
-  unsigned char *buffer = (unsigned char *) gcry_random_bytes_secure
-    (BITS / 8, GCRY_STRONG_RANDOM);
+  unsigned char *buffer = static_cast<unsigned char *>
+    (gcry_random_bytes_secure(BITS / 8, GCRY_STRONG_RANDOM));
 
   if(!buffer)
     {

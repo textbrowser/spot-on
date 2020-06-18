@@ -48,6 +48,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
                           -Wno-deprecated-copy \
                           -Wno-expansion-to-defined \

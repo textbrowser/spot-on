@@ -527,8 +527,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
   if(port)
     *port = 0;
 
-  if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr,
-		 &length) == 0)
+  if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr, &length) == 0)
     {
       if(peeraddr.ss_family == AF_INET)
 	{
@@ -4117,11 +4116,11 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 void spoton_misc::closeSocket(const qintptr socketDescriptor)
 {
 #if defined(Q_OS_WIN)
-  shutdown((SOCKET) socketDescriptor, SD_BOTH);
-  closesocket((SOCKET) socketDescriptor);
+  shutdown(static_cast<SOCKET> (socketDescriptor), SD_BOTH);
+  closesocket(static_cast<SOCKET> (socketDescriptor));
 #else
-  shutdown((int) socketDescriptor, SHUT_RDWR);
-  close((int) socketDescriptor);
+  shutdown(static_cast<int> (socketDescriptor), SHUT_RDWR);
+  close(static_cast<int> (socketDescriptor));
 #endif
 }
 
