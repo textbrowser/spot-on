@@ -136,7 +136,8 @@ void spoton_web_server::slotTimeout(void)
   if(m_http->isListening() && m_http->serverPort() != port)
     m_http->close();
 
-  if(m_https->isListening() && m_https->serverPort() != port + 5)
+  if(m_https->isListening() &&
+     m_https->serverPort() != static_cast<quint16> (port + 5))
     {
       m_https->clear();
       m_https->close();
@@ -197,7 +198,8 @@ void spoton_web_server::slotTimeout(void)
 	 "This is a serious problem!");
 
   if(!m_https->isListening())
-    if(!m_https->listen(spoton_misc::localAddressIPv4(), port + 5))
+    if(!m_https->listen(spoton_misc::localAddressIPv4(),
+			static_cast<quint16> (port + 5)))
       spoton_misc::logError
 	("spoton_web_server::slotTimeout(): m_https->listen() failure. "
 	 "This is a serious problem!");

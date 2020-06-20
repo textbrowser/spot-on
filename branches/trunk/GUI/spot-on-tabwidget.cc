@@ -74,7 +74,8 @@ void spoton_tabwidget::slotTimeout(void)
 	(2, tr("The database file email.db has reached its designated "
 	       "capacity."));
     }
-  else if((1.0 * fileInfo.size()) / (1.0 * maximumSize) >= 0.90)
+  else if(static_cast<double> (fileInfo.size()) /
+	  static_cast<double> (maximumSize) >= 0.90)
     {
       tabBar()->setTabTextColor(2, QColor("orange"));
       tabBar()->setTabToolTip

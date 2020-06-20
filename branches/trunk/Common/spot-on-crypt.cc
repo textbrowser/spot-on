@@ -3298,7 +3298,7 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
   QByteArray a;
   QByteArray b;
   int length = qMax(bytes1.length(), bytes2.length());
-  unsigned long int rc = 0;
+  int rc = 0;
 
   a = bytes1.leftJustified(length, 0);
   b = bytes2.leftJustified(length, 0);
@@ -3310,13 +3310,12 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
   for(int i = 0; i < length; i++)
     {
       std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba1
-	(static_cast<unsigned long int> (a.at(i)));
+	(static_cast<unsigned long long int> (a.at(i)));
       std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba2
-	(static_cast<unsigned long int> (b.at(i)));
+	(static_cast<unsigned long long int> (b.at(i)));
 
       for(size_t j = 0; j < ba1.size(); j++)
-	rc |= static_cast<unsigned long int> (ba1[j]) ^
-	  static_cast<unsigned long int> (ba2[j]);
+	rc |= ba1[j] ^ ba2[j];
     }
 
   return rc == 0; /*

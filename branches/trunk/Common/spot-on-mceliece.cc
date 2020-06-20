@@ -124,7 +124,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	      */
 
 	      if(m_n > 0)
-		m_m = static_cast<size_t> (::log2(m_n));
+		m_m = static_cast<size_t> (::log2(static_cast<double> (m_n)));
 
 	      preparePreSynTab();
 	    }
@@ -152,7 +152,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 {
   m_k = 0;
   m_m = m;
-  m_n = 1 << m_m; // 2^m
+  m_n = static_cast<size_t> (1) << m_m; // 2^m
   m_ok = true;
   m_t = t;
 
@@ -204,7 +204,8 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 	  A = gf2e = NTL::to_GF2E(gf2x);
 
 	  for(int long j = 0; j < static_cast<long int> (dividers.size()); j++)
-	    if(NTL::power(gf2e, dividers[j]) == NTL::to_GF2E(1))
+	    if(NTL::power(gf2e, dividers[static_cast<size_t> (j)]) ==
+	       NTL::to_GF2E(1))
 	      {
 		found = false;
 		break;
@@ -282,7 +283,7 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
 
       for(long int i = 0; i < n; i++)
 	for(long int j = 0; j < k; j++)
-	  mat_GF2[j][m_swappingColumns[i]] = m_G[j][i];
+	  mat_GF2[j][m_swappingColumns[static_cast<size_t> (i)]] = m_G[j][i];
 
       m_G = mat_GF2;
     }
@@ -490,11 +491,10 @@ void spoton_mceliece_private_key::reset(const bool ok)
   m_t = 0;
 }
 
-void spoton_mceliece_private_key::swapSwappingColumns(const long int i,
-						      const long int j)
+void spoton_mceliece_private_key::swapSwappingColumns(const size_t i,
+						      const size_t j)
 {
-  if(i < 0 || i >= static_cast<long int> (m_swappingColumns.size()) ||
-     j < 0 || j >= static_cast<long int> (m_swappingColumns.size()))
+  if(i >= m_swappingColumns.size() || j >= m_swappingColumns.size())
     {
       m_ok = false;
       return;
@@ -624,7 +624,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
       */
 
       if(m_n > 0)
-	m_m = ::log2(m_n);
+	m_m = static_cast<size_t> (::log2(static_cast<double> (m_n)));
     }
   else
     {
@@ -841,7 +841,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
       for(long int i = 0; i < n; i++)
 	if(ccar[i] != 0)
-	  syndrome += v[i];
+	  syndrome += v[static_cast<size_t> (i)];
 
       NTL::GF2EX sigma = NTL::GF2EX::zero();
 
@@ -953,7 +953,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       vec_GF2.SetLength(n);
 
       for(long int i = 0; i < n; i++)
-	vec_GF2[i] = ccar[swappingColumns[i]];
+	vec_GF2[i] = ccar[swappingColumns[static_cast<size_t> (i)]];
 
       long int k = static_cast<long int> (m_k);
 
@@ -1009,7 +1009,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream2.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream2[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < h.length(); j++, k++)
@@ -1055,7 +1057,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream1.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream1[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < rcar.length(); j++, k++)
@@ -1080,7 +1084,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 		p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	      }
 
-	    plaintext.write(p, plaintext_size);
+	    plaintext.write(p, static_cast<long int> (plaintext_size));
 	    break;
 	  }
 	case spoton_mceliece_private_key::FOB:
@@ -1097,7 +1101,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    keyStream2 = spoton_crypt::shake256
 	      (keyStream2,
-	       qCeil(static_cast<double> (m.length()) / CHAR_BIT),
+	       static_cast<size_t> (qCeil(static_cast<double> (m.length()) /
+					  static_cast<double> (CHAR_BIT))),
 	       &ok);
 
 	    if(!ok)
@@ -1110,7 +1115,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream2.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream2[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < h.length(); j++, k++)
@@ -1129,7 +1136,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    keyStream1 = spoton_crypt::shake256
 	      (keyStream1,
-	       qCeil(static_cast<double> (m.length()) / CHAR_BIT),
+	       static_cast<size_t> (qCeil(static_cast<double> (m.length()) /
+					  static_cast<double> (CHAR_BIT))),
 	       &ok);
 
 	    if(!ok)
@@ -1142,7 +1150,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream1.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream1[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < rcar.length(); j++, k++)
@@ -1167,7 +1177,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 		p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	      }
 
-	    plaintext.write(p, plaintext_size);
+	    plaintext.write(p, static_cast<long int> (plaintext_size));
 	    break;
 	  }
 	case spoton_mceliece_private_key::PCA:
@@ -1191,7 +1201,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 		p[static_cast<size_t> (i)] = static_cast<char> (b.to_ulong());
 	      }
 
-	    plaintext.write(p, plaintext_size);
+	    plaintext.write(p, static_cast<long int> (plaintext_size));
 	    break;
 	  }
 	default:
@@ -1243,7 +1253,8 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
       for(size_t i = 0, k = 0; i < plaintext_size; i++)
 	{
-	  std::bitset<CHAR_BIT> b(plaintext[i]);
+	  std::bitset<CHAR_BIT> b
+	    (static_cast<unsigned long long int> (plaintext[i]));
 
 	  for(long int j = 0;
 	      j < static_cast<long int> (b.size()) && k < m_k;
@@ -1317,7 +1328,9 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream1.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream1[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < r.length(); j++, k++)
@@ -1363,7 +1376,9 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream2.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream2[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < h.length(); j++, k++)
@@ -1405,7 +1420,9 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream1.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream1[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream1[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < r.length(); j++, k++)
@@ -1437,7 +1454,9 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    for(long int i = 0, k = 0;
 		i < static_cast<long int> (keyStream2.size()); i++)
 	      {
-		std::bitset<CHAR_BIT> b(keyStream2[static_cast<int> (i)]);
+		std::bitset<CHAR_BIT> b
+		  (static_cast<unsigned long long int>
+		   (keyStream2[static_cast<int> (i)]));
 
 		for(long int j = 0; j < static_cast<long int> (b.size()) &&
 		      k < h.length(); j++, k++)
@@ -1601,7 +1620,8 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 
 		if(pivot)
 		  {
-		    m_privateKey->swapSwappingColumns(i, j);
+		    m_privateKey->swapSwappingColumns
+		      (static_cast<size_t> (i), static_cast<size_t> (j));
 		    break;
 		  }
 	      }
@@ -1615,7 +1635,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 
       for(long int i = 0; i < n; i++)
 	for(long int j = 0; j < m * t; j++)
-	  mat_GF2[j][i] = H[j][swappingColumns[i]];
+	  mat_GF2[j][i] = H[j][swappingColumns[static_cast<size_t> (i)]];
 
       H = mat_GF2;
 

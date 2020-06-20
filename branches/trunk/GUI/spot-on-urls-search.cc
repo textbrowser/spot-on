@@ -328,8 +328,8 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 
       html.append
 	(QString("The query completed in %1 second(s).<br><br>").
-	 arg(qAbs(static_cast<double> (m_urlQueryElapsedTimer.
-				       elapsed() / 1000.0))));
+	 arg(qAbs(static_cast<double> (m_urlQueryElapsedTimer.elapsed()) /
+		  1000.0)));
 
       while(query.next())
 	{

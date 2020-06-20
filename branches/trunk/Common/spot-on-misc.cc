@@ -3609,43 +3609,6 @@ int spoton_misc::minimumNeighborLaneWidth(void)
   return laneWidth;
 }
 
-int spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
-{
-  if(!tcpSocket)
-    return -1;
-
-  int count = 0;
-
-#ifdef Q_OS_FREEBSD
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   FIONWRITE,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_LINUX)
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   SIOCOUTQ,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_MAC)
-  socklen_t length = (socklen_t) sizeof(count);
-
-  if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
-		SOL_SOCKET,
-		SO_NWRITE,
-		&count,
-		&length) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_OPENBSD)
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   TIOCOUTQ,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#else
-  count = tcpSocket->bytesToWrite();
-#endif
-  return count;
-}
-
 qint64 spoton_misc::oidFromPublicKeyHash(const QByteArray &publicKeyHash)
 {
   QString connectionName("");
@@ -3719,6 +3682,43 @@ qint64 spoton_misc::participantCount(const QString &keyType,
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  return count;
+}
+
+qint64 spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
+{
+  if(!tcpSocket)
+    return -1;
+
+  qint64 count = 0;
+
+#ifdef Q_OS_FREEBSD
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
+	   FIONWRITE,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_LINUX)
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
+	   SIOCOUTQ,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_MAC)
+  socklen_t length = (socklen_t) sizeof(count);
+
+  if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
+		SOL_SOCKET,
+		SO_NWRITE,
+		&count,
+		&length) == -1)
+    count = tcpSocket->bytesToWrite();
+#elif defined(Q_OS_OPENBSD)
+  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
+	   TIOCOUTQ,
+	   &count) == -1)
+    count = tcpSocket->bytesToWrite();
+#else
+  count = tcpSocket->bytesToWrite();
+#endif
   return count;
 }
 

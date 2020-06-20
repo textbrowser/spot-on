@@ -507,8 +507,7 @@ int spoton_neighbor::write(const char *data,
 
 	  qint64 minimum = qMin
 	    (spoton_common::MAXIMUM_TCP_PACKET_SIZE,
-	     maximumBufferSize -
-	     static_cast<qint64> (spoton_misc::sendQueueSize(m_tcpSocket)));
+	     maximumBufferSize - spoton_misc::sendQueueSize(m_tcpSocket));
 
 	  if(minimum > 0)
 	    sent = m_tcpSocket->write(data, qMin(minimum, remaining));
@@ -638,7 +637,7 @@ int spoton_neighbor::write(const char *data,
       {
 	QWriteLocker locker(&m_bytesDiscardedOnWriteMutex);
 
-	m_bytesDiscardedOnWrite += remaining;
+	m_bytesDiscardedOnWrite += static_cast<quint64> (remaining);
       }
 
       if(emitDropped)
@@ -4191,7 +4190,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
       return;
     }
 
-  int noid = neighbor_oid;
+  qint64 noid = neighbor_oid;
 
   /*
   ** Save a friendly key.

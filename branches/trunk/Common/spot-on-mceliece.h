@@ -149,7 +149,7 @@ class spoton_mceliece_private_key
     return m_swappingColumns;
   }
 
-  void swapSwappingColumns(const long int i, const long int j);
+  void swapSwappingColumns(const size_t i, const size_t j);
 
  private:
   Conversions m_conversion;
@@ -258,7 +258,7 @@ class spoton_mceliece
   static double expansion(const size_t m, const size_t t)
   {
     size_t k = 0;
-    size_t n = 1 << m; // 2^m
+    size_t n = static_cast<size_t> (1) << m; // 2^m
 
     if(m * t < n)
       k = n - m * t;
@@ -272,7 +272,7 @@ class spoton_mceliece
   void initializeSystemParameters(const size_t m, const size_t t)
   {
     m_m = m;
-    m_n = 1 << m_m; // 2^m
+    m_n = static_cast<size_t> (1) << m_m; // 2^m
     m_t = t;
 
     /*

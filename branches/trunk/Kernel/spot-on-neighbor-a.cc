@@ -3171,7 +3171,9 @@ void spoton_neighbor::slotTimeout(void)
      m_privateApplicationCredentials.isEmpty())
     if(m_sourceOfRandomness > 0)
       if(readyToWrite())
-	write(spoton_crypt::weakRandomBytes(m_sourceOfRandomness).constData(),
+	write(spoton_crypt::
+	      weakRandomBytes(static_cast<size_t> (m_sourceOfRandomness)).
+	      constData(),
 	      m_sourceOfRandomness);
 }
 

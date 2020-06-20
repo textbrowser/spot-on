@@ -204,10 +204,10 @@ class spoton_misc
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
   static int minimumNeighborLaneWidth(void);
-  static int sendQueueSize(QTcpSocket *socket);
   static qint64 oidFromPublicKeyHash(const QByteArray &publicKeyHash);
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
+  static qint64 sendQueueSize(QTcpSocket *socket);
   static quint64 databaseAccesses(void);
   static spoton_crypt *cryptFromForwardSecrecyMagnet
     (const QByteArray &magnet);

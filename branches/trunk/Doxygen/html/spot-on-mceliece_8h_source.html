@@ -220,7 +220,7 @@ $(function() {
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    <span class="keywordflow">return</span> m_swappingColumns;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  }</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160; </div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordtype">void</span> swapSwappingColumns(<span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> i, <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> j);</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordtype">void</span> swapSwappingColumns(<span class="keyword">const</span> <span class="keywordtype">size_t</span> i, <span class="keyword">const</span> <span class="keywordtype">size_t</span> j);</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160; </div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  Conversions m_conversion;</div>
@@ -329,7 +329,7 @@ $(function() {
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">double</span> expansion(<span class="keyword">const</span> <span class="keywordtype">size_t</span> m, <span class="keyword">const</span> <span class="keywordtype">size_t</span> t)</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  {</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordtype">size_t</span> k = 0;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordtype">size_t</span> n = 1 &lt;&lt; m; <span class="comment">// 2^m</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="keywordtype">size_t</span> n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span> (1) &lt;&lt; m; <span class="comment">// 2^m</span></div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span>(m * t &lt; n)</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      k = n - m * t;</div>
@@ -343,7 +343,7 @@ $(function() {
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="keywordtype">void</span> initializeSystemParameters(<span class="keyword">const</span> <span class="keywordtype">size_t</span> m, <span class="keyword">const</span> <span class="keywordtype">size_t</span> t)</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  {</div>
 <div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    m_m = m;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    m_n = 1 &lt;&lt; m_m; <span class="comment">// 2^m</span></div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    m_n = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span> (1) &lt;&lt; m_m; <span class="comment">// 2^m</span></div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    m_t = t;</div>
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160; </div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="comment">/*</span></div>
