@@ -37,7 +37,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-qual \
                           -Wdouble-promotion \
                           -Wextra \
-                          -Wl,-z,relro \
                           -Wno-cast-align \
                           -Wno-deprecated-copy \
                           -Wno-gnu-inline-cpp-without-extern \
