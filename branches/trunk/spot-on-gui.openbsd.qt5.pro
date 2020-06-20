@@ -37,6 +37,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-qual \
                           -Wdouble-promotion \
                           -Wextra \
+                          -Wl,-z,relro \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \

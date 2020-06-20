@@ -50,6 +50,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-qual \
                           -Wdouble-promotion \
                           -Wextra \
+                          -Wl,-z,relro \
                           -Wno-deprecated-copy \
                           -Wno-expansion-to-defined \
                           -Wno-unused \
