@@ -60,6 +60,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -mabi=altivec \
                           -mpowerpc \
                           -mtune=powerpc \
+                          -pedantic \
                           -pie \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash

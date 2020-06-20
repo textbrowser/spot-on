@@ -35,6 +35,7 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
@@ -43,6 +44,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
+                          -pedantic \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge

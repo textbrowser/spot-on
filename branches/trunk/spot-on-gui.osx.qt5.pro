@@ -41,6 +41,7 @@ QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
                           -Wno-cast-align \
                           -Wno-deprecated-copy \
@@ -54,6 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fstack-protector-all \
                           -fwrapv \
                           -mtune=generic \
+                          -pedantic \
                           -std=c++11
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12

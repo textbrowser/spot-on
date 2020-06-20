@@ -39,12 +39,14 @@ QMAKE_CLEAN     += ..\\..\\libNTRU.dll \
 QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstrict-overflow=5 \
                           -fwrapv \
                           -mtune=generic \
+                          -pedantic
                           -pie \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r debug \
