@@ -12,7 +12,8 @@ libspoton.target = libspoton.so
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= concurrent \
+QT		+= bluetooth \
+                   concurrent \
                    gui \
                    multimedia \
                    network \
@@ -45,7 +46,6 @@ QMAKE_CLEAN            += ../../libNTL/unix.d/src/*.lo \
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
-                          -Wcast-align \
                           -Wcast-qual \
                           -Wdouble-promotion \
                           -Wextra \
