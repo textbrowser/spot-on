@@ -35,7 +35,9 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
+                          -Wl,-z,relro \
                           -Wno-cast-align \
                           -Wno-deprecated-copy \
                           -Wno-gnu-inline-cpp-without-extern \
@@ -47,7 +49,9 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=generic
+                          -mtune=generic \
+                          -pedantic \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12

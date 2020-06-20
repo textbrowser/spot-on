@@ -42,7 +42,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-align \
                           -Wcast-qual \
                           -Wdouble-promotion \
-                          -Wextra -Wl,-z,relro \
+                          -Wextra \
+                          -Wl,-z,relro \
                           -Wno-unused \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
@@ -54,6 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -mabi=altivec \
                           -mpowerpc \
                           -mtune=powerpc \
+                          -pedantic \
                           -pie \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash

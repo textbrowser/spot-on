@@ -35,13 +35,16 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstrict-overflow=5 \
                           -fwrapv \
                           -mtune=generic \
-                          -pie
+                          -pedantic \
+                          -pie \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r debug \
                           -r release \
                           .qmake.cache \
