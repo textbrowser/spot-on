@@ -53,7 +53,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=generic
+                          -mtune=generic \
+                          -std=c++11
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 

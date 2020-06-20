@@ -49,7 +49,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=native
+                          -mtune=native \
+                          -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 

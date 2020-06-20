@@ -42,6 +42,7 @@ QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdouble-promotion \
                           -Werror \
                           -Wextra \
                           -Woverloaded-virtual \
@@ -52,7 +53,9 @@ QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -fstack-protector-all \
                           -fwrapv \
                           -mtune=native \
-                          -pie
+                          -pedantic \
+                          -pie \
+                          -std=c++11
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/goldbug/Lib
 QMAKE_EXTRA_TARGETS = libntru libspoton purge
 QMAKE_LFLAGS_RPATH =

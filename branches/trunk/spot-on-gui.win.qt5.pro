@@ -45,7 +45,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstrict-overflow=5 \
                           -fwrapv \
                           -mtune=generic \
-                          -pie
+                          -pie \
+                          -std=c++11
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r debug \
                           .qmake.cache \
