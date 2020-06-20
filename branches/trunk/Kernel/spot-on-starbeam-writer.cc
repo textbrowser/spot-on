@@ -759,8 +759,9 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 	  }
 
 	QWriteLocker locker(&m_statisticsMutex);
-	QMutableHashIterator<QString, spoton_starbeam_writer_statistics> it
+	QHashIterator<QString, spoton_starbeam_writer_statistics> it
 	  (m_statistics);
+	QStringList list;
 
 	while(it.hasNext())
 	  {
@@ -792,8 +793,11 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 	      query.exec();
 
 	    if(remove)
-	      it.remove();
+	      list << it.key();
 	  }
+
+	for(int i = 0; i < list.size(); i++)
+	  m_statistics.remove(list.at(i));
       }
 
     db.close();
