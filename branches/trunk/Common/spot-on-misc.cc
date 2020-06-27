@@ -4339,6 +4339,14 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 10;
 
   settings.insert("gui/searchResultsPerPage", integer);
+  integer = settings.value("gui/soss_maximum_clients", 10).toInt(&ok);
+
+  if(!ok)
+    integer = 10;
+  else if(integer < 1 || integer > 999999999)
+    integer = 10;
+
+  settings.insert("gui/soss_maximum_clients", integer);
   rational = qAbs(settings.value("kernel/cachePurgeInterval", 15.00).
 		  toDouble(&ok));
 
