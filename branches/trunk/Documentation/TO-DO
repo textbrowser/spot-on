@@ -249,6 +249,7 @@ Completed Items
 176.   Display default Spot-On page on failed URLs.
 177.   Beautiful combination boxes.
 178.   Proxies. Delegated to Spot-On-Lite.
+179.   Limit the number of SOSS clients.
 
 Ignored Items
 
@@ -287,5 +288,4 @@ Remaining Items
 7.     Windows BT. Requires Qt 5.14.
 8.     Windows NTL.
 9.     Pointcheval.
-10.    Limit the number of SOSS clients.
-11.    Pre-future SOSS tasks.
+10.    Pre-future SOSS tasks.

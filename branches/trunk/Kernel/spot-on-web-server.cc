@@ -47,6 +47,7 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
 {
   m_abort = new QAtomicInt(0);
+  m_clientCount = new QAtomicInt(0);
   m_http = new spoton_web_server_tcp_server(this);
   m_https = new spoton_web_server_tcp_server(this);
 
@@ -82,6 +83,7 @@ spoton_web_server::~spoton_web_server()
     thread->wait();
 
   delete m_abort;
+  delete m_clientCount;
 }
 
 int spoton_web_server::clientCount(void) const
@@ -95,7 +97,11 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
     return;
 
   spoton_web_server_thread *thread = new spoton_web_server_thread
-    (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
+    (m_abort,
+     m_clientCount,
+     this,
+     QPair<QByteArray, QByteArray> (),
+     socketDescriptor);
 
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   thread->start();
@@ -114,7 +120,11 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
   QPair<QByteArray, QByteArray> credentials
     (m_https->certificate(), m_https->privateKey());
   spoton_web_server_thread *thread = new spoton_web_server_thread
-    (m_abort, this, credentials, socketDescriptor);
+    (m_abort,
+     m_clientCount,
+     this,
+     credentials,
+     socketDescriptor);
 
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   thread->start();
@@ -295,13 +305,22 @@ void spoton_web_server_thread::process
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
     {
-      data = data.simplified().trimmed().mid(5); // get /c <- c
-      data = data.mid(0, data.indexOf(' '));
+      if(m_clientCount->fetchAndAddOrdered(0) <
+	 spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
+	{
+	  data = data.simplified().trimmed().mid(5); // get /c <- c
+	  data = data.mid(0, data.indexOf(' '));
+	  m_clientCount->fetchAndAddOrdered(1);
 
-      QPair<QString, QString> address (socket->localAddress().toString(),
-				       QString::number(socket->localPort()));
+	  QPair<QString, QString> address
+	    (socket->localAddress().toString(),
+	     QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+	  process(socket.data(), data, address);
+	  m_clientCount->fetchAndAddOrdered(-1);
+	}
+      else
+	writeDefaultPage(socket.data());
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
@@ -309,9 +328,17 @@ void spoton_web_server_thread::process
       if(spoton_kernel::
 	 setting("gui/web_server_serve_local_content", false).toBool())
 	{
-	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
-	  data = data.mid(0, data.indexOf(' '));
-	  processLocal(socket.data(), data);
+	  if(m_clientCount->fetchAndAddOrdered(0) <
+	     spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
+	    {
+	      data = data.simplified().trimmed().mid(11); // get /local-x <- x
+	      data = data.mid(0, data.indexOf(' '));
+	      m_clientCount->fetchAndAddOrdered(1);
+	      processLocal(socket.data(), data);
+	      m_clientCount->fetchAndAddOrdered(-1);
+	    }
+	  else
+	    writeDefaultPage(socket.data());
 	}
       else
 	writeDefaultPage(socket.data());
@@ -322,14 +349,23 @@ void spoton_web_server_thread::process
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
-      data = data.simplified().trimmed();
-      data = data.mid(data.lastIndexOf("current="));
-      data = data.mid(0, data.indexOf(' '));
+      if(m_clientCount->fetchAndAddOrdered(0) <
+	 spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
+	{
+	  data = data.simplified().trimmed();
+	  data = data.mid(data.lastIndexOf("current="));
+	  data = data.mid(0, data.indexOf(' '));
+	  m_clientCount->fetchAndAddOrdered(1);
 
-      QPair<QString, QString> address (socket->localAddress().toString(),
-				       QString::number(socket->localPort()));
+	  QPair<QString, QString> address
+	    (socket->localAddress().toString(),
+	     QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+	  process(socket.data(), data, address);
+	  m_clientCount->fetchAndAddOrdered(-1);
+	}
+      else
+	writeDefaultPage(socket.data());
     }
 }
 
