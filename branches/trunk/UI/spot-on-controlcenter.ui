@@ -493,8 +493,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>414</width>
-                <height>498</height>
+                <width>762</width>
+                <height>582</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2228,8 +2228,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>670</width>
-             <height>429</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2936,7 +2936,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>265</width>
+                     <width>256</width>
                      <height>1538</height>
                     </rect>
                    </property>
@@ -3481,8 +3481,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>730</width>
-             <height>230</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3886,7 +3886,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>730</width>
+                  <width>735</width>
                   <height>603</height>
                  </rect>
                 </property>
@@ -4699,8 +4699,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>625</width>
-             <height>412</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4785,8 +4785,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>682</width>
-                 <height>713</height>
+                 <width>741</width>
+                 <height>695</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5758,7 +5758,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>865</width>
+             <width>836</width>
              <height>1311</height>
             </rect>
            </property>
@@ -6960,7 +6960,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>621</width>
+             <width>751</width>
              <height>704</height>
             </rect>
            </property>
@@ -8122,8 +8122,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>678</width>
-             <height>777</height>
+             <width>767</width>
+             <height>795</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8232,6 +8232,26 @@
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_121">
+                <property name="text">
+                 <string>Maximum Clients</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="soss_maximum_clients">
+                <property name="minimum">
+                 <number>-1</number>
+                </property>
+                <property name="maximum">
+                 <number>999999999</number>
+                </property>
+                <property name="value">
+                 <number>-1</number>
                 </property>
                </widget>
               </item>
@@ -8870,8 +8890,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>275</width>
-             <height>165</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9728,6 +9748,7 @@
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>soss_maximum_clients</tabstop>
   <tabstop>web_server_serve_local_content</tabstop>
   <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlName</tabstop>
