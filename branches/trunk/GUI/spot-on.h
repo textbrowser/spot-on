@@ -932,6 +932,7 @@ class spoton: public QMainWindow
   void slotRespondToForwardSecrecy(void);
   void slotRetrieveMail(void);
   void slotRewindFile(void);
+  void slotSOSSMaximumClientsChanged(int value);
   void slotSaveAlternatingColors(bool state);
   void slotSaveAttachment(void);
   void slotSaveBuzzAutoJoin(bool state);

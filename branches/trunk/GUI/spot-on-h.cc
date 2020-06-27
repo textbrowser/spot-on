@@ -926,6 +926,14 @@ void spoton::slotPrepareContextMenuMirrors(void)
   prepareContextMenuMirrors();
 }
 
+void spoton::slotSOSSMaximumClientsChanged(int value)
+{
+  QSettings settings;
+
+  m_settings["gui/soss_maximum_clients"] = value;
+  settings.setValue("gui/soss_maximum_clients", value);
+}
+
 void spoton::slotSaveExternalIPUrl(void)
 {
   m_optionsUi.external_ip_url->setText

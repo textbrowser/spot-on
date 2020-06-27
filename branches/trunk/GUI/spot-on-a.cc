@@ -2150,6 +2150,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotSignatureKeyTypeChanged(int)));
+  connect(m_ui.soss_maximum_clients,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotSOSSMaximumClientsChanged(int)));
   connect(m_ui.sslListener,
 	  SIGNAL(toggled(bool)),
 	  m_ui.days_valid,
