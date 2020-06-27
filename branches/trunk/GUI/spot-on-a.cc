@@ -2348,6 +2348,10 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/showUrlsPage", true).toBool());
   m_ui.secondary_storage_maximum_page_count->setValue
     (m_settings.value("gui/congestion_control_max_page_count", 10000).toInt());
+  m_ui.soss_maximum_clients->blockSignals(true);
+  m_ui.soss_maximum_clients->setValue
+    (m_settings.value("gui/soss_maximum_clients", 10).toInt());
+  m_ui.soss_maximum_clients->blockSignals(false);
   m_ui.web_server_port->blockSignals(true);
   m_ui.web_server_port->setValue
     (m_settings.value("gui/web_server_port", 0).toInt());
