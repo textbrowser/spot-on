@@ -4118,6 +4118,9 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
 
 void spoton_misc::closeSocket(const qintptr socketDescriptor)
 {
+  if(socketDescriptor < 0)
+    return;
+
 #if defined(Q_OS_WIN)
   shutdown(static_cast<SOCKET> (socketDescriptor), SD_BOTH);
   closesocket(static_cast<SOCKET> (socketDescriptor));

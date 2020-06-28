@@ -106,6 +106,7 @@ class spoton_web_server: public QObject
  private slots:
   void slotHttpClientConnected(const qint64 socketDescriptor);
   void slotHttpsClientConnected(const qint64 socketDescriptor);
+  void slotThreadFinished(void);
   void slotTimeout(void);
 };
 
@@ -114,14 +115,12 @@ class spoton_web_server_thread: public QThread
   Q_OBJECT
 
  public:
-  spoton_web_server_thread(QAtomicInt *atomicInt1,
-			   QAtomicInt *atomicInt2,
+  spoton_web_server_thread(QAtomicInt *atomicInt,
 			   QObject *parent,
 			   const QPair<QByteArray, QByteArray> &credentials,
 			   const qint64 socketDescriptor):QThread(parent)
   {
-    m_abort = atomicInt1;
-    m_clientCount = atomicInt2;
+    m_abort = atomicInt;
     m_credentials = credentials;
     m_socketDescriptor = socketDescriptor;
   }
@@ -131,7 +130,6 @@ class spoton_web_server_thread: public QThread
 
  private:
   QAtomicInt *m_abort;
-  QAtomicInt *m_clientCount;
   QPair<QByteArray, QByteArray> m_credentials;
   qint64 m_socketDescriptor;
   void process(const QPair<QByteArray, QByteArray> &credentials,

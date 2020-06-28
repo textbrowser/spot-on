@@ -88,46 +88,56 @@ spoton_web_server::~spoton_web_server()
 
 int spoton_web_server::clientCount(void) const
 {
-  return findChildren<spoton_web_server_thread *> ().size();
+  return m_clientCount->fetchAndAddOrdered(0);
 }
 
 void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 {
-  if(socketDescriptor < 0)
-    return;
+  if(m_clientCount->fetchAndAddOrdered(0) >=
+     spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||
+     socketDescriptor < 0)
+    {
+      spoton_misc::closeSocket(socketDescriptor);
+      return;
+    }
 
   spoton_web_server_thread *thread = new spoton_web_server_thread
-    (m_abort,
-     m_clientCount,
-     this,
-     QPair<QByteArray, QByteArray> (),
-     socketDescriptor);
+    (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
 
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
+  connect
+    (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+  m_clientCount->fetchAndAddOrdered(1);
   thread->start();
 }
 
 void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 {
-  if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
+  if(m_clientCount->fetchAndAddOrdered(0) >=
+     spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||
+     m_https->certificate().isEmpty() ||
+     m_https->privateKey().isEmpty() ||
+     socketDescriptor < 0)
     {
       spoton_misc::closeSocket(socketDescriptor);
       return;
     }
-  else if(socketDescriptor < 0)
-    return;
 
   QPair<QByteArray, QByteArray> credentials
     (m_https->certificate(), m_https->privateKey());
   spoton_web_server_thread *thread = new spoton_web_server_thread
-    (m_abort,
-     m_clientCount,
-     this,
-     credentials,
-     socketDescriptor);
+    (m_abort, this, credentials, socketDescriptor);
 
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
+  connect
+    (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+  m_clientCount->fetchAndAddOrdered(1);
   thread->start();
+}
+
+void spoton_web_server::slotThreadFinished(void)
+{
+  m_clientCount->fetchAndAddOrdered(-1);
 }
 
 void spoton_web_server::slotTimeout(void)
@@ -305,22 +315,13 @@ void spoton_web_server_thread::process
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
     {
-      if(m_clientCount->fetchAndAddOrdered(0) <
-	 spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
-	{
-	  data = data.simplified().trimmed().mid(5); // get /c <- c
-	  data = data.mid(0, data.indexOf(' '));
-	  m_clientCount->fetchAndAddOrdered(1);
+      data = data.simplified().trimmed().mid(5); // get /c <- c
+      data = data.mid(0, data.indexOf(' '));
 
-	  QPair<QString, QString> address
-	    (socket->localAddress().toString(),
-	     QString::number(socket->localPort()));
+      QPair<QString, QString> address(socket->localAddress().toString(),
+				      QString::number(socket->localPort()));
 
-	  process(socket.data(), data, address);
-	  m_clientCount->fetchAndAddOrdered(-1);
-	}
-      else
-	writeDefaultPage(socket.data());
+      process(socket.data(), data, address);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
@@ -328,17 +329,9 @@ void spoton_web_server_thread::process
       if(spoton_kernel::
 	 setting("gui/web_server_serve_local_content", false).toBool())
 	{
-	  if(m_clientCount->fetchAndAddOrdered(0) <
-	     spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
-	    {
-	      data = data.simplified().trimmed().mid(11); // get /local-x <- x
-	      data = data.mid(0, data.indexOf(' '));
-	      m_clientCount->fetchAndAddOrdered(1);
-	      processLocal(socket.data(), data);
-	      m_clientCount->fetchAndAddOrdered(-1);
-	    }
-	  else
-	    writeDefaultPage(socket.data());
+	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
+	  data = data.mid(0, data.indexOf(' '));
+	  processLocal(socket.data(), data);
 	}
       else
 	writeDefaultPage(socket.data());
@@ -349,23 +342,14 @@ void spoton_web_server_thread::process
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
-      if(m_clientCount->fetchAndAddOrdered(0) <
-	 spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt())
-	{
-	  data = data.simplified().trimmed();
-	  data = data.mid(data.lastIndexOf("current="));
-	  data = data.mid(0, data.indexOf(' '));
-	  m_clientCount->fetchAndAddOrdered(1);
+      data = data.simplified().trimmed();
+      data = data.mid(data.lastIndexOf("current="));
+      data = data.mid(0, data.indexOf(' '));
 
-	  QPair<QString, QString> address
-	    (socket->localAddress().toString(),
-	     QString::number(socket->localPort()));
+      QPair<QString, QString> address(socket->localAddress().toString(),
+				      QString::number(socket->localPort()));
 
-	  process(socket.data(), data, address);
-	  m_clientCount->fetchAndAddOrdered(-1);
-	}
-      else
-	writeDefaultPage(socket.data());
+      process(socket.data(), data, address);
     }
 }
 
