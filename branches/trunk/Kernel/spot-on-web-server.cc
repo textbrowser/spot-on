@@ -104,9 +104,9 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
   spoton_web_server_thread *thread = new spoton_web_server_thread
     (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
 
-  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   connect
     (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   m_clientCount->fetchAndAddOrdered(1);
   thread->start();
 }
@@ -128,9 +128,9 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
   spoton_web_server_thread *thread = new spoton_web_server_thread
     (m_abort, this, credentials, socketDescriptor);
 
-  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   connect
     (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
   m_clientCount->fetchAndAddOrdered(1);
   thread->start();
 }
