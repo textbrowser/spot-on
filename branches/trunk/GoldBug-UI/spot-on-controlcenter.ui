@@ -132,7 +132,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>605</width>
-             <height>811</height>
+             <height>815</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>679</width>
-             <height>791</height>
+             <width>658</width>
+             <height>650</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2901,8 +2901,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>2052</height>
+             <width>529</width>
+             <height>1993</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4170,8 +4170,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>649</width>
-             <height>791</height>
+             <width>624</width>
+             <height>794</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5294,8 +5294,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>610</width>
-             <height>791</height>
+             <width>605</width>
+             <height>361</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5380,8 +5380,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>697</width>
-                 <height>760</height>
+                 <width>661</width>
+                 <height>703</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6622,8 +6622,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>882</width>
-             <height>1432</height>
+             <width>843</width>
+             <height>1380</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8198,8 +8198,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>1054</height>
+             <width>584</width>
+             <height>1034</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9563,8 +9563,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>585</width>
-             <height>839</height>
+             <width>654</width>
+             <height>818</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9673,6 +9673,19 @@ color: rgb(255, 255, 255);
                 </property>
                 <property name="value">
                  <number>0</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="soss_maximum_clients">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>999999999</number>
+                </property>
+                <property name="value">
+                 <number>10</number>
                 </property>
                </widget>
               </item>
@@ -11279,7 +11292,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>32</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -11902,6 +11915,7 @@ border-style: inset;
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
   <tabstop>web_server_port</tabstop>
+  <tabstop>soss_maximum_clients</tabstop>
   <tabstop>web_server_serve_local_content</tabstop>
   <tabstop>postgresql_credentials</tabstop>
   <tabstop>urlActionMenu</tabstop>
