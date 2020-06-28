@@ -72,9 +72,7 @@ class spoton_kernel: public QObject
  public:
   spoton_kernel(void);
   ~spoton_kernel();
-  static QAtomicInt s_congestion_control_secondary_storage;
   static QAtomicInt s_sendInitialStatus;
-  static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
   static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
   static QPair<quint64, quint64> s_totalUiBytesReadWritten;
@@ -174,6 +172,7 @@ class spoton_kernel: public QObject
   int m_activeNeighbors;
   int m_activeStarbeams;
   quint64 m_urlsProcessed;
+  static QAtomicInt s_congestion_control_secondary_storage;
   static QByteArray s_messagingCacheKey;
   static QDateTime s_institutionLastModificationTime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;
@@ -183,6 +182,7 @@ class spoton_kernel: public QObject
   static QHash<QString, QVariant> s_settings;
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QList<QByteArray> > s_institutionKeys;
+  static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
