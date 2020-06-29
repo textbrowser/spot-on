@@ -26,7 +26,6 @@
 */
 
 #include <QDesktopServices>
-#include <QPrinter>
 
 #include "spot-on-defines.h"
 #include "spot-on-emailwindow.h"
