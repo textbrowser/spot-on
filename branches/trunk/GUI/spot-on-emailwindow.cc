@@ -26,7 +26,6 @@
 */
 
 #include <QDesktopServices>
-#include <QPrintPreviewDialog>
 #include <QPrinter>
 
 #include "spot-on-defines.h"

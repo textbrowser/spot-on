@@ -114,18 +114,19 @@ void spoton_documentation::slotFindInitialize(void)
 void spoton_documentation::slotPagePrintPreview(void)
 {
   QPrinter printer(QPrinter::HighResolution);
-  QPrintPreviewDialog printDialog(&printer, this);
+  QScopedPointer<QPrintPreviewDialog> printDialog
+    (new QPrintPreviewDialog(&printer, this));
 
-  printDialog.setWindowModality(Qt::WindowModal);
-  connect(&printDialog,
+  printDialog->setWindowModality(Qt::WindowModal);
+  connect(printDialog.data(),
 	  SIGNAL(paintRequested(QPrinter *)),
 	  this,
 	  SLOT(slotPrint(QPrinter *)));
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  printDialog.show();
+  printDialog->show();
   QApplication::restoreOverrideCursor();
 
-  if(printDialog.exec() == QDialog::Accepted)
+  if(printDialog->exec() == QDialog::Accepted)
     {
       QApplication::processEvents();
       m_ui.textBrowser->print(&printer);
