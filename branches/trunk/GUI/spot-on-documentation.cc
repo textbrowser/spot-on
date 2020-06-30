@@ -117,7 +117,7 @@ void spoton_documentation::slotPagePrintPreview(void)
   QScopedPointer<QPrintPreviewDialog> printDialog
     (new QPrintPreviewDialog(&printer, this));
 
-  printDialog->setWindowModality(Qt::WindowModal);
+  printDialog->setWindowModality(Qt::ApplicationModal);
   connect(printDialog.data(),
 	  SIGNAL(paintRequested(QPrinter *)),
 	  this,
