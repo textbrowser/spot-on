@@ -28,7 +28,6 @@
 #ifndef _spoton_pacify_h_
 #define _spoton_pacify_h_
 
-#include <algorithm>
 #include <cmath>
 #include <map>
 #include <string>
