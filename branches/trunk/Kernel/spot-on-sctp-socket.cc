@@ -25,7 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QAbstractSocket>
+#include <QtGlobal>
 
 #ifdef SPOTON_SCTP_ENABLED
 #ifdef Q_OS_FREEBSD
