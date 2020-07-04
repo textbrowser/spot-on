@@ -28,7 +28,7 @@
 #ifndef _spoton_sctp_server_h_
 #define _spoton_sctp_server_h_
 
-#include <QHostInfo>
+#include <QHostAddress>
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
 #include <QPointer>
 #include <QSocketNotifier>

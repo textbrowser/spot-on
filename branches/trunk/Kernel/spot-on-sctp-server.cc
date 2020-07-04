@@ -73,7 +73,6 @@ extern "C"
 #endif
 #endif
 
-#include "Common/spot-on-common.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-socket-options.h"
 #include "spot-on-kernel.h"
