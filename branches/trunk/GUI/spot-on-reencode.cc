@@ -25,14 +25,11 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QApplication>
 #include <QDir>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
-
-#include <limits>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"

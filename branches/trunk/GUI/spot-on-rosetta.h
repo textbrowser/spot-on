@@ -28,13 +28,10 @@
 #ifndef _spoton_rosetta_h_
 #define _spoton_rosetta_h_
 
-#include <QMainWindow>
-
 #include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
 class spoton;
-class spoton_crypt;
 
 class spoton_rosetta: public QMainWindow
 {

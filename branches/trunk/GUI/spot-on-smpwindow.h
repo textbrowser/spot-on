@@ -28,9 +28,6 @@
 #ifndef _spoton_smpwindow_h_
 #define _spoton_smpwindow_h_
 
-#include <QMainWindow>
-
-#include "Common/spot-on-common.h"
 #include "spot-on-smp.h"
 #include "ui_spot-on-smpwindow.h"
 
