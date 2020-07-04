@@ -32,7 +32,6 @@
 #include <QFuture>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPointer>
 #include <QTimer>
 
 class spoton_crypt;
