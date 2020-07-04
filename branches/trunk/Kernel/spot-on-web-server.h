@@ -29,12 +29,11 @@
 #define _spoton_web_server_h_
 
 #include <QPointer>
-#include <QQueue>
-#include <QSqlDatabase>
-#include <QSslSocket>
 #include <QTcpServer>
 #include <QThread>
 #include <QTimer>
+
+class QSslSocket;
 
 class spoton_web_server_tcp_server: public QTcpServer
 {

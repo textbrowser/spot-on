@@ -25,7 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QNetworkInterface>
 #include <QSqlQuery>
 #include <QSslKey>
 #include <QSslSocket>
