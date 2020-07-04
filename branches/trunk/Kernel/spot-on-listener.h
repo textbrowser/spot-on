@@ -42,7 +42,6 @@
 #include <qbluetoothsocket.h>
 #endif
 
-#include "Common/spot-on-misc.h"
 #include "spot-on-neighbor.h"
 
 class QNetworkInterface;

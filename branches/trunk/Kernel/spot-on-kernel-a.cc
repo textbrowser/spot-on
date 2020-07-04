@@ -32,7 +32,6 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QtCore/qmath.h>
 
 #include <iostream>
 #include <limits>
