@@ -53,8 +53,7 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
        publicKey,
        serverAddress(),
        60L * 60L * 24L *
-       static_cast<long int> (spoton_common::
-			      KERNEL_CERTIFICATE_DAYS_VALID),
+       static_cast<long int> (spoton_common::KERNEL_CERTIFICATE_DAYS_VALID),
        error);
 
   if(error.isEmpty())

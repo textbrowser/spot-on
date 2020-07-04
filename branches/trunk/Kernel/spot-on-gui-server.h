@@ -35,8 +35,6 @@
 #include <QTcpServer>
 #include <QTimer>
 
-#include "Common/spot-on-common.h"
-
 class spoton_gui_server_tcp_server: public QTcpServer
 {
   Q_OBJECT
