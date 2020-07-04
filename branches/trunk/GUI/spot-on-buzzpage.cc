@@ -32,7 +32,6 @@
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlQuery>
-#include <QtCore/qmath.h>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"

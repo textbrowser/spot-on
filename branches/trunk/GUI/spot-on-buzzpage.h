@@ -31,12 +31,10 @@
 #include <QPointer>
 #include <QSslSocket>
 #include <QTimer>
-#include <QWidget>
 
 #include "ui_spot-on-buzzpage.h"
 
 class spoton;
-class spoton_crypt;
 
 class spoton_buzzpage: public QWidget
 {
