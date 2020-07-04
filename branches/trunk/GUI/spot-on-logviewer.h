@@ -29,7 +29,6 @@
 #define _spoton_logviewer_h_
 
 #include <QDateTime>
-#include <QMainWindow>
 #include <QTimer>
 
 #include "ui_spot-on-logviewer.h"

@@ -28,8 +28,6 @@
 #ifndef _spoton_encryptfile_h_
 #define _spoton_encryptfile_h_
 
-#include <QMainWindow>
-
 #include "ui_spot-on-encryptfile.h"
 
 class QKeyEvent;
