@@ -35,7 +35,6 @@
 
 class QSslSocket;
 class spoton;
-class spoton_crypt;
 
 class spoton_chatwindow: public QMainWindow
 {
