@@ -28,7 +28,6 @@
 #ifndef _spoton_documentation_h_
 #define _spoton_documentation_h_
 
-#include <QMainWindow>
 #include <QUrl>
 
 #include "ui_spot-on-documentation.h"
