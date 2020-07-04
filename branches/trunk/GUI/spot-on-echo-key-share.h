@@ -28,7 +28,6 @@
 #ifndef _spoton_echo_key_share_h_
 #define _spoton_echo_key_share_h_
 
-#include <QMainWindow>
 #include <QPointer>
 
 #include "ui_spot-on-echo-key-share.h"

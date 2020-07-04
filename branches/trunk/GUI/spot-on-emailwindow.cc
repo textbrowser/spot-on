@@ -25,8 +25,6 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <QDesktopServices>
-
 #include "spot-on-defines.h"
 #include "spot-on-emailwindow.h"
 #include "spot-on.h"

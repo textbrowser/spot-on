@@ -28,7 +28,6 @@
 #ifndef _spoton_emailwindow_h_
 #define _spoton_emailwindow_h_
 
-#include <QMainWindow>
 #include <QUrl>
 
 #include "ui_spot-on-emailwindow.h"
