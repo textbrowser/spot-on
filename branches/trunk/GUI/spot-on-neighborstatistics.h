@@ -30,7 +30,6 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
-#include <QMainWindow>
 #include <QTimer>
 
 #include "ui_spot-on-neighborstatistics.h"
