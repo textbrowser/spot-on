@@ -250,6 +250,7 @@ Completed Items
 177.   Beautiful combination boxes.
 178.   Proxies. Delegated to Spot-On-Lite.
 179.   Limit the number of SOSS clients.
+180.   Remove obsolete includes.
 
 Ignored Items
 
@@ -283,11 +284,10 @@ Remaining Items
 2.     Open Library.
 3.     Which key types to export and import? A new selection dialog.
 4.     SQLite silent mode; limit synchronization.
-5.     Remove obsolete includes.
+5.     Simple interface. Automatic UDP.
 6.     IMAP and optional removal of messages; retrieve latest.
 7.     Windows BT. Requires Qt 5.14.
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
 11.    Distorted text in previews.
-12.    Simple interface.
