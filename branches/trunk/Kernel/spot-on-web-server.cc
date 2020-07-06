@@ -36,6 +36,7 @@
 #include "spot-on-kernel.h"
 
 static QByteArray s_search;
+static QString s_emptyQuery;
 static quint64 s_urlLimit = 10;
 
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
@@ -49,6 +50,40 @@ spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
   m_clientCount = new QAtomicInt(0);
   m_http = new spoton_web_server_tcp_server(this);
   m_https = new spoton_web_server_tcp_server(this);
+
+  for(int i = 0; i < 10 + 6; i++)
+    for(int j = 0; j < 10 + 6; j++)
+      {
+	QChar c1;
+	QChar c2;
+
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	if(i == 15 && j == 15)
+	  s_emptyQuery.append
+	    (QString("SELECT title, "      // 0
+		     "url, "               // 1
+		     "description, "       // 2
+		     "url_hash, "          // 3
+		     "date_time_inserted " // 4
+		     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
+	else
+	  s_emptyQuery.append
+	    (QString("SELECT title, "      // 0
+		     "url, "               // 1
+		     "description, "       // 2
+		     "url_hash, "          // 3
+		     "date_time_inserted " // 4
+		     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
+      }
 
   QFile file(":/search.html");
 
@@ -418,40 +453,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
       if(search.trimmed().isEmpty())
 	{
-	  for(int i = 0; i < 10 + 6; i++)
-	    for(int j = 0; j < 10 + 6; j++)
-	      {
-		QChar c1;
-		QChar c2;
-
-		if(i <= 9)
-		  c1 = QChar(i + 48);
-		else
-		  c1 = QChar(i + 97 - 10);
-
-		if(j <= 9)
-		  c2 = QChar(j + 48);
-		else
-		  c2 = QChar(j + 97 - 10);
-
-		if(i == 15 && j == 15)
-		  querystr.append
-		    (QString("SELECT title, "      // 0
-			     "url, "               // 1
-			     "description, "       // 2
-			     "url_hash, "          // 3
-			     "date_time_inserted " // 4
-			     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
-		else
-		  querystr.append
-		    (QString("SELECT title, "      // 0
-			     "url, "               // 1
-			     "description, "       // 2
-			     "url_hash, "          // 3
-			     "date_time_inserted " // 4
-			     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
-	      }
-
+	  querystr.append(s_emptyQuery);
 	  querystr.append(" ORDER BY 5 DESC ");
 	  querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
 	  querystr.append(QString(" OFFSET %1 ").arg(offset));
