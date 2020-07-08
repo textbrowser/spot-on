@@ -433,20 +433,22 @@ void spoton_web_server_thread::process(QSslSocket *socket,
       return;
     }
 
+  QElapsedTimer elapsed;
+
+  elapsed.start();
+
   QSqlDatabase db(spoton_kernel::urlDatabase());
   QString connectionName(db.connectionName());
   QString html("");
 
   if(db.isOpen())
     {
-      QElapsedTimer elapsed;
       QString link(list.value(1).toLower());
       QString querystr("");
       QString search("");
       QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
 
-      elapsed.start();
       search = list.value(3);
       search = spoton_misc::percentEncoding(search);
       search.replace("+", " ");
