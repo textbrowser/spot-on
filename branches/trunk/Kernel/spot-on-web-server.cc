@@ -628,6 +628,8 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
       if(query.exec() || querystr.trimmed().isEmpty())
 	{
+	  int position = -1;
+
 	  html.append
 	    ("HTTP/1.1 200 OK\r\n"
 	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
@@ -635,9 +637,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  html.replace("value=\"\"", QString("value=\"%1\"").arg(search));
 	  html.remove("</html>");
 	  html.append("<p><font color=\"#696969\" size=2>");
-	  html.append
-	    (QString("Query completed in %1 second(s).</font></p>").
-	     arg(qAbs(static_cast<double> (elapsed.elapsed())) / 1000.0));
+	  position = html.length();
 	  html.append("<div id=\"footer\">");
 
 	  while(query.next())
@@ -824,6 +824,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  str = str.trimmed();
 	  html.append(str);
 	  html.append("</p></div></html>");
+	  html.insert
+	    (position,
+	     QString("Query completed in %1 second(s).</font></p>").
+	     arg(qAbs(static_cast<double> (elapsed.elapsed())) / 1000.0));
 	}
     }
 
