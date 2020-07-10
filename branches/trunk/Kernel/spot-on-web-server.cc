@@ -47,9 +47,10 @@ void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
 {
   m_abort = new QAtomicInt(0);
-  m_clientCount = new QAtomicInt(0);
   m_http = new spoton_web_server_tcp_server(this);
+  m_httpClientCount = new QAtomicInt(0);
   m_https = new spoton_web_server_tcp_server(this);
+  m_httpsClientCount = new QAtomicInt(0);
 
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
@@ -117,17 +118,23 @@ spoton_web_server::~spoton_web_server()
     thread->wait();
 
   delete m_abort;
-  delete m_clientCount;
+  delete m_httpClientCount;
+  delete m_httpsClientCount;
 }
 
-int spoton_web_server::clientCount(void) const
+int spoton_web_server::httpClientCount(void) const
 {
-  return m_clientCount->fetchAndAddOrdered(0);
+  return m_httpClientCount->fetchAndAddOrdered(0);
+}
+
+int spoton_web_server::httpsClientCount(void) const
+{
+  return m_httpsClientCount->fetchAndAddOrdered(0);
 }
 
 void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 {
-  if(m_clientCount->fetchAndAddOrdered(0) >=
+  if(m_httpClientCount->fetchAndAddOrdered(0) >=
      spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||
      socketDescriptor < 0)
     {
@@ -139,15 +146,20 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
     (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
 
   connect
-    (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+    (thread, SIGNAL(finished(void)), this, SLOT(slotHttpThreadFinished(void)));
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
-  m_clientCount->fetchAndAddOrdered(1);
+  m_httpClientCount->fetchAndAddOrdered(1);
   thread->start();
+}
+
+void spoton_web_server::slotHttpThreadFinished(void)
+{
+  m_httpClientCount->fetchAndAddOrdered(-1);
 }
 
 void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 {
-  if(m_clientCount->fetchAndAddOrdered(0) >=
+  if(m_httpsClientCount->fetchAndAddOrdered(0) >=
      spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||
      m_https->certificate().isEmpty() ||
      m_https->privateKey().isEmpty() ||
@@ -163,19 +175,21 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
     (m_abort, this, credentials, socketDescriptor);
 
   connect
-    (thread, SIGNAL(finished(void)), this, SLOT(slotThreadFinished(void)));
+    (thread, SIGNAL(finished(void)), this, SLOT(slotHttpsThreadFinished(void)));
   connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
-  m_clientCount->fetchAndAddOrdered(1);
+  m_httpsClientCount->fetchAndAddOrdered(1);
   thread->start();
 }
 
-void spoton_web_server::slotThreadFinished(void)
+void spoton_web_server::slotHttpsThreadFinished(void)
 {
-  m_clientCount->fetchAndAddOrdered(-1);
+  m_httpsClientCount->fetchAndAddOrdered(-1);
 }
 
 void spoton_web_server::slotTimeout(void)
 {
+  int maximumClients = spoton_kernel::setting
+    ("gui/soss_maximum_clients", 10).toInt();
   quint16 port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
@@ -187,11 +201,13 @@ void spoton_web_server::slotTimeout(void)
       return;
     }
 
-  if(m_http->isListening() && m_http->serverPort() != port)
+  if((m_http->isListening() && m_http->serverPort() != port) ||
+     m_httpClientCount->fetchAndAddOrdered(0) >= maximumClients)
     m_http->close();
 
-  if(m_https->isListening() &&
-     m_https->serverPort() != static_cast<quint16> (port + 5))
+  if((m_https->isListening() &&
+      m_https->serverPort() != static_cast<quint16> (port + 5)) ||
+     m_httpsClientCount->fetchAndAddOrdered(0) >= maximumClients)
     {
       m_https->clear();
       m_https->close();
@@ -245,13 +261,15 @@ void spoton_web_server::slotTimeout(void)
 	}
     }
 
-  if(!m_http->isListening())
+  if(!m_http->isListening() &&
+     m_httpClientCount->fetchAndAddOrdered(0) < maximumClients)
     if(!m_http->listen(spoton_misc::localAddressIPv4(), port))
       spoton_misc::logError
 	("spoton_web_server::slotTimeout(): m_http->listen() failure. "
 	 "This is a serious problem!");
 
-  if(!m_https->isListening())
+  if(!m_https->isListening() &&
+     m_httpsClientCount->fetchAndAddOrdered(0) < maximumClients)
     if(!m_https->listen(spoton_misc::localAddressIPv4(),
 			static_cast<quint16> (port + 5)))
       spoton_misc::logError

@@ -6242,8 +6242,13 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
-		      "VALUES ('Web Server Clients', ?)");
-	query.bindValue(0, locale.toString(m_webServer->clientCount()));
+		      "VALUES ('Web Server HTTP Clients', ?)");
+	query.bindValue(0, locale.toString(m_webServer->httpClientCount()));
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('Web Server HTTPS Clients', ?)");
+	query.bindValue(0, locale.toString(m_webServer->httpsClientCount()));
 	query.exec();
       }
 

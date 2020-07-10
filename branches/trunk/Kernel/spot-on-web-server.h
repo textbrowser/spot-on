@@ -93,19 +93,22 @@ class spoton_web_server: public QObject
  public:
   spoton_web_server(QObject *parent);
   ~spoton_web_server();
-  int clientCount(void) const;
+  int httpClientCount(void) const;
+  int httpsClientCount(void) const;
 
  private:
   QAtomicInt *m_abort;
-  QAtomicInt *m_clientCount;
+  QAtomicInt *m_httpClientCount;
+  QAtomicInt *m_httpsClientCount;
   QPointer<spoton_web_server_tcp_server> m_http;
   QPointer<spoton_web_server_tcp_server> m_https;
   QTimer m_generalTimer;
 
  private slots:
   void slotHttpClientConnected(const qint64 socketDescriptor);
+  void slotHttpThreadFinished(void);
   void slotHttpsClientConnected(const qint64 socketDescriptor);
-  void slotThreadFinished(void);
+  void slotHttpsThreadFinished(void);
   void slotTimeout(void);
 };
 
