@@ -74,6 +74,9 @@ extern "C"
 #include <QNetworkInterface>
 #endif
 #include <QNetworkProxy>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#include <QRandomGenerator>
+#endif
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -1159,8 +1162,19 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
 
   dbId = s_dbId += 1;
   locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    db = QSqlDatabase::addDatabase
+      ("QSQLITE", QString("spoton_database_%1_%2").
+       arg(QRandomGenerator::global()->generate64()).arg(dbId));
+  else
+    db = QSqlDatabase::addDatabase
+      ("QSQLITE", QString("spoton_database_%1_%2").
+       arg(QRandomGenerator().generate64()).arg(dbId));    
+#else
   db = QSqlDatabase::addDatabase
     ("QSQLITE", QString("spoton_database_%1_%2").arg(qrand()).arg(dbId));
+#endif
   connectionName = db.connectionName();
   return db;
 }
@@ -1173,7 +1187,16 @@ QString spoton_misc::databaseName(void)
 
   dbId = s_dbId += 1;
   locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    return QString("spoton_database_%1_%2").
+      arg(QRandomGenerator::global()->generate64()).arg(dbId);
+  else
+    return QString("spoton_database_%1_%2").
+      arg(QRandomGenerator().generate64()).arg(dbId);    
+#else
   return QString("spoton_database_%1_%2").arg(qrand()).arg(dbId);
+#endif
 }
 
 QString spoton_misc::formattedSize(const qint64 size)
@@ -1281,7 +1304,11 @@ QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
       QStringList digits;
       QStringList list;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+      list = iipp.split(".", Qt::KeepEmptyParts);
+#else
       list = iipp.split(".", QString::KeepEmptyParts);
+#endif
 
       for(int i = 0; i < list.size(); i++)
 	digits.append(list.at(i));
@@ -1961,10 +1988,17 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
     {
       QHash<QString, char> discovered;
       QSqlQuery query(db);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+      QStringList keywords
+	(QString::fromUtf8(all_keywords.toLower().constData(),
+			   all_keywords.length()).
+	 split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+#else
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
+#endif
       int count = 0;
 
       std::sort(keywords.begin(), keywords.end(), lengthGreaterThan);
