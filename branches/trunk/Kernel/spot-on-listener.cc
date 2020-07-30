@@ -1195,7 +1195,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      }
 	    else if(m_transport == "udp")
 	      {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 		if(m_keySize > 0)
 		  query.bindValue(30, spoton_common::SSL_CONTROL_STRING);
 		else
@@ -1878,7 +1878,7 @@ void spoton_listener::slotTimeout(void)
 			  m_sslControlString = spoton_common::
 			    SSL_CONTROL_STRING;
 			else if(m_transport == "udp")
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 			  m_sslControlString = spoton_common::
 			    SSL_CONTROL_STRING;
 #else

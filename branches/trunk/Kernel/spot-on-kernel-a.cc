@@ -557,7 +557,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 		cout << "Question, please: ";
 		cout.flush();
 		input1 = cin.readLine(std::numeric_limits<int>::max());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		cout << Qt::endl;
+#else
+		cout << endl;
+#endif
 		cout << "Answer, please: ";
 		cout.flush();
 		input2 = cin.readLine(std::numeric_limits<int>::max());

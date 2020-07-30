@@ -111,7 +111,7 @@ bool spoton_neighbor::isEncrypted(void) const
     return m_tcpSocket->isEncrypted();
   else if(m_udpSocket)
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_dtls)
 	{
 	  if(m_isUserDefined)
@@ -167,7 +167,7 @@ void spoton_neighbor::abort(void)
     m_tcpSocket->abort();
   else if(m_udpSocket)
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_dtls)
 	m_dtls->deleteLater();
 #endif
@@ -246,7 +246,7 @@ void spoton_neighbor::close(void)
     }
   else if(m_udpSocket)
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_dtls)
 	m_dtls->deleteLater();
 #endif
@@ -520,7 +520,7 @@ void spoton_neighbor::parsePrivateApplicationData
     }
 }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 void spoton_neighbor::prepareDtls(void)
 {
   if(m_dtls)
@@ -587,7 +587,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
     spoton_kernel::messagingCacheAdd(message);
 }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 void spoton_neighbor::slotHandshakeTimeout(void)
 {
   if(m_dtls && m_udpSocket)
@@ -619,7 +619,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 
   m_bytesRead += static_cast<quint64> (datagram.length());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   if(m_dtls)
     {
       if(m_dtls->isConnectionEncrypted())

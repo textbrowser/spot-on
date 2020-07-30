@@ -4182,7 +4182,7 @@ void spoton::slotAddListener(void)
 	  return;
 	}
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_ui.sslListener->isChecked())
 	{
 	  QHostAddress address;
@@ -4408,7 +4408,7 @@ void spoton::slotAddListener(void)
 	  }
 
 	if((m_ui.listenerTransport->currentIndex() == 2 ||  // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	    m_ui.listenerTransport->currentIndex() == 3 ||  // UDP
 #endif
 	    m_ui.listenerTransport->currentIndex() == 4) && // WebSocket
@@ -4482,7 +4482,7 @@ void spoton::slotAddListener(void)
 	  query.bindValue
 	    (13, crypt->encryptedThenHashed("stream", &ok).toBase64());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	if(m_ui.sslListener->isChecked() && (transport == "tcp" ||
 					     transport == "udp" ||
 					     transport == "websocket"))
@@ -4584,7 +4584,7 @@ void spoton::slotAddNeighbor(void)
       return;
     }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   if(m_ui.neighborTransport->currentIndex() == 3 && // UDP
      m_ui.requireSsl->isChecked() &&
      spoton_misc::
@@ -4867,7 +4867,7 @@ void spoton::slotAddNeighbor(void)
 	  }
 
 	if(m_ui.neighborTransport->currentIndex() == 2 || // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	   m_ui.neighborTransport->currentIndex() == 3 || // UDP
 #endif
 	   m_ui.neighborTransport->currentIndex() == 4)   // WebSocket
@@ -4894,7 +4894,7 @@ void spoton::slotAddNeighbor(void)
 					    &ok).toBase64());
 
 	if(m_ui.neighborTransport->currentIndex() == 2 || // TCP
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	   m_ui.neighborTransport->currentIndex() == 3 || // UDP
 #endif
 	   m_ui.neighborTransport->currentIndex() == 4)   // WebSocket
@@ -4941,7 +4941,7 @@ void spoton::slotAddNeighbor(void)
 		(26, crypt->encryptedThenHashed("stream", &ok).toBase64());
 	  }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
         if(m_ui.requireSsl->isChecked() && (transport == "tcp" ||
 					    transport == "udp" ||
 					    transport == "websocket"))

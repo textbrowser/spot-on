@@ -311,7 +311,7 @@ spoton_neighbor::spoton_neighbor
     m_requireSsl = true;
   else if(m_transport == "udp")
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       m_requireSsl = true;
 #else
       m_requireSsl = false;
@@ -331,7 +331,7 @@ spoton_neighbor::spoton_neighbor
     m_useSsl = true;
   else if(m_transport == "udp")
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       m_useSsl = true;
 #else
       m_useSsl = false;
@@ -380,7 +380,7 @@ spoton_neighbor::spoton_neighbor
 		    (configuration.supportedCiphers(), m_sslControlString,
 		     configuration);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 		  if(m_udpSocket)
 		    {
 		      m_udpSslConfiguration = configuration;
@@ -564,7 +564,7 @@ spoton_neighbor::spoton_neighbor
     {
       if(m_tcpSocket)
 	m_tcpSocket->startServerEncryption();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       else if(m_udpSocket)
 	prepareDtls();
 #endif
@@ -746,7 +746,7 @@ spoton_neighbor::spoton_neighbor
     }
   else if(m_transport == "udp")
     {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_keySize != 0)
 	m_useSsl = true;
       else
@@ -872,7 +872,7 @@ spoton_neighbor::spoton_neighbor
 		(configuration.supportedCiphers(), m_sslControlString,
 		 configuration);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	      if(m_udpSocket)
 		{
 		  m_udpSslConfiguration = configuration;
@@ -2105,7 +2105,7 @@ void spoton_neighbor::slotReadyRead(void)
       while(m_udpSocket->bytesAvailable() > 0)
 	data.append(m_udpSocket->readAll());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
       if(m_dtls && m_isUserDefined)
 	{
 	  m_bytesRead += static_cast<quint64> (data.length());
@@ -3057,7 +3057,7 @@ void spoton_neighbor::slotTimeout(void)
 		    return;
 		  }
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 		prepareDtls();
 
 		if(m_dtls)

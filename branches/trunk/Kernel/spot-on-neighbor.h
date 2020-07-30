@@ -30,7 +30,7 @@
 
 #include <QAtomicInt>
 #include <QDateTime>
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 #include <QDtls>
 #include <QDtlsClientVerifier>
 #endif
@@ -283,7 +283,7 @@ class spoton_neighbor: public QThread
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   QDtlsClientVerifier m_dtlsClientVerifier;
   QHash<QPair<QHostAddress, quint16>, char> m_verifiedUdpClients;
 #endif
@@ -301,7 +301,7 @@ class spoton_neighbor: public QThread
 #else
   QPointer<QObject> m_bluetoothSocket;
 #endif
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   QPointer<QDtls> m_dtls;
 #endif
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
@@ -325,7 +325,7 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
   QSslCertificate m_peerCertificate;
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   QSslConfiguration m_udpSslConfiguration;
 #endif
   QString m_address;
@@ -378,7 +378,7 @@ class spoton_neighbor: public QThread
     (const QByteArray &data,
      const QByteArray &privateApplicationCredentials,
      const qint64 maximumContentLength);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   void prepareDtls(void);
 #endif
   void process0000(int length,
