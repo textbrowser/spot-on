@@ -1659,9 +1659,15 @@ void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
   QString error("");
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  QStringList list
+    (m_ui.new_feed->text().trimmed().replace("\n", " ").
+     split(" ", Qt::SkipEmptyParts));
+#else
   QStringList list
     (m_ui.new_feed->text().trimmed().replace("\n", " ").
      split(" ", QString::SkipEmptyParts));
+#endif
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)

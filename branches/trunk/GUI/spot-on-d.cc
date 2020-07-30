@@ -1804,7 +1804,7 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
       if(item->checkState() == Qt::Checked)
 	{
 	  QFile::Permissions g(file.permissions());
-	  QFile::Permissions s = 0;
+	  QFile::Permissions s = QFile::Permissions();
 
 	  if(g & QFile::ExeOther)
 	    s |= QFile::ExeOther;

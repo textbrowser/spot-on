@@ -5946,9 +5946,16 @@ void spoton::slotResetAll(void)
     ::ShellExecuteA(0, "runas", program.toUtf8().constData(),
 		    0, 0, SW_SHOWNORMAL);
 #else
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  QProcess::startDetached(QCoreApplication::applicationDirPath() +
+			  QDir::separator() +
+			  SPOTON_APPLICATION_NAME,
+			  QStringList());
+#else
   QProcess::startDetached(QCoreApplication::applicationDirPath() +
 			  QDir::separator() +
 			  SPOTON_APPLICATION_NAME);
+#endif
 #endif
 }
 

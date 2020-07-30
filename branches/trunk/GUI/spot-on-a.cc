@@ -432,7 +432,13 @@ spoton::spoton(void):QMainWindow()
 
   m_locked = false;
   m_quit = false;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    QRandomGenerator::global()->seed
+      (static_cast<quint32> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+#else
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+#endif
   spoton_crypt::memcmp_test();
   spoton_smp::test1();
   spoton_smp::test2();
@@ -4059,6 +4065,24 @@ void spoton::slotActivateKernel(void)
   QString program(m_ui.kernelPath->text());
   bool status = false;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#ifdef Q_OS_MAC
+  if(QFileInfo(program).isBundle())
+    {
+      QStringList list;
+
+      list << "-a" << program << "-g";
+      status = QProcess::startDetached("open", list);
+    }
+  else
+    status = QProcess::startDetached(program, QStringList());
+#elif defined(Q_OS_WIN)
+  status = QProcess::startDetached
+    (QString("\"%1\"").arg(program), QStringList());
+#else
+  status = QProcess::startDetached(program, QStringList());
+#endif
+#else
 #ifdef Q_OS_MAC
   if(QFileInfo(program).isBundle())
     {
@@ -4073,6 +4097,7 @@ void spoton::slotActivateKernel(void)
   status = QProcess::startDetached(QString("\"%1\"").arg(program));
 #else
   status = QProcess::startDetached(program);
+#endif
 #endif
 
   QElapsedTimer time;
@@ -4336,10 +4361,17 @@ void spoton::slotAddListener(void)
 	    QStringList digits;
 	    QStringList list;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+	    if(protocol == "IPv4")
+	      list = ip.split(".", Qt::KeepEmptyParts);
+	    else
+	      list = ip.split(":", Qt::KeepEmptyParts);
+#else
 	    if(protocol == "IPv4")
 	      list = ip.split(".", QString::KeepEmptyParts);
 	    else
 	      list = ip.split(":", QString::KeepEmptyParts);
+#endif
 
 	    for(int i = 0; i < list.size(); i++)
 	      digits.append(list.at(i));

@@ -828,8 +828,13 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.chat_primary_account->clear();
   m_poptasticRetroPhoneSettingsUi.email_primary_account->clear();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(m_poptasticRetroPhoneSettingsUi.poptastic_label->
+     pixmap(Qt::ReturnByValue).isNull())
+#else
   if(!m_poptasticRetroPhoneSettingsUi.poptastic_label->pixmap() ||
      m_poptasticRetroPhoneSettingsUi.poptastic_label->pixmap()->isNull())
+#endif
     {
       QPixmap pixmap;
 

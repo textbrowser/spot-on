@@ -105,7 +105,11 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     }
 
   QString transport(t.toLower().trimmed());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  QStringList list(options.toLower().split(";", Qt::SkipEmptyParts));
+#else
   QStringList list(options.toLower().split(";", QString::SkipEmptyParts));
+#endif
 
   if(list.isEmpty())
     {
