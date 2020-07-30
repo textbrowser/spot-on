@@ -44,8 +44,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wdouble-promotion \
                           -Wextra \
                           -Wno-cast-align \
-                          -Wno-deprecated-copy \
-                          -Wno-gnu-inline-cpp-without-extern \
+                          -Wno-deprecated \
                           -Wno-unused-parameter \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
@@ -62,7 +61,7 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 INCLUDEPATH	  += . \
                      ../../. \
-                     /usr/local/Cellar/openssl/1.0.2t/include \
+                     /usr/local/Cellar/openssl@1.1/1.1.1g/include \
                      /usr/local/include \
                      /usr/local/opt \
                      /usr/local/opt/curl/include \
@@ -70,7 +69,7 @@ INCLUDEPATH	  += . \
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU \
                      -L../../libSpotOn \
-                     -L/usr/local/Cellar/openssl/1.0.2t/lib \
+                     -L/usr/local/Cellar/openssl@1.1/1.1.1g/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
                      -framework AppKit \
@@ -103,11 +102,11 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On_Qt5.d/.
 copyspoton.path             = /Applications/Spot-On_Qt5.d
-copyssl.extra               = cp /usr/local/Cellar/openssl/1.0.2t/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/.
+copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1g/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On_Qt5.d
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = /Applications/Spot-On_Qt5.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl/1.0.2t/lib/libcrypto.1.0.0.dylib @executable_path/../Frameworks/libcrypto.1.0.0.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libssl.1.0.0.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1g/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On_Qt5.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP

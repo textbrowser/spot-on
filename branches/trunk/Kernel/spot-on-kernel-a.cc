@@ -557,7 +557,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 		cout << "Question, please: ";
 		cout.flush();
 		input1 = cin.readLine(std::numeric_limits<int>::max());
-		cout << endl;
+		cout << Qt::endl;
 		cout << "Answer, please: ";
 		cout.flush();
 		input2 = cin.readLine(std::numeric_limits<int>::max());
