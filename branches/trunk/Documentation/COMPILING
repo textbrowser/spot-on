@@ -22,7 +22,7 @@ OS X
 
 Homebrew is required for OS X.
 
-qmake QMAKE_CXX=/usr/local/opt/llvm/bin/clang++ -o Makefile spot-on.osx.qt5.pro
+qmake -o Makefile spot-on.osx.qt5.pro
 sudo make install
 
 OpenBSD
