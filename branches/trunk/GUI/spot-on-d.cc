@@ -2359,7 +2359,7 @@ void spoton::slotSetListenerSSLControlString(void)
   if(transport == "TCP")
     goto continue_label;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
   if(transport == "UDP")
     goto continue_label;
 #endif
@@ -2452,7 +2452,7 @@ void spoton::slotSetNeighborSSLControlString(void)
   if(transport == "TCP")
     goto continue_label;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
   if(transport == "UDP")
     goto continue_label;
 #endif

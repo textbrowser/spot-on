@@ -145,7 +145,7 @@ bool spoton::listenerSupportsSslTls(void) const
 	  if(integer > 0 && string == "tcp")
 	    return true;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	  if(integer > 0 && string == "udp")
 	    return true;
 #endif
@@ -177,7 +177,7 @@ bool spoton::neighborSupportsSslTls(void) const
 	  if(integer > 0 && string == "tcp")
 	    return true;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	  if(integer > 0 && string == "udp")
 	    return true;
 #endif
