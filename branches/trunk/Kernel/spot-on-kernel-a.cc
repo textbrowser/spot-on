@@ -473,7 +473,13 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   s_institutionLastModificationTime = QDateTime();
   s_messagingCacheKey = spoton_crypt::weakRandomBytes
     (static_cast<size_t> (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    QRandomGenerator::global()->seed
+      (static_cast<quint32> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+#else
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
+#endif
   QDir().mkdir(spoton_misc::homePath());
 
   QSettings settings;
@@ -4317,7 +4323,16 @@ void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
 void spoton_kernel::slotImpersonateTimeout(void)
 {
   slotScramble();
-  m_impersonateTimer.setInterval(qrand() % 30000 + 10);
+
+  int random = 0;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    random = static_cast<int> (QRandomGenerator::global()->generate());
+#else
+  random = qrand();
+#endif
+  m_impersonateTimer.setInterval(random % 30000 + 10);
 }
 
 void spoton_kernel::slotMessageReceivedFromUI
@@ -4743,7 +4758,17 @@ void spoton_kernel::slotRequestScramble(void)
   if(setting("gui/scramblerEnabled", false).toBool())
     {
       if(!m_scramblerTimer.isActive())
-	m_scramblerTimer.start(qrand() % (15000 - 1500 + 1) + 1500);
+	{
+	  int random = 0;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+	  if(QRandomGenerator::global())
+	    random = static_cast<int> (QRandomGenerator::global()->generate());
+#else
+	  random = qrand();
+#endif
+	  m_scramblerTimer.start(random % (15000 - 1500 + 1) + 1500);
+	}
     }
   else
     m_scramblerTimer.stop();
@@ -5037,7 +5062,14 @@ void spoton_kernel::slotScramble(void)
   QByteArray data;
   QByteArray hashType(setting("gui/kernelHashType",
 			      "sha512").toString().toLatin1());
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  QByteArray message
+    ((QRandomGenerator::global() ?
+      static_cast<int> (QRandomGenerator::global()->generate()) : 0) %
+     1024 + 512, 0);
+#else
   QByteArray message(qrand() % 1024 + 512, 0);
+#endif
   QByteArray messageCode;
   QByteArray symmetricKey;
   bool ok = true;

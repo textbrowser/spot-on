@@ -676,6 +676,15 @@ void spoton_starbeam_reader::slotTimeout(void)
 			    {
 			      const QPair<QByteArray, qint64> &pair
 				(m_readFuture.result());
+			      int random = 0;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+			      if(QRandomGenerator::global())
+				random = static_cast<int>
+				  (QRandomGenerator::global()->generate());
+#else
+			      random = qrand();
+#endif
 
 			      if(!pair.first.isEmpty())
 				pulsate
@@ -683,7 +692,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 				   fileName,
 				   pulseSize,
 				   fileSize,
-				   m_magnets.value(qrand() % m_magnets.count()),
+				   m_magnets.value(random % m_magnets.count()),
 				   nova,
 				   hash,
 				   sha3_512_hash,
