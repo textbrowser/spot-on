@@ -533,7 +533,7 @@ int spoton_neighbor::write(const char *data,
 	{
 	  if(m_isUserDefined)
 	    {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
 		  (m_udpSocket,
@@ -545,7 +545,7 @@ int spoton_neighbor::write(const char *data,
 	    }
 	  else
 	    {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	      if(m_dtls)
 		sent = m_dtls->writeDatagramEncrypted
 		  (m_udpSocket,
@@ -3575,7 +3575,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 	}
       else if(m_udpSocket)
 	{
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	  if(m_dtls)
 	    {
 	      if(m_peerCertificate.isNull() &&
@@ -3689,7 +3689,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 	}
       else if(m_udpSocket)
 	{
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
 	  certificate = m_udpSslConfiguration.localCertificate();
 	  save = true;
 #endif
@@ -4292,7 +4292,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   QSqlQuery query(db);
   QSslCipher cipher;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(Q_OS_MAC)
   if(m_dtls)
     cipher = m_dtls->sessionCipher();
   else
