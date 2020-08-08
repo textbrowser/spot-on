@@ -17,7 +17,7 @@ Summary of Spot-On
 <li>Echo public-key distribution system.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
 <li>Infinite listeners and neighbors.</li>
-<li>Integrated file encryption of files and directories.</li>
+<li>Integrated file encryption of directories and files.</li>
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Offline e-mail.</li>
