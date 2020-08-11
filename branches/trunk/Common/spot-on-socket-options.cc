@@ -130,6 +130,23 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	if(!string.isEmpty())
 	  {
+	    int level = IPPROTO_IP;
+	    int option = IP_TOS;
+	    int rc = 0;
+	    int v = string.toInt();
+	    socklen_t length = (socklen_t) sizeof(v);
+
+	    rc = setsockopt((int) socket, level, option, &v, length);
+
+	    if(rc != 0)
+	      {
+		if(ok)
+		  *ok = false;
+
+		spoton_misc::logError
+		  ("spoton_socket_options::setSocketOptions(): "
+		   "setsockopt() failure on IP_TOS.");
+	      }
 	  }
 #endif
       }
