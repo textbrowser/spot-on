@@ -123,9 +123,19 @@ void spoton_socket_options::setSocketOptions(const QString &options,
     *ok = true;
 
   foreach(QString string, list)
-    if(string.startsWith("nodelay=") && (transport == "sctp" ||
-					 transport == "tcp" ||
-					 transport == "websocket"))
+    if(string.startsWith("ip_tos="))
+      {
+#ifndef Q_OS_WIN
+	string = string.mid(static_cast<int> (qstrlen("ip_tos=")));
+
+	if(!string.isEmpty())
+	  {
+	  }
+#endif
+      }
+    else if(string.startsWith("nodelay=") && (transport == "sctp" ||
+					      transport == "tcp" ||
+					      transport == "websocket"))
       {
 	string = string.mid(static_cast<int> (qstrlen("nodelay=")));
 
@@ -166,10 +176,9 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	      }
 	  }
       }
-    else if(string.
-	    startsWith("so_keepalive=") && (transport == "sctp" ||
-					    transport == "tcp" ||
-					    transport == "websocket"))
+    else if(string.startsWith("so_keepalive=") && (transport == "sctp" ||
+						   transport == "tcp" ||
+						   transport == "websocket"))
       {
 	string = string.mid(static_cast<int> (qstrlen("so_keepalive=")));
 
