@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>350</width>
-    <height>350</height>
+    <width>450</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -38,8 +38,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>316</width>
-        <height>898</height>
+        <width>417</width>
+        <height>710</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -356,6 +356,87 @@
          </item>
          <item>
           <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="Line" name="line_6">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Type of Service</string>
+           </property>
+           <property name="buddy">
+            <cstring>so_sndbuf</cstring>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="type_of_service">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
+           <item>
+            <property name="text">
+             <string>0 Routine</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>32 Priority</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>64 Immediate</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>96 Flash</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>128 Flash Override</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>160 CRITIC / ECP</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>192 Internetwork Control</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>224 Network Control</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>

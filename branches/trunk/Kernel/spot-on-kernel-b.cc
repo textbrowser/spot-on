@@ -2234,13 +2234,13 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	  }
 	else if(list.value(i).toLower().startsWith("date:"))
 	  {
-	    QString string(list.value(i));
+	    QString str(list.value(i));
 
-	    string.remove(0, static_cast<int> (qstrlen("date:")));
-	    string = string.trimmed();
+	    str.remove(0, static_cast<int> (qstrlen("date:")));
+	    str = str.trimmed();
 
-	    if(!string.isEmpty())
-	      date = QDateTime::fromString(string, Qt::RFC2822Date);
+	    if(!str.isEmpty())
+	      date = QDateTime::fromString(str, Qt::RFC2822Date);
 	  }
 	else if(list.value(i).toLower().startsWith("from:"))
 	  {
