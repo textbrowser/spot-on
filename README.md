@@ -7,6 +7,7 @@ Summary of Spot-On
 <li>Bluetooth, SCTP, TCP, UDP.</li>
 <li>Configurable thread priorities.</li>
 <li>Custom URL rules.</li>
+<li>Custom socket options.</li>
 <li>DSA, ECDSA, EdDSA, ElGamal, McEliece, NTRU, RSA.</li>
 <li>DTLS.</li>
 <li>Debian packages.</li>
