@@ -49,9 +49,6 @@
        <property name="readOnly">
         <bool>true</bool>
        </property>
-       <property name="placeholderText">
-        <string>Buzz Magnet</string>
-       </property>
       </widget>
      </item>
      <item>
