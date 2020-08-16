@@ -73,7 +73,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="destination"/>
+         <widget class="QLineEdit" name="destination">
+          <property name="placeholderText">
+           <string>Destination Path</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="selectDestination">
@@ -100,7 +104,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="file"/>
+         <widget class="QLineEdit" name="file">
+          <property name="placeholderText">
+           <string>Origin Path</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="select">
@@ -133,7 +141,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="password"/>
+         <widget class="QLineEdit" name="password">
+          <property name="placeholderText">
+           <string>Secret</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QLabel" name="label_5">
@@ -153,7 +165,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="pin"/>
+         <widget class="QLineEdit" name="pin">
+          <property name="placeholderText">
+           <string>PIN</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

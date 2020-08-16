@@ -73,7 +73,11 @@
              </property>
              <layout class="QGridLayout" name="gridLayout">
               <item row="1" column="1">
-               <widget class="QLineEdit" name="proxyHostname"/>
+               <widget class="QLineEdit" name="proxyHostname">
+                <property name="placeholderText">
+                 <string>Hostname</string>
+                </property>
+               </widget>
               </item>
               <item row="0" column="0">
                <widget class="QLabel" name="label_3">
@@ -148,7 +152,11 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QLineEdit" name="proxyUsername"/>
+               <widget class="QLineEdit" name="proxyUsername">
+                <property name="placeholderText">
+                 <string>Username</string>
+                </property>
+               </widget>
               </item>
               <item row="2" column="2">
                <widget class="QLabel" name="label_20">
@@ -167,6 +175,9 @@
                 </property>
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
+                </property>
+                <property name="placeholderText">
+                 <string>Password</string>
                 </property>
                </widget>
               </item>
@@ -466,6 +477,9 @@
                <property name="toolTip">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Multiple links may be specified. Please separate links via single spaces.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
+               <property name="placeholderText">
+                <string>Feed(s)</string>
+               </property>
               </widget>
              </item>
              <item>
@@ -501,7 +515,7 @@
              <x>0</x>
              <y>0</y>
              <width>693</width>
-             <height>633</height>
+             <height>563</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -668,6 +682,9 @@
                <widget class="QLineEdit" name="find">
                 <property name="toolTip">
                  <string>Please press the Enter key after providing the search text.</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Find</string>
                 </property>
                </widget>
               </item>

@@ -56,7 +56,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="ip"/>
+      <widget class="QLineEdit" name="ip">
+       <property name="placeholderText">
+        <string>IP Address</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
@@ -89,7 +93,11 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="scope"/>
+      <widget class="QLineEdit" name="scope">
+       <property name="placeholderText">
+        <string>Scope ID</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -35,6 +35,9 @@
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
+       <property name="placeholderText">
+        <string>Gold Bug Secret</string>
+       </property>
       </widget>
      </item>
      <item>

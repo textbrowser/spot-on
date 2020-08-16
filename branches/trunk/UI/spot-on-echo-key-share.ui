@@ -159,7 +159,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="name"/>
+       <widget class="QLineEdit" name="name">
+        <property name="placeholderText">
+         <string>Community Name</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -248,7 +252,7 @@
      <x>0</x>
      <y>0</y>
      <width>750</width>
-     <height>39</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

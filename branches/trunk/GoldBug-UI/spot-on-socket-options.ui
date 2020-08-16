@@ -292,7 +292,7 @@
             <string>SO_&amp;TIMESTAMPING</string>
            </property>
            <property name="buddy">
-            <cstring>so_keepalive</cstring>
+            <cstring>so_timestamping</cstring>
            </property>
           </widget>
          </item>
@@ -381,10 +381,10 @@
          <item>
           <widget class="QLabel" name="label_13">
            <property name="text">
-            <string>Type of Service</string>
+            <string>Type of Service (&amp;IP_TOS)</string>
            </property>
            <property name="buddy">
-            <cstring>so_sndbuf</cstring>
+            <cstring>type_of_service</cstring>
            </property>
           </widget>
          </item>
