@@ -6837,8 +6837,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 	}
     }
 
-  m_ui.favorites->setMinimumContentsLength
-    (m_ui.favorites->itemText(0).length());
+  m_ui.favorites->setMinimumContentsLength(25);
   QApplication::restoreOverrideCursor();
 }
 

@@ -406,6 +406,9 @@
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
             </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
+            </property>
            </widget>
           </item>
           <item>
@@ -492,6 +495,9 @@
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
             </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
+            </property>
            </widget>
           </item>
           <item>
@@ -508,6 +514,9 @@
            <widget class="QComboBox" name="transfer_hash_type">
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
             </property>
            </widget>
           </item>

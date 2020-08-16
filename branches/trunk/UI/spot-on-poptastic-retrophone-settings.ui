@@ -147,6 +147,9 @@
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
        </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
+       </property>
       </widget>
      </item>
      <item>
@@ -188,6 +191,9 @@
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
        </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
+       </property>
       </widget>
      </item>
      <item>
@@ -204,6 +210,9 @@
       <widget class="QComboBox" name="email_primary_account">
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
+       </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
        </property>
       </widget>
      </item>
@@ -234,7 +243,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>-156</y>
+        <y>0</y>
         <width>964</width>
         <height>708</height>
        </rect>
