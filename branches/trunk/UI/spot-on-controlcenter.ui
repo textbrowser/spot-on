@@ -181,7 +181,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="buzzName"/>
+                  <widget class="QLineEdit" name="buzzName">
+                   <property name="placeholderText">
+                    <string>Your Name</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="saveBuzzName">
@@ -225,6 +229,9 @@
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
                    </property>
+                   <property name="minimumContentsLength">
+                    <number>25</number>
+                   </property>
                    <item>
                     <property name="text">
                      <string notr="true">Empty</string>
@@ -246,6 +253,9 @@
                   <widget class="QLineEdit" name="demagnetize">
                    <property name="toolTip">
                     <string>Demagnetize the link.</string>
+                   </property>
+                   <property name="placeholderText">
+                    <string>Buzz Magnet</string>
                    </property>
                   </widget>
                  </item>
@@ -299,7 +309,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="channel"/>
+                  <widget class="QLineEdit" name="channel">
+                   <property name="placeholderText">
+                    <string>Buzz Channel Key</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_44">
@@ -332,7 +346,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="channelSalt"/>
+                  <widget class="QLineEdit" name="channelSalt">
+                   <property name="placeholderText">
+                    <string>Buzz Salt</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_36">
@@ -348,6 +366,9 @@
                   <widget class="QComboBox" name="channelType">
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                   <property name="minimumContentsLength">
+                    <number>15</number>
                    </property>
                   </widget>
                  </item>
@@ -369,7 +390,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="buzzHashKey"/>
+                  <widget class="QLineEdit" name="buzzHashKey">
+                   <property name="placeholderText">
+                    <string>Buzz Hash Key</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_62">
@@ -385,6 +410,9 @@
                   <widget class="QComboBox" name="buzzHashType">
                    <property name="sizeAdjustPolicy">
                     <enum>QComboBox::AdjustToContents</enum>
+                   </property>
+                   <property name="minimumContentsLength">
+                    <number>15</number>
                    </property>
                   </widget>
                  </item>
@@ -624,7 +652,11 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="nodeName"/>
+                        <widget class="QLineEdit" name="nodeName">
+                         <property name="placeholderText">
+                          <string>Your Name</string>
+                         </property>
+                        </widget>
                        </item>
                        <item>
                         <widget class="QPushButton" name="saveNodeName">
@@ -692,6 +724,9 @@
                        </property>
                        <property name="acceptRichText">
                         <bool>false</bool>
+                       </property>
+                       <property name="placeholderText">
+                        <string>Status</string>
                        </property>
                       </widget>
                      </item>
@@ -883,6 +918,9 @@
                      </property>
                      <property name="acceptRichText">
                       <bool>false</bool>
+                     </property>
+                     <property name="placeholderText">
+                      <string>Please type a message...</string>
                      </property>
                     </widget>
                    </item>
@@ -1344,7 +1382,11 @@
                        </widget>
                       </item>
                       <item row="2" column="1">
-                       <widget class="QLineEdit" name="outgoingSubject"/>
+                       <widget class="QLineEdit" name="outgoingSubject">
+                        <property name="placeholderText">
+                         <string>Subject</string>
+                        </property>
+                       </widget>
                       </item>
                       <item row="3" column="0">
                        <layout class="QVBoxLayout" name="verticalLayout_71">
@@ -1430,7 +1472,11 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLineEdit" name="emailNameEditable"/>
+                         <widget class="QLineEdit" name="emailNameEditable">
+                          <property name="placeholderText">
+                           <string>Your Name</string>
+                          </property>
+                         </widget>
                         </item>
                         <item>
                          <widget class="QPushButton" name="reloadEmailNames">
@@ -1552,6 +1598,9 @@
                           <property name="toolTip">
                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
+                          <property name="placeholderText">
+                           <string>Optional Secret</string>
+                          </property>
                          </widget>
                         </item>
                         <item>
@@ -1616,6 +1665,9 @@
                         </property>
                         <property name="textInteractionFlags">
                          <set>Qt::TextEditorInteraction</set>
+                        </property>
+                        <property name="placeholderText">
+                         <string>Message</string>
                         </property>
                        </widget>
                       </item>
@@ -2047,7 +2099,11 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLineEdit" name="addInstitutionLineEdit"/>
+                         <widget class="QLineEdit" name="addInstitutionLineEdit">
+                          <property name="placeholderText">
+                           <string>Post Office Magnet</string>
+                          </property>
+                         </widget>
                         </item>
                        </layout>
                       </item>
@@ -2082,6 +2138,9 @@
                              <property name="sizeAdjustPolicy">
                               <enum>QComboBox::AdjustToContents</enum>
                              </property>
+                             <property name="minimumContentsLength">
+                              <number>15</number>
+                             </property>
                             </widget>
                            </item>
                            <item row="0" column="0">
@@ -2095,7 +2154,11 @@
                             </widget>
                            </item>
                            <item row="0" column="1">
-                            <widget class="QLineEdit" name="institutionName"/>
+                            <widget class="QLineEdit" name="institutionName">
+                             <property name="placeholderText">
+                              <string>Post Office Name</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="1" column="0">
                             <widget class="QLabel" name="label_77">
@@ -2108,12 +2171,19 @@
                             </widget>
                            </item>
                            <item row="1" column="1">
-                            <widget class="QLineEdit" name="institutionPostalAddress"/>
+                            <widget class="QLineEdit" name="institutionPostalAddress">
+                             <property name="placeholderText">
+                              <string>Post Office Address</string>
+                             </property>
+                            </widget>
                            </item>
                            <item row="0" column="3">
                             <widget class="QComboBox" name="institutionNameType">
                              <property name="sizeAdjustPolicy">
                               <enum>QComboBox::AdjustToContents</enum>
+                             </property>
+                             <property name="minimumContentsLength">
+                              <number>15</number>
                              </property>
                             </widget>
                            </item>
@@ -2550,7 +2620,11 @@
                       </widget>
                      </item>
                      <item row="0" column="2">
-                      <widget class="QLineEdit" name="listenerIP"/>
+                      <widget class="QLineEdit" name="listenerIP">
+                       <property name="placeholderText">
+                        <string>Listener IP Address</string>
+                       </property>
+                      </widget>
                      </item>
                      <item row="0" column="3">
                       <widget class="QLabel" name="label_12">
@@ -2598,7 +2672,11 @@
                       </widget>
                      </item>
                      <item row="1" column="2">
-                      <widget class="QLineEdit" name="listenerScopeId"/>
+                      <widget class="QLineEdit" name="listenerScopeId">
+                       <property name="placeholderText">
+                        <string>Listener Scope ID</string>
+                       </property>
+                      </widget>
                      </item>
                      <item row="1" column="5">
                       <widget class="QRadioButton" name="ipv6Listener">
@@ -2843,6 +2921,9 @@
                        <property name="text">
                         <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
                        </property>
+                       <property name="placeholderText">
+                        <string>Listener SSL Control String</string>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -2934,7 +3015,7 @@
                   <widget class="QWidget" name="scrollAreaWidgetContents_3">
                    <property name="geometry">
                     <rect>
-                     <x>0</x>
+                     <x>-74</x>
                      <y>0</y>
                      <width>256</width>
                      <height>1538</height>
@@ -3029,12 +3110,19 @@
                           </widget>
                          </item>
                          <item row="0" column="1">
-                          <widget class="QLineEdit" name="accountName"/>
+                          <widget class="QLineEdit" name="accountName">
+                           <property name="placeholderText">
+                            <string>Account Name</string>
+                           </property>
+                          </widget>
                          </item>
                          <item row="1" column="1">
                           <widget class="QLineEdit" name="accountPassword">
                            <property name="echoMode">
                             <enum>QLineEdit::Password</enum>
+                           </property>
+                           <property name="placeholderText">
+                            <string>Account Password</string>
                            </property>
                           </widget>
                          </item>
@@ -3186,7 +3274,11 @@
                           <number>5</number>
                          </property>
                          <item row="0" column="1">
-                          <widget class="QLineEdit" name="ae_token"/>
+                          <widget class="QLineEdit" name="ae_token">
+                           <property name="placeholderText">
+                            <string>Adaptive Echo Token</string>
+                           </property>
+                          </widget>
                          </item>
                          <item row="0" column="0">
                           <widget class="QLabel" name="label_83">
@@ -3213,6 +3305,9 @@
                            <property name="sizeAdjustPolicy">
                             <enum>QComboBox::AdjustToContents</enum>
                            </property>
+                           <property name="minimumContentsLength">
+                            <number>15</number>
+                           </property>
                           </widget>
                          </item>
                          <item row="2" column="0">
@@ -3229,6 +3324,9 @@
                           <widget class="QComboBox" name="ae_h_type">
                            <property name="sizeAdjustPolicy">
                             <enum>QComboBox::AdjustToContents</enum>
+                           </property>
+                           <property name="minimumContentsLength">
+                            <number>15</number>
                            </property>
                           </widget>
                          </item>
@@ -3329,6 +3427,9 @@
                          <property name="toolTip">
                           <string>The keyword Any is supported.</string>
                          </property>
+                         <property name="placeholderText">
+                          <string>Allowed IP Address</string>
+                         </property>
                         </widget>
                        </item>
                        <item>
@@ -3398,6 +3499,9 @@
                          </property>
                          <property name="tabChangesFocus">
                           <bool>true</bool>
+                         </property>
+                         <property name="placeholderText">
+                          <string>Message</string>
                          </property>
                         </widget>
                        </item>
@@ -3885,7 +3989,7 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>0</y>
+                  <y>-232</y>
                   <width>735</width>
                   <height>603</height>
                  </rect>
@@ -3944,7 +4048,11 @@
                            <number>5</number>
                           </property>
                           <item row="0" column="1">
-                           <widget class="QLineEdit" name="neighborIP"/>
+                           <widget class="QLineEdit" name="neighborIP">
+                            <property name="placeholderText">
+                             <string>Neighbor IP Address</string>
+                            </property>
+                           </widget>
                           </item>
                           <item row="0" column="0">
                            <widget class="QLabel" name="label_24">
@@ -4021,7 +4129,11 @@
                            </widget>
                           </item>
                           <item row="1" column="1">
-                           <widget class="QLineEdit" name="neighborScopeId"/>
+                           <widget class="QLineEdit" name="neighborScopeId">
+                            <property name="placeholderText">
+                             <string>Neighbor Scope ID</string>
+                            </property>
+                           </widget>
                           </item>
                           <item row="1" column="5">
                            <widget class="QRadioButton" name="ipv6Neighbor">
@@ -4243,6 +4355,9 @@
                             <property name="text">
                              <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
                             </property>
+                            <property name="placeholderText">
+                             <string>Neighbor SSL Control String</string>
+                            </property>
                            </widget>
                           </item>
                          </layout>
@@ -4416,7 +4531,11 @@
                                </widget>
                               </item>
                               <item row="1" column="1">
-                               <widget class="QLineEdit" name="proxyHostname"/>
+                               <widget class="QLineEdit" name="proxyHostname">
+                                <property name="placeholderText">
+                                 <string>Hostname</string>
+                                </property>
+                               </widget>
                               </item>
                               <item row="0" column="0">
                                <widget class="QLabel" name="label_3">
@@ -4449,7 +4568,11 @@
                                </widget>
                               </item>
                               <item row="2" column="1">
-                               <widget class="QLineEdit" name="proxyUsername"/>
+                               <widget class="QLineEdit" name="proxyUsername">
+                                <property name="placeholderText">
+                                 <string>Username</string>
+                                </property>
+                               </widget>
                               </item>
                               <item row="2" column="2">
                                <widget class="QLabel" name="label_20">
@@ -4468,6 +4591,9 @@
                                 </property>
                                 <property name="echoMode">
                                  <enum>QLineEdit::Password</enum>
+                                </property>
+                                <property name="placeholderText">
+                                 <string>Password</string>
                                 </property>
                                </widget>
                               </item>
@@ -4582,6 +4708,9 @@
                           </property>
                           <property name="acceptRichText">
                            <bool>false</bool>
+                          </property>
+                          <property name="placeholderText">
+                           <string>Input</string>
                           </property>
                          </widget>
                         </item>
@@ -5046,7 +5175,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="commonUrlPassphrase"/>
+                      <widget class="QLineEdit" name="commonUrlPassphrase">
+                       <property name="placeholderText">
+                        <string>Common Credentials Secret</string>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_133">
@@ -5059,7 +5192,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="commonUrlPin"/>
+                      <widget class="QLineEdit" name="commonUrlPin">
+                       <property name="placeholderText">
+                        <string>Common Credentials PIN</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -5083,6 +5220,9 @@
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToContents</enum>
                        </property>
+                       <property name="minimumContentsLength">
+                        <number>15</number>
+                       </property>
                       </widget>
                      </item>
                      <item>
@@ -5099,6 +5239,9 @@
                       <widget class="QComboBox" name="commonUrlHash">
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToContents</enum>
+                       </property>
+                       <property name="minimumContentsLength">
+                        <number>15</number>
                        </property>
                       </widget>
                      </item>
@@ -5217,7 +5360,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="urlIniPath"/>
+                      <widget class="QLineEdit" name="urlIniPath">
+                       <property name="placeholderText">
+                        <string>Not Used</string>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_108">
@@ -5276,6 +5423,9 @@
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToContents</enum>
                        </property>
+                       <property name="minimumContentsLength">
+                        <number>15</number>
+                       </property>
                       </widget>
                      </item>
                      <item>
@@ -5292,6 +5442,9 @@
                       <widget class="QComboBox" name="urlHash">
                        <property name="sizeAdjustPolicy">
                         <enum>QComboBox::AdjustToContents</enum>
+                       </property>
+                       <property name="minimumContentsLength">
+                        <number>15</number>
                        </property>
                       </widget>
                      </item>
@@ -5353,6 +5506,9 @@
                        <property name="echoMode">
                         <enum>QLineEdit::Password</enum>
                        </property>
+                       <property name="placeholderText">
+                        <string>Not Used</string>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -5373,7 +5529,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="urlIniHash"/>
+                      <widget class="QLineEdit" name="urlIniHash">
+                       <property name="placeholderText">
+                        <string>Not Used</string>
+                       </property>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_112">
@@ -5386,7 +5546,11 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLineEdit" name="urlSalt"/>
+                      <widget class="QLineEdit" name="urlSalt">
+                       <property name="placeholderText">
+                        <string>Not Used</string>
+                       </property>
+                      </widget>
                      </item>
                     </layout>
                    </item>
@@ -5570,6 +5734,9 @@
                    <property name="toolTip">
                     <string>Please provide complete keywords.</string>
                    </property>
+                   <property name="placeholderText">
+                    <string>Search</string>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -5707,6 +5874,9 @@
                    <widget class="QLineEdit" name="find">
                     <property name="toolTip">
                      <string>Please press the Enter key after providing the search text.</string>
+                    </property>
+                    <property name="placeholderText">
+                     <string>Find</string>
                     </property>
                    </widget>
                   </item>
@@ -5901,7 +6071,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="kernelPath"/>
+                    <widget class="QLineEdit" name="kernelPath">
+                     <property name="placeholderText">
+                      <string>Spot-On-Kernel File Path</string>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QPushButton" name="selectKernelPath">
@@ -6002,6 +6176,9 @@
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
                      </property>
+                     <property name="minimumContentsLength">
+                      <number>15</number>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -6018,6 +6195,9 @@
                     <widget class="QComboBox" name="kernelHashType">
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <property name="minimumContentsLength">
+                      <number>15</number>
                      </property>
                     </widget>
                    </item>
@@ -6081,6 +6261,9 @@
                     <widget class="QComboBox" name="congestionAlgorithm">
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <property name="minimumContentsLength">
+                      <number>15</number>
                      </property>
                     </widget>
                    </item>
@@ -6252,6 +6435,9 @@
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
                      </property>
+                     <property name="minimumContentsLength">
+                      <number>15</number>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -6268,6 +6454,9 @@
                     <widget class="QComboBox" name="hashType">
                      <property name="sizeAdjustPolicy">
                       <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <property name="minimumContentsLength">
+                      <number>15</number>
                      </property>
                     </widget>
                    </item>
@@ -6369,6 +6558,9 @@
                      <property name="echoMode">
                       <enum>QLineEdit::Password</enum>
                      </property>
+                     <property name="placeholderText">
+                      <string>Passphrase Confirmation</string>
+                     </property>
                     </widget>
                    </item>
                    <item row="1" column="0">
@@ -6392,7 +6584,11 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="username"/>
+                    <widget class="QLineEdit" name="username">
+                     <property name="placeholderText">
+                      <string>Your Name</string>
+                     </property>
+                    </widget>
                    </item>
                    <item row="6" column="0">
                     <widget class="QRadioButton" name="question_rb">
@@ -6416,6 +6612,9 @@
                      <property name="toolTip">
                       <string>Virtual keyboard via double-click.</string>
                      </property>
+                     <property name="placeholderText">
+                      <string>Question</string>
+                     </property>
                     </widget>
                    </item>
                    <item row="8" column="0">
@@ -6432,6 +6631,9 @@
                     <widget class="spoton_lineedit" name="answer">
                      <property name="toolTip">
                       <string>Virtual keyboard via double-click.</string>
+                     </property>
+                     <property name="placeholderText">
+                      <string>Answer</string>
                      </property>
                     </widget>
                    </item>
@@ -6454,6 +6656,9 @@
                        </property>
                        <property name="echoMode">
                         <enum>QLineEdit::Password</enum>
+                       </property>
+                       <property name="placeholderText">
+                        <string>Passphrase</string>
                        </property>
                       </widget>
                      </item>
@@ -7158,6 +7363,9 @@
                        <property name="acceptRichText">
                         <bool>false</bool>
                        </property>
+                       <property name="placeholderText">
+                        <string>StarBeam Magnet</string>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -7283,10 +7491,17 @@
                           <property name="sizeAdjustPolicy">
                            <enum>QComboBox::AdjustToContents</enum>
                           </property>
+                          <property name="minimumContentsLength">
+                           <number>15</number>
+                          </property>
                          </widget>
                         </item>
                         <item row="0" column="3">
-                         <widget class="QLineEdit" name="etpEncryptionKey"/>
+                         <widget class="QLineEdit" name="etpEncryptionKey">
+                          <property name="placeholderText">
+                           <string>StarBeam Encryption Key</string>
+                          </property>
+                         </widget>
                         </item>
                         <item row="0" column="2">
                          <widget class="QLabel" name="label_50">
@@ -7299,7 +7514,11 @@
                          </widget>
                         </item>
                         <item row="1" column="3">
-                         <widget class="QLineEdit" name="etpMacKey"/>
+                         <widget class="QLineEdit" name="etpMacKey">
+                          <property name="placeholderText">
+                           <string>StarBeam Hash Key</string>
+                          </property>
+                         </widget>
                         </item>
                         <item row="1" column="4">
                          <widget class="QLabel" name="label_57">
@@ -7315,6 +7534,9 @@
                          <widget class="QComboBox" name="etpHashType">
                           <property name="sizeAdjustPolicy">
                            <enum>QComboBox::AdjustToContents</enum>
+                          </property>
+                          <property name="minimumContentsLength">
+                           <number>15</number>
                           </property>
                          </widget>
                         </item>
@@ -7434,7 +7656,11 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="receiveNova"/>
+                     <widget class="QLineEdit" name="receiveNova">
+                      <property name="placeholderText">
+                       <string>Nova</string>
+                      </property>
+                     </widget>
                     </item>
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_43">
@@ -7508,7 +7734,11 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="destination"/>
+                       <widget class="QLineEdit" name="destination">
+                        <property name="placeholderText">
+                         <string>Absolute Directory Name</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <widget class="QPushButton" name="etpSelectDestination">
@@ -7982,7 +8212,11 @@
                        <number>5</number>
                       </property>
                       <item>
-                       <widget class="QLineEdit" name="transmitNova"/>
+                       <widget class="QLineEdit" name="transmitNova">
+                        <property name="placeholderText">
+                         <string>Nova</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <widget class="QPushButton" name="generateNova">
@@ -8012,7 +8246,11 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="transmittedFile"/>
+                       <widget class="QLineEdit" name="transmittedFile">
+                        <property name="placeholderText">
+                         <string>Absolute File Path</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <widget class="QPushButton" name="etpSelectFile">
@@ -8350,7 +8588,11 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="urlName"/>
+                   <widget class="QLineEdit" name="urlName">
+                    <property name="placeholderText">
+                     <string>Your Name</string>
+                    </property>
+                   </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="saveUrlName">
@@ -8746,7 +8988,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="domain"/>
+                    <widget class="QLineEdit" name="domain">
+                     <property name="placeholderText">
+                      <string>Domain Name</string>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QCheckBox" name="downDist">
@@ -8997,6 +9243,9 @@
                   <property name="echoMode">
                    <enum>QLineEdit::Password</enum>
                   </property>
+                  <property name="placeholderText">
+                   <string>Passphrase</string>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -9040,7 +9289,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="spoton_lineedit" name="question_authenticate"/>
+                 <widget class="spoton_lineedit" name="question_authenticate">
+                  <property name="placeholderText">
+                   <string>Question</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QLabel" name="label_100">
@@ -9053,7 +9306,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="spoton_lineedit" name="answer_authenticate"/>
+                 <widget class="spoton_lineedit" name="answer_authenticate">
+                  <property name="placeholderText">
+                   <string>Answer</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>

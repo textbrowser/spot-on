@@ -97,7 +97,6 @@ copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On_
 copyspoton.path             = /Applications/Spot-On_Qt5.d
 copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1g/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On_Qt5.d
-copyssl.path                = /Applications/Spot-On_Qt5.d
 install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1g/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat

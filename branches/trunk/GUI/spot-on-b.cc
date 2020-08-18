@@ -2359,11 +2359,11 @@ void spoton::prepareListenerIPCombo(void)
 		{
 		  if(address.protocol() == QAbstractSocket::IPv4Protocol)
 		    {
-		      QString string(address.toString());
+		      QString str(address.toString());
 
-		      if(!hash.contains(string))
+		      if(!hash.contains(str))
 			{
-			  hash[string] = 0;
+			  hash[str] = 0;
 			  list.append(address.toString());
 			}
 		    }
@@ -2372,13 +2372,13 @@ void spoton::prepareListenerIPCombo(void)
 		{
 		  if(address.protocol() == QAbstractSocket::IPv6Protocol)
 		    {
-		      QString string
+		      QString str
 			(QHostAddress(address.toIPv6Address()).toString());
 
-		      if(!hash.contains(string))
+		      if(!hash.contains(str))
 			{
-			  hash[string] = 0;
-			  list.append(string);
+			  hash[str] = 0;
+			  list.append(str);
 			}
 		    }
 		}

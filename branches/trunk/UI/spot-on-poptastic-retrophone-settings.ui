@@ -115,7 +115,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="capath"/>
+      <widget class="QLineEdit" name="capath">
+       <property name="placeholderText">
+        <string>Certificate Authority File Path</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="selectcapath">
@@ -142,6 +146,9 @@
       <widget class="QComboBox" name="account">
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
+       </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
        </property>
       </widget>
      </item>
@@ -184,6 +191,9 @@
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
        </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
+       </property>
       </widget>
      </item>
      <item>
@@ -200,6 +210,9 @@
       <widget class="QComboBox" name="email_primary_account">
        <property name="sizeAdjustPolicy">
         <enum>QComboBox::AdjustToContents</enum>
+       </property>
+       <property name="minimumContentsLength">
+        <number>15</number>
        </property>
       </widget>
      </item>
@@ -346,7 +359,11 @@
                  </widget>
                 </item>
                 <item row="1" column="1">
-                 <widget class="QLineEdit" name="proxy_server_address"/>
+                 <widget class="QLineEdit" name="proxy_server_address">
+                  <property name="placeholderText">
+                   <string>Hostname</string>
+                  </property>
+                 </widget>
                 </item>
                 <item row="2" column="0">
                  <widget class="QLabel" name="label_14">
@@ -359,7 +376,11 @@
                  </widget>
                 </item>
                 <item row="2" column="1">
-                 <widget class="QLineEdit" name="proxy_username"/>
+                 <widget class="QLineEdit" name="proxy_username">
+                  <property name="placeholderText">
+                   <string>Username</string>
+                  </property>
+                 </widget>
                 </item>
                 <item row="1" column="3">
                  <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -405,6 +426,9 @@
                  <widget class="QLineEdit" name="proxy_password">
                   <property name="echoMode">
                    <enum>QLineEdit::Password</enum>
+                  </property>
+                  <property name="placeholderText">
+                   <string>Password</string>
                   </property>
                  </widget>
                 </item>
@@ -507,6 +531,9 @@
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
                 </property>
+                <property name="placeholderText">
+                 <string>Incoming Password</string>
+                </property>
                </widget>
               </item>
               <item row="8" column="0">
@@ -548,10 +575,18 @@
                </widget>
               </item>
               <item row="4" column="1">
-               <widget class="QLineEdit" name="in_server_address"/>
+               <widget class="QLineEdit" name="in_server_address">
+                <property name="placeholderText">
+                 <string>Incoming Server Address</string>
+                </property>
+               </widget>
               </item>
               <item row="9" column="1">
-               <widget class="QLineEdit" name="in_username"/>
+               <widget class="QLineEdit" name="in_username">
+                <property name="placeholderText">
+                 <string>Incoming Username</string>
+                </property>
+               </widget>
               </item>
               <item row="6" column="1">
                <widget class="QSpinBox" name="in_server_port">
@@ -600,17 +635,28 @@
                </widget>
               </item>
               <item row="9" column="3">
-               <widget class="QLineEdit" name="out_username"/>
+               <widget class="QLineEdit" name="out_username">
+                <property name="placeholderText">
+                 <string>Outgoing Username</string>
+                </property>
+               </widget>
               </item>
               <item row="10" column="3">
                <widget class="QLineEdit" name="out_password">
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
                 </property>
+                <property name="placeholderText">
+                 <string>Outgoing Password</string>
+                </property>
                </widget>
               </item>
               <item row="4" column="3">
-               <widget class="QLineEdit" name="out_server_address"/>
+               <widget class="QLineEdit" name="out_server_address">
+                <property name="placeholderText">
+                 <string>Outgoing Server Address</string>
+                </property>
+               </widget>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="label_10">
@@ -870,6 +916,9 @@
                <widget class="QLineEdit" name="smtp_localname">
                 <property name="text">
                  <string>localhost</string>
+                </property>
+                <property name="placeholderText">
+                 <string>Local Hostname</string>
                 </property>
                </widget>
               </item>

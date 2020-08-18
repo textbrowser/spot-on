@@ -1211,8 +1211,22 @@ void spoton::slotSetSocketOptions(void)
     }
 #endif
 
+#ifdef Q_OS_WIN
+  ui.type_of_service->setEnabled(false);
+  ui.type_of_service->setToolTip(tr("Not available on Windows."));
+#endif
+
   foreach(const QString &string, list)
-    if(string.startsWith("nodelay="))
+    if(string.startsWith("ip_tos="))
+      {
+	if(ui.type_of_service->isEnabled())
+	  {
+	    QString str(string.mid(static_cast<int> (qstrlen("ip_tos="))));
+
+	    ui.type_of_service->setCurrentIndex(str.toInt() / 32);
+	  }
+      }
+    else if(string.startsWith("nodelay="))
       {
 	if(ui.nodelay->isEnabled())
 	  ui.nodelay->setChecked
@@ -1294,6 +1308,15 @@ void spoton::slotSetSocketOptions(void)
     {
       socketOptions.append
 	(QString("so_timestamping=%1").arg(ui.so_timestamping->isChecked()));
+      socketOptions.append(";");
+    }
+
+  if(ui.type_of_service->isEnabled())
+    {
+      socketOptions.append
+	(QString("ip_tos=%1").
+	 arg(ui.type_of_service->currentText().
+	     mid(0, ui.type_of_service->currentText().indexOf(' '))));
       socketOptions.append(";");
     }
 

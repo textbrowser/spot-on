@@ -433,9 +433,6 @@ spoton::spoton(void):QMainWindow()
   m_locked = false;
   m_quit = false;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-  if(QRandomGenerator::global())
-    QRandomGenerator::global()->seed
-      (static_cast<quint32> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #else
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #endif
@@ -6837,8 +6834,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 	}
     }
 
-  m_ui.favorites->setMinimumContentsLength
-    (m_ui.favorites->itemText(0).length());
+  m_ui.favorites->setMinimumContentsLength(25);
   QApplication::restoreOverrideCursor();
 }
 

@@ -130,6 +130,9 @@
         <property name="acceptRichText">
          <bool>false</bool>
         </property>
+        <property name="placeholderText">
+         <string>Please type a message...</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -252,7 +255,7 @@
      <x>0</x>
      <y>0</y>
      <width>350</width>
-     <height>32</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

@@ -83,7 +83,11 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="database"/>
+      <widget class="QLineEdit" name="database">
+       <property name="placeholderText">
+        <string>PostgreSQL Database Name</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label">
@@ -96,7 +100,11 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="name"/>
+      <widget class="QLineEdit" name="name">
+       <property name="placeholderText">
+        <string>Account Name</string>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_2">
@@ -113,12 +121,15 @@
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
+       <property name="placeholderText">
+        <string>Account Password</string>
+       </property>
       </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>&amp;Host</string>
+        <string>&amp;Hostname</string>
        </property>
        <property name="buddy">
         <cstring>host</cstring>
@@ -129,6 +140,9 @@
       <widget class="QLineEdit" name="host">
        <property name="text">
         <string>localhost</string>
+       </property>
+       <property name="placeholderText">
+        <string>Hostname</string>
        </property>
       </widget>
      </item>
@@ -172,6 +186,9 @@
        </property>
        <property name="text">
         <string>connect_timeout=10;sslmode=verify-full</string>
+       </property>
+       <property name="placeholderText">
+        <string>Connection Options</string>
        </property>
       </widget>
      </item>

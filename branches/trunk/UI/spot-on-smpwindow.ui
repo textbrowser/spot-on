@@ -38,9 +38,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>923</width>
-             <height>1010</height>
+             <y>-438</y>
+             <width>922</width>
+             <height>912</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -151,7 +151,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="secret"/>
+                  <widget class="QLineEdit" name="secret">
+                   <property name="placeholderText">
+                    <string>Secret</string>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -402,6 +406,9 @@
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
             </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
+            </property>
            </widget>
           </item>
           <item>
@@ -488,6 +495,9 @@
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
             </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
+            </property>
            </widget>
           </item>
           <item>
@@ -504,6 +514,9 @@
            <widget class="QComboBox" name="transfer_hash_type">
             <property name="sizeAdjustPolicy">
              <enum>QComboBox::AdjustToContents</enum>
+            </property>
+            <property name="minimumContentsLength">
+             <number>15</number>
             </property>
            </widget>
           </item>
@@ -547,7 +560,7 @@
      <x>0</x>
      <y>0</y>
      <width>975</width>
-     <height>39</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

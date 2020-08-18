@@ -7,6 +7,7 @@ Summary of Spot-On
 <li>Bluetooth, SCTP, TCP, UDP.</li>
 <li>Configurable thread priorities.</li>
 <li>Custom URL rules.</li>
+<li>Custom socket options.</li>
 <li>DSA, ECDSA, EdDSA, ElGamal, McEliece, NTRU, RSA.</li>
 <li>DTLS.</li>
 <li>Debian packages.</li>
@@ -17,7 +18,7 @@ Summary of Spot-On
 <li>Echo public-key distribution system.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
 <li>Infinite listeners and neighbors.</li>
-<li>Integrated file encryption of files and directories.</li>
+<li>Integrated file encryption of directories and files.</li>
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Offline e-mail.</li>

@@ -44,6 +44,9 @@
        <property name="echoMode">
         <enum>QLineEdit::Password</enum>
        </property>
+       <property name="placeholderText">
+        <string>Passphrase</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -70,7 +73,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="question"/>
+      <widget class="QLineEdit" name="question">
+       <property name="placeholderText">
+        <string>Question</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label">
@@ -83,7 +90,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="answer"/>
+      <widget class="QLineEdit" name="answer">
+       <property name="placeholderText">
+        <string>Answer</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

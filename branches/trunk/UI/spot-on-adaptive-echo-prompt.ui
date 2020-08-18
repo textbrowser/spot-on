@@ -46,7 +46,11 @@
       <number>5</number>
      </property>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="token"/>
+      <widget class="QLineEdit" name="token">
+       <property name="placeholderText">
+        <string>Adaptive Echo Token</string>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_2">
@@ -78,6 +82,9 @@
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContents</enum>
          </property>
+         <property name="minimumContentsLength">
+          <number>15</number>
+         </property>
         </widget>
        </item>
        <item>
@@ -104,6 +111,9 @@
         <widget class="QComboBox" name="token_e_type">
          <property name="sizeAdjustPolicy">
           <enum>QComboBox::AdjustToContents</enum>
+         </property>
+         <property name="minimumContentsLength">
+          <number>15</number>
          </property>
         </widget>
        </item>

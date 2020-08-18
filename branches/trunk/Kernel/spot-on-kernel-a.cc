@@ -474,9 +474,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   s_messagingCacheKey = spoton_crypt::weakRandomBytes
     (static_cast<size_t> (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-  if(QRandomGenerator::global())
-    QRandomGenerator::global()->seed
-      (static_cast<quint32> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #else
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #endif

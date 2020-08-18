@@ -155,7 +155,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="passphrase"/>
+      <widget class="QLineEdit" name="passphrase">
+       <property name="placeholderText">
+        <string>Secret Input</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

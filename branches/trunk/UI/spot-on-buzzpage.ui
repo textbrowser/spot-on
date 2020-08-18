@@ -303,6 +303,9 @@
        <property name="acceptRichText">
         <bool>false</bool>
        </property>
+       <property name="placeholderText">
+        <string>Please type a message...</string>
+       </property>
       </widget>
      </item>
      <item>

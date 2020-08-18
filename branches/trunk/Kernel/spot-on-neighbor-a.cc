@@ -2105,7 +2105,8 @@ void spoton_neighbor::slotReadyRead(void)
       while(m_udpSocket->bytesAvailable() > 0)
 	data.append(m_udpSocket->readAll());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) &&	\
+  !defined(SPOTON_DTLS_DISABLED)
       if(m_dtls && m_isUserDefined)
 	{
 	  m_bytesRead += static_cast<quint64> (data.length());
@@ -2173,7 +2174,8 @@ void spoton_neighbor::slotReadyRead(void)
 
   m_bytesRead += static_cast<quint64> (data.length());
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) &&	\
+  !defined(SPOTON_DTLS_DISABLED)
  next_label:
 #endif
 

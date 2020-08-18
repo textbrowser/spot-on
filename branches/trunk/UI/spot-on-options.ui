@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1500</y>
+         <y>-3425</y>
          <width>719</width>
          <height>3835</height>
         </rect>
@@ -940,7 +940,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="geoipPath4"/>
+                 <widget class="QLineEdit" name="geoipPath4">
+                  <property name="placeholderText">
+                   <string>GeoIP IPv4 File Path</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="selectGeoIP4">
@@ -967,7 +971,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="geoipPath6"/>
+                 <widget class="QLineEdit" name="geoipPath6">
+                  <property name="placeholderText">
+                   <string>GeoIP IPv6 File Path</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="selectGeoIP6">
@@ -994,6 +1002,9 @@
                   </property>
                   <property name="text">
                    <string>https://api.ipify.org</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>External IP URL</string>
                   </property>
                  </widget>
                 </item>
@@ -1201,6 +1212,9 @@
                  <widget class="QLineEdit" name="sslControlString">
                   <property name="text">
                    <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>SSL Control String</string>
                   </property>
                  </widget>
                 </item>

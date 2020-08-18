@@ -23,6 +23,7 @@ sudo cp -pr ./Documentation/* /usr/local/spot-on/Documentation/.
 sudo chmod -x /usr/local/spot-on/Lib/lib*
 sudo chown -Rh root:staff /usr/local/spot-on
 sudo find /usr/local/spot-on -type f -exec chmod g+w {} \;
+sudo rm /usr/local/spot-on/Documentation/*.qrc
 
 Preparing Spot-On-x_amd64.deb:
 
@@ -32,4 +33,4 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.07.07_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.08.19_amd64.deb
