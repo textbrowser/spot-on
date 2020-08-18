@@ -8032,8 +8032,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    case 11: // remote_port
 		    case 15: // proxy_port
 		      {
-			item = new spoton_table_widget_item
-			  (query->value(i).toString());
+			item = new spoton_table_widget_item(QString(bytes));
 			break;
 		      }
 		    default:

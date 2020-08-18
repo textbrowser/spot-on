@@ -1163,8 +1163,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: Neighbor Remote IP Information").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Neighbor Remote IP Information").arg(SPOTON_APPLICATION_NAME));
 
   if(protocol == "IPv4" || protocol.isEmpty())
     {
