@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-3425</y>
+         <y>0</y>
          <width>719</width>
          <height>3835</height>
         </rect>
@@ -2731,7 +2731,7 @@ with the kernel process.</string>
     <string>&amp;Close</string>
    </property>
    <property name="shortcut">
-    <string>Esc</string>
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>

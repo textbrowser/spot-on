@@ -67,9 +67,6 @@
    <property name="text">
     <string>&amp;Close</string>
    </property>
-   <property name="shortcut">
-    <string>Esc</string>
-   </property>
   </action>
   <action name="action_New_Page">
    <property name="text">

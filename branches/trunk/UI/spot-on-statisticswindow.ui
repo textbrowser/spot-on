@@ -65,7 +65,7 @@
     <string>&amp;Close</string>
    </property>
    <property name="shortcut">
-    <string>Esc</string>
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>
