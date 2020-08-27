@@ -76,7 +76,8 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -lcrypto-1_1 \
                    -lcurl \
                    -lgcrypt-20 \
-                   -lgpg-error-0 \-lntl \
+                   -lgpg-error-0 \
+		   -lntl \
                    -lntru \
                    -lpq -lpthread \
                    -lspoton \
