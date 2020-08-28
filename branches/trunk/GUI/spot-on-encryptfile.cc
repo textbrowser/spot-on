@@ -95,12 +95,6 @@ void spoton_encryptfile::abort(void)
 
 void spoton_encryptfile::keyPressEvent(QKeyEvent *event)
 {
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
   QMainWindow::keyPressEvent(event);
 }
 

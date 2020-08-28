@@ -83,12 +83,6 @@ spoton_logviewer::~spoton_logviewer()
 
 void spoton_logviewer::keyPressEvent(QKeyEvent *event)
 {
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
   QMainWindow::keyPressEvent(event);
 }
 

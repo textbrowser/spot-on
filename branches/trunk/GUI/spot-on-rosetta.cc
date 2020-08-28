@@ -192,12 +192,6 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
   QMainWindow::keyPressEvent(event);
 }
 

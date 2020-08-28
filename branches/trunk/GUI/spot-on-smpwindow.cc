@@ -298,12 +298,6 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 
 void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 {
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
   QMainWindow::keyPressEvent(event);
 }
 
