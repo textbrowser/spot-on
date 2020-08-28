@@ -25,6 +25,8 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QShortcut>
+
 #include "spot-on-defines.h"
 #include "spot-on-emailwindow.h"
 #include "spot-on.h"
@@ -93,6 +95,9 @@ spoton_emailwindow::spoton_emailwindow
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
     button->setToolTip(tr("Select All"));
 
+  new QShortcut(tr("Ctrl+W"),
+		this,
+		SLOT(close(void)));
   setWindowTitle(tr("%1: E-Mail").arg(SPOTON_APPLICATION_NAME));
   slotPopulateParticipants();
   slotUpdate();

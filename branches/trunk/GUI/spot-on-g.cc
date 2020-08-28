@@ -30,6 +30,7 @@ extern "C"
 #include <libpq-fe.h>
 }
 
+#include <QShortcut>
 #include <QSqlDriver>
 
 #include "spot-on-documentation.h"
@@ -315,6 +316,9 @@ void spoton::joinBuzzChannel(const QUrl &url)
      arg(SPOTON_APPLICATION_NAME).
      arg(page->channel().constData()));
   mainWindow->show();
+  new QShortcut(tr("Ctrl+W"),
+		mainWindow,
+		SLOT(close(void)));
   page->show();
   page->showUnify(true);
 
@@ -576,6 +580,9 @@ void spoton::slotBuzzInvite(void)
 	 arg(SPOTON_APPLICATION_NAME).
 	 arg(page->channel().constData()));
       mainWindow->show();
+      new QShortcut(tr("Ctrl+W"),
+		    mainWindow,
+		    SLOT(close(void)));
       page->show();
       page->showUnify(true);
     }
@@ -1535,6 +1542,9 @@ void spoton::slotSeparateBuzzPage(void)
      arg(SPOTON_APPLICATION_NAME).
      arg(page->channel().constData()));
   mainWindow->show();
+  new QShortcut(tr("Ctrl+W"),
+		mainWindow,
+		SLOT(close(void)));
   page->show();
   page->showUnify(true);
 }

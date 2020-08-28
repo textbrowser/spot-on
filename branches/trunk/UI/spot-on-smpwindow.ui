@@ -583,6 +583,9 @@
    <property name="text">
     <string>&amp;Close</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
   </action>
   <action name="action_Purge_SMP_State_Machines">
    <property name="text">
