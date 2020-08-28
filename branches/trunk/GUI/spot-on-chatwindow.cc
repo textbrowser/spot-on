@@ -192,12 +192,6 @@ void spoton_chatwindow::closeEvent(QCloseEvent *event)
 
 void spoton_chatwindow::keyPressEvent(QKeyEvent *event)
 {
-  if(event)
-    {
-      if(event->key() == Qt::Key_Escape)
-	close();
-    }
-
   QMainWindow::keyPressEvent(event);
 }
 

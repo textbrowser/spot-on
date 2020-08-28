@@ -674,7 +674,7 @@ spoton::spoton(void):QMainWindow()
   action = menu->addAction(tr("&Close"),
 			   m_addParticipantWindow,
 			   SLOT(close(void)));
-  action->setShortcut(Qt::Key_Escape);
+  action->setShortcut(tr("Ctrl+W"));
   m_addParticipantWindow->menuBar()->addMenu(menu);
 #else
   QMenu *menu = 0;
