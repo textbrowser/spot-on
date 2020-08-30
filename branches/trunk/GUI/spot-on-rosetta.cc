@@ -180,6 +180,7 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 		      "@" +
 		      sSignature.toBase64());
 
+      data = spoton_misc::wrap(data);
       QApplication::restoreOverrideCursor();
       return data;
     }
@@ -339,7 +340,7 @@ void spoton_rosetta::slotAddContact(void)
     }
 
   QByteArray key
-    (ui.newContact->toPlainText().toLatin1());
+    (ui.newContact->toPlainText().remove("\n").remove("\r\n").toLatin1());
 
   if(key.isEmpty())
     {
@@ -683,9 +684,11 @@ void spoton_rosetta::slotConvert(void)
 	messageCode = crypt->keyedHash(data, &ok);
 
       if(ok)
-	data = keyInformation.toBase64() + "@" +
-	  data.toBase64() + "@" +
-	  messageCode.toBase64();
+	data = spoton_misc::wrap(keyInformation.toBase64() +
+				 "@" +
+				 data.toBase64() +
+				 "@" +
+				 messageCode.toBase64());
 
       crypt.reset();
 
@@ -717,7 +720,8 @@ void spoton_rosetta::slotConvert(void)
     {
       QByteArray cipherType;
       QByteArray computedHash;
-      QByteArray data(ui.input->toPlainText().toLatin1());
+      QByteArray data
+	(ui.input->toPlainText().remove("\n").remove("\r\n").toLatin1());
       QByteArray encryptionKey;
       QByteArray hashKey;
       QByteArray hashType;

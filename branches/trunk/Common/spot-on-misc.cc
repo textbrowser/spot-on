@@ -405,6 +405,25 @@ QByteArray spoton_misc::urlToEncoded(const QUrl &url)
   return url.toEncoded();
 }
 
+QByteArray spoton_misc::wrap(const QByteArray &data)
+{
+  QByteArray bytes;
+
+  for(int i = 0; i < data.size(); i++)
+    {
+      bytes.append(data.at(i));
+
+      if(i > 0 && i % 80 == 0)
+#ifndef Q_OS_WIN
+	bytes.append("\n");
+#else
+        bytes.append("\r\n");
+#endif
+    }
+
+  return bytes;
+}
+
 QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
 {
   int length = qMin(a.length(), b.length());
