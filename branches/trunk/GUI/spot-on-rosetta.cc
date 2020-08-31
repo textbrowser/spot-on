@@ -460,16 +460,18 @@ void spoton_rosetta::slotAddContact(void)
 
   mSignature = QByteArray::fromBase64(mSignature);
 
-  if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey,
-				     mSignature))
-    {
-      QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
-	 tr("Invalid 'rosetta' public key signature."));
-      QApplication::processEvents();
-      return;
-    }
+  QString algorithm(spoton_crypt::publicKeyAlgorithm(mPublicKey).toLower());
+
+  if(!(algorithm.startsWith("mceliece") || algorithm.startsWith("ntru")))
+    if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey, mSignature))
+      {
+	QMessageBox::critical
+	  (this, tr("%1: Error").
+	   arg(SPOTON_APPLICATION_NAME),
+	   tr("Invalid 'rosetta' public key signature."));
+	QApplication::processEvents();
+	return;
+      }
 
   QByteArray sPublicKey(list.value(4));
   QByteArray sSignature(list.value(5));
@@ -477,8 +479,7 @@ void spoton_rosetta::slotAddContact(void)
   sPublicKey = QByteArray::fromBase64(sPublicKey);
   sSignature = QByteArray::fromBase64(sSignature);
 
-  if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey,
-				     sSignature))
+  if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
     {
       QMessageBox::critical
 	(this, tr("%1: Error").
@@ -954,6 +955,8 @@ void spoton_rosetta::slotCopyOrPaste(void)
   else
     a = "paste";
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   if(qobject_cast<QLineEdit *> (widget))
     {
       if(a == "copy")
@@ -968,6 +971,8 @@ void spoton_rosetta::slotCopyOrPaste(void)
       else
 	qobject_cast<QTextEdit *> (widget)->paste();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta::slotDecryptToggled(bool state)

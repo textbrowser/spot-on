@@ -409,15 +409,13 @@ QByteArray spoton_misc::wrap(const QByteArray &data)
 {
   QByteArray bytes;
 
-  for(int i = 0; i < data.size(); i++)
+  for(int i = 0; i < data.size(); i += 80)
     {
-      bytes.append(data.at(i));
-
-      if(i > 0 && i % 80 == 0)
+      bytes.append(data.mid(i, 80));
 #ifndef Q_OS_WIN
-	bytes.append("\n");
+      bytes.append("\n");
 #else
-        bytes.append("\r\n");
+      bytes.append("\r\n");
 #endif
     }
 
