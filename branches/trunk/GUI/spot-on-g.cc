@@ -74,7 +74,7 @@ QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
   if(ok)
     return "K" + QByteArray("open-library").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();

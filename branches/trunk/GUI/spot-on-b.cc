@@ -72,7 +72,7 @@ QByteArray spoton::copyMyChatPublicKey(void) const
   if(ok)
     return "K" + QByteArray("chat").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();
@@ -107,7 +107,7 @@ QByteArray spoton::copyMyEmailPublicKey(void) const
   if(ok)
     return "K" + QByteArray("email").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();
@@ -147,7 +147,7 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
   if(ok)
     return "K" + QByteArray("poptastic").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();
@@ -170,9 +170,6 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
   mPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
 
   if(ok)
-    mPublicKey = qCompress(mPublicKey);
-
-  if(ok)
     mSignature = m_crypts.value("rosetta")->digitalSignature(mPublicKey, &ok);
 
   if(ok)
@@ -185,7 +182,7 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
   if(ok)
     return "K" + QByteArray("rosetta").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();
@@ -220,7 +217,7 @@ QByteArray spoton::copyMyUrlPublicKey(void) const
   if(ok)
     return "K" + QByteArray("url").toBase64() + "@" +
       name.toBase64() + "@" +
-      mPublicKey.toBase64() + "@" + mSignature.toBase64() + "@" +
+      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
       sPublicKey.toBase64() + "@" + sSignature.toBase64();
   else
     return QByteArray();
@@ -757,7 +754,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
       QByteArray mySPublicKey;
       bool ok = true;
 
-      mPublicKey = QByteArray::fromBase64(mPublicKey);
+      mPublicKey = qUncompress(QByteArray::fromBase64(mPublicKey));
       myPublicKey = m_crypts.value(keyType)->publicKey(&ok);
 
       if(!ok)
@@ -1121,6 +1118,8 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QApplication::processEvents();
 	  return false;
 	}
+
+      list.replace(2, qUncompress(list.at(2))); // Public Key
 
       QByteArray myPublicKey;
       QByteArray mySPublicKey;
@@ -3113,7 +3112,7 @@ void spoton::slotCopyFriendshipBundle(void)
 
   data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
 			 myName.toBase64() + "@" +
-			 myPublicKey.toBase64() + "@" +
+			 qCompress(myPublicKey).toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
 			 mySPublicKey.toBase64() + "@" +
 			 mySSignature.toBase64(), &ok);

@@ -2331,7 +2331,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 
   data = crypt.encrypted(QByteArray("url").toBase64() + "@" +
 			 myName.toBase64() + "@" +
-			 myPublicKey.toBase64() + "@" +
+			 qCompress(myPublicKey).toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
 			 mySPublicKey.toBase64() + "@" +
 			 mySSignature.toBase64(), &ok);

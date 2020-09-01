@@ -5546,7 +5546,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 
   data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
 			 myName.toBase64() + "@" +
-			 myPublicKey.toBase64() + "@" +
+			 qCompress(myPublicKey).toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
 			 mySPublicKey.toBase64() + "@" +
 			 mySSignature.toBase64(), &ok);
