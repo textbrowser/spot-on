@@ -822,8 +822,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
       mSignature = QByteArray::fromBase64(mSignature);
 
-      if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey,
-					 mSignature))
+      if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey, mSignature))
 	{
 	  QMessageBox mb(parent);
 
@@ -850,8 +849,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
       sPublicKey = QByteArray::fromBase64(sPublicKey);
       sSignature = QByteArray::fromBase64(sSignature);
 
-      if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey,
-					 sSignature))
+      if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
 	{
 	  QMessageBox mb(parent);
 
