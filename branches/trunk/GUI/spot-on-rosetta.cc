@@ -685,7 +685,7 @@ void spoton_rosetta::slotConvert(void)
 	messageCode = crypt->keyedHash(data, &ok);
 
       if(ok)
-	data = spoton_misc::wrap(keyInformation.toBase64() +
+	data = spoton_misc::wrap(qCompress(keyInformation).toBase64() +
 				 "@" +
 				 data.toBase64() +
 				 "@" +
@@ -748,7 +748,8 @@ void spoton_rosetta::slotConvert(void)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
       data = list.value(1);
-      keyInformation = eCrypt->publicKeyDecrypt(list.value(0), &ok);
+      keyInformation = eCrypt->publicKeyDecrypt
+	(qUncompress(list.value(0)), &ok);
 
       if(!ok)
 	{
