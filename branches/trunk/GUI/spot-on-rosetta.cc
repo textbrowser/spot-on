@@ -157,6 +157,9 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
+    mPublicKey = qCompress(mPublicKey);
+
+  if(ok)
     mSignature = eCrypt->digitalSignature(mPublicKey, &ok);
 
   if(ok)
@@ -395,7 +398,7 @@ void spoton_rosetta::slotAddContact(void)
   QByteArray mySPublicKey;
   bool ok = true;
 
-  mPublicKey = QByteArray::fromBase64(mPublicKey);
+  mPublicKey = qUncompress(QByteArray::fromBase64(mPublicKey));
   myPublicKey = eCrypt->publicKey(&ok);
 
   if(!ok)

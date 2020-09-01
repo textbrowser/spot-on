@@ -170,6 +170,9 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
   mPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
 
   if(ok)
+    mPublicKey = qCompress(mPublicKey);
+
+  if(ok)
     mSignature = m_crypts.value("rosetta")->digitalSignature(mPublicKey, &ok);
 
   if(ok)
