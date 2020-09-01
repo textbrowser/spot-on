@@ -157,9 +157,6 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
-    mPublicKey = qCompress(mPublicKey);
-
-  if(ok)
     mSignature = eCrypt->digitalSignature(mPublicKey, &ok);
 
   if(ok)
@@ -175,7 +172,7 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 		      "@" +
 		      name.toBase64() +
 		      "@" +
-		      mPublicKey.toBase64() +
+		      qCompress(mPublicKey).toBase64() +
 		      "@" +
 		      mSignature.toBase64() +
 		      "@" +
