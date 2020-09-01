@@ -1449,6 +1449,23 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
   return QString(text).remove(QRegExp("<[^>]*>"));
 }
 
+QString spoton_misc::wrap(const QString &t)
+{
+  QByteArray text;
+
+  for(int i = 0; i < t.size(); i += 80)
+    {
+      text.append(t.mid(i, 80));
+#ifndef Q_OS_WIN
+      text.append("\n");
+#else
+      text.append("\r\n");
+#endif
+    }
+
+  return text;
+}
+
 bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
 {
   if(!then.isValid())

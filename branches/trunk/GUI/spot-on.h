@@ -414,6 +414,7 @@ class spoton: public QMainWindow
   QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
+  static char s_keyDelimiter;
   QHash<QString, spoton_crypt *> crypts(void) const;
   QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
   QList<QByteArray> retrieveForwardSecrecyInformation(const QString &oid,

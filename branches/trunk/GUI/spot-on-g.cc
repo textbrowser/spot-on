@@ -752,7 +752,7 @@ void spoton::slotCopyMyOpenLibraryPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -921,7 +921,7 @@ void spoton::slotCopyUrlKeys(void)
 	  return;
 	}
 
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
     }
   else
     clipboard->clear();

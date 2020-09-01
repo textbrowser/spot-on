@@ -107,6 +107,7 @@ QStringList spoton_common::SPOTON_SIGNATURE_KEY_NAMES =
 		<< "poptastic-signature"
 		<< "rosetta-signature"
 		<< "url-signature";
+char spoton::s_keyDelimiter = '|';
 const int spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE;
 const int spoton_common::BUZZ_MAXIMUM_ID_LENGTH;
 const int spoton_common::CACHE_TIME_DELTA_MAXIMUM_STATIC;
@@ -5338,11 +5339,13 @@ void spoton::slotCopyAllMyPublicKeys(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QString text(copyMyChatPublicKey() + "\n" +
-	       copyMyEmailPublicKey() + "\n" +
-	       copyMyOpenLibraryPublicKey() + "\n" +
-	       copyMyPoptasticPublicKey() + "\n" +
-	       copyMyRosettaPublicKey() + "\n" +
+  QString text(copyMyChatPublicKey() + s_keyDelimiter +
+	       copyMyEmailPublicKey() + s_keyDelimiter +
+#ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
+	       copyMyOpenLibraryPublicKey() + s_keyDelimiter +
+#endif
+	       copyMyPoptasticPublicKey() + s_keyDelimiter +
+	       copyMyRosettaPublicKey() + s_keyDelimiter +
 	       copyMyUrlPublicKey());
 
   QApplication::restoreOverrideCursor();
@@ -5365,7 +5368,7 @@ void spoton::slotCopyAllMyPublicKeys(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -5580,7 +5583,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  clipboard->setText(text);
+  clipboard->setText(spoton_misc::wrap(text));
   QApplication::restoreOverrideCursor();
 }
 

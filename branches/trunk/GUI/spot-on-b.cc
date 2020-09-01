@@ -2817,7 +2817,8 @@ void spoton::slotAddAccount(void)
 void spoton::slotAddFriendsKey(void)
 {
   QByteArray key
-    (m_ui.friendInformation->toPlainText().toLatin1().trimmed());
+    (m_ui.friendInformation->toPlainText().remove("\n").remove("\r\n").
+     toLatin1().trimmed());
 #if SPOTON_GOLDBUG == 0
   QWidget *parent = m_addParticipantWindow;
 #else
@@ -2828,7 +2829,7 @@ void spoton::slotAddFriendsKey(void)
     addFriendsKey(key, "E", parent);
   else if(key.startsWith("K") || key.startsWith("k"))
     {
-      QList<QByteArray> list(key.split('\n'));
+      QList<QByteArray> list(key.split(s_keyDelimiter));
 
       for(int i = 0; i < list.size(); i++)
 	{
@@ -3148,7 +3149,7 @@ void spoton::slotCopyFriendshipBundle(void)
       return;
     }
 
-  clipboard->setText(text);
+  clipboard->setText(spoton_misc::wrap(text));
   QApplication::restoreOverrideCursor();
 }
 
@@ -3178,7 +3179,7 @@ void spoton::slotCopyMyChatPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3209,7 +3210,7 @@ void spoton::slotCopyMyEmailPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3240,7 +3241,7 @@ void spoton::slotCopyMyPoptasticPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3271,7 +3272,7 @@ void spoton::slotCopyMyRosettaPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }
@@ -3302,7 +3303,7 @@ void spoton::slotCopyMyURLPublicKey(void)
       repaint();
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
       QApplication::restoreOverrideCursor();
     }
 }

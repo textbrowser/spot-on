@@ -2028,7 +2028,7 @@ void spoton::slotCopyEmailKeys(void)
 	  return;
 	}
 
-      clipboard->setText(text);
+      clipboard->setText(spoton_misc::wrap(text));
     }
   else
     clipboard->clear();
@@ -2368,7 +2368,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
       return;
     }
 
-  clipboard->setText(text);
+  clipboard->setText(spoton_misc::wrap(text));
   QApplication::restoreOverrideCursor();
 }
 

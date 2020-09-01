@@ -129,6 +129,7 @@ class spoton_misc
   static QString percentEncoding(const QString &string);
   static QString prettyFileSize(const qint64 size);
   static QString removeSpecialHtmlTags(const QString &text);
+  static QString wrap(const QString &t);
   static bool acceptableTimeSeconds(const QDateTime &then, const int delta);
   static bool allParticipantsHaveGeminis(void);
   static bool authenticateAccount(QByteArray &name,
