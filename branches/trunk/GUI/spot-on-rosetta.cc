@@ -1075,6 +1075,12 @@ void spoton_rosetta::slotEncryptToggled(bool state)
   ui.sign->setEnabled(state);
 }
 
+void spoton_rosetta::slotParticipantAdded(const QString &type)
+{
+  if(type == "rosetta")
+    populateContacts();
+}
+
 void spoton_rosetta::slotRename(void)
 {
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;

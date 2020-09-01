@@ -868,6 +868,10 @@ spoton::spoton(void):QMainWindow()
 				     const int &)));
   connect(this,
 	  SIGNAL(participantAdded(const QString &)),
+	  &m_rosetta,
+	  SLOT(slotParticipantAdded(const QString &)));
+  connect(this,
+	  SIGNAL(participantAdded(const QString &)),
 	  m_smpWindow,
 	  SLOT(slotRefresh(void)));
   connect(this,
