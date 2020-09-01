@@ -1064,7 +1064,11 @@ void spoton_rosetta::slotDelete(void)
     {
       emit participantDeleted(oid, "rosetta");
       ui.contacts->removeItem(ui.contacts->currentIndex());
-      sortContacts();
+
+      if(ui.contacts->count() == 0)
+	ui.contacts->addItem("Empty"); // Please do not translate Empty.
+      else
+	sortContacts();
     }
 }
 
