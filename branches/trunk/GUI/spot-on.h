@@ -826,6 +826,7 @@ class spoton: public QMainWindow
   void slotLaneWidthChanged(int index);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);
+  void slotLimitSqliteSynchronization(bool state);
   void slotLinkClicked(const QUrl &url);
   void slotListenerChanged(QTableWidgetItem *item);
   void slotListenerFullEcho(void);

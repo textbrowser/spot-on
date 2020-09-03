@@ -1241,6 +1241,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotLimitConnections(int)));
+  connect(m_optionsUi.limit_sqlite_synchronization,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotLimitSqliteSynchronization(bool)));
   connect(m_optionsUi.listenersUpdateInterval,
 	  SIGNAL(valueChanged(double)),
 	  this,

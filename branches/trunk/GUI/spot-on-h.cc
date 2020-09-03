@@ -647,6 +647,15 @@ void spoton::slotKeysIndexChanged(const QString &text)
 #endif
 }
 
+void spoton::slotLimitSqliteSynchronization(bool state)
+{
+  m_settings["gui/limit_sqlite_synchronization"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/limit_sqlite_synchronization", state);
+}
+
 void spoton::slotMailContextMenu(const QPoint &point)
 {
 #if SPOTON_GOLDBUG == 0
