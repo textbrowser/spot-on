@@ -6061,7 +6061,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 	qint64 v1 = 0;
 	qint64 v2 = 0;
 
-	query.exec("PRAGMA synchronous = NORMAL");
+	if(setting("gui/limit_sqlite_synchronization", false).toBool())
+	  query.exec("PRAGMA synchronous = OFF");
+	else
+	  query.exec("PRAGMA synchronous = NORMAL");
+
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Active Buzz Channels', ?)");

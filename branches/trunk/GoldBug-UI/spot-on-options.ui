@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>750</width>
-    <height>550</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1530</y>
+         <y>0</y>
          <width>719</width>
-         <height>3835</height>
+         <height>3862</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -940,7 +940,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="geoipPath4"/>
+                 <widget class="QLineEdit" name="geoipPath4">
+                  <property name="placeholderText">
+                   <string>GeoIP IPv4 File Path</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="selectGeoIP4">
@@ -967,7 +971,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="geoipPath6"/>
+                 <widget class="QLineEdit" name="geoipPath6">
+                  <property name="placeholderText">
+                   <string>GeoIP IPv6 File Path</string>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QPushButton" name="selectGeoIP6">
@@ -994,6 +1002,9 @@
                   </property>
                   <property name="text">
                    <string>https://api.ipify.org</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>External IP URL</string>
                   </property>
                  </widget>
                 </item>
@@ -1079,6 +1090,16 @@
                  </spacer>
                 </item>
                </layout>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="limit_sqlite_synchronization">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the SQLite synchronous command to off on dispensable database writes. For example, Kernel statistics are considered nonessential.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Limit SQLite synchronization.</string>
+                </property>
+               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_64">
@@ -1201,6 +1222,9 @@
                  <widget class="QLineEdit" name="sslControlString">
                   <property name="text">
                    <string>HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>SSL Control String</string>
                   </property>
                  </widget>
                 </item>
@@ -2717,7 +2741,7 @@ with the kernel process.</string>
     <string>&amp;Close</string>
    </property>
    <property name="shortcut">
-    <string>Esc</string>
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>
@@ -2756,6 +2780,7 @@ with the kernel process.</string>
   <tabstop>external_ip_url</tabstop>
   <tabstop>guiExternalIpFetch</tabstop>
   <tabstop>guiSecureMemoryPool</tabstop>
+  <tabstop>limit_sqlite_synchronization</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>
   <tabstop>sslControlString</tabstop>
