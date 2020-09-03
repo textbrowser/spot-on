@@ -253,6 +253,7 @@ Completed Items
 180.   Remove obsolete includes.
 181.   Distorted text in previews. Varies with system.
 182.   Minimum contents lengths for combination boxes.
+183.   Decrypt / encrypt panels in Rosetta.
 
 Ignored Items
 
@@ -292,4 +293,3 @@ Remaining Items
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
-11.    Decrypt / encrypt panels in Rosetta.
