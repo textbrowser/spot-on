@@ -2783,6 +2783,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/impersonate", false).toBool());
   m_optionsUi.displayPopups->setChecked
     (m_settings.value("gui/displayPopupsAutomatically", true).toBool());
+  m_optionsUi.limit_sqlite_synchronization->setChecked
+    (m_settings.value("gui/limit_sqlite_synchronization", false).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
 #if defined(Q_OS_MAC) || defined(Q_OS_WIN)
