@@ -285,7 +285,7 @@ Remaining Items
 1.     Audible.
 2.     Open Library.
 3.     Which key types to export and import? A new selection dialog.
-4.     SQLite silent mode; limit synchronization.
+4.     SQLite silent mode; limit synchronization. Partially completed.
 5.     Simple interface. Automatic UDP.
 6.     IMAP and optional removal of messages; retrieve latest.
 7.     Windows BT. Requires Qt 5.14.
