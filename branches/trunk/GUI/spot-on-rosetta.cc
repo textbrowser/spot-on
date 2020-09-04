@@ -84,7 +84,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCopyMyRosettaPublicKey(void)));
-  connect(ui.copyConverted,
+  connect(ui.copyEncrypt,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCopyConverted(void)));
@@ -577,6 +577,8 @@ void spoton_rosetta::slotConvert(void)
       return;
     }
 
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   /*
   ** Decrypt.
   */
@@ -584,10 +586,6 @@ void spoton_rosetta::slotConvert(void)
   {
     QByteArray data
       (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
-
-    if(data.isEmpty())
-      return;
-
     QByteArray cipherType;
     QByteArray computedHash;
     QByteArray encryptionKey;
@@ -602,6 +600,9 @@ void spoton_rosetta::slotConvert(void)
     QScopedPointer<spoton_crypt> crypt;
     QString error("");
     bool ok = true;
+
+    if(data.isEmpty())
+      goto done_label1;
 
     list = data.split('@');
 
@@ -748,6 +749,8 @@ void spoton_rosetta::slotConvert(void)
 
   done_label1:
 
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
     if(!error.isEmpty())
       {
 	QMessageBox::critical(this, tr("%1: Error").
@@ -762,7 +765,7 @@ void spoton_rosetta::slotConvert(void)
   */
 
   {
-    QByteArray data;
+    QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
     QByteArray encryptionKey;
     QByteArray hashKey;
     QByteArray keyInformation;
@@ -776,6 +779,9 @@ void spoton_rosetta::slotConvert(void)
     QString error("");
     bool ok = true;
     size_t encryptionKeyLength = 0;
+
+    if(data.isEmpty())
+      goto done_label2;
 
     if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
       {
@@ -798,7 +804,6 @@ void spoton_rosetta::slotConvert(void)
 	goto done_label2;
       }
 
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     encryptionKey.resize(static_cast<int> (encryptionKeyLength));
     encryptionKey = spoton_crypt::veryStrongRandomBytes
       (static_cast<size_t> (encryptionKey.length()));

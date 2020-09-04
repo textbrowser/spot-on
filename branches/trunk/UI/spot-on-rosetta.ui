@@ -98,8 +98,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>945</width>
-         <height>459</height>
+         <width>888</width>
+         <height>562</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -186,7 +186,7 @@
                        <bool>true</bool>
                       </property>
                       <property name="placeholderText">
-                       <string>Input</string>
+                       <string>Decrypt Input</string>
                       </property>
                      </widget>
                     </item>
@@ -418,6 +418,23 @@
                         </property>
                        </spacer>
                       </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout">
+                      <item>
+                       <spacer name="horizontalSpacer">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
                       <item>
                        <widget class="QPushButton" name="clearInput">
                         <property name="text">
@@ -438,7 +455,7 @@
                        <bool>true</bool>
                       </property>
                       <property name="placeholderText">
-                       <string>Input</string>
+                       <string>Encrypt Input</string>
                       </property>
                      </widget>
                     </item>
@@ -489,6 +506,13 @@
                         </property>
                        </widget>
                       </item>
+                      <item>
+                       <widget class="QPushButton" name="copyEncrypt">
+                        <property name="text">
+                         <string>Copy</string>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </item>
                     <item>
@@ -536,13 +560,6 @@
                <widget class="QPushButton" name="convert">
                 <property name="text">
                  <string>Convert</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="copyConverted">
-                <property name="text">
-                 <string>Copy</string>
                 </property>
                </widget>
               </item>
@@ -633,7 +650,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -697,9 +714,9 @@
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
+  <tabstop>copyEncrypt</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>convert</tabstop>
-  <tabstop>copyConverted</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>
