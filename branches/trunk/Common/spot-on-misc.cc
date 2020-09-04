@@ -405,13 +405,14 @@ QByteArray spoton_misc::urlToEncoded(const QUrl &url)
   return url.toEncoded();
 }
 
-QByteArray spoton_misc::wrap(const QByteArray &data)
+QByteArray spoton_misc::wrap(const QByteArray &data, const int c)
 {
   QByteArray bytes;
+  int characters = qMax(1, c);
 
-  for(int i = 0; i < data.size(); i += 80)
+  for(int i = 0; i < data.size(); i += characters)
     {
-      bytes.append(data.mid(i, 80));
+      bytes.append(data.mid(i, characters));
 #ifndef Q_OS_WIN
       bytes.append("\n");
 #else
@@ -1449,13 +1450,14 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
   return QString(text).remove(QRegExp("<[^>]*>"));
 }
 
-QString spoton_misc::wrap(const QString &t)
+QString spoton_misc::wrap(const QString &t, const int c)
 {
   QByteArray text;
+  int characters = qMax(1, c);
 
-  for(int i = 0; i < t.size(); i += 80)
+  for(int i = 0; i < t.size(); i += characters)
     {
-      text.append(t.mid(i, 80));
+      text.append(t.mid(i, characters));
 #ifndef Q_OS_WIN
       text.append("\n");
 #else

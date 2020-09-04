@@ -593,13 +593,13 @@ void spoton_rosetta::slotConvert(void)
       return;
     }
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
   /*
   ** Decrypt.
   */
 
   {
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
     QByteArray data
       (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
     QByteArray cipherType;
@@ -765,15 +765,16 @@ void spoton_rosetta::slotConvert(void)
 
   done_label1:
 
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
     if(!error.isEmpty())
       {
+	QApplication::restoreOverrideCursor();
 	QMessageBox::critical(this, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      error);
 	QApplication::processEvents();
       }
+    else
+      QApplication::restoreOverrideCursor();
   }
 
   /*
@@ -781,6 +782,8 @@ void spoton_rosetta::slotConvert(void)
   */
 
   {
+    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
     QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
     QByteArray encryptionKey;
     QByteArray hashKey;
@@ -911,15 +914,16 @@ void spoton_rosetta::slotConvert(void)
 
   done_label2:
 
-    QApplication::restoreOverrideCursor();
-
     if(!error.isEmpty())
       {
+	QApplication::restoreOverrideCursor();
 	QMessageBox::critical(this, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      error);
 	QApplication::processEvents();
       }
+    else
+      QApplication::restoreOverrideCursor();
   }
 }
 

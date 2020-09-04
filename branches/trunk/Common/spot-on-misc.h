@@ -87,7 +87,7 @@ class spoton_misc
   static QByteArray signaturePublicKeyFromPublicKeyHash
     (const QByteArray &publicKeyHash, spoton_crypt *crypt);
   static QByteArray urlToEncoded(const QUrl &url);
-  static QByteArray wrap(const QByteArray &data);
+  static QByteArray wrap(const QByteArray &data, const int c = 80);
   static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
@@ -129,7 +129,7 @@ class spoton_misc
   static QString percentEncoding(const QString &string);
   static QString prettyFileSize(const qint64 size);
   static QString removeSpecialHtmlTags(const QString &text);
-  static QString wrap(const QString &t);
+  static QString wrap(const QString &t, const int c = 80);
   static bool acceptableTimeSeconds(const QDateTime &then, const int delta);
   static bool allParticipantsHaveGeminis(void);
   static bool authenticateAccount(QByteArray &name,
