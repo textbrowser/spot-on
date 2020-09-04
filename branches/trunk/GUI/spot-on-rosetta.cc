@@ -47,7 +47,11 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   setWindowTitle
     (tr("%1: Rosetta").
      arg(SPOTON_APPLICATION_NAME));
+  ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
+  ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
+  ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
+  ui.outputEncrypt->setWordWrapMode(QTextOption::NoWrap);
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,

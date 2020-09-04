@@ -97,8 +97,8 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-237</y>
-         <width>888</width>
+         <y>0</y>
+         <width>799</width>
          <height>562</height>
         </rect>
        </property>
@@ -169,7 +169,7 @@
                       <item>
                        <widget class="QPushButton" name="decryptReset">
                         <property name="text">
-                         <string>Reset</string>
+                         <string>Clear</string>
                         </property>
                        </widget>
                       </item>
