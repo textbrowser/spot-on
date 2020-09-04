@@ -97,8 +97,8 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-237</y>
-         <width>799</width>
+         <y>0</y>
+         <width>888</width>
          <height>562</height>
         </rect>
        </property>
@@ -165,6 +165,13 @@
                          </size>
                         </property>
                        </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="decryptPaste">
+                        <property name="text">
+                         <string>Paste</string>
+                        </property>
+                       </widget>
                       </item>
                       <item>
                        <widget class="QPushButton" name="decryptReset">
@@ -276,11 +283,20 @@
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_11">
                       <item>
-                       <widget class="QLabel" name="signedMessage">
-                        <property name="text">
-                         <string>Signed:</string>
+                       <widget class="QLabel" name="signedMessage"/>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_12">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
                         </property>
-                       </widget>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                      </layout>
                     </item>
@@ -481,6 +497,13 @@
                        </spacer>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="encryptPaste">
+                        <property name="text">
+                         <string>Paste</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="clearInput">
                         <property name="text">
                          <string>Reset</string>
@@ -545,16 +568,16 @@
                        </spacer>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="clearOutput">
+                       <widget class="QPushButton" name="copyEncrypt">
                         <property name="text">
-                         <string>Clear</string>
+                         <string>Copy</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="copyEncrypt">
+                       <widget class="QPushButton" name="clearOutput">
                         <property name="text">
-                         <string>Copy</string>
+                         <string>Clear</string>
                         </property>
                        </widget>
                       </item>
@@ -708,6 +731,7 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
+    <addaction name="actionClear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
    </widget>
@@ -739,6 +763,14 @@
     <string>Ctrl+V</string>
    </property>
   </action>
+  <action name="actionClear_Clipboard_Buffer">
+   <property name="text">
+    <string>Clear Clipboard Buffer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>name</tabstop>
@@ -746,6 +778,7 @@
   <tabstop>copy</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>tabWidget</tabstop>
+  <tabstop>decryptPaste</tabstop>
   <tabstop>decryptReset</tabstop>
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
@@ -756,10 +789,11 @@
   <tabstop>cipher</tabstop>
   <tabstop>hash</tabstop>
   <tabstop>sign</tabstop>
+  <tabstop>encryptPaste</tabstop>
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
-  <tabstop>clearOutput</tabstop>
   <tabstop>copyEncrypt</tabstop>
+  <tabstop>clearOutput</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>convert</tabstop>
   <tabstop>newContact</tabstop>

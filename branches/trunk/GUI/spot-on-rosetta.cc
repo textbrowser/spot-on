@@ -97,6 +97,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDecryptClear(void)));
+  connect(ui.decryptPaste,
+	  SIGNAL(clicked(void)),
+	  ui.inputDecrypt,
+	  SLOT(paste(void)));
   connect(ui.decryptReset,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -109,6 +113,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDelete(void)));
+  connect(ui.encryptPaste,
+	  SIGNAL(clicked(void)),
+	  ui.inputEncrypt,
+	  SLOT(paste(void)));
   connect(ui.encryptSplitter,
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
