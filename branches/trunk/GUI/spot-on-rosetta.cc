@@ -88,6 +88,14 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCopyConverted(void)));
+  connect(ui.decryptClear,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDecryptClear(void)));
+  connect(ui.decryptReset,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotDecryptReset(void)));
   connect(ui.deleteContact,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -541,11 +549,11 @@ void spoton_rosetta::slotClear(void)
     {
       ui.cipher->setCurrentIndex(0);
       ui.hash->setCurrentIndex(0);
-      ui.input->clear();
+      ui.inputEncrypt->clear();
       ui.sign->setChecked(true);
     }
   else if(sender() == ui.clearOutput)
-    ui.output->clear();
+    ui.outputEncrypt->clear();
 }
 
 void spoton_rosetta::slotClose(void)
@@ -575,7 +583,7 @@ void spoton_rosetta::slotConvert(void)
 
   {
     QByteArray data
-      (ui.input->toPlainText().remove("\n").remove("\r\n").toLatin1());
+      (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
 
     if(data.isEmpty())
       return;
@@ -729,12 +737,13 @@ void spoton_rosetta::slotConvert(void)
 	if(error.isEmpty())
 	  error = tr("A serious cryptographic error occurred.");
 
-	ui.output->clear();
+	ui.outputDecrypt->clear();
       }
     else
       {
-	ui.output->setText(QString::fromUtf8(data.constData(), data.length()));
-	ui.output->selectAll();
+	ui.outputDecrypt->setText
+	  (QString::fromUtf8(data.constData(), data.length()));
+	ui.outputDecrypt->selectAll();
       }
 
   done_label1:
@@ -774,7 +783,7 @@ void spoton_rosetta::slotConvert(void)
 	goto done_label2;
       }
 
-    if(ui.input->toPlainText().isEmpty())
+    if(ui.inputEncrypt->toPlainText().isEmpty())
       {
 	error = tr("Please provide an actual message!");
 	goto done_label2;
@@ -836,7 +845,7 @@ void spoton_rosetta::slotConvert(void)
 
 	if(ok)
 	  signature = sCrypt->digitalSignature
-	    (myPublicKeyHash + ui.input->toPlainText().toUtf8(),
+	    (myPublicKeyHash + ui.inputEncrypt->toPlainText().toUtf8(),
 	     &ok);
       }
 
@@ -845,7 +854,7 @@ void spoton_rosetta::slotConvert(void)
 	QDataStream stream(&data, QIODevice::WriteOnly);
 
 	stream << myPublicKeyHash
-	       << ui.input->toPlainText().toUtf8()
+	       << ui.inputEncrypt->toPlainText().toUtf8()
 	       << signature;
 
 	if(stream.status() != QDataStream::Ok)
@@ -873,11 +882,11 @@ void spoton_rosetta::slotConvert(void)
 
     if(ok)
       {
-	ui.output->setText(data);
-	ui.output->selectAll();
+	ui.outputEncrypt->setText(data);
+	ui.outputEncrypt->selectAll();
       }
     else
-      ui.output->clear();
+      ui.outputEncrypt->clear();
 
   done_label2:
 
@@ -898,7 +907,7 @@ void spoton_rosetta::slotCopyConverted(void)
   QClipboard *clipboard = QApplication::clipboard();
 
   if(clipboard)
-    clipboard->setText(ui.output->toPlainText());
+    clipboard->setText(ui.outputEncrypt->toPlainText());
 }
 
 void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
@@ -968,6 +977,16 @@ void spoton_rosetta::slotCopyOrPaste(void)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rosetta::slotDecryptClear(void)
+{
+  ui.outputDecrypt->clear();
+}
+
+void spoton_rosetta::slotDecryptReset(void)
+{
+  ui.inputDecrypt->clear();
 }
 
 void spoton_rosetta::slotDelete(void)
@@ -1192,6 +1211,8 @@ void spoton_rosetta::slotSetIcons(void)
   ui.clearInput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
+  ui.decryptClear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.decryptReset->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }
 

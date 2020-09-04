@@ -58,6 +58,8 @@ class spoton_rosetta: public QMainWindow
   void slotCopyConverted(void);
   void slotCopyMyRosettaPublicKey(void);
   void slotCopyOrPaste(void);
+  void slotDecryptClear(void);
+  void slotDecryptReset(void);
   void slotDelete(void);
   void slotParticipantAdded(const QString &type);
   void slotRename(void);

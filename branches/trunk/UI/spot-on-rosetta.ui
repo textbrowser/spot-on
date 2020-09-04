@@ -98,8 +98,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>869</width>
-         <height>523</height>
+         <width>945</width>
+         <height>459</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -176,7 +176,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTextEdit" name="input_2">
+                     <widget class="QTextEdit" name="inputDecrypt">
                       <property name="font">
                        <font>
                         <family>Monospace</family>
@@ -240,7 +240,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTextBrowser" name="output_2">
+                     <widget class="QTextBrowser" name="outputDecrypt">
                       <property name="font">
                        <font>
                         <family>Monospace</family>
@@ -428,7 +428,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTextEdit" name="input">
+                     <widget class="QTextEdit" name="inputEncrypt">
                       <property name="font">
                        <font>
                         <family>Monospace</family>
@@ -492,7 +492,7 @@
                      </layout>
                     </item>
                     <item>
-                     <widget class="QTextBrowser" name="output">
+                     <widget class="QTextBrowser" name="outputEncrypt">
                       <property name="font">
                        <font>
                         <family>Monospace</family>
@@ -633,7 +633,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -685,9 +685,9 @@
   <tabstop>scrollArea</tabstop>
   <tabstop>tabWidget</tabstop>
   <tabstop>decryptReset</tabstop>
-  <tabstop>input_2</tabstop>
+  <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
-  <tabstop>output_2</tabstop>
+  <tabstop>outputDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
@@ -695,9 +695,9 @@
   <tabstop>hash</tabstop>
   <tabstop>sign</tabstop>
   <tabstop>clearInput</tabstop>
-  <tabstop>input</tabstop>
+  <tabstop>inputEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
-  <tabstop>output</tabstop>
+  <tabstop>outputEncrypt</tabstop>
   <tabstop>convert</tabstop>
   <tabstop>copyConverted</tabstop>
   <tabstop>newContact</tabstop>
