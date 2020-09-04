@@ -53,6 +53,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.newContact->setWordWrapMode(QTextOption::NoWrap);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::NoWrap);
+  connect(ui.action_Clear_Clipboard_Buffer,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotClearClipboardBuffer(void)));
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -612,6 +616,21 @@ void spoton_rosetta::slotClear(void)
     }
   else if(sender() == ui.clearOutput)
     ui.outputEncrypt->clear();
+}
+
+void spoton_rosetta::slotClearClipboardBuffer(void)
+{
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      menuBar()->repaint();
+      repaint();
+      QApplication::processEvents();
+      clipboard->clear();
+      QApplication::restoreOverrideCursor();
+    }
 }
 
 void spoton_rosetta::slotClose(void)

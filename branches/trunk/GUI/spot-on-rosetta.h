@@ -54,6 +54,7 @@ class spoton_rosetta: public QMainWindow
  private slots:
   void slotAddContact(void);
   void slotClear(void);
+  void slotClearClipboardBuffer(void);
   void slotClose(void);
   void slotConvert(void);
   void slotCopyConverted(void);

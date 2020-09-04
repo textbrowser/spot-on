@@ -731,7 +731,7 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="actionClear_Clipboard_Buffer"/>
+    <addaction name="action_Clear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
    </widget>
@@ -763,7 +763,7 @@
     <string>Ctrl+V</string>
    </property>
   </action>
-  <action name="actionClear_Clipboard_Buffer">
+  <action name="action_Clear_Clipboard_Buffer">
    <property name="text">
     <string>Clear Clipboard Buffer</string>
    </property>
