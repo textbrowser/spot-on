@@ -281,6 +281,18 @@ void spoton_rosetta::populateContacts(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_rosetta::resizeEvent(QResizeEvent *event)
+{
+  if(!isFullScreen())
+    {
+      QSettings settings;
+
+      settings.setValue("gui/rosettaGeometry", saveGeometry());
+    }
+
+  QWidget::resizeEvent(event);
+}
+
 void spoton_rosetta::setName(const QString &text)
 {
   ui.name->setText(text);
