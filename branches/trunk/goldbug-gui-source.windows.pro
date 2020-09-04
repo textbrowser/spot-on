@@ -19,6 +19,7 @@ FORMS           = GoldBug-UI\\spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI\\spot-on-postgresql-connect.ui \
 		  GoldBug-UI\\spot-on-private-application-credentials.ui \
 		  GoldBug-UI\\spot-on-rosetta.ui \
+		  GoldBug-UI\\spot-on-rosetta-pgp-import.ui \
 		  GoldBug-UI\\spot-on-rss.ui \
 		  GoldBug-UI\\spot-on-smpwindow.ui \
 		  GoldBug-UI\\spot-on-socket-options.ui \
