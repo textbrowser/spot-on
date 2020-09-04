@@ -255,6 +255,7 @@ Completed Items
 182.   Minimum contents lengths for combination boxes.
 183.   Decrypt / encrypt panels in Rosetta.
 184.   Retain Rosetta size and splitter states.
+185.   Include source name in Rosetta messages.
 
 Ignored Items
 
@@ -294,8 +295,7 @@ Remaining Items
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
-11.    Include source name in Rosetta messages.
-12.    PGP and Rosetta.
-13.    Rosetta: Inbox, Drafts (?), Sent, Trash.
-14.    Separate new-contact dialog in Rosetta.
-15.    Paste buttons in Rosetta panels.
+11.    PGP and Rosetta.
+12.    Rosetta: Inbox, Drafts (?), Sent, Trash.
+13.    Separate new-contact dialog in Rosetta.
+14.    Paste buttons in Rosetta panels.

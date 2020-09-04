@@ -44,12 +44,13 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   m_parent = 0;
   ui.setupUi(this);
-  setWindowTitle
-    (tr("%1: Rosetta").
-     arg(SPOTON_APPLICATION_NAME));
+  setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
+  ui.from->setText(tr("Empty"));
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
+  ui.newContact->setLineWrapMode(QTextEdit::FixedColumnWidth);
+  ui.newContact->setWordWrapMode(QTextOption::NoWrap);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::NoWrap);
   connect(ui.action_Close,
@@ -640,6 +641,7 @@ void spoton_rosetta::slotConvert(void)
     QByteArray hashType;
     QByteArray keyInformation;
     QByteArray messageCode;
+    QByteArray name;
     QByteArray publicKeyHash;
     QByteArray signature;
     QDataStream stream(&keyInformation, QIODevice::ReadOnly);
@@ -738,7 +740,7 @@ void spoton_rosetta::slotConvert(void)
 	QDataStream stream(&data, QIODevice::ReadOnly);
 	QList<QByteArray> list;
 
-	for(int i = 0; i < 3; i++)
+	for(int i = 0; i < 4; i++)
 	  {
 	    QByteArray a;
 
@@ -753,11 +755,12 @@ void spoton_rosetta::slotConvert(void)
 	      list << a;
 	  }
 
-	if(list.size() == 3)
+	if(list.size() == 4)
 	  {
 	    publicKeyHash = list.value(0);
-	    data = list.value(1);
-	    signature = list.value(2);
+	    name = list.value(1);
+	    data = list.value(2);
+	    signature = list.value(3);
 	  }
 	else
 	  {
@@ -772,7 +775,7 @@ void spoton_rosetta::slotConvert(void)
       {
 	if(signature.isEmpty())
 	  error = tr("The message was not signed.");
-	else if(!spoton_misc::isValidSignature(publicKeyHash + data,
+	else if(!spoton_misc::isValidSignature(publicKeyHash + name + data,
 					       publicKeyHash,
 					       signature,
 					       eCrypt))
@@ -789,6 +792,7 @@ void spoton_rosetta::slotConvert(void)
       }
     else
       {
+	ui.from->setText(QString::fromUtf8(name.constData(), name.length()));
 	ui.outputDecrypt->setText
 	  (QString::fromUtf8(data.constData(), data.length()));
 	ui.outputDecrypt->selectAll();
@@ -822,10 +826,12 @@ void spoton_rosetta::slotConvert(void)
     QByteArray messageCode;
     QByteArray myPublicKey;
     QByteArray myPublicKeyHash;
+    QByteArray name;
     QByteArray publicKey;
     QByteArray signature;
     QDataStream stream(&keyInformation, QIODevice::WriteOnly);
     QScopedPointer<spoton_crypt> crypt;
+    QSettings settings;
     QString error("");
     bool ok = true;
     size_t encryptionKeyLength = 0;
@@ -860,6 +866,7 @@ void spoton_rosetta::slotConvert(void)
     hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
     hashKey = spoton_crypt::veryStrongRandomBytes
       (static_cast<size_t> (hashKey.length()));
+    name = settings.value("gui/rosettaName", "unknown").toByteArray();
     publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
       toByteArray();
     stream << encryptionKey
@@ -900,15 +907,17 @@ void spoton_rosetta::slotConvert(void)
 
 	if(ok)
 	  signature = sCrypt->digitalSignature
-	    (myPublicKeyHash + ui.inputEncrypt->toPlainText().toUtf8(),
+	    (myPublicKeyHash + name + ui.inputEncrypt->toPlainText().toUtf8(),
 	     &ok);
       }
 
     if(ok)
       {
 	QDataStream stream(&data, QIODevice::WriteOnly);
+	QSettings settings;
 
 	stream << myPublicKeyHash
+	       << name
 	       << ui.inputEncrypt->toPlainText().toUtf8()
 	       << signature;
 
@@ -1037,6 +1046,7 @@ void spoton_rosetta::slotCopyOrPaste(void)
 
 void spoton_rosetta::slotDecryptClear(void)
 {
+  ui.from->setText(tr("Empty"));
   ui.outputDecrypt->clear();
 }
 
