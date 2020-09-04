@@ -164,6 +164,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   for(int i = 0; i < keys.size(); i++)
     if(settings.contains(keys.at(i)))
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
+
+  slotDecryptClear();
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
@@ -644,10 +646,12 @@ void spoton_rosetta::slotConvert(void)
     QByteArray name;
     QByteArray publicKeyHash;
     QByteArray signature;
+    QColor signatureColor;
     QDataStream stream(&keyInformation, QIODevice::ReadOnly);
     QList<QByteArray> list;
     QScopedPointer<spoton_crypt> crypt;
     QString error("");
+    QString signedMessage("");
     bool ok = true;
 
     if(data.isEmpty())
@@ -774,13 +778,24 @@ void spoton_rosetta::slotConvert(void)
     if(ok)
       {
 	if(signature.isEmpty())
-	  error = tr("The message was not signed.");
+	  {
+	    signatureColor = QColor(240, 128, 128); // Light coral!
+	    signedMessage = tr("Empty signature.");
+	  }
 	else if(!spoton_misc::isValidSignature(publicKeyHash + name + data,
 					       publicKeyHash,
 					       signature,
 					       eCrypt))
-	  error = tr("Invalid signature. Perhaps your contacts are "
-		     "not current.");
+	  {
+	    signatureColor = QColor(240, 128, 128); // Light coral!
+	    signedMessage = tr
+	      ("Invalid signature. Perhaps your contacts are not current.");
+	  }
+	else
+	  {
+	    signatureColor = QColor(144, 238, 144);
+	    signedMessage = tr("Message was signed.");
+	  }
       }
 
     if(!ok)
@@ -796,6 +811,9 @@ void spoton_rosetta::slotConvert(void)
 	ui.outputDecrypt->setText
 	  (QString::fromUtf8(data.constData(), data.length()));
 	ui.outputDecrypt->selectAll();
+	ui.signedMessage->setStyleSheet
+	  (QString("QLabel {background: %1;}").arg(signatureColor.name()));
+	ui.signedMessage->setText(signedMessage);
       }
 
   done_label1:
@@ -1048,6 +1066,12 @@ void spoton_rosetta::slotDecryptClear(void)
 {
   ui.from->setText(tr("Empty"));
   ui.outputDecrypt->clear();
+
+  QColor color(240, 128, 128); // Light coral!
+
+  ui.signedMessage->setStyleSheet
+    (QString("QLabel {background: %1;}").arg(color.name()));
+  ui.signedMessage->setText(tr("Message was not signed."));
 }
 
 void spoton_rosetta::slotDecryptReset(void)

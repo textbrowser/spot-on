@@ -274,6 +274,17 @@
                      </layout>
                     </item>
                     <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_11">
+                      <item>
+                       <widget class="QLabel" name="signedMessage">
+                        <property name="text">
+                         <string>Signed:</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
                      <widget class="QTextBrowser" name="outputDecrypt">
                       <property name="font">
                        <font>
