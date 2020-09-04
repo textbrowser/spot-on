@@ -735,8 +735,15 @@
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
    </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="action_Import_PGP_Keys"/>
+   </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
+   <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Close">
@@ -769,6 +776,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="action_Import_PGP_Keys">
+   <property name="text">
+    <string>&amp;Import PGP Keys...</string>
    </property>
   </action>
  </widget>
