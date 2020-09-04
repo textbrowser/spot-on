@@ -65,6 +65,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
+  connect(ui.action_Import_PGP_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotImportPgpKeys(void)));
   connect(ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1194,6 +1198,10 @@ void spoton_rosetta::slotDelete(void)
       else
 	sortContacts();
     }
+}
+
+void spoton_rosetta::slotImportPgpKeys(void)
+{
 }
 
 void spoton_rosetta::slotParticipantAdded(const QString &type)

@@ -23,6 +23,13 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>gpg --armor --export-secret-keys</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QTextBrowser" name="privateKey">
          <property name="openLinks">
           <bool>false</bool>
@@ -38,6 +45,13 @@
        <string>Public Key</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>gpg --armor --export you@you.org</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QTextBrowser" name="publicKey">
          <property name="openLinks">
