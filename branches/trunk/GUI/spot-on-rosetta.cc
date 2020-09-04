@@ -301,6 +301,12 @@ void spoton_rosetta::setName(const QString &text)
 
 void spoton_rosetta::show(spoton *parent)
 {
+  QSettings settings;
+
+  if(!isVisible())
+    if(settings.contains("gui/rosettaGeometry"))
+      restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
+
   m_parent = parent;
   showNormal();
   activateWindow();
@@ -324,8 +330,6 @@ void spoton_rosetta::show(spoton *parent)
 
       move(X, Y);
     }
-
-  QSettings settings;
 
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
