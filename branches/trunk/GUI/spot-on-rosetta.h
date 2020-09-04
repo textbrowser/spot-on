@@ -66,6 +66,7 @@ class spoton_rosetta: public QMainWindow
   void slotRename(void);
   void slotSaveName(void);
   void slotSetIcons(void);
+  void slotSplitterMoved(int pox, int index);
 
  signals:
   void participantAdded(const QString &type);

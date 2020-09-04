@@ -96,10 +96,22 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDecryptReset(void)));
+  connect(ui.decryptSplitter,
+	  SIGNAL(splitterMoved(int, int)),
+	  this,
+	  SLOT(slotSplitterMoved(int, int)));
   connect(ui.deleteContact,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotDelete(void)));
+  connect(ui.encryptSplitter,
+	  SIGNAL(splitterMoved(int, int)),
+	  this,
+	  SLOT(slotSplitterMoved(int, int)));
+  connect(ui.mainHorizontalSplitter,
+	  SIGNAL(splitterMoved(int, int)),
+	  this,
+	  SLOT(slotSplitterMoved(int, int)));
   connect(ui.name,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -132,6 +144,21 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     ui.hash->addItem("n/a");
 
   populateContacts();
+
+  QList<QSplitter *> splitters;
+  QSettings settings;
+  QStringList keys;
+
+  keys << "gui/rosettaDecryptSplitter"
+       << "gui/rosettaEncryptSplitter"
+       << "gui/rosettaMainHorizontalSplitter";
+  splitters << ui.decryptSplitter
+	    << ui.encryptSplitter
+	    << ui.mainHorizontalSplitter;
+
+  for(int i = 0; i < keys.size(); i++)
+    if(settings.contains(keys.at(i)))
+      splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
@@ -1239,6 +1266,26 @@ void spoton_rosetta::slotSetIcons(void)
   ui.decryptClear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.decryptReset->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+}
+
+void spoton_rosetta::slotSplitterMoved(int pos, int index)
+{
+  QSplitter *splitter = qobject_cast<QSplitter *> (sender());
+
+  if(!splitter)
+    return;
+
+  QSettings settings;
+  QString key("");
+
+  if(splitter == ui.decryptSplitter)
+    key = "gui/rosettaDecryptSplitter";
+  else if(splitter == ui.encryptSplitter)
+    key = "gui/rosettaEncryptSplitter";
+  else
+    key = "gui/rosettaMainHorizontalSplitter";
+
+  settings.setValue(key, splitter->saveState());
 }
 
 void spoton_rosetta::sortContacts(void)
