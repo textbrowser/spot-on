@@ -1343,6 +1343,9 @@ void spoton_rosetta::slotSetIcons(void)
 
 void spoton_rosetta::slotSplitterMoved(int pos, int index)
 {
+  Q_UNUSED(index);
+  Q_UNUSED(pos);
+
   QSplitter *splitter = qobject_cast<QSplitter *> (sender());
 
   if(!splitter)
