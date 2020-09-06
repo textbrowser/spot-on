@@ -45,6 +45,11 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   m_parent = 0;
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
+#ifndef SPOTON_GPGME_ENABLED
+  ui.action_Import_PGP_Keys->setEnabled(false);
+  ui.action_Import_PGP_Keys->setToolTip
+    (tr("The GnuPG Made Easy library is not available."));
+#endif
   ui.from->setText(tr("Empty"));
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
