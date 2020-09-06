@@ -10,14 +10,14 @@ CONFIG		+= qt release warn_on
 LANGUAGE	= C++
 QT		+= concurrent \
                    gui \
+                   multimedia \
                    network \
                    printsupport \
                    sql \
                    websockets \
                    widgets
 
-DEFINES	+= SPOTON_LINKED_WITH_LIBGEOIP \
-	   SPOTON_LINKED_WITH_LIBNTRU \
+DEFINES	+= SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_WEBSOCKETS_ENABLED
 
