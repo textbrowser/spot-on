@@ -19,7 +19,7 @@
     <item>
      <widget class="QGroupBox" name="groupBox">
       <property name="title">
-       <string>Private Key</string>
+       <string>Private Key(s)</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -31,6 +31,9 @@
        </item>
        <item>
         <widget class="QTextBrowser" name="privateKey">
+         <property name="placeholderText">
+          <string>Private Key(s)</string>
+         </property>
          <property name="openLinks">
           <bool>false</bool>
          </property>
@@ -42,7 +45,7 @@
     <item>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="title">
-       <string>Public Key</string>
+       <string>Public Key(s)</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -54,6 +57,9 @@
        </item>
        <item>
         <widget class="QTextBrowser" name="publicKey">
+         <property name="placeholderText">
+          <string>Public Key(s)</string>
+         </property>
          <property name="openLinks">
           <bool>false</bool>
          </property>
@@ -80,7 +86,7 @@
       <item>
        <widget class="QPushButton" name="pushButton">
         <property name="text">
-         <string>Import</string>
+         <string>&amp;Import</string>
         </property>
        </widget>
       </item>
