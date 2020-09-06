@@ -368,13 +368,8 @@ void spoton_web_server_thread::process
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /about"))
     {
-      socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      socket->write(s_search);
+      QString about("");
 
-      QByteArray about;
-
-      about.append("<h4>");
       about.append("Build ABI: ");
       about.append(QSysInfo::buildAbi());
       about.append("<br>");
@@ -398,8 +393,16 @@ void spoton_web_server_thread::process
       about.append("<br>");
       about.append("Product Version: ");
       about.append(QSysInfo::productVersion());
-      about.append("</h4>");
-      socket->write(about);
+
+      QString html("");
+
+      html.append
+	("HTTP/1.1 200 OK\r\n Content-Type: text/html; charset=utf-8\r\n\r\n");
+      html.append(s_search);
+      html.remove("</html>");
+      html.append(about);
+      html.append("</html>");
+      socket->write(html.toUtf8());
 
       for(int i = 1; i <= 30; i++)
 	if(m_abort->fetchAndAddOrdered(0) ||
