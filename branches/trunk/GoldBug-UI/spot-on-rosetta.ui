@@ -6,12 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>815</height>
+    <width>650</width>
+    <height>450</height>
    </rect>
-  </property>
-  <property name="windowTitle">
-   <string>GoldBug: Rosetta CryptoPad</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../Icons/icons.qrc">
@@ -22,57 +19,22 @@
     <property name="spacing">
      <number>5</number>
     </property>
-    <property name="margin">
+    <property name="leftMargin">
+     <number>5</number>
+    </property>
+    <property name="topMargin">
+     <number>5</number>
+    </property>
+    <property name="rightMargin">
+     <number>5</number>
+    </property>
+    <property name="bottomMargin">
      <number>5</number>
     </property>
     <item>
-     <widget class="QLabel" name="label_9">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>40</height>
-       </size>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="autoFillBackground">
-       <bool>false</bool>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
-
-color: rgb(255, 255, 255);
-
-
-</string>
-      </property>
-      <property name="text">
-       <string>Rosetta CryptoPad</string>
-      </property>
-      <property name="margin">
-       <number>0</number>
-      </property>
-      <property name="indent">
-       <number>5</number>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_7">
       <property name="spacing">
-       <number>3</number>
+       <number>5</number>
       </property>
       <item>
        <widget class="QLabel" name="label_4">
@@ -85,31 +47,14 @@ color: rgb(255, 255, 255);
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="name"/>
+       <widget class="QLineEdit" name="name">
+        <property name="placeholderText">
+         <string>Your Name</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="save">
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-        </property>
         <property name="text">
          <string>Save</string>
         </property>
@@ -122,7 +67,7 @@ QPushButton:pressed {
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>10</width>
+          <width>40</width>
           <height>20</height>
          </size>
         </property>
@@ -130,675 +75,640 @@ QPushButton:pressed {
       </item>
       <item>
        <widget class="QPushButton" name="copy">
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
+        <property name="toolTip">
+         <string>Copy your public key pairs to the clipboard buffer.</string>
         </property>
         <property name="text">
-         <string>Copy My &amp;Rosetta Keys</string>
+         <string>Copy Rosetta Public Keys</string>
         </property>
        </widget>
       </item>
      </layout>
     </item>
     <item>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="title">
-       <string>Add New Contact</string>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <property name="spacing">
-        <number>5</number>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>888</width>
+         <height>562</height>
+        </rect>
        </property>
-       <property name="margin">
-        <number>5</number>
-       </property>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QTextEdit" name="newContact">
-           <property name="font">
-            <font>
-             <family>Monospace</family>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: qlineargradient(spread:pad, x1:0.968, y1:0.932, x2:0.513, y2:0.5, stop:0 rgba(183, 235, 255, 255), stop:1 rgba(255, 255, 255, 255)); </string>
-           </property>
-           <property name="tabChangesFocus">
-            <bool>true</bool>
-           </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Decrypt / Encrypt</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QSplitter" name="mainHorizontalSplitter">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <widget class="QGroupBox" name="groupBox_5">
+               <property name="title">
+                <string>Decrypt</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <item>
+                 <widget class="QSplitter" name="decryptSplitter">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <widget class="QGroupBox" name="groupBox_3">
+                   <property name="title">
+                    <string>Input</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_4">
+                    <property name="spacing">
+                     <number>5</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>5</number>
+                    </property>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_3">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <spacer name="horizontalSpacer_3">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="decryptPaste">
+                        <property name="text">
+                         <string>Paste</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="decryptReset">
+                        <property name="text">
+                         <string>Clear</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QTextEdit" name="inputDecrypt">
+                      <property name="font">
+                       <font>
+                        <family>Monospace</family>
+                       </font>
+                      </property>
+                      <property name="tabChangesFocus">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Decrypt Input</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QGroupBox" name="groupBox_4">
+                   <property name="title">
+                    <string>Output</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_7">
+                    <property name="spacing">
+                     <number>5</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>5</number>
+                    </property>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_9">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <spacer name="horizontalSpacer_10">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="decryptClear">
+                        <property name="text">
+                         <string>Clear</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_10">
+                      <item>
+                       <widget class="QLabel" name="label_5">
+                        <property name="text">
+                         <string>From:</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="from">
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                        <property name="textInteractionFlags">
+                         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_11">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_11">
+                      <item>
+                       <widget class="QLabel" name="signedMessage"/>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_12">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QTextBrowser" name="outputDecrypt">
+                      <property name="font">
+                       <font>
+                        <family>Monospace</family>
+                       </font>
+                      </property>
+                      <property name="tabChangesFocus">
+                       <bool>true</bool>
+                      </property>
+                      <property name="openLinks">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QGroupBox" name="groupBox_6">
+               <property name="title">
+                <string>Encrypt</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_9">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_5">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <item>
+                   <widget class="QLabel" name="label">
+                    <property name="text">
+                     <string>&amp;Participant</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>contacts</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="contacts">
+                    <property name="sizeAdjustPolicy">
+                     <enum>QComboBox::AdjustToContents</enum>
+                    </property>
+                    <property name="minimumContentsLength">
+                     <number>15</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="deleteContact">
+                    <property name="text">
+                     <string>Remove</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="rename">
+                    <property name="text">
+                     <string>Rename...</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_5">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QSplitter" name="encryptSplitter">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <widget class="QGroupBox" name="groupBox">
+                   <property name="title">
+                    <string>Input</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout_2">
+                    <property name="spacing">
+                     <number>5</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>5</number>
+                    </property>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_2">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <widget class="QLabel" name="label_2">
+                        <property name="text">
+                         <string>&amp;Cipher Type</string>
+                        </property>
+                        <property name="buddy">
+                         <cstring>cipher</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="cipher">
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToContents</enum>
+                        </property>
+                        <property name="minimumContentsLength">
+                         <number>15</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QLabel" name="label_3">
+                        <property name="text">
+                         <string>&amp;Hash Type</string>
+                        </property>
+                        <property name="buddy">
+                         <cstring>hash</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="hash">
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToContents</enum>
+                        </property>
+                        <property name="minimumContentsLength">
+                         <number>15</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QCheckBox" name="sign">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="text">
+                         <string>&amp;Sign message.</string>
+                        </property>
+                        <property name="checked">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_2">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout">
+                      <item>
+                       <spacer name="horizontalSpacer">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="encryptPaste">
+                        <property name="text">
+                         <string>Paste</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="clearInput">
+                        <property name="text">
+                         <string>Reset</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QTextEdit" name="inputEncrypt">
+                      <property name="font">
+                       <font>
+                        <family>Monospace</family>
+                       </font>
+                      </property>
+                      <property name="tabChangesFocus">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Encrypt Input</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                  <widget class="QGroupBox" name="groupBox_2">
+                   <property name="title">
+                    <string>Output</string>
+                   </property>
+                   <layout class="QVBoxLayout" name="verticalLayout">
+                    <property name="spacing">
+                     <number>5</number>
+                    </property>
+                    <property name="leftMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>5</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>5</number>
+                    </property>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_4">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <spacer name="horizontalSpacer_4">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="copyEncrypt">
+                        <property name="text">
+                         <string>Copy</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="clearOutput">
+                        <property name="text">
+                         <string>Clear</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <widget class="QTextBrowser" name="outputEncrypt">
+                      <property name="font">
+                       <font>
+                        <family>Monospace</family>
+                       </font>
+                      </property>
+                      <property name="tabChangesFocus">
+                       <bool>true</bool>
+                      </property>
+                      <property name="openLinks">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <item>
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="convert">
+                <property name="text">
+                 <string>Convert</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_8">
-           <property name="spacing">
-            <number>0</number>
-           </property>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_5">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QPushButton" name="add">
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-               </property>
-               <property name="text">
-                <string>Add</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/add.png</normaloff>:/nuvola/add.png</iconset>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="clearContact">
-               <property name="styleSheet">
-                <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-               </property>
-               <property name="text">
-                <string>Clear</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../Icons/icons.qrc">
-                 <normaloff>:/nuvola/empty-trash.png</normaloff>:/nuvola/empty-trash.png</iconset>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-      </property>
-      <property name="verticalSpacing">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_6">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>24</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 127);</string>
-        </property>
-        <property name="text">
-         <string>1</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <item>
-         <widget class="QRadioButton" name="encrypt">
-          <property name="layoutDirection">
-           <enum>Qt::RightToLeft</enum>
-          </property>
-          <property name="text">
-           <string>&amp;Encrypt</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="decrypt">
-          <property name="text">
-           <string>&amp;Decrypt</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>24</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(170, 170, 255);</string>
-        </property>
-        <property name="text">
-         <string>4</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>24</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(170, 170, 255);</string>
-        </property>
-        <property name="text">
-         <string>2</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>24</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">background-color: rgb(255, 255, 127);</string>
-        </property>
-        <property name="text">
-         <string>3</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>5</number>
-        </property>
-        <property name="leftMargin">
-         <number>10</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>for/from the &amp;Contact:</string>
-          </property>
-          <property name="buddy">
-           <cstring>contacts</cstring>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="contacts">
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContents</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="deleteContact">
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-          </property>
-          <property name="text">
-           <string>Delete Contact</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="rename">
-          <property name="styleSheet">
-           <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-          </property>
-          <property name="text">
-           <string>Rename...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>10</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSplitter" name="splitter">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="childrenCollapsible">
-         <bool>false</bool>
-        </property>
-        <widget class="QGroupBox" name="groupBox">
-         <property name="title">
-          <string>Input</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="spacing">
-           <number>5</number>
-          </property>
-          <property name="margin">
-           <number>5</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="spacing">
-             <number>5</number>
-            </property>
+          <widget class="QWidget" name="tab_2">
+           <attribute name="title">
+            <string>New Contact</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>&amp;Cipher Type:</string>
+             <widget class="QTextEdit" name="newContact">
+              <property name="font">
+               <font>
+                <family>Monospace</family>
+               </font>
               </property>
-              <property name="buddy">
-               <cstring>cipher</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cipher">
-              <property name="sizeAdjustPolicy">
-               <enum>QComboBox::AdjustToContents</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>&amp;Hash Type:</string>
-              </property>
-              <property name="buddy">
-               <cstring>hash</cstring>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="hash">
-              <property name="sizeAdjustPolicy">
-               <enum>QComboBox::AdjustToContents</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="sign">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>&amp;Sign message.</string>
-              </property>
-              <property name="checked">
+              <property name="tabChangesFocus">
                <bool>true</bool>
               </property>
+              <property name="placeholderText">
+               <string>Contact Bundle</string>
+              </property>
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <property name="spacing">
+               <number>5</number>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="clearInput">
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Icons/icons.qrc">
-                <normaloff>:/nuvola/empty-trash.png</normaloff>:/nuvola/empty-trash.png</iconset>
-              </property>
-             </widget>
+              <item>
+               <spacer name="horizontalSpacer_9">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="add">
+                <property name="text">
+                 <string>Add</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearContact">
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QTextEdit" name="input">
-            <property name="styleSheet">
-             <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(255, 255, 255);</string>
-            </property>
-            <property name="tabChangesFocus">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>Output</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <property name="spacing">
-           <number>5</number>
-          </property>
-          <property name="margin">
-           <number>5</number>
-          </property>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <property name="spacing">
-             <number>5</number>
-            </property>
-            <item>
-             <spacer name="horizontalSpacer_4">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>10</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="clearOutput">
-              <property name="styleSheet">
-               <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../Icons/icons.qrc">
-                <normaloff>:/nuvola/empty-trash.png</normaloff>:/nuvola/empty-trash.png</iconset>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QTextBrowser" name="output">
-            <property name="styleSheet">
-             <string notr="true"/>
-            </property>
-            <property name="tabChangesFocus">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="layoutWidget">
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <property name="spacing">
-           <number>5</number>
-          </property>
-          <item>
-           <widget class="QPushButton" name="convert">
-            <property name="styleSheet">
-             <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-            </property>
-            <property name="text">
-             <string>Convert</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../Icons/icons.qrc">
-              <normaloff>:/nuvola/refresh.png</normaloff>:/nuvola/refresh.png</iconset>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QPushButton" name="copyConverted">
-        <property name="styleSheet">
-         <string notr="true">QPushButton {
- border: 2px solid gray;
- background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 #E0E0E0, stop: 1 #FFFFFF);
- border-radius: 5px;
- margin: 2px;
- padding: 2px;
- }
-
-
-QPushButton:hover { 
-background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                   stop: 0 rgb(254,229,172), stop: 1 #FFFFFF);
-background-position: top center; }
-
-QPushButton:pressed {
-     background-color: darkgray;
-     border-style: inset;
- } </string>
-        </property>
-        <property name="text">
-         <string>Copy Conversion</string>
-        </property>
-        <property name="icon">
-         <iconset resource="../Icons/icons.qrc">
-          <normaloff>:/nuvola/copy.png</normaloff>:/nuvola/copy.png</iconset>
-        </property>
-       </widget>
-      </item>
-     </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -807,8 +717,8 @@ QPushButton:pressed {
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
-     <height>31</height>
+     <width>650</width>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -817,15 +727,23 @@ QPushButton:pressed {
     </property>
     <addaction name="action_Close"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
+   <widget class="QMenu" name="menu_Edit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
+    <addaction name="action_Clear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
    </widget>
+   <widget class="QMenu" name="menu_Tools">
+    <property name="title">
+     <string>&amp;Tools</string>
+    </property>
+    <addaction name="action_Import_PGP_Keys"/>
+   </widget>
    <addaction name="menu_File"/>
-   <addaction name="menuEdit"/>
+   <addaction name="menu_Edit"/>
+   <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Close">
@@ -833,30 +751,36 @@ QPushButton:pressed {
     <string>&amp;Close</string>
    </property>
    <property name="shortcut">
-    <string>Esc</string>
-   </property>
-  </action>
-  <action name="action_Empty_Log">
-   <property name="text">
-    <string>&amp;Empty Log</string>
-   </property>
-  </action>
-  <action name="actionEnable_Log">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>E&amp;nable Log</string>
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="action_Copy">
    <property name="text">
-    <string>Copy</string>
+    <string>&amp;Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
   <action name="action_Paste">
    <property name="text">
-    <string>Past</string>
+    <string>&amp;Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="action_Clear_Clipboard_Buffer">
+   <property name="text">
+    <string>Clear Clipboard Buffer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="action_Import_PGP_Keys">
+   <property name="text">
+    <string>&amp;Import PGP Keys...</string>
    </property>
   </action>
  </widget>
@@ -864,23 +788,29 @@ QPushButton:pressed {
   <tabstop>name</tabstop>
   <tabstop>save</tabstop>
   <tabstop>copy</tabstop>
-  <tabstop>newContact</tabstop>
-  <tabstop>add</tabstop>
-  <tabstop>clearContact</tabstop>
-  <tabstop>encrypt</tabstop>
-  <tabstop>decrypt</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>tabWidget</tabstop>
+  <tabstop>decryptPaste</tabstop>
+  <tabstop>decryptReset</tabstop>
+  <tabstop>inputDecrypt</tabstop>
+  <tabstop>decryptClear</tabstop>
+  <tabstop>outputDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
   <tabstop>cipher</tabstop>
   <tabstop>hash</tabstop>
   <tabstop>sign</tabstop>
+  <tabstop>encryptPaste</tabstop>
   <tabstop>clearInput</tabstop>
-  <tabstop>input</tabstop>
+  <tabstop>inputEncrypt</tabstop>
+  <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
-  <tabstop>output</tabstop>
+  <tabstop>outputEncrypt</tabstop>
   <tabstop>convert</tabstop>
-  <tabstop>copyConverted</tabstop>
+  <tabstop>newContact</tabstop>
+  <tabstop>add</tabstop>
+  <tabstop>clearContact</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
