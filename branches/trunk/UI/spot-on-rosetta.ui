@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>450</height>
+    <width>1037</width>
+    <height>763</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -98,8 +98,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>888</width>
-         <height>562</height>
+         <width>1027</width>
+         <height>659</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -318,6 +318,33 @@
                    </layout>
                   </widget>
                  </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <item>
+                   <spacer name="horizontalSpacer_13">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="convertDecrypt">
+                    <property name="text">
+                     <string>Convert</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -598,6 +625,33 @@
                       </property>
                      </widget>
                     </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_6">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <spacer name="horizontalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="convertEncrypt">
+                        <property name="text">
+                         <string>Convert</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
                    </layout>
                   </widget>
                  </widget>
@@ -605,33 +659,6 @@
                </layout>
               </widget>
              </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <spacer name="horizontalSpacer_6">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="convert">
-                <property name="text">
-                 <string>Convert</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </item>
            </layout>
           </widget>
@@ -717,7 +744,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>650</width>
+     <width>1037</width>
      <height>30</height>
     </rect>
    </property>
@@ -795,6 +822,7 @@
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
   <tabstop>outputDecrypt</tabstop>
+  <tabstop>convertDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
@@ -807,7 +835,7 @@
   <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
   <tabstop>outputEncrypt</tabstop>
-  <tabstop>convert</tabstop>
+  <tabstop>convertEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>

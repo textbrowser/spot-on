@@ -89,10 +89,14 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotClear(void)));
-  connect(ui.convert,
+  connect(ui.convertDecrypt,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotConvert(void)));
+	  SLOT(slotConvertDecrypt(void)));
+  connect(ui.convertEncrypt,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotConvertEncrypt(void)));
   connect(ui.copy,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -100,7 +104,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   connect(ui.copyEncrypt,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotCopyConverted(void)));
+	  SLOT(slotCopyEncrypted(void)));
   connect(ui.decryptClear,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -642,7 +646,7 @@ void spoton_rosetta::slotClose(void)
   close();
 }
 
-void spoton_rosetta::slotConvert(void)
+void spoton_rosetta::slotConvertDecrypt(void)
 {
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
   spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
@@ -658,365 +662,374 @@ void spoton_rosetta::slotConvert(void)
       return;
     }
 
-  /*
-  ** Decrypt.
-  */
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  {
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  QByteArray data
+    (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
+  QByteArray cipherType;
+  QByteArray computedHash;
+  QByteArray encryptionKey;
+  QByteArray hashKey;
+  QByteArray hashType;
+  QByteArray keyInformation;
+  QByteArray messageCode;
+  QByteArray name;
+  QByteArray publicKeyHash;
+  QByteArray signature;
+  QColor signatureColor;
+  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+  QList<QByteArray> list;
+  QScopedPointer<spoton_crypt> crypt;
+  QString error("");
+  QString signedMessage("");
+  bool ok = true;
 
-    QByteArray data
-      (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
-    QByteArray cipherType;
-    QByteArray computedHash;
-    QByteArray encryptionKey;
-    QByteArray hashKey;
-    QByteArray hashType;
-    QByteArray keyInformation;
-    QByteArray messageCode;
-    QByteArray name;
-    QByteArray publicKeyHash;
-    QByteArray signature;
-    QColor signatureColor;
-    QDataStream stream(&keyInformation, QIODevice::ReadOnly);
-    QList<QByteArray> list;
-    QScopedPointer<spoton_crypt> crypt;
-    QString error("");
-    QString signedMessage("");
-    bool ok = true;
+  if(data.isEmpty())
+    goto done_label;
 
-    if(data.isEmpty())
-      goto done_label1;
+  list = data.split('@');
 
-    list = data.split('@');
+  for(int i = 0; i < list.size(); i++)
+    list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-    for(int i = 0; i < list.size(); i++)
-      list.replace(i, QByteArray::fromBase64(list.at(i)));
+  data = list.value(1);
+  keyInformation = eCrypt->publicKeyDecrypt(qUncompress(list.value(0)), &ok);
 
-    data = list.value(1);
-    keyInformation = eCrypt->publicKeyDecrypt(qUncompress(list.value(0)), &ok);
+  if(!ok)
+    {
+      error = tr("The method spoton_crypt::publicKeyDecrypt() failed.");
+      goto done_label;
+    }
 
-    if(!ok)
-      {
-	error = tr("The method spoton_crypt::publicKeyDecrypt() failed.");
-	goto done_label1;
-      }
+  messageCode = list.value(2);
 
-    messageCode = list.value(2);
+  if(ok)
+    {
+      QDataStream stream(&keyInformation, QIODevice::ReadOnly);
+      QList<QByteArray> list;
 
-    if(ok)
-      {
-	QDataStream stream(&keyInformation, QIODevice::ReadOnly);
-	QList<QByteArray> list;
+      for(int i = 0; i < 4; i++)
+	{
+	  QByteArray a;
 
-	for(int i = 0; i < 4; i++)
-	  {
-	    QByteArray a;
+	  stream >> a;
 
-	    stream >> a;
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	  else
+	    list << a;
+	}
 
-	    if(stream.status() != QDataStream::Ok)
-	      {
-		list.clear();
-		break;
-	      }
-	    else
-	      list << a;
-	  }
+      if(list.size() == 4)
+	{
+	  encryptionKey = list.value(0);
+	  hashKey = list.value(1);
+	  cipherType = list.value(2);
+	  hashType = list.value(3);
+	}
+      else
+	{
+	  error = tr("Stream error.");
+	  goto done_label;
+	}
+    }
 
-	if(list.size() == 4)
-	  {
-	    encryptionKey = list.value(0);
-	    hashKey = list.value(1);
-	    cipherType = list.value(2);
-	    hashType = list.value(3);
-	  }
-	else
-	  {
-	    error = tr("Stream error.");
-	    goto done_label1;
-	  }
-      }
+  if(ok)
+    {
+      computedHash = spoton_crypt::keyedHash(data, hashKey, hashType, &ok);
 
-    if(ok)
-      {
-	computedHash = spoton_crypt::keyedHash(data, hashKey, hashType, &ok);
+      if(!ok)
+	{
+	  error = tr("The method spoton_crypt::keyedHash() failed.");
+	  goto done_label;
+	}
+    }
 
-	if(!ok)
-	  {
-	    error = tr("The method spoton_crypt::keyedHash() failed.");
-	    goto done_label1;
-	  }
-      }
+  if(ok)
+    {
+      if(computedHash.isEmpty() || messageCode.isEmpty() ||
+	 !spoton_crypt::memcmp(computedHash, messageCode))
+	{
+	  error = tr("The computed hash does not match the provided hash.");
+	  goto done_label;
+	}
+    }
 
-    if(ok)
-      {
-	if(computedHash.isEmpty() || messageCode.isEmpty() ||
-	   !spoton_crypt::memcmp(computedHash, messageCode))
-	  {
-	    error = tr("The computed hash does not match the provided hash.");
-	    goto done_label1;
-	  }
-      }
+  crypt.reset(new spoton_crypt(cipherType,
+			       "",
+			       QByteArray(),
+			       encryptionKey,
+			       0,
+			       0,
+			       ""));
 
-    crypt.reset(new spoton_crypt(cipherType,
-				 "",
-				 QByteArray(),
-				 encryptionKey,
-				 0,
-				 0,
-				 ""));
+  if(ok)
+    data = crypt->decrypted(data, &ok);
 
-    if(ok)
-      data = crypt->decrypted(data, &ok);
+  if(ok)
+    {
+      QDataStream stream(&data, QIODevice::ReadOnly);
+      QList<QByteArray> list;
 
-    if(ok)
-      {
-	QDataStream stream(&data, QIODevice::ReadOnly);
-	QList<QByteArray> list;
+      for(int i = 0; i < 4; i++)
+	{
+	  QByteArray a;
 
-	for(int i = 0; i < 4; i++)
-	  {
-	    QByteArray a;
+	  stream >> a;
 
-	    stream >> a;
+	  if(stream.status() != QDataStream::Ok)
+	    {
+	      list.clear();
+	      break;
+	    }
+	  else
+	    list << a;
+	}
 
-	    if(stream.status() != QDataStream::Ok)
-	      {
-		list.clear();
-		break;
-	      }
-	    else
-	      list << a;
-	  }
-
-	if(list.size() == 4)
-	  {
-	    publicKeyHash = list.value(0);
-	    name = list.value(1);
-	    data = list.value(2);
-	    signature = list.value(3);
-	  }
-	else
-	  {
-	    error = tr("Stream error.");
-	    ok = false;
-	  }
-      }
-
-    crypt.reset();
-
-    if(ok)
-      {
-	if(signature.isEmpty())
-	  {
-	    signatureColor = QColor(240, 128, 128); // Light coral!
-	    signedMessage = tr("Empty signature.");
-	  }
-	else if(!spoton_misc::isValidSignature(publicKeyHash + name + data,
-					       publicKeyHash,
-					       signature,
-					       eCrypt))
-	  {
-	    signatureColor = QColor(240, 128, 128); // Light coral!
-	    signedMessage = tr
-	      ("Invalid signature. Perhaps your contacts are not current.");
-	  }
-	else
-	  {
-	    signatureColor = QColor(144, 238, 144);
-	    signedMessage = tr("Message was signed.");
-	  }
-      }
-
-    if(!ok)
-      {
-	if(error.isEmpty())
-	  error = tr("A serious cryptographic error occurred.");
-
-	ui.outputDecrypt->clear();
-      }
-    else
-      {
-	ui.from->setText(QString::fromUtf8(name.constData(), name.length()));
-	ui.outputDecrypt->setText
-	  (QString::fromUtf8(data.constData(), data.length()));
-	ui.outputDecrypt->selectAll();
-	ui.signedMessage->setStyleSheet
-	  (QString("QLabel {background: %1;}").arg(signatureColor.name()));
-	ui.signedMessage->setText(signedMessage);
-      }
-
-  done_label1:
-
-    if(!error.isEmpty())
-      {
-	QApplication::restoreOverrideCursor();
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      error);
-	QApplication::processEvents();
-      }
-    else
-      QApplication::restoreOverrideCursor();
-  }
-
-  /*
-  ** Encrypt.
-  */
-
-  {
-    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-    QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
-    QByteArray encryptionKey;
-    QByteArray hashKey;
-    QByteArray keyInformation;
-    QByteArray messageCode;
-    QByteArray myPublicKey;
-    QByteArray myPublicKeyHash;
-    QByteArray name;
-    QByteArray publicKey;
-    QByteArray signature;
-    QDataStream stream(&keyInformation, QIODevice::WriteOnly);
-    QScopedPointer<spoton_crypt> crypt;
-    QSettings settings;
-    QString error("");
-    bool ok = true;
-    size_t encryptionKeyLength = 0;
-
-    if(data.isEmpty())
-      goto done_label2;
-
-    if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
-      {
-	error = tr("Invalid item data. This is a serious flaw.");
-	goto done_label2;
-      }
-
-    if(ui.inputEncrypt->toPlainText().isEmpty())
-      {
-	error = tr("Please provide an actual message!");
-	goto done_label2;
-      }
-
-    encryptionKeyLength = spoton_crypt::cipherKeyLength
-      (ui.cipher->currentText().toLatin1());
-
-    if(encryptionKeyLength == 0)
-      {
-	error = tr("The method spoton_crypt::cipherKeyLength() failed.");
-	goto done_label2;
-      }
-
-    encryptionKey.resize(static_cast<int> (encryptionKeyLength));
-    encryptionKey = spoton_crypt::veryStrongRandomBytes
-      (static_cast<size_t> (encryptionKey.length()));
-    hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-    hashKey = spoton_crypt::veryStrongRandomBytes
-      (static_cast<size_t> (hashKey.length()));
-    name = settings.value("gui/rosettaName", "unknown").toByteArray();
-    publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
-      toByteArray();
-    stream << encryptionKey
-	   << hashKey
-	   << ui.cipher->currentText().toLatin1()
-	   << ui.hash->currentText().toLatin1();
-
-    if(stream.status() != QDataStream::Ok)
-      ok = false;
-
-    if(ok)
-      keyInformation = spoton_crypt::publicKeyEncrypt
-	(keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
-
-    if(!ok)
-      {
-	error = tr("The method spoton_crypt::publicKeyEncrypt() failed or "
-		   "an error occurred with the QDataStream object.");
-	goto done_label2;
-      }
-
-    crypt.reset(new spoton_crypt(ui.cipher->currentText(),
-				 ui.hash->currentText(),
-				 QByteArray(),
-				 encryptionKey,
-				 hashKey,
-				 0,
-				 0,
-				 ""));
-
-    if(ui.sign->isChecked())
-      {
-	if(ok)
-	  myPublicKey = eCrypt->publicKey(&ok);
-
-	if(ok)
-	  myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
-
-	if(ok)
-	  signature = sCrypt->digitalSignature
-	    (myPublicKeyHash + name + ui.inputEncrypt->toPlainText().toUtf8(),
-	     &ok);
-      }
-
-    if(ok)
-      {
-	QDataStream stream(&data, QIODevice::WriteOnly);
-	QSettings settings;
-
-	stream << myPublicKeyHash
-	       << name
-	       << ui.inputEncrypt->toPlainText().toUtf8()
-	       << signature;
-
-	if(stream.status() != QDataStream::Ok)
+      if(list.size() == 4)
+	{
+	  publicKeyHash = list.value(0);
+	  name = list.value(1);
+	  data = list.value(2);
+	  signature = list.value(3);
+	}
+      else
+	{
+	  error = tr("Stream error.");
 	  ok = false;
+	}
+    }
 
-	if(ok)
-	  data = crypt->encrypted(data, &ok);
-      }
+  crypt.reset();
 
-    if(ok)
-      messageCode = crypt->keyedHash(data, &ok);
+  if(ok)
+    {
+      if(signature.isEmpty())
+	{
+	  signatureColor = QColor(240, 128, 128); // Light coral!
+	  signedMessage = tr("Empty signature.");
+	}
+      else if(!spoton_misc::isValidSignature(publicKeyHash + name + data,
+					     publicKeyHash,
+					     signature,
+					     eCrypt))
+	{
+	  signatureColor = QColor(240, 128, 128); // Light coral!
+	  signedMessage = tr
+	    ("Invalid signature. Perhaps your contacts are not current.");
+	}
+      else
+	{
+	  signatureColor = QColor(144, 238, 144);
+	  signedMessage = tr("Message was signed.");
+	}
+    }
 
-    if(ok)
-      data = spoton_misc::wrap(qCompress(keyInformation).toBase64() +
-			       "@" +
-			       data.toBase64() +
-			       "@" +
-			       messageCode.toBase64());
-
-    crypt.reset();
-
-    if(!ok)
+  if(!ok)
+    {
       if(error.isEmpty())
 	error = tr("A serious cryptographic error occurred.");
 
-    if(ok)
-      {
-	ui.outputEncrypt->setText(data);
-	ui.outputEncrypt->selectAll();
-      }
-    else
-      ui.outputEncrypt->clear();
+      ui.outputDecrypt->clear();
+    }
+  else
+    {
+      ui.from->setText(QString::fromUtf8(name.constData(), name.length()));
+      ui.outputDecrypt->setText
+	(QString::fromUtf8(data.constData(), data.length()));
+      ui.outputDecrypt->selectAll();
+      ui.signedMessage->setStyleSheet
+	(QString("QLabel {background: %1;}").arg(signatureColor.name()));
+      ui.signedMessage->setText(signedMessage);
+    }
 
-  done_label2:
+  done_label:
 
-    if(!error.isEmpty())
-      {
-	QApplication::restoreOverrideCursor();
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
-			      error);
-	QApplication::processEvents();
-      }
-    else
+  if(!error.isEmpty())
+    {
       QApplication::restoreOverrideCursor();
-  }
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    error);
+      QApplication::processEvents();
+    }
+  else
+    QApplication::restoreOverrideCursor();
 }
 
-void spoton_rosetta::slotCopyConverted(void)
+void spoton_rosetta::slotConvertEncrypt(void)
+{
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!eCrypt || !sCrypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object(s). This is "
+			       "a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
+  QByteArray encryptionKey;
+  QByteArray hashKey;
+  QByteArray keyInformation;
+  QByteArray messageCode;
+  QByteArray myPublicKey;
+  QByteArray myPublicKeyHash;
+  QByteArray name;
+  QByteArray publicKey;
+  QByteArray signature;
+  QDataStream stream(&keyInformation, QIODevice::WriteOnly);
+  QScopedPointer<spoton_crypt> crypt;
+  QSettings settings;
+  QString error("");
+  bool ok = true;
+  size_t encryptionKeyLength = 0;
+
+  if(data.isEmpty())
+    goto done_label;
+
+  if(ui.contacts->itemData(ui.contacts->currentIndex()).isNull())
+    {
+      error = tr("Invalid item data. This is a serious flaw.");
+      goto done_label;
+    }
+
+  if(ui.inputEncrypt->toPlainText().isEmpty())
+    {
+      error = tr("Please provide an actual message!");
+      goto done_label;
+    }
+
+  encryptionKeyLength = spoton_crypt::cipherKeyLength
+    (ui.cipher->currentText().toLatin1());
+
+  if(encryptionKeyLength == 0)
+    {
+      error = tr("The method spoton_crypt::cipherKeyLength() failed.");
+      goto done_label;
+    }
+
+  encryptionKey.resize(static_cast<int> (encryptionKeyLength));
+  encryptionKey = spoton_crypt::veryStrongRandomBytes
+    (static_cast<size_t> (encryptionKey.length()));
+  hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
+  hashKey = spoton_crypt::veryStrongRandomBytes
+    (static_cast<size_t> (hashKey.length()));
+  name = settings.value("gui/rosettaName", "unknown").toByteArray();
+  publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
+    toByteArray();
+  stream << encryptionKey
+	 << hashKey
+	 << ui.cipher->currentText().toLatin1()
+	 << ui.hash->currentText().toLatin1();
+
+  if(stream.status() != QDataStream::Ok)
+    ok = false;
+
+  if(ok)
+    keyInformation = spoton_crypt::publicKeyEncrypt
+      (keyInformation, qCompress(publicKey), publicKey.mid(0, 25), &ok);
+
+  if(!ok)
+    {
+      error = tr("The method spoton_crypt::publicKeyEncrypt() failed or "
+		 "an error occurred with the QDataStream object.");
+      goto done_label;
+    }
+
+  crypt.reset(new spoton_crypt(ui.cipher->currentText(),
+			       ui.hash->currentText(),
+			       QByteArray(),
+			       encryptionKey,
+			       hashKey,
+			       0,
+			       0,
+			       ""));
+
+  if(ui.sign->isChecked())
+    {
+      if(ok)
+	myPublicKey = eCrypt->publicKey(&ok);
+
+      if(ok)
+	myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
+
+      if(ok)
+	signature = sCrypt->digitalSignature
+	  (myPublicKeyHash + name + ui.inputEncrypt->toPlainText().toUtf8(),
+	   &ok);
+    }
+
+  if(ok)
+    {
+      QDataStream stream(&data, QIODevice::WriteOnly);
+      QSettings settings;
+
+      stream << myPublicKeyHash
+	     << name
+	     << ui.inputEncrypt->toPlainText().toUtf8()
+	     << signature;
+
+      if(stream.status() != QDataStream::Ok)
+	ok = false;
+
+      if(ok)
+	data = crypt->encrypted(data, &ok);
+    }
+
+  if(ok)
+    messageCode = crypt->keyedHash(data, &ok);
+
+  if(ok)
+    data = spoton_misc::wrap(qCompress(keyInformation).toBase64() +
+			     "@" +
+			     data.toBase64() +
+			     "@" +
+			     messageCode.toBase64());
+
+  crypt.reset();
+
+  if(!ok)
+    if(error.isEmpty())
+      error = tr("A serious cryptographic error occurred.");
+
+  if(ok)
+    {
+      ui.outputEncrypt->setText(data);
+      ui.outputEncrypt->selectAll();
+    }
+  else
+    ui.outputEncrypt->clear();
+
+  done_label:
+
+  if(!error.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    error);
+      QApplication::processEvents();
+    }
+  else
+    QApplication::restoreOverrideCursor();
+}
+
+void spoton_rosetta::slotCopyDecrypted(void)
+{
+}
+
+void spoton_rosetta::slotCopyEncrypted(void)
 {
   QClipboard *clipboard = QApplication::clipboard();
 

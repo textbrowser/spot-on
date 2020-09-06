@@ -56,8 +56,10 @@ class spoton_rosetta: public QMainWindow
   void slotClear(void);
   void slotClearClipboardBuffer(void);
   void slotClose(void);
-  void slotConvert(void);
-  void slotCopyConverted(void);
+  void slotConvertDecrypt(void);
+  void slotConvertEncrypt(void);
+  void slotCopyDecrypted(void);
+  void slotCopyEncrypted(void);
   void slotCopyMyRosettaPublicKey(void);
   void slotCopyOrPaste(void);
   void slotDecryptClear(void);
