@@ -51,7 +51,6 @@ INCLUDEPATH	+= . \
 LIBS		+= -L../../../libNTRU \
                    -L../../../libSpotOn \
                    -L/usr/local/lib \
-                   -lGeoIP \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \

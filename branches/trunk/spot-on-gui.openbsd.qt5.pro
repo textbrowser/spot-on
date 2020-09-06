@@ -56,7 +56,6 @@ INCLUDEPATH	       += . \
                           GUI
 LIBS		       += -L../../libNTRU \
                           -L../../libSpotOn \
-                          -lGeoIP \
                           -lcrypto \
                           -lcurl \
                           -lgcrypt \
