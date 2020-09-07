@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1037</width>
-    <height>763</height>
+    <width>650</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -74,12 +74,18 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="copy">
+       <widget class="QToolButton" name="copy">
         <property name="toolTip">
          <string>Copy your public key pairs to the clipboard buffer.</string>
         </property>
         <property name="text">
          <string>Copy Rosetta Public Keys</string>
+        </property>
+        <property name="popupMode">
+         <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -98,8 +104,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1027</width>
-         <height>659</height>
+         <width>888</width>
+         <height>561</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -744,7 +750,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1037</width>
+     <width>650</width>
      <height>30</height>
     </rect>
    </property>
