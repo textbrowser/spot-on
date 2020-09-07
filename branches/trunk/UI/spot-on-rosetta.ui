@@ -79,10 +79,13 @@
          <string>Copy your public key pairs to the clipboard buffer.</string>
         </property>
         <property name="text">
-         <string>Copy Rosetta Public Keys</string>
+         <string>Copy Public Key(s)</string>
         </property>
         <property name="popupMode">
          <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
         <property name="autoRaise">
          <bool>true</bool>

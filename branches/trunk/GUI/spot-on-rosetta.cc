@@ -50,6 +50,20 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.action_Import_PGP_Keys->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
 #endif
+  ui.copy->setMenu(new QMenu(this));
+#ifdef SPOTON_GPGME_ENABLED
+  ui.copy->menu()->addAction(tr("Copy My &PGP Public Key(s)"),
+			     this,
+			     SLOT(slotCopyMyPGPKeys(void)));
+#else
+  QAction *action = ui.copy->menu()->addAction
+    (tr("Copy My &PGP Public Key(s)"))->setEnabled(false);
+
+  action->setToolTip(tr("The GnuPG Made Easy library is not available."));
+#endif
+  ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
+			     this,
+			     SLOT(slotCopyMyRosettaPublicKeys(void)));
   ui.from->setText(tr("Empty"));
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
@@ -104,8 +118,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SLOT(slotConvertEncrypt(void)));
   connect(ui.copy,
 	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotCopyMyRosettaPublicKey(void)));
+	  ui.copy,
+	  SLOT(showMenu(void)));
   connect(ui.copyEncrypt,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1042,7 +1056,13 @@ void spoton_rosetta::slotCopyEncrypted(void)
     clipboard->setText(ui.outputEncrypt->toPlainText());
 }
 
-void spoton_rosetta::slotCopyMyRosettaPublicKey(void)
+void spoton_rosetta::slotCopyMyPGPKeys(void)
+{
+#ifdef SPOTON_GPGME_ENABLED
+#endif
+}
+
+void spoton_rosetta::slotCopyMyRosettaPublicKeys(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
