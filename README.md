@@ -39,4 +39,5 @@ Summary of Spot-On
 <li>UDP multicast, unicast.</li>
 <li>Ultra StarBeam file sharing.</li>
 <li>WebSockets.</li>
+<li>Windows portable.</li>
 </ul>
