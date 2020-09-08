@@ -4,8 +4,6 @@ OS X
 
 Homebrew is required.
 
-brew install libgcrypt
-
 Windows
 
 Developers, please download the Gpg4win installer from

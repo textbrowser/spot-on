@@ -84,6 +84,7 @@ LIBS		+= -L../../libNTL/unix.d/src/.libs \
                    -lcurl \
                    -lgcrypt \
                    -lgpg-error \
+                   -lgpgme \
                    -lntl \
                    -lntru \
                    -lpq \
