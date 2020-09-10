@@ -24,13 +24,17 @@ QT		+= bluetooth \
 
 DEFINES	+= QT_DEPRECATED_WARNINGS \
            SPOTON_BLUETOOTH_ENABLED \
-           SPOTON_GPGME_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
            SPOTON_SCTP_ENABLED \
-	   SPOTON_WEBSOCKETS_ENABLED
+           SPOTON_WEBSOCKETS_ENABLED
+
+exists(/usr/include/gpgme.h) {
+DEFINES += SPOTON_GPGME_ENABLED
+LIBS += -lgpgme
+}
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL, libNTRU, and libSpotOn.
@@ -84,7 +88,6 @@ LIBS		+= -L../../libNTL/unix.d/src/.libs \
                    -lcurl \
                    -lgcrypt \
                    -lgpg-error \
-                   -lgpgme \
                    -lntl \
                    -lntru \
                    -lpq \
