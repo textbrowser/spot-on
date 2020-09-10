@@ -57,8 +57,9 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     SLOT(slotCopyMyPGPKeys(void)));
 #else
   QAction *action = ui.copy->menu()->addAction
-    (tr("Copy My &PGP Public Key(s)"))->setEnabled(false);
+    (tr("Copy My &PGP Public Key(s)"));
 
+  action->setEnabled(false);
   action->setToolTip(tr("The GnuPG Made Easy library is not available."));
 #endif
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
