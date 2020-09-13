@@ -25,14 +25,23 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "spot-on-rosetta-gpg-import.h"
+#infdef _spoton_rosetta_gpg_import_h_
+#define _spoton_rosetta_gpg_import_h_
 
-spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(QWidget *parent):
-  QMainWindow(parent)
-{
-  m_ui.setup(this);
-}
+#include <QMainWindow>
 
-spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
+#include "ui_spot-on-rosetta-gpg-import.h"
+
+class spoton_rosetta_gpg_import: public QMainWindow
 {
-}
+  Q_OBJECT
+
+ public:
+  spoton_rosetta_gpg_import(QWidget *parent);
+  ~spoton_rosetta_gpg_import();
+
+ private:
+  Ui_spoton_rosetta_gpg_import m_ui;
+};
+
+#endif
