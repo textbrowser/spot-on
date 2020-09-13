@@ -21,7 +21,7 @@ FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
 		  UI\\spot-on-postgresql-connect.ui \
 		  UI\\spot-on-private-application-credentials.ui \
 		  UI\\spot-on-rosetta.ui \
-		  UI\\spot-on-rosetta-pgp-import.ui \
+		  UI\\spot-on-rosetta-gpg-import.ui \
 		  UI\\spot-on-rss.ui \
 		  UI\\spot-on-smpwindow.ui \
 		  UI\\spot-on-socket-options.ui \

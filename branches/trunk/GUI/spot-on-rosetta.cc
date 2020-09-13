@@ -1241,6 +1241,8 @@ void spoton_rosetta::slotDelete(void)
 
 void spoton_rosetta::slotImportGPGKeys(void)
 {
+#ifdef SPOTON_GPGME_ENABLED
+#endif
 }
 
 void spoton_rosetta::slotParticipantAdded(const QString &type)
