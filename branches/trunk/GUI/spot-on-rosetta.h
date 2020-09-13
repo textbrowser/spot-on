@@ -60,13 +60,13 @@ class spoton_rosetta: public QMainWindow
   void slotConvertEncrypt(void);
   void slotCopyDecrypted(void);
   void slotCopyEncrypted(void);
-  void slotCopyMyPGPKeys(void);
+  void slotCopyMyGPGKeys(void);
   void slotCopyMyRosettaPublicKeys(void);
   void slotCopyOrPaste(void);
   void slotDecryptClear(void);
   void slotDecryptReset(void);
   void slotDelete(void);
-  void slotImportPgpKeys(void);
+  void slotImportGPGKeys(void);
   void slotParticipantAdded(const QString &type);
   void slotRename(void);
   void slotSaveName(void);

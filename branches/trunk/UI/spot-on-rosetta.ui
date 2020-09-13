@@ -775,7 +775,7 @@
     <property name="title">
      <string>&amp;Tools</string>
     </property>
-    <addaction name="action_Import_PGP_Keys"/>
+    <addaction name="action_Import_GPG_Keys"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -814,9 +814,9 @@
     <string>Ctrl+B</string>
    </property>
   </action>
-  <action name="action_Import_PGP_Keys">
+  <action name="action_Import_GPG_Keys">
    <property name="text">
-    <string>&amp;Import PGP Keys...</string>
+    <string>&amp;Import GPG Keys...</string>
    </property>
   </action>
  </widget>

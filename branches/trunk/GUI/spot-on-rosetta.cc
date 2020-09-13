@@ -46,18 +46,18 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
-  ui.action_Import_PGP_Keys->setEnabled(false);
-  ui.action_Import_PGP_Keys->setToolTip
+  ui.action_Import_GPG_Keys->setEnabled(false);
+  ui.action_Import_GPG_Keys->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
-  ui.copy->menu()->addAction(tr("Copy My &PGP Public Key(s)"),
+  ui.copy->menu()->addAction(tr("Copy My &GPG Public Key(s)"),
 			     this,
-			     SLOT(slotCopyMyPGPKeys(void)));
+			     SLOT(slotCopyMyGPGKeys(void)));
 #else
   QAction *action = ui.copy->menu()->addAction
-    (tr("Copy My &PGP Public Key(s)"));
+    (tr("Copy My &GPG Public Key(s)"));
 
   action->setEnabled(false);
   action->setToolTip(tr("The GnuPG Made Easy library is not available."));
@@ -85,10 +85,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
-  connect(ui.action_Import_PGP_Keys,
+  connect(ui.action_Import_GPG_Keys,
 	  SIGNAL(triggered(void)),
 	  this,
-	  SLOT(slotImportPgpKeys(void)));
+	  SLOT(slotImportGPGKeys(void)));
   connect(ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1057,7 +1057,7 @@ void spoton_rosetta::slotCopyEncrypted(void)
     clipboard->setText(ui.outputEncrypt->toPlainText());
 }
 
-void spoton_rosetta::slotCopyMyPGPKeys(void)
+void spoton_rosetta::slotCopyMyGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
 #endif
@@ -1239,7 +1239,7 @@ void spoton_rosetta::slotDelete(void)
     }
 }
 
-void spoton_rosetta::slotImportPgpKeys(void)
+void spoton_rosetta::slotImportGPGKeys(void)
 {
 }
 
