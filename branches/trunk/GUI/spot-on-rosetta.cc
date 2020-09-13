@@ -38,6 +38,7 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on-defines.h"
 #include "spot-on-rosetta.h"
+#include "spot-on-rosetta-gpg-import.h"
 #include "spot-on.h"
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
@@ -1242,6 +1243,10 @@ void spoton_rosetta::slotDelete(void)
 void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  if(!m_gpgImport)
+    m_gpgImport = new spoton_rosetta_gpg_import(this);
+
+  m_gpgImport->show();
 #endif
 }
 

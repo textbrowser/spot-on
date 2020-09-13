@@ -28,10 +28,13 @@
 #ifndef _spoton_rosetta_h_
 #define _spoton_rosetta_h_
 
+#include <QPointer>
+
 #include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
 class spoton;
+class spoton_rosetta_gpg_import;
 
 class spoton_rosetta: public QMainWindow
 {
@@ -45,6 +48,9 @@ class spoton_rosetta: public QMainWindow
  private:
   Ui_spoton_rosetta ui;
   spoton *m_parent;
+#ifdef SPOTON_GPGME_ENABLED
+  QPointer<spoton_rosetta_gpg_import> m_gpgImport;
+#endif
   QByteArray copyMyRosettaPublicKey(void) const;
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
