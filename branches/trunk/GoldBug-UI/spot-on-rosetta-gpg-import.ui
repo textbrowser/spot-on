@@ -30,12 +30,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextBrowser" name="privateKey">
+        <widget class="QTextEdit" name="privateKey">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="acceptRichText">
+          <bool>false</bool>
+         </property>
          <property name="placeholderText">
           <string>Private Key(s)</string>
-         </property>
-         <property name="openLinks">
-          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -56,12 +59,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextBrowser" name="publicKey">
+        <widget class="QTextEdit" name="publicKey">
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
+         <property name="acceptRichText">
+          <bool>false</bool>
+         </property>
          <property name="placeholderText">
           <string>Public Key(s)</string>
-         </property>
-         <property name="openLinks">
-          <bool>false</bool>
          </property>
         </widget>
        </item>
