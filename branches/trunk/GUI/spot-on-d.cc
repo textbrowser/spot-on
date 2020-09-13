@@ -2682,6 +2682,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.shareBuzzMagnet->setVisible(!state);
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
+#else
 #endif
   m_sb.errorlog->setHidden(state);
 }
