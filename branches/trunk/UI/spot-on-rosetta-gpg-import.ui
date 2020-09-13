@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>spoton_rosetta_pgp_import</class>
- <widget class="QMainWindow" name="spoton_rosetta_pgp_import">
+ <class>spoton_rosetta_gpg_import</class>
+ <widget class="QMainWindow" name="spoton_rosetta_gpg_import">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -132,7 +132,7 @@
   <connection>
    <sender>action_Close</sender>
    <signal>triggered()</signal>
-   <receiver>spoton_rosetta_pgp_import</receiver>
+   <receiver>spoton_rosetta_gpg_import</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

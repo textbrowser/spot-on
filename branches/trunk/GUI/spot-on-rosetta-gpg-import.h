@@ -25,7 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#infdef _spoton_rosetta_gpg_import_h_
+#ifndef _spoton_rosetta_gpg_import_h_
 #define _spoton_rosetta_gpg_import_h_
 
 #include <QMainWindow>

@@ -30,7 +30,7 @@
 spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(QWidget *parent):
   QMainWindow(parent)
 {
-  m_ui.setup(this);
+  m_ui.setupUi(this);
 }
 
 spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
