@@ -42,6 +42,9 @@ class spoton_rosetta_gpg_import: public QMainWindow
 
  private:
   Ui_spoton_rosetta_gpg_import m_ui;
+
+ private slots:
+  void slotImport(void);
 };
 
 #endif

@@ -32,9 +32,17 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(QWidget *parent):
   QMainWindow(parent)
 {
   m_ui.setupUi(this);
+  connect(m_ui.import,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotImport(void)));
   setWindowTitle(tr("%1: Rosetta GPG Import").arg(SPOTON_APPLICATION_NAME));
 }
 
 spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
+{
+}
+
+void spoton_rosetta_gpg_import::slotImport(void)
 {
 }
