@@ -90,7 +90,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="importButton">
         <property name="text">
          <string>&amp;Import</string>
         </property>
@@ -129,7 +129,7 @@
  <tabstops>
   <tabstop>privateKey</tabstop>
   <tabstop>publicKey</tabstop>
-  <tabstop>pushButton</tabstop>
+  <tabstop>importButton</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>

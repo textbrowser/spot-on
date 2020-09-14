@@ -32,7 +32,7 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(QWidget *parent):
   QMainWindow(parent)
 {
   m_ui.setupUi(this);
-  connect(m_ui.import,
+  connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotImport(void)));
@@ -45,4 +45,6 @@ spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
 
 void spoton_rosetta_gpg_import::slotImport(void)
 {
+#ifdef SPOTON_GPGME_ENABLED
+#endif
 }
