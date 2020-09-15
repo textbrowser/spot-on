@@ -47,7 +47,7 @@ class spoton_rosetta: public QMainWindow
 
  private:
   Ui_spoton_rosetta ui;
-  spoton *m_parent;
+  QPointer<spoton> m_parent;
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
