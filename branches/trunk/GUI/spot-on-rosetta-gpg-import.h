@@ -30,6 +30,7 @@
 
 #include <QMainWindow>
 
+#include "spot-on.h"
 #include "ui_spot-on-rosetta-gpg-import.h"
 
 class spoton_rosetta_gpg_import: public QMainWindow
@@ -37,10 +38,11 @@ class spoton_rosetta_gpg_import: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_rosetta_gpg_import(QWidget *parent);
+  spoton_rosetta_gpg_import(spoton *parent);
   ~spoton_rosetta_gpg_import();
 
  private:
+  QPointer<spoton> m_parent;
   Ui_spoton_rosetta_gpg_import m_ui;
 
  private slots:

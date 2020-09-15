@@ -35,9 +35,10 @@
 #include "spot-on-defines.h"
 #include "spot-on-rosetta-gpg-import.h"
 
-spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(QWidget *parent):
+spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(spoton *parent):
   QMainWindow(parent)
 {
+  m_parent = parent;
   m_ui.setupUi(this);
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
@@ -74,6 +75,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 	QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
 	QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
+
+	
       }
 
     db.close();

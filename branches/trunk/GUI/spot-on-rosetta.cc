@@ -1247,7 +1247,7 @@ void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(!m_gpgImport)
-    m_gpgImport = new spoton_rosetta_gpg_import(this);
+    m_gpgImport = new spoton_rosetta_gpg_import(m_parent);
 
   m_gpgImport->showNormal();
   m_gpgImport->activateWindow();
