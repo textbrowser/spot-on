@@ -30,7 +30,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="privateKey">
+        <widget class="QTextEdit" name="private_keys">
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
@@ -59,7 +59,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="publicKey">
+        <widget class="QTextEdit" name="public_keys">
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
@@ -127,8 +127,8 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>privateKey</tabstop>
-  <tabstop>publicKey</tabstop>
+  <tabstop>private_keys</tabstop>
+  <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
  </tabstops>
  <resources>

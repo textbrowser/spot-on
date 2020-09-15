@@ -71,6 +71,9 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys TEXT NOT NULL, "
 		   "public_keys_hash TEXT NOT NULL, "
 		   "PRIMARY KEY (private_keys_hash, public_keys_hash))");
+
+	QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
+	QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
       }
 
     db.close();
