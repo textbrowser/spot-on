@@ -28,6 +28,7 @@
 #ifndef _spoton_tabwidget_h_
 #define _spoton_tabwidget_h_
 
+#include <QPointer>
 #include <QTabWidget>
 #include <QTimer>
 
@@ -45,8 +46,8 @@ class spoton_tabwidget: public QTabWidget
   void setSpotOn(spoton *parent);
 
  private:
+  QPointer<spoton> m_parent;
   QTimer m_timer;
-  spoton *m_parent;
 
  private slots:
   void slotTimeout(void);

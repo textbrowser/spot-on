@@ -61,13 +61,13 @@ class spoton_rss: public QMainWindow
   QNetworkAccessManager m_feedNetworkAccessManager;
   QPalette m_originalFindPalette;
   QPointer<QAction> m_scheduleAction;
+  QPointer<spoton> m_parent;
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
   QTimer m_importTimer;
   QTimer m_statisticsTimer;
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;
-  spoton *m_parent;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);

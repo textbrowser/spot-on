@@ -28,6 +28,8 @@
 #ifndef _spoton_smpwindow_h_
 #define _spoton_smpwindow_h_
 
+#include <QPointer>
+
 #include "spot-on-smp.h"
 #include "ui_spot-on-smpwindow.h"
 
@@ -69,8 +71,8 @@ class spoton_smpwindow: public QMainWindow
 
  private:
   QHash<QByteArray, spoton_smpwindow_smp *> m_smps;
+  QPointer<spoton> m_parent;
   Ui_spoton_smpwindow m_ui;
-  spoton *m_parent;
   void generateSecretData(spoton_smpwindow_smp *smp);
   void keyPressEvent(QKeyEvent *event);
   void showError(const QString &error);
