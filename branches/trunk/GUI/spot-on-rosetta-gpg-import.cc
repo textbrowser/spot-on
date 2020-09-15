@@ -25,6 +25,13 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef SPOTON_GPGME_ENABLED
+#include <QDir>
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#endif
+
+#include "Common/spot-on-misc.h"
 #include "spot-on-defines.h"
 #include "spot-on-rosetta-gpg-import.h"
 
@@ -46,5 +53,29 @@ spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS gpg ("
+		   "private_keys TEXT NOT NULL, "
+		   "private_keys_hash TEXT NOT NULL, "
+		   "public_keys TEXT NOT NULL, "
+		   "public_keys_hash TEXT NOT NULL, "
+		   "PRIMARY KEY (private_keys_hash, public_keys_hash))");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 #endif
 }
