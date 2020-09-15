@@ -59,11 +59,11 @@ class spoton_chatwindow: public QMainWindow
 
  private:
   QPointer<QSslSocket> m_kernelSocket;
+  QPointer<spoton> m_parent;
   QString m_id;
   QString m_keyType;
   QString m_publicKeyHash;
   Ui_spoton_chatwindow ui;
-  spoton *m_parent;
   void closeEvent(QCloseEvent *event);
   void keyPressEvent(QKeyEvent *event);
   void sendMessage(bool *ok);

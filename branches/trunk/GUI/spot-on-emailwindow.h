@@ -28,6 +28,7 @@
 #ifndef _spoton_emailwindow_h_
 #define _spoton_emailwindow_h_
 
+#include <QPointer>
 #include <QUrl>
 
 #include "ui_spot-on-emailwindow.h"
@@ -46,9 +47,9 @@ class spoton_emailwindow: public QMainWindow
   ~spoton_emailwindow();
 
  private:
+  QPointer<spoton> m_parent;
   QString m_receiver_sender_hash;
   Ui_spoton_emailwindow m_ui;
-  spoton *m_parent;
   void closeEvent(QCloseEvent *event);
 
  private slots:

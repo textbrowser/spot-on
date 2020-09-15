@@ -30,6 +30,7 @@
 
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QPointer>
 #include <QTimer>
 
 #include "ui_spot-on-neighborstatistics.h"
@@ -48,10 +49,10 @@ class spoton_neighborstatistics: public QMainWindow
  private:
   QFuture<QList<QPair<QString, QString> > > m_future;
   QFutureWatcher<QList<QPair<QString, QString> > > m_futureWatcher;
+  QPointer<spoton> m_parent;
   QTimer m_timer;
-  QList<QPair<QString, QString> > query(void);
   Ui_spoton_neighbor_statistics m_ui;
-  spoton *m_parent;
+  QList<QPair<QString, QString> > query(void);
   void closeEvent(QCloseEvent *event);
 
  private slots:

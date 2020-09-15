@@ -49,8 +49,8 @@ class spoton_echo_key_share: public QMainWindow
 
  private:
   QPointer<QSslSocket> m_kernelSocket;
+  QPointer<spoton> m_parent;
   Ui_spoton_echokeyshare ui;
-  spoton *m_parent;
   bool save(const QPair<QByteArray, QByteArray> &keys,
 	    const QString &cipherType,
 	    const QString &hashType,

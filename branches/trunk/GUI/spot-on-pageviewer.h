@@ -29,6 +29,7 @@
 #define _spoton_pageviewer_h_
 
 #include <QMainWindow>
+#include <QPointer>
 #include <QSqlDatabase>
 #ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineView>
@@ -88,6 +89,7 @@ class spoton_pageviewer: public QMainWindow
  private:
   QByteArray m_content;
   QPalette m_originalFindPalette;
+  QPointer<spoton> m_parent;
   QSqlDatabase *m_database;
   QString m_hoveredLink;
   QString m_urlHash;
@@ -97,7 +99,6 @@ class spoton_pageviewer: public QMainWindow
   QWebView *m_webView;
 #endif
   Ui_spoton_pageviewer m_ui;
-  spoton *m_parent;
 #if !defined(SPOTON_WEBENGINE_ENABLED) && !defined(SPOTON_WEBKIT_ENABLED)
   spoton_textbrowser *m_webView;
 #endif
