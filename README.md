@@ -16,6 +16,7 @@ Summary of Spot-On
 <li>Dooble, Firefox, Lynx, etc. support for custom search engine.</li>
 <li>E-mail (IMAP, POP, Spot-On).</li>
 <li>Echo public-key distribution system.</li>
+<li>End-to-End, not Hop-to-Hop encryption.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
