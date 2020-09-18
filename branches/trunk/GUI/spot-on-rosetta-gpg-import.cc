@@ -80,10 +80,18 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	  {
 	    QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
 	    QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
+
+	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
+	      {
+	      }
+	    else
+	      error = tr("Please provide non-empty keys.");
 	  }
 	else
 	  error = tr("Invalid crypt object. Critical error.");
       }
+    else
+      error = tr("Unable to access the database idiotes.db.");
 
     db.close();
   }
