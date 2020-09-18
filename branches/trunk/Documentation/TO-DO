@@ -302,3 +302,4 @@ Remaining Items
 14.    Single Rosetta attachments.
 15.    New Rosetta keys database table.
 16.    Display PGP key information (gpg --check-signatures / --list-keys).
+17.    STUN.

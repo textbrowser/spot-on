@@ -55,6 +55,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   QString connectionName("");
+  QString error("");
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -73,15 +74,24 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys_hash TEXT NOT NULL, "
 		   "PRIMARY KEY (private_keys_hash, public_keys_hash))");
 
-	QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
-	QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
+	spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
 
-	
+	if(crypt)
+	  {
+	    QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
+	    QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
+	  }
+	else
+	  error = tr("Invalid crypt object. Critical error.");
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!error.isEmpty())
+    {
+    }
 #endif
 }
