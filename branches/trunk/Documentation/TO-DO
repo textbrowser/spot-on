@@ -300,6 +300,6 @@ Remaining Items
 12.    Rosetta: Inbox, Drafts (?), Sent, Trash.
 13.    Separate new-contact dialog in Rosetta.
 14.    Single Rosetta attachments.
-15.    New Rosetta keys database table.
+15.    New Rosetta keys database tables (participants, personal).
 16.    Display PGP key information (gpg --check-signatures / --list-keys).
 17.    STUN.
