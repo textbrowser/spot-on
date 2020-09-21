@@ -710,9 +710,9 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   QByteArray message;
 
   message.append("call_participant_using_forward_secrecy_");
-  message.append(keyType);
+  message.append(keyType.toUtf8());
   message.append("_");
-  message.append(oid);
+  message.append(oid.toUtf8());
   message.append("\n");
 
   if(!writeKernelSocketData(message))

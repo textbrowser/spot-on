@@ -2500,7 +2500,7 @@ void spoton::sendMessage(bool *ok)
 	  else
 	    message.append("poptasticmessage_");
 
-	  message.append(QString("%1_").arg(data.toString()));
+	  message.append(QString("%1_").arg(data.toString()).toUtf8());
 	  message.append(name.toBase64());
 	  message.append("_");
 	  message.append(m_ui.message->toPlainText().toUtf8().
@@ -4672,7 +4672,7 @@ void spoton::slotPublicizeListenerPlaintext(void)
   QByteArray message;
 
   message.append("publicizelistenerplaintext_");
-  message.append(oid);
+  message.append(oid.toUtf8());
   message.append("\n");
 
   if(!writeKernelSocketData(message))
@@ -6872,7 +6872,7 @@ void spoton::slotShareChatPublicKey(void)
 	name = "unknown";
 
       message.append("sharepublickey_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(QByteArray("chat").toBase64());
       message.append("_");
@@ -6973,7 +6973,7 @@ void spoton::slotShareEmailPublicKey(void)
 	name = "unknown";
 
       message.append("sharepublickey_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(QByteArray("email").toBase64());
       message.append("_");
@@ -7074,7 +7074,7 @@ void spoton::slotShareURLPublicKey(void)
 	name = "unknown";
 
       message.append("sharepublickey_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(QByteArray("url").toBase64());
       message.append("_");

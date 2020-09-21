@@ -3727,12 +3727,12 @@ void spoton::magnetize(void)
     list.replace(i, QByteArray::fromBase64(list.at(i)));
 
   data.append("magnet:?");
-  data.append(QString("rn=%1&").arg(list.value(0).constData()));
-  data.append(QString("xf=%1&").arg(list.value(1).constData()));
-  data.append(QString("xs=%1&").arg(list.value(2).constData()));
-  data.append(QString("ct=%1&").arg(list.value(3).constData()));
-  data.append(QString("hk=%1&").arg(list.value(4).constData()));
-  data.append(QString("ht=%1&").arg(list.value(5).constData()));
+  data.append(QString("rn=%1&").arg(list.value(0).constData()).toUtf8());
+  data.append(QString("xf=%1&").arg(list.value(1).constData()).toUtf8());
+  data.append(QString("xs=%1&").arg(list.value(2).constData()).toUtf8());
+  data.append(QString("ct=%1&").arg(list.value(3).constData()).toUtf8());
+  data.append(QString("hk=%1&").arg(list.value(4).constData()).toUtf8());
+  data.append(QString("ht=%1&").arg(list.value(5).constData()).toUtf8());
   data.append("xt=urn:buzz");
   clipboard->setText(data);
 
@@ -5245,9 +5245,9 @@ void spoton::slotCallParticipant(void)
   else
     message.append("call_participant_using_public_key_");
 
-  message.append(keyType);
+  message.append(keyType.toUtf8());
   message.append("_");
-  message.append(oid);
+  message.append(oid.toUtf8());
   message.append("\n");
 
   if(!writeKernelSocketData(message))
@@ -5883,7 +5883,7 @@ void spoton::slotDetachListenerNeighbors(void)
 	QByteArray message;
 
 	message.append("detach_listener_neighbors_");
-	message.append(oid);
+	message.append(oid.toUtf8());
 	message.append("\n");
 
 	if(!writeKernelSocketData(message))
@@ -5919,7 +5919,7 @@ void spoton::slotDisconnectListenerNeighbors(void)
 	QByteArray message;
 
 	message.append("disconnect_listener_neighbors_");
-	message.append(oid);
+	message.append(oid.toUtf8());
 	message.append("\n");
 
 	if(!writeKernelSocketData(message))
@@ -6763,7 +6763,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 			label.append(channelName);
 
 		      label.append(":");
-		      label.append(QString::number(iterationCount));
+		      label.append(QString::number(iterationCount).toUtf8());
 		      label.append(":");
 
 		      if(channelSalt.length() > 16)
@@ -7003,7 +7003,7 @@ void spoton::slotPopulateListeners(void)
 		if(!ok)
 		  {
 		    certificateDigest.clear();
-		    certificateDigest.append(tr("error"));
+		    certificateDigest.append(tr("error").toUtf8());
 		  }
 
 		if(ok)
@@ -7737,7 +7737,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	{
 	  certificate.clear();
 	  certificateDigest.clear();
-	  certificateDigest.append(tr("error"));
+	  certificateDigest.append(tr("error").toUtf8());
 	}
 
       if(ok)
@@ -7767,7 +7767,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	  if(!ok)
 	    {
 	      sslSessionCipher.clear();
-	      sslSessionCipher.append(tr("error"));
+	      sslSessionCipher.append(tr("error").toUtf8());
 	    }
 	}
 
@@ -8009,7 +8009,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		      if(!ok)
 			{
 			  bytes.clear();
-			  bytes.append(tr("error"));
+			  bytes.append(tr("error").toUtf8());
 			}
 		    }
 

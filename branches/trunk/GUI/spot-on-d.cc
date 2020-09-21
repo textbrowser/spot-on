@@ -2571,7 +2571,7 @@ void spoton::slotSharePoptasticPublicKey(void)
 	name = "unknown@unknown.org";
 
       message.append("sharepublickey_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(QByteArray("poptastic").toBase64());
       message.append("_");

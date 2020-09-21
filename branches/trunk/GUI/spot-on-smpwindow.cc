@@ -262,12 +262,12 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	QSqlQuery query(db);
 	bool ok = true;
 
-	hint.append(smp->m_name);
+	hint.append(smp->m_name.toUtf8());
 	hint.append(" - ");
-	hint.append(smp->m_keyType);
+	hint.append(smp->m_keyType.toUtf8());
 	hint.append(" - ");
 	hint.append(QDateTime::currentDateTime().
-		    toString("yyyy-MM-dd hh:mm:ss"));
+		    toString("yyyy-MM-dd hh:mm:ss").toUtf8());
 	query.prepare("INSERT INTO secrets "
 		      "(generated_data, generated_data_hash, hint, key_type) "
 		      "VALUES (?, ?, ?, ?)");

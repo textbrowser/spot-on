@@ -1844,7 +1844,7 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
       goto done_label;
     }
 
-  saltedPassphrase.append(passphrase).append(salt);
+  saltedPassphrase.append(passphrase.toUtf8()).append(salt);
   saltedPassphraseHash.resize(static_cast<int> (length));
   gcry_md_hash_buffer(hashAlgorithm,
 		      saltedPassphraseHash.data(),

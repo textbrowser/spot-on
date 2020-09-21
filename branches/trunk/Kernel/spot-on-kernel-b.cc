@@ -937,7 +937,7 @@ void spoton_kernel::postPoptastic(void)
 		     arg(r2.constData()).
 		     arg(values.value("message").toByteArray().constData()).
 		     arg(attachmentName.constData()));
-		  bytes.append(str);
+		  bytes.append(str.toUtf8());
 
 		  while(!attachment.isEmpty())
 		    {

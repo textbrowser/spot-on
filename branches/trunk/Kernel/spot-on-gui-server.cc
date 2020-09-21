@@ -223,7 +223,7 @@ void spoton_gui_server::slotAuthenticationRequested
   QByteArray message;
 
   message.append("authentication_requested_");
-  message.append(peerInformation);
+  message.append(peerInformation.toUtf8());
   message.append("\n");
   sendMessageToUIs(message);
 }
@@ -420,7 +420,7 @@ void spoton_gui_server::slotNotification(const QString &text)
 
   QByteArray message("notification_");
 
-  message.append(text);
+  message.append(text.toUtf8());
   message.append("\n");
   sendMessageToUIs(message);
 }
@@ -971,7 +971,7 @@ void spoton_gui_server::slotStatusMessageReceived
 
   message.append(publicKeyHash.toBase64());
   message.append("_");
-  message.append(status);
+  message.append(status.toUtf8());
   message.append("\n");
   sendMessageToUIs(message);
 }

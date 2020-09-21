@@ -143,12 +143,12 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   QByteArray data;
 
   data.append("magnet:?");
-  data.append(QString("rn=%1&").arg(m_channel.constData()));
-  data.append(QString("xf=%1&").arg(m_iterationCount));
-  data.append(QString("xs=%1&").arg(m_channelSalt.constData()));
-  data.append(QString("ct=%1&").arg(m_channelType.constData()));
-  data.append(QString("hk=%1&").arg(m_hashKey.constData()));
-  data.append(QString("ht=%1&").arg(m_hashType.constData()));
+  data.append(QString("rn=%1&").arg(m_channel.constData()).toUtf8());
+  data.append(QString("xf=%1&").arg(m_iterationCount).toUtf8());
+  data.append(QString("xs=%1&").arg(m_channelSalt.constData()).toUtf8());
+  data.append(QString("ct=%1&").arg(m_channelType.constData()).toUtf8());
+  data.append(QString("hk=%1&").arg(m_hashKey.constData()).toUtf8());
+  data.append(QString("ht=%1&").arg(m_hashType.constData()).toUtf8());
   data.append("xt=urn:buzz");
   ui.magnet->setText(data);
   slotSetIcons();

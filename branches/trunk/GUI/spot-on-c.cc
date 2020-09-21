@@ -1513,7 +1513,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 	}
 
       message.append("befriendparticipant_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(keyType.toLatin1().toBase64());
       message.append("_");
@@ -1950,7 +1950,7 @@ void spoton::slotCopyEmailKeys(void)
 	item(row, 0); // Name
 
       if(item)
-	name.append(item->text());
+	name.append(item->text().toUtf8());
 
       item = m_ui.emailParticipants->item(row, 1); // OID
 
@@ -1960,7 +1960,7 @@ void spoton::slotCopyEmailKeys(void)
       item = m_ui.emailParticipants->item(row, 3); // public_key_hash
 
       if(item)
-	publicKeyHash.append(item->text());
+	publicKeyHash.append(item->text().toUtf8());
     }
 
   if(oid.isEmpty() || publicKeyHash.isEmpty())
@@ -2713,28 +2713,29 @@ void spoton::slotExportListeners(void)
 	    QByteArray bytes;
 
 	    bytes.append("echo_mode=");
-	    bytes.append(m_ui.listeners->item(i, 11)->text());
+	    bytes.append(m_ui.listeners->item(i, 11)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("ip_address=");
-	    bytes.append(m_ui.listeners->item(i, 7)->text());
+	    bytes.append(m_ui.listeners->item(i, 7)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("orientation=");
-	    bytes.append(m_ui.listeners->item(i, 18)->text());
+	    bytes.append(m_ui.listeners->item(i, 18)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("port=");
-	    bytes.append(m_ui.listeners->item(i, 4)->text());
+	    bytes.append(m_ui.listeners->item(i, 4)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("protocol=");
-	    bytes.append(m_ui.listeners->item(i, 6)->text());
+	    bytes.append(m_ui.listeners->item(i, 6)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("scope_id=");
-	    bytes.append(m_ui.listeners->item(i, 5)->text().remove("&"));
+	    bytes.append
+	      (m_ui.listeners->item(i, 5)->text().remove("&").toUtf8());
 	    bytes.append("&");
 	    bytes.append("ssl_key_size=");
-	    bytes.append(m_ui.listeners->item(i, 2)->text());
+	    bytes.append(m_ui.listeners->item(i, 2)->text().toUtf8());
 	    bytes.append("&");
 	    bytes.append("transport=");
-	    bytes.append(m_ui.listeners->item(i, 15)->text());
+	    bytes.append(m_ui.listeners->item(i, 15)->text().toUtf8());
 	    bytes.append("\n");
 	    file.write(bytes);
 	    file.flush();
@@ -4512,7 +4513,7 @@ void spoton::slotShareBuzzMagnet(void)
   QByteArray message;
 
   message.append("sharebuzzmagnet_");
-  message.append(oid);
+  message.append(oid.toUtf8());
   message.append("_");
   message.append(data.toBase64());
   message.append("\n");

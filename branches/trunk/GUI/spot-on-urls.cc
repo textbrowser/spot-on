@@ -2199,7 +2199,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	str.remove(0, 1);
 
       original = QUrl(str);
-      message.append(url.toString().mid(0, url.toString().indexOf("%")));
+      message.append
+	(url.toString().mid(0, url.toString().indexOf("%")).toUtf8());
       message.append("\n");
 
       QMessageBox mb(this);

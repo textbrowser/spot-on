@@ -278,7 +278,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   else
     message.append("poptasticmessage_");
 
-  message.append(QString("%1_").arg(m_id));
+  message.append(QString("%1_").arg(m_id).toUtf8());
   message.append(name.toBase64());
   message.append("_");
   message.append(ui.message->toPlainText().toUtf8().toBase64());

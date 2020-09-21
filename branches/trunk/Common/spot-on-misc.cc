@@ -1452,7 +1452,7 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
 
 QString spoton_misc::wrap(const QString &t, const int c)
 {
-  QByteArray text;
+  QString text("");
   int characters = qMax(1, c);
 
   for(int i = 0; i < t.size(); i += characters)

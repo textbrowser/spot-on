@@ -616,7 +616,7 @@ void spoton::slotBuzzInvite(void)
       QByteArray message;
 
       message.append("message_");
-      message.append(QString("%1_").arg(oids.at(i)));
+      message.append(QString("%1_").arg(oids.at(i)).toUtf8());
       message.append(name.toBase64());
       message.append("_");
       message.append(magnet.toLatin1().toBase64());
@@ -844,7 +844,7 @@ void spoton::slotCopyUrlKeys(void)
 	item(row, 0); // Name
 
       if(item)
-	name.append(item->text());
+	name.append(item->text().toUtf8());
 
       item = m_ui.urlParticipants->item(row, 1); // OID
 
@@ -854,7 +854,7 @@ void spoton::slotCopyUrlKeys(void)
       item = m_ui.urlParticipants->item(row, 3); // public_key_hash
 
       if(item)
-	publicKeyHash.append(item->text());
+	publicKeyHash.append(item->text().toUtf8());
     }
 
   if(oid.isEmpty() || publicKeyHash.isEmpty())
@@ -1920,7 +1920,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 	name = "unknown";
 
       message.append("sharepublickey_");
-      message.append(oid);
+      message.append(oid.toUtf8());
       message.append("_");
       message.append(QByteArray("open-library").toBase64());
       message.append("_");

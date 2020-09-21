@@ -715,7 +715,7 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
   else
     message.append("poptasticmessage_");
 
-  message.append(QString("%1_").arg(oid));
+  message.append(QString("%1_").arg(oid).toUtf8());
 
   if(keyType.toLower() == "chat")
     name = m_settings.value("gui/nodeName", "unknown").toByteArray();
