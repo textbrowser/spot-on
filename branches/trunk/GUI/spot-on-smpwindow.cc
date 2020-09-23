@@ -271,20 +271,20 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	query.prepare("INSERT INTO secrets "
 		      "(generated_data, generated_data_hash, hint, key_type) "
 		      "VALUES (?, ?, ?, ?)");
-	query.addBindValue(s_crypt->encryptedThenHashed(stream, &ok).
-			   toBase64());
+	query.addBindValue
+	  (s_crypt->encryptedThenHashed(stream, &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue(s_crypt->keyedHash(stream, &ok).toBase64());
 
 	if(ok)
-	  query.addBindValue(s_crypt->encryptedThenHashed(hint, &ok).
-			     toBase64());
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(hint, &ok).toBase64());
 
 	if(ok)
-	  query.addBindValue(s_crypt->encryptedThenHashed(smp->m_keyType.
-							  toLatin1(), &ok).
-			     toBase64());
+	  query.addBindValue
+	    (s_crypt->encryptedThenHashed(smp->m_keyType.
+					  toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();

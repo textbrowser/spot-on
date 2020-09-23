@@ -78,11 +78,36 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 	if(crypt)
 	  {
-	    QString privateKeys(m_ui.private_keys->toPlainText().trimmed());
-	    QString publicKeys(m_ui.public_keys->toPlainText().trimmed());
+	    QByteArray privateKeys
+	      (m_ui.private_keys->toPlainText().trimmed().toUtf8());
+	    QByteArray publicKeys
+	      (m_ui.public_keys->toPlainText().trimmed().toUtf8());
+	    bool ok = true;
 
 	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
 	      {
+		query.addBindValue
+		  (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
+
+		if(ok)
+		  query.addBindValue
+		    (crypt->keyedHash(privateKeys, &ok).toBase64());
+
+		if(ok)
+		  query.addBindValue
+		    (crypt->encryptedThenHashed(publicKeys, &ok).toBase64());
+
+		if(ok)
+		  query.addBindValue
+		    (crypt->keyedHash(publicKeys, &ok).toBase64());
+
+		if(ok)
+		  {
+		    if(!query.exec())
+		      error = tr("A database error occurred.");
+		  }
+		else
+		  error = tr("A cryptographic error occurred.");
 	      }
 	    else
 	      error = tr("Please provide non-empty keys.");
