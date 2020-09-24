@@ -126,5 +126,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
   if(!error.isEmpty())
     {
     }
+  else if(QApplication::clipboard())
+    QApplication::clipboard()->clear();
 #endif
 }
