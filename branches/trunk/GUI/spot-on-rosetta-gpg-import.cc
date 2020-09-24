@@ -29,6 +29,8 @@
 #include <QDir>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+
+#include <gpgme.h>
 #endif
 
 #include "Common/spot-on-misc.h"
@@ -86,6 +88,28 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
 	      {
+		gpgme_ctx_t ctx = 0;
+		gpgme_data_t keydata = 0;
+
+		gpgme_check_version(0);
+		gpgme_new(&ctx);
+
+		if(ctx)
+		  {
+		    ssize_t size = gpgme_data_write
+		      (keydata,
+		       privateKeys.constData(),
+		       static_cast<size_t> (privateKeys.length()));
+		    m_ui.private_keys_digest->setText(QString::number(size));
+
+		    if(size > 0)
+		      if(gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+			{
+			}
+
+		    gpgme_data_release(keydata);
+		  }
+
 		query.addBindValue
 		  (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
 
@@ -108,9 +132,14 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 		else
 		  error = tr("A cryptographic error occurred.");
+
+		gpgme_release(ctx);
 	      }
 	    else
 	      error = tr("Please provide non-empty keys.");
+
+	    spoton_crypt::memzero(privateKeys);
+	    spoton_crypt::memzero(publicKeys);
 	  }
 	else
 	  error = tr("Invalid crypt object. Critical error.");

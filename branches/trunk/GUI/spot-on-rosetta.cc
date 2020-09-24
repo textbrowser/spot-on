@@ -667,6 +667,10 @@ void spoton_rosetta::slotClearClipboardBuffer(void)
 
 void spoton_rosetta::slotClose(void)
 {
+#ifdef SPOTON_GPGME_ENABLED
+  if(m_gpgImport)
+    m_gpgImport->close();
+#endif
   close();
 }
 

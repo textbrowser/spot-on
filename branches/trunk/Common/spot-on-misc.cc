@@ -130,8 +130,7 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
   if(!crypt)
     {
       logError
-	("spoton_misc::findPublicKeyHashGivenHash(): crypt "
-	 "is zero.");
+	("spoton_misc::findPublicKeyHashGivenHash(): crypt is zero.");
       return QByteArray();
     }
 
@@ -299,8 +298,7 @@ QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
   if(!crypt)
     {
       logError
-	("spoton_misc::publicKeyFromSignaturePublicKeyHash(): crypt "
-	 "is zero.");
+	("spoton_misc::publicKeyFromSignaturePublicKeyHash(): crypt is zero.");
       return QByteArray();
     }
 
@@ -352,8 +350,7 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
   if(!crypt)
     {
       logError
-	("spoton_misc::signaturePublicKeyFromPublicKeyHash(): crypt "
-	 "is zero.");
+	("spoton_misc::signaturePublicKeyFromPublicKeyHash(): crypt is zero.");
       return QByteArray();
     }
 
@@ -444,8 +441,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
   if(!crypt)
     {
       logError
-	("spoton_misc::retrieveEchoShareInformation(): crypt "
-	 "is zero.");
+	("spoton_misc::retrieveEchoShareInformation(): crypt is zero.");
       return QHash<QString, QByteArray> ();
     }
 
@@ -597,8 +593,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
   if(!crypt)
     {
       logError
-	("spoton_misc::findEchoKeys(): crypt "
-	 "is zero.");
+	("spoton_misc::findEchoKeys(): crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -717,8 +712,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   if(!crypt)
     {
       logError
-	("spoton_misc::findForwardSecrecyKeys(): crypt "
-	 "is zero.");
+	("spoton_misc::findForwardSecrecyKeys(): crypt is zero.");
       return QList<QByteArray> ();
     }
 
@@ -953,8 +947,7 @@ QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
   if(!crypt)
     {
       logError
-	("spoton_misc::decryptedAdaptiveEchoPair(): crypt "
-	 "is zero.");
+	("spoton_misc::decryptedAdaptiveEchoPair(): crypt is zero.");
       return QPair<QByteArray, QByteArray> ();
     }
 
@@ -1273,8 +1266,7 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
   if(!crypt)
     {
       logError
-	("spoton_misc::keyTypeFromPublicKeyHash(): crypt "
-	 "is zero.");
+	("spoton_misc::keyTypeFromPublicKeyHash(): crypt is zero.");
       return "";
     }
 
@@ -1348,8 +1340,7 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
   if(!crypt)
     {
       logError
-	("spoton_misc::nameFromPublicKeyHash(): crypt "
-	 "is zero.");
+	("spoton_misc::nameFromPublicKeyHash(): crypt is zero.");
       return "unknown";
     }
 
@@ -2117,8 +2108,7 @@ bool spoton_misc::isAcceptedIP(const QString &address,
   else if(!crypt)
     {
       logError
-	("spoton_misc::isAcceptedIP(): crypt "
-	 "is zero.");
+	("spoton_misc::isAcceptedIP(): crypt is zero.");
       return false;
     }
 
@@ -3443,8 +3433,7 @@ bool spoton_misc::saveReceivedStarBeamHashes(const QSqlDatabase &db,
   if(!crypt)
     {
       logError
-	("spoton_misc::saveReceivedStarBeamHashes(): crypt "
-	 "is zero.");
+	("spoton_misc::saveReceivedStarBeamHashes(): crypt is zero.");
       return false;
     }
   else if(!db.isOpen())
@@ -3486,8 +3475,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
   if(!crypt)
     {
       logError
-	("spoton_misc::storeAlmostAnonymousLetter(): crypt "
-	 "is zero.");
+	("spoton_misc::storeAlmostAnonymousLetter(): crypt is zero.");
       return false;
     }
 
@@ -3718,8 +3706,7 @@ qint64 spoton_misc::participantCount(const QString &keyType,
   if(!crypt)
     {
       logError
-	("spoton_misc::participantCount(): crypt "
-	 "is zero.");
+	("spoton_misc::participantCount(): crypt is zero.");
       return 0;
     }
 
@@ -3884,8 +3871,7 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
   if(!crypt)
     {
       logError
-	("spoton_misc::retrieveUrlCommonCredentials(): crypt "
-	 "is zero.");
+	("spoton_misc::retrieveUrlCommonCredentials(): crypt is zero.");
       return 0;
     }
 
@@ -5885,8 +5871,7 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
   else if(!crypt)
     {
       logError
-	("spoton_misc::savePublishedNeighbor(): crypt "
-	 "is zero.");
+	("spoton_misc::savePublishedNeighbor(): crypt is zero.");
       return;
     }
 

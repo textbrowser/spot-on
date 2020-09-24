@@ -4380,6 +4380,11 @@ void spoton_crypt::memcmp_test(void)
     }
 }
 
+void spoton_crypt::memzero(QByteArray &bytes)
+{
+  memset(bytes.data(), 0, static_cast<size_t> (bytes.length()));
+}
+
 void spoton_crypt::purgeDatabases(void)
 {
   QString connectionName("");

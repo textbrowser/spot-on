@@ -31,14 +31,29 @@
        </item>
        <item>
         <widget class="QTextEdit" name="private_keys">
+         <property name="font">
+          <font>
+           <family>Monospace</family>
+          </font>
+         </property>
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
-         <property name="acceptRichText">
-          <bool>false</bool>
-         </property>
          <property name="placeholderText">
           <string>Private Key(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="private_keys_digest">
+         <property name="text">
+          <string>Current Digest</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -60,14 +75,29 @@
        </item>
        <item>
         <widget class="QTextEdit" name="public_keys">
+         <property name="font">
+          <font>
+           <family>Monospace</family>
+          </font>
+         </property>
          <property name="tabChangesFocus">
           <bool>true</bool>
          </property>
-         <property name="acceptRichText">
-          <bool>false</bool>
-         </property>
          <property name="placeholderText">
           <string>Public Key(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="public_keys_digest">
+         <property name="text">
+          <string>Current Digest</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
