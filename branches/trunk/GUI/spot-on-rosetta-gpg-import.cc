@@ -89,23 +89,24 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
 	      {
 		gpgme_ctx_t ctx = 0;
-		gpgme_data_t keydata = 0;
 
 		gpgme_check_version(0);
 		gpgme_new(&ctx);
 
 		if(ctx)
 		  {
-		    ssize_t size = gpgme_data_write
-		      (keydata,
+		    gpgme_data_t keydata = 0;
+		    gpgme_error_t err = gpgme_data_new_from_mem
+		      (&keydata,
 		       privateKeys.constData(),
-		       static_cast<size_t> (privateKeys.length()));
-		    m_ui.private_keys_digest->setText(QString::number(size));
+		       static_cast<size_t> (privateKeys.length()),
+		       1); // Private copy.
 
-		    if(size > 0)
-		      if(gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
-			{
-			}
+		    if(err == GPG_ERR_NO_ERROR &&
+		       keydata &&
+		       gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+		      {
+		      }
 
 		    gpgme_data_release(keydata);
 		  }
