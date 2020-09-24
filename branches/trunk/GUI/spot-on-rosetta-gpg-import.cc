@@ -109,6 +109,20 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		      }
 
 		    gpgme_data_release(keydata);
+		    keydata = 0;
+		    err = gpgme_data_new_from_mem
+		      (&keydata,
+		       publicKeys.constData(),
+		       static_cast<size_t> (publicKeys.length()),
+		       1); // Private copy.
+
+		    if(err == GPG_ERR_NO_ERROR &&
+		       keydata &&
+		       gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+		      {
+		      }
+
+		    gpgme_data_release(keydata);
 		  }
 
 		query.addBindValue
