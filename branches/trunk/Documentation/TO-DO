@@ -296,9 +296,10 @@ Remaining Items
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
-11.    PGP and Rosetta.
+11.    GPG and Rosetta.
 12.    Rosetta: Inbox, Drafts (?), Sent, Trash.
 13.    Separate new-contact dialog in Rosetta.
 14.    Single Rosetta attachments.
 15.    New Rosetta keys database tables (participants, personal).
-16.    Display PGP key information (gpg --check-signatures / --list-keys).
+16.    Display GPG key information (gpg --check-signatures / --list-keys).
+17.    Allow removal of GPG keys.
