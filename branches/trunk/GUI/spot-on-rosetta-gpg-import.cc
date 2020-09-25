@@ -90,7 +90,7 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 	    {
 	      gpgme_import_status_t imports = result->imports;
 
-	      if(imports)
+	      if(imports && imports->fpr)
 		fingerprint = QByteArray(imports->fpr);
 	    }
 	}
