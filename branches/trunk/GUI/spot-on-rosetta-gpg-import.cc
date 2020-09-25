@@ -65,12 +65,15 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
   QByteArray fingerprint;
+
+  if(data.trimmed().isEmpty())
+    return fingerprint;
+
   gpgme_ctx_t ctx = 0;
 
   gpgme_check_version(0);
-  gpgme_new(&ctx);
 
-  if(ctx)
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
       gpgme_data_t keydata = 0;
       gpgme_error_t err = gpgme_data_new_from_mem
@@ -100,6 +103,73 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 #else
   Q_UNUSED(data);
   return QByteArray();
+#endif
+}
+
+QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  QString dump("");
+
+  if(data.trimmed().isEmpty())
+    return dump;
+
+  gpgme_ctx_t ctx = 0;
+
+  gpgme_check_version(0);
+
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = 0;
+      gpgme_error_t err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
+
+      if(err == GPG_ERR_NO_ERROR &&
+	 keydata &&
+	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+	{
+	  err = gpgme_op_keylist_start(ctx, 0, 0);
+
+	  while(err == GPG_ERR_NO_ERROR)
+	    {
+	      gpgme_key_t key = 0;
+
+	      if((err = gpgme_op_keylist_next(ctx, &key)) != GPG_ERR_NO_ERROR)
+		break;
+
+	      QString email("");
+	      QString fingerprint("");
+	      QString name("");
+
+	      if(key->uids && key->uids->email)
+		email = key->uids->email;
+
+	      if(key->fpr)
+		fingerprint = key->fpr;
+
+	      if(key->uids && key->uids->name)
+		name = key->uids->name;
+
+	      dump = QString("E-Mail: %1<br>"
+			     "Name: %2<br>"
+			     "Fingerprint: %3").
+		arg(email).
+		arg(name).
+		arg(fingerprint);
+	      gpgme_key_release(key);
+	      break;
+	    }
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return dump;
+#else
+  Q_UNUSED(data);
+  return "";
 #endif
 }
 
@@ -148,8 +218,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 		else
 		  {
-		    m_ui.private_keys_dump->setText(fingerprint1);
-		    m_ui.public_keys_dump->setText(fingerprint2);
+		    m_ui.private_keys_dump->setText(dump(privateKeys));
+		    m_ui.public_keys_dump->setText(dump(publicKeys));
 		  }
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
