@@ -69,9 +69,9 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
   if(data.trimmed().isEmpty())
     return fingerprint;
 
-  gpgme_ctx_t ctx = 0;
-
   gpgme_check_version(0);
+
+  gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
@@ -114,9 +114,9 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
   if(data.trimmed().isEmpty())
     return dump;
 
-  gpgme_ctx_t ctx = 0;
-
   gpgme_check_version(0);
+
+  gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
@@ -135,7 +135,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 	    {
 	      gpgme_key_t key = 0;
 
-	      if((err = gpgme_op_keylist_next(ctx, &key)) != GPG_ERR_NO_ERROR)
+	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
 		break;
 
 	      QString email("");
