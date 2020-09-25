@@ -144,6 +144,13 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		    m_ui.public_keys_digest->setText(fingerprint2);
 		  }
 
+		query.prepare("INSERT OR REPLACE INTO gpg "
+			      "(private_keys, "
+			      "private_keys_hash, "
+			      "public_keys, "
+			      "public_keys_hash) "
+			      "VALUES (?, ?, ?, ?)");
+
 		if(ok)
 		  query.addBindValue
 		    (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
@@ -165,7 +172,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		    if(!query.exec())
 		      error = tr("A database error occurred.");
 		  }
-		else
+		else if(error.isEmpty())
 		  error = tr("A cryptographic error occurred.");
 	      }
 	    else
@@ -186,9 +193,10 @@ void spoton_rosetta_gpg_import::slotImport(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(!error.isEmpty())
-    {
-    }
-  else if(QApplication::clipboard())
+    QMessageBox::critical
+      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+
+  if(QApplication::clipboard())
     QApplication::clipboard()->clear();
 #endif
 }
