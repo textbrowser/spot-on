@@ -30,14 +30,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="private_keys">
+        <widget class="QPlainTextEdit" name="private_keys">
          <property name="font">
           <font>
            <family>Monospace</family>
           </font>
-         </property>
-         <property name="tabChangesFocus">
-          <bool>true</bool>
          </property>
          <property name="placeholderText">
           <string>Private Key(s)</string>
@@ -45,9 +42,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="private_keys_digest">
+        <widget class="QLabel" name="private_keys_dump">
          <property name="text">
-          <string>Current Digest</string>
+          <string>Dump</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -74,14 +71,11 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="public_keys">
+        <widget class="QPlainTextEdit" name="public_keys">
          <property name="font">
           <font>
            <family>Monospace</family>
           </font>
-         </property>
-         <property name="tabChangesFocus">
-          <bool>true</bool>
          </property>
          <property name="placeholderText">
           <string>Public Key(s)</string>
@@ -89,9 +83,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="public_keys_digest">
+        <widget class="QLabel" name="public_keys_dump">
          <property name="text">
-          <string>Current Digest</string>
+          <string>Dump</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -145,7 +139,14 @@
     </property>
     <addaction name="action_Close"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="action_Clear"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
   </widget>
   <action name="action_Close">
    <property name="text">
@@ -153,6 +154,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="action_Clear">
+   <property name="text">
+    <string>&amp;Clear</string>
    </property>
   </action>
  </widget>

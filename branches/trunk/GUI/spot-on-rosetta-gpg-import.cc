@@ -42,6 +42,14 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(spoton *parent):
 {
   m_parent = parent;
   m_ui.setupUi(this);
+  connect(m_ui.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_ui.private_keys,
+	  SLOT(clear(void)));
+  connect(m_ui.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_ui.public_keys,
+	  SLOT(clear(void)));
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -140,8 +148,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 		else
 		  {
-		    m_ui.private_keys_digest->setText(fingerprint1);
-		    m_ui.public_keys_digest->setText(fingerprint2);
+		    m_ui.private_keys_dump->setText(fingerprint1);
+		    m_ui.public_keys_dump->setText(fingerprint2);
 		  }
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
