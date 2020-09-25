@@ -53,6 +53,48 @@ spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
 {
 }
 
+QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  QByteArray fingerprint;
+  gpgme_ctx_t ctx = 0;
+
+  gpgme_check_version(0);
+  gpgme_new(&ctx);
+
+  if(ctx)
+    {
+      gpgme_data_t keydata = 0;
+      gpgme_error_t err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
+
+      if(err == GPG_ERR_NO_ERROR &&
+	 keydata &&
+	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+	{
+	  gpgme_import_result_t result = gpgme_op_import_result(ctx);
+
+	  if(result)
+	    {
+	      gpgme_import_status_t imports = result->imports;
+
+	      if(imports)
+		fingerprint = QByteArray(imports->fpr);
+	    }
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return fingerprint;
+#else
+  Q_UNUSED(data);
+  return QByteArray();
+#endif
+}
+
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -88,49 +130,27 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
 	      {
-		gpgme_ctx_t ctx = 0;
+		QByteArray fingerprint1(fingerprint(privateKeys));
+		QByteArray fingerprint2(fingerprint(publicKeys));
 
-		gpgme_check_version(0);
-		gpgme_new(&ctx);
-
-		if(ctx)
+		if(fingerprint1.isEmpty() || fingerprint2.isEmpty())
 		  {
-		    gpgme_data_t keydata = 0;
-		    gpgme_error_t err = gpgme_data_new_from_mem
-		      (&keydata,
-		       privateKeys.constData(),
-		       static_cast<size_t> (privateKeys.length()),
-		       1); // Private copy.
-
-		    if(err == GPG_ERR_NO_ERROR &&
-		       keydata &&
-		       gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
-		      {
-		      }
-
-		    gpgme_data_release(keydata);
-		    keydata = 0;
-		    err = gpgme_data_new_from_mem
-		      (&keydata,
-		       publicKeys.constData(),
-		       static_cast<size_t> (publicKeys.length()),
-		       1); // Private copy.
-
-		    if(err == GPG_ERR_NO_ERROR &&
-		       keydata &&
-		       gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
-		      {
-		      }
-
-		    gpgme_data_release(keydata);
+		    error = tr("GPGME error.");
+		    ok = false;
 		  }
-
-		query.addBindValue
-		  (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
+		else
+		  {
+		    m_ui.private_keys_digest->setText(fingerprint1);
+		    m_ui.public_keys_digest->setText(fingerprint2);
+		  }
 
 		if(ok)
 		  query.addBindValue
-		    (crypt->keyedHash(privateKeys, &ok).toBase64());
+		    (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
+
+		if(ok)
+		  query.addBindValue
+		    (crypt->keyedHash(fingerprint1, &ok).toBase64());
 
 		if(ok)
 		  query.addBindValue
@@ -138,7 +158,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 		if(ok)
 		  query.addBindValue
-		    (crypt->keyedHash(publicKeys, &ok).toBase64());
+		    (crypt->keyedHash(fingerprint2, &ok).toBase64());
 
 		if(ok)
 		  {
@@ -147,8 +167,6 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 		else
 		  error = tr("A cryptographic error occurred.");
-
-		gpgme_release(ctx);
 	      }
 	    else
 	      error = tr("Please provide non-empty keys.");

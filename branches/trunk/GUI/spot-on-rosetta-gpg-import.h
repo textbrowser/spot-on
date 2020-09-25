@@ -40,6 +40,7 @@ class spoton_rosetta_gpg_import: public QMainWindow
  public:
   spoton_rosetta_gpg_import(spoton *parent);
   ~spoton_rosetta_gpg_import();
+  static QByteArray fingerprint(const QByteArray &data);
 
  private:
   QPointer<spoton> m_parent;
