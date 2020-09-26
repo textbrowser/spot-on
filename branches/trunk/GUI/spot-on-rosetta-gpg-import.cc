@@ -176,6 +176,8 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString connectionName("");
   QString error("");
 
@@ -269,6 +271,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 
   if(!error.isEmpty())
     QMessageBox::critical
