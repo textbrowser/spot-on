@@ -280,6 +280,13 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		    m_ui.public_keys_dump->setText(dump(publicKeys));
 		  }
 
+		if(ok)
+		  /*
+		  ** Remove all other entries.
+		  */
+
+		  query.exec("DELETE FROM gpg");
+
 		query.prepare("INSERT OR REPLACE INTO gpg "
 			      "(private_keys, "
 			      "private_keys_hash, "
