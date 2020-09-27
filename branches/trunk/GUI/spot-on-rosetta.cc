@@ -1274,6 +1274,41 @@ void spoton_rosetta::slotParticipantAdded(const QString &type)
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
 {
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove your GPG keys?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM gpg");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rosetta::slotRename(void)

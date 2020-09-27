@@ -257,6 +257,7 @@ Completed Items
 184.   Retain Rosetta size and splitter states.
 185.   Include source name in Rosetta messages.
 186.   Paste buttons in Rosetta panels.
+187.   Allow removal of personal GPG keys.
 
 Ignored Items
 
@@ -302,4 +303,4 @@ Remaining Items
 14.    Single Rosetta attachments.
 15.    New Rosetta keys database tables (participants, personal).
 16.    Display GPG key information (gpg --check-signatures / --list-keys).
-17.    Allow removal of GPG keys, including personal keys.
+17.    Allow removal of GPG keys.

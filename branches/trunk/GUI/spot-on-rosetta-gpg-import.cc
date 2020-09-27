@@ -281,11 +281,14 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 
 		if(ok)
-		  /*
-		  ** Remove all other entries.
-		  */
+		  {
+		    /*
+		    ** Remove all other entries.
+		    */
 
-		  query.exec("DELETE FROM gpg");
+		    query.exec("PRAGMA secure_delete = ON");
+		    query.exec("DELETE FROM gpg");
+		  }
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
 			      "(private_keys, "
