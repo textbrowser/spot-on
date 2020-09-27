@@ -53,6 +53,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.action_Import_GPG_Keys->setEnabled(false);
   ui.action_Import_GPG_Keys->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
+  ui.action_Remove_GPG_Keys->setEnabled(false);
+  ui.action_Remove_GPG_Keys->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
@@ -97,6 +99,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotCopyOrPaste(void)));
+  connect(ui.action_Remove_GPG_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotRemoveGPGKeys(void)));
   connect(ui.add,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1264,6 +1270,10 @@ void spoton_rosetta::slotParticipantAdded(const QString &type)
 {
   if(type == "rosetta")
     populateContacts();
+}
+
+void spoton_rosetta::slotRemoveGPGKeys(void)
+{
 }
 
 void spoton_rosetta::slotRename(void)

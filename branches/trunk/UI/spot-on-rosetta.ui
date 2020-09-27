@@ -106,7 +106,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-236</y>
+         <y>0</y>
          <width>888</width>
          <height>561</height>
         </rect>
@@ -770,6 +770,8 @@
     <addaction name="action_Clear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
+    <addaction name="separator"/>
+    <addaction name="action_Remove_GPG_Keys"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -817,6 +819,11 @@
   <action name="action_Import_GPG_Keys">
    <property name="text">
     <string>&amp;Import GPG Keys...</string>
+   </property>
+  </action>
+  <action name="action_Remove_GPG_Keys">
+   <property name="text">
+    <string>Remove GPG Keys</string>
    </property>
   </action>
  </widget>

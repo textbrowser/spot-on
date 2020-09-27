@@ -74,6 +74,7 @@ class spoton_rosetta: public QMainWindow
   void slotDelete(void);
   void slotImportGPGKeys(void);
   void slotParticipantAdded(const QString &type);
+  void slotRemoveGPGKeys(void);
   void slotRename(void);
   void slotSaveName(void);
   void slotSetIcons(void);
