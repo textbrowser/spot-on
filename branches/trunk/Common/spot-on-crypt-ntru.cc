@@ -76,8 +76,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
 	(0, static_cast<int> (qstrlen("ntru-private-key-")));
       memcpy(privateKey_array, privateKey.constData(), length1);
       ntru_import_priv(privateKey_array, &kp.priv);
-      privateKey.replace
-	(0, privateKey.length(), QByteArray(privateKey.length(), 0));
+      spoton_crypt::memzero(privateKey);
       publicKey.append(m_publicKey, m_publicKey.length());
       publicKey.remove
 	(0, static_cast<int> (qstrlen("ntru-public-key-")));
@@ -85,14 +84,11 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
       ntru_import_pub(publicKey_array, &kp.pub); /*
 						 ** Returns a value.
 						 */
-      publicKey.replace
-	(0, publicKey.length(), QByteArray(publicKey.length(), 0));
+      spoton_crypt::memzero(publicKey);
       memcpy(encrypted, data.constData(),
 	     static_cast<size_t> (data.length()));
       memset(privateKey_array, 0, length1);
-      privateKey.clear();
       memset(publicKey_array, 0, length2);
-      publicKey.clear();
 
       int index = 0;
       struct NtruEncParams parameters[] = {EES1087EP2,

@@ -86,7 +86,6 @@ spoton_smp::~spoton_smp()
   gcry_mpi_release(m_modulus);
   gcry_mpi_release(m_order);
   m_generator = 0;
-  m_guessString.replace(0, m_guessString.length(), '0');
   m_modulus = 0;
   m_order = 0;
   reset();
@@ -1673,8 +1672,6 @@ void spoton_smp::reset(void)
   m_g3a = 0;
   m_g3b = 0;
   m_guess = 0;
-  m_guessString.replace(0, m_guessString.length(), '0');
-  m_guessString.clear();
   m_guessWhirl = 0;
   m_guessWhirlLength = 0;
   m_pa = 0;
@@ -1683,6 +1680,7 @@ void spoton_smp::reset(void)
   m_qab = 0;
   m_qb = 0;
   m_step = 0;
+  spoton_crypt::memzero(m_guessString);
 }
 
 void spoton_smp::setGuess(const QString &guess)

@@ -160,6 +160,7 @@ class spoton_crypt
   static void init(const int secureMemorySize, const bool cbc_cts_enabled);
   static void memcmp_test(void);
   static void memzero(QByteArray &bytes);
+  static void memzero(QString &str);
   static void purgeDatabases(void);
   static void reencodePrivatePublicKeys
     (spoton_crypt *newCrypt,

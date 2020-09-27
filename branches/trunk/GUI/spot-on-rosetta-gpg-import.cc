@@ -173,6 +173,62 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 #endif
 }
 
+void spoton_rosetta_gpg_import::showCurrentDump(void)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT private_keys, public_keys FROM gpg") &&
+	   query.next())
+	  {
+	    QByteArray privateKeys
+	      (QByteArray::fromBase64(query.value(0).toByteArray()));
+	    QByteArray publicKeys
+	      (QByteArray::fromBase64(query.value(1).toByteArray()));
+	    bool ok = true;
+
+	    privateKeys = crypt->decryptedAfterAuthenticated(privateKeys, &ok);
+	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, &ok);
+	    m_ui.private_keys_dump->setText(dump(privateKeys));
+	    m_ui.public_keys_dump->setText(dump(publicKeys));
+	    spoton_crypt::memzero(privateKeys);
+	    spoton_crypt::memzero(publicKeys);
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+#endif
+}
+
+void spoton_rosetta_gpg_import::showNormal(void)
+{
+  showCurrentDump();
+  QMainWindow::showNormal();
+}
+
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED

@@ -43,9 +43,13 @@ class spoton_rosetta_gpg_import: public QMainWindow
   static QByteArray fingerprint(const QByteArray &data);
   static QString dump(const QByteArray &data);
 
+ public slots:
+  void showNormal(void);
+
  private:
   QPointer<spoton> m_parent;
   Ui_spoton_rosetta_gpg_import m_ui;
+  void showCurrentDump(void);
 
  private slots:
   void slotImport(void);
