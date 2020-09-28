@@ -474,6 +474,7 @@ void spoton_rosetta::slotAddContact(void)
 	      bool ok = true;
 
 	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
+			 "email TEXT NOT NULL, "
 			 "public_keys TEXT NOT NULL, "
 			 "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
@@ -484,8 +485,14 @@ void spoton_rosetta::slotAddContact(void)
 		}
 
 	      query.prepare("INSERT OR REPLACE INTO gpg "
-			    "(public_keys, public_keys_hash) "
-			    "VALUES (?, ?)");
+			    "(email, public_keys, public_keys_hash) "
+			    "VALUES (?, ?, ?)");
+
+	      if(ok)
+		query.addBindValue
+		  (eCrypt->encryptedThenHashed(spoton_rosetta_gpg_import::
+					       email(key).toUtf8(), &ok).
+		   toBase64());
 
 	      if(ok)
 		query.addBindValue

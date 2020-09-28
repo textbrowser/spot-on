@@ -173,6 +173,57 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 #endif
 }
 
+QString spoton_rosetta_gpg_import::email(const QByteArray &data)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  QString email("");
+
+  if(data.trimmed().isEmpty())
+    return email;
+
+  gpgme_check_version(0);
+
+  gpgme_ctx_t ctx = 0;
+
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = 0;
+      gpgme_error_t err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
+
+      if(err == GPG_ERR_NO_ERROR &&
+	 keydata &&
+	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+	{
+	  err = gpgme_op_keylist_start(ctx, 0, 0);
+
+	  while(err == GPG_ERR_NO_ERROR)
+	    {
+	      gpgme_key_t key = 0;
+
+	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
+		break;
+
+	      if(key->uids && key->uids->email)
+		email = key->uids->email;
+
+	      gpgme_key_release(key);
+	      break;
+	    }
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return email;
+#else
+  Q_UNUSED(data);
+  return "";
+#endif
+}
+
 void spoton_rosetta_gpg_import::showCurrentDump(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
