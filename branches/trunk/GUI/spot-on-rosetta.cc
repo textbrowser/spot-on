@@ -302,41 +302,27 @@ void spoton_rosetta::populateContacts(void)
 
 	ui.contacts->clear();
 	query.setForwardOnly(true);
-	query.prepare("SELECT name, public_key FROM friends_public_keys "
+	query.prepare("SELECT name, public_key_hash FROM friends_public_keys "
 		      "WHERE key_type_hash = ?");
 
 	if(eCrypt)
-	  query.bindValue(0, eCrypt->keyedHash(QByteArray("rosetta"), &ok).
-			  toBase64());
+	  query.addBindValue
+	    (eCrypt->keyedHash(QByteArray("rosetta"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
 	    {
 	      QByteArray name;
-	      QByteArray publicKey;
 	      bool ok = true;
 
 	      if(eCrypt)
 		name = eCrypt->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(0).
-					  toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 	      else
 		ok = false;
 
 	      if(ok)
-		{
-		  if(eCrypt)
-		    publicKey = eCrypt->decryptedAfterAuthenticated
-		      (QByteArray::fromBase64(query.value(1).
-					      toByteArray()),
-		       &ok);
-		  else
-		    ok = false;
-		}
-
-	      if(ok)
-		names.insert(name, publicKey);
+		names.insert(name, query.value(1).toByteArray());
 	    }
 
 	QMapIterator<QString, QByteArray> it(names);
@@ -1064,8 +1050,11 @@ void spoton_rosetta::slotConvertEncrypt(void)
   hashKey = spoton_crypt::veryStrongRandomBytes
     (static_cast<size_t> (hashKey.length()));
   name = settings.value("gui/rosettaName", "unknown").toByteArray();
-  publicKey = ui.contacts->itemData(ui.contacts->currentIndex()).
-    toByteArray();
+  publicKey = spoton_misc::publicKeyFromHash
+    (QByteArray::fromBase64(ui.contacts->
+			    itemData(ui.contacts->
+				     currentIndex()).toByteArray()),
+     eCrypt);
   stream << encryptionKey
 	 << hashKey
 	 << ui.cipher->currentText().toLatin1()
@@ -1296,14 +1285,11 @@ void spoton_rosetta::slotDelete(void)
 
   QApplication::processEvents();
 
-  QByteArray data
+  QByteArray publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
   QString oid
-    (QString::
-     number(spoton_misc::
-	    oidFromPublicKeyHash(spoton_crypt::
-				 sha512Hash(data, 0).toBase64())));
+    (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
   bool ok = true;
 
   {
@@ -1319,11 +1305,8 @@ void spoton_rosetta::slotDelete(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM friends_public_keys WHERE "
 		      "public_key_hash = ?");
-	query.bindValue(0, spoton_crypt::sha512Hash(data, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
-
+	query.addBindValue(publicKeyHash);
+	ok = query.exec();
 	spoton_misc::purgeSignatureRelationships
 	  (db, m_parent ? m_parent->crypts().value("rosetta", 0) : 0);
       }
@@ -1451,7 +1434,8 @@ void spoton_rosetta::slotRename(void)
   if(name.isEmpty() || !ok)
     return;
 
-  QByteArray publicKeyHash;
+  QByteArray publicKeyHash
+    (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
 
   {
@@ -1462,22 +1446,17 @@ void spoton_rosetta::slotRename(void)
 
     if(db.open())
       {
-	QByteArray data(ui.contacts->itemData(ui.contacts->currentIndex()).
-			toByteArray());
 	QSqlQuery query(db);
 
 	query.prepare("UPDATE friends_public_keys "
 		      "SET name = ?, "
 		      "name_changed_by_user = 1 "
 		      "WHERE public_key_hash = ?");
-	query.bindValue
-	  (0, eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+	query.addBindValue
+	  (eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
-	  {
-	    publicKeyHash = spoton_crypt::sha512Hash(data, &ok).toBase64();
-	    query.bindValue(1, publicKeyHash);
-	  }
+	  query.addBindValue(publicKeyHash);
 
 	if(ok)
 	  if((ok = query.exec()))
