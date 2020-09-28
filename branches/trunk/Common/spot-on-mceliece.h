@@ -51,10 +51,10 @@ class spoton_mceliece_private_key
  public:
   enum Conversions
   {
-   FOA = 0, // Fujisaki-Okamoto Model A
-   FOB,     // Fujisaki-Okamoto Model A
-   PCA,     // Pointcheval Model A
-   ZZZ
+    FOA = 0, // Fujisaki-Okamoto Model A
+    FOB,     // Fujisaki-Okamoto Model A
+    PCA,     // Pointcheval Model A
+    ZZZ
   };
 
   spoton_mceliece_private_key(const char *privateKey,

@@ -41,6 +41,12 @@ class spoton_rosetta: public QMainWindow
   Q_OBJECT
 
  public:
+  enum DestinationTypes
+  {
+    GPG = 0,
+    ROSETTA
+  };
+
   spoton_rosetta(void);
   void setName(const QString &text);
   void show(spoton *parent);
