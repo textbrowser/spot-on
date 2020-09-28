@@ -1181,7 +1181,7 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
   else
     db = QSqlDatabase::addDatabase
       ("QSQLITE", QString("spoton_database_%1_%2").
-       arg(QRandomGenerator().generate64()).arg(dbId));    
+       arg(QRandomGenerator().generate64()).arg(dbId));
 #else
   db = QSqlDatabase::addDatabase
     ("QSQLITE", QString("spoton_database_%1_%2").arg(qrand()).arg(dbId));
@@ -1204,7 +1204,7 @@ QString spoton_misc::databaseName(void)
       arg(QRandomGenerator::global()->generate64()).arg(dbId);
   else
     return QString("spoton_database_%1_%2").
-      arg(QRandomGenerator().generate64()).arg(dbId);    
+      arg(QRandomGenerator().generate64()).arg(dbId);
 #else
   return QString("spoton_database_%1_%2").arg(qrand()).arg(dbId);
 #endif

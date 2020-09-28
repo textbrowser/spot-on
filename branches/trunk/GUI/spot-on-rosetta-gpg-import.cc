@@ -151,9 +151,9 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 	      if(key->uids && key->uids->name)
 		name = key->uids->name;
 
-	      dump = QString("E-Mail: %1<br>"
-			     "Name: %2<br>"
-			     "Fingerprint: %3").
+	      dump = tr("E-Mail: %1<br>"
+			"Name: %2<br>"
+			"Fingerprint: %3").
 		arg(email).
 		arg(name).
 		arg(fingerprint);
@@ -176,7 +176,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 void spoton_rosetta_gpg_import::showCurrentDump(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
+  spoton_crypt *crypt = m_parent->crypts().value("rosetta", 0);
 
   if(!crypt)
     return;
@@ -213,6 +213,16 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	    spoton_crypt::memzero(privateKeys);
 	    spoton_crypt::memzero(publicKeys);
 	  }
+	else
+	  {
+	    m_ui.private_keys_dump->setText(tr("GPG Dump"));
+	    m_ui.public_keys_dump->setText(tr("GPG Dump"));
+	  }
+      }
+    else
+      {
+	m_ui.private_keys_dump->setText(tr("GPG Dump"));
+	m_ui.public_keys_dump->setText(tr("GPG Dump"));
       }
 
     db.close();
@@ -254,7 +264,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys_hash TEXT NOT NULL, "
 		   "PRIMARY KEY (private_keys_hash, public_keys_hash))");
 
-	spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
+	spoton_crypt *crypt = m_parent->crypts().value("rosetta", 0);
 
 	if(crypt)
 	  {
@@ -340,8 +350,11 @@ void spoton_rosetta_gpg_import::slotImport(void)
   QApplication::restoreOverrideCursor();
 
   if(!error.isEmpty())
-    QMessageBox::critical
-      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+      QApplication::processEvents();
+    }
 
   if(QApplication::clipboard())
     QApplication::clipboard()->clear();

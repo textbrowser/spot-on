@@ -44,7 +44,7 @@
        <item>
         <widget class="QLabel" name="private_keys_dump">
          <property name="text">
-          <string>Dump</string>
+          <string>GPG Dump</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>
@@ -85,7 +85,7 @@
        <item>
         <widget class="QLabel" name="public_keys_dump">
          <property name="text">
-          <string>Dump</string>
+          <string>GPG Dump</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

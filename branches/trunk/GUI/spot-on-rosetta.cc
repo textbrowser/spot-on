@@ -426,14 +426,107 @@ void spoton_rosetta::show(spoton *parent)
 void spoton_rosetta::slotAddContact(void)
 {
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
 
-  if(!eCrypt || !sCrypt)
+  if(!eCrypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object(s). This is "
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+#ifdef SPOTON_GPGME_ENABLED
+  {
+    QByteArray key(ui.newContact->toPlainText().trimmed().toLatin1());
+
+    if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
+       key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
+      {
+	QString connectionName("");
+	QString error("");
+
+	{
+	  QSqlDatabase db = spoton_misc::database(connectionName);
+
+	  db.setDatabaseName(spoton_misc::homePath() +
+			     QDir::separator() +
+			     "friends_public_keys.db");
+
+	  if(db.open())
+	    {
+	      QSqlQuery query(db);
+	      bool ok = true;
+
+	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
+			 "public_keys TEXT NOT NULL, "
+			 "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
+
+	      if(key.isEmpty())
+		{
+		  QByteArray fingerprint
+		    (spoton_rosetta_gpg_import::fingerprint(key));
+
+		  if(fingerprint.isEmpty())
+		    {
+		      error = tr("GPGME error.");
+		      ok = false;
+		    }
+
+		  query.prepare("INSERT OR REPLACE INTO gpg "
+				"(public_keys, public_keys_hash) "
+				"VALUES (?, ?)");
+
+		  if(ok)
+		    query.addBindValue
+		      (eCrypt->encryptedThenHashed(key, &ok).toBase64());
+
+		  if(ok)
+		    query.addBindValue
+		      (eCrypt->keyedHash(fingerprint, &ok).toBase64());
+
+		  if(ok)
+		    {
+		      if(!query.exec())
+			error = tr("A database error occurred.");
+		    }
+		  else if(error.isEmpty())
+		    error = tr("A cryptographic error occurred.");
+		}
+	      else
+		error = tr("Please provide non-empty keys.");
+
+	      spoton_crypt::memzero(key);
+	    }
+	  else
+	    error = tr("Unable to access the database idiotes.db.");
+
+	  db.close();
+	}
+
+	QSqlDatabase::removeDatabase(connectionName);
+
+	if(!error.isEmpty())
+	  {
+	    QMessageBox::critical
+	      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
+	    QApplication::processEvents();
+	  }
+
+	return;
+      }
+  }
+#endif
+
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!sCrypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
       return;
@@ -1179,8 +1272,7 @@ void spoton_rosetta::slotDelete(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected "
-		"contact?"));
+  mb.setText(tr("Are you sure that you wish to remove the selected contact?"));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
@@ -1288,6 +1380,8 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
       QApplication::processEvents();
       return;
     }
+
+  QApplication::processEvents();
 
   QString connectionName("");
 

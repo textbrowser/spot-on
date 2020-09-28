@@ -74,12 +74,21 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="copy">
+       <widget class="QToolButton" name="copy">
         <property name="toolTip">
          <string>Copy your public key pairs to the clipboard buffer.</string>
         </property>
         <property name="text">
-         <string>Copy Rosetta Public Keys</string>
+         <string>Copy Public Key(s)</string>
+        </property>
+        <property name="popupMode">
+         <enum>QToolButton::MenuButtonPopup</enum>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -99,7 +108,7 @@
          <x>0</x>
          <y>0</y>
          <width>888</width>
-         <height>562</height>
+         <height>561</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -318,6 +327,33 @@
                    </layout>
                   </widget>
                  </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <property name="spacing">
+                   <number>5</number>
+                  </property>
+                  <item>
+                   <spacer name="horizontalSpacer_13">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="convertDecrypt">
+                    <property name="text">
+                     <string>Convert</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </widget>
@@ -598,6 +634,33 @@
                       </property>
                      </widget>
                     </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_6">
+                      <property name="spacing">
+                       <number>5</number>
+                      </property>
+                      <item>
+                       <spacer name="horizontalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="convertEncrypt">
+                        <property name="text">
+                         <string>Convert</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
                    </layout>
                   </widget>
                  </widget>
@@ -606,38 +669,11 @@
               </widget>
              </widget>
             </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <property name="spacing">
-               <number>5</number>
-              </property>
-              <item>
-               <spacer name="horizontalSpacer_6">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item>
-               <widget class="QPushButton" name="convert">
-                <property name="text">
-                 <string>Convert</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
            </layout>
           </widget>
           <widget class="QWidget" name="tab_2">
            <attribute name="title">
-            <string>New Contact</string>
+            <string>Add Contact</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
@@ -734,6 +770,8 @@
     <addaction name="action_Clear_Clipboard_Buffer"/>
     <addaction name="action_Copy"/>
     <addaction name="action_Paste"/>
+    <addaction name="separator"/>
+    <addaction name="action_Remove_GPG_Keys"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -783,6 +821,11 @@
     <string>&amp;Import GPG Keys...</string>
    </property>
   </action>
+  <action name="action_Remove_GPG_Keys">
+   <property name="text">
+    <string>Remove GPG Keys</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>name</tabstop>
@@ -795,6 +838,7 @@
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
   <tabstop>outputDecrypt</tabstop>
+  <tabstop>convertDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
@@ -807,7 +851,7 @@
   <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
   <tabstop>outputEncrypt</tabstop>
-  <tabstop>convert</tabstop>
+  <tabstop>convertEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>

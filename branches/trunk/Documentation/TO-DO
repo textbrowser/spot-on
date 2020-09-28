@@ -258,6 +258,7 @@ Completed Items
 185.   Include source name in Rosetta messages.
 186.   Paste buttons in Rosetta panels.
 187.   Allow removal of personal GPG keys.
+188.   New Rosetta keys database tables (participants, personal).
 
 Ignored Items
 
@@ -301,6 +302,5 @@ Remaining Items
 12.    Rosetta: Inbox, Drafts (?), Sent, Trash.
 13.    Separate new-contact dialog in Rosetta.
 14.    Single Rosetta attachments.
-15.    New Rosetta keys database tables (participants, personal).
-16.    Display GPG key information (gpg --check-signatures / --list-keys).
-17.    Allow removal of GPG keys.
+15.    Display GPG key information (gpg --check-signatures / --list-keys).
+16.    Allow removal of GPG keys.

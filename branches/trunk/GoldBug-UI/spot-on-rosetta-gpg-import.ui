@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
+    <width>600</width>
     <height>450</height>
    </rect>
   </property>
@@ -30,15 +30,27 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="privateKey">
-         <property name="tabChangesFocus">
-          <bool>true</bool>
-         </property>
-         <property name="acceptRichText">
-          <bool>false</bool>
+        <widget class="QPlainTextEdit" name="private_keys">
+         <property name="font">
+          <font>
+           <family>Monospace</family>
+          </font>
          </property>
          <property name="placeholderText">
           <string>Private Key(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="private_keys_dump">
+         <property name="text">
+          <string>GPG Dump</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -59,15 +71,27 @@
         </widget>
        </item>
        <item>
-        <widget class="QTextEdit" name="publicKey">
-         <property name="tabChangesFocus">
-          <bool>true</bool>
-         </property>
-         <property name="acceptRichText">
-          <bool>false</bool>
+        <widget class="QPlainTextEdit" name="public_keys">
+         <property name="font">
+          <font>
+           <family>Monospace</family>
+          </font>
          </property>
          <property name="placeholderText">
           <string>Public Key(s)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="public_keys_dump">
+         <property name="text">
+          <string>GPG Dump</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
          </property>
         </widget>
        </item>
@@ -105,7 +129,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>550</width>
+     <width>600</width>
      <height>30</height>
     </rect>
    </property>
@@ -115,7 +139,14 @@
     </property>
     <addaction name="action_Close"/>
    </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="action_Clear"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
   </widget>
   <action name="action_Close">
    <property name="text">
@@ -125,10 +156,15 @@
     <string>Ctrl+W</string>
    </property>
   </action>
+  <action name="action_Clear">
+   <property name="text">
+    <string>&amp;Clear</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
-  <tabstop>privateKey</tabstop>
-  <tabstop>publicKey</tabstop>
+  <tabstop>private_keys</tabstop>
+  <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
  </tabstops>
  <resources>
