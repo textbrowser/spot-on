@@ -90,6 +90,7 @@ class spoton_crypt
 			      const QByteArray &key,
 			      const QByteArray &hashType,
 			      bool *ok);
+  static QByteArray publicGPG(spoton_crypt *crypt);
   static QByteArray publicKeyEncrypt(const QByteArray &data,
 				     const QByteArray &pk,
 				     const QByteArray &startsWith,

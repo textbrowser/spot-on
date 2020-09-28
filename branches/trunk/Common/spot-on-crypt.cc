@@ -1173,6 +1173,40 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
   return hash;
 }
 
+QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
+{
+  if(!crypt)
+    return QByteArray();
+
+  QByteArray publicKeys;
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_keys FROM gpg") && query.next())
+	  {
+	    publicKeys = QByteArray::fromBase64(query.value(0).toByteArray());
+	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, 0);
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return publicKeys;
+}
+
 QByteArray spoton_crypt::publicKey(bool *ok)
 {
   QReadLocker locker(&m_publicKeyMutex);

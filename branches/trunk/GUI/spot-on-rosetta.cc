@@ -66,7 +66,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("Copy My &GPG Public Key(s)"));
 
   action->setEnabled(false);
-  action->setToolTip(tr("The GnuPG Made Easy library is not available."));
+  action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
 			     this,
@@ -439,11 +439,23 @@ void spoton_rosetta::slotAddContact(void)
 
 #ifdef SPOTON_GPGME_ENABLED
   {
-    QByteArray key(ui.newContact->toPlainText().trimmed().toLatin1());
+    QByteArray key(ui.newContact->toPlainText().trimmed().toUtf8());
 
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
       {
+	if(spoton_rosetta_gpg_import::fingerprint(key) ==
+	   spoton_rosetta_gpg_import::
+	   fingerprint(spoton_crypt::publicGPG(eCrypt)))
+	  {
+	    QMessageBox::critical
+	      (this,
+	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	       tr("Please do not add personal GPG keys."));
+	    QApplication::processEvents();
+	    return;
+	  }
+
 	QString connectionName("");
 	QString error("");
 
@@ -456,6 +468,8 @@ void spoton_rosetta::slotAddContact(void)
 
 	  if(db.open())
 	    {
+	      QByteArray fingerprint
+		(spoton_rosetta_gpg_import::fingerprint(key));
 	      QSqlQuery query(db);
 	      bool ok = true;
 
@@ -463,44 +477,34 @@ void spoton_rosetta::slotAddContact(void)
 			 "public_keys TEXT NOT NULL, "
 			 "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
-	      if(key.isEmpty())
+	      if(fingerprint.isEmpty())
 		{
-		  QByteArray fingerprint
-		    (spoton_rosetta_gpg_import::fingerprint(key));
-
-		  if(fingerprint.isEmpty())
-		    {
-		      error = tr("GPGME error.");
-		      ok = false;
-		    }
-
-		  query.prepare("INSERT OR REPLACE INTO gpg "
-				"(public_keys, public_keys_hash) "
-				"VALUES (?, ?)");
-
-		  if(ok)
-		    query.addBindValue
-		      (eCrypt->encryptedThenHashed(key, &ok).toBase64());
-
-		  if(ok)
-		    query.addBindValue
-		      (eCrypt->keyedHash(fingerprint, &ok).toBase64());
-
-		  if(ok)
-		    {
-		      if(!query.exec())
-			error = tr("A database error occurred.");
-		    }
-		  else if(error.isEmpty())
-		    error = tr("A cryptographic error occurred.");
+		  error = tr("GPGME error.");
+		  ok = false;
 		}
-	      else
-		error = tr("Please provide non-empty keys.");
 
-	      spoton_crypt::memzero(key);
+	      query.prepare("INSERT OR REPLACE INTO gpg "
+			    "(public_keys, public_keys_hash) "
+			    "VALUES (?, ?)");
+
+	      if(ok)
+		query.addBindValue
+		  (eCrypt->encryptedThenHashed(key, &ok).toBase64());
+
+	      if(ok)
+		query.addBindValue
+		  (eCrypt->keyedHash(fingerprint, &ok).toBase64());
+
+	      if(ok)
+		{
+		  if(!query.exec())
+		    error = tr("A database error occurred.");
+		}
+	      else if(error.isEmpty())
+		error = tr("A cryptographic error occurred.");
 	    }
 	  else
-	    error = tr("Unable to access the database idiotes.db.");
+	    error = tr("Unable to access the database friends_public_keys.db.");
 
 	  db.close();
 	}

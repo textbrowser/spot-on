@@ -285,6 +285,7 @@ Ignored Items
 16.    The libgcrypt library supports GCRY_KDF_SCRYPT.
 17.    Weather feeds.
 18.    Separate NTRU implementation.
+19.    Rosetta: Inbox, Drafts (?), Sent, Trash.
 
 Remaining Items
 
@@ -298,9 +299,8 @@ Remaining Items
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
-11.    GPG and Rosetta.
-12.    Rosetta: Inbox, Drafts (?), Sent, Trash.
-13.    Separate new-contact dialog in Rosetta.
-14.    Single Rosetta attachments.
-15.    Display GPG key information (gpg --check-signatures / --list-keys).
-16.    Allow removal of GPG keys.
+11.    Separate new-contact dialog in Rosetta.
+12.    Single Rosetta attachments.
+13.    Display GPG key information (gpg --check-signatures / --list-keys).
+14.    Allow removal of GPG keys.
+15.    Re-encode GPG keys.
