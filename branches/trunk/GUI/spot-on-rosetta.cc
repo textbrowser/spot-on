@@ -552,7 +552,10 @@ void spoton_rosetta::slotAddContact(void)
 	    QApplication::processEvents();
 	  }
 	else
-	  ui.newContact->selectAll();
+	  {
+	    populateContacts();
+	    ui.newContact->selectAll();
+	  }
 
 	return;
       }
@@ -818,7 +821,9 @@ void spoton_rosetta::slotContactsChanged(int index)
   DestinationTypes destinationType = DestinationTypes
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
+  ui.cipher->setCurrentIndex(0);
   ui.cipher->setEnabled(destinationType != ROSETTA);
+  ui.hash->setCurrentIndex(0);
   ui.hash->setEnabled(destinationType != ROSETTA);
 }
 
