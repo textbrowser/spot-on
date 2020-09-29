@@ -119,6 +119,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotClear(void)));
+  connect(ui.contacts,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotContactsChanged(int)));
   connect(ui.convertDecrypt,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -330,6 +334,29 @@ void spoton_rosetta::populateContacts(void)
 		}
 	    }
 
+	query.prepare("SELECT email, public_keys_hash FROM gpg");
+
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray name;
+	      bool ok = true;
+
+	      if(eCrypt)
+		name = eCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+	      else
+		ok = false;
+
+	      if(ok)
+		{
+		  QPair<DestinationTypes, QByteArray> pair
+		    (GPG, query.value(1).toByteArray());
+
+		  names.insert(name, pair);
+		}
+	    }
+
 	QMapIterator<QString, QPair<DestinationTypes, QByteArray> > it(names);
 
 	while(it.hasNext())
@@ -524,6 +551,8 @@ void spoton_rosetta::slotAddContact(void)
 	      (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 	    QApplication::processEvents();
 	  }
+	else
+	  ui.newContact->selectAll();
 
 	return;
       }
@@ -782,6 +811,15 @@ void spoton_rosetta::slotClose(void)
     m_gpgImport->close();
 #endif
   close();
+}
+
+void spoton_rosetta::slotContactsChanged(int index)
+{
+  DestinationTypes destinationType = DestinationTypes
+    (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
+
+  ui.cipher->setEnabled(destinationType != GPG);
+  ui.hash->setEnabled(destinationType != GPG);
 }
 
 void spoton_rosetta::slotConvertDecrypt(void)
@@ -1299,6 +1337,9 @@ void spoton_rosetta::slotDelete(void)
 
   QApplication::processEvents();
 
+  DestinationTypes destinationType = DestinationTypes
+    (ui.contacts->itemData(ui.contacts->currentIndex(),
+			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
   QByteArray publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
@@ -1317,12 +1358,19 @@ void spoton_rosetta::slotDelete(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM friends_public_keys WHERE "
-		      "public_key_hash = ?");
+
+	if(destinationType == GPG)
+	  query.prepare("DELETE FROM gpg WHERE public_keys_hash = ?");
+	else
+	  query.prepare
+	    ("DELETE FROM friends_public_keys WHERE public_key_hash = ?");
+
 	query.addBindValue(publicKeyHash);
 	ok = query.exec();
-	spoton_misc::purgeSignatureRelationships
-	  (db, m_parent ? m_parent->crypts().value("rosetta", 0) : 0);
+
+	if(destinationType == ROSETTA)
+	  spoton_misc::purgeSignatureRelationships
+	    (db, m_parent ? m_parent->crypts().value("rosetta", 0) : 0);
       }
     else
       ok = false;
