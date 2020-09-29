@@ -294,7 +294,7 @@ void spoton_rosetta::populateContacts(void)
 
     if(db.open())
       {
-	QMultiMap<QString, QByteArray> names;
+	QMultiMap<QString, QPair<DestinationTypes, QByteArray> > names;
 	QSqlQuery query(db);
 	bool ok = true;
 	spoton_crypt *eCrypt = m_parent ?
@@ -322,10 +322,15 @@ void spoton_rosetta::populateContacts(void)
 		ok = false;
 
 	      if(ok)
-		names.insert(name, query.value(1).toByteArray());
+		{
+		  QPair<DestinationTypes, QByteArray> pair
+		    (ROSETTA, query.value(1).toByteArray());
+
+		  names.insert(name, pair);
+		}
 	    }
 
-	QMapIterator<QString, QByteArray> it(names);
+	QMapIterator<QString, QPair<DestinationTypes, QByteArray> > it(names);
 
 	while(it.hasNext())
 	  {
@@ -334,9 +339,14 @@ void spoton_rosetta::populateContacts(void)
 	    QString str(it.key().trimmed());
 
 	    if(str.isEmpty())
-	      ui.contacts->addItem("unknown", it.value());
+	      ui.contacts->addItem("unknown", it.value().second);
 	    else
-	      ui.contacts->addItem(str, it.value());
+	      ui.contacts->addItem(str, it.value().second);
+
+	    ui.contacts->setItemData
+	      (ui.contacts->count() - 1,
+	       it.value().first,
+	       Qt::ItemDataRole(Qt::UserRole + 1));
 	  }
       }
 
@@ -1553,14 +1563,22 @@ void spoton_rosetta::sortContacts(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QMultiMap<QString, QVariant> map;
+  QMultiMap<QString, QPair<DestinationTypes, QVariant> > map;
 
   for(int i = 0; i < ui.contacts->count(); i++)
-    map.insert(ui.contacts->itemText(i), ui.contacts->itemData(i));
+    {
+      QPair<DestinationTypes, QVariant> pair
+	(DestinationTypes(ui.contacts->
+			  itemData(i, Qt::ItemDataRole(Qt::UserRole + 1)).
+			  toInt()),
+	 ui.contacts->itemData(i));
+
+      map.insert(ui.contacts->itemText(i), pair);
+    }
 
   ui.contacts->clear();
 
-  QMapIterator<QString, QVariant> it(map);
+  QMapIterator<QString, QPair<DestinationTypes, QVariant> > it(map);
 
   while(it.hasNext())
     {
@@ -1569,9 +1587,9 @@ void spoton_rosetta::sortContacts(void)
       QString str(it.key().trimmed());
 
       if(str.isEmpty())
-	ui.contacts->addItem("unknown", it.value());
+	ui.contacts->addItem("unknown", it.value().second);
       else
-	ui.contacts->addItem(str, it.value());
+	ui.contacts->addItem(str, it.value().second);
     }
 
   QApplication::restoreOverrideCursor();
