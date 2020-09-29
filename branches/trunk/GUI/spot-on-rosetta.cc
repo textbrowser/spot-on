@@ -818,8 +818,8 @@ void spoton_rosetta::slotContactsChanged(int index)
   DestinationTypes destinationType = DestinationTypes
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
-  ui.cipher->setEnabled(destinationType != GPG);
-  ui.hash->setEnabled(destinationType != GPG);
+  ui.cipher->setEnabled(destinationType != ROSETTA);
+  ui.hash->setEnabled(destinationType != ROSETTA);
 }
 
 void spoton_rosetta::slotConvertDecrypt(void)
