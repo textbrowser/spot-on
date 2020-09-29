@@ -343,6 +343,10 @@ void spoton_rosetta::populateContacts(void)
 	    else
 	      ui.contacts->addItem(str, it.value().second);
 
+	    /*
+	    ** Record destination type.
+	    */
+
 	    ui.contacts->setItemData
 	      (ui.contacts->count() - 1,
 	       it.value().first,
@@ -1590,6 +1594,15 @@ void spoton_rosetta::sortContacts(void)
 	ui.contacts->addItem("unknown", it.value().second);
       else
 	ui.contacts->addItem(str, it.value().second);
+
+      /*
+      ** Record destination type.
+      */
+
+      ui.contacts->setItemData
+	(ui.contacts->count() - 1,
+	 it.value().first,
+	 Qt::ItemDataRole(Qt::UserRole + 1));
     }
 
   QApplication::restoreOverrideCursor();
