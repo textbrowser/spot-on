@@ -26,7 +26,9 @@ digraph "Graphical Class Hierarchy"
   Node56 -> Node66 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node66 [label="spoton_rosetta",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__rosetta.html",tooltip=" "];
   Node56 -> Node67 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node67 [label="spoton_rss",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__rss.html",tooltip=" "];
+  Node67 [label="spoton_rosetta_gpg\l_import",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__rosetta__gpg__import.html",tooltip=" "];
   Node56 -> Node68 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node68 [label="spoton_smpwindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__smpwindow.html",tooltip=" "];
+  Node68 [label="spoton_rss",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__rss.html",tooltip=" "];
+  Node56 -> Node69 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node69 [label="spoton_smpwindow",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classspoton__smpwindow.html",tooltip=" "];
 }
