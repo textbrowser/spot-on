@@ -75,6 +75,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
+  ui.newContact->setLineWrapColumnOrWidth(80);
   ui.newContact->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.newContact->setWordWrapMode(QTextOption::NoWrap);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
@@ -819,7 +820,10 @@ void spoton_rosetta::slotClose(void)
 void spoton_rosetta::slotContactsChanged(int index)
 {
   if(index < 0)
-    return;
+    {
+      slotClear();
+      return;
+    }
 
   DestinationTypes destinationType = DestinationTypes
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());

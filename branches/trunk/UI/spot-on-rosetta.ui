@@ -108,7 +108,7 @@
          <x>0</x>
          <y>0</y>
          <width>888</width>
-         <height>561</height>
+         <height>585</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -415,6 +415,16 @@
                    </spacer>
                   </item>
                  </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="dump">
+                  <property name="text">
+                   <string>Dump</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QSplitter" name="encryptSplitter">
