@@ -818,13 +818,16 @@ void spoton_rosetta::slotClose(void)
 
 void spoton_rosetta::slotContactsChanged(int index)
 {
+  if(index < 0)
+    return;
+
   DestinationTypes destinationType = DestinationTypes
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
   ui.cipher->setCurrentIndex(0);
-  ui.cipher->setEnabled(destinationType != ROSETTA);
+  ui.cipher->setEnabled(destinationType == ROSETTA);
   ui.hash->setCurrentIndex(0);
-  ui.hash->setEnabled(destinationType != ROSETTA);
+  ui.hash->setEnabled(destinationType == ROSETTA);
 }
 
 void spoton_rosetta::slotConvertDecrypt(void)

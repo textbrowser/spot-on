@@ -304,3 +304,4 @@ Remaining Items
 13.    Display GPG key information (gpg --check-signatures / --list-keys).
 14.    Allow removal of GPG keys.
 15.    Re-encode GPG keys.
+16.    Display destination types.
