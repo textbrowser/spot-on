@@ -73,14 +73,19 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
   ui.dump->setVisible(false);
   ui.from->setText(tr("Empty"));
+  ui.inputDecrypt->setLineWrapColumnOrWidth(80);
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
-  ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
+  ui.inputDecrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.inputEncrypt->setLineWrapColumnOrWidth(80);
+  ui.inputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
+  ui.inputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   ui.newContact->setLineWrapColumnOrWidth(80);
   ui.newContact->setLineWrapMode(QTextEdit::FixedColumnWidth);
-  ui.newContact->setWordWrapMode(QTextOption::NoWrap);
+  ui.newContact->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
-  ui.outputEncrypt->setWordWrapMode(QTextOption::NoWrap);
+  ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
   connect(ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
