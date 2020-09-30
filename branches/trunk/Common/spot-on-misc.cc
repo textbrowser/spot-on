@@ -206,12 +206,12 @@ QByteArray spoton_misc::forwardSecrecyMagnetFromList
 }
 
 QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
+					  const bool gpg,
 					  spoton_crypt *crypt)
 {
   if(!crypt)
     {
-      logError
-	("spoton_misc::publicKeyFromHash(): crypt is zero.");
+      logError("spoton_misc::publicKeyFromHash(): crypt is zero.");
       return QByteArray();
     }
 
@@ -230,17 +230,20 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
 	bool ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "public_key_hash = ?");
+
+	if(gpg)
+	  query.prepare
+	    ("SELECT public_keys FROM gpg WHERE public_keys_hash = ?");
+	else
+	  query.prepare("SELECT public_key "
+			"FROM friends_public_keys WHERE "
+			"public_key_hash = ?");
+
 	query.bindValue(0, publicKeyHash.toBase64());
 
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
+	if(query.exec() && query.next())
+	  publicKey = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
       }
 
     db.close();
@@ -254,8 +257,7 @@ QByteArray spoton_misc::publicKeyFromOID(const qint64 oid, spoton_crypt *crypt)
 {
   if(!crypt)
     {
-      logError
-	("spoton_misc::publicKeyFromHash(): crypt is zero.");
+      logError("spoton_misc::publicKeyFromHash(): crypt is zero.");
       return QByteArray();
     }
 

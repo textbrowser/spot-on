@@ -80,6 +80,7 @@ class spoton_misc
   static QByteArray forwardSecrecyMagnetFromList
     (const QList<QByteArray> &list);
   static QByteArray publicKeyFromHash(const QByteArray &publicKeyHash,
+				      const bool gpg,
 				      spoton_crypt *crypt);
   static QByteArray publicKeyFromOID(const qint64 oid, spoton_crypt *crypt);
   static QByteArray publicKeyFromSignaturePublicKeyHash

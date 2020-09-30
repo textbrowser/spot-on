@@ -222,6 +222,7 @@ void spoton_mailer::slotRetrieveMail
 
   QByteArray publicKey
     (spoton_misc::publicKeyFromHash(publicKeyHash,
+				    false,
 				    spoton_kernel::crypt("email")));
 
   if(publicKey.isEmpty())

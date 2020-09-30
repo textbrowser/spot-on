@@ -1257,7 +1257,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(1), s_crypt1));
+    (spoton_misc::publicKeyFromHash(list.value(1), false, s_crypt1));
 
   if(publicKey.isEmpty())
     return;
@@ -1460,7 +1460,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey
-    (spoton_misc::publicKeyFromHash(list.value(0), s_crypt1));
+    (spoton_misc::publicKeyFromHash(list.value(0), false, s_crypt1));
 
   if(publicKey.isEmpty())
     return;

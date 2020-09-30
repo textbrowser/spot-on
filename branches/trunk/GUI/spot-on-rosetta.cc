@@ -71,6 +71,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
 			     this,
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
+  ui.dump->setVisible(false);
   ui.from->setText(tr("Empty"));
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::NoWrap);
@@ -822,6 +823,7 @@ void spoton_rosetta::slotContactsChanged(int index)
   if(index < 0)
     {
       slotClear();
+      ui.dump->setVisible(false);
       return;
     }
 
@@ -830,6 +832,28 @@ void spoton_rosetta::slotContactsChanged(int index)
 
   ui.cipher->setCurrentIndex(0);
   ui.cipher->setEnabled(destinationType == ROSETTA);
+
+  if(destinationType == GPG)
+    {
+      QByteArray publicKey;
+      spoton_crypt *eCrypt = m_parent ?
+	m_parent->crypts().value("rosetta", 0) : 0;
+
+      publicKey = spoton_misc::publicKeyFromHash
+	(QByteArray::fromBase64(ui.contacts->
+				itemData(ui.contacts->
+					 currentIndex()).toByteArray()),
+	 true,
+	 eCrypt);
+      ui.dump->setText(spoton_rosetta_gpg_import::dump(publicKey));
+      ui.dump->setVisible(!ui.dump->text().isEmpty());
+    }
+  else
+    {
+      ui.dump->setText("");
+      ui.dump->setVisible(false);
+    }
+
   ui.hash->setCurrentIndex(0);
   ui.hash->setEnabled(destinationType == ROSETTA);
 }
@@ -1118,6 +1142,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
     (QByteArray::fromBase64(ui.contacts->
 			    itemData(ui.contacts->
 				     currentIndex()).toByteArray()),
+     false,
      eCrypt);
   stream << encryptionKey
 	 << hashKey
@@ -1508,6 +1533,9 @@ void spoton_rosetta::slotRename(void)
   if(name.isEmpty() || !ok)
     return;
 
+  DestinationTypes destinationType = DestinationTypes
+    (ui.contacts->itemData(ui.contacts->currentIndex(),
+			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
   QByteArray publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
@@ -1522,10 +1550,14 @@ void spoton_rosetta::slotRename(void)
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE friends_public_keys "
-		      "SET name = ?, "
-		      "name_changed_by_user = 1 "
-		      "WHERE public_key_hash = ?");
+	if(destinationType == GPG)
+	  query.prepare("UPDATE gpg SET email = ? WHERE public_keys_hash = ?");
+	else
+	  query.prepare("UPDATE friends_public_keys "
+			"SET name = ?, "
+			"name_changed_by_user = 1 "
+			"WHERE public_key_hash = ?");
+
 	query.addBindValue
 	  (eCrypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
