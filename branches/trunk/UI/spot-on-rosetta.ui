@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>650</width>
-    <height>450</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -107,8 +107,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>888</width>
-         <height>589</height>
+         <width>977</width>
+         <height>585</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -186,6 +186,13 @@
                        <widget class="QPushButton" name="decryptReset">
                         <property name="text">
                          <string>Clear</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="convertDecrypt">
+                        <property name="text">
+                         <string>Convert</string>
                         </property>
                        </widget>
                       </item>
@@ -333,26 +340,6 @@
                   <property name="spacing">
                    <number>5</number>
                   </property>
-                  <item>
-                   <spacer name="horizontalSpacer_13">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
-                  <item>
-                   <widget class="QPushButton" name="convertDecrypt">
-                    <property name="text">
-                     <string>Convert</string>
-                    </property>
-                   </widget>
-                  </item>
                  </layout>
                 </item>
                </layout>
@@ -550,6 +537,13 @@
                        </widget>
                       </item>
                       <item>
+                       <widget class="QPushButton" name="convertEncrypt">
+                        <property name="text">
+                         <string>Convert</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="clearInput">
                         <property name="text">
                          <string>Reset</string>
@@ -649,26 +643,6 @@
                       <property name="spacing">
                        <number>5</number>
                       </property>
-                      <item>
-                       <spacer name="horizontalSpacer_6">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                      <item>
-                       <widget class="QPushButton" name="convertEncrypt">
-                        <property name="text">
-                         <string>Convert</string>
-                        </property>
-                       </widget>
-                      </item>
                      </layout>
                     </item>
                    </layout>
@@ -845,10 +819,10 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>decryptPaste</tabstop>
   <tabstop>decryptReset</tabstop>
+  <tabstop>convertDecrypt</tabstop>
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
   <tabstop>outputDecrypt</tabstop>
-  <tabstop>convertDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
@@ -856,12 +830,12 @@
   <tabstop>hash</tabstop>
   <tabstop>sign</tabstop>
   <tabstop>encryptPaste</tabstop>
+  <tabstop>convertEncrypt</tabstop>
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
   <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
   <tabstop>outputEncrypt</tabstop>
-  <tabstop>convertEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>
