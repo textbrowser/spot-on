@@ -259,6 +259,8 @@ Completed Items
 186.   Paste buttons in Rosetta panels.
 187.   Allow removal of personal GPG keys.
 188.   New Rosetta keys database tables (participants, personal).
+189.   Allow removal of GPG keys.
+190.   Display destination types (GPG dump).
 
 Ignored Items
 
@@ -302,6 +304,4 @@ Remaining Items
 11.    Separate new-contact dialog in Rosetta.
 12.    Single Rosetta attachments.
 13.    Display GPG key information (gpg --check-signatures / --list-keys).
-14.    Allow removal of GPG keys.
-15.    Re-encode GPG keys.
-16.    Display destination types.
+14.    Re-encode GPG keys.

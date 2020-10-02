@@ -847,6 +847,7 @@ void spoton_rosetta::slotContactsChanged(int index)
   ui.cipher->setCurrentIndex(0);
   ui.cipher->setEnabled(destinationType == ROSETTA);
   ui.convertEncrypt->setEnabled(destinationType != ZZZ);
+  ui.deleteContact->setEnabled(destinationType != ZZZ);
 
   if(destinationType == GPG)
     {
