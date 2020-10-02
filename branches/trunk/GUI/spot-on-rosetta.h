@@ -44,7 +44,8 @@ class spoton_rosetta: public QMainWindow
   enum DestinationTypes
   {
     GPG = 0,
-    ROSETTA
+    ROSETTA,
+    ZZZ
   };
 
   spoton_rosetta(void);

@@ -394,9 +394,13 @@ void spoton_rosetta::populateContacts(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   if(ui.contacts->count() == 0)
-    ui.contacts->addItem("Empty"); // Please do not translate Empty.
+    {
+      ui.contacts->addItem("Empty"); // Please do not translate Empty.
+      ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
+    }
 
   QApplication::restoreOverrideCursor();
+  slotContactsChanged(0);
 }
 
 void spoton_rosetta::resizeEvent(QResizeEvent *event)
@@ -828,7 +832,12 @@ void spoton_rosetta::slotContactsChanged(int index)
   if(index < 0)
     {
       slotClear();
+      ui.convertEncrypt->setEnabled(false);
+      ui.deleteContact->setEnabled(false);
       ui.dump->setVisible(false);
+      ui.rename->setEnabled(false);
+      ui.sign->setChecked(true);
+      ui.sign->setEnabled(false);
       return;
     }
 
@@ -837,6 +846,7 @@ void spoton_rosetta::slotContactsChanged(int index)
 
   ui.cipher->setCurrentIndex(0);
   ui.cipher->setEnabled(destinationType == ROSETTA);
+  ui.convertEncrypt->setEnabled(destinationType != ZZZ);
 
   if(destinationType == GPG)
     {
@@ -861,6 +871,9 @@ void spoton_rosetta::slotContactsChanged(int index)
 
   ui.hash->setCurrentIndex(0);
   ui.hash->setEnabled(destinationType == ROSETTA);
+  ui.rename->setEnabled(destinationType != ZZZ);
+  ui.sign->setChecked(true);
+  ui.sign->setEnabled(destinationType != ZZZ);
 }
 
 void spoton_rosetta::slotConvertDecrypt(void)
@@ -1437,9 +1450,14 @@ void spoton_rosetta::slotDelete(void)
       ui.contacts->removeItem(ui.contacts->currentIndex());
 
       if(ui.contacts->count() == 0)
-	ui.contacts->addItem("Empty"); // Please do not translate Empty.
+	{
+	  ui.contacts->addItem("Empty"); // Please do not translate Empty.
+	  ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
+	}
       else
 	sortContacts();
+
+      slotContactsChanged(0);
     }
 }
 
