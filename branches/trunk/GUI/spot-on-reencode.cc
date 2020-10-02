@@ -836,6 +836,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  deleteQuery.exec();
 		}
 	    }
+
+	if(query.exec("SELECT email, public_keys, OID FROM gpg"))
+	  while(query.next())
+	    {
+	    }
       }
 
     db.close();
