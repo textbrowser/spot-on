@@ -140,6 +140,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 
 	      QString email("");
 	      QString fingerprint("");
+	      QString keyid("");
 	      QString name("");
 
 	      if(key->uids && key->uids->email)
@@ -148,13 +149,18 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 	      if(key->fpr)
 		fingerprint = key->fpr;
 
+	      if(key->subkeys->keyid)
+		keyid = key->subkeys->keyid;
+
 	      if(key->uids && key->uids->name)
 		name = key->uids->name;
 
 	      dump = tr("E-Mail: %1<br>"
-			"Name: %2<br>"
-			"Fingerprint: %3").
+			"Key ID: %2<br>"
+			"Name: %3<br>"
+			"Fingerprint: %4").
 		arg(email).
+		arg(keyid).
 		arg(name).
 		arg(fingerprint);
 	      gpgme_key_release(key);
