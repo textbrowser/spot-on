@@ -89,6 +89,7 @@ class spoton_rosetta: public QMainWindow
   void slotSplitterMoved(int pox, int index);
 
  signals:
+  void gpgKeysRemoved(void);
   void participantAdded(const QString &type);
   void participantDeleted(const QString &oid, const QString &type);
   void participantNameChanged(const QByteArray &publicKeyHash,

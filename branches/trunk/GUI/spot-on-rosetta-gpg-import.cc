@@ -50,6 +50,10 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(spoton *parent):
 	  SIGNAL(triggered(void)),
 	  m_ui.public_keys,
 	  SLOT(clear(void)));
+  connect(m_ui.action_Remove_GPG_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotRemoveGPGKeys(void)));
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -296,6 +300,12 @@ void spoton_rosetta_gpg_import::showNormal(void)
   QMainWindow::showNormal();
 }
 
+void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
+{
+  m_ui.private_keys_dump->setText(tr("GPG Dump"));
+  m_ui.public_keys_dump->setText(tr("GPG Dump"));
+}
+
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -338,7 +348,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 		if(fingerprint1.isEmpty() || fingerprint2.isEmpty())
 		  {
-		    error = tr("GPGME error.");
+		    error = tr("GPGME error. Please verify that the "
+			       "provide keys are correct.");
 		    ok = false;
 		  }
 		else
@@ -416,4 +427,50 @@ void spoton_rosetta_gpg_import::slotImport(void)
   if(QApplication::clipboard())
     QApplication::clipboard()->clear();
 #endif
+}
+
+void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
+{
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Are you sure that you wish to remove your GPG keys?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+
+	if(query.exec("DELETE FROM gpg"))
+	  {
+	    m_ui.private_keys_dump->setText(tr("GPG Dump"));
+	    m_ui.public_keys_dump->setText(tr("GPG Dump"));
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }

@@ -144,6 +144,8 @@
      <string>&amp;Edit</string>
     </property>
     <addaction name="action_Clear"/>
+    <addaction name="separator"/>
+    <addaction name="action_Remove_GPG_Keys"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
@@ -159,6 +161,11 @@
   <action name="action_Clear">
    <property name="text">
     <string>&amp;Clear</string>
+   </property>
+  </action>
+  <action name="action_Remove_GPG_Keys">
+   <property name="text">
+    <string>Remove GPG Keys</string>
    </property>
   </action>
  </widget>

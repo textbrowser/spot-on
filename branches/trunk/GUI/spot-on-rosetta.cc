@@ -1466,7 +1466,13 @@ void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(!m_gpgImport)
-    m_gpgImport = new spoton_rosetta_gpg_import(m_parent);
+    {
+      m_gpgImport = new spoton_rosetta_gpg_import(m_parent);
+      connect(this,
+	      SIGNAL(gpgKeysRemoved(void)),
+	      m_gpgImport,
+	      SLOT(slotGPGKeysRemoved(void)));
+    }
 
   m_gpgImport->showNormal();
   m_gpgImport->activateWindow();
@@ -1513,7 +1519,9 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM gpg");
+
+	if(query.exec("DELETE FROM gpg"))
+	  emit gpgKeysRemoved();
       }
 
     db.close();

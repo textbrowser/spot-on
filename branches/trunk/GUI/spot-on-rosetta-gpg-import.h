@@ -53,7 +53,9 @@ class spoton_rosetta_gpg_import: public QMainWindow
   void showCurrentDump(void);
 
  private slots:
+  void slotGPGKeysRemoved(void);
   void slotImport(void);
+  void slotRemoveGPGKeys(void);
 };
 
 #endif
