@@ -1274,8 +1274,51 @@ void spoton_rosetta::slotCopyEncrypted(void)
 
 void spoton_rosetta::slotCopyMyGPGKeys(void)
 {
-#ifdef SPOTON_GPGME_ENABLED
-#endif
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+
+  if(!eCrypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT public_keys FROM gpg");
+
+	if(query.exec() && query.next())
+	  {
+	    QByteArray publicKeys;
+
+	    publicKeys = eCrypt->decryptedAfterAuthenticated
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), 0);
+
+	    QClipboard *clipboard = QApplication::clipboard();
+
+	    if(clipboard)
+	      {
+		repaint();
+		QApplication::processEvents();
+		clipboard->setText(publicKeys);
+	      }
+	  }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta::slotCopyMyRosettaPublicKeys(void)
