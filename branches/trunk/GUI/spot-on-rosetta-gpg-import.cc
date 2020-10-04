@@ -116,13 +116,12 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  QString dump("");
-
   if(data.trimmed().isEmpty())
-    return dump;
+    return "";
 
   gpgme_check_version(0);
 
+  QString dump("");
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
@@ -187,13 +186,12 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  QString email("");
-
   if(data.trimmed().isEmpty())
-    return email;
+    return "";
 
   gpgme_check_version(0);
 
+  QString email("");
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
