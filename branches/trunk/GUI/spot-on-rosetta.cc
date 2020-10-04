@@ -293,10 +293,13 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     }
 }
 
-QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
+QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
+				      const QByteArray &sender) const
 {
 #ifdef SPOTON_GPGME_ENABLED
+  Q_UNUSED(sender);
   gpgme_check_version(0);
+  gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
 
   QByteArray output;
   gpgme_ctx_t ctx = 0;
@@ -323,24 +326,24 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
       if(err == GPG_ERR_NO_ERROR)
 	{
 	  gpgme_data_t keydata = 0;
-	  gpgme_key_t key[] = {0, 0};
+	  gpgme_key_t keys[] = {0, 0};
 
 	  err = gpgme_data_new_from_mem
 	    // 1 = A private copy.
 	    (&keydata,
-	     publicKey.constData(),
-	     static_cast<size_t> (publicKey.length()),
+	     receiver.constData(),
+	     static_cast<size_t> (receiver.length()),
 	     1);
 
 	  if(err == GPG_ERR_NO_ERROR)
 	    err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    err = gpgme_op_keylist_next(ctx, &key[0]);
+	    err = gpgme_op_keylist_next(ctx, &keys[0]);
 
 	  if(err == GPG_ERR_NO_ERROR)
 	    err = gpgme_op_encrypt
-	      (ctx, key, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
+	      (ctx, keys, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
 
 	  if(err != GPG_ERR_NO_ERROR)
 	    spoton_misc::logError
@@ -348,19 +351,21 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
 	       arg(gpgme_strerror(err)));
 
 	  gpgme_data_release(keydata);
-	  gpgme_key_unref(key[0]);
+	  gpgme_key_unref(keys[0]);
 	}
 
       if(err == GPG_ERR_NO_ERROR)
 	{
 	  QByteArray bytes(512, 0);
+	  ssize_t rc = 0;
 
 	  gpgme_data_seek(ciphertext, 0, SEEK_SET);
 
-	  while(gpgme_data_read(ciphertext,
-				bytes.data(),
-				static_cast<size_t> (bytes.length())) > 0)
-	    output.append(bytes);
+	  while
+	    ((rc = gpgme_data_read(ciphertext,
+				   bytes.data(),
+				   static_cast<size_t> (bytes.length()))) > 0)
+	    output.append(bytes.mid(0, static_cast<int> (rc)));
 	}
 
       gpgme_data_release(ciphertext);
@@ -370,7 +375,8 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
   gpgme_release(ctx);
   return output;
 #else
-  Q_UNUSED(publicKey);
+  Q_UNUSED(receiver);
+  Q_UNUSED(sender);
   return QByteArray();
 #endif
 }
@@ -1202,7 +1208,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QByteArray publicKey;
+      QByteArray receiver;
+      QByteArray sender;
       QString connectionName("");
 
       {
@@ -1224,7 +1231,30 @@ void spoton_rosetta::slotConvertEncrypt(void)
 	       itemData(ui.contacts->currentIndex()).toByteArray());
 
 	    if(query.exec() && query.next())
-	      publicKey = eCrypt->decryptedAfterAuthenticated
+	      receiver = eCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.prepare("SELECT public_keys FROM gpg");
+
+	    if(query.exec() && query.next())
+	      sender = eCrypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
 	  }
 
@@ -1233,7 +1263,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
       QSqlDatabase::removeDatabase(connectionName);
       QApplication::restoreOverrideCursor();
-      ui.outputEncrypt->setText(gpgEncrypt(publicKey));
+      ui.outputEncrypt->setText(gpgEncrypt(receiver, sender));
       ui.outputEncrypt->selectAll();
       return;
     }
