@@ -68,13 +68,12 @@ spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
 QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  QByteArray fingerprint;
-
   if(data.trimmed().isEmpty())
-    return fingerprint;
+    return QByteArray();
 
   gpgme_check_version(0);
 
+  QByteArray fingerprint;
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
@@ -84,18 +83,22 @@ QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
 
-      if(err == GPG_ERR_NO_ERROR &&
-	 keydata &&
-	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+      if(err == GPG_ERR_NO_ERROR && keydata)
 	{
-	  gpgme_import_result_t result = gpgme_op_import_result(ctx);
+	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
 
-	  if(result)
+	  while(err == GPG_ERR_NO_ERROR)
 	    {
-	      gpgme_import_status_t imports = result->imports;
+	      gpgme_key_t key = 0;
 
-	      if(imports && imports->fpr)
-		fingerprint = QByteArray(imports->fpr);
+	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
+		break;
+
+	      if(key->fpr)
+		fingerprint = QByteArray(key->fpr);
+
+	      gpgme_key_unref(key);
+	      break;
 	    }
 	}
 
@@ -129,11 +132,9 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
 
-      if(err == GPG_ERR_NO_ERROR &&
-	 keydata &&
-	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+      if(err == GPG_ERR_NO_ERROR && keydata)
 	{
-	  err = gpgme_op_keylist_start(ctx, 0, 0);
+	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
 
 	  while(err == GPG_ERR_NO_ERROR)
 	    {
@@ -167,7 +168,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 		arg(keyid).
 		arg(name).
 		arg(fingerprint);
-	      gpgme_key_release(key);
+	      gpgme_key_unref(key);
 	      break;
 	    }
 	}
@@ -202,11 +203,9 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
 
-      if(err == GPG_ERR_NO_ERROR &&
-	 keydata &&
-	 gpgme_op_import(ctx, keydata) == GPG_ERR_NO_ERROR)
+      if(err == GPG_ERR_NO_ERROR && keydata)
 	{
-	  err = gpgme_op_keylist_start(ctx, 0, 0);
+	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
 
 	  while(err == GPG_ERR_NO_ERROR)
 	    {
@@ -218,7 +217,7 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 	      if(key->uids && key->uids->email)
 		email = key->uids->email;
 
-	      gpgme_key_release(key);
+	      gpgme_key_unref(key);
 	      break;
 	    }
 	}
