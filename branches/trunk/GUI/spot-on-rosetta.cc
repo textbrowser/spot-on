@@ -303,6 +303,8 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
+      gpgme_set_armor(ctx, 1);
+
       gpgme_data_t ciphertext = 0;
       gpgme_data_t plaintext = 0;
       gpgme_error_t err = gpgme_data_new(&ciphertext);
@@ -339,6 +341,11 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
 	  if(err == GPG_ERR_NO_ERROR)
 	    err = gpgme_op_encrypt
 	      (ctx, key, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
+
+	  if(err != GPG_ERR_NO_ERROR)
+	    spoton_misc::logError
+	      (QString("spoton_rosetta::gpgEncrypt(): %1.").
+	       arg(gpgme_strerror(err)));
 
 	  gpgme_data_release(keydata);
 	  gpgme_key_unref(key[0]);
