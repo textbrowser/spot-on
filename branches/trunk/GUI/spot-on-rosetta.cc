@@ -286,6 +286,12 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     }
 }
 
+void spoton_rosetta::gpgEncrypt(const QByteArray &publicKey)
+{
+#ifdef SPOTON_GPGME_ENABLED
+#endif
+}
+
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {
   QMainWindow::keyPressEvent(event);
@@ -1111,6 +1117,40 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
   if(destinationType == GPG)
     {
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      QByteArray publicKey;
+      QString connectionName("");
+
+      {
+	QSqlDatabase db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName(spoton_misc::homePath() +
+			   QDir::separator() +
+			   "friends_public_keys.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+	    query.prepare
+	      ("SELECT public_keys FROM gpg WHERE public_keys_hash = ?");
+	    query.addBindValue
+	      (ui.contacts->
+	       itemData(ui.contacts->currentIndex()).toByteArray());
+
+	    if(query.exec() && query.next())
+	      publicKey = eCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+      QApplication::restoreOverrideCursor();
+      gpgEncrypt(publicKey);
       return;
     }
 
