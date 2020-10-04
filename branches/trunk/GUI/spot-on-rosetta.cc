@@ -298,26 +298,70 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
 #ifdef SPOTON_GPGME_ENABLED
   gpgme_check_version(0);
 
+  QByteArray output;
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
-      gpgme_data_t keydata = 0;
-      gpgme_error_t err = gpgme_data_new_from_mem
-	// 1 = A private copy.
-	(&keydata,
-	 publicKey.constData(),
-	 static_cast<size_t> (publicKey.length()), 1);
+      gpgme_data_t ciphertext = 0;
+      gpgme_data_t plaintext = 0;
+      gpgme_error_t err = gpgme_data_new(&ciphertext);
 
-      if(err == GPG_ERR_NO_ERROR && keydata)
+      if(err == GPG_ERR_NO_ERROR)
 	{
+	  QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
+
+	  err = gpgme_data_new_from_mem
+	    (&plaintext,
+	     data.constData(),
+	     static_cast<size_t> (data.length()),
+	     0);
 	}
 
-      gpgme_data_release(keydata);
+      if(err == GPG_ERR_NO_ERROR)
+	{
+	  gpgme_data_t keydata = 0;
+	  gpgme_key_t key[] = {0, 0};
+
+	  err = gpgme_data_new_from_mem
+	    // 1 = A private copy.
+	    (&keydata,
+	     publicKey.constData(),
+	     static_cast<size_t> (publicKey.length()),
+	     1);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_keylist_next(ctx, &key[0]);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_encrypt
+	      (ctx, key, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
+
+	  gpgme_data_release(keydata);
+	  gpgme_key_unref(key[0]);
+	}
+
+      if(err == GPG_ERR_NO_ERROR)
+	{
+	  QByteArray bytes(512, 0);
+
+	  gpgme_data_seek(ciphertext, 0, SEEK_SET);
+
+	  while(gpgme_data_read(ciphertext,
+				bytes.data(),
+				static_cast<size_t> (bytes.length())) > 0)
+	    output.append(bytes);
+	}
+
+      gpgme_data_release(ciphertext);
+      gpgme_data_release(plaintext);
     }
 
   gpgme_release(ctx);
-  return QByteArray();
+  return output;
 #else
   Q_UNUSED(publicKey);
   return QByteArray();
