@@ -30,7 +30,10 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 
+extern "C"
+{
 #include <gpgme.h>
+}
 #endif
 
 #include "Common/spot-on-misc.h"

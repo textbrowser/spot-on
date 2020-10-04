@@ -59,7 +59,7 @@ class spoton_rosetta: public QMainWindow
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
   QByteArray copyMyRosettaPublicKey(void) const;
-  void gpgEncrypt(const QByteArray &publicKey);
+  QByteArray gpgEncrypt(const QByteArray &publicKey) const;
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
   void resizeEvent(QResizeEvent *event);

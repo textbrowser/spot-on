@@ -33,6 +33,13 @@
 #include <QSettings>
 #include <QSqlQuery>
 
+#ifdef SPOTON_GPGME_ENABLED
+extern "C"
+{
+#include <gpgme.h>
+}
+#endif
+
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -286,9 +293,34 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     }
 }
 
-void spoton_rosetta::gpgEncrypt(const QByteArray &publicKey)
+QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &publicKey) const
 {
 #ifdef SPOTON_GPGME_ENABLED
+  gpgme_check_version(0);
+
+  gpgme_ctx_t ctx = 0;
+
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = 0;
+      gpgme_error_t err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata,
+	 publicKey.constData(),
+	 static_cast<size_t> (publicKey.length()), 1);
+
+      if(err == GPG_ERR_NO_ERROR && keydata)
+	{
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return QByteArray();
+#else
+  Q_UNUSED(publicKey);
+  return QByteArray();
 #endif
 }
 
@@ -1150,7 +1182,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
       QSqlDatabase::removeDatabase(connectionName);
       QApplication::restoreOverrideCursor();
-      gpgEncrypt(publicKey);
+      ui.outputEncrypt->setText(gpgEncrypt(publicKey));
+      ui.outputEncrypt->selectAll();
       return;
     }
 
