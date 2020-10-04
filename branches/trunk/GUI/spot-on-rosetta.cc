@@ -1094,14 +1094,34 @@ void spoton_rosetta::slotConvertDecrypt(void)
 void spoton_rosetta::slotConvertEncrypt(void)
 {
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
 
-  if(!eCrypt || !sCrypt)
+  if(!eCrypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object(s). This is "
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+  DestinationTypes destinationType = DestinationTypes
+    (ui.contacts->itemData(ui.contacts->currentIndex(),
+			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
+
+  if(destinationType == GPG)
+    {
+      return;
+    }
+
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!sCrypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
       return;
