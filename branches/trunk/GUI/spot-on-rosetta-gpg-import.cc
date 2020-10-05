@@ -47,10 +47,6 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(spoton *parent):
   m_ui.setupUi(this);
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),
-	  m_ui.private_keys,
-	  SLOT(clear(void)));
-  connect(m_ui.action_Clear,
-	  SIGNAL(triggered(void)),
 	  m_ui.public_keys,
 	  SLOT(clear(void)));
   connect(m_ui.action_Remove_GPG_Keys,
@@ -258,33 +254,22 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT private_keys, public_keys FROM gpg") &&
+	if(query.exec("SELECT public_keys FROM gpg") &&
 	   query.next())
 	  {
-	    QByteArray privateKeys
-	      (QByteArray::fromBase64(query.value(0).toByteArray()));
 	    QByteArray publicKeys
-	      (QByteArray::fromBase64(query.value(1).toByteArray()));
+	      (QByteArray::fromBase64(query.value(0).toByteArray()));
 	    bool ok = true;
 
-	    privateKeys = crypt->decryptedAfterAuthenticated(privateKeys, &ok);
 	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, &ok);
-	    m_ui.private_keys_dump->setText(dump(privateKeys));
 	    m_ui.public_keys_dump->setText(dump(publicKeys));
-	    spoton_crypt::memzero(privateKeys);
 	    spoton_crypt::memzero(publicKeys);
 	  }
 	else
-	  {
-	    m_ui.private_keys_dump->setText(tr("GPG Dump"));
-	    m_ui.public_keys_dump->setText(tr("GPG Dump"));
-	  }
+	  m_ui.public_keys_dump->setText(tr("GPG Dump"));
       }
     else
-      {
-	m_ui.private_keys_dump->setText(tr("GPG Dump"));
-	m_ui.public_keys_dump->setText(tr("GPG Dump"));
-      }
+      m_ui.public_keys_dump->setText(tr("GPG Dump"));
 
     db.close();
   }
@@ -302,7 +287,6 @@ void spoton_rosetta_gpg_import::showNormal(void)
 
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
-  m_ui.private_keys_dump->setText(tr("GPG Dump"));
   m_ui.public_keys_dump->setText(tr("GPG Dump"));
 }
 
@@ -325,38 +309,29 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS gpg ("
-		   "private_keys TEXT NOT NULL, "
-		   "private_keys_hash TEXT NOT NULL, "
 		   "public_keys TEXT NOT NULL, "
-		   "public_keys_hash TEXT NOT NULL, "
-		   "PRIMARY KEY (private_keys_hash, public_keys_hash))");
+		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
 	spoton_crypt *crypt = m_parent->crypts().value("rosetta", 0);
 
 	if(crypt)
 	  {
-	    QByteArray privateKeys
-	      (m_ui.private_keys->toPlainText().trimmed().toUtf8());
 	    QByteArray publicKeys
 	      (m_ui.public_keys->toPlainText().trimmed().toUtf8());
 	    bool ok = true;
 
-	    if(!privateKeys.isEmpty() && !publicKeys.isEmpty())
+	    if(!publicKeys.isEmpty())
 	      {
-		QByteArray fingerprint1(fingerprint(privateKeys));
-		QByteArray fingerprint2(fingerprint(publicKeys));
+		QByteArray fingerprint(this->fingerprint(publicKeys));
 
-		if(fingerprint1.isEmpty() || fingerprint2.isEmpty())
+		if(fingerprint.isEmpty())
 		  {
 		    error = tr("GPGME error. Please verify that the "
-			       "provide keys are correct.");
+			       "provided keys are correct.");
 		    ok = false;
 		  }
 		else
-		  {
-		    m_ui.private_keys_dump->setText(dump(privateKeys));
-		    m_ui.public_keys_dump->setText(dump(publicKeys));
-		  }
+		  m_ui.public_keys_dump->setText(dump(publicKeys));
 
 		if(ok)
 		  {
@@ -369,19 +344,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
-			      "(private_keys, "
-			      "private_keys_hash, "
-			      "public_keys, "
-			      "public_keys_hash) "
-			      "VALUES (?, ?, ?, ?)");
-
-		if(ok)
-		  query.addBindValue
-		    (crypt->encryptedThenHashed(privateKeys, &ok).toBase64());
-
-		if(ok)
-		  query.addBindValue
-		    (crypt->keyedHash(fingerprint1, &ok).toBase64());
+			      "(public_keys, public_keys_hash) VALUES (?, ?)");
 
 		if(ok)
 		  query.addBindValue
@@ -389,7 +352,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 		if(ok)
 		  query.addBindValue
-		    (crypt->keyedHash(fingerprint2, &ok).toBase64());
+		    (crypt->keyedHash(fingerprint, &ok).toBase64());
 
 		if(ok)
 		  {
@@ -402,7 +365,6 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	    else
 	      error = tr("Please provide non-empty keys.");
 
-	    spoton_crypt::memzero(privateKeys);
 	    spoton_crypt::memzero(publicKeys);
 	  }
 	else
@@ -463,10 +425,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 	query.exec("PRAGMA secure_delete = ON");
 
 	if(query.exec("DELETE FROM gpg"))
-	  {
-	    m_ui.private_keys_dump->setText(tr("GPG Dump"));
-	    m_ui.public_keys_dump->setText(tr("GPG Dump"));
-	  }
+	  m_ui.public_keys_dump->setText(tr("GPG Dump"));
       }
 
     db.close();

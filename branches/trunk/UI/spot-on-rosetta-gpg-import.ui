@@ -17,47 +17,6 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QGroupBox" name="groupBox">
-      <property name="title">
-       <string>Private Key(s)</string>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>gpg --armor --export-secret-keys</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPlainTextEdit" name="private_keys">
-         <property name="font">
-          <font>
-           <family>Monospace</family>
-          </font>
-         </property>
-         <property name="placeholderText">
-          <string>Private Key(s)</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="private_keys_dump">
-         <property name="text">
-          <string>GPG Dump</string>
-         </property>
-         <property name="wordWrap">
-          <bool>true</bool>
-         </property>
-         <property name="textInteractionFlags">
-          <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="title">
        <string>Public Key(s)</string>
@@ -170,7 +129,6 @@
   </action>
  </widget>
  <tabstops>
-  <tabstop>private_keys</tabstop>
   <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
  </tabstops>
