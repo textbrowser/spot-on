@@ -1607,11 +1607,22 @@ void spoton_rosetta::slotDelete(void)
       return;
     }
 
+  DestinationTypes destinationType = DestinationTypes
+    (ui.contacts->itemData(ui.contacts->currentIndex(),
+			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
   QMessageBox mb(this);
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove the selected contact?"));
+
+  if(destinationType == GPG)
+    mb.setText
+      (tr("Are you sure that you wish to remove the selected contact? "
+	  "The contact will also be removed from the GPG keyring."));
+  else
+    mb.setText
+      (tr("Are you sure that you wish to remove the selected contact?"));
+
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
@@ -1624,9 +1635,6 @@ void spoton_rosetta::slotDelete(void)
 
   QApplication::processEvents();
 
-  DestinationTypes destinationType = DestinationTypes
-    (ui.contacts->itemData(ui.contacts->currentIndex(),
-			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
   QByteArray publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
