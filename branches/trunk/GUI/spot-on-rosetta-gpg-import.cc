@@ -64,54 +64,6 @@ spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
 {
 }
 
-QByteArray spoton_rosetta_gpg_import::fingerprint(const QByteArray &data)
-{
-#ifdef SPOTON_GPGME_ENABLED
-  if(data.trimmed().isEmpty())
-    return QByteArray();
-
-  gpgme_check_version(0);
-
-  QByteArray fingerprint;
-  gpgme_ctx_t ctx = 0;
-
-  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
-    {
-      gpgme_data_t keydata = 0;
-      gpgme_error_t err = gpgme_data_new_from_mem
-	// 1 = A private copy.
-	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
-
-      if(err == GPG_ERR_NO_ERROR && keydata)
-	{
-	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
-
-	  while(err == GPG_ERR_NO_ERROR)
-	    {
-	      gpgme_key_t key = 0;
-
-	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
-		break;
-
-	      if(key->fpr)
-		fingerprint = QByteArray(key->fpr);
-
-	      gpgme_key_unref(key);
-	      break;
-	    }
-	}
-
-      gpgme_data_release(keydata);
-    }
-
-  gpgme_release(ctx);
-  return fingerprint;
-#else
-  Q_UNUSED(data);
-  return QByteArray();
-#endif
-}
-
 QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -257,14 +209,14 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	if(query.exec("SELECT public_keys FROM gpg") &&
 	   query.next())
 	  {
-	    QByteArray publicKeys
+	    QByteArray publicKey
 	      (QByteArray::fromBase64(query.value(0).toByteArray()));
 	    bool ok = true;
 
-	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, &ok);
-	    m_ui.public_keys->setPlainText(publicKeys);
-	    m_ui.public_keys_dump->setText(dump(publicKeys));
-	    spoton_crypt::memzero(publicKeys);
+	    publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
+	    m_ui.public_keys->setPlainText(publicKey);
+	    m_ui.public_keys_dump->setText(dump(publicKey));
+	    spoton_crypt::memzero(publicKey);
 	  }
 	else
 	  m_ui.public_keys_dump->setText(tr("GPG Dump"));
@@ -318,13 +270,13 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 	if(crypt)
 	  {
-	    QByteArray publicKeys
+	    QByteArray publicKey
 	      (m_ui.public_keys->toPlainText().trimmed().toUtf8());
 	    bool ok = true;
 
-	    if(!publicKeys.isEmpty())
+	    if(!publicKey.isEmpty())
 	      {
-		QByteArray fingerprint(this->fingerprint(publicKeys));
+		QByteArray fingerprint(spoton_crypt::fingerprint(publicKey));
 
 		if(fingerprint.isEmpty())
 		  {
@@ -333,7 +285,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		    ok = false;
 		  }
 		else
-		  m_ui.public_keys_dump->setText(dump(publicKeys));
+		  m_ui.public_keys_dump->setText(dump(publicKey));
 
 		if(ok)
 		  {
@@ -350,7 +302,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 		if(ok)
 		  query.addBindValue
-		    (crypt->encryptedThenHashed(publicKeys, &ok).toBase64());
+		    (crypt->encryptedThenHashed(publicKey, &ok).toBase64());
 
 		if(ok)
 		  query.addBindValue
@@ -367,7 +319,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	    else
 	      error = tr("Please provide non-empty keys.");
 
-	    spoton_crypt::memzero(publicKeys);
+	    spoton_crypt::memzero(publicKey);
 	  }
 	else
 	  error = tr("Invalid crypt object. Critical error.");

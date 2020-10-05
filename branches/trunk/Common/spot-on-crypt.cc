@@ -38,6 +38,13 @@
 #include <iostream>
 #include <limits>
 
+#ifdef SPOTON_GPGME_ENABLED
+extern "C"
+{
+#include <gpgme.h>
+}
+#endif
+
 #include "spot-on-common.h"
 #include "spot-on-crypt.h"
 #ifdef SPOTON_MCELIECE_ENABLED
@@ -925,6 +932,57 @@ QByteArray spoton_crypt::encryptedThenHashed(const QByteArray &data, bool *ok)
     return bytes2 + bytes1; // HMAC(E(Data)) || E(Data)
 }
 
+QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  if(publicKey.trimmed().isEmpty())
+    return QByteArray();
+
+  gpgme_check_version(0);
+
+  QByteArray fingerprint;
+  gpgme_ctx_t ctx = 0;
+
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = 0;
+      gpgme_error_t err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata,
+	 publicKey.constData(),
+	 static_cast<size_t> (publicKey.length()),
+	 1);
+
+      if(err == GPG_ERR_NO_ERROR && keydata)
+	{
+	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
+
+	  while(err == GPG_ERR_NO_ERROR)
+	    {
+	      gpgme_key_t key = 0;
+
+	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
+		break;
+
+	      if(key->fpr)
+		fingerprint = QByteArray(key->fpr);
+
+	      gpgme_key_unref(key);
+	      break;
+	    }
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return fingerprint;
+#else
+  Q_UNUSED(publicKey);
+  return QByteArray();
+#endif
+}
+
 QByteArray spoton_crypt::hashKey(void)
 {
   QReadLocker locker(&m_hashKeyMutex);
@@ -1178,7 +1236,7 @@ QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
   if(!crypt)
     return QByteArray();
 
-  QByteArray publicKeys;
+  QByteArray publicKey;
   QString connectionName("");
 
   {
@@ -1195,8 +1253,8 @@ QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
 
 	if(query.exec("SELECT public_keys FROM gpg") && query.next())
 	  {
-	    publicKeys = QByteArray::fromBase64(query.value(0).toByteArray());
-	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, 0);
+	    publicKey = QByteArray::fromBase64(query.value(0).toByteArray());
+	    publicKey = crypt->decryptedAfterAuthenticated(publicKey, 0);
 	  }
       }
 
@@ -1204,7 +1262,7 @@ QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  return publicKeys;
+  return publicKey;
 }
 
 QByteArray spoton_crypt::publicKey(bool *ok)
@@ -4515,13 +4573,13 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
-	      updateQuery.exec("PRAGMA secure_delete = ON");
-	      updateQuery.exec("DELETE FROM gpg");
 	      publicKey = oldCrypt->decryptedAfterAuthenticated
 		(publicKey, &ok);
 
 	      if(ok)
 		{
+		  updateQuery.exec("PRAGMA secure_delete = ON");
+		  updateQuery.exec("DELETE FROM gpg");
 		  updateQuery.prepare
 		    ("INSERT INTO gpg (public_keys, public_keys_hash) "
 		     "VALUES (?, ?)");
@@ -4529,8 +4587,13 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 		    (newCrypt->encryptedThenHashed(publicKey, &ok).toBase64());
 
 		  if(ok)
-		    updateQuery.addBindValue
-		      (newCrypt->keyedHash(publicKey, &ok).toBase64());
+		    {
+		      QByteArray fingerprint
+			(spoton_crypt::fingerprint(publicKey));
+
+		      updateQuery.addBindValue
+			(newCrypt->keyedHash(fingerprint, &ok).toBase64());
+		    }
 		}
 
 	      updateQuery.exec();

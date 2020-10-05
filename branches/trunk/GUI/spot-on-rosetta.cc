@@ -597,9 +597,8 @@ void spoton_rosetta::slotAddContact(void)
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
       {
-	if(spoton_rosetta_gpg_import::fingerprint(key) ==
-	   spoton_rosetta_gpg_import::
-	   fingerprint(spoton_crypt::publicGPG(eCrypt)))
+	if(spoton_crypt::fingerprint(key) ==
+	   spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)))
 	  {
 	    QMessageBox::critical
 	      (this,
@@ -655,8 +654,7 @@ void spoton_rosetta::slotAddContact(void)
 
 	  if(db.open())
 	    {
-	      QByteArray fingerprint
-		(spoton_rosetta_gpg_import::fingerprint(key));
+	      QByteArray fingerprint(spoton_crypt::fingerprint(key));
 	      QSqlQuery query(db);
 	      bool ok = true;
 
@@ -1507,9 +1505,9 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 
 	if(query.exec() && query.next())
 	  {
-	    QByteArray publicKeys;
+	    QByteArray publicKey;
 
-	    publicKeys = eCrypt->decryptedAfterAuthenticated
+	    publicKey = eCrypt->decryptedAfterAuthenticated
 	      (QByteArray::fromBase64(query.value(0).toByteArray()), 0);
 
 	    QClipboard *clipboard = QApplication::clipboard();
@@ -1518,7 +1516,7 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 	      {
 		repaint();
 		QApplication::processEvents();
-		clipboard->setText(publicKeys);
+		clipboard->setText(publicKey);
 	      }
 	  }
       }
