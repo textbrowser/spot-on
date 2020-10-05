@@ -320,7 +320,7 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	    (&plaintext,
 	     data.constData(),
 	     static_cast<size_t> (data.length()),
-	     0);
+	     1);
 	}
 
       if(err == GPG_ERR_NO_ERROR)
