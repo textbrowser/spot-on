@@ -341,12 +341,8 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	    err = gpgme_op_keylist_next(ctx, &keys[0]);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    {
-	      gpgme_encrypt_flags_t flags = gpgme_encrypt_flags_t
-		(GPGME_ENCRYPT_ALWAYS_TRUST);
-
-	      err = gpgme_op_encrypt(ctx, keys, flags, plaintext, ciphertext);
-	    }
+	    err = gpgme_op_encrypt
+	      (ctx, keys, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
 
 	  if(err != GPG_ERR_NO_ERROR)
 	    spoton_misc::logError
@@ -595,11 +591,13 @@ void spoton_rosetta::slotAddContact(void)
 	gpgme_check_version(0);
 
 	gpgme_ctx_t ctx = 0;
+	gpgme_error_t err = gpgme_new(&ctx);
 
-	if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+	if(err == GPG_ERR_NO_ERROR)
 	  {
 	    gpgme_data_t keydata = 0;
-	    gpgme_error_t err = gpgme_data_new_from_mem
+
+	    err = gpgme_data_new_from_mem
 	      // 1 = A private copy.
 	      (&keydata,
 	       key.constData(),
@@ -613,6 +611,16 @@ void spoton_rosetta::slotAddContact(void)
 	  }
 
 	gpgme_release(ctx);
+
+	if(err != GPG_ERR_NO_ERROR)
+	  {
+	    QMessageBox::critical
+	      (this,
+	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	       "GPGME error. Cannot add the key(s) to the local keyring.");
+	    QApplication::processEvents();
+	    return;
+	  }
 
 	QString connectionName("");
 	QString error("");
@@ -1644,6 +1652,22 @@ void spoton_rosetta::slotDelete(void)
   QString oid
     (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
   bool ok = true;
+
+  if(destinationType == GPG)
+    {
+#ifdef SPOTON_GPGME_ENABLED
+      gpgme_check_version(0);
+
+      gpgme_ctx_t ctx = 0;
+      gpgme_error_t err = gpgme_new(&ctx);
+
+      if(err == GPG_ERR_NO_ERROR)
+	{
+	}
+
+      gpgme_release(ctx);
+#endif
+    }
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);

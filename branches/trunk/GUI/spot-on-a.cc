@@ -56,6 +56,13 @@ extern "C"
 #include <qbluetooth.h>
 #endif
 
+#ifdef SPOTON_GPGME_ENABLED
+extern "C"
+{
+#include <gpgme.h>
+}
+#endif
+
 #include "Common/spot-on-architecture.h"
 #include "Common/spot-on-threefish.h"
 #include "Common/spot-on-version.h"
@@ -596,6 +603,7 @@ spoton::spoton(void):QMainWindow()
 	     "Qt %5 (runtime %12), %6-bit.<br>"
 	     "%7.<br>"
 	     "libgcrypt %8.<br>"
+	     "libgpgme %13.<br>"
 	     "libntl %9.<br>"
 	     "libspoton %10.<br>"
 	     "Location of .spot-on: %11.<br><br>"
@@ -631,7 +639,12 @@ spoton::spoton(void):QMainWindow()
 #endif
      arg(LIBSPOTON_VERSION_STR).
      arg(spoton_misc::homePath()).
-     arg(qversion));
+     arg(qversion).
+#ifdef SPOTON_GPGME_ENABLED
+     arg(GPGME_VERSION));
+#else
+     arg("0.0"));
+#endif
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);

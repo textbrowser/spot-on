@@ -261,6 +261,7 @@ Completed Items
 188.   New Rosetta keys database tables (participants, personal).
 189.   Allow removal of GPG keys.
 190.   Display destination types (GPG dump).
+191.   Include GPGME version information.
 
 Ignored Items
 
@@ -301,8 +302,7 @@ Remaining Items
 8.     Windows NTL.
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
-11.    Separate new-contact dialog in Rosetta.
-12.    Single Rosetta attachments.
-13.    Display GPG key information (gpg --check-signatures / --list-keys).
-14.    Re-encode GPG keys.
-15.    Include GPGME version information.
+11.    Single Rosetta attachments.
+12.    Display GPG key information (gpg --check-signatures / --list-keys).
+13.    Re-encode GPG keys.
+14.    Delete GPG keys from local keyring.
