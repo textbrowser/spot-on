@@ -1,0 +1,1 @@
+GPG is supported if the /usr/include/gpgme.h file is discovered.

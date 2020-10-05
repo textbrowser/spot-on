@@ -302,14 +302,15 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 
   QByteArray output;
   gpgme_ctx_t ctx = 0;
+  gpgme_error_t err = gpgme_new(&ctx);
 
-  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+  if(err == GPG_ERR_NO_ERROR)
     {
-      gpgme_set_armor(ctx, 1);
-
       gpgme_data_t ciphertext = 0;
       gpgme_data_t plaintext = 0;
-      gpgme_error_t err = gpgme_data_new(&ciphertext);
+
+      gpgme_set_armor(ctx, 1);
+      err = gpgme_data_new(&ciphertext);
 
       if(err == GPG_ERR_NO_ERROR)
 	{
@@ -344,11 +345,6 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	    err = gpgme_op_encrypt
 	      (ctx, keys, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
 
-	  if(err != GPG_ERR_NO_ERROR)
-	    spoton_misc::logError
-	      (QString("spoton_rosetta::gpgEncrypt(): %1.").
-	       arg(gpgme_strerror(err)));
-
 	  gpgme_data_release(keydata);
 	  gpgme_key_unref(keys[0]);
 	}
@@ -372,6 +368,17 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
     }
 
   gpgme_release(ctx);
+  
+  if(err != GPG_ERR_NO_ERROR)
+    {
+      spoton_misc::logError
+	(QString("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
+	 arg(gpgme_strerror(err)));
+      ui.outputEncrypt->setText
+	(tr("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
+	 arg(gpgme_strerror(err)));
+    }
+
   return output;
 #else
   Q_UNUSED(receiver);

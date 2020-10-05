@@ -31,11 +31,6 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
            SPOTON_SCTP_ENABLED \
            SPOTON_WEBSOCKETS_ENABLED
 
-exists(/usr/include/gpgme.h) {
-DEFINES += SPOTON_GPGME_ENABLED
-LIBS += -lgpgme
-}
-
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL, libNTRU, and libSpotOn.
 

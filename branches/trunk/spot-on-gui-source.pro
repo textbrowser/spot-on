@@ -1,3 +1,8 @@
+exists(/usr/include/gpgme.h) {
+DEFINES += SPOTON_GPGME_ENABLED
+LIBS += -lgpgme
+}
+
 FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-buzzpage.ui \
 		  UI/spot-on-chatwindow.ui \
