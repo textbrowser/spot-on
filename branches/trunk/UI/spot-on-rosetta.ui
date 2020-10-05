@@ -108,7 +108,7 @@
          <x>0</x>
          <y>0</y>
          <width>977</width>
-         <height>585</height>
+         <height>551</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -410,6 +410,9 @@
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
+                  </property>
+                  <property name="textInteractionFlags">
+                   <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                   </property>
                  </widget>
                 </item>
