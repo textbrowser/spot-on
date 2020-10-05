@@ -299,7 +299,6 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 #ifdef SPOTON_GPGME_ENABLED
   Q_UNUSED(sender);
   gpgme_check_version(0);
-  gpgme_engine_check_version(GPGME_PROTOCOL_OpenPGP);
 
   QByteArray output;
   gpgme_ctx_t ctx = 0;
@@ -342,8 +341,12 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	    err = gpgme_op_keylist_next(ctx, &keys[0]);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    err = gpgme_op_encrypt
-	      (ctx, keys, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
+	    {
+	      gpgme_encrypt_flags_t flags = gpgme_encrypt_flags_t
+		(GPGME_ENCRYPT_ALWAYS_TRUST);
+
+	      err = gpgme_op_encrypt(ctx, keys, flags, plaintext, ciphertext);
+	    }
 
 	  if(err != GPG_ERR_NO_ERROR)
 	    spoton_misc::logError
@@ -588,6 +591,28 @@ void spoton_rosetta::slotAddContact(void)
 	    QApplication::processEvents();
 	    return;
 	  }
+
+	gpgme_check_version(0);
+
+	gpgme_ctx_t ctx = 0;
+
+	if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+	  {
+	    gpgme_data_t keydata = 0;
+	    gpgme_error_t err = gpgme_data_new_from_mem
+	      // 1 = A private copy.
+	      (&keydata,
+	       key.constData(),
+	       static_cast<size_t> (key.length()),
+	       1);
+
+	    if(err == GPG_ERR_NO_ERROR)
+	      err = gpgme_op_import(ctx, keydata);
+
+	    gpgme_data_release(keydata);
+	  }
+
+	gpgme_release(ctx);
 
 	QString connectionName("");
 	QString error("");
