@@ -4497,8 +4497,8 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
@@ -4506,6 +4506,36 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	bool ok = true;
 
 	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_keys FROM gpg"))
+	  if(query.next())
+	    {
+	      QByteArray publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      updateQuery.exec("PRAGMA secure_delete = ON");
+	      updateQuery.exec("DELETE FROM gpg");
+	      publicKey = oldCrypt->decryptedAfterAuthenticated
+		(publicKey, &ok);
+
+	      if(ok)
+		{
+		  updateQuery.prepare
+		    ("INSERT INTO gpg (public_keys, public_keys_hash) "
+		     "VALUES (?, ?)");
+		  updateQuery.addBindValue
+		    (newCrypt->encryptedThenHashed(publicKey, &ok).toBase64());
+
+		  if(ok)
+		    updateQuery.addBindValue
+		      (newCrypt->keyedHash(publicKey, &ok).toBase64());
+		}
+
+	      updateQuery.exec();
+	    }
+
 	query.prepare("SELECT id, "   // 0
 		      "private_key, " // 1
 		      "public_key "   // 2
@@ -4527,8 +4557,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	      bool ok = true;
 
 	      updateQuery.exec("PRAGMA secure_delete = ON");
-	      id = oldCrypt->decryptedAfterAuthenticated
-		(id, &ok);
+	      id = oldCrypt->decryptedAfterAuthenticated(id, &ok);
 
 	      if(ok)
 		{
@@ -4571,12 +4600,10 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 		id = newCrypt->encryptedThenHashed(id, &ok);
 
 	      if(ok)
-		privateKey = newCrypt->encryptedThenHashed
-		  (privateKey, &ok);
+		privateKey = newCrypt->encryptedThenHashed(privateKey, &ok);
 
 	      if(ok)
-		publicKey = newCrypt->encryptedThenHashed
-		  (publicKey, &ok);
+		publicKey = newCrypt->encryptedThenHashed(publicKey, &ok);
 
 	      if(ok)
 		{
@@ -4594,8 +4621,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 		}
 	      else
 		{
-		  updateQuery.prepare("DELETE FROM idiotes "
-				      "WHERE id = ?");
+		  updateQuery.prepare("DELETE FROM idiotes WHERE id = ?");
 		  updateQuery.bindValue(0, query.value(0));
 		}
 
