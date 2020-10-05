@@ -342,8 +342,22 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	    err = gpgme_op_keylist_next(ctx, &keys[0]);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    err = gpgme_op_encrypt
-	      (ctx, keys, GPGME_ENCRYPT_ALWAYS_TRUST, plaintext, ciphertext);
+	    {
+	      if(ui.sign->isChecked())
+		err = gpgme_op_encrypt_sign
+		  (ctx,
+		   keys,
+		   GPGME_ENCRYPT_ALWAYS_TRUST,
+		   plaintext,
+		   ciphertext);
+	      else
+		err = gpgme_op_encrypt
+		  (ctx,
+		   keys,
+		   GPGME_ENCRYPT_ALWAYS_TRUST,
+		   plaintext,
+		   ciphertext);
+	    }
 
 	  gpgme_data_release(keydata);
 	  gpgme_key_unref(keys[0]);
