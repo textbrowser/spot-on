@@ -617,7 +617,7 @@ void spoton_rosetta::slotAddContact(void)
 	    QMessageBox::critical
 	      (this,
 	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	       "GPGME error. Cannot add the key(s) to the local keyring.");
+	       "GPGME error. Cannot add the key(s) to the keyring.");
 	    QApplication::processEvents();
 	    return;
 	  }
@@ -638,6 +638,10 @@ void spoton_rosetta::slotAddContact(void)
 		(spoton_rosetta_gpg_import::fingerprint(key));
 	      QSqlQuery query(db);
 	      bool ok = true;
+
+	      /*
+	      ** GPG public keys are not encrypted in the keyring.
+	      */
 
 	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
 			 "email TEXT NOT NULL, "
