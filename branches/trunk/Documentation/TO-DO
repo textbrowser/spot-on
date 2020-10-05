@@ -305,3 +305,4 @@ Remaining Items
 12.    Single Rosetta attachments.
 13.    Display GPG key information (gpg --check-signatures / --list-keys).
 14.    Re-encode GPG keys.
+15.    Include GPGME version information.
