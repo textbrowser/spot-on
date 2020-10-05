@@ -262,6 +262,7 @@ Completed Items
 189.   Allow removal of GPG keys.
 190.   Display destination types (GPG dump).
 191.   Include GPGME version information.
+192.   Delete GPG keys from local keyring.
 
 Ignored Items
 
@@ -305,4 +306,3 @@ Remaining Items
 11.    Single Rosetta attachments.
 12.    Display GPG key information (gpg --check-signatures / --list-keys).
 13.    Re-encode GPG keys.
-14.    Delete GPG keys from local keyring.

@@ -355,7 +355,7 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  QByteArray bytes(512, 0);
+	  QByteArray bytes(1024, 0);
 	  ssize_t rc = 0;
 
 	  gpgme_data_seek(ciphertext, 0, SEEK_SET);
@@ -1241,37 +1241,14 @@ void spoton_rosetta::slotConvertEncrypt(void)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QByteArray receiver;
+      QByteArray publicKeyHash
+	(QByteArray::fromBase64(ui.contacts->
+				itemData(ui.contacts->currentIndex()).
+				toByteArray()));
+      QByteArray receiver
+	(spoton_misc::publicKeyFromHash(publicKeyHash, true, eCrypt));
       QByteArray sender;
       QString connectionName("");
-
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName(spoton_misc::homePath() +
-			   QDir::separator() +
-			   "friends_public_keys.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.setForwardOnly(true);
-	    query.prepare
-	      ("SELECT public_keys FROM gpg WHERE public_keys_hash = ?");
-	    query.addBindValue
-	      (ui.contacts->
-	       itemData(ui.contacts->currentIndex()).toByteArray());
-
-	    if(query.exec() && query.next())
-	      receiver = eCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
 
       {
 	QSqlDatabase db = spoton_misc::database(connectionName);
@@ -1653,9 +1630,9 @@ void spoton_rosetta::slotDelete(void)
     (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
   bool ok = true;
 
+#ifdef SPOTON_GPGME_ENABLED
   if(destinationType == GPG)
     {
-#ifdef SPOTON_GPGME_ENABLED
       gpgme_check_version(0);
 
       gpgme_ctx_t ctx = 0;
@@ -1663,11 +1640,37 @@ void spoton_rosetta::slotDelete(void)
 
       if(err == GPG_ERR_NO_ERROR)
 	{
+	  QByteArray publicKey;
+	  gpgme_data_t keydata = 0;
+	  gpgme_key_t key = 0;
+	  spoton_crypt *eCrypt = m_parent ?
+	    m_parent->crypts().value("rosetta", 0) : 0;
+
+	  publicKey = spoton_misc::publicKeyFromHash
+	    (QByteArray::fromBase64(publicKeyHash), true, eCrypt);
+	  err = gpgme_data_new_from_mem
+	    // 1 = A private copy.
+	    (&keydata,
+	     publicKey.constData(),
+	     static_cast<size_t> (publicKey.length()),
+	     1);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_keylist_next(ctx, &key);
+
+	  if(err == GPG_ERR_NO_ERROR)
+	    err = gpgme_op_delete_ext(ctx, key, GPGME_DELETE_FORCE);
+
+	  gpgme_data_release(keydata);
+	  gpgme_key_unref(key);
 	}
 
       gpgme_release(ctx);
-#endif
     }
+#endif
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
