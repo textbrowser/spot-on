@@ -262,6 +262,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	    bool ok = true;
 
 	    publicKeys = crypt->decryptedAfterAuthenticated(publicKeys, &ok);
+	    m_ui.public_keys->setPlainText(publicKeys);
 	    m_ui.public_keys_dump->setText(dump(publicKeys));
 	    spoton_crypt::memzero(publicKeys);
 	  }
@@ -287,6 +288,7 @@ void spoton_rosetta_gpg_import::showNormal(void)
 
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
+  m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("GPG Dump"));
 }
 
@@ -385,9 +387,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
-
-  if(QApplication::clipboard())
-    QApplication::clipboard()->clear();
+  else
+    m_ui.public_keys->selectAll();
 #endif
 }
 
