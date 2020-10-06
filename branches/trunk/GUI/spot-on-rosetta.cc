@@ -1051,6 +1051,8 @@ void spoton_rosetta::slotConvertDecrypt(void)
       {
 	gpgme_check_version(0);
 
+	QColor signatureColor(240, 128, 128); // Light coral!
+	QString signedMessage(tr("Invalid signature."));
 	gpgme_ctx_t ctx = 0;
 	gpgme_error_t err = gpgme_new(&ctx);
 
@@ -1070,12 +1072,11 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		 1);
 
 	    if(err == GPG_ERR_NO_ERROR)
-	      err = gpgme_op_decrypt_ext
-		(ctx, GPGME_DECRYPT_VERIFY, ciphertext, plaintext);
+	      err = gpgme_op_decrypt_verify(ctx, ciphertext, plaintext);
 
 	    if(err == GPG_ERR_NO_ERROR)
 	      {
-		ui.outputEncrypt->clear();
+		ui.outputDecrypt->clear();
 
 		QByteArray bytes(1024, 0);
 		ssize_t rc = 0;
@@ -1091,6 +1092,21 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		    (bytes.mid(0, static_cast<int> (rc)));
 
 		ui.outputDecrypt->selectAll();
+
+		gpgme_verify_result_t result = gpgme_op_verify_result(ctx);
+
+		if(result)
+		  {
+		    gpgme_signature_t signature = result->signatures;
+
+		    if((signature && (signature->summary &
+				      GPGME_SIGSUM_GREEN)) ||
+		       (signature && !signature->summary))
+		      {
+			signatureColor = QColor(144, 238, 144);
+			signedMessage = tr("Message was signed.");
+		      }
+		  }
 	      }
 
 	    gpgme_data_release(ciphertext);
@@ -1104,6 +1120,9 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	    (tr("spoton_rosetta::slotConvertDecrypt(): error (%1) raised.").
 	     arg(gpgme_strerror(err)));
 
+	ui.signedMessage->setStyleSheet
+	  (QString("QLabel {background: %1;}").arg(signatureColor.name()));
+	ui.signedMessage->setText(signedMessage);
 	return;
       }
   }
