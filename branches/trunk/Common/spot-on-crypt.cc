@@ -4570,7 +4570,6 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	    {
 	      QByteArray publicKey
 		(QByteArray::fromBase64(query.value(0).toByteArray()));
-	      QSqlQuery updateQuery(db);
 	      bool ok = true;
 
 	      publicKey = oldCrypt->decryptedAfterAuthenticated
@@ -4578,6 +4577,8 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 
 	      if(ok)
 		{
+		  QSqlQuery updateQuery(db);
+
 		  updateQuery.exec("PRAGMA secure_delete = ON");
 		  updateQuery.exec("DELETE FROM gpg");
 		  updateQuery.prepare
@@ -4594,9 +4595,9 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 		      updateQuery.addBindValue
 			(newCrypt->keyedHash(fingerprint, &ok).toBase64());
 		    }
-		}
 
-	      updateQuery.exec();
+		  updateQuery.exec();
+		}
 	    }
 
 	query.prepare("SELECT id, "   // 0
