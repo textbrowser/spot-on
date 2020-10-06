@@ -220,6 +220,7 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= 0x050700
   qapplication.setAttribute(Qt::AA_DontUseNativeDialogs, true);
 #endif
+  qapplication.setAttribute(Qt::AA_DontUseNativeMenuBar, true);
 #if SPOTON_GOLDBUG == 0
   qapplication.setWindowIcon(QIcon(":/Logo/spot-on-logo.png"));
 #else
