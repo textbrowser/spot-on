@@ -1031,14 +1031,92 @@ void spoton_rosetta::slotContactsChanged(int index)
 void spoton_rosetta::slotConvertDecrypt(void)
 {
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
 
-  if(!eCrypt || !sCrypt)
+  if(!eCrypt)
     {
       QMessageBox::critical(this, tr("%1: Error").
 			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object(s). This is "
+			    tr("Invalid spoton_crypt object. This is "
+			       "a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+#ifdef SPOTON_GPGME_ENABLED
+  {
+    QByteArray data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
+
+    if(data.endsWith("-----END PGP MESSAGE-----") &&
+       data.startsWith("-----BEGIN PGP MESSAGE-----"))
+      {
+	gpgme_check_version(0);
+
+	gpgme_ctx_t ctx = 0;
+	gpgme_error_t err = gpgme_new(&ctx);
+
+	if(err == GPG_ERR_NO_ERROR)
+	  {
+	    gpgme_data_t ciphertext = 0;
+	    gpgme_data_t plaintext = 0;
+
+	    gpgme_set_armor(ctx, 1);
+	    err = gpgme_data_new(&plaintext);
+
+	    if(err == GPG_ERR_NO_ERROR)
+	      err = gpgme_data_new_from_mem
+		(&ciphertext,
+		 data.constData(),
+		 static_cast<size_t> (data.length()),
+		 1);
+
+	    if(err == GPG_ERR_NO_ERROR)
+	      err = gpgme_op_decrypt_ext
+		(ctx, GPGME_DECRYPT_VERIFY, ciphertext, plaintext);
+
+	    if(err == GPG_ERR_NO_ERROR)
+	      {
+		ui.outputEncrypt->clear();
+
+		QByteArray bytes(1024, 0);
+		ssize_t rc = 0;
+
+		gpgme_data_seek(plaintext, 0, SEEK_SET);
+
+		while
+		  ((rc =
+		    gpgme_data_read(plaintext,
+				    bytes.data(),
+				    static_cast<size_t> (bytes.length()))) > 0)
+		  ui.outputDecrypt->append
+		    (bytes.mid(0, static_cast<int> (rc)));
+
+		ui.outputDecrypt->selectAll();
+	      }
+
+	    gpgme_data_release(ciphertext);
+	    gpgme_data_release(plaintext);
+	  }
+
+	gpgme_release(ctx);
+
+	if(err != GPG_ERR_NO_ERROR)
+	  ui.outputDecrypt->setText
+	    (tr("spoton_rosetta::slotConvertDecrypt(): error (%1) raised.").
+	     arg(gpgme_strerror(err)));
+
+	return;
+      }
+  }
+#endif
+
+  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+    value("rosetta-signature", 0) : 0;
+
+  if(!eCrypt)
+    {
+      QMessageBox::critical(this, tr("%1: Error").
+			    arg(SPOTON_APPLICATION_NAME),
+			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
       return;
