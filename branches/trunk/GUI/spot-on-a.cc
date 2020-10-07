@@ -3392,7 +3392,7 @@ spoton::spoton(void):QMainWindow()
       QTimer::singleShot(2500, this, SLOT(slotAfterFirstShow(void)));
     }
 
-#ifdef Q_OS_MACOS
+#ifdef Q_OS_MAC
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
