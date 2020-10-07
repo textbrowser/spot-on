@@ -304,5 +304,4 @@ Remaining Items
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
 11.    Single Rosetta attachments.
-12.    Display GPG key information (gpg --check-signatures / --list-keys).
-13.    Re-encode GPG keys.
+12.    Re-encode GPG keys.

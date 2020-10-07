@@ -160,6 +160,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   connect(ui.decryptPaste,
 	  SIGNAL(clicked(void)),
 	  ui.inputDecrypt,
+	  SLOT(clear(void)));
+  connect(ui.decryptPaste,
+	  SIGNAL(clicked(void)),
+	  ui.inputDecrypt,
 	  SLOT(paste(void)));
   connect(ui.decryptReset,
 	  SIGNAL(clicked(void)),
@@ -1099,6 +1103,26 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		  {
 		    gpgme_signature_t signature = result->signatures;
 
+		    if(signature && signature->fpr)
+		      {
+			gpgme_key_t key = 0;
+
+			if(gpgme_get_key(ctx, signature->fpr, &key, 0) ==
+			   GPG_ERR_NO_ERROR)
+			  {
+			    if(key->uids && key->uids->email)
+			      ui.from->setText(key->uids->email);
+			    else
+			      ui.from->setText(tr("Empty"));
+
+			    gpgme_key_unref(key);
+			  }
+			else
+			  ui.from->setText(tr("Empty"));
+		      }
+		    else
+		      ui.from->setText(tr("Empty"));
+
 		    if((signature && (signature->summary &
 				      GPGME_SIGSUM_GREEN)) ||
 		       (signature && !signature->summary))
@@ -1116,9 +1140,12 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	gpgme_release(ctx);
 
 	if(err != GPG_ERR_NO_ERROR)
-	  ui.outputDecrypt->setText
-	    (tr("spoton_rosetta::slotConvertDecrypt(): error (%1) raised.").
-	     arg(gpgme_strerror(err)));
+	  {
+	    ui.from->setText(tr("Empty"));
+	    ui.outputDecrypt->setText
+	      (tr("spoton_rosetta::slotConvertDecrypt(): error (%1) raised.").
+	       arg(gpgme_strerror(err)));
+	  }
 
 	ui.signedMessage->setStyleSheet
 	  (QString("QLabel {background: %1;}").arg(signatureColor.name()));
