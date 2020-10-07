@@ -149,6 +149,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  ui.copy,
 	  SLOT(showMenu(void)));
+  connect(ui.copyDecrypt,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotCopyDecrypted(void)));
   connect(ui.copyEncrypt,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1602,6 +1606,10 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
 void spoton_rosetta::slotCopyDecrypted(void)
 {
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    clipboard->setText(ui.outputDecrypt->toPlainText());
 }
 
 void spoton_rosetta::slotCopyEncrypted(void)
