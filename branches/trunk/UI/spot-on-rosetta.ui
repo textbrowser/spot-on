@@ -260,6 +260,13 @@
                         </property>
                        </widget>
                       </item>
+                      <item>
+                       <widget class="QPushButton" name="copyDecrypt">
+                        <property name="text">
+                         <string>Copy</string>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </item>
                     <item>
@@ -611,16 +618,16 @@
                        </spacer>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="copyEncrypt">
+                       <widget class="QPushButton" name="clearOutput">
                         <property name="text">
-                         <string>Copy</string>
+                         <string>Clear</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="clearOutput">
+                       <widget class="QPushButton" name="copyEncrypt">
                         <property name="text">
-                         <string>Clear</string>
+                         <string>Copy</string>
                         </property>
                        </widget>
                       </item>
@@ -825,6 +832,7 @@
   <tabstop>convertDecrypt</tabstop>
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
+  <tabstop>copyDecrypt</tabstop>
   <tabstop>outputDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
@@ -836,8 +844,8 @@
   <tabstop>convertEncrypt</tabstop>
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
-  <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
+  <tabstop>copyEncrypt</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
