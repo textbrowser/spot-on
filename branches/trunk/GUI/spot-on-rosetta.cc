@@ -1114,11 +1114,11 @@ void spoton_rosetta::slotConvertDecrypt(void)
 			      ui.from->setText(key->uids->email);
 			    else
 			      ui.from->setText(tr("Empty"));
-
-			    gpgme_key_unref(key);
 			  }
 			else
 			  ui.from->setText(tr("Empty"));
+
+			gpgme_key_unref(key);
 		      }
 		    else
 		      ui.from->setText(tr("Empty"));
