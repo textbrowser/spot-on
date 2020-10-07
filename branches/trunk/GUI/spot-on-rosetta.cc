@@ -617,8 +617,13 @@ void spoton_rosetta::slotAddContact(void)
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
       {
-	if(spoton_crypt::fingerprint(key) ==
-	   spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)))
+	QByteArray fingerprint1(spoton_crypt::fingerprint(key));
+	QByteArray fingerprint2
+	  (spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)));
+
+	if(fingerprint1 == fingerprint2 &&
+	   !fingerprint1.isEmpty() &&
+	   !fingerprint2.isEmpty())
 	  {
 	    QMessageBox::critical
 	      (this,
