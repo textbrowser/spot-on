@@ -1050,18 +1050,6 @@ void spoton_rosetta::slotContactsChanged(int index)
 
 void spoton_rosetta::slotConvertDecrypt(void)
 {
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
-
-  if(!eCrypt)
-    {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
-      QApplication::processEvents();
-      return;
-    }
-
 #ifdef SPOTON_GPGME_ENABLED
   {
     QByteArray data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
@@ -1171,7 +1159,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
   }
 #endif
 
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().
     value("rosetta-signature", 0) : 0;
 
   if(!eCrypt)
