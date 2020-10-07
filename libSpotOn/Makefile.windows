@@ -18,7 +18,6 @@ libspoton.o:	libspoton.c libspoton.h
 	-Wformat=2 \
 	-Wpointer-arith \
 	-Wshadow \
-	-Wsign-conversion \
 	-Wstrict-overflow=5 \
 	-Wstrict-prototypes \
 	-pedantic \
