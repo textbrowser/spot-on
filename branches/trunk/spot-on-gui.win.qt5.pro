@@ -19,7 +19,8 @@ QT		+= concurrent \
                    websockets \
                    widgets
 
-DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
+DEFINES         += SPOTON_GPGME_ENABLED \
+                   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
 		   SPOTON_MCELIECE_ENABLED \
@@ -59,6 +60,7 @@ QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 INCLUDEPATH	+= . \
                    ..\\..\\. \
                    ..\\..\\PostgreSQL\\Include.win32 \
+                   ..\\..\\libGPGME\\Win32.d \
                    ..\\..\\libGeoIP\\Include.win32 \
                    ..\\..\\libNTL\\windows.d\\include \
                    ..\\..\\libOpenSSL\\Include.win32 \
@@ -66,6 +68,7 @@ INCLUDEPATH	+= . \
                    ..\\..\\libcURL\\Win32.d\\include \
                    GUI
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
+                   -L..\\..\\libGPGME\\Win32.d \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\libNTL\\windows.d\\libraries.d \
 		   -L..\\..\\libNTRU \
@@ -78,6 +81,7 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -lcurl \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
+                   -lgpgme-11 \
                    -lntl \
                    -lntru \
                    -lpq \
