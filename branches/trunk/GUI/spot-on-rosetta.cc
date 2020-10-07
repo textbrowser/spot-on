@@ -180,6 +180,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   connect(ui.encryptPaste,
 	  SIGNAL(clicked(void)),
 	  ui.inputEncrypt,
+	  SLOT(clear(void)));
+  connect(ui.encryptPaste,
+	  SIGNAL(clicked(void)),
+	  ui.inputEncrypt,
 	  SLOT(paste(void)));
   connect(ui.encryptSplitter,
 	  SIGNAL(splitterMoved(int, int)),
@@ -1720,14 +1724,20 @@ void spoton_rosetta::slotCopyOrPaste(void)
       if(a == "copy")
 	qobject_cast<QLineEdit *> (widget)->copy();
       else
-	qobject_cast<QLineEdit *> (widget)->paste();
+	{
+	  qobject_cast<QLineEdit *> (widget)->clear();
+	  qobject_cast<QLineEdit *> (widget)->paste();
+	}
     }
   else if(qobject_cast<QTextEdit *> (widget))
     {
       if(a == "copy")
 	qobject_cast<QTextEdit *> (widget)->copy();
       else
-	qobject_cast<QTextEdit *> (widget)->paste();
+	{
+	  qobject_cast<QTextEdit *> (widget)->paste();
+	  qobject_cast<QTextEdit *> (widget)->paste();
+	}
     }
 
   QApplication::restoreOverrideCursor();

@@ -1,5 +1,5 @@
 /* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
- * Copyright (C) 2001-2019 g10 Code GmbH
+ * Copyright (C) 2001-2020 g10 Code GmbH
  *
  * This file is part of libgpg-error (aka libgpgrt).
  *
@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.36"
-#define GPGRT_VERSION     "1.36"
+#define GPG_ERROR_VERSION "1.39"
+#define GPGRT_VERSION     "1.39"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012400
-#define GPGRT_VERSION_NUMBER     0x012400
+#define GPG_ERROR_VERSION_NUMBER 0x012700
+#define GPGRT_VERSION_NUMBER     0x012700
 
 
 #ifdef __GNUC__
@@ -434,6 +434,10 @@ typedef enum
     GPG_ERR_WRONG_NAME = 313,
     GPG_ERR_NO_AUTH = 314,
     GPG_ERR_BAD_AUTH = 315,
+    GPG_ERR_NO_KEYBOXD = 316,
+    GPG_ERR_KEYBOXD = 317,
+    GPG_ERR_NO_SERVICE = 318,
+    GPG_ERR_SERVICE = 319,
     GPG_ERR_SYSTEM_BUG = 666,
     GPG_ERR_DNS_UNKNOWN = 711,
     GPG_ERR_DNS_SECTION = 712,
@@ -540,6 +544,37 @@ typedef enum
     GPG_ERR_USER_14 = 1037,
     GPG_ERR_USER_15 = 1038,
     GPG_ERR_USER_16 = 1039,
+    GPG_ERR_SQL_OK = 1500,
+    GPG_ERR_SQL_ERROR = 1501,
+    GPG_ERR_SQL_INTERNAL = 1502,
+    GPG_ERR_SQL_PERM = 1503,
+    GPG_ERR_SQL_ABORT = 1504,
+    GPG_ERR_SQL_BUSY = 1505,
+    GPG_ERR_SQL_LOCKED = 1506,
+    GPG_ERR_SQL_NOMEM = 1507,
+    GPG_ERR_SQL_READONLY = 1508,
+    GPG_ERR_SQL_INTERRUPT = 1509,
+    GPG_ERR_SQL_IOERR = 1510,
+    GPG_ERR_SQL_CORRUPT = 1511,
+    GPG_ERR_SQL_NOTFOUND = 1512,
+    GPG_ERR_SQL_FULL = 1513,
+    GPG_ERR_SQL_CANTOPEN = 1514,
+    GPG_ERR_SQL_PROTOCOL = 1515,
+    GPG_ERR_SQL_EMPTY = 1516,
+    GPG_ERR_SQL_SCHEMA = 1517,
+    GPG_ERR_SQL_TOOBIG = 1518,
+    GPG_ERR_SQL_CONSTRAINT = 1519,
+    GPG_ERR_SQL_MISMATCH = 1520,
+    GPG_ERR_SQL_MISUSE = 1521,
+    GPG_ERR_SQL_NOLFS = 1522,
+    GPG_ERR_SQL_AUTH = 1523,
+    GPG_ERR_SQL_FORMAT = 1524,
+    GPG_ERR_SQL_RANGE = 1525,
+    GPG_ERR_SQL_NOTADB = 1526,
+    GPG_ERR_SQL_NOTICE = 1527,
+    GPG_ERR_SQL_WARNING = 1528,
+    GPG_ERR_SQL_ROW = 1600,
+    GPG_ERR_SQL_DONE = 1601,
     GPG_ERR_MISSING_ERRNO = 16381,
     GPG_ERR_UNKNOWN_ERRNO = 16382,
     GPG_ERR_EOF = 16383,
@@ -982,6 +1017,13 @@ int gpg_err_code_to_errno (gpg_err_code_t code);
  * (report this) and GPG_ERR_MISSING_ERRNO if ERRNO has the value 0. */
 gpg_err_code_t gpg_err_code_from_syserror (void);
 
+/* Mapper for SQLite primary error codes.  */
+static GPG_ERR_INLINE gpg_error_t
+gpg_err_code_from_sqlite (int sqlres)
+{
+  return sqlres? GPG_ERR_SQL_OK + (sqlres & 0xff) : 0;
+}
+
 
 /* Set the ERRNO variable.  This function is the preferred way to set
  * ERRNO due to peculiarities on WindowsCE.  */
@@ -1094,6 +1136,7 @@ gpg_error_from_syserror (void)
  */
 
 void *gpgrt_realloc (void *a, size_t n);
+void *gpgrt_reallocarray (void *a, size_t oldnmemb, size_t nmemb, size_t size);
 void *gpgrt_malloc (size_t n);
 void *gpgrt_calloc (size_t n, size_t m);
 char *gpgrt_strdup (const char *string);
@@ -1344,6 +1387,7 @@ gpgrt_stream_t gpgrt_fopencookie (void *_GPGRT__RESTRICT cookie,
                                   const char *_GPGRT__RESTRICT mode,
                                   gpgrt_cookie_io_functions_t functions);
 int gpgrt_fclose (gpgrt_stream_t stream);
+int gpgrt_fcancel (gpgrt_stream_t stream);
 int gpgrt_fclose_snatch (gpgrt_stream_t stream,
                          void **r_buffer, size_t *r_buflen);
 int gpgrt_onclose (gpgrt_stream_t stream, int mode,
@@ -1836,7 +1880,12 @@ typedef struct
 #define ARGPARSE_FLAG_NOVERSION  64  /* No output for "--version".           */
 #define ARGPARSE_FLAG_RESET     128  /* Request to reset the internal state. */
 #define ARGPARSE_FLAG_STOP_SEEN 256  /* Set to true if a "--" has been seen. */
-#define ARGPARSE_FLAG_NOLINENO  512  /* Do not zero the lineno field.         */
+#define ARGPARSE_FLAG_NOLINENO  512  /* Do not zero the lineno field.        */
+#define ARGPARSE_FLAG_SYS      1024  /* Use system config file.              */
+#define ARGPARSE_FLAG_USER     2048  /* Use user config file.                */
+#define ARGPARSE_FLAG_VERBOSE  4096  /* Print additional argparser info.     */
+#define ARGPARSE_FLAG_USERVERS 8192  /* Try version-ed user config files.    */
+#define ARGPARSE_FLAG_WITHATTR 16384 /* Return attribute bits.               */
 
 /* Constants for (gpgrt_argparse_t).err.  */
 #define ARGPARSE_PRINT_WARNING  1    /* Print a diagnostic.                  */
@@ -1855,9 +1904,21 @@ typedef struct
 #define ARGPARSE_INVALID_ALIAS     (-10)
 #define ARGPARSE_OUT_OF_CORE       (-11)
 #define ARGPARSE_INVALID_ARG       (-12)
+#define ARGPARSE_PERMISSION_ERROR  (-13)
+#define ARGPARSE_NO_CONFFILE       (-14)
+#define ARGPARSE_CONFFILE          (-15)
+#define ARGPARSE_INVALID_META      (-16)
+#define ARGPARSE_UNKNOWN_META      (-17)
+#define ARGPARSE_UNEXPECTED_META   (-18)
 
-/* Flags for the option descriptor (gpgrt_opt_t)->flags.  Note that
- * a TYPE constant may be or-ed with the OPT constants.  */
+/* Flags for the option descriptor (gpgrt_opt_t)->flags.  Note that a
+ * TYPE constant may be or-ed with the OPT constants but when used as
+ * return value in r_type these OPT constants are normally not
+ * included.  However with ARGPARSE_FLAG_WITHATTR used and an option
+ * would normally not be returned, it is returned but
+ * ARGPARSE_OPT_IGNORE is then set; further ARPARSE_ATTR_* are set.
+ */
+#define ARGPARSE_TYPE_MASK   0x0007  /* Mask for the type bits.           */
 #define ARGPARSE_TYPE_NONE        0  /* Does not take an argument.        */
 #define ARGPARSE_TYPE_INT         1  /* Takes an int argument.            */
 #define ARGPARSE_TYPE_STRING      2  /* Takes a string argument.          */
@@ -1867,6 +1928,11 @@ typedef struct
 #define ARGPARSE_OPT_PREFIX   (1<<4) /* Allow 0x etc. prefixed values.    */
 #define ARGPARSE_OPT_IGNORE   (1<<6) /* Ignore command or option.         */
 #define ARGPARSE_OPT_COMMAND  (1<<7) /* The argument is a command.        */
+#define ARGPARSE_OPT_CONFFILE (1<<8) /* The value is a conffile.          */
+#define ARGPARSE_OPT_HEADER   (1<<9) /* The value is printed as a header. */
+#define ARGPARSE_OPT_VERBATIM (1<<10)/* The value is printed verbatim.    */
+#define ARGPARSE_ATTR_FORCE   (1<<14)/* Attribute force is set.           */
+#define ARGPARSE_ATTR_IGNORE  (1<<15)/* Attribute ignore is set.          */
 
 /* A set of macros to make option definitions easier to read.  */
 #define ARGPARSE_x(s,l,t,f,d) \
@@ -1933,28 +1999,55 @@ typedef struct
 #define ARGPARSE_c(s,l,d) \
      { (s), (l), (ARGPARSE_TYPE_NONE | ARGPARSE_OPT_COMMAND), (d) }
 
-#define ARGPARSE_ignore(s,l) \
-     { (s), (l), (ARGPARSE_OPT_IGNORE), "@" }
+#define ARGPARSE_conffile(s,l,d) \
+  { (s), (l), (ARGPARSE_TYPE_STRING|ARGPARSE_OPT_CONFFILE), (d) }
 
+#define ARGPARSE_noconffile(s,l,d) \
+  { (s), (l), (ARGPARSE_TYPE_NONE|ARGPARSE_OPT_CONFFILE), (d) }
+
+/* This macro is for stub or obsolete options.  */
+#define ARGPARSE_ignore(s,l)                    \
+  { (s), (l), (ARGPARSE_OPT_IGNORE), "@" }
+
+/* This is a legacy version of ARGPARSE_verbatim which really does
+ * verbatim printing.  */
 #define ARGPARSE_group(s,d) \
-     { (s), NULL, 0, (d) }
+  { (s), NULL, 0, (d) }
+
+/* Verbatim print the string D in the help output.  It does not make
+ * use of the "@" hack as ARGPARSE_group does.  */
+#define ARGPARSE_verbatim(d) \
+  { 1, NULL, (ARGPARSE_OPT_VERBATIM), (d) }
+
+/* Same as ARGPARSE_verbatim but also print a colon and a LF.  N can
+ * be used give a symbolic name to the header.  Nothing is printed if
+ * D is the empty string.  */
+#define ARGPARSE_header(n,d) \
+  { 1, (n), (ARGPARSE_OPT_HEADER), (d) }
 
 /* Mark the end of the list (mandatory).  */
 #define ARGPARSE_end() \
-     { 0, NULL, 0, NULL }
+  { 0, NULL, 0, NULL }
 
 #endif /* GPGRT_ENABLE_ARGPARSE_MACROS */
+
+/* Values used for gpgrt_set_confdir.  */
+#define GPGRT_CONFDIR_USER 1   /* The user's configuration dir.    */
+#define GPGRT_CONFDIR_SYS  2   /* The systems's configuration dir. */
 
 /* Take care: gpgrt_argparse keeps state in ARG and requires that
  * either ARGPARSE_FLAG_RESET is used after OPTS has been changed or
  * gpgrt_argparse (NULL, ARG, NULL) is called first.  */
 int gpgrt_argparse (gpgrt_stream_t fp,
                     gpgrt_argparse_t *arg, gpgrt_opt_t *opts);
+int gpgrt_argparser (gpgrt_argparse_t *arg, gpgrt_opt_t *opts,
+                     const char *confname);
 void gpgrt_usage (int level);
 const char *gpgrt_strusage (int level);
 void gpgrt_set_strusage (const char *(*f)(int));
 void gpgrt_set_usage_outfnc (int (*f)(int, const char *));
 void gpgrt_set_fixed_string_mapper (const char *(*f)(const char*));
+void gpgrt_set_confdir (int what, const char *name);
 
 
 /*
@@ -1965,6 +2058,12 @@ void gpgrt_set_fixed_string_mapper (const char *(*f)(const char*));
  * numbering scheme a LEVEL of 3 is suitable; see the manual.  */
 int gpgrt_cmp_version (const char *a, const char *b, int level);
 
+/* Construct a filename from the NULL terminated list of parts.  Tilde
+ * expansion is done for the first argument.  The caller must release
+ * the result using gpgrt_free; on error ERRNO is set and NULL
+ * returned.  The second function returns an absolute filename.  */
+char *gpgrt_fnameconcat (const char *first, ...) GPGRT_ATTR_SENTINEL(0);
+char *gpgrt_absfnameconcat (const char *first, ...) GPGRT_ATTR_SENTINEL(0);
 
 
 #ifdef __cplusplus
