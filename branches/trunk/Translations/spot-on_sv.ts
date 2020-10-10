@@ -4480,12 +4480,12 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="614"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="626"/>
         <source>&lt;html&gt;If checked, public key pairs originating from the specified community will be saved in friends_public_keys.db.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="618"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="630"/>
         <source>&lt;html&gt;If checked, public key pairs originating from the specified community must contain valid signatures in order to be saved in friends_public_keys.db. Keys that are not signed will be temporarily accepted.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4500,73 +4500,73 @@ Error: %1.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="945"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="957"/>
         <source>Please select a parent category.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="953"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="965"/>
         <source>Please provide a Community Name that contains at least sixteen characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="982"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="994"/>
         <source>An error (%1) occurred with spoton_crypt::derivedKeys().</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="993"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="1005"/>
         <source>An error occurred while attempting to save the generated keys.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="857"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="869"/>
         <source>%1: Error</source>
         <translation type="unfinished">%1: Fel</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="532"/>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="596"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="544"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="608"/>
         <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="413"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="425"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="409"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="421"/>
         <source>Are you sure that you wish to remove the selected item(s)?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="667"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="679"/>
         <source>Invalid eCrypt and/or sCrypt object(s). This is a fatal error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="673"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="685"/>
         <source>Invalid m_kernelSocket object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="679"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="691"/>
         <source>The interface is not connected to the kernel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="685"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="697"/>
         <source>The connection to the kernel is not encrypted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="233"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="245"/>
         <source>%1: New Category</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-echo-key-share.cc" line="234"/>
+        <location filename="../GUI/spot-on-echo-key-share.cc" line="246"/>
         <source>&amp;Category</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9576,7 +9576,7 @@ with the kernel process.</source>
     <name>spoton_rosetta</name>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="42"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1985"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="2008"/>
         <source>&amp;Name</source>
         <translation>&amp;Namn</translation>
     </message>
@@ -9586,12 +9586,12 @@ with the kernel process.</source>
         <translation>Spara</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="569"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="576"/>
         <source>Encrypt Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="702"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="709"/>
         <source>Add</source>
         <translation>Lägg till</translation>
     </message>
@@ -9599,7 +9599,7 @@ with the kernel process.</source>
         <location filename="../UI/spot-on-rosetta.ui" line="188"/>
         <location filename="../UI/spot-on-rosetta.ui" line="259"/>
         <location filename="../UI/spot-on-rosetta.ui" line="623"/>
-        <location filename="../UI/spot-on-rosetta.ui" line="709"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="716"/>
         <source>Clear</source>
         <translation>Rensa</translation>
     </message>
@@ -9634,23 +9634,23 @@ with the kernel process.</source>
         <translation type="vanished">Ny kontakt</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="677"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="684"/>
         <source>Contact Bundle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="360"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="367"/>
         <source>&amp;Participant</source>
         <translation>&amp;Deltagare</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="380"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="387"/>
         <source>Remove</source>
         <translation>Radera</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="142"/>
-        <location filename="../UI/spot-on-rosetta.ui" line="426"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="433"/>
         <source>Input</source>
         <translation>Indata</translation>
     </message>
@@ -9671,7 +9671,7 @@ with the kernel process.</source>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="181"/>
-        <location filename="../UI/spot-on-rosetta.ui" line="538"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="545"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9681,79 +9681,79 @@ with the kernel process.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="270"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="277"/>
         <source>From:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="349"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="356"/>
         <source>Encrypt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="409"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="416"/>
         <source>Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="452"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="459"/>
         <source>&amp;Cipher Type</source>
         <translation>&amp;Cipher-typ</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="472"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="479"/>
         <source>&amp;Hash Type</source>
         <translation>&amp;Hash-typ</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="498"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="505"/>
         <source>&amp;Sign message.</source>
         <translation>&amp;Signera meddelande.</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="552"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="559"/>
         <source>Reset</source>
         <translation>Återställ</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="663"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="670"/>
         <source>Add Contact</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="779"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="786"/>
         <source>Ctrl+W</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="800"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="807"/>
         <source>Clear Clipboard Buffer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="803"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="810"/>
         <source>Ctrl+B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="808"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="815"/>
         <source>&amp;Import GPG Keys...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="813"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="820"/>
         <source>Remove GPG Keys</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="220"/>
-        <location filename="../UI/spot-on-rosetta.ui" line="577"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="584"/>
         <source>Output</source>
         <translation>Utdata</translation>
     </message>
     <message>
         <location filename="../UI/spot-on-rosetta.ui" line="195"/>
-        <location filename="../UI/spot-on-rosetta.ui" line="545"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="552"/>
         <source>Convert</source>
         <translation>Konvertera</translation>
     </message>
@@ -9762,32 +9762,33 @@ with the kernel process.</source>
         <translation type="vanished">Esc</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="784"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="791"/>
         <source>&amp;Copy</source>
         <translation>&amp;Kopiera</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="787"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="794"/>
         <source>Ctrl+C</source>
         <translation>Ctrl+C</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="792"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="799"/>
         <source>&amp;Paste</source>
         <translation>&amp;Klistra in</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="795"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="802"/>
         <source>Ctrl+V</source>
         <translation>Ctrl+V</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="616"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="266"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="630"/>
         <source>Copy</source>
         <translation>Kopiera</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="387"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="394"/>
         <source>Rename...</source>
         <translation>Byt namn...</translation>
     </message>
@@ -9804,22 +9805,22 @@ with the kernel process.</source>
         <translation type="obsolete">3</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="749"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="756"/>
         <source>&amp;File</source>
         <translation>&amp;Arkiv</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="755"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="762"/>
         <source>&amp;Edit</source>
         <translation>&amp;Redigera</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="765"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="772"/>
         <source>&amp;Tools</source>
         <translation type="unfinished">&amp;Verktyg</translation>
     </message>
     <message>
-        <location filename="../UI/spot-on-rosetta.ui" line="776"/>
+        <location filename="../UI/spot-on-rosetta.ui" line="783"/>
         <source>&amp;Close</source>
         <translation>&amp;Stäng</translation>
     </message>
@@ -9837,41 +9838,40 @@ with the kernel process.</source>
         <translation>%1: Rosetta</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="589"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="609"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="643"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="717"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="736"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="749"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="759"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="772"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="787"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="855"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="871"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="887"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="933"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1041"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1163"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1360"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1375"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1433"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1585"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1666"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1746"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1866"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1963"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1973"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="2038"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="634"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="668"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="742"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="761"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="774"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="784"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="797"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="812"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="880"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="896"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="912"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="958"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1176"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1373"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1388"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1446"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1598"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1683"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1769"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1889"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1986"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1996"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="2061"/>
         <source>%1: Error</source>
         <translation>%1: Fel</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1667"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1684"/>
         <source>The rosetta public key is too long (%1 bytes).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="774"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="799"/>
         <source>Irregular data. Expecting 6 entries, received %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9893,215 +9893,214 @@ with the kernel process.</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-rosetta.cc" line="82"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1116"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1119"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1124"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1144"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1726"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1129"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1132"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1137"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1157"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1749"/>
         <source>Empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="396"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="416"/>
         <source>spoton_rosetta::gpgEncrypt(): error (%1) raised.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="610"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="635"/>
         <source>Please do not add personal GPG keys.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="676"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="701"/>
         <source>GPGME error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="701"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="726"/>
         <source>A database error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="704"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="729"/>
         <source>A cryptographic error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="707"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="732"/>
         <source>Unable to access the database friends_public_keys.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="789"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="814"/>
         <source>Invalid key type. Expecting &apos;rosetta&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="814"/>
         <location filename="../GUI/spot-on-rosetta.cc" line="839"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1771"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1923"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="864"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1794"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1946"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="857"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="882"/>
         <source>You&apos;re attempting to add your own &apos;%1&apos; keys. Please do not do this!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="873"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="898"/>
         <source>Invalid &apos;rosetta&apos; public key signature.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="889"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="914"/>
         <source>Invalid signature public key signature.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="935"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="960"/>
         <source>An error occurred while attempting to save the friendship bundle.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1059"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1072"/>
         <source>Invalid signature.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1146"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1159"/>
         <source>spoton_rosetta::slotConvertDecrypt(): error (%1) raised.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1319"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1332"/>
         <source>Empty signature.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1131"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1333"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1144"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1346"/>
         <source>Message was signed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1465"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1748"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1975"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1478"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1771"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1998"/>
         <source>Invalid item data. This is a serious flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1471"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1484"/>
         <source>Please provide an actual message!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1480"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1493"/>
         <source>The method spoton_crypt::cipherKeyLength() failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1340"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1570"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1353"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1583"/>
         <source>A serious cryptographic error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1206"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1219"/>
         <source>The method spoton_crypt::publicKeyDecrypt() failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1241"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1307"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1254"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1320"/>
         <source>Stream error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1252"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1265"/>
         <source>The method spoton_crypt::keyedHash() failed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1262"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1275"/>
         <source>The computed hash does not match the provided hash.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1328"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1341"/>
         <source>Invalid signature. Perhaps your contacts are not current.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1868"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1891"/>
         <source>An error occurred while attempting to delete the specified participant.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="591"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="738"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1043"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1165"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1377"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1435"/>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1965"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="611"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="763"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1178"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1390"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1448"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1988"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1920"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1943"/>
         <source>Are you sure that you wish to remove your GPG keys?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1984"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="2007"/>
         <source>%1: New Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="2040"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="2063"/>
         <source>An error occurred while attempting to rename the specified participant.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="751"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="776"/>
         <source>Empty key(s). Really?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="761"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="786"/>
         <source>Invalid key(s). The provided text must start with either the letter K or the letter k.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="809"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="834"/>
         <source>Unable to retrieve your %1 public key for comparison. Continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="834"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="859"/>
         <source>Unable to retrieve your %1 signature public key for comparison. Continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1511"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1524"/>
         <source>The method spoton_crypt::publicKeyEncrypt() failed or an error occurred with the QDataStream object.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1733"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1756"/>
         <source>Message was not signed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1763"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1786"/>
         <source>Are you sure that you wish to remove the selected contact? The contact will also be removed from the GPG keyring.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rosetta.cc" line="1767"/>
+        <location filename="../GUI/spot-on-rosetta.cc" line="1790"/>
         <source>Are you sure that you wish to remove the selected contact?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10233,13 +10232,13 @@ with the kernel process.</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="236"/>
-        <location filename="../GUI/spot-on-rss.cc" line="3020"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3032"/>
         <source>Copy Selected &amp;Link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="233"/>
-        <location filename="../GUI/spot-on-rss.cc" line="3018"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3030"/>
         <source>Copy All Links</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10255,7 +10254,7 @@ with the kernel process.</source>
     </message>
     <message>
         <location filename="../GUI/spot-on-rss.cc" line="247"/>
-        <location filename="../GUI/spot-on-rss.cc" line="3028"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3040"/>
         <source>&amp;Refresh Table</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10265,111 +10264,111 @@ with the kernel process.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1188"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1200"/>
         <source>error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1675"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1687"/>
         <source>Invalid spoton_crypt object. This is a fatal flaw.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1680"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1692"/>
         <source>Please provide atleast one RSS feed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1701"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1713"/>
         <source>Empty or invalid URL.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1709"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1721"/>
         <source>URL scheme must be HTTP or HTTPS.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1748"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1760"/>
         <source>Database or crypt-object error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1752"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1764"/>
         <source>Unable to access rss.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1765"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1777"/>
         <source>%1: Error</source>
         <translation type="unfinished">%1: Fel</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1981"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1993"/>
         <source>Are you sure that you wish to delete all of the RSS feeds?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="1985"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2029"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2485"/>
-        <location filename="../GUI/spot-on-rss.cc" line="2808"/>
-        <location filename="../GUI/spot-on-rss.cc" line="3283"/>
+        <location filename="../GUI/spot-on-rss.cc" line="1997"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2041"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2497"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2820"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3295"/>
         <source>%1: Confirmation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2025"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2037"/>
         <source>Are you sure that you wish to delete the selected RSS feed?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2482"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2494"/>
         <source>Are you sure that you wish to purge obsolete links?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2549"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2561"/>
         <source>Populating...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2553"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2565"/>
         <source>%1: Populating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="2805"/>
+        <location filename="../GUI/spot-on-rss.cc" line="2817"/>
         <source>Are you sure that you wish to remove all malformed links?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3023"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3035"/>
         <source>Delete &amp;All Feeds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3025"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3037"/>
         <source>Delete &amp;Selected Feed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3031"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3043"/>
         <source>&amp;Schedule Selected Feed For Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3095"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3107"/>
         <source>%1 RSS Feeds | %2 Failed Imports | %3 Hidden URLs | %4 Imported URLs | %5 Not Imported URLs | %6 Indexed URLs | %7 Not Indexed URLs | %8 Malformed | %9 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3115"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3127"/>
         <source>0 RSS Feeds | 0 Failed Imports | 0 Hidden URLs | 0 Imported URLs | 0 Not Imported URLs | 0 Indexed URLs | 0 Not Indexed URLs | 0 Malformed | 0 Total URLs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-rss.cc" line="3279"/>
+        <location filename="../GUI/spot-on-rss.cc" line="3291"/>
         <source>Are you sure that you wish to remove %1?</source>
         <translation type="unfinished"></translation>
     </message>
