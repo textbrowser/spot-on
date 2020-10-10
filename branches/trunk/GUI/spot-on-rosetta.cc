@@ -33,13 +33,6 @@
 #include <QSettings>
 #include <QSqlQuery>
 
-#ifdef SPOTON_GPGME_ENABLED
-extern "C"
-{
-#include <gpgme.h>
-}
-#endif
-
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -51,9 +44,12 @@ extern "C"
 #endif
 #include "spot-on.h"
 
+QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = 0;
+
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   m_parent = 0;
+  s_rosetta = this;
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
@@ -368,19 +364,31 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 	  if(err == GPG_ERR_NO_ERROR)
 	    {
 	      if(ui.sign->isChecked())
-		err = gpgme_op_encrypt_sign
-		  (ctx,
-		   keys,
-		   GPGME_ENCRYPT_ALWAYS_TRUST,
-		   plaintext,
-		   ciphertext);
+		{
+		  err = gpgme_set_pinentry_mode
+		    (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
+
+		  if(err == GPG_ERR_NO_ERROR)
+		    {
+		      gpgme_set_passphrase_cb(ctx, &gpgPassphrase, 0);
+		      err = gpgme_op_encrypt_sign
+			(ctx,
+			 keys,
+			 GPGME_ENCRYPT_ALWAYS_TRUST,
+			 plaintext,
+			 ciphertext);
+		    }
+		}
 	      else
-		err = gpgme_op_encrypt
-		  (ctx,
-		   keys,
-		   GPGME_ENCRYPT_ALWAYS_TRUST,
-		   plaintext,
-		   ciphertext);
+		{
+		  gpgme_set_passphrase_cb(ctx, 0, 0);
+		  err = gpgme_op_encrypt
+		    (ctx,
+		     keys,
+		     GPGME_ENCRYPT_ALWAYS_TRUST,
+		     plaintext,
+		     ciphertext);
+		}
 	    }
 
 	  gpgme_data_release(keydata);
@@ -424,6 +432,43 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
   return QByteArray();
 #endif
 }
+
+#ifdef SPOTON_GPGME_ENABLED
+gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
+					    const char *uid_hint,
+					    const char *passphrase_info,
+					    int prev_was_bad,
+					    int fd)
+{
+  Q_UNUSED(hook);
+  Q_UNUSED(uid_hint);
+  Q_UNUSED(passphrase_info);
+  Q_UNUSED(prev_was_bad);
+
+  QString passphrase("");
+  bool ok = true;
+
+  passphrase = QInputDialog::getText
+    (s_rosetta,
+     tr("%1: GPG Passphrase").arg(SPOTON_APPLICATION_NAME),
+     tr("&GPG Passphrase"),
+     QLineEdit::Password,
+     "",
+     &ok);
+
+  if(passphrase.isEmpty() || !ok)
+    return GPG_ERR_NO_PASSPHRASE;
+
+  gpgme_ssize_t rc = gpgme_io_writen
+    (fd,
+     passphrase.toUtf8().constData(),
+     static_cast<size_t> (passphrase.toUtf8().length()));
+
+  rc = gpgme_io_writen(fd, "\n", static_cast<size_t> (1));
+  Q_UNUSED(rc);
+  return GPG_ERR_NO_ERROR;
+}
+#endif
 
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {

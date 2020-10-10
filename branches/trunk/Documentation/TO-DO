@@ -264,6 +264,7 @@ Completed Items
 191.   Include GPGME version information.
 192.   Delete GPG keys from local keyring.
 193.   Copy Rosetta plaintext.
+194.   GPG passphrase.
 
 Ignored Items
 
@@ -306,4 +307,3 @@ Remaining Items
 10.    Pre-future SOSS tasks.
 11.    Single Rosetta attachments.
 12.    Re-encode GPG keys.
-13.    GPG passphrase.

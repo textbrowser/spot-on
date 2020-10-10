@@ -4200,8 +4200,12 @@ void spoton::slotRenameParticipant(void)
   bool ok = true;
 
   name = QInputDialog::getText
-    (this, tr("%1: New Name").arg(SPOTON_APPLICATION_NAME), tr("&Name"),
-     QLineEdit::Normal, list.value(0).data().toString(), &ok);
+    (this,
+     tr("%1: New Name").arg(SPOTON_APPLICATION_NAME),
+     tr("&Name"),
+     QLineEdit::Normal,
+     list.value(0).data().toString(),
+     &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
   if(name.isEmpty() || !ok)

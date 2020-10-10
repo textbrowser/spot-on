@@ -30,6 +30,13 @@
 
 #include <QPointer>
 
+#ifdef SPOTON_GPGME_ENABLED
+extern "C"
+{
+#include <gpgme.h>
+}
+#endif
+
 #include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
@@ -61,6 +68,14 @@ class spoton_rosetta: public QMainWindow
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(const QByteArray &receiver,
 			const QByteArray &sender) const;
+#ifdef SPOTON_GPGME_ENABLED
+  static QPointer<spoton_rosetta> s_rosetta;
+  static gpgme_error_t gpgPassphrase(void *hook,
+				     const char *uid_hint,
+				     const char *passphrase_info,
+				     int prev_was_bad,
+				     int fd);
+#endif
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
   void resizeEvent(QResizeEvent *event);
