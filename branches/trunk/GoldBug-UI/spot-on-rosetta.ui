@@ -32,6 +32,34 @@
      <number>5</number>
     </property>
     <item>
+     <widget class="QLabel" name="label_30">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <weight>75</weight>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));
+color: rgb(255, 255, 255);
+</string>
+      </property>
+      <property name="text">
+       <string>Rosetta</string>
+      </property>
+      <property name="indent">
+       <number>5</number>
+      </property>
+     </widget>
+    </item>
+    <item>
      <layout class="QHBoxLayout" name="horizontalLayout_7">
       <property name="spacing">
        <number>5</number>
@@ -257,6 +285,13 @@
                        <widget class="QPushButton" name="decryptClear">
                         <property name="text">
                          <string>Clear</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QPushButton" name="copyDecrypt">
+                        <property name="text">
+                         <string>Copy</string>
                         </property>
                        </widget>
                       </item>
@@ -611,16 +646,16 @@
                        </spacer>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="copyEncrypt">
+                       <widget class="QPushButton" name="clearOutput">
                         <property name="text">
-                         <string>Copy</string>
+                         <string>Clear</string>
                         </property>
                        </widget>
                       </item>
                       <item>
-                       <widget class="QPushButton" name="clearOutput">
+                       <widget class="QPushButton" name="copyEncrypt">
                         <property name="text">
-                         <string>Clear</string>
+                         <string>Copy</string>
                         </property>
                        </widget>
                       </item>
@@ -825,6 +860,7 @@
   <tabstop>convertDecrypt</tabstop>
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
+  <tabstop>copyDecrypt</tabstop>
   <tabstop>outputDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
@@ -836,8 +872,8 @@
   <tabstop>convertEncrypt</tabstop>
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
-  <tabstop>copyEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
+  <tabstop>copyEncrypt</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
