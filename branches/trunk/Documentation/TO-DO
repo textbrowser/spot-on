@@ -265,6 +265,7 @@ Completed Items
 192.   Delete GPG keys from local keyring.
 193.   Copy Rosetta plaintext.
 194.   GPG passphrase.
+195.   Re-encode GPG keys.
 
 Ignored Items
 
@@ -306,4 +307,3 @@ Remaining Items
 9.     Pointcheval.
 10.    Pre-future SOSS tasks.
 11.    Single Rosetta attachments.
-12.    Re-encode GPG keys.

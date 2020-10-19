@@ -81,8 +81,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "data_hash = ? WHERE "
 				  "data_hash = ?");
 	      data = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		updateQuery.bindValue
@@ -90,12 +89,9 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		updateQuery.bindValue
-		  (1,
-		   newCrypt->keyedHash(data,
-				       &ok).toBase64());
+		  (1, newCrypt->keyedHash(data, &ok).toBase64());
 
-	      updateQuery.bindValue
-		(2, query.value(1));
+	      updateQuery.bindValue(2, query.value(1));
 
 	      if(ok)
 		updateQuery.exec();
@@ -145,9 +141,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      bool ok = true;
 
 	      bytes = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.value(0).
-			    toByteArray()), &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 	      updateQuery.prepare("UPDATE categories "
 				  "SET category = ?, "
 				  "category_hash = ? "
@@ -173,8 +167,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM categories "
-				      "WHERE OID = ?");
+		  deleteQuery.prepare("DELETE FROM categories WHERE OID = ?");
 		  deleteQuery.bindValue
 		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
@@ -204,9 +197,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QByteArray bytes;
 
 		  bytes = oldCrypt->decryptedAfterAuthenticated
-		    (QByteArray::
-		     fromBase64(query.value(i).
-				toByteArray()), &ok);
+		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
 
 		  if(ok)
 		    list.append(bytes);
@@ -452,8 +443,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 			deleteQuery.exec("PRAGMA secure_delete = ON");
 			deleteQuery.prepare
-			  ("DELETE FROM folders_attachment WHERE "
-			   "OID = ?");
+			  ("DELETE FROM folders_attachment WHERE OID = ?");
 			deleteQuery.bindValue
 			  (0, query.value(query.record().count() - 1));
 			deleteQuery.exec();
@@ -544,8 +534,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM institutions WHERE "
-				      "OID = ?");
+		  deleteQuery.prepare("DELETE FROM institutions WHERE OID = ?");
 		  deleteQuery.bindValue
 		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
@@ -620,8 +609,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM post_office WHERE "
-				      "OID = ?");
+		  deleteQuery.prepare("DELETE FROM post_office WHERE OID = ?");
 		  deleteQuery.bindValue
 		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
@@ -837,9 +825,64 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		}
 	    }
 
-	if(query.exec("SELECT email, public_keys, OID FROM gpg"))
+	if(query.exec("SELECT email, "     // 0
+		      "public_keys, "      // 1
+		      "public_keys_hash, " // 2
+		      "OID "               // 3
+		      "FROM gpg"))
 	  while(query.next())
 	    {
+	      QByteArray email;
+	      QByteArray fingerprint;
+	      QByteArray publicKeys;
+	      QSqlQuery updateQuery(db);
+	      bool ok = true;
+
+	      email = oldCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(ok)
+		publicKeys = oldCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+
+	      if(ok)
+		fingerprint = spoton_crypt::fingerprint(publicKeys);
+
+	      updateQuery.prepare
+		("UPDATE gpg SET "
+		 "email = ?, "
+		 "public_keys = ?, "
+		 "public_keys_hash = ? "
+		 "WHERE public_keys_hash = ?");
+
+	      if(ok)
+		updateQuery.addBindValue
+		  (newCrypt->encryptedThenHashed(email, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.addBindValue
+		  (newCrypt->encryptedThenHashed(publicKeys, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.addBindValue
+		  (newCrypt->keyedHash(fingerprint, &ok).toBase64());
+
+	      if(ok)
+		updateQuery.addBindValue(query.value(2));
+
+	      if(ok)
+		updateQuery.exec();
+	      else
+		{
+		  spoton_misc::logError("Re-encoding gpg error.");
+
+		  QSqlQuery deleteQuery(db);
+
+		  deleteQuery.exec("PRAGMA secure_delete = ON");
+		  deleteQuery.prepare("DELETE FROM gpg WHERE OID = ?");
+		  deleteQuery.bindValue(0, query.value(3));
+		  deleteQuery.exec();
+		}
 	    }
       }
 
@@ -1723,8 +1766,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM neighbors WHERE "
-				      "hash = ?");
+		  deleteQuery.prepare("DELETE FROM neighbors WHERE hash = ?");
 		  deleteQuery.bindValue(0, query.value(4));
 		  deleteQuery.exec();
 		}
@@ -1941,8 +1983,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM rss_feeds WHERE "
-				      "OID = ?");
+		  deleteQuery.prepare("DELETE FROM rss_feeds WHERE OID = ?");
 		  deleteQuery.bindValue
 		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
@@ -2603,8 +2644,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  QSqlQuery deleteQuery(db);
 
 		  deleteQuery.exec("PRAGMA secure_delete = ON");
-		  deleteQuery.prepare("DELETE FROM distillers WHERE "
-				      "OID = ?");
+		  deleteQuery.prepare("DELETE FROM distillers WHERE OID = ?");
 		  deleteQuery.bindValue
 		    (0, query.value(query.record().count() - 1));
 		  deleteQuery.exec();
