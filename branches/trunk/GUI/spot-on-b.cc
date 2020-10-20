@@ -2020,8 +2020,11 @@ void spoton::populateMail(void)
 	QSqlQuery query(db);
 	QString html(m_ui.mailMessage->toHtml());
 	QStringList oids;
+	QTextBrowser textBrowser;
 	int vValue = m_ui.mail->verticalScrollBar()->value();
 	int totalRows = 0;
+
+	textBrowser.setVisible(false);
 
 	for(int i = 0; i < list.size(); i++)
 	  {
@@ -2096,7 +2099,8 @@ void spoton::populateMail(void)
 		      row += 1;
 
 		    if(i == 0 || i == 1 || i == 2 ||
-		       i == 3 || i == 6 || i == 7 || i == 10)
+		       i == 3 || i == 6 || i == 7 ||
+		       i == 10)
 		      {
 			if(i == 1 || i == 2 || i == 3 || i == 6 || i == 10)
 			  {
@@ -2144,6 +2148,24 @@ void spoton::populateMail(void)
 					   horizontalHeaderItem(i)->text());
 					tooltip.append(": ");
 					tooltip.append(item->text());
+					tooltip.append("<br>");
+				      }
+
+				    if(i == 6)
+				      {
+					textBrowser.setText(item->text());
+					tooltip.append
+					  (m_ui.mail->
+					   horizontalHeaderItem(i)->text());
+					tooltip.append(": ");
+					tooltip.append
+					  (textBrowser.
+					   toPlainText().mid(0, 128).trimmed());
+
+					if(textBrowser.toPlainText().
+					   trimmed().length() > 128)
+					  tooltip.append("...");
+
 					tooltip.append("<br>");
 				      }
 				  }
@@ -2237,6 +2259,7 @@ void spoton::populateMail(void)
 			      (m_ui.mail->horizontalHeaderItem(i)->text());
 			    tooltip.append(": ");
 			    tooltip.append(item->text());
+			    tooltip.append("<br>");
 			  }
 			else
 			  {
@@ -2253,6 +2276,9 @@ void spoton::populateMail(void)
 		      (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		    m_ui.mail->setItem(row - 1, i, item);
 		  }
+
+		if(tooltip.endsWith("<br>"))
+		  tooltip = tooltip.mid(0, tooltip.length() - 4);
 
 		tooltip.append("</html>");
 
