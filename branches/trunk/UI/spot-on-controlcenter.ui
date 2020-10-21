@@ -521,8 +521,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>414</width>
-                <height>498</height>
+                <width>762</width>
+                <height>582</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -990,7 +990,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>866</width>
+             <width>880</width>
              <height>679</height>
             </rect>
            </property>
@@ -1144,6 +1144,73 @@
                       </item>
                       <item>
                        <spacer name="horizontalSpacer_32">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_50">
+                      <item>
+                       <widget class="QLabel" name="label_122">
+                        <property name="text">
+                         <string>Page</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="email_page">
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToContents</enum>
+                        </property>
+                        <property name="minimumContentsLength">
+                         <number>15</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_24">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_62">
+                      <item>
+                       <widget class="QSpinBox" name="email_pages">
+                        <property name="suffix">
+                         <string> Letters Per Page</string>
+                        </property>
+                        <property name="minimum">
+                         <number>25</number>
+                        </property>
+                        <property name="maximum">
+                         <number>999999999</number>
+                        </property>
+                        <property name="value">
+                         <number>500</number>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_25">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>
@@ -2298,8 +2365,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>670</width>
-             <height>429</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3017,7 +3084,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>336</width>
+                     <width>327</width>
                      <height>1520</height>
                     </rect>
                    </property>
@@ -3585,8 +3652,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>730</width>
-             <height>230</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -3990,7 +4057,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>730</width>
+                  <width>735</width>
                   <height>603</height>
                  </rect>
                 </property>
@@ -4828,8 +4895,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>625</width>
-             <height>412</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4914,7 +4981,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>824</width>
+                 <width>795</width>
                  <height>677</height>
                 </rect>
                </property>
@@ -5928,7 +5995,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>936</width>
+             <width>907</width>
              <height>1293</height>
             </rect>
            </property>
@@ -7165,7 +7232,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>621</width>
+             <width>751</width>
              <height>704</height>
             </rect>
            </property>
@@ -9136,8 +9203,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>275</width>
-             <height>165</height>
+             <width>772</width>
+             <height>592</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9789,6 +9856,8 @@
   <tabstop>mailTab</tabstop>
   <tabstop>folder</tabstop>
   <tabstop>deleteEmail</tabstop>
+  <tabstop>email_page</tabstop>
+  <tabstop>email_pages</tabstop>
   <tabstop>reply</tabstop>
   <tabstop>resend</tabstop>
   <tabstop>saveAttachment</tabstop>
