@@ -456,7 +456,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
      "",
      &ok);
 
-  if(passphrase.isEmpty() || !ok)
+  if(!ok || passphrase.isEmpty())
     return GPG_ERR_NO_PASSPHRASE;
 
   gpgme_ssize_t rc = gpgme_io_writen
