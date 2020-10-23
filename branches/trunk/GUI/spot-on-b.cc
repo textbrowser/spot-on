@@ -2333,8 +2333,7 @@ void spoton::populateMail(void)
 
 	m_ui.mail->resizeColumnsToContents();
 	m_ui.mail->setRowCount(totalRows);
-	m_ui.mail->setSelectionMode
-	  (QAbstractItemView::MultiSelection);
+	m_ui.mail->setSelectionMode(QAbstractItemView::MultiSelection);
 
 	if(cRow.values().value(0))
 	  m_ui.mailMessage->setHtml(html);
@@ -2342,8 +2341,7 @@ void spoton::populateMail(void)
 	for(int i = 0; i < rows.size(); i++)
 	  m_ui.mail->selectRow(rows.at(i));
 
-	m_ui.mail->setSelectionMode
-	  (QAbstractItemView::ExtendedSelection);
+	m_ui.mail->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	m_ui.mail->setSortingEnabled(true);
 	m_ui.mail->verticalScrollBar()->setValue(vValue);
 	connect(m_ui.mail,
