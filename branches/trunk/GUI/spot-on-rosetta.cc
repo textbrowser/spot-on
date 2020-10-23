@@ -464,8 +464,9 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
      passphrase.toUtf8().constData(),
      static_cast<size_t> (passphrase.toUtf8().length()));
 
-  rc = gpgme_io_writen(fd, "\n", static_cast<size_t> (1));
-  Q_UNUSED(rc);
+  if(rc > 0)
+    rc = gpgme_io_writen(fd, "\n", static_cast<size_t> (1));
+
   return GPG_ERR_NO_ERROR;
 }
 #endif
