@@ -22,8 +22,7 @@ QT		+= bluetooth \
                    websockets \
                    widgets
 
-DEFINES	+= QT_DEPRECATED_WARNINGS \
-           SPOTON_BLUETOOTH_ENABLED \
+DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \

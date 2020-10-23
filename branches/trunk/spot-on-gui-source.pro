@@ -8,6 +8,8 @@ DEFINES += SPOTON_GPGME_ENABLED
 LIBS += -lgpgme
 }
 
+DEFINES	+= QT_DEPRECATED_WARNINGS
+
 FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-buzzpage.ui \
 		  UI/spot-on-chatwindow.ui \
