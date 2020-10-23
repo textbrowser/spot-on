@@ -467,6 +467,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   if(rc > 0)
     rc = gpgme_io_writen(fd, "\n", static_cast<size_t> (1));
 
+  spoton_crypt::memzero(passphrase);
   return GPG_ERR_NO_ERROR;
 }
 #endif
