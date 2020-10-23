@@ -778,6 +778,8 @@ class spoton: public QMainWindow
   void slotDropUrlTables(void);
   void slotDuplicateTransmittedMagnet(void);
   void slotEmailFsGb(int index);
+  void slotEmailLettersPerPageChanged(int value);
+  void slotEmailPageChanged(int value);
   void slotEmailSecretsActionSelected(void);
   void slotEmptyTrash(void);
   void slotEnableChatEmoticons(bool state);

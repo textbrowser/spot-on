@@ -606,6 +606,21 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotEmailLettersPerPageChanged(int value)
+{
+  m_settings["gui/email_letters_per_page"] = value;
+
+  QSettings settings;
+
+  settings.setValue("gui/email_letters_per_page", value);
+}
+
+void spoton::slotEmailPageChanged(int value)
+{
+  Q_UNUSED(value);
+  populateMail();
+}
+
 void spoton::slotFindInSearch(void)
 {
 #if SPOTON_GOLDBUG == 0

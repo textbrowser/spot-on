@@ -1730,6 +1730,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotProtocolRadioToggled(bool)));
+  connect(m_ui.email_pages,
+	  SIGNAL(valueChanged(int)),
+	  this,
+	  SLOT(slotEmailLettersPerPageChanged(int)));
   connect(m_ui.emailNameEditable,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -2372,6 +2376,8 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/showStarBeamPage", true).toBool());
   m_ui.action_Urls->setChecked
     (m_settings.value("gui/showUrlsPage", true).toBool());
+  m_ui.email_pages->setValue
+    (m_settings.value("gui/email_letters_per_page", 500).toInt());
   m_ui.secondary_storage_maximum_page_count->setValue
     (m_settings.value("gui/congestion_control_max_page_count", 10000).toInt());
   m_ui.soss_maximum_clients->blockSignals(true);

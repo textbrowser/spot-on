@@ -26,6 +26,7 @@
 */
 
 #include <QSslKey>
+#include <QtMath>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
@@ -2021,6 +2022,7 @@ void spoton::populateMail(void)
 	QString html(m_ui.mailMessage->toHtml());
 	QStringList oids;
 	QTextBrowser textBrowser;
+	int emailPage = m_ui.email_page->currentIndex();
 	int vValue = m_ui.mail->verticalScrollBar()->value();
 	int totalRows = 0;
 
@@ -2037,10 +2039,15 @@ void spoton::populateMail(void)
 	      oids.append(data.toString());
 	  }
 
+	disconnect(m_ui.email_page,
+		   SIGNAL(currentIndexChanged(int)),
+		   this,
+		   SLOT(slotEmailPageChanged(int)));
 	disconnect(m_ui.mail,
 		   SIGNAL(itemSelectionChanged(void)),
 		   this,
 		   SLOT(slotMailSelected(void)));
+	m_ui.email_page->clear();
 	m_ui.mail->setRowCount(0);
 	m_ui.mail->setSortingEnabled(false);
 	m_ui.mailMessage->clear();
@@ -2050,7 +2057,26 @@ void spoton::populateMail(void)
 			      "folder_index = %1").
 		      arg(m_ui.folder->currentIndex())))
 	  if(query.next())
-	    m_ui.mail->setRowCount(query.value(0).toInt());
+	    {
+	      int pages = qCeil
+		(query.value(0).toDouble() /
+		 static_cast<double> (m_ui.email_pages->value()));
+
+	      for(int i = 0; i < pages; i++)
+		m_ui.email_page->addItem(QString::number(i + 1));
+
+	      m_ui.mail->setRowCount(query.value(0).toInt());
+	    }
+
+	if(m_ui.email_page->count() == 0)
+	  m_ui.email_page->addItem("1");
+
+	emailPage = qBound(0, emailPage, m_ui.email_page->count() - 1);
+	m_ui.email_page->setCurrentIndex(emailPage);
+	connect(m_ui.email_page,
+		SIGNAL(currentIndexChanged(int)),
+		this,
+		SLOT(slotEmailPageChanged(int)));
 
 	if(query.exec(QString("SELECT f.date, "          // 0
 			      "f.receiver_sender, "      // 1
@@ -2068,8 +2094,12 @@ void spoton::populateMail(void)
 			      "LEFT JOIN folders_attachment a "
 			      "ON a.folders_oid = f.OID "
 			      "WHERE f.folder_index = %1 "
-			      "GROUP BY f.OID").
-		      arg(m_ui.folder->currentIndex())))
+			      "GROUP BY f.OID "
+			      "LIMIT %2 OFFSET %3").
+		      arg(m_ui.folder->currentIndex()).
+		      arg(m_ui.email_pages->value()).
+		      arg(m_ui.email_page->currentIndex() *
+			  m_ui.email_pages->value())))
 	  {
 	    int row = 0;
 
