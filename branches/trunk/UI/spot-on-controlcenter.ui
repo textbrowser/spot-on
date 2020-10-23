@@ -990,7 +990,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>866</width>
+             <width>942</width>
              <height>679</height>
             </rect>
            </property>
@@ -1177,23 +1177,6 @@
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_24">
-                        <property name="orientation">
-                         <enum>Qt::Horizontal</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>40</width>
-                          <height>20</height>
-                         </size>
-                        </property>
-                       </spacer>
-                      </item>
-                     </layout>
-                    </item>
-                    <item>
-                     <layout class="QHBoxLayout" name="horizontalLayout_62">
-                      <item>
                        <widget class="QSpinBox" name="email_pages">
                         <property name="toolTip">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please refresh after changing. Valid values lie in the interval [25, 999999999].&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1213,7 +1196,7 @@
                        </widget>
                       </item>
                       <item>
-                       <spacer name="horizontalSpacer_25">
+                       <spacer name="horizontalSpacer_24">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
                         </property>

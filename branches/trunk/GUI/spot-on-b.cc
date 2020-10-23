@@ -2021,7 +2021,7 @@ void spoton::populateMail(void)
 	QSqlQuery query(db);
 	QString html(m_ui.mailMessage->toHtml());
 	QStringList oids;
-	QTextBrowser textBrowser;
+	QTextBrowser textBrowser; // Preview tool tip.
 	int emailPage = m_ui.email_page->currentIndex();
 	int vValue = m_ui.mail->verticalScrollBar()->value();
 	int totalRows = 0;
