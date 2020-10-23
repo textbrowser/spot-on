@@ -61,12 +61,12 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
-  ui.copy->menu()->addAction(tr("Copy My &GPG Public Key(s)"),
+  ui.copy->menu()->addAction(tr("Copy My &GPG Public Keys"),
 			     this,
 			     SLOT(slotCopyMyGPGKeys(void)));
 #else
   QAction *action = ui.copy->menu()->addAction
-    (tr("Copy My &GPG Public Key(s)"));
+    (tr("Copy My &GPG Public Keys"));
 
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
@@ -711,7 +711,7 @@ void spoton_rosetta::slotAddContact(void)
 	    QMessageBox::critical
 	      (this,
 	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	       "GPGME error. Cannot add the key(s) to the keyring.");
+	       "GPGME error. Cannot add the key block to the keyring.");
 	    QApplication::processEvents();
 	    return;
 	  }
