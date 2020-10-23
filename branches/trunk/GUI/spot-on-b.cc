@@ -2331,6 +2331,7 @@ void spoton::populateMail(void)
 	      }
 	  }
 
+	m_ui.mail->resizeColumnsToContents();
 	m_ui.mail->setRowCount(totalRows);
 	m_ui.mail->setSelectionMode
 	  (QAbstractItemView::MultiSelection);

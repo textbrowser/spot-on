@@ -990,7 +990,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1137</width>
+             <width>1075</width>
              <height>679</height>
             </rect>
            </property>
@@ -1249,6 +1249,9 @@
                        <property name="sortingEnabled">
                         <bool>true</bool>
                        </property>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>150</number>
+                       </attribute>
                        <attribute name="horizontalHeaderDefaultSectionSize">
                         <number>250</number>
                        </attribute>
