@@ -441,9 +441,9 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 					    int fd)
 {
   Q_UNUSED(hook);
-  Q_UNUSED(uid_hint);
   Q_UNUSED(passphrase_info);
   Q_UNUSED(prev_was_bad);
+  Q_UNUSED(uid_hint);
 
   QString passphrase("");
   bool ok = true;
