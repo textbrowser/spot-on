@@ -79,7 +79,7 @@
          <string>Copy your public key pairs to the clipboard buffer.</string>
         </property>
         <property name="text">
-         <string>Copy Public Key(s)</string>
+         <string>Copy Public Keys</string>
         </property>
         <property name="popupMode">
          <enum>QToolButton::MenuButtonPopup</enum>
