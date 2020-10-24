@@ -988,7 +988,7 @@
           <widget class="QWidget" name="scrollAreaWidgetContents_6">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>-324</x>
              <y>0</y>
              <width>1075</width>
              <height>679</height>
@@ -1760,7 +1760,7 @@
                          </layout>
                         </item>
                         <item>
-                         <widget class="QLabel" name="label_86">
+                         <widget class="QLabel" name="attachment_label">
                           <property name="sizePolicy">
                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                             <horstretch>0</horstretch>

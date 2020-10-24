@@ -564,6 +564,13 @@ spoton::spoton(void):QMainWindow()
     }
 
   list.clear();
+#if SPOTON_GOLDBUG == 0
+  m_ui.attachment_label->setText
+    (tr("Please note that individual attachments are limited to %1 MiB. "
+	"Traditional e-mail supports only single attachments. "
+	"Inline attachments are not supported.").
+     arg(spoton_common::EMAIL_ATTACHMENT_MAXIMUM_SIZE / 1048576));
+#endif
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
 	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES.html\">"
