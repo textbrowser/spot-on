@@ -1135,6 +1135,13 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		 1);
 
 	    if(err == GPG_ERR_NO_ERROR)
+	      {
+		err = gpgme_set_pinentry_mode
+		  (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
+		gpgme_set_passphrase_cb(ctx, &gpgPassphrase, 0);
+	      }
+
+	    if(err == GPG_ERR_NO_ERROR)
 	      err = gpgme_op_decrypt_verify(ctx, ciphertext, plaintext);
 
 	    if(err == GPG_ERR_NO_ERROR)
@@ -1155,6 +1162,11 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		    (bytes.mid(0, static_cast<int> (rc)));
 
 		ui.outputDecrypt->selectAll();
+
+		QTextCursor textCursor = ui.outputDecrypt->textCursor();
+
+		textCursor.setPosition(0);
+		ui.outputDecrypt->setTextCursor(textCursor);
 
 		gpgme_verify_result_t result = gpgme_op_verify_result(ctx);
 
@@ -1405,6 +1417,11 @@ void spoton_rosetta::slotConvertDecrypt(void)
       ui.from->setText(QString::fromUtf8(name.constData(), name.length()));
       ui.outputDecrypt->setText
 	(QString::fromUtf8(data.constData(), data.length()));
+
+      QTextCursor textCursor = ui.outputDecrypt->textCursor();
+
+      textCursor.setPosition(0);
+      ui.outputDecrypt->setTextCursor(textCursor);
       ui.outputDecrypt->selectAll();
       ui.signedMessage->setStyleSheet
 	(QString("QLabel {background: %1;}").arg(signatureColor.name()));
