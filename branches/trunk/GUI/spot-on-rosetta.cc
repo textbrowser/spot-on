@@ -32,6 +32,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QSqlQuery>
+#include <QStandardPaths>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
@@ -1492,9 +1493,10 @@ void spoton_rosetta::slotConvertEncrypt(void)
       }
 
       QSqlDatabase::removeDatabase(connectionName);
-      QApplication::restoreOverrideCursor();
       ui.outputEncrypt->setText(gpgEncrypt(receiver, sender));
       ui.outputEncrypt->selectAll();
+      toDesktop();
+      QApplication::restoreOverrideCursor();
       return;
     }
 
@@ -1646,6 +1648,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
     {
       ui.outputEncrypt->setText(data);
       ui.outputEncrypt->selectAll();
+      toDesktop();
     }
   else
     ui.outputEncrypt->clear();
@@ -2237,4 +2240,22 @@ void spoton_rosetta::sortContacts(void)
     }
 
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rosetta::toDesktop(void) const
+{
+  if(!ui.desktop->isChecked())
+    return;
+
+  QFile file;
+  QString fileName
+    (QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) +
+     QDir::separator() +
+     "spot_on_" +
+     QString::number(QDateTime::currentMSecsSinceEpoch())+
+     ".asc");
+
+  file.setFileName(fileName);
+  file.open(QIODevice::WriteOnly);
+  file.write(ui.outputEncrypt->toPlainText().toUtf8());
 }

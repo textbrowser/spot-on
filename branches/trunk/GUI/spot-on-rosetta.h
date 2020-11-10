@@ -80,6 +80,7 @@ class spoton_rosetta: public QMainWindow
   void populateContacts(void);
   void resizeEvent(QResizeEvent *event);
   void sortContacts(void);
+  void toDesktop(void) const;
 
  private slots:
   void slotAddContact(void);
