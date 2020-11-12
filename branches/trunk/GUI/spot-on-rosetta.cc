@@ -1019,6 +1019,7 @@ void spoton_rosetta::slotClear(void)
   else if(sender() == ui.clearInput)
     {
       ui.cipher->setCurrentIndex(0);
+      ui.desktop->setChecked(false);
       ui.hash->setCurrentIndex(0);
       ui.inputEncrypt->clear();
       ui.sign->setChecked(true);
