@@ -18,7 +18,7 @@ Summary of Spot-On
 <li>Echo public-key distribution system.</li>
 <li>End-to-End, not Hop-to-Hop encryption.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
-<li>GPG-light via Rosetta.</li>
+<li>GPG-lite via Rosetta.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
 <li>Messaging.</li>
