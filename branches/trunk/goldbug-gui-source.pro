@@ -1,3 +1,15 @@
+exists(/usr/include/gpgme.h) {
+DEFINES += SPOTON_GPGME_ENABLED
+LIBS += -lgpgme
+}
+
+exists(/usr/local/include/gpgme.h) {
+DEFINES += SPOTON_GPGME_ENABLED
+LIBS += -lgpgme
+}
+
+DEFINES	+= QT_DEPRECATED_WARNINGS
+
 FORMS           = GoldBug-UI/spot-on-adaptive-echo-prompt.ui \
 		  GoldBug-UI/spot-on-buzzpage.ui \
 		  GoldBug-UI/spot-on-chatwindow.ui \

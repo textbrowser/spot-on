@@ -133,7 +133,7 @@ color: rgb(255, 255, 255);
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>0</x>
+         <x>-358</x>
          <y>0</y>
          <width>977</width>
          <height>551</height>
@@ -582,6 +582,13 @@ color: rgb(255, 255, 255);
                        </widget>
                       </item>
                       <item>
+                       <widget class="QCheckBox" name="desktop">
+                        <property name="text">
+                         <string>Desktop</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
                        <widget class="QPushButton" name="clearInput">
                         <property name="text">
                          <string>Reset</string>
@@ -870,6 +877,7 @@ color: rgb(255, 255, 255);
   <tabstop>sign</tabstop>
   <tabstop>encryptPaste</tabstop>
   <tabstop>convertEncrypt</tabstop>
+  <tabstop>desktop</tabstop>
   <tabstop>clearInput</tabstop>
   <tabstop>inputEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
