@@ -1,1 +1,1 @@
-sudo apt-get install -f
+sudo apt install </path/to/deb/file/debfile.deb>
