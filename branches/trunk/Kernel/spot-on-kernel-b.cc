@@ -1057,8 +1057,7 @@ void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
 					const QString &messageType)
 {
   /*
-  ** Some of the following is similar to logic in
-  ** spoton_neighbor.
+  ** Some of the following is similar to logic in spoton_neighbor.
   */
 
   if(!setting("gui/acceptGeminis", true).toBool())

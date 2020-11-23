@@ -1055,8 +1055,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   if(!s_crypt)
     return QList<QByteArray> ();
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
 
   if(fileInfo.exists())
     {
@@ -4803,8 +4802,8 @@ void spoton_kernel::slotRetrieveMail(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
