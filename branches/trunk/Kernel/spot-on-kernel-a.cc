@@ -5133,8 +5133,14 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   if(keyType == "poptastic" && publicKey.contains("-poptastic"))
     {
       postPoptasticMessage
-	(attachmentData, message, receiverName, subject, mode,
-	 fromAccount, date, mailOid);
+	(attachmentData,
+	 message,
+	 receiverName,
+	 subject,
+	 mode,
+	 fromAccount,
+	 date,
+	 mailOid);
       return;
     }
 
