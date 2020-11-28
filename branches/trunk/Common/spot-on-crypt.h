@@ -91,6 +91,8 @@ class spoton_crypt
 			      const QByteArray &key,
 			      const QByteArray &hashType,
 			      bool *ok);
+  static QByteArray preferredHMAC(const QByteArray &data,
+				  const QByteArray &key);
   static QByteArray publicGPG(spoton_crypt *crypt);
   static QByteArray publicKeyEncrypt(const QByteArray &data,
 				     const QByteArray &pk,

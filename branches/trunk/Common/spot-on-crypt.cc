@@ -28,6 +28,7 @@
 #include <QDataStream>
 #include <QDir>
 #include <QElapsedTimer>
+#include <QMessageAuthenticationCode>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -1229,6 +1230,16 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
   gcry_md_close(hd);
   return hash;
+}
+
+QByteArray spoton_crypt::preferredHMAC(const QByteArray &data,
+				       const QByteArray &key)
+{
+  QMessageAuthenticationCode hd(QCryptographicHash::Sha3_512);
+
+  hd.setKey(key);
+  hd.addData(data);
+  return hd.result(); 
 }
 
 QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
