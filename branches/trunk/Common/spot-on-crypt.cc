@@ -3507,6 +3507,11 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
   return ok;
 }
 
+const char *spoton_crypt::preferredHMACAlgorithm(void)
+{
+  return "sha3_512";
+}
+
 qint64 spoton_crypt::publicKeyCount(void)
 {
   QString connectionName("");
