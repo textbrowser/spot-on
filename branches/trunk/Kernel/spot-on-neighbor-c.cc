@@ -68,7 +68,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 	  spoton_crypt crypt(symmetricKeys.value(1),
-			     "sha512",
+			     "sha512", // Buzz
 			     QByteArray(),
 			     symmetricKeys.value(0),
 			     0,
@@ -134,7 +134,7 @@ QString spoton_neighbor::findMessageType
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append("aes256");
 	      symmetricKeys.append(gemini.second);
-	      symmetricKeys.append("sha512");
+	      symmetricKeys.append(spoton_crypt::preferredHashAlgorithm());
 	      goto done_label;
 	    }
 	  else
@@ -1523,7 +1523,7 @@ void spoton_neighbor::process0002b
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      spoton_crypt crypt(symmetricKeys.value(1),
-				 "sha512",
+				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
 				 symmetricKeys.value(0),
 				 0,
@@ -2068,7 +2068,7 @@ void spoton_neighbor::process0040a(int length,
 	      QByteArray data(list.value(0));
 	      bool ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
-				 "sha512",
+				 "sha512", // Buzz
 				 QByteArray(),
 				 symmetricKeys.value(0),
 				 0,
@@ -2153,7 +2153,7 @@ void spoton_neighbor::process0040b(int length,
 	      QByteArray data(list.value(0));
 	      bool ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
-				 "sha512",
+				 "sha512", // Buzz
 				 QByteArray(),
 				 symmetricKeys.value(0),
 				 0,
@@ -2404,7 +2404,9 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		  (QDateTime::currentDateTime().toUTC().
 		   toString("MMddyyyyhhmm").
 		   toLatin1() + accountClientSentSalt + salt,
-		   name + password, "sha512", &ok);
+		   name + password,
+		   spoton_crypt::preferredHashAlgorithm(),
+		   &ok);
 
 	      if(ok)
 		{
@@ -2421,7 +2423,9 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 			(QDateTime::currentDateTime().toUTC().addSecs(60).
 			 toString("MMddyyyyhhmm").
 			 toLatin1() + accountClientSentSalt + salt,
-			 name + password, "sha512", &ok);
+			 name + password,
+			 spoton_crypt::preferredHashAlgorithm(),
+			 &ok);
 
 		      if(ok)
 			{

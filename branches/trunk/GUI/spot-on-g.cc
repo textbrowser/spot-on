@@ -498,7 +498,7 @@ void spoton::slotBuzzInvite(void)
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
      toBase64());
-  QByteArray hashType("sha512");
+  QByteArray hashType("sha512"); // Buzz
   QByteArray id;
   QPair<QByteArray, QByteArray> keys;
   QPointer<spoton_buzzpage> page;

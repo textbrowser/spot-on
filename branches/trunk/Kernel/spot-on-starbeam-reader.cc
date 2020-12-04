@@ -362,7 +362,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 
       {
 	spoton_crypt crypt("aes256",
-			   "sha512",
+			   spoton_crypt::preferredHashAlgorithm(),
 			   QByteArray(),
 			   pair.first,
 			   pair.second,

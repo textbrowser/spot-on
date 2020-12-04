@@ -266,7 +266,7 @@ void spoton_starbeam_writer::processData(void)
       bool ok = true;
       spoton_crypt crypt
 	("aes256",
-	 "sha512",
+	 spoton_crypt::preferredHashAlgorithm(),
 	 QByteArray(),
 	 novas.at(i).mid(0,
 			 static_cast<int> (spoton_crypt::
@@ -700,7 +700,7 @@ void spoton_starbeam_writer::processData(void)
 
       {
 	spoton_crypt crypt("aes256",
-			   "sha512",
+			   spoton_crypt::preferredHashAlgorithm(),
 			   QByteArray(),
 			   pair.first,
 			   pair.second,
