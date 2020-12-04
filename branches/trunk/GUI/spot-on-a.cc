@@ -5582,7 +5582,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 
   QByteArray data;
   spoton_crypt crypt(cipherType,
-		     "sha512",
+		     spoton_crypt::preferredHashAlgorithm(),
 		     QByteArray(),
 		     symmetricKey,
 		     hashKey,

@@ -1050,7 +1050,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
       QByteArray computedHash;
       spoton_crypt crypt(list.value(1), // Cipher Type
-			 "sha512",
+			 spoton_crypt::preferredHashAlgorithm(),
 			 QByteArray(),
 			 list.value(0), // Symmetric Key
 			 list.value(2), // Hash Key
@@ -3157,7 +3157,7 @@ void spoton::slotCopyFriendshipBundle(void)
 
   QByteArray data;
   spoton_crypt crypt(cipherType,
-		     "sha512",
+		     spoton_crypt::preferredHashAlgorithm(),
 		     QByteArray(),
 		     symmetricKey,
 		     hashKey,

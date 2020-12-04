@@ -1265,7 +1265,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 
   gemini = spoton_crypt::derivedKeys
     ("aes256",
-     "sha512",
+     spoton_crypt::preferredHashAlgorithm(),
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),
@@ -1310,7 +1310,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
 
   gemini = spoton_crypt::derivedKeys
     ("aes256",
-     "sha512",
+     spoton_crypt::preferredHashAlgorithm(),
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
      smp->guessSha(),

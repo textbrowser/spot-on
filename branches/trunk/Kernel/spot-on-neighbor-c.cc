@@ -109,7 +109,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 	  spoton_crypt crypt("aes256",
-			     "sha512",
+			     spoton_crypt::preferredHashAlgorithm(),
 			     QByteArray(),
 			     gemini.first,
 			     0,

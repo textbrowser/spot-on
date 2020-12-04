@@ -1024,8 +1024,11 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 		    if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 		      {
 			QByteArray computedHash
-			  (spoton_crypt::keyedHash(data, gemini.second,
-						   "sha512", &ok));
+			  (spoton_crypt::
+			   keyedHash(data,
+				     gemini.second,
+				     spoton_crypt::preferredHashAlgorithm(),
+				     &ok));
 
 			if(ok)
 			  if(!computedHash.isEmpty() && !hash.isEmpty() &&
@@ -1576,7 +1579,10 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTime().toUTC().
 		       toString("MMddyyyyhhmm").
-		       toLatin1() + salt, name + password, "sha512", &ok);
+		       toLatin1() + salt,
+		       name + password,
+		       spoton_crypt::preferredHashAlgorithm(),
+		       &ok);
 
 		  if(ok)
 		    if(!hash.isEmpty() && !newHash.isEmpty() &&
@@ -1590,7 +1596,10 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTime().toUTC().addSecs(60).
 		       toString("MMddyyyyhhmm").
-		       toLatin1() + salt, name + password, "sha512", &ok);
+		       toLatin1() + salt,
+		       name + password,
+		       spoton_crypt::preferredHashAlgorithm(),
+		       &ok);
 
 		  if(ok)
 		    if(!hash.isEmpty() && !newHash.isEmpty() &&

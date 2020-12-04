@@ -9,7 +9,7 @@ Gemini Encryption Key (Base-64)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
 }
 EOL
 {
@@ -97,7 +97,7 @@ Gemini Encryption Key (Base-64)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
 }
 EOL
 {
@@ -377,7 +377,7 @@ Gemini Encryption Key (Base-64)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
 }
 EOL
 {
@@ -489,12 +489,12 @@ Account Authentication
 Echoed? No
 
 Message Type ("0050") (Client Request)
-0 - Keyed SHA-512 Digest (Base-64)
+0 - Keyed SHA3-512 Digest (Base-64)
 EOL
 1 - Random Data (Base-64)
 
 Message Type ("0051") (Server Response)
-0 - Keyed SHA-512 Digest (Base-64)
+0 - Keyed SHA3-512 Digest (Base-64)
 EOL
 1 - Random Data (Base-64)
 
@@ -522,14 +522,14 @@ Optional Nova AES-256 (Base-64)
 	10 - Ultra?
 	11 - SHA3-512 File Digest
 }
-Optional Nova SHA-512
+Optional Nova SHA3-512
 {
 	0 - Keyed Message Code (Base-64)
 }
 }
 EOL
 {
-	0 - Keyed SHA-512 Message Code (Base-64)
+	0 - Keyed SHA3-512 Message Code (Base-64)
 }
 EOL
 {
@@ -548,14 +548,14 @@ Optional Nova AES-256 (Base-64)
 	2 - UTC Date
 	3 - ID
 }
-Optional Nova SHA-512
+Optional Nova SHA3-512
 {
 	0 - Keyed Message Code (Base-64)
 }
 }
 EOL
 {
-	0 - Keyed SHA-512 Message Code (Base-64)
+	0 - Keyed SHA3-512 Message Code (Base-64)
 }
 EOL
 {

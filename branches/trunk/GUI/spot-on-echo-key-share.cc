@@ -389,13 +389,14 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 
   QPair<QByteArray, QByteArray> keys;
   QString error("");
+  const char *hmacAlgorithm = spoton_crypt::preferredHashAlgorithm();
 
   keys = spoton_crypt::derivedKeys
     ("aes256",
-     "sha512",
+     hmacAlgorithm,
      static_cast<unsigned long int> (15000),
      name.mid(0, 16).toUtf8(),
-     QByteArray("aes256").toHex() + QByteArray("sha512").toHex() +
+     QByteArray("aes256").toHex() + QByteArray(hmacAlgorithm).toHex() +
      name.mid(16).toUtf8(),
      spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
      false,
@@ -404,7 +405,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
   if(!error.isEmpty())
     return;
 
-  save(keys, "aes256", "sha512", 15000, name, id);
+  save(keys, "aes256", hmacAlgorithm, 15000, name, id);
 }
 
 void spoton_echo_key_share::deleteSelected(void)

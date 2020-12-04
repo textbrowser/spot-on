@@ -85,7 +85,7 @@ QList<QByteArray> spoton_receive::process0000
 	      QByteArray computedHash;
 	      QByteArray message(list.value(0));
 	      spoton_crypt crypt("aes256",
-				 "sha512",
+				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
 				 gemini.first,
 				 gemini.second,
@@ -614,7 +614,7 @@ QList<QByteArray> spoton_receive::process0000b
       */
 
       spoton_crypt crypt("aes256",
-			 "sha512",
+			 spoton_crypt::preferredHashAlgorithm(),
 			 QByteArray(),
 			 symmetricKeys.value(0),
 			 0,
@@ -1154,7 +1154,7 @@ QList<QByteArray> spoton_receive::process0013
 	      QByteArray computedHash;
 	      QByteArray message(list.value(0));
 	      spoton_crypt crypt("aes256",
-				 "sha512",
+				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
 				 gemini.first,
 				 gemini.second,
@@ -1959,7 +1959,7 @@ QString spoton_receive::findMessageType
 	  QByteArray data;
 	  bool ok = true;
 	  spoton_crypt crypt("aes256",
-			     "sha512",
+			     spoton_crypt::preferredHashAlgorithm(),
 			     QByteArray(),
 			     gemini.first,
 			     0,
@@ -1985,7 +1985,7 @@ QString spoton_receive::findMessageType
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append("aes256");
 	      symmetricKeys.append(gemini.second);
-	      symmetricKeys.append("sha512");
+	      symmetricKeys.append(spoton_crypt::preferredHashAlgorithm());
 	      goto done_label;
 	    }
 	  else

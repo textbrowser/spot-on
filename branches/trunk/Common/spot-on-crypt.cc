@@ -3507,7 +3507,12 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
   return ok;
 }
 
-const char *spoton_crypt::preferredHMACAlgorithm(void)
+const char *spoton_crypt::preferredCipherAlgorithm(void)
+{
+  return "aes256";
+}
+
+const char *spoton_crypt::preferredHashAlgorithm(void)
 {
   return "sha3_512";
 }

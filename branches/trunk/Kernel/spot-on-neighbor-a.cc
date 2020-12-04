@@ -1371,7 +1371,10 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 
   hash = spoton_crypt::keyedHash
     (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
-     toLatin1() + clientSalt + salt, name + password, "sha512", &ok);
+     toLatin1() + clientSalt + salt,
+     name + password,
+     spoton_crypt::preferredHashAlgorithm(),
+     &ok);
 
   if(ok)
     message = spoton_send::message0051(hash, salt);
@@ -2281,7 +2284,10 @@ void spoton_neighbor::slotSendAccountInformation(void)
 
 	hash = spoton_crypt::keyedHash
 	  (QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmm").
-	   toLatin1() + salt, name + password, "sha512", &ok);
+	   toLatin1() + salt,
+	   name + password,
+	   spoton_crypt::preferredHashAlgorithm(),
+	   &ok);
 
 	if(ok)
 	  message = spoton_send::message0050(hash, salt);

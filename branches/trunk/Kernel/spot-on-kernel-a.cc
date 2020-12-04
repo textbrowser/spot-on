@@ -3184,14 +3184,15 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			QByteArray bytes;
 			QByteArray messageCode;
 			QDataStream stream(&bytes, QIODevice::WriteOnly);
-			spoton_crypt crypt("aes256",
-					   "sha512" ,
-					   QByteArray(),
-					   gemini.first,
-					   gemini.second,
-					   0,
-					   0,
-					   "");
+			spoton_crypt crypt
+			  ("aes256",
+			   spoton_crypt::preferredHashAlgorithm(),
+			   QByteArray(),
+			   gemini.first,
+			   gemini.second,
+			   0,
+			   0,
+			   "");
 
 			stream << QByteArray("0013")
 			       << data;
@@ -4199,7 +4200,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		    QByteArray signature;
 		    QDateTime dateTime(QDateTime::currentDateTime());
 		    spoton_crypt crypt(symmetricKeyAlgorithm,
-				       "sha512",
+				       spoton_crypt::preferredHashAlgorithm(),
 				       QByteArray(),
 				       gemini.first,
 				       gemini.second,
@@ -4480,8 +4481,8 @@ void spoton_kernel::slotMessageReceivedFromUI
 	    QByteArray bytes;
 	    QByteArray messageCode;
 	    QDataStream stream(&bytes, QIODevice::WriteOnly);
-	    spoton_crypt crypt("aes256",
-			       "sha512" ,
+	    spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
+			       spoton_crypt::preferredHashAlgorithm(),
 			       QByteArray(),
 			       gemini.first,
 			       gemini.second,
@@ -5284,7 +5285,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  */
 
 		  institutionCipherType = "aes256";
-		  institutionHashType = "sha512";
+		  institutionHashType = spoton_crypt::preferredHashAlgorithm();
 		  institutionName = spoton_crypt::weakRandomBytes
 		    (spoton_crypt::cipherKeyLength("aes256"));
 		  institutionPostalAddress =
