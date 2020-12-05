@@ -1251,8 +1251,8 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray cipherType(setting("gui/fsCipherType",
-				"aes256").toString().toLatin1());
+  QByteArray cipherType(setting("gui/fsCipherType", "aes256").
+			toString().toLatin1());
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey
@@ -1454,8 +1454,8 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray cipherType(setting("gui/fsCipherType",
-				"aes256").toString().toLatin1());
+  QByteArray cipherType(setting("gui/fsCipherType", "aes256").
+			toString().toLatin1());
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
   QByteArray publicKey

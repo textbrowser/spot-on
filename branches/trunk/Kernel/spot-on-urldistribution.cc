@@ -503,11 +503,11 @@ void spoton_urldistribution::run(void)
     return;
 
   QByteArray cipherType
-    (spoton_kernel::setting("gui/kernelCipherType",
-			    "aes256").toString().toLatin1());
+    (spoton_kernel::setting("gui/kernelCipherType", "aes256").
+     toString().toLatin1());
   QByteArray hashType
-    (spoton_kernel::setting("gui/kernelHashType",
-			    "sha512").toString().toLatin1());
+    (spoton_kernel::setting("gui/kernelHashType", "sha512").
+     toString().toLatin1());
   size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength == 0)

@@ -692,10 +692,10 @@ void spoton_gui_server::slotReadyRead(void)
 		      try
 			{
 			  s_crypt = new (std::nothrow) spoton_crypt
-			    (spoton_kernel::setting("gui/cipherType",
-						    "aes256").toString(),
-			     spoton_kernel::setting("gui/hashType",
-						    "sha512").toString(),
+			    (spoton_kernel::
+			     setting("gui/cipherType", "aes256").toString(),
+			     spoton_kernel::
+			     setting("gui/hashType", "sha512").toString(),
 			     QByteArray(),
 			     QByteArray::fromBase64(list.value(0)),
 			     QByteArray::fromBase64(list.value(1)),
