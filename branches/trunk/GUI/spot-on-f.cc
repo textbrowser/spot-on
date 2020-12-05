@@ -1086,7 +1086,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	continue;
 
       QPair<QByteArray, QByteArray> keys;
-      spoton_crypt crypt("aes256",
+      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			 spoton_crypt::preferredHashAlgorithm(),
 			 QByteArray(),
 			 QByteArray(),

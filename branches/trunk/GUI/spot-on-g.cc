@@ -681,7 +681,10 @@ void spoton::slotChatSecretsActionSelected(void)
   QPair<QByteArray, QByteArray> gemini;
 
   gemini.first = action->property("stream").toString().mid
-    (0, static_cast<int> (spoton_crypt::cipherKeyLength("aes256"))).toLatin1();
+    (0, static_cast<int> (spoton_crypt::
+			  cipherKeyLength(spoton_crypt::
+					  preferredCipherAlgorithm()))).
+    toLatin1();
   gemini.second = action->property("stream").toString().mid
     (gemini.first.length(), spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
     toLatin1();

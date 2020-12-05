@@ -3047,8 +3047,7 @@ void spoton::slotCopyFriendshipBundle(void)
   */
 
   QString neighborOid("");
-  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").
+  QByteArray cipherType(m_settings.value("gui/kernelCipherType", "aes256").
 			toString().toLatin1());
   QByteArray hashKey;
   QByteArray keyInformation;
@@ -3974,7 +3973,9 @@ void spoton::slotGenerateGeminiInChat(void)
   QPair<QByteArray, QByteArray> gemini;
 
   gemini.first = spoton_crypt::
-    strongRandomBytes(spoton_crypt::cipherKeyLength("aes256"));
+    strongRandomBytes(spoton_crypt::
+		      cipherKeyLength(spoton_crypt::
+				      preferredCipherAlgorithm()));
   gemini.second = spoton_crypt::strongRandomBytes
     (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 
@@ -4340,7 +4341,9 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
 	QByteArray bytes(goldbug.toUtf8());
 	QByteArray magnet;
-	int size = static_cast<int> (spoton_crypt::cipherKeyLength("aes256"));
+	int size = static_cast<int>
+	  (spoton_crypt::cipherKeyLength(spoton_crypt::
+					 preferredCipherAlgorithm()));
 
 	magnet.append("magnet:?aa=sha512&ak=");
 	magnet.append
@@ -6419,7 +6422,9 @@ void spoton::slotSendMail(void)
 
 		QByteArray bytes(m_ui.goldbug->text().toUtf8());
 		int size = static_cast<int>
-		  (spoton_crypt::cipherKeyLength("aes256"));
+		  (spoton_crypt::
+		   cipherKeyLength(spoton_crypt::
+				   preferredCipherAlgorithm()));
 
 		goldbug.append("magnet:?aa=sha512&ak=");
 		goldbug.append

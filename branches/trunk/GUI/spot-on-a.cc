@@ -2636,7 +2636,9 @@ spoton::spoton(void):QMainWindow()
 		       m_settings.value("gui/buzzName", "unknown").
 		       toByteArray().length()).trimmed());
   m_ui.channel->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+    (static_cast<int> (spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())));
   m_ui.emailName->clear();
   m_ui.emailName->addItem
     (QString::fromUtf8(m_settings.value("gui/emailName", "unknown").
@@ -2659,7 +2661,9 @@ spoton::spoton(void):QMainWindow()
 		       toByteArray().length()).trimmed());
   m_ui.username->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.receiveNova->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
+    (static_cast<int> (spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())) + 512);
   m_optionsUi.external_ip_url->setText
     (m_settings.value("gui/external_ip_url",
 		      "https://api.ipify.org").toString());
@@ -2667,11 +2671,17 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/sslControlString",
 		      spoton_common::SSL_CONTROL_STRING).toString());
   m_ui.etpEncryptionKey->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+    (static_cast<int> (spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())));
   m_ui.institutionName->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+    (static_cast<int> (spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())));
   m_ui.transmitNova->setMaxLength
-    (static_cast<int> (spoton_crypt::cipherKeyLength("aes256")) + 512);
+    (static_cast<int> (spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())) + 512);
   m_ui.channelType->addItems(spoton_crypt::cipherTypes());
   m_ui.cipherType->blockSignals(true);
   m_ui.cipherType->addItems(spoton_crypt::cipherTypes());
@@ -5472,8 +5482,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   */
 
   QString neighborOid("");
-  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").
+  QByteArray cipherType(m_settings.value("gui/kernelCipherType", "aes256").
 			toString().toLatin1());
   QByteArray hashKey;
   QByteArray keyInformation;

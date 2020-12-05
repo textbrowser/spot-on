@@ -4227,10 +4227,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/emailRetrievalInterval", integer);
   str = settings.value("gui/fsCipherType").toString();
 
-  if(!(str == "aes256" ||
-       str == "camellia256" ||
-       str == "serpent256" ||
-       str == "twofish"))
+  if(!spoton_crypt::cipherTypes().contains(str))
     str = "aes256";
 
   settings.insert("gui/fsCipherType", str);
@@ -4286,8 +4283,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/iterationCount", integer);
   str = settings.value("gui/kernelCipherType").toString();
 
-  if(!(str == "aes256" || str == "camellia256" ||
-       str == "serpent256" || str == "twofish"))
+  if(!spoton_crypt::cipherTypes().contains(str))
     str = "aes256";
 
   settings.insert("gui/kernelCipherType", str);

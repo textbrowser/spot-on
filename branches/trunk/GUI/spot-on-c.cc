@@ -2222,9 +2222,8 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   */
 
   QString neighborOid("");
-  QByteArray cipherType(m_settings.value("gui/kernelCipherType",
-					 "aes256").toString().
-			toLatin1());
+  QByteArray cipherType(m_settings.value("gui/kernelCipherType", "aes256").
+			toString().toLatin1());
   QByteArray hashKey;
   QByteArray keyInformation;
   QByteArray publicKey;
@@ -2929,7 +2928,9 @@ void spoton::slotGenerateNova(void)
 {
   QByteArray nova
     (spoton_crypt::
-     strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")) +
+     strongRandomBytes(spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())) +
      spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 

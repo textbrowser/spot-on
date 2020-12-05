@@ -84,7 +84,7 @@ QList<QByteArray> spoton_receive::process0000
 	    {
 	      QByteArray computedHash;
 	      QByteArray message(list.value(0));
-	      spoton_crypt crypt("aes256",
+	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
 				 gemini.first,
@@ -613,7 +613,7 @@ QList<QByteArray> spoton_receive::process0000b
       ** process() methods perform redundant tests.
       */
 
-      spoton_crypt crypt("aes256",
+      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			 spoton_crypt::preferredHashAlgorithm(),
 			 QByteArray(),
 			 symmetricKeys.value(0),
@@ -1153,7 +1153,7 @@ QList<QByteArray> spoton_receive::process0013
 	    {
 	      QByteArray computedHash;
 	      QByteArray message(list.value(0));
-	      spoton_crypt crypt("aes256",
+	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
 				 gemini.first,
@@ -1958,7 +1958,7 @@ QString spoton_receive::findMessageType
 	{
 	  QByteArray data;
 	  bool ok = true;
-	  spoton_crypt crypt("aes256",
+	  spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			     spoton_crypt::preferredHashAlgorithm(),
 			     QByteArray(),
 			     gemini.first,
@@ -1983,7 +1983,7 @@ QString spoton_receive::findMessageType
 	  if(!type.isEmpty())
 	    {
 	      symmetricKeys.append(gemini.first);
-	      symmetricKeys.append("aes256");
+	      symmetricKeys.append(spoton_crypt::preferredCipherAlgorithm());
 	      symmetricKeys.append(gemini.second);
 	      symmetricKeys.append(spoton_crypt::preferredHashAlgorithm());
 	      goto done_label;

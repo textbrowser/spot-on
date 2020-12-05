@@ -1264,7 +1264,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   QString error("");
 
   gemini = spoton_crypt::derivedKeys
-    ("aes256",
+    (spoton_crypt::preferredCipherAlgorithm(),
      spoton_crypt::preferredHashAlgorithm(),
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
@@ -1309,7 +1309,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   QString error("");
 
   gemini = spoton_crypt::derivedKeys
-    ("aes256",
+    (spoton_crypt::preferredCipherAlgorithm(),
      spoton_crypt::preferredHashAlgorithm(),
      spoton_common::GEMINI_ITERATION_COUNT,
      smp->guessWhirlpool().toHex(),
@@ -2085,7 +2085,10 @@ void spoton::slotShareStarBeam(void)
   */
 
   QByteArray eKey
-    (spoton_crypt::strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")).
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())).
      toBase64());
   QByteArray mKey
     (spoton_crypt::
@@ -2095,11 +2098,15 @@ void spoton::slotShareStarBeam(void)
   bool ok = true;
 
   magnet.append("magnet:?");
-  magnet.append("ct=aes256&");
+  magnet.append("ct=");
+  magnet.append(spoton_crypt::preferredCipherAlgorithm());
+  magnet.append("&");
   magnet.append("ek=");
   magnet.append(eKey);
   magnet.append("&");
-  magnet.append("ht=sha512&");
+  magnet.append("ht=");
+  magnet.append(spoton_crypt::preferredHashAlgorithm());
+  magnet.append("&");
   magnet.append("mk=");
   magnet.append(mKey);
   magnet.append("&");

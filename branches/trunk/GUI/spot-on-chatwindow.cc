@@ -594,7 +594,10 @@ void spoton_chatwindow::slotShareStarBeam(void)
   */
 
   QByteArray eKey
-    (spoton_crypt::strongRandomBytes(spoton_crypt::cipherKeyLength("aes256")).
+    (spoton_crypt::
+     strongRandomBytes(spoton_crypt::
+		       cipherKeyLength(spoton_crypt::
+				       preferredCipherAlgorithm())).
      toBase64());
   QByteArray mKey
     (spoton_crypt::

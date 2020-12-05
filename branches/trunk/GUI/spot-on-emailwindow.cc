@@ -824,7 +824,9 @@ void spoton_emailwindow::slotSendMail(void)
 
 		QByteArray bytes(m_ui.goldbug->text().toUtf8());
 		int size = static_cast<int>
-		  (spoton_crypt::cipherKeyLength("aes256"));
+		  (spoton_crypt::
+		   cipherKeyLength(spoton_crypt::
+				   preferredCipherAlgorithm()));
 
 		goldbug.append("magnet:?aa=sha512&ak=");
 		goldbug.append
