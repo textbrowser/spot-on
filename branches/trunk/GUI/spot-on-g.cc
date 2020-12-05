@@ -493,7 +493,7 @@ void spoton::slotBuzzInvite(void)
 							    maxLength())).
 		     toBase64().mid(0, m_ui.channel->maxLength()));
   QByteArray channelSalt(spoton_crypt::strongRandomBytes(512).toBase64());
-  QByteArray channelType("aes256");
+  QByteArray channelType("aes256"); // Buzz
   QByteArray hashKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).

@@ -828,11 +828,14 @@ void spoton_emailwindow::slotSendMail(void)
 		   cipherKeyLength(spoton_crypt::
 				   preferredCipherAlgorithm()));
 
-		goldbug.append("magnet:?aa=sha512&ak=");
+		goldbug.append("magnet:?aa=");
+		goldbug.append(spoton_crypt::preferredHashAlgorithm());
+		goldbug.append("&ak=");
 		goldbug.append
 		  (bytes.mid(size,
 			     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-		goldbug.append("&ea=aes256");
+		goldbug.append("&ea=");
+		goldbug.append(spoton_crypt::preferredCipherAlgorithm());
 		goldbug.append("&ek=");
 		goldbug.append(bytes.mid(0, size));
 		goldbug.append("&xt=urn:forward-secrecy");

@@ -607,12 +607,13 @@ void spoton_chatwindow::slotShareStarBeam(void)
   bool ok = true;
 
   magnet.append("magnet:?");
-  magnet.append("ct=aes256&");
-  magnet.append("ek=");
+  magnet.append("ct=");
+  magnet.append(spoton_crypt::preferredCipherAlgorithm());
+  magnet.append("&ek=");
   magnet.append(eKey);
-  magnet.append("&");
-  magnet.append("ht=sha512&");
-  magnet.append("mk=");
+  magnet.append("&ht=");
+  magnet.append(spoton_crypt::preferredHashAlgorithm());
+  magnet.append("&mk=");
   magnet.append(mKey);
   magnet.append("&");
   magnet.append("xt=urn:starbeam");
