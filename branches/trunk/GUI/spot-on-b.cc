@@ -4345,10 +4345,13 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 	  (spoton_crypt::cipherKeyLength(spoton_crypt::
 					 preferredCipherAlgorithm()));
 
-	magnet.append("magnet:?aa=sha512&ak=");
+	magnet.append("magnet:?aa=");
+	magnet.append(spoton_crypt::preferredHashAlgorithm());
+	magnet.append("&ak=");
 	magnet.append
 	  (bytes.mid(size, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-	magnet.append("&ea=aes256");
+	magnet.append("&ea=");
+	magnet.append(spoton_crypt::preferredCipherAlgorithm());
 	magnet.append("&ek=");
 	magnet.append(bytes.mid(0, size));
 	magnet.append("&xt=urn:forward-secrecy");
@@ -6426,11 +6429,14 @@ void spoton::slotSendMail(void)
 		   cipherKeyLength(spoton_crypt::
 				   preferredCipherAlgorithm()));
 
-		goldbug.append("magnet:?aa=sha512&ak=");
+		goldbug.append("magnet:?aa=");
+		goldbug.append(spoton_crypt::preferredHashAlgorithm());
+		goldbug.append("&ak=");
 		goldbug.append
 		  (bytes.mid(size,
 			     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
-		goldbug.append("&ea=aes256");
+		goldbug.append("&ea=");
+		goldbug.append(spoton_crypt::preferredCipherAlgorithm());
 		goldbug.append("&ek=");
 		goldbug.append(bytes.mid(0, size));
 		goldbug.append("&xt=urn:forward-secrecy");
