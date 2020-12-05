@@ -108,7 +108,7 @@ QString spoton_neighbor::findMessageType
 	{
 	  QByteArray data;
 	  bool ok = true;
-	  spoton_crypt crypt("aes256",
+	  spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			     spoton_crypt::preferredHashAlgorithm(),
 			     QByteArray(),
 			     gemini.first,
@@ -132,7 +132,7 @@ QString spoton_neighbor::findMessageType
 	  if(type == "0000" || type == "0000b" || type == "0013")
 	    {
 	      symmetricKeys.append(gemini.first);
-	      symmetricKeys.append("aes256");
+	      symmetricKeys.append(spoton_crypt::preferredCipherAlgorithm());
 	      symmetricKeys.append(gemini.second);
 	      symmetricKeys.append(spoton_crypt::preferredHashAlgorithm());
 	      goto done_label;
@@ -3891,12 +3891,16 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	if(messageType == "0000a")
 	  if(!gemini.isEmpty() && !geminiHashKey.isEmpty())
 	    if(static_cast<size_t> (gemini.length()) ==
-	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
+	       spoton_crypt::
+	       cipherKeyLength(spoton_crypt::
+			       preferredCipherAlgorithm()) / 2 &&
 	       geminiHashKey.length() ==
 	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
 	      {
 		bytes1 = spoton_crypt::strongRandomBytes
-		  (spoton_crypt::cipherKeyLength("aes256") / 2);
+		  (spoton_crypt::
+		   cipherKeyLength(spoton_crypt::
+				   preferredCipherAlgorithm()) / 2);
 		bytes2 = spoton_crypt::strongRandomBytes
 		  (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2);
 		geminis.first.append(bytes1);
@@ -3907,7 +3911,8 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	if(messageType == "0000c")
 	  if(!gemini.isEmpty() && !geminiHashKey.isEmpty())
 	    if(static_cast<size_t> (gemini.length()) ==
-	       spoton_crypt::cipherKeyLength("aes256") / 2 &&
+	       spoton_crypt::
+	       cipherKeyLength(spoton_crypt::preferredCipherAlgorithm()) / 2 &&
 	       geminiHashKey.length() ==
 	       spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES / 2)
 	      {

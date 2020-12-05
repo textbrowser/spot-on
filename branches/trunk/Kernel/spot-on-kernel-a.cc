@@ -1388,10 +1388,8 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
       {
 	QPair<QByteArray, QByteArray> keys
 	  (spoton_crypt::
-	   derivedKeys(setting("gui/cipherType",
-			       "aes256").toString(),
-		       setting("gui/hashType",
-			       "sha512").toString(),
+	   derivedKeys(setting("gui/cipherType", "aes256").toString(),
+		       setting("gui/hashType", "sha512").toString(),
 		       static_cast<unsigned long int> (setting("gui/"
 							       "iterationCount",
 							       10000).toInt()),
@@ -1992,7 +1990,9 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	continue;
 
       QByteArray computedHash;
-      int length = static_cast<int> (spoton_crypt::cipherKeyLength("aes256"));
+      int length = static_cast<int>
+	(spoton_crypt::
+	 cipherKeyLength(spoton_crypt::preferredCipherAlgorithm()));
       spoton_crypt crypt(tokenType.split('\n').value(0),
 			 tokenType.split('\n').value(1),
 			 QByteArray(),
@@ -3185,7 +3185,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			QByteArray messageCode;
 			QDataStream stream(&bytes, QIODevice::WriteOnly);
 			spoton_crypt crypt
-			  ("aes256",
+			  (spoton_crypt::preferredCipherAlgorithm(),
 			   spoton_crypt::preferredHashAlgorithm(),
 			   QByteArray(),
 			   gemini.first,
@@ -3547,7 +3547,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
       ** Now, the destination tag.
       */
 
-      spoton_crypt crypt("aes256",
+      spoton_crypt crypt("aes256", // Buzz
 			 "sha512", // Buzz
 			 QByteArray(),
 			 QByteArray(),
@@ -4122,7 +4122,8 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 					  toByteArray()),
 		   &ok);
 
-	      QByteArray symmetricKeyAlgorithm("aes256");
+	      QByteArray symmetricKeyAlgorithm
+		(spoton_crypt::preferredCipherAlgorithm());
 	      size_t symmetricKeyLength = 0;
 
 	      if(ok)
@@ -4365,12 +4366,12 @@ void spoton_kernel::slotMessageReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray cipherType(setting("gui/kernelCipherType",
-				"aes256").toString().toLatin1());
+  QByteArray cipherType(setting("gui/kernelCipherType", "aes256").
+			toString().toLatin1());
   QByteArray data;
   QByteArray hashKey;
-  QByteArray hashType(setting("gui/kernelHashType",
-			      "sha512").toString().toLatin1());
+  QByteArray hashType(setting("gui/kernelHashType", "sha512").
+		      toString().toLatin1());
   QByteArray keyInformation;
   QByteArray startsWith;
   QByteArray symmetricKey;
@@ -4939,8 +4940,8 @@ void spoton_kernel::slotRetrieveMail(void)
 		 toString().toLatin1());
 	      QByteArray data;
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray message(spoton_crypt::strongRandomBytes(64));
 	      QByteArray publicKey;
@@ -5054,11 +5055,11 @@ void spoton_kernel::slotRetrieveMail(void)
 
 void spoton_kernel::slotScramble(void)
 {
-  QByteArray cipherType(setting("gui/kernelCipherType",
-				"aes256").toString().toLatin1());
+  QByteArray cipherType(setting("gui/kernelCipherType", "aes256").
+			toString().toLatin1());
   QByteArray data;
-  QByteArray hashType(setting("gui/kernelHashType",
-			      "sha512").toString().toLatin1());
+  QByteArray hashType(setting("gui/kernelHashType", "sha512").
+		      toString().toLatin1());
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   QByteArray message
     ((QRandomGenerator::global() ?
@@ -5284,10 +5285,13 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		  ** Artificial credentials.
 		  */
 
-		  institutionCipherType = "aes256";
+		  institutionCipherType = spoton_crypt::
+		    preferredCipherAlgorithm();
 		  institutionHashType = spoton_crypt::preferredHashAlgorithm();
 		  institutionName = spoton_crypt::weakRandomBytes
-		    (spoton_crypt::cipherKeyLength("aes256"));
+		    (spoton_crypt::
+		     cipherKeyLength(spoton_crypt::
+				     preferredCipherAlgorithm()));
 		  institutionPostalAddress =
 		    spoton_crypt::weakRandomBytes
 		    (spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);

@@ -357,11 +357,13 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
       QPair<QByteArray, QByteArray> pair;
 
       pair.first = nova.mid
-	(0, static_cast<int> (spoton_crypt::cipherKeyLength("aes256")));
+	(0, static_cast<int> (spoton_crypt::
+			      cipherKeyLength(spoton_crypt::
+					      preferredCipherAlgorithm())));
       pair.second = nova.mid(pair.first.length());
 
       {
-	spoton_crypt crypt("aes256",
+	spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			   spoton_crypt::preferredHashAlgorithm(),
 			   QByteArray(),
 			   pair.first,
