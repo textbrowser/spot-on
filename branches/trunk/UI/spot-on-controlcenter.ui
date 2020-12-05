@@ -848,12 +848,12 @@
                        </column>
                        <column>
                         <property name="text">
-                         <string>Gemini AES-256 Encryption Key</string>
+                         <string>Gemini Encryption Key</string>
                         </property>
                        </column>
                        <column>
                         <property name="text">
-                         <string>Gemini SHA-512 Hash Key</string>
+                         <string>Gemini Hash Key</string>
                         </property>
                        </column>
                        <column>
@@ -1632,7 +1632,7 @@
                         <item>
                          <widget class="QLineEdit" name="goldbug">
                           <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of AES-256 encryption and SHA-512 authentication. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of authentication and encryption. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="placeholderText">
                            <string>Optional Secret</string>

@@ -789,12 +789,10 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
 #if SPOTON_GOLDBUG == 1
       menu->addAction
-	(tr("&Generate Random Gemini Pair "
-	    "(AES-256 Key, SHA-512 Key) (Without Call)"),
+	(tr("&Generate Random Gemini Pair (Without Call)"),
 	 this, SLOT(slotGenerateGeminiInChat(void)));
 #else
-      menu->addAction(tr("&Generate Random Gemini Pair "
-			 "(AES-256 Key, SHA-512 Key)"),
+      menu->addAction(tr("&Generate Random Gemini Pair"),
 		      this, SLOT(slotGenerateGeminiInChat(void)));
 #endif
       menu->addSeparator();

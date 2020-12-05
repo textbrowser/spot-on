@@ -3045,8 +3045,8 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		(setting("gui/kernelCipherType", "aes256").
 		 toString().toLatin1());
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray name;
 
@@ -3650,8 +3650,8 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		 &ok);
 
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
 	      QByteArray symmetricKeyAlgorithm
@@ -3881,8 +3881,8 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		   &ok);
 
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
 	      QByteArray symmetricKeyAlgorithm
@@ -5239,8 +5239,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		 toString().toLatin1());
 	      QByteArray data;
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray institutionHashType;
 	      QByteArray institutionName;
 	      QByteArray institutionPostalAddress;
@@ -5562,8 +5562,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      QByteArray data2;
 	      QByteArray hashKey1;
 	      QByteArray hashKey2;
-	      QByteArray hashType(setting("gui/kernelHashType",
-					  "sha512").toString().toLatin1());
+	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
+				  toString().toLatin1());
 	      QByteArray keyInformation1;
 	      QByteArray keyInformation2;
 	      QByteArray messageCode1;

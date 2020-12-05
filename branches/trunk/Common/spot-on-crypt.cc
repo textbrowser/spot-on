@@ -3514,7 +3514,7 @@ const char *spoton_crypt::preferredCipherAlgorithm(void)
 
 const char *spoton_crypt::preferredHashAlgorithm(void)
 {
-  return "sha3_512";
+  return "sha3-512";
 }
 
 qint64 spoton_crypt::publicKeyCount(void)
