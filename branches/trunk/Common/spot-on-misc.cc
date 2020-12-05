@@ -4227,15 +4227,16 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/emailRetrievalInterval", integer);
   str = settings.value("gui/fsCipherType").toString();
 
-  if(!(str == "aes256" || str == "camellia256" ||
-       str == "serpent256" || str == "twofish"))
+  if(!(str == "aes256" ||
+       str == "camellia256" ||
+       str == "serpent256" ||
+       str == "twofish"))
     str = "aes256";
 
   settings.insert("gui/fsCipherType", str);
   str = settings.value("gui/fsHashType").toString();
 
-  if(!(str == "sha512" || str == "stribog512" ||
-       str == "whirlpool"))
+  if(!spoton_crypt::hashTypes().contains(str))
     str = "sha512";
 
   settings.insert("gui/fsHashType", str);
@@ -4262,8 +4263,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/guiExternalIpInterval", integer);
   str = settings.value("gui/hashType").toString();
 
-  if(!(str == "sha512" || str == "stribog512" ||
-       str == "whirlpool"))
+  if(!spoton_crypt::hashTypes().contains(str))
     str = "sha512";
 
   settings.insert("gui/hashType", str);
@@ -4301,7 +4301,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   settings.insert("gui/kernelExternalIpInterval", integer);
   str = settings.value("gui/kernelHashType").toString();
 
-  if(!(str == "sha512" || str == "stribog512" || str == "whirlpool"))
+  if(!spoton_crypt::hashTypes().contains(str))
     str = "sha512";
 
   settings.insert("gui/kernelHashType", str);
