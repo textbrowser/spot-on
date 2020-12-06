@@ -1992,7 +1992,7 @@ QPushButton:pressed {
                   </column>
                   <column>
                    <property name="text">
-                    <string>Recipient SHA-512 Hash</string>
+                    <string>Recipient Hash</string>
                    </property>
                   </column>
                  </widget>

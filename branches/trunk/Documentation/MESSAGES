@@ -9,7 +9,7 @@ Gemini Encryption Key (Base-64)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) Message Code (Base-64)
 }
 EOL
 {
@@ -30,12 +30,12 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Name
 	2 - Message
 	3 - Sequence Number
 	4 - UTC Date
-	5 - Recipient's SHA-512 Digest (Not Distributed)
+	5 - Recipient's Digest (Not Distributed)
 	6 - Signature (First Group Items and Previous Six Items)
 }
 EOL
@@ -65,11 +65,11 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Gemini Encryption Key
 	2 - Gemini Digest Key
 	3 - UTC Date
-	4 - Recipient's SHA-512 Digest (Not Distributed)
+	4 - Recipient's Digest (Not Distributed)
 	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
@@ -88,16 +88,16 @@ Groups: 3
 Gemini Encryption Key (Base-64)
 {
 	0 - 0000b
-	1 - Dispatcher's SHA-512 Digest
+	1 - Dispatcher's Digest
 	2 - Gemini Encryption Key
 	3 - Gemini Digest Key
 	4 - UTC Date
-	5 - Recipient's SHA-512 Digest (Not Distributed)
+	5 - Recipient's Digest (Not Distributed)
 	6 - Signature (Previous Six Items)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) Message Code (Base-64)
 }
 EOL
 {
@@ -145,9 +145,9 @@ Public Key
 EOL
 Encryption Key 1
 {
-	0 - Dispatcher's SHA-512 Digest (Base-64)
+	0 - Dispatcher's Digest (Base-64)
 	EOL
-	1 - Recipient's SHA-512 Digest (Base-64)
+	1 - Recipient's Digest (Base-64)
 	EOL
 	2 - Signature (First Group Items and Previous Two Items) (Base-64)
 }
@@ -167,7 +167,7 @@ Public Key
 EOL
 Encryption Key 2
 {
-	0 - Dispatcher's SHA-512 Digest (Base-64)
+	0 - Dispatcher's Digest (Base-64)
 	EOL
 	1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
 	EOL
@@ -181,7 +181,7 @@ Encryption Key 2
 	EOL
 	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Recipient's SHA-512 Digest (Not Distributed)
+	7 - Recipient's Digest (Not Distributed)
 	EOL
 	8 - Signature (0001b Group Items and Previous Eight Items)
 	    (Optional Gold Bug) (Base-64)
@@ -218,7 +218,7 @@ Public Key
 EOL
 Encryption Key
 {
-	0 - Dispatcher's SHA-512 Digest (Base-64)
+	0 - Dispatcher's Digest (Base-64)
 	EOL
 	1 - Dispatcher's Name (Optional Gold Bug) (Base-64)
 	EOL
@@ -232,7 +232,7 @@ Encryption Key
 	EOL
 	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Recipient's SHA-512 Digest (Not Distributed)
+	7 - Recipient's Digest (Not Distributed)
 	EOL
 	8 - Signature (First Group Items and Previous Eight Items)
 	    (Optional Gold Bug) (Base-64)
@@ -304,7 +304,7 @@ Public Key
 EOL
 Encryption Key
 {
-	0 - Requester's SHA-512 Digest (Base-64)
+	0 - Requester's Digest (Base-64)
 	EOL
 	1 - Random Message (Base-64)
 	EOL
@@ -377,7 +377,7 @@ Gemini Encryption Key (Base-64)
 }
 EOL
 {
-	0 - Keyed (Gemini Digest Key) SHA3-512 Message Code (Base-64)
+	0 - Keyed (Gemini Digest Key) Message Code (Base-64)
 }
 EOL
 {
@@ -398,11 +398,11 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Name
 	2 - Status
 	3 - UTC Date
-	4 - Recipient's SHA-512 Digest (Not Distributed)
+	4 - Recipient's Digest (Not Distributed)
 	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
@@ -489,12 +489,12 @@ Account Authentication
 Echoed? No
 
 Message Type ("0050") (Client Request)
-0 - Keyed SHA3-512 Digest (Base-64)
+0 - Keyed Digest (Base-64)
 EOL
 1 - Random Data (Base-64)
 
 Message Type ("0051") (Server Response)
-0 - Keyed SHA3-512 Digest (Base-64)
+0 - Keyed Digest (Base-64)
 EOL
 1 - Random Data (Base-64)
 
@@ -522,14 +522,14 @@ Optional Nova AES-256 (Base-64)
 	10 - Ultra?
 	11 - SHA3-512 File Digest
 }
-Optional Nova SHA3-512
+Optional Nova
 {
 	0 - Keyed Message Code (Base-64)
 }
 }
 EOL
 {
-	0 - Keyed SHA3-512 Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
@@ -548,14 +548,14 @@ Optional Nova AES-256 (Base-64)
 	2 - UTC Date
 	3 - ID
 }
-Optional Nova SHA3-512
+Optional Nova
 {
 	0 - Keyed Message Code (Base-64)
 }
 }
 EOL
 {
-	0 - Keyed SHA3-512 Message Code (Base-64)
+	0 - Keyed Message Code (Base-64)
 }
 EOL
 {
@@ -593,7 +593,7 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - URL
 	2 - Title
 	3 - Description
@@ -605,7 +605,7 @@ Encryption Key (Base-64)
 	i + 3 - Content
 	...
 	n - 2 - UTC Date
-	n - 1 - Recipient's SHA-512 Digest (Not Distributed)
+	n - 1 - Recipient's Digest (Not Distributed)
 	n - Signature (First Group Items and Previous n - 1 Items)
 }
 EOL
@@ -660,10 +660,10 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Dispatcher's Ephemeral Public Key
 	2 - UTC Date
-	3 - Recipient's SHA-512 Digest (Not Distributed)
+	3 - Recipient's Digest (Not Distributed)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
@@ -689,7 +689,7 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Ephemeral Public Key
 	{
 		0 - Forward Secrecy Authentication Algorithm
@@ -698,7 +698,7 @@ Encryption Key (Base-64)
 		3 - Forward Secrecy Encryption Key
 	}
 	2 - UTC Date
-	3 - Recipient's SHA-512 Digest (Not Distributed)
+	3 - Recipient's Digest (Not Distributed)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
@@ -727,10 +727,10 @@ Public Key (Base-64)
 EOL
 Encryption Key (Base-64)
 {
-	0 - Dispatcher's SHA-512 Digest
+	0 - Dispatcher's Digest
 	1 - Data
 	2 - UTC Date
-	3 - Recipient's SHA-512 Digest (Not Distributed)
+	3 - Recipient's Digest (Not Distributed)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
