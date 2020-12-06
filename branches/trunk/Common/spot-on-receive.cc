@@ -506,7 +506,7 @@ QList<QByteArray> spoton_receive::process0000a
 				  if(!ok ||
 				     !spoton_misc::
 				     /*
-				     ** 0 - Sender's SHA-512 Hash
+				     ** 0 - Sender's Hash
 				     ** 1 - Gemini Encryption Key
 				     ** 2 - Gemini Hash Key
 				     ** 3 - Timestamp
@@ -667,7 +667,7 @@ QList<QByteArray> spoton_receive::process0000b
 			 !spoton_misc::
 			 /*
 			 ** 0 - 0000b
-			 ** 1 - Sender's SHA-512 Hash
+			 ** 1 - Sender's Hash
 			 ** 2 - Gemini Encryption Key
 			 ** 3 - Gemini Hash Key
 			 ** 4 - Timestamp

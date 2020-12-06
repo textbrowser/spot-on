@@ -125,6 +125,8 @@ struct gcry_thread_cbs gcry_threads_qt =
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
 bool spoton_crypt::s_cbc_cts_enabled = true;
+static QCryptographicHash::Algorithm qt_preferred_hash_algorithm =
+  QCryptographicHash::Sha3_512;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
 static int digital_signature_hash_algorithm = GCRY_MD_SHA3_512;
@@ -1242,11 +1244,19 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 QByteArray spoton_crypt::preferredHMAC(const QByteArray &data,
 				       const QByteArray &key)
 {
-  QMessageAuthenticationCode hd(QCryptographicHash::Sha3_512);
+  QMessageAuthenticationCode hd(qt_preferred_hash_algorithm);
 
   hd.setKey(key);
   hd.addData(data);
   return hd.result(); 
+}
+
+QByteArray spoton_crypt::preferredHash(const QByteArray &data)
+{
+  QCryptographicHash hd(qt_preferred_hash_algorithm);
+
+  hd.addData(data);
+  return hd.result();
 }
 
 QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
@@ -3846,7 +3856,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(X509_sign(x509, pk, EVP_sha512()) == 0)
+  if(X509_sign(x509, pk, EVP_sha3_512()) == 0)
     {
       error = QObject::tr("X509_sign() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
