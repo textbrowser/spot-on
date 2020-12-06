@@ -65,6 +65,8 @@ extern "C"
 #include <openssl/opensslv.h>
 }
 
+#define SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING "sha512"
+
 #ifndef SPOTON_LINKED_WITH_LIBPTHREAD
 #include <QMutex>
 extern "C"
@@ -125,6 +127,7 @@ QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
 bool spoton_crypt::s_cbc_cts_enabled = true;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
+static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 
 spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 			   const QByteArray &publicKey)
@@ -587,7 +590,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
   locker1.unlock();
   gcry_md_hash_buffer
-    (GCRY_MD_SHA512,
+    (digital_signature_hash_algorithm,
      hash.data(),
      data.constData(),
      static_cast<size_t> (data.length()));
@@ -648,7 +651,9 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
     }
   else if(keyType == "eddsa")
     err = gcry_sexp_build(&data_t, 0,
-			  "(data (flags eddsa)(hash-algo sha512)"
+			  "(data (flags eddsa)(hash-algo "
+			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+			  ")"
 			  "(value %b))",
 			  hash.length(),
 			  hash.constData());
@@ -656,7 +661,9 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
     {
       random = strongRandomBytes(static_cast<size_t> (random.length()));
       err = gcry_sexp_build(&data_t, 0,
-			    "(data (flags pss)(hash sha512 %b)"
+			    "(data (flags pss)(hash "
+			    SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+			    " %b)"
 			    "(random-override %b))",
 			    hash.length(),
 			    hash.constData(),
@@ -1567,7 +1574,9 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 	  random.resize(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 	  err = gcry_sexp_build(&data_t, 0,
 				"(enc-val (flags oaep)"
-				"(hash-algo sha512)(random-override %b) %S)",
+				"(hash-algo "
+				SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+				")(random-override %b) %S)",
 				random.length(),
 				random.constData(),
 				raw_t);
@@ -1691,13 +1700,16 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	      random.resize(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
-	      err = gcry_sexp_build(&data_t, 0,
-				    "(data (flags oaep)(hash-algo sha512)"
-				    "(value %b)(random-override %b))",
-				    data.length(),
-				    data.constData(),
-				    random.length(),
-				    random.constData());
+	      err = gcry_sexp_build
+		(&data_t, 0,
+		 "(data (flags oaep)(hash-algo "
+		 SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+		 ")"
+		 "(value %b)(random-override %b))",
+		 data.length(),
+		 data.constData(),
+		 random.length(),
+		 random.constData());
 	    }
 	}
 
@@ -3259,7 +3271,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
       }
 
   gcry_md_hash_buffer
-    (GCRY_MD_SHA512,
+    (digital_signature_hash_algorithm,
      hash.data(),
      data.constData(),
      static_cast<size_t> (data.length()));
@@ -3317,13 +3329,17 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
     }
   else if(keyType == "eddsa")
     err = gcry_sexp_build(&data_t, 0,
-			  "(data (flags eddsa)(hash-algo sha512)"
+			  "(data (flags eddsa)(hash-algo "
+			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+			  ")"
 			  "(value %b))",
 			  hash.length(),
 			  hash.constData());
   else if(keyType == "rsa")
     err = gcry_sexp_build(&data_t, 0,
-			  "(data (flags pss)(hash sha512 %b)"
+			  "(data (flags pss)(hash "
+			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+			  " %b)"
 			  "(random-override %b))",
 			  hash.length(),
 			  hash.constData(),
