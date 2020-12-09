@@ -6,15 +6,15 @@ sudo mkdir -p /usr/local/spot-on/SQL
 sudo mkdir -p /usr/local/spot-on/Sounds
 sudo mkdir -p /usr/local/spot-on/Translations
 cd ~/spot-on.d/branches/trunk
-qmake -o Makefile spot-on.qt5.pro && make -j 4
+qmake -o Makefile spot-on.pro && make -j 4
 sudo cp -p ../../libNTL/unix.d/src/.libs/libntl.so* /usr/local/spot-on/Lib/.
 sudo cp -p ../../libNTRU/libntru.so /usr/local/spot-on/Lib/.
 sudo cp -p ../../libSpotOn/libspoton.so /usr/local/spot-on/Lib/.
 sudo cp -p ./Data/spot-on-neighbors.txt /usr/local/spot-on/.
 sudo cp -p ./Icons/Logo/spot-on-logo.png /usr/local/spot-on/.
 sudo cp -p ./SQL/* /usr/local/spot-on/SQL/.
-sudo cp -p ./Shell/spot-on-kernel.qt5.sh /usr/local/spot-on/.
-sudo cp -p ./Shell/spot-on.qt5.sh /usr/local/spot-on/.
+sudo cp -p ./Shell/spot-on-kernel.sh /usr/local/spot-on/.
+sudo cp -p ./Shell/spot-on.sh /usr/local/spot-on/.
 sudo cp -p ./Sounds/* /usr/local/spot-on/Sounds/.
 sudo cp -p ./Spot-On /usr/local/spot-on/.
 sudo cp -p ./Spot-On-Kernel /usr/local/spot-on/.
@@ -30,7 +30,7 @@ Preparing Spot-On-x_amd64.deb:
 cd
 mkdir -p spot-on-debian/usr/local
 mkdir -p spot-on-debian/usr/share/applications
-cp -p ./spot-on.d/branches/trunk/spot-on.qt5.desktop spot-on-debian/usr/share/applications/.
+cp -p ./spot-on.d/branches/trunk/spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
 cp -r /usr/local/spot-on spot-on-debian/usr/local/.
 fakeroot dpkg-deb --build spot-on-debian Spot-On-2020.12.25_amd64.deb

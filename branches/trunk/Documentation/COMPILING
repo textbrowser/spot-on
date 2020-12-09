@@ -5,24 +5,24 @@ regarding other libraries.
 
 ARM
 
-qmake or qmake-qt5 -o Makefile spot-on.arm.qt5.pro
+qmake or qmake-qt5 -o Makefile spot-on.arm.pro
 make
 
 FreeBSD
 
-qmake or qmake-qt5 -o Makefile spot-on.freebsd.qt5.pro
+qmake or qmake-qt5 -o Makefile spot-on.freebsd.pro
 gmake
 
 Linux
 
-qmake or qmake-qt5 -o Makefile spot-on.qt5.pro
+qmake or qmake-qt5 -o Makefile spot-on.pro
 make
 
 OS X
 
 Homebrew is required for OS X.
 
-qmake -o Makefile spot-on.osx.qt5.pro
+qmake -o Makefile spot-on.osx.pro
 sudo make install
 
 OpenBSD
@@ -32,10 +32,10 @@ gmake
 
 PowerPC
 
-qmake or qmake-qt5 -o Makefile spot-on.powerpc.qt5.pro
+qmake or qmake-qt5 -o Makefile spot-on.powerpc.pro
 make
 
 Windows
 
-qmake -o Makefile spot-on.win.qt5.pro
+qmake -o Makefile spot-on.win.pro
 mingw32-make
