@@ -3,6 +3,6 @@ purge.commands = rm -f */*~ *~
 
 CONFIG		+=	ordered
 QMAKE_EXTRA_TARGETS = purge
-SUBDIRS		=	goldbug-gui.qt5.pro \
-			Kernel/spot-on-kernel.qt5.pro
+SUBDIRS		=	goldbug-gui.pro \
+			Kernel/spot-on-kernel.pro
 TEMPLATE	=	subdirs

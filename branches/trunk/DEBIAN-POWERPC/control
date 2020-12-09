@@ -7,4 +7,4 @@ Section: Science
 Version: 2020.12.25
 Description: Spot-On
  Welcome to Spot-On on PowerPC!
- A spot-on.qt5.desktop file will also be installed in /usr/share/applications/.
+ A spot-on.desktop file will also be installed in /usr/share/applications/.

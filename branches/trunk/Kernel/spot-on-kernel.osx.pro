@@ -93,22 +93,22 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
-copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On_Qt5.d/.
-copyspoton.path             = /Applications/Spot-On_Qt5.d
-copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1h/lib/*.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/.
-copyssl.path                = /Applications/Spot-On_Qt5.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1h/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
+copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On.d/.
+copyspoton.path             = /Applications/Spot-On.d
+copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1h/lib/*.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
+copyssl.path                = /Applications/Spot-On.d
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1h/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
-libgeoip_data_install.path  = /Applications/Spot-On_Qt5.d/GeoIP
-libntru_install.extra       = cp ../../../libNTRU/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
+libgeoip_data_install.path  = /Applications/Spot-On.d/GeoIP
+libntru_install.extra       = cp ../../../libNTRU/libntru.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libntru_install.path        = .
-libspoton_install.extra     = cp ../../../libSpotOn/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change libspoton.dylib @executable_path/../Frameworks/libspoton.dylib /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
+libspoton_install.extra     = cp ../../../libSpotOn/libspoton.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change /usr/local/opt/libgcrypt/lib/libgcrypt.20.dylib @loader_path/libgcrypt.20.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libspoton.dylib && install_name_tool -change libspoton.dylib @executable_path/../Frameworks/libspoton.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 libspoton_install.path      = .
-macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app -executable=/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
+macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On.d/Spot-On-Kernel.app -executable=/Applications/Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 macdeployqt.path            = Spot-On-Kernel.app
-preinstall.extra            = rm -rf /Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/*
-preinstall.path             = /Applications/Spot-On_Qt5.d
+preinstall.extra            = rm -rf /Applications/Spot-On.d/Spot-On-Kernel.app/*
+preinstall.path             = /Applications/Spot-On.d
 
 # Order is important.
 

@@ -3,6 +3,6 @@ purge.commands = rm -f */*~ *~
 
 CONFIG		+=	ordered
 QMAKE_EXTRA_TARGETS = purge
-SUBDIRS		=	spot-on-gui.osx.qt5.pro \
-			Kernel/spot-on-kernel.osx.qt5.pro
+SUBDIRS		=	spot-on-gui.osx.pro \
+			Kernel/spot-on-kernel.osx.pro
 TEMPLATE	=	subdirs
