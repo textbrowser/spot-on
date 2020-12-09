@@ -5,8 +5,8 @@
 
 # CURL
 
-curl=curl-7.73.0-win32-mingw
-dlcurl=dl-7.73.0
+curl=curl-7.74.0-win32-mingw
+dlcurl=dl-7.74.0
 
 rm -f $curl.zip
 rm -fr $curl
@@ -76,7 +76,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3330000.zip
+sqlite=sqlite-dll-win32-x86-3340000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2020/$sqlite
@@ -92,7 +92,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3330000.zip
+sqlite=sqlite-amalgamation-3340000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2020/$sqlite
