@@ -5,17 +5,17 @@ regarding other libraries.
 
 ARM
 
-qmake or qmake-qt5 -o Makefile spot-on.arm.pro
+qmake -o Makefile spot-on.arm.pro
 make
 
 FreeBSD
 
-qmake or qmake-qt5 -o Makefile spot-on.freebsd.pro
+qmake -o Makefile spot-on.freebsd.pro
 gmake
 
 Linux
 
-qmake or qmake-qt5 -o Makefile spot-on.pro
+qmake -o Makefile spot-on.pro
 make
 
 OS X
@@ -27,12 +27,12 @@ sudo make install
 
 OpenBSD
 
-qmake or qmake-qt5 -o Makefile spot-on.openbsd.pro
+qmake -o Makefile spot-on.openbsd.pro
 gmake
 
 PowerPC
 
-qmake or qmake-qt5 -o Makefile spot-on.powerpc.pro
+qmake -o Makefile spot-on.powerpc.pro
 make
 
 Windows
