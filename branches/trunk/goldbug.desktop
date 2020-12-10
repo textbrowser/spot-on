@@ -3,7 +3,7 @@
 [Desktop Entry]
 Categories=Net
 Comment=GoldBug
-Exec=/usr/local/goldbug/goldbug.qt5.sh
+Exec=/usr/local/goldbug/goldbug.sh
 GenericName=GoldBug
 Icon=/usr/local/goldbug/goldbug.png
 Name=GoldBug
