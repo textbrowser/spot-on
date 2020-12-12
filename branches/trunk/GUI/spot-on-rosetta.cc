@@ -1604,7 +1604,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
 	myPublicKey = eCrypt->publicKey(&ok);
 
       if(ok)
-	myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
+	myPublicKeyHash = spoton_crypt::preferredHash(myPublicKey);
 
       if(ok)
 	signature = sCrypt->digitalSignature

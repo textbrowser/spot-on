@@ -523,18 +523,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QByteArray bytes;
-  bool ok = true;
-
-  bytes = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("An error occurred with spoton_crypt::sha512Hash().");
-      showError(error);
-      return;
-    }
-
+  QByteArray bytes(spoton_crypt::preferredHash(publicKey));
   QString name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
@@ -557,7 +546,10 @@ void spoton_smpwindow::slotExecute(void)
   smp->m_cache.clear();
   smp->m_smp->initialize();
 
-  QList<QByteArray> values(smp->m_smp->step1(&ok));
+  QList<QByteArray> values;
+  bool ok = true;
+
+  values = smp->m_smp->step1(&ok);
 
   if(!ok)
     {
@@ -593,14 +585,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("An error occurred with spoton_crypt::sha512Hash().");
-      showError(error);
-      return;
-    }
+  myPublicKeyHash = spoton_crypt::preferredHash(myPublicKey);
 
   QByteArray encryptionKey;
   QByteArray hashKey;
@@ -643,7 +628,7 @@ void spoton_smpwindow::slotExecute(void)
 
   QByteArray signature;
   QDateTime dateTime(QDateTime::currentDateTime());
-  QByteArray recipientDigest(spoton_crypt::sha512Hash(publicKey, &ok));
+  QByteArray recipientDigest(spoton_crypt::preferredHash(publicKey));
 
   signature = s_crypt2->digitalSignature
     ("0092" +
@@ -958,16 +943,8 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
     }
 
   QByteArray bytes;
-  bool ok = true;
 
-  bytes = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("An error occurred with spoton_crypt::sha512Hash().");
-      showError(error);
-      return;
-    }
+  bytes = spoton_crypt::preferredHash(publicKey);
 
   spoton_smpwindow_smp *smp = m_smps.value(bytes, 0);
 
@@ -1348,23 +1325,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       goto done_label;
     }
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(myPublicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("An error occurred with spoton_crypt::sha512Hash().");
-      goto done_label;
-    }
-
-  recipientDigest = spoton_crypt::sha512Hash(smp->m_publicKey, &ok);
-
-  if(!ok)
-    {
-      error = tr("A failure occurred while computing the SHA-512 "
-		 "digest of the recipient's public key.");
-      goto done_label;
-    }
-
+  myPublicKeyHash = spoton_crypt::preferredHash(myPublicKey);
+  recipientDigest = spoton_crypt::preferredHash(smp->m_publicKey);
   hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::strongRandomBytes
     (static_cast<size_t> (hashKey.length()));

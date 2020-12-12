@@ -278,7 +278,7 @@ QList<QByteArray> spoton_receive::process0000
 
 				  if(ok)
 				    recipientDigest = spoton_crypt::
-				      sha512Hash(recipientDigest, &ok);
+				      preferredHash(recipientDigest);
 
 				  if(!ok ||
 				     !spoton_misc::
@@ -501,7 +501,7 @@ QList<QByteArray> spoton_receive::process0000a
 
 				  if(ok)
 				    recipientDigest = spoton_crypt::
-				      sha512Hash(recipientDigest, &ok);
+				      preferredHash(recipientDigest);
 
 				  if(!ok ||
 				     !spoton_misc::
@@ -661,7 +661,7 @@ QList<QByteArray> spoton_receive::process0000b
 
 		      if(ok)
 			recipientDigest = spoton_crypt::
-			  sha512Hash(recipientDigest, &ok);
+			  preferredHash(recipientDigest);
 
 		      if(!ok ||
 			 !spoton_misc::
