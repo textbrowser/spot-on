@@ -369,8 +369,8 @@ void spoton_fireshare::slotTimeout(void)
 		      QByteArray myPublicKeyHash;
 
 		      if(ok)
-			myPublicKeyHash = spoton_crypt::sha512Hash
-			  (myPublicKey, &ok);
+			myPublicKeyHash = spoton_crypt::preferredHash
+			  (myPublicKey);
 
 		      if(ok)
 			{
@@ -551,7 +551,7 @@ void spoton_fireshare::slotTimeout(void)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
 	  {
 	    QByteArray recipientDigest
-	      (spoton_crypt::sha512Hash(publicKeys.at(i), &ok));
+	      (spoton_crypt::preferredHash(publicKeys.at(i)));
 
 	    signature = s_crypt2->digitalSignature
 	      (keyInformation +

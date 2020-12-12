@@ -3910,7 +3910,11 @@ void spoton_crypt::generateCertificate(RSA *rsa,
     memzero(certificate);
 
   if(rsa)
-    RSA_up_ref(rsa); // Reference counter.
+    RSA_up_ref(rsa); /*
+		     ** Reference counter. The rsa object will be
+		     ** destroyed separately via RSA_free().
+		     ** See also EVP_PKEY_free().
+		     */
 
   EVP_PKEY_free(pk);
   X509_NAME_ENTRY_free(commonNameEntry);
