@@ -2920,10 +2920,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
   if(!ok)
     return;
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
+  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
   QByteArray status(setting("gui/my_status", "Online").
 		    toByteArray().toLower());
@@ -3129,22 +3126,21 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
 			QByteArray recipientDigest
-			  (spoton_crypt::sha512Hash(publicKey, &ok));
+			  (spoton_crypt::preferredHash(publicKey));
 
-			if(ok)
-			  signature = s_crypt2->digitalSignature
-			    ("0013" +
-			     symmetricKey +
-			     hashKey +
-			     cipherType +
-			     hashType +
-			     myPublicKeyHash +
-			     name +
-			     status +
-			     dateTime.toUTC().toString("MMddyyyyhhmmss").
-			     toLatin1() +
-			     recipientDigest,
-			     &ok);
+			signature = s_crypt2->digitalSignature
+			  ("0013" +
+			   symmetricKey +
+			   hashKey +
+			   cipherType +
+			   hashType +
+			   myPublicKeyHash +
+			   name +
+			   status +
+			   dateTime.toUTC().toString("MMddyyyyhhmmss").
+			   toLatin1() +
+			   recipientDigest,
+			   &ok);
 		      }
 
 		    if(ok)
@@ -3609,12 +3605,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
   if(!ok)
     return;
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
-  else
-    ok = false;
+  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
   QByteArray data;
   QString connectionName("");
@@ -3727,21 +3718,21 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
 			QByteArray recipientDigest
-			  (spoton_crypt::sha512Hash(publicKey, &ok));
+			  (spoton_crypt::preferredHash(publicKey));
 
-			if(ok)
-			  signature = s_crypt2->digitalSignature
-			    ("0000c" +
-			     symmetricKey +
-			     hashKey +
-			     symmetricKeyAlgorithm +
-			     hashType +
-			     myPublicKeyHash +
-			     geminis.first +
-			     geminis.second +
-			     dateTime.toUTC().toString("MMddyyyyhhmmss").
-			     toLatin1() +
-			     recipientDigest, &ok);
+			signature = s_crypt2->digitalSignature
+			  ("0000c" +
+			   symmetricKey +
+			   hashKey +
+			   symmetricKeyAlgorithm +
+			   hashType +
+			   myPublicKeyHash +
+			   geminis.first +
+			   geminis.second +
+			   dateTime.toUTC().toString("MMddyyyyhhmmss").
+			   toLatin1() +
+			   recipientDigest,
+			   &ok);
 		      }
 
 		    if(ok)
@@ -3809,12 +3800,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
   if(!ok)
     return;
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
-  else
-    ok = false;
+  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
   QByteArray data;
   QString connectionName("");
@@ -3958,21 +3944,21 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
 			QByteArray recipientDigest
-			  (spoton_crypt::sha512Hash(publicKey, &ok));
+			  (spoton_crypt::preferredHash(publicKey));
 
-			if(ok)
-			  signature = s_crypt2->digitalSignature
-			    ("0000a" +
-			     symmetricKey +
-			     hashKey +
-			     symmetricKeyAlgorithm +
-			     hashType +
-			     myPublicKeyHash +
-			     gemini.first +
-			     gemini.second +
-			     dateTime.toUTC().toString("MMddyyyyhhmmss").
-			     toLatin1() +
-			     recipientDigest, &ok);
+			signature = s_crypt2->digitalSignature
+			  ("0000a" +
+			   symmetricKey +
+			   hashKey +
+			   symmetricKeyAlgorithm +
+			   hashType +
+			   myPublicKeyHash +
+			   gemini.first +
+			   gemini.second +
+			   dateTime.toUTC().toString("MMddyyyyhhmmss").
+			   toLatin1() +
+			   recipientDigest,
+			   &ok);
 		      }
 
 		    if(ok)
@@ -4049,12 +4035,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
   if(!ok)
     return;
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
-  else
-    ok = false;
+  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
   QByteArray data;
   QByteArray hashKey;
@@ -4212,17 +4193,17 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
 			QByteArray recipientDigest
-			  (spoton_crypt::sha512Hash(publicKey, &ok));
+			  (spoton_crypt::preferredHash(publicKey));
 
-			if(ok)
-			  signature = s_crypt2->digitalSignature
-			    ("0000b" +
-			     myPublicKeyHash +
-			     symmetricKey +
-			     hashKey +
-			     dateTime.toUTC().toString("MMddyyyyhhmmss").
-			     toLatin1() +
-			     recipientDigest, &ok);
+			signature = s_crypt2->digitalSignature
+			  ("0000b" +
+			   myPublicKeyHash +
+			   symmetricKey +
+			   hashKey +
+			   dateTime.toUTC().toString("MMddyyyyhhmmss").
+			   toLatin1() +
+			   recipientDigest,
+			   &ok);
 		      }
 
 		    if(ok)
@@ -4361,10 +4342,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
   QByteArray myPublicKeyHash;
 
-  myPublicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
+  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
   QByteArray cipherType(setting("gui/kernelCipherType", "aes256").
 			toString().toLatin1());
@@ -4428,21 +4406,21 @@ void spoton_kernel::slotMessageReceivedFromUI
 	if(setting("gui/chatSignMessages", true).toBool())
 	  {
 	    QByteArray recipientDigest
-	      (spoton_crypt::sha512Hash(qUncompress(publicKey), &ok));
+	      (spoton_crypt::preferredHash(qUncompress(publicKey)));
 
-	    if(ok)
-	      signature = s_crypt2->digitalSignature
-		("0000" +
-		 symmetricKey +
-		 hashKey +
-		 cipherType +
-		 hashType +
-		 myPublicKeyHash +
-		 name +
-		 message +
-		 sequenceNumber +
-		 utcDate +
-		 recipientDigest, &ok);
+	    signature = s_crypt2->digitalSignature
+	      ("0000" +
+	       symmetricKey +
+	       hashKey +
+	       cipherType +
+	       hashType +
+	       myPublicKeyHash +
+	       name +
+	       message +
+	       sequenceNumber +
+	       utcDate +
+	       recipientDigest,
+	       &ok);
 	  }
 
 	if(ok)
@@ -4793,11 +4771,7 @@ void spoton_kernel::slotRetrieveMail(void)
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(publicKey, &ok));
-
-  if(!ok)
-    return;
-
+  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
   QList<QByteArray> list;
   QString connectionName("");
 
@@ -5195,17 +5169,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
-
-  if(!ok)
-    return;
-
+  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   QByteArray recipientHash;
 
-  recipientHash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    return;
+  recipientHash = spoton_crypt::preferredHash(publicKey);
 
   QList<QPair<QByteArray, qint64> > list;
   QString connectionName("");
@@ -5388,43 +5355,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  if(sign)
 			    {
 			      QByteArray recipientDigest
-				(spoton_crypt::sha512Hash(publicKey, &ok));
-
-			      if(ok)
-				signature = s_crypt2->digitalSignature
-				  ("0001b" +
-				   symmetricKey +
-				   hashKey +
-				   symmetricKeyAlgorithm +
-				   hashType +
-				   myPublicKeyHash +
-				   items.value(0) + // Name
-				   items.value(1) + // Subject
-				   items.value(2) + // Message
-				   items.value(3) + // Date
-				   items.value(4) + // Attachment Data
-				   QByteArray::number(goldbugUsed) +
-				   recipientDigest,
-				   &ok);
-			    }
-
-			  if(ok)
-			    items << crypt->encryptedThenHashed
-			      (signature, &ok);
-			}
-
-		      delete crypt;
-		    }
-		  else
-		    {
-		      if(sign)
-			{
-			  QByteArray recipientDigest
-			    (spoton_crypt::sha512Hash(publicKey, &ok));
-
-			  if(ok)
-			    {
-			      QByteArray signature;
+				(spoton_crypt::preferredHash(publicKey));
 
 			      signature = s_crypt2->digitalSignature
 				("0001b" +
@@ -5441,10 +5372,41 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 QByteArray::number(goldbugUsed) +
 				 recipientDigest,
 				 &ok);
-
-			      if(ok)
-				items << signature;
 			    }
+
+			  if(ok)
+			    items << crypt->encryptedThenHashed
+			      (signature, &ok);
+			}
+
+		      delete crypt;
+		    }
+		  else
+		    {
+		      if(sign)
+			{
+			  QByteArray recipientDigest
+			    (spoton_crypt::preferredHash(publicKey));
+			  QByteArray signature;
+
+			  signature = s_crypt2->digitalSignature
+			    ("0001b" +
+			     symmetricKey +
+			     hashKey +
+			     symmetricKeyAlgorithm +
+			     hashType +
+			     myPublicKeyHash +
+			     items.value(0) + // Name
+			     items.value(1) + // Subject
+			     items.value(2) + // Message
+			     items.value(3) + // Date
+			     items.value(4) + // Attachment Data
+			     QByteArray::number(goldbugUsed) +
+			     recipientDigest,
+			     &ok);
+
+			  if(ok)
+			    items << signature;
 			}
 		    }
 		}
@@ -5723,43 +5685,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 			  if(sign)
 			    {
 			      QByteArray recipientDigest
-				(spoton_crypt::sha512Hash(publicKey, &ok));
-
-			      if(ok)
-				signature = s_crypt2->digitalSignature
-				  ("0001b" +
-				   symmetricKey +
-				   hashKey2 +
-				   cipherType +
-				   hashType +
-				   myPublicKeyHash +
-				   items.value(0) + // Name
-				   items.value(1) + // Subject
-				   items.value(2) + // Message
-				   items.value(3) + // Date
-				   items.value(4) + // Attachment Data
-				   QByteArray::number(goldbugUsed) +
-				   recipientDigest,
-				   &ok);
-			    }
-
-			  if(ok)
-			    items << crypt->encryptedThenHashed
-			      (signature, &ok);
-			}
-
-		      delete crypt;
-		    }
-		  else
-		    {
-		      if(sign)
-			{
-			  QByteArray recipientDigest
-			    (spoton_crypt::sha512Hash(publicKey, &ok));
-
-			  if(ok)
-			    {
-			      QByteArray signature;
+				(spoton_crypt::preferredHash(publicKey));
 
 			      signature = s_crypt2->digitalSignature
 				("0001b" +
@@ -5776,10 +5702,41 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 				 QByteArray::number(goldbugUsed) +
 				 recipientDigest,
 				 &ok);
-
-			      if(ok)
-				items << signature;
 			    }
+
+			  if(ok)
+			    items << crypt->encryptedThenHashed
+			      (signature, &ok);
+			}
+
+		      delete crypt;
+		    }
+		  else
+		    {
+		      if(sign)
+			{
+			  QByteArray recipientDigest
+			    (spoton_crypt::preferredHash(publicKey));
+			  QByteArray signature;
+
+			  signature = s_crypt2->digitalSignature
+			    ("0001b" +
+			     symmetricKey +
+			     hashKey2 +
+			     cipherType +
+			     hashType +
+			     myPublicKeyHash +
+			     items.value(0) + // Name
+			     items.value(1) + // Subject
+			     items.value(2) + // Message
+			     items.value(3) + // Date
+			     items.value(4) + // Attachment Data
+			     QByteArray::number(goldbugUsed) +
+			     recipientDigest,
+			     &ok);
+
+			  if(ok)
+			    items << signature;
 			}
 		    }
 		}

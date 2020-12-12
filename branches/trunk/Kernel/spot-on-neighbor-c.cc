@@ -924,8 +924,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 	      QByteArray publicKey = s_crypt->publicKey(&ok);
 	      QByteArray publicKeyHash;
 
-	      if(ok)
-		publicKeyHash = spoton_crypt::sha512Hash(publicKey, &ok);
+	      publicKeyHash = spoton_crypt::preferredHash(publicKey);
 
 	      if(ok &&
 		 !publicKeyHash.isEmpty() && !recipientHash.isEmpty() &&
@@ -2803,9 +2802,8 @@ void spoton_neighbor::process0080(int length,
 				    else
 				      ok = false;
 
-				    if(ok)
-				      recipientDigest = spoton_crypt::
-					sha512Hash(recipientDigest, &ok);
+				    recipientDigest = spoton_crypt::
+				      preferredHash(recipientDigest);
 
 				    if(!ok ||
 				       !spoton_misc::
@@ -4239,20 +4237,18 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 
 	    QSqlQuery query(db);
 	    bool exists = false;
-	    bool ok = true;
 
 	    query.setForwardOnly(true);
 	    query.prepare("SELECT neighbor_oid "
 			  "FROM friends_public_keys "
 			  "WHERE public_key_hash = ?");
-	    query.bindValue(0, spoton_crypt::sha512Hash(publicKey,
-							&ok).toBase64());
+	    query.bindValue
+	      (0, spoton_crypt::preferredHash(publicKey).toBase64());
 
-	    if(ok)
-	      if(query.exec())
-		if(query.next())
-		  if(query.value(0).toLongLong() == -1)
-		    exists = true;
+	    if(query.exec())
+	      if(query.next())
+		if(query.value(0).toLongLong() == -1)
+		  exists = true;
 
 	    if(!exists)
 	      {
@@ -4569,8 +4565,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
       else
 	ok = false;
 
-      if(ok)
-	recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+      recipientDigest = spoton_crypt::preferredHash(recipientDigest);
 
       if(!ok ||
 	 !spoton_misc::

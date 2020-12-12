@@ -861,7 +861,7 @@ void spoton_kernel::postPoptastic(void)
 		{
 		  curl_payload_text.append
 		    (QString("Subject: %1\r\n").
-		     arg(spoton_crypt::sha512Hash(bytes.simplified(), &ok).
+		     arg(spoton_crypt::preferredHash(bytes.simplified()).
 			 toHex().constData()).toLatin1());
 		  curl_payload_text.append("\r\n");
 		}
@@ -1246,15 +1246,11 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
-
-  if(!ok)
-    return;
-
   QByteArray cipherType(setting("gui/fsCipherType", "aes256").
 			toString().toLatin1());
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
+  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   QByteArray publicKey
     (spoton_misc::publicKeyFromHash(list.value(1), false, s_crypt1));
 
@@ -1325,7 +1321,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
   if(sign)
     {
       QByteArray recipientDigest
-	(spoton_crypt::sha512Hash(publicKey, &ok));
+	(spoton_crypt::preferredHash(publicKey));
 
       signature = s_crypt2->digitalSignature
 	("0091a" +
@@ -1449,15 +1445,11 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::sha512Hash(myPublicKey, &ok));
-
-  if(!ok)
-    return;
-
   QByteArray cipherType(setting("gui/fsCipherType", "aes256").
 			toString().toLatin1());
   QByteArray hashType(setting("gui/fsHashType", "sha512").
 		      toString().toLatin1());
+  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   QByteArray publicKey
     (spoton_misc::publicKeyFromHash(list.value(0), false, s_crypt1));
 
@@ -1543,7 +1535,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   if(sign)
     {
       QByteArray recipientDigest
-	(spoton_crypt::sha512Hash(publicKey, &ok));
+	(spoton_crypt::preferredHash(publicKey));
 
       signature = s_crypt2->digitalSignature
 	("0091b" +
@@ -1795,10 +1787,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	      bool ok = true;
 
 	      recipientDigest = s_crypt->publicKey(&ok);
-
-	      if(ok)
-		recipientDigest = spoton_crypt::
-		  sha512Hash(recipientDigest, &ok);
+	      recipientDigest = spoton_crypt::preferredHash(recipientDigest);
 
 	      if(!ok ||
 		 !spoton_misc::
@@ -2218,8 +2207,8 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
       QByteArray boundary;
       QByteArray from;
       QByteArray hash
-	(spoton_crypt::sha512Hash(message.mid(message.indexOf("content=")).
-				  simplified(), 0).toHex());
+	(spoton_crypt::preferredHash(message.mid(message.indexOf("content=")).
+				     simplified()).toHex());
       QByteArray subject;
       QDateTime date(QDateTime::currentDateTime());
       QList<QByteArray> list(message.trimmed().split('\n'));
@@ -2422,7 +2411,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    if(ok)
 	      {
 		QByteArray senderPublicKeyHash
-		  (spoton_crypt::sha512Hash(from + "-poptastic", &ok));
+		  (spoton_crypt::preferredHash(from + "-poptastic"));
 
 		query.bindValue
 		  (8, senderPublicKeyHash.toBase64());

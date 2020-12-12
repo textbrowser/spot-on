@@ -3264,14 +3264,13 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
   query.setForwardOnly(true);
   query.prepare("SELECT name FROM friends_public_keys WHERE "
 		"name_changed_by_user = 1 AND public_key_hash = ?");
-  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+  query.bindValue(0, spoton_crypt::preferredHash(publicKey).toBase64());
 
-  if(ok && query.exec())
+  if(query.exec())
     if(query.next())
       name = crypt->decryptedAfterAuthenticated
 	(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-  ok = true;
   query.prepare("INSERT OR REPLACE INTO friends_public_keys "
 		"(gemini, gemini_hash_key, key_type, key_type_hash, "
 		"name, public_key, public_key_hash, "
@@ -3283,10 +3282,8 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 		"?, ?, ?, ?, ?, ?, ?, "
 		"(SELECT name_changed_by_user FROM friends_public_keys WHERE "
 		"public_key_hash = ?))");
-  query.bindValue(0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-  if(ok)
-    query.bindValue(1, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+  query.bindValue(0, spoton_crypt::preferredHash(publicKey).toBase64());
+  query.bindValue(1, spoton_crypt::preferredHash(publicKey).toBase64());
 
   if(ok)
     query.bindValue(2, crypt->encryptedThenHashed(keyType, &ok).toBase64());
@@ -3334,16 +3331,12 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
     query.bindValue
       (5, crypt->encryptedThenHashed(publicKey, &ok).toBase64());
 
-  if(ok)
-    query.bindValue
-      (6, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
+  query.bindValue
+    (6, spoton_crypt::preferredHash(publicKey).toBase64());
   query.bindValue(7, neighborOid);
   query.bindValue
     (8, QDateTime::currentDateTime().toString(Qt::ISODate));
-
-  if(ok)
-    query.bindValue(9, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
+  query.bindValue(9, spoton_crypt::preferredHash(publicKey).toBase64());
 
   if(ok)
     ok = query.exec();
@@ -3362,14 +3355,10 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 		      "(public_key_hash, signature_public_key_hash) "
 		      "VALUES (?, ?)");
 	query.bindValue
-	  (0, spoton_crypt::sha512Hash(publicKey, &ok).toBase64());
-
-	if(ok)
-	  query.bindValue
-	    (1, spoton_crypt::sha512Hash(sPublicKey, &ok).toBase64());
-
-	if(ok)
-	  ok = query.exec();
+	  (0, spoton_crypt::preferredHash(publicKey).toBase64());
+	query.bindValue
+	  (1, spoton_crypt::preferredHash(sPublicKey).toBase64());
+	ok = query.exec();
       }
 
   return ok;

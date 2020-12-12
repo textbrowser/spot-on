@@ -7813,7 +7813,7 @@ QPushButton:pressed {
                    </column>
                    <column>
                     <property name="text">
-                     <string>SHA-512 Hash</string>
+                     <string>Hash</string>
                     </property>
                    </column>
                    <column>

@@ -350,7 +350,7 @@ void spoton_kernel::slotDropped(const QByteArray &data)
   if(!neighbor)
     return;
 
-  QByteArray hash(spoton_crypt::sha512Hash(data, 0));
+  QByteArray hash(spoton_crypt::preferredHash(data));
   QPair<QByteArray, qint64> pair(hash, neighbor->id());
 
   {

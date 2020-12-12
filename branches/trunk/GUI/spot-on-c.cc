@@ -5177,14 +5177,9 @@ void spoton::updatePublicKeysLabel(void)
       item->setText(crypt->publicKeySize());
       m_ui.personal_public_keys->setItem(i, 2, item);
       bytes = crypt->publicKey(&ok);
-
-      if(ok)
-	{
-	  bytes = spoton_crypt::sha512Hash(bytes, &ok);
-	  base64 = bytes.toBase64();
-	  bytes = bytes.toHex();
-	}
-
+      bytes = spoton_crypt::preferredHash(bytes);
+      base64 = bytes.toBase64();
+      bytes = bytes.toHex();
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 

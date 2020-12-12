@@ -275,10 +275,8 @@ QList<QByteArray> spoton_receive::process0000
 				  bool ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
-
-				  if(ok)
-				    recipientDigest = spoton_crypt::
-				      preferredHash(recipientDigest);
+				  recipientDigest = spoton_crypt::
+				    preferredHash(recipientDigest);
 
 				  if(!ok ||
 				     !spoton_misc::
@@ -498,10 +496,8 @@ QList<QByteArray> spoton_receive::process0000a
 				  bool ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
-
-				  if(ok)
-				    recipientDigest = spoton_crypt::
-				      preferredHash(recipientDigest);
+				  recipientDigest = spoton_crypt::
+				    preferredHash(recipientDigest);
 
 				  if(!ok ||
 				     !spoton_misc::
@@ -658,10 +654,8 @@ QList<QByteArray> spoton_receive::process0000b
 		      bool ok = true;
 
 		      recipientDigest = s_crypt->publicKey(&ok);
-
-		      if(ok)
-			recipientDigest = spoton_crypt::
-			  preferredHash(recipientDigest);
+		      recipientDigest = spoton_crypt::
+			preferredHash(recipientDigest);
 
 		      if(!ok ||
 			 !spoton_misc::
@@ -1343,10 +1337,8 @@ QList<QByteArray> spoton_receive::process0013
 				  bool ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
-
-				  if(ok)
-				    recipientDigest = spoton_crypt::
-				      sha512Hash(recipientDigest, &ok);
+				  recipientDigest = spoton_crypt::
+				    preferredHash(recipientDigest);
 
 				  if(!ok ||
 				     !spoton_misc::
@@ -1583,8 +1575,7 @@ QList<QByteArray> spoton_receive::process0091
 	  else
 	    ok = false;
 
-	  if(ok)
-	    recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+	  recipientDigest = spoton_crypt::preferredHash(recipientDigest);
 
 	  if(messageType == "0091a")
 	    {
@@ -1809,8 +1800,7 @@ QList<QByteArray> spoton_receive::process0092
       else
 	ok = false;
 
-      if(ok)
-	recipientDigest = spoton_crypt::sha512Hash(recipientDigest, &ok);
+      recipientDigest = spoton_crypt::preferredHash(recipientDigest);
 
       if(!ok ||
 	 !spoton_misc::isValidSignature("0092" +

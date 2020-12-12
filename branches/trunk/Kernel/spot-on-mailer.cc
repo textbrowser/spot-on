@@ -252,17 +252,8 @@ void spoton_mailer::slotRetrieveMail
     }
 
   QByteArray hash;
-  bool ok = true;
 
-  hash = spoton_crypt::sha512Hash(publicKey, &ok);
-
-  if(!ok)
-    {
-      spoton_misc::logError
-	("spoton_mailer::slotRetrieveMail(): "
-	 "spoton_crypt::sha512Hash() failure.");
-      return;
-    }
+  hash = spoton_crypt::preferredHash(publicKey);
 
   QDateTime dateTime
     (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
