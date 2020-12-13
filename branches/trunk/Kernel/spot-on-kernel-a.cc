@@ -3547,7 +3547,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 			 "sha512", // Buzz
 			 QByteArray(),
 			 QByteArray(),
-			 spoton_crypt::sha512Hash(hashKey.mid(48), 0),
+			 spoton_crypt::sha512Hash(hashKey.mid(48), 0), // Buzz
 			 0,
 			 0,
 			 "");
