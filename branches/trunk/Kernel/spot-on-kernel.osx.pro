@@ -58,12 +58,12 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 ICON		  =
 INCLUDEPATH	  += . \
                      ../. ../../../. \
-                     /usr/local/Cellar/openssl@1.1/1.1.1h/include \
+                     /usr/local/Cellar/openssl@1.1/1.1.1i/include \
                      /usr/local/include /usr/local/opt \
                      /usr/local/opt/curl/include
 LIBS		  += -L../../../libNTRU \
                      -L../../../libSpotOn \
-                     -L/usr/local/Cellar/openssl@1.1/1.1.1h/lib \
+                     -L/usr/local/Cellar/openssl@1.1/1.1.1i/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
                      -framework Cocoa \
@@ -95,9 +95,9 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On.d/.
 copyspoton.path             = /Applications/Spot-On.d
-copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1h/lib/*.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
+copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1i/lib/*.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1h/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1i/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = /Applications/Spot-On.d/GeoIP
