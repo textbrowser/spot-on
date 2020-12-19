@@ -2,11 +2,6 @@ Web content is presented in plain text widgets.
 For fancy displays, please consider WebEngine or
 WebKit.
 
-Qt 4.x
-
-DEFINES += SPOTON_WEBKIT_ENABLED
-QT += webkit
-
 Qt 5.x (< 5.6)
 
 DEFINES += SPOTON_WEBENGINE_ENABLED

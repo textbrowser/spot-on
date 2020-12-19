@@ -18,7 +18,7 @@ C - D - d
 
 Let t_B_1 and t_B_2 be two tokens that B is aware of.
 
-Suppose none of the private nodes know the tokens. If so, all Echo
+Suppose the private nodes do not know the tokens. If so, all Echo
 communications will behave as they would do without Adaptive Echo.
 
 Now suppose that node a and node d know t_B_1. As B begins to receive Echo
@@ -43,4 +43,4 @@ b - S
 c - S
 
 If f transmits a message intended for d, d will receive the message via S
-because S connects to d.
+because S is connected to d.
