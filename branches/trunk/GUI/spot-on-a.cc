@@ -2433,6 +2433,9 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/kernelUpdateTimer", 3.50).toDouble());
   m_optionsUi.listenersUpdateInterval->setValue
     (m_settings.value("gui/listenersUpdateTimer", 3.50).toDouble());
+  m_optionsUi.other_options->setPlainText
+    (QByteArray::fromBase64(m_settings.value("gui/other_options").
+			    toByteArray()));
   m_optionsUi.neighborsUpdateInterval->setValue
     (m_settings.value("gui/neighborsUpdateTimer", 3.50).toDouble());
   m_optionsUi.starbeamUpdateInterval->setValue

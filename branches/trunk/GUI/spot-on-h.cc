@@ -622,6 +622,14 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 
 void spoton::slotApplyOtherOptions(void)
 {
+  m_settings["gui/other_options"] = m_optionsUi.other_options->
+    toPlainText().trimmed().toLatin1().toBase64();
+
+  QSettings settings;
+
+  settings.setValue
+    ("gui/other_options",
+     m_optionsUi.other_options->toPlainText().trimmed().toLatin1().toBase64());
 }
 
 void spoton::slotEmailLettersPerPageChanged(int value)
