@@ -1102,6 +1102,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
 	  SLOT(close(void)));
+  connect(m_optionsUi.apply_other,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotApplyOtherOptions(void)));
   connect(m_optionsUi.autoAddSharedSBMagnets,
 	  SIGNAL(toggled(bool)),
 	  this,
