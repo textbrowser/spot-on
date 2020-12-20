@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1074</y>
-         <width>719</width>
-         <height>3862</height>
+         <y>0</y>
+         <width>726</width>
+         <height>3882</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1521,6 +1521,21 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="miscellaneous">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox#miscellaneous:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
+          </property>
+          <property name="title">
+           <string>Miscellaneous</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPlainTextEdit" name="other_options"/>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="permissions">
           <property name="styleSheet">
            <string notr="true">QGroupBox#permissions:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
@@ -2725,7 +2740,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>750</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -2795,6 +2810,7 @@ with the kernel process.</string>
   <tabstop>postgresql_kernel_url_distribution_timeout</tabstop>
   <tabstop>kernel_url_batch_size</tabstop>
   <tabstop>maximum_url_keywords_kernel</tabstop>
+  <tabstop>other_options</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>

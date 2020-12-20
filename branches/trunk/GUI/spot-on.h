@@ -632,6 +632,7 @@ class spoton: public QMainWindow
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void prepareVisiblePages(void);
+  void processOtherOptions(void);
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void retrieveNeighbors(void);

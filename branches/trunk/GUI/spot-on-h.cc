@@ -418,6 +418,31 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::processOtherOptions(void)
+{
+  QByteArray bytes;
+  QList<QByteArray> list;
+  QSettings settings;
+
+  bytes = QByteArray::fromBase64
+    (settings.value("other_options").toByteArray());
+  list = bytes.split('\n');
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QString str(list.at(i));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+      QStringList pair(str.split(":=", Qt::SkipEmptyParts));
+#else
+      QStringList pair(str.split(":=", QString::SkipEmptyParts));
+#endif
+
+      if(!pair.value(0).trimmed().isEmpty() &&
+	 !pair.value(1).trimmed().isEmpty())
+	m_settings[pair.value(0).trimmed()] = pair.value(1).trimmed();
+    }
+}
+
 void spoton::retrieveNeighbors(void)
 {
   QFileInfo fileInfo
