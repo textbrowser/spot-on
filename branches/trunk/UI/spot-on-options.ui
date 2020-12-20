@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-1707</y>
          <width>726</width>
-         <height>3882</height>
+         <height>3915</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1532,6 +1532,30 @@
            <item>
             <widget class="QPlainTextEdit" name="other_options"/>
            </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="apply_other">
+               <property name="text">
+                <string>Apply</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </widget>
         </item>
@@ -2811,6 +2835,7 @@ with the kernel process.</string>
   <tabstop>kernel_url_batch_size</tabstop>
   <tabstop>maximum_url_keywords_kernel</tabstop>
   <tabstop>other_options</tabstop>
+  <tabstop>apply_other</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
