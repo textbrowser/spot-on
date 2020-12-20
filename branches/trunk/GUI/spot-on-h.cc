@@ -1501,15 +1501,16 @@ void spoton::slotWebServerValueChangedTimeout(void)
       QString error("");
 
       m_sb.status->setText
-	(tr("Generating 3072-bit SSL/TLS data. Please be patient."));
+	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
+	 arg(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
       m_sb.status->repaint();
       spoton_crypt::generateSslKeys
-	(3072,
+	(spoton_common::WEB_SERVER_RSA_KEY_SIZE,
 	 certificate,
 	 privateKey,
 	 publicKey,
 	 spoton_misc::localAddressIPv4(),
-	 365L * 60L * 60L * 24L,
+	 spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME,
 	 error);
       m_sb.status->clear();
 
