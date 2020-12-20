@@ -943,6 +943,30 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
   return map.values();
 }
 
+QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
+{
+  QList<QByteArray> list;
+  QMap<QString, QVariant> map;
+
+  list = bytes.split('\n');
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      QString str(list.at(i));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+      QStringList pair(str.split(":=", Qt::SkipEmptyParts));
+#else
+      QStringList pair(str.split(":=", QString::SkipEmptyParts));
+#endif
+
+      if(!pair.value(0).trimmed().isEmpty() &&
+	 !pair.value(1).trimmed().isEmpty())
+	map[pair.value(0).trimmed()] = pair.value(1).trimmed();
+    }
+
+  return map;
+}
+
 QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
 (const QPair<QByteArray, QByteArray> &pair, spoton_crypt *crypt)
 {

@@ -420,26 +420,15 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
 
 void spoton::processOtherOptions(void)
 {
-  QByteArray bytes;
-  QList<QByteArray> list;
-  QSettings settings;
+  QMapIterator<QString, QVariant> it
+    (spoton_misc::otherOptions(QByteArray::
+			       fromBase64(m_settings.value("other_options").
+					  toByteArray())));
 
-  bytes = QByteArray::fromBase64
-    (settings.value("other_options").toByteArray());
-  list = bytes.split('\n');
-
-  for(int i = 0; i < list.size(); i++)
+  while(it.hasNext())
     {
-      QString str(list.at(i));
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-      QStringList pair(str.split(":=", Qt::SkipEmptyParts));
-#else
-      QStringList pair(str.split(":=", QString::SkipEmptyParts));
-#endif
-
-      if(!pair.value(0).trimmed().isEmpty() &&
-	 !pair.value(1).trimmed().isEmpty())
-	m_settings[pair.value(0).trimmed()] = pair.value(1).trimmed();
+      it.next();
+      m_settings[it.key()] = it.value();
     }
 }
 
