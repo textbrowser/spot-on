@@ -55,7 +55,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
-  s_rosetta = this;
   ui.action_Import_GPG_Keys->setEnabled(false);
   ui.action_Import_GPG_Keys->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
@@ -64,6 +63,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
+  s_rosetta = this;
   ui.copy->menu()->addAction(tr("Copy My &GPG Public Keys"),
 			     this,
 			     SLOT(slotCopyMyGPGKeys(void)));
