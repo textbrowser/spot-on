@@ -3787,7 +3787,10 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(X509_gmtime_adj(X509_get_notAfter(x509), days) == 0)
+  if(X509_gmtime_adj(X509_get_notAfter(x509),
+		     qBound(1L,
+			    days,
+			    std::numeric_limits<long int>::max())) == 0)
     {
       error = QObject::tr("X509_gmtime_adj() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
