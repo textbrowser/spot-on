@@ -626,13 +626,13 @@ class spoton: public QMainWindow
   void prepareAndShowInstallationWizard(void);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
+  void prepareOtherOptions(void);
   void prepareSMP(const QString &hash);
   void prepareTabIcons(void);
   void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
   void prepareVisiblePages(void);
-  void processOtherOptions(void);
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void retrieveNeighbors(void);

@@ -418,17 +418,31 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::processOtherOptions(void)
+void spoton::prepareOtherOptions(void)
 {
   QMapIterator<QString, QVariant> it
     (spoton_misc::otherOptions(QByteArray::
-			       fromBase64(m_settings.value("other_options").
+			       fromBase64(m_settings.value("gui/other_options").
 					  toByteArray())));
+
+  m_optionsUi.other_options->clear();
 
   while(it.hasNext())
     {
       it.next();
       m_settings[it.key()] = it.value();
+      m_optionsUi.other_options->appendPlainText
+	(it.key() + " := " + it.value().toString());
+    }
+
+  if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
+    {
+      m_optionsUi.other_options->appendPlainText
+	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
+	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
+      m_optionsUi.other_options->appendPlainText
+	("WEB_SERVER_RSA_KEY_SIZE := " +
+	 QString::number(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
     }
 }
 
