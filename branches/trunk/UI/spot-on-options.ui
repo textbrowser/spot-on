@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1683</y>
-         <width>726</width>
-         <height>3915</height>
+         <y>-1640</y>
+         <width>719</width>
+         <height>4144</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1531,6 +1531,9 @@
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <widget class="QPlainTextEdit" name="other_options">
+             <property name="toolTip">
+              <string>Option := Value</string>
+             </property>
              <property name="plainText">
               <string notr="true"/>
              </property>
@@ -2768,7 +2771,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>750</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

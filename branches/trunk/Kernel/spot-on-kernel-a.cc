@@ -5934,6 +5934,17 @@ void spoton_kernel::slotUpdateSettings(void)
       s_settings.insert(settings.allKeys().at(i),
 			settings.value(settings.allKeys().at(i)));
 
+  QMapIterator<QString, QVariant> it
+    (spoton_misc::otherOptions(QByteArray::
+			       fromBase64(s_settings.value("gui/other_options").
+					  toByteArray())));
+
+  while(it.hasNext())
+    {
+      it.next();
+      s_settings[it.key()] = it.value();
+    }
+
   spoton_misc::correctSettingsContainer(s_settings);
   spoton_misc::setTimeVariables(s_settings);
   locker.unlock();

@@ -443,6 +443,8 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_RSA_KEY_SIZE := " +
 	 QString::number(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
+      m_optionsUi.other_options->appendPlainText
+	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
     }
 }
 

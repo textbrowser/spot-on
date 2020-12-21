@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-2050</y>
          <width>719</width>
          <height>4144</height>
         </rect>
@@ -1531,6 +1531,9 @@
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
             <widget class="QPlainTextEdit" name="other_options">
+             <property name="toolTip">
+              <string>Option := Value</string>
+             </property>
              <property name="plainText">
               <string notr="true"/>
              </property>

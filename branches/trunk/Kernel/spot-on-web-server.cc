@@ -317,7 +317,11 @@ void spoton_web_server_thread::process
 	(QSsl::SslOptionDisableSessionPersistence, true);
       configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
 #endif
-      configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableSessionTickets,
+	 spoton_kernel::
+	 setting("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS",
+		 true).toBool());
 #if QT_VERSION >= 0x050501
       spoton_crypt::setSslCiphers
 	(QSslConfiguration::supportedCiphers(), sslCS, configuration);
