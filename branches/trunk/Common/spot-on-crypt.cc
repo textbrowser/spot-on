@@ -3788,7 +3788,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
     }
 
   if(X509_gmtime_adj(X509_get_notAfter(x509),
-		     qBound(1L,
+		     qBound(60L,
 			    days,
 			    std::numeric_limits<long int>::max())) == 0)
     {
