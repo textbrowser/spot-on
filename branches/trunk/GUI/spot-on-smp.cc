@@ -180,7 +180,8 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        ok);
   else
@@ -295,7 +296,8 @@ QList<QByteArray> spoton_smp::equalLogs(const gcry_mpi_t qab,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        ok);
   else
@@ -378,7 +380,8 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        ok);
   else
@@ -1380,7 +1383,8 @@ bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        &ok);
   else
@@ -1477,7 +1481,8 @@ bool spoton_smp::verifyEqualLogs(const QList<QByteArray> &list,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        &ok);
   else
@@ -1564,7 +1569,8 @@ bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
 
   if(m_spoton)
     bytes = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        bytes,
        &ok);
   else
@@ -1750,7 +1756,8 @@ void spoton_smp::setGuess(const QString &guess)
 
   if(m_spoton)
     hash = spoton_crypt::hash
-      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH_ALGORITHM",
+				  "sha512").toByteArray(),
        guess.toUtf8(),
        &ok);
   else

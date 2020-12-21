@@ -438,7 +438,7 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
-	("SMP_PREFERRED_HASH := sha3-512");
+	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
 	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
@@ -648,6 +648,7 @@ void spoton::slotApplyOtherOptions(void)
   settings.setValue
     ("gui/other_options",
      m_optionsUi.other_options->toPlainText().trimmed().toLatin1().toBase64());
+  prepareOtherOptions();
 }
 
 void spoton::slotEmailLettersPerPageChanged(int value)
@@ -1546,7 +1547,9 @@ void spoton::slotWebServerValueChangedTimeout(void)
 
       m_sb.status->setText
 	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
-	 arg(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
+	 arg(m_settings.value("WEB_SERVER_RSA_KEY_SIZE",
+			      spoton_common::WEB_SERVER_RSA_KEY_SIZE).
+	     toInt()));
       m_sb.status->repaint();
       spoton_crypt::generateSslKeys
 	(m_settings.value("WEB_SERVER_RSA_KEY_SIZE",
