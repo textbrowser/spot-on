@@ -3950,8 +3950,8 @@ void spoton::sendBuzzKeysToKernel(void)
   if((sent = ((m_kernelSocket.isEncrypted() ||
 	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
 	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
-    foreach(spoton_buzzpage *page, m_buzzPages.values())
-      {
+    {
+      foreach(spoton_buzzpage *page, m_buzzPages.values())
 	if(page && (sent &= (m_kernelSocket.isEncrypted() ||
 			     m_ui.kernelKeySize->currentText().toInt() == 0)))
 	  {
@@ -3977,7 +3977,7 @@ void spoton::sendBuzzKeysToKernel(void)
 		   arg(m_kernelSocket.peerPort()));
 	      }
 	  }
-      }
+    }
 
   m_keysShared["buzz_channels_sent_to_kernel"] = sent ? "true" : "false";
 }
