@@ -3951,31 +3951,33 @@ void spoton::sendBuzzKeysToKernel(void)
 	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
 	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
     foreach(spoton_buzzpage *page, m_buzzPages.values())
-      if(page && (sent &= (m_kernelSocket.isEncrypted() ||
-			   m_ui.kernelKeySize->currentText().toInt() == 0)))
-	{
-	  QByteArray message;
+      {
+	if(page && (sent &= (m_kernelSocket.isEncrypted() ||
+			     m_ui.kernelKeySize->currentText().toInt() == 0)))
+	  {
+	    QByteArray message;
 
-	  message.append("addbuzz_");
-	  message.append(page->key().toBase64());
-	  message.append("_");
-	  message.append(page->channelType().toBase64());
-	  message.append("_");
-	  message.append(page->hashKey().toBase64());
-	  message.append("_");
-	  message.append(page->hashType().toBase64());
-	  message.append("\n");
+	    message.append("addbuzz_");
+	    message.append(page->key().toBase64());
+	    message.append("_");
+	    message.append(page->channelType().toBase64());
+	    message.append("_");
+	    message.append(page->hashKey().toBase64());
+	    message.append("_");
+	    message.append(page->hashType().toBase64());
+	    message.append("\n");
 
-	  if(!writeKernelSocketData(message))
-	    {
-	      sent = false;
-	      spoton_misc::logError
-		(QString("spoton::sendBuzzKeysToKernel(): write() failure "
-			 "for %1:%2.").
-		 arg(m_kernelSocket.peerAddress().toString()).
-		 arg(m_kernelSocket.peerPort()));
-	    }
-	}
+	    if(!writeKernelSocketData(message))
+	      {
+		sent = false;
+		spoton_misc::logError
+		  (QString("spoton::sendBuzzKeysToKernel(): write() failure "
+			   "for %1:%2.").
+		   arg(m_kernelSocket.peerAddress().toString()).
+		   arg(m_kernelSocket.peerPort()));
+	      }
+	  }
+      }
 
   m_keysShared["buzz_channels_sent_to_kernel"] = sent ? "true" : "false";
 }
