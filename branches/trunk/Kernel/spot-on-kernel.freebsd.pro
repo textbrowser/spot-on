@@ -14,7 +14,6 @@ QT		+= bluetooth concurrent network sql websockets
 QT              -= gui
 
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
-	   SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
@@ -39,7 +38,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-qual \
                           -Wdouble-promotion \
                           -Wextra \
-                          -Wl,-z,relro \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \
@@ -47,9 +45,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=native \
                           -pedantic \
-                          -std=c++11
+                          -std=c++17
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru libspoton purge
 
@@ -60,7 +57,6 @@ INCLUDEPATH	+= . \
 LIBS		+= -L../../../libNTRU \
                    -L../../../libSpotOn \
                    -L/usr/local/lib \
-                   -lGeoIP \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
