@@ -668,7 +668,7 @@ void spoton::prepareSMP(const QString &hash)
 
   if(!smp)
     {
-      smp = new spoton_smp();
+      smp = new spoton_smp(this);
       m_smps[hash] = smp;
     }
 

@@ -87,6 +87,9 @@ class spoton_crypt
      const bool singleIteration,
      QString &error);
   static QByteArray fingerprint(const QByteArray &publicKey);
+  static QByteArray hash(const QByteArray &algorithm,
+			 const QByteArray &data,
+			 bool *ok);
   static QByteArray keyedHash(const QByteArray &data,
 			      const QByteArray &key,
 			      const QByteArray &hashType,

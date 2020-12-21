@@ -37,10 +37,12 @@ extern "C"
 #include <gcrypt.h>
 }
 
+class spoton;
+
 class spoton_smp
 {
  public:
-  spoton_smp(void);
+  spoton_smp(spoton *spoton);
   ~spoton_smp(void);
   static const unsigned int BITS = 1536;
   static gcry_mpi_t generateWeakRandomPrime(bool *ok);
@@ -125,6 +127,7 @@ class spoton_smp
   gcry_mpi_t m_qb;
   int m_step;
   size_t m_guessWhirlLength;
+  spoton *m_spoton;
   static const int TERMINAL_STATE = -1;
   QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);

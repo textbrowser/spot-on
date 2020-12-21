@@ -33,9 +33,10 @@
 #include <QtDebug>
 
 #include "Common/spot-on-crypt.h"
+#include "spot-on.h"
 #include "spot-on-smp.h"
 
-spoton_smp::spoton_smp(void)
+spoton_smp::spoton_smp(spoton *spoton)
 {
   gcry_mpi_scan(&m_generator, GCRYMPI_FMT_HEX,
 		"0x02",
@@ -77,6 +78,7 @@ spoton_smp::spoton_smp(void)
   m_pb = 0;
   m_qab = 0;
   m_qb = 0;
+  m_spoton = spoton;
   m_step = 0;
 }
 
@@ -175,7 +177,14 @@ QList<QByteArray> spoton_smp::coordinatesProof(const gcry_mpi_t g2,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, ok);
 
   if(bytes.isEmpty())
     {if(ok) *ok = false; list.clear(); goto done_label;}
@@ -283,7 +292,14 @@ QList<QByteArray> spoton_smp::equalLogs(const gcry_mpi_t qab,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, ok);
 
   if(bytes.isEmpty())
     {if(ok) *ok = false; list.clear(); goto done_label;}
@@ -359,7 +375,14 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, ok);
 
   if(bytes.isEmpty())
     {if(ok) *ok = false; list.clear(); goto done_label;}
@@ -1354,7 +1377,14 @@ bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       &ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, &ok);
 
   if(!ok)
     goto done_label;
@@ -1444,7 +1474,14 @@ bool spoton_smp::verifyEqualLogs(const QList<QByteArray> &list,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       &ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, &ok);
 
   if(!ok)
     goto done_label;
@@ -1524,7 +1561,14 @@ bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
 
   gcry_free(buffer);
   buffer = 0;
-  bytes = spoton_crypt::sha512Hash(bytes, &ok);
+
+  if(m_spoton)
+    bytes = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       bytes,
+       &ok);
+  else
+    bytes = spoton_crypt::sha512Hash(bytes, &ok);
 
   if(!ok)
     goto done_label;
@@ -1704,7 +1748,13 @@ void spoton_smp::setGuess(const QString &guess)
   QByteArray hash;
   bool ok = true;
 
-  hash = spoton_crypt::sha512Hash(guess.toUtf8(), &ok);
+  if(m_spoton)
+    hash = spoton_crypt::hash
+      (m_spoton->m_settings.value("SMP_PREFERRED_HASH", "sha512").toByteArray(),
+       guess.toUtf8(),
+       &ok);
+  else
+    hash = spoton_crypt::sha512Hash(guess.toUtf8(), &ok);
 
   if(ok)
     {
@@ -1899,8 +1949,8 @@ void spoton_smp::test1(void)
   QList<QByteArray> list;
   bool ok = true;
   bool passed = false;
-  spoton_smp a;
-  spoton_smp b;
+  spoton_smp a(nullptr);
+  spoton_smp b(nullptr);
 
   a.setGuess("This is a test.");
   b.setGuess("This is a test.");
@@ -1960,8 +2010,8 @@ void spoton_smp::test2(void)
   QList<QByteArray> list;
   bool ok = true;
   bool passed = false;
-  spoton_smp a;
-  spoton_smp b;
+  spoton_smp a(nullptr);
+  spoton_smp b(nullptr);
 
   a.setGuess("This is a test.");
   b.setGuess("This is not a test.");
@@ -2021,8 +2071,8 @@ void spoton_smp::test3(void)
   QList<QByteArray> list;
   bool ok = true;
   bool passed = false;
-  spoton_smp a;
-  spoton_smp b;
+  spoton_smp a(nullptr);
+  spoton_smp b(nullptr);
 
   a.setGuess("This is a test.");
   b.setGuess("This is a test.");
@@ -2067,8 +2117,8 @@ void spoton_smp::test4(void)
   bool ok = true;
   bool passed = false;
   gcry_mpi_t prime = generateWeakRandomPrime(&ok);
-  spoton_smp a;
-  spoton_smp b;
+  spoton_smp a(nullptr);
+  spoton_smp b(nullptr);
 
   if(!ok)
     {

@@ -438,6 +438,8 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
+	("SMP_PREFERRED_HASH := sha3-512");
+      m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
 	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
       m_optionsUi.other_options->appendPlainText

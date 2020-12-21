@@ -993,6 +993,39 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
 #endif
 }
 
+QByteArray spoton_crypt::hash(const QByteArray &algorithm,
+			      const QByteArray &data,
+			      bool *ok)
+{
+  QByteArray hash;
+  unsigned int length = gcry_md_get_algo_dlen
+    (gcry_md_map_name(algorithm.constData()));
+
+  if(length > 0)
+    {
+      if(ok)
+	*ok = true;
+
+      hash.resize(static_cast<int> (length));
+      gcry_md_hash_buffer
+	(gcry_md_map_name(algorithm.constData()),
+	 hash.data(),
+	 data.constData(),
+	 static_cast<size_t> (data.length()));
+    }
+  else
+    {
+      if(ok)
+	*ok = false;
+
+      spoton_misc::logError
+	(QString("spoton_crypt::hash(): gcry_md_get_algo_dlen() "
+		 "failure for %1.").arg(algorithm.constData()));
+    }
+
+  return hash;
+}
+
 QByteArray spoton_crypt::hashKey(void)
 {
   QReadLocker locker(&m_hashKeyMutex);

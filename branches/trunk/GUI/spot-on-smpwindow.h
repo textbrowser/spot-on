@@ -39,9 +39,9 @@ class spoton;
 class spoton_smpwindow_smp
 {
  public:
-  spoton_smpwindow_smp(const QString &guess)
+  spoton_smpwindow_smp(const QString &guess, spoton *spoton)
   {
-    m_smp = new spoton_smp();
+    m_smp = new spoton_smp(spoton);
     m_smp->setGuess(guess);
   }
 

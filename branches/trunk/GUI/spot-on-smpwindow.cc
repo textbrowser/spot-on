@@ -531,7 +531,7 @@ void spoton_smpwindow::slotExecute(void)
 
   if(!smp)
     {
-      smp = new spoton_smpwindow_smp(secret);
+      smp = new spoton_smpwindow_smp(secret, m_parent);
       smp->m_keyType = keyType;
       smp->m_name = name;
       smp->m_oid = list.value(0).data().toLongLong();
@@ -787,7 +787,7 @@ void spoton_smpwindow::slotGenerateData(void)
 
   QScopedPointer<spoton_smpwindow_smp> smp;
 
-  smp.reset(new spoton_smpwindow_smp(secret));
+  smp.reset(new spoton_smpwindow_smp(secret, m_parent));
   smp->m_keyType = keyType;
   smp->m_name = name;
   smp->m_oid = oid.toLongLong();
@@ -950,7 +950,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
 
   if(!smp)
     {
-      smp = new spoton_smpwindow_smp(secret);
+      smp = new spoton_smpwindow_smp(secret, m_parent);
       smp->m_keyType = keyType;
       smp->m_name = m_ui.participants->selectionModel()->selectedRows(0).
 	value(0).data().toString();
