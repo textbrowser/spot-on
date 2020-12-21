@@ -4064,7 +4064,7 @@ void spoton::slotAbout(void)
   pixmap = pixmap.scaled
     (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   str = QString
-    ("<html>Spot-On Version %1<br>"
+    ("<html>Spot-On Version %1 (Final)<br>"
      "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
      "https://textbrowser.github.io/spot-on</a> for more information.").
     arg(SPOTON_VERSION_STR);
