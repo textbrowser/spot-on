@@ -267,6 +267,7 @@ Completed Items
 194.   GPG passphrase.
 195.   Re-encode GPG keys.
 196.   E-mail pagination.
+197.   Manual retrieval of Poptastic. Cancel automatic.
 
 Ignored Items
 
@@ -313,4 +314,3 @@ Remaining Items
 8.     Cryptographic discovery.
 9.     Rosetta Spell checker.
 10.    Future proof.
-11.    Manual retrieval of Poptastic. Cancel automatic.
