@@ -45,7 +45,9 @@
 #endif
 #include "spot-on.h"
 
+#ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = 0;
+#endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
