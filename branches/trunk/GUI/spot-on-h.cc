@@ -1545,12 +1545,16 @@ void spoton::slotWebServerValueChangedTimeout(void)
 	 arg(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
       m_sb.status->repaint();
       spoton_crypt::generateSslKeys
-	(spoton_common::WEB_SERVER_RSA_KEY_SIZE,
+	(m_settings.value("WEB_SERVER_RSA_KEY_SIZE",
+			  spoton_common::WEB_SERVER_RSA_KEY_SIZE).toInt(),
 	 certificate,
 	 privateKey,
 	 publicKey,
 	 spoton_misc::localAddressIPv4(),
-	 spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME,
+	 m_settings.value("WEB_SERVER_CERTIFICATE_LIFETIME",
+			  static_cast<int> (spoton_common::
+					    WEB_SERVER_CERTIFICATE_LIFETIME)).
+	 toInt(),
 	 error);
       m_sb.status->clear();
 
