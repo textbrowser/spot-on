@@ -4294,9 +4294,11 @@ void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
     listener = m_listeners.value(listenerOid, 0);
 
   if(listener)
-    foreach(spoton_neighbor *socket,
-	    listener->findChildren<spoton_neighbor *> ())
-      socket->deleteLater();
+    {
+      foreach(spoton_neighbor *socket,
+	      listener->findChildren<spoton_neighbor *> ())
+	socket->deleteLater();
+    }
 }
 
 void spoton_kernel::slotImpersonateTimeout(void)
