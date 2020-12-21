@@ -4492,7 +4492,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   if(!ok)
     rational = 5.00;
-  else if(rational < 5.00)
+  else if(rational < 0.00)
     rational = 5.00;
 
   settings.insert("gui/poptasticRefreshInterval", rational);

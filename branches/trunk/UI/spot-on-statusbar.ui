@@ -43,6 +43,20 @@
     </widget>
    </item>
    <item>
+    <widget class="QToolButton" name="pop_poptastic">
+     <property name="toolTip">
+      <string>Pop Poptastic messages.</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Icons/icons.qrc">
+       <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="status">
      <property name="minimumSize">
       <size>
@@ -239,6 +253,7 @@
  </widget>
  <tabstops>
   <tabstop>lock</tabstop>
+  <tabstop>pop_poptastic</tabstop>
   <tabstop>authentication_request</tabstop>
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>
@@ -248,6 +263,7 @@
   <tabstop>listeners</tabstop>
   <tabstop>neighbors</tabstop>
   <tabstop>errorlog</tabstop>
+  <tabstop>warning</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>

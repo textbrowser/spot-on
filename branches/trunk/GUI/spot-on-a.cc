@@ -849,6 +849,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotStatusButtonClicked(void)));
+  connect(m_sb.pop_poptastic,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPopPoptastic(void)));
   connect(m_sb.status,
 	  SIGNAL(linkActivated(const QString &)),
 	  this,

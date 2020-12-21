@@ -680,9 +680,14 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
 		       toDouble()));
-  m_poptasticPopTimer.start
-    (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
-				      5.00).toDouble()));
+  m_poptasticPopTimer.setInterval(5000);
+
+  if(static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
+				      5.00).toDouble()) > 0)
+    m_poptasticPopTimer.start
+      (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
+					5.00).toDouble()));
+
   m_poptasticPostTimer.start(2500);
   m_prepareTimer.start(10000);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
@@ -815,6 +820,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					  const QByteArray &,
 					  const QByteArray &,
 					  const QString &)));
+      connect(m_guiServer,
+	      SIGNAL(poptasticPop(void)),
+	      this,
+	      SLOT(slotPoptasticPop(void)));
       connect(m_guiServer,
 	      SIGNAL(populateStarBeamKeys(void)),
 	      m_starbeamWriter,
@@ -5973,7 +5982,10 @@ void spoton_kernel::slotUpdateSettings(void)
   int integer = static_cast<int>
     (1000 * setting("gui/poptasticRefreshInterval", 5.00).toDouble());
 
-  if(integer != m_poptasticPopTimer.interval())
+  if(integer <= 0)
+    m_poptasticPopTimer.stop();
+  else if(integer != m_poptasticPopTimer.interval() ||
+	  !m_poptasticPopTimer.isActive())
     m_poptasticPopTimer.start(integer);
 
   if(setting("gui/publishPeriodically", false).toBool())

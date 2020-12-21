@@ -784,6 +784,8 @@ void spoton_gui_server::slotReadyRead(void)
 		   QByteArray::fromBase64(list.value(4)),
 		   "poptastic");
 	    }
+	  else if(message.startsWith("poptasticpop"))
+	    emit poptasticPop();
 	  else if(message.startsWith("populate_starbeam_keys") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    emit populateStarBeamKeys();

@@ -820,6 +820,11 @@ void spoton::slotPQUrlDatabaseFaulty(void)
     }
 }
 
+void spoton::slotPopPoptastic(void)
+{
+  writeKernelSocketData("poptasticpop");
+}
+
 void spoton::slotPopulateNeighbors(void)
 {
   if(currentTabName() != "neighbors")

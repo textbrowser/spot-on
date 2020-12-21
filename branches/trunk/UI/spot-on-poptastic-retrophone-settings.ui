@@ -50,11 +50,14 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="poptasticRefresh">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A value of zero disables the periodic query.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="suffix">
         <string> seconds.</string>
        </property>
        <property name="minimum">
-        <double>5.000000000000000</double>
+        <double>0.000000000000000</double>
        </property>
        <property name="maximum">
         <double>999999999.000000000000000</double>
