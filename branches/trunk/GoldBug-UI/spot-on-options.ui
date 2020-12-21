@@ -45,7 +45,7 @@
          <x>0</x>
          <y>0</y>
          <width>719</width>
-         <height>3862</height>
+         <height>4144</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1521,6 +1521,49 @@
          </widget>
         </item>
         <item>
+         <widget class="QGroupBox" name="miscellaneous">
+          <property name="styleSheet">
+           <string notr="true">QGroupBox#miscellaneous:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
+          </property>
+          <property name="title">
+           <string>Miscellaneous</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPlainTextEdit" name="other_options">
+             <property name="plainText">
+              <string notr="true"/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="apply_other">
+               <property name="text">
+                <string>Apply</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QGroupBox" name="permissions">
           <property name="styleSheet">
            <string notr="true">QGroupBox#permissions:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
@@ -2795,6 +2838,8 @@ with the kernel process.</string>
   <tabstop>postgresql_kernel_url_distribution_timeout</tabstop>
   <tabstop>kernel_url_batch_size</tabstop>
   <tabstop>maximum_url_keywords_kernel</tabstop>
+  <tabstop>other_options</tabstop>
+  <tabstop>apply_other</tabstop>
   <tabstop>acceptBuzzMagnets</tabstop>
   <tabstop>acceptGeminis</tabstop>
   <tabstop>chatAcceptSigned</tabstop>
