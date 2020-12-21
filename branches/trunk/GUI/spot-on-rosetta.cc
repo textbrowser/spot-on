@@ -52,10 +52,10 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = 0;
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   m_parent = 0;
-  s_rosetta = this;
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
+  s_rosetta = this;
   ui.action_Import_GPG_Keys->setEnabled(false);
   ui.action_Import_GPG_Keys->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
