@@ -1944,8 +1944,7 @@ void spoton::slotCopyEmailKeys(void)
 
   if((row = m_ui.emailParticipants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.emailParticipants->
-	item(row, 0); // Name
+      QTableWidgetItem *item = m_ui.emailParticipants->item(row, 0); // Name
 
       if(item)
 	name.append(item->text().toUtf8());
@@ -2010,10 +2009,12 @@ void spoton::slotCopyEmailKeys(void)
   if(!publicKey.isEmpty() && !signatureKey.isEmpty())
     {
       QString text
-	("K" + QByteArray("email").toBase64() + "@" +
-	 name.toBase64() + "@" +
-	 publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
-	 signatureKey.toBase64() + "@" + QByteArray().toBase64());
+	("K" + QByteArray("email").toBase64() + "@" + // 0
+	 name.toBase64() + "@" +                      // 1
+	 publicKey.toBase64() + "@" +                 // 2
+	 QByteArray().toBase64() + "@" +              // 3
+	 signatureKey.toBase64() + "@" +              // 4
+	 QByteArray().toBase64());                    // 5
 
       if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
 	{
