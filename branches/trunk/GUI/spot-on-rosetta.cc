@@ -919,8 +919,14 @@ void spoton_rosetta::slotAddContact(void)
       QApplication::processEvents();
     }
 
+  QByteArray sPublicKey(list.value(4));
+  QByteArray sSignature(list.value(5));
+
+  sPublicKey = QByteArray::fromBase64(sPublicKey);
+  sSignature = QByteArray::fromBase64(sSignature);
+
   if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
-     (mSignature == mySPublicKey && !mySPublicKey.isEmpty()))
+     (sPublicKey == mySPublicKey && !mySPublicKey.isEmpty()))
     {
       QMessageBox::critical
 	(this, tr("%1: Error").
@@ -945,12 +951,6 @@ void spoton_rosetta::slotAddContact(void)
 	QApplication::processEvents();
 	return;
       }
-
-  QByteArray sPublicKey(list.value(4));
-  QByteArray sSignature(list.value(5));
-
-  sPublicKey = QByteArray::fromBase64(sPublicKey);
-  sSignature = QByteArray::fromBase64(sSignature);
 
   if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
     {

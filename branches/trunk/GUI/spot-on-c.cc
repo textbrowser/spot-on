@@ -2011,7 +2011,7 @@ void spoton::slotCopyEmailKeys(void)
       QString text
 	("K" + QByteArray("email").toBase64() + "@" + // 0
 	 name.toBase64() + "@" +                      // 1
-	 publicKey.toBase64() + "@" +                 // 2
+	 qCompress(publicKey.toBase64()) + "@" +      // 2
 	 QByteArray().toBase64() + "@" +              // 3
 	 signatureKey.toBase64() + "@" +              // 4
 	 QByteArray().toBase64());                    // 5

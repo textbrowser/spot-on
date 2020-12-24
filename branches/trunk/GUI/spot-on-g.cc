@@ -908,10 +908,12 @@ void spoton::slotCopyUrlKeys(void)
 
   if(!publicKey.isEmpty() && !signatureKey.isEmpty())
     {
-      QString text("K" + QByteArray("url").toBase64() + "@" +
-		   name.toBase64() + "@" +
-		   publicKey.toBase64() + "@" + QByteArray().toBase64() + "@" +
-		   signatureKey.toBase64() + "@" + QByteArray().toBase64());
+      QString text("K" + QByteArray("url").toBase64() + "@" + // 0
+		   name.toBase64() + "@" +                    // 1
+		   qCompress(publicKey.toBase64()) + "@" +    // 2
+		   QByteArray().toBase64() + "@" +            // 3
+		   signatureKey.toBase64() + "@" +            // 4
+		   QByteArray().toBase64());                  // 5
 
       if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
 	{

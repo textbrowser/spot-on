@@ -749,13 +749,9 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  return false;
 	}
 
-      QByteArray mPublicKey(list.value(2));
-      QByteArray mSignature(list.value(3));
       QByteArray myPublicKey;
-      QByteArray mySPublicKey;
       bool ok = true;
 
-      mPublicKey = qUncompress(QByteArray::fromBase64(mPublicKey));
       myPublicKey = m_crypts.value(keyType)->publicKey(&ok);
 
       if(!ok)
@@ -781,6 +777,8 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
 	  QApplication::processEvents();
 	}
+
+      QByteArray mySPublicKey;
 
       mySPublicKey = m_crypts.value
 	(QString("%1-signature").arg(keyType.constData()))->publicKey(&ok);
@@ -809,8 +807,16 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  QApplication::processEvents();
 	}
 
+      QByteArray mPublicKey(list.value(2));
+      QByteArray mSignature(list.value(3));
+      QByteArray sPublicKey(list.value(4));
+      QByteArray sSignature(list.value(5));
+
+      mPublicKey = qUncompress(QByteArray::fromBase64(mPublicKey));
+      sPublicKey = QByteArray::fromBase64(sPublicKey);
+
       if((mPublicKey == myPublicKey && !myPublicKey.isEmpty()) ||
-	 (mSignature == mySPublicKey && !mySPublicKey.isEmpty()))
+	 (sPublicKey == mySPublicKey && !mySPublicKey.isEmpty()))
 	{
 	  QMessageBox::critical
 	    (parent, tr("%1: Error").
@@ -829,8 +835,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Invalid %1 "
-			"public key signature. Accept?").
+	  mb.setText(tr("Invalid %1 public key signature. Accept?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::WindowModal);
@@ -844,10 +849,6 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	    }
 	}
 
-      QByteArray sPublicKey(list.value(4));
-      QByteArray sSignature(list.value(5));
-
-      sPublicKey = QByteArray::fromBase64(sPublicKey);
       sSignature = QByteArray::fromBase64(sSignature);
 
       if(!spoton_crypt::isValidSignature(sPublicKey, sPublicKey, sSignature))
@@ -856,8 +857,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-	  mb.setText(tr("Invalid %1 "
-			"signature public key signature. Accept?").
+	  mb.setText(tr("Invalid %1 signature public key signature. Accept?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::WindowModal);
