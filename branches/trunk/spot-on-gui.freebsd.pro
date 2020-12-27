@@ -18,7 +18,8 @@ QT		+= concurrent \
                    websockets \
                    widgets
 
-DEFINES	+= SPOTON_LINKED_WITH_LIBNTRU \
+DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
+	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
 	   SPOTON_SCTP_ENABLED \
