@@ -9,7 +9,8 @@ libspoton.target = libspoton.so
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= concurrent \
+QT		+= bluetooth \
+                   concurrent \
                    gui \
                    multimedia \
                    network \
