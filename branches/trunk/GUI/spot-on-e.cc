@@ -25,10 +25,12 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef SPOTON_POPTASTIC_SUPPORTED
 extern "C"
 {
 #include <curl/curl.h>
 }
+#endif
 
 #include <QCoreApplication>
 #include <QSettings>
@@ -303,11 +305,12 @@ QString spoton::savePoptasticAccount(void)
 static QStringList curl_protocols(void)
 {
   QStringList list;
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
 
   for(int i = 0; data->protocols[i] != 0; i++)
     list << QString(data->protocols[i]).toLower();
-
+#endif
   return list;
 }
 
@@ -2258,6 +2261,7 @@ void spoton::slotShowOptions(void)
 
 void spoton::slotTestPoptasticPop3Settings(void)
 {
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
   QString error("");
@@ -2396,10 +2400,12 @@ void spoton::slotTestPoptasticPop3Settings(void)
        tr("Failure!\nError: %1.").arg(error));
 
   QApplication::processEvents();
+#endif
 }
 
 void spoton::slotTestPoptasticSmtpSettings(void)
 {
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
   QString error("");
@@ -2545,6 +2551,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
        tr("Failure!\nError: %1.").arg(error));
 
   QApplication::processEvents();
+#endif
 }
 
 void spoton::slotVerifySMPSecret(const QString &hash,

@@ -723,6 +723,9 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.selectGeoIP6->setToolTip
     (tr("%1 was configured without libGeoIP.").arg(SPOTON_APPLICATION_NAME));
 #endif
+#ifndef SPOTON_POPTASTIC_SUPPORTED
+  m_sb.pop_poptastic->setToolTip(tr("Poptastic is not supported."));
+#endif
   m_statisticsUi.setupUi(m_statisticsWindow);
   m_statisticsUi.view->setModel(m_statisticsModel);
   m_ui.statistics->setModel(m_statisticsModel);
@@ -2978,6 +2981,7 @@ spoton::spoton(void):QMainWindow()
     {
       m_sb.frame->setEnabled(false);
       m_sb.lock->setEnabled(false);
+      m_sb.pop_poptastic->setEnabled(false);
 #if SPOTON_GOLDBUG == 0
       m_ui.action_Add_Participant->setEnabled(false);
 #endif
@@ -3026,6 +3030,7 @@ spoton::spoton(void):QMainWindow()
     {
       m_sb.frame->setEnabled(false);
       m_sb.lock->setEnabled(false);
+      m_sb.pop_poptastic->setEnabled(false);
 #if SPOTON_GOLDBUG == 0
       m_ui.action_Add_Participant->setEnabled(false);
 #endif
@@ -10775,6 +10780,9 @@ void spoton::slotValidatePassphrase(void)
 
 	    m_sb.frame->setEnabled(true);
 	    m_sb.lock->setEnabled(true);
+#ifdef SPOTON_POPTASTIC_SUPPORTED
+	    m_sb.pop_poptastic->setEnabled(true);
+#endif
 #if SPOTON_GOLDBUG == 0
 	    m_ui.action_Add_Participant->setEnabled(true);
 #endif
