@@ -526,7 +526,7 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
 #if defined(Q_OS_WIN)
     if(WSAGetLastError() == WSAEWOULDBLOCK)
       sent = 0;
- #else
+#else
     if(errno == EAGAIN || errno == EWOULDBLOCK)
       sent = 0;
 #endif

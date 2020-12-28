@@ -9847,6 +9847,9 @@ void spoton::slotSetPassphrase(void)
 
       m_sb.frame->setEnabled(true);
       m_sb.lock->setEnabled(true);
+#ifdef SPOTON_POPTASTIC_SUPPORTED
+      m_sb.pop_poptastic->setEnabled(true);
+#endif
 #if SPOTON_GOLDBUG == 0
       m_ui.action_Add_Participant->setEnabled(true);
 #endif
@@ -9858,7 +9861,9 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_New_Global_Name->setEnabled(true);
       m_ui.action_Notifications_Window->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
+#ifdef SPOTON_POPTASTIC_SUPPORTED
       m_ui.action_Poptastic_Settings->setEnabled(true);
+#endif
       m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
       m_ui.action_RSS->setEnabled(true);
       m_ui.action_Rosetta->setEnabled(true);
@@ -10794,7 +10799,9 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_New_Global_Name->setEnabled(true);
 	    m_ui.action_Notifications_Window->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
+#ifdef SPOTON_POPTASTIC_SUPPORTED
 	    m_ui.action_Poptastic_Settings->setEnabled(true);
+#endif
 	    m_ui.action_Purge_Ephemeral_Keys->setEnabled(true);
 	    m_ui.action_RSS->setEnabled(true);
 	    m_ui.action_Rosetta->setEnabled(true);

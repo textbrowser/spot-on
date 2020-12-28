@@ -202,7 +202,7 @@ class spoton_pacify
 	  r += 2.0;
 	else if(r > 3.0)
 	  r = 5.0;
-	else if(r == 3.0)
+	else if(qFuzzyCompare(3.0, r))
 	  r = 4.0;
 	else if(r > 2.0)
 	  r = 3.0;
@@ -247,7 +247,7 @@ class spoton_pacify
       else
 	break;
 
-    if(a + b + c + d == 0.0)
+    if(qFuzzyIsNull(a + b + c + d))
       rc += 30.0;
     else
       {
