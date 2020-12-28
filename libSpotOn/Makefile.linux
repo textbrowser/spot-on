@@ -10,15 +10,20 @@ libspoton.o:	libspoton.c libspoton.h
 	-Waggregate-return \
 	-Wall \
 	-Wconversion \
+	-Wdouble-promotion \
 	-Werror \
 	-Wextra \
+	-Wfloat-equal \
 	-Wformat=2 \
+	-Wformat-overflow=2 \
+	-Wlogical-op \
 	-Wpointer-arith \
 	-Wshadow \
 	-Wsign-conversion \
 	-Wstack-protector \
 	-Wstrict-overflow=5 \
 	-Wstrict-prototypes \
+	-Wundef \
 	-ansi \
 	-fPIC \
 	-fstack-protector-all \
