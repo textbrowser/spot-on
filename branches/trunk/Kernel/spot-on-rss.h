@@ -48,7 +48,6 @@ class spoton_rss: public QObject
  private:
   QAtomicInt m_cancelImport;
   QByteArray m_feedDownloadContent;
-  QFuture<void> m_importFuture;
   QFuture<void> m_parseXmlFuture;
   QNetworkAccessManager m_contentNetworkAccessManager;
   QNetworkAccessManager m_feedNetworkAccessManager;
@@ -57,6 +56,7 @@ class spoton_rss: public QObject
   QTimer m_downloadTimer;
   QTimer m_importTimer;
   QTimer m_populateTimer;
+  QVector<QFuture<void > > m_importFutures;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void import(const int maximumKeywords);

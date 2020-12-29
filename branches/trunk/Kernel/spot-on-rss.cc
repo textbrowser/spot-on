@@ -75,6 +75,12 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
   m_downloadContentTimer.start();
   m_downloadTimer.setInterval(static_cast<int> (60000.0 * value));
   m_downloadTimer.start();
+  m_importFutures.resize
+    (qCeil(1.5 * qMax(1, QThread::idealThreadCount())));
+
+  for(int i = 0; i < m_importFutures.size(); i++)
+    m_importFutures.replace(i, QFuture<void> ());
+
   m_importTimer.setInterval(2500);
   m_importTimer.start();
   m_populateTimer.setInterval(10000);
@@ -144,8 +150,13 @@ void spoton_rss::deactivate(void)
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
-  m_importFuture.cancel();
-  m_importFuture.waitForFinished();
+
+  for(int i = 0; i < m_importFutures.size(); i++)
+    {
+      m_importFutures[i].cancel();
+      m_importFutures[i].waitForFinished();
+    }
+
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
   m_populateTimer.stop();
@@ -193,7 +204,7 @@ void spoton_rss::import(const int maximumKeywords)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      if(m_importFuture.isCanceled())
+	      if(m_cancelImport.fetchAndAddOrdered(0))
 		break;
 
 	      QByteArray domain;
@@ -238,7 +249,7 @@ void spoton_rss::import(const int maximumKeywords)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_importFuture.isCanceled())
+  if(m_cancelImport.fetchAndAddOrdered(0))
     return;
 
   QList<QByteArray> urlHashes;
@@ -325,7 +336,7 @@ void spoton_rss::import(const int maximumKeywords)
 
 		  for(int i = 0; i < polarizers.size(); i++)
 		    {
-		      if(m_importFuture.isCanceled())
+		      if(m_cancelImport.fetchAndAddOrdered(0))
 			break;
 
 		      QString type(polarizers.at(i).second);
@@ -352,7 +363,7 @@ void spoton_rss::import(const int maximumKeywords)
 			}
 		    }
 
-		  if(m_importFuture.isCanceled())
+		  if(m_cancelImport.fetchAndAddOrdered(0))
 		    break;
 		}
 
@@ -373,7 +384,7 @@ void spoton_rss::import(const int maximumKeywords)
 		}
 
 	      if(ct >= spoton_common::RSS_IMPORTS_PER_THREAD ||
-		 m_importFuture.isCanceled())
+		 m_cancelImport.fetchAndAddOrdered(0))
 		break;
 	    }
       }
@@ -383,15 +394,17 @@ void spoton_rss::import(const int maximumKeywords)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(m_importFuture.isCanceled())
+  if(m_cancelImport.fetchAndAddOrdered(0))
     return;
 
   QList<bool> imported;
 
-  for(int i = 0; i < lists.size() && !m_importFuture.isCanceled(); i++)
+  for(int i = 0;
+      i < lists.size() && !m_cancelImport.fetchAndAddOrdered(0);
+      i++)
     imported << importUrl(lists.at(i), maximumKeywords);
 
-  if(m_importFuture.isCanceled())
+  if(m_cancelImport.fetchAndAddOrdered(0))
     return;
 
   {
@@ -403,7 +416,9 @@ void spoton_rss::import(const int maximumKeywords)
       {
 	QSqlQuery query(db);
 
-	for(int i = 0; i < imported.size() && !m_importFuture.isCanceled(); i++)
+	for(int i = 0;
+	    i < imported.size() && !m_cancelImport.fetchAndAddOrdered(0);
+	    i++)
 	  {
 	    query.prepare("UPDATE rss_feeds_links "
 			  "SET imported = ? "
@@ -1467,11 +1482,17 @@ void spoton_rss::slotFeedReplyReadyRead(void)
 
 void spoton_rss::slotImport(void)
 {
-  if(m_importFuture.isFinished())
-    m_importFuture = QtConcurrent::run
-      (this,
-       &spoton_rss::import,
-       spoton_kernel::setting("gui/rss_maximum_keywords", 50).toInt());
+  for(int i = 0; i < m_importFutures.size(); i++)
+    if(m_importFutures.at(i).isFinished())
+      {
+	m_importFutures.replace
+	  (i,
+	   QtConcurrent::run(this,
+			     &spoton_rss::import,
+			     spoton_kernel::
+			     setting("gui/rss_maximum_keywords", 50).toInt()));
+	break;
+      }
 }
 
 void spoton_rss::slotLogError(const QString &error)

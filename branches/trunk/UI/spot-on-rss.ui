@@ -314,6 +314,9 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="download_interval">
+            <property name="toolTip">
+             <string>Kernel monitors this setting.</string>
+            </property>
             <property name="suffix">
              <string> minute(s)</string>
             </property>
@@ -514,8 +517,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>360</width>
-             <height>223</height>
+             <width>685</width>
+             <height>564</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -759,7 +762,7 @@
      <x>0</x>
      <y>0</y>
      <width>725</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
