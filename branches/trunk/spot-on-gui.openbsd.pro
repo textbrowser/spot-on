@@ -20,6 +20,7 @@ QT		+= concurrent \
 DEFINES	+= SPOTON_DTLS_DISABLED \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_POPTASTIC_SUPPORTED \
            SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
