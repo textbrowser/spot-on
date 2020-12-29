@@ -494,6 +494,7 @@ spoton::spoton(void):QMainWindow()
   m_sb.setupUi(m_sbWidget);
   m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.dooble_import_groupbox->setVisible(false);
+  m_ui.email_page->addItem("1");
   m_ui.emailParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.importUrls->setVisible(false);
