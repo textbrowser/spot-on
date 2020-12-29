@@ -18,6 +18,7 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
                    SPOTON_MCELIECE_ENABLED \
+                   SPOTON_POPTASTIC_SUPPORTED \
 		   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge

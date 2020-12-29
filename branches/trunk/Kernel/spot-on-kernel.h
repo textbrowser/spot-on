@@ -28,10 +28,12 @@
 #ifndef _spoton_kernel_h_
 #define _spoton_kernel_h_
 
+#ifdef SPOTON_POPTASTIC_SUPPORTED
 extern "C"
 {
 #include <curl/curl.h>
 }
+#endif
 
 #include <QAtomicInt>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)

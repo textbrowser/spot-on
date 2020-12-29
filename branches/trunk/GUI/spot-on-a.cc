@@ -27,7 +27,9 @@
 
 extern "C"
 {
+#ifdef SPOTON_POPTASTIC_SUPPORTED
 #include <curl/curl.h>
+#endif
 #include <libpq-fe.h>
 }
 
@@ -207,7 +209,9 @@ int main(int argc, char *argv[])
   qputenv("QV4_FORCE_INTERPRETER", "1");
   spoton_misc::prepareSignalHandler(signal_handler);
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
+#endif
   libspoton_enable_sqlite_cache();
 #if defined(Q_OS_WIN)
   QApplication::addLibraryPath("plugins");
@@ -367,7 +371,9 @@ int main(int argc, char *argv[])
   spoton spoton;
 
   rc = qapplication.exec();
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_cleanup();
+#endif
   spoton_crypt::terminate();
   return rc;
 }
@@ -637,8 +643,13 @@ spoton::spoton(void):QMainWindow()
 #endif
 	 "OpenSSL is not supported, according to Qt").
      arg(SPOTON_ARCHITECTURE_STR).
-     arg(QT_VERSION_STR).arg(CHAR_BIT * sizeof(void *)).
+     arg(QT_VERSION_STR).
+     arg(CHAR_BIT * sizeof(void *)).
+#ifdef SPOTON_POPTASTIC_SUPPORTED
      arg(curl_version()).
+#else
+     arg("libCURL is not supported").
+#endif
      arg(GCRYPT_VERSION).
 #ifdef SPOTON_MCELIECE_ENABLED
      arg(NTL_VERSION).

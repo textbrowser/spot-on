@@ -268,7 +268,9 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
       }
 
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
+#endif
   libspoton_enable_sqlite_cache();
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
@@ -433,7 +435,9 @@ int main(int argc, char *argv[])
 	rc = EXIT_FAILURE;
 
       delete s_kernel;
+#ifdef SPOTON_POPTASTIC_SUPPORTED
       curl_global_cleanup();
+#endif
       spoton_crypt::terminate();
       return rc;
     }
@@ -443,7 +447,9 @@ int main(int argc, char *argv[])
 		<< libspoton_strerror(err)
 		<< ") with libspoton_init_b(). Exiting kernel."
 		<< std::endl;
+#ifdef SPOTON_POPTASTIC_SUPPORTED
       curl_global_cleanup();
+#endif
       spoton_crypt::terminate();
       return EXIT_FAILURE;
     }

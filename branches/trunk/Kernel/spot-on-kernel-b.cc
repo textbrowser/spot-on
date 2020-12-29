@@ -33,6 +33,7 @@
 #include "spot-on-kernel.h"
 #include "spot-on-mailer.h"
 
+#ifdef SPOTON_POPTASTIC_SUPPORTED
 static QByteArray curl_receive_data;
 static QList<QByteArray> curl_payload_text;
 
@@ -84,6 +85,7 @@ static size_t curl_write_memory_callback(void *contents,
     ((const char *) contents, static_cast<int> (nmemb *size));
   return nmemb * size;
 }
+#endif
 
 void spoton_kernel::importUrls(void)
 {
@@ -337,6 +339,7 @@ void spoton_kernel::importUrls(void)
 
 void spoton_kernel::popPoptastic(void)
 {
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   spoton_crypt *s_crypt = crypt("poptastic");
 
   if(!s_crypt)
@@ -612,10 +615,12 @@ void spoton_kernel::popPoptastic(void)
     curl_easy_cleanup(curl);
 
   curl_receive_data.clear();
+#endif
 }
 
 void spoton_kernel::postPoptastic(void)
 {
+#ifdef SPOTON_POPTASTIC_SUPPORTED
   spoton_crypt *s_crypt = crypt("poptastic");
 
   if(!s_crypt)
@@ -1047,6 +1052,7 @@ void spoton_kernel::postPoptastic(void)
 	spoton_misc::logError("spoton_kernel::postPoptastic(): "
 			      "curl_easy_init() failure.");
     }
+#endif
 }
 
 void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
