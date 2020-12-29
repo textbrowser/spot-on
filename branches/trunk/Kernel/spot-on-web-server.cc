@@ -354,7 +354,7 @@ void spoton_web_server_thread::process
   for(int i = 1; i <= 30; i++)
     if(m_abort->fetchAndAddOrdered(0) || (socket->state() ==
 					  QAbstractSocket::ConnectedState &&
-					  socket->waitForReadyRead(1000)))
+					  socket->waitForReadyRead(50)))
       break;
 
   QByteArray data;
@@ -367,7 +367,7 @@ void spoton_web_server_thread::process
 	break;
 
       if(socket->state() == QAbstractSocket::ConnectedState)
-	socket->waitForReadyRead(250);
+	socket->waitForReadyRead(50);
       else
 	break;
     }
