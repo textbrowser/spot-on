@@ -87,7 +87,7 @@ class spoton_common
 #else
     CHAR_BIT * 1024 * 1024;
 #endif
-  static const int MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE = 4096;
+  static const int MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE = 4096;
   static const int MAXIMUM_PENDING_CONNECTIONS = USHRT_MAX;
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
   static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 262144;

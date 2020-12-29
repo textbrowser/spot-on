@@ -438,6 +438,10 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
+	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
+	 QString::number(spoton_common::
+			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
+      m_optionsUi.other_options->appendPlainText
 	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_CERTIFICATE_LIFETIME := " +

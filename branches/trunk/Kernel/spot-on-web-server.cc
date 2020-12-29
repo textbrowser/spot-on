@@ -294,8 +294,15 @@ void spoton_web_server_thread::process
   ** Prepare the socket!
   */
 
-  socket->setReadBufferSize
-    (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE);
+  auto readBufferSize =
+    qMax(0,
+	 spoton_kernel::
+	 setting("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE",
+		 spoton_common::
+		 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE).
+	 toInt());
+
+  socket->setReadBufferSize(static_cast<qint64> (readBufferSize));
   socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
 
   if(!credentials.first.isEmpty())
@@ -356,8 +363,7 @@ void spoton_web_server_thread::process
     {
       data.append(socket->readAll().toLower());
 
-      if(data.length() >
-	 spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SINGLE_SOCKET_BUFFER_SIZE)
+      if(data.length() > readBufferSize)
 	break;
 
       if(socket->state() == QAbstractSocket::ConnectedState)
