@@ -273,7 +273,7 @@ $(function() {
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      r += 2.0;</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(r &gt; 3.0)</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      r = 5.0;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(r == 3.0)</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(qFuzzyCompare(3.0, r))</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      r = 4.0;</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    <span class="keywordflow">else</span> <span class="keywordflow">if</span>(r &gt; 2.0)</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;      r = 3.0;</div>
@@ -318,7 +318,7 @@ $(function() {
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;      <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; </div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="keywordflow">if</span>(a + b + c + d == 0.0)</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="keywordflow">if</span>(qFuzzyIsNull(a + b + c + d))</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;      rc += 30.0;</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="keywordflow">else</span></div>
 <div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;      {</div>
