@@ -60,6 +60,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wno-unused \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
+                          -Wredundant-decls \
                           -Wstack-protector \
                           -Wstrict-overflow=5 \
                           -fPIE \
