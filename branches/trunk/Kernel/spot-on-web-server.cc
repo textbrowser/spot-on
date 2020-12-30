@@ -45,7 +45,7 @@ static QString s_emptyQuery;
 
 static int s_waitForBytesWritten = 1000;
 static int s_waitForEncrypted = 1000;
-static int s_waitForReadyRead = 50;
+static int s_waitForReadyRead = 10;
 static quint64 s_urlLimit = 10;
 
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
