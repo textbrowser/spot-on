@@ -415,12 +415,14 @@ void spoton_web_server_thread::process
 
       QString html("");
 
-      html.append
-	("HTTP/1.1 200 OK\r\n Content-Type: text/html; charset=utf-8\r\n\r\n");
       html.append(s_search);
       html.remove("</html>");
       html.append(about);
       html.append("</html>");
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Length: " +
+	 QByteArray::number(html.toUtf8().length()) +
+	 "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
       socket->write(html.toUtf8());
 
       for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
@@ -727,9 +729,6 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	{
 	  int position = -1;
 
-	  html.append
-	    ("HTTP/1.1 200 OK\r\n"
-	     "Content-Type: text/html; charset=utf-8\r\n\r\n");
 	  html.append(s_search);
 	  html.replace("value=\"\"", QString("value=\"%1\"").arg(search));
 	  html.remove("</html>");
@@ -935,12 +934,19 @@ void spoton_web_server_thread::process(QSslSocket *socket,
   if(html.isEmpty())
     {
       socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	 "charset=utf-8\r\n\r\n");
+	("HTTP/1.1 200 OK\r\nContent-Length: " +
+	 QByteArray::number(s_search.length()) +
+	 "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
       socket->write(s_search);
     }
   else
-    socket->write(html.toUtf8());
+    {
+      socket->write
+	("HTTP/1.1 200 OK\r\nContent-Length: " +
+	 QByteArray::number(html.toUtf8().length()) +
+	 "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+      socket->write(html.toUtf8());
+    }
 
   for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
@@ -994,9 +1000,9 @@ void spoton_web_server_thread::processLocal
 
 	      if(!content.isEmpty())
 		{
-		  html.append
-		    ("HTTP/1.1 200 OK\r\n"
-		     "Content-Type: text/html; charset=utf-8\r\n\r\n");
+		  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
+		    QByteArray::number(content.length()) +
+		    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
 		  html.append(content);
 		}
 	    }
@@ -1010,8 +1016,9 @@ void spoton_web_server_thread::processLocal
   if(html.isEmpty())
     {
       socket->write
-	("HTTP/1.1 200 OK\r\nContent-Type: text/html; "
-	 "charset=utf-8\r\n\r\n");
+	("HTTP/1.1 200 OK\r\nContent-Length: " +
+	 QByteArray::number(s_search.length()) +
+	 "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
       socket->write(s_search);
     }
   else
@@ -1035,7 +1042,9 @@ void spoton_web_server_thread::writeDefaultPage(QSslSocket *socket)
     return;
 
   socket->write
-    ("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+    ("HTTP/1.1 200 OK\r\nContent-Length: " +
+     QByteArray::number(s_search.length()) +
+     "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
   socket->write(s_search);
 
   for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
