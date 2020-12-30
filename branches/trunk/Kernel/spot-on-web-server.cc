@@ -44,7 +44,7 @@ static int s_bytesPerWrite = 4096;
 ** Wait for at least 30 seconds. Be careful!
 */
 
-static int s_waitForBytesWritten = 1000;
+static int s_waitForBytesWritten = 250;
 static int s_waitForEncrypted = 1000;
 static int s_waitForReadyRead = 10;
 static quint64 s_urlLimit = 10;
@@ -1034,10 +1034,12 @@ void spoton_web_server_thread::write
       qint64 rc = socket->write(data.mid(i, s_bytesPerWrite));
 
       socket->flush();
-      socket->waitForBytesWritten(s_waitForBytesWritten);
 
       if(rc > 0)
-	i += static_cast<int> (rc);
+	{
+	  i += static_cast<int> (rc);
+	  socket->waitForBytesWritten(s_waitForBytesWritten);
+	}
     }
 }
 
