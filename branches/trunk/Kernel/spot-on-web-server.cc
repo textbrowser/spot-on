@@ -40,7 +40,7 @@ static QByteArray s_search;
 static QString s_emptyQuery;
 static int s_waitForBytesWritten = 1000;
 static int s_waitForEncrypted = 1000;
-static int s_waitForReadyRead = 150;
+static int s_waitForReadyRead = 50;
 static quint64 s_urlLimit = 10;
 
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
@@ -354,7 +354,7 @@ void spoton_web_server_thread::process
   ** Read the socket data!
   */
 
-  for(int i = 1; i <= 30; i++)
+  for(int i = 1; i <= qCeil(30000 / s_waitForReadyRead); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
        (socket->state() ==
 	QAbstractSocket::ConnectedState &&
