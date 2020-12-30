@@ -38,6 +38,11 @@
 
 static QByteArray s_search;
 static QString s_emptyQuery;
+
+/*
+** Wait for at least 30 seconds. Be careful!
+*/
+
 static int s_waitForBytesWritten = 1000;
 static int s_waitForEncrypted = 1000;
 static int s_waitForReadyRead = 50;
@@ -344,7 +349,7 @@ void spoton_web_server_thread::process
     }
 
   if(!credentials.first.isEmpty())
-    for(int i = 1; i <= 30; i++)
+    for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForEncrypted)); i++)
       if(m_abort->fetchAndAddOrdered(0) ||
 	 (socket->state() == QAbstractSocket::ConnectedState &&
 	  socket->waitForEncrypted(s_waitForEncrypted)))
@@ -354,7 +359,7 @@ void spoton_web_server_thread::process
   ** Read the socket data!
   */
 
-  for(int i = 1; i <= qCeil(30000 / s_waitForReadyRead); i++)
+  for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForReadyRead)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
        (socket->state() ==
 	QAbstractSocket::ConnectedState &&
@@ -418,7 +423,7 @@ void spoton_web_server_thread::process
       html.append("</html>");
       socket->write(html.toUtf8());
 
-      for(int i = 1; i <= 30; i++)
+      for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
 	if(m_abort->fetchAndAddOrdered(0) ||
 	   (socket->state() ==
 	    QAbstractSocket::ConnectedState &&
@@ -937,7 +942,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
   else
     socket->write(html.toUtf8());
 
-  for(int i = 1; i <= 30; i++)
+  for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
        (socket->state() == QAbstractSocket::ConnectedState &&
 	socket->waitForBytesWritten(s_waitForBytesWritten)))
@@ -1012,7 +1017,7 @@ void spoton_web_server_thread::processLocal
   else
     socket->write(html);
 
-  for(int i = 1; i <= 30; i++)
+  for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
        (socket->state() == QAbstractSocket::ConnectedState &&
 	socket->waitForBytesWritten(s_waitForBytesWritten)))
@@ -1033,7 +1038,7 @@ void spoton_web_server_thread::writeDefaultPage(QSslSocket *socket)
     ("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
   socket->write(s_search);
 
-  for(int i = 1; i <= 30; i++)
+  for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForBytesWritten)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
        (socket->state() == QAbstractSocket::ConnectedState &&
 	socket->waitForBytesWritten(s_waitForBytesWritten)))
