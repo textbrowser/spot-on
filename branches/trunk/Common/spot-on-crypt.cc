@@ -1281,7 +1281,7 @@ QByteArray spoton_crypt::preferredHMAC(const QByteArray &data,
 
   hd.setKey(key);
   hd.addData(data);
-  return hd.result(); 
+  return hd.result();
 }
 
 QByteArray spoton_crypt::preferredHash(const QByteArray &data)

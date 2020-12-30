@@ -414,7 +414,7 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
     }
 
   gpgme_release(ctx);
-  
+
   if(err != GPG_ERR_NO_ERROR)
     {
       spoton_misc::logError
