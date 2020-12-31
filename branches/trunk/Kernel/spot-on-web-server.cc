@@ -1051,6 +1051,10 @@ void spoton_web_server_thread::writeDefaultPage
 
   if(redirect)
     {
+      /*
+      ** New URL for the client.
+      */
+
       QByteArray location;
 
       if(!socket->isEncrypted())
