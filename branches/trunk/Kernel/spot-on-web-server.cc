@@ -448,11 +448,11 @@ void spoton_web_server_thread::process
 	  processLocal(socket.data(), data);
 	}
       else
-	writeDefaultPage(socket.data());
+	writeDefaultPage(socket.data(), true);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /"))
-    writeDefaultPage(socket.data());
+    writeDefaultPage(socket.data(), true);
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
@@ -465,6 +465,8 @@ void spoton_web_server_thread::process
 
       process(socket.data(), data, address);
     }
+  else if(!data.isEmpty())
+    writeDefaultPage(socket.data(), true);
 }
 
 void spoton_web_server_thread::process(QSslSocket *socket,
@@ -478,7 +480,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(list.size() != 4)
     {
-      writeDefaultPage(socket);
+      writeDefaultPage(socket, true);
       return;
     }
 
@@ -500,7 +502,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(current > pages)
     {
-      writeDefaultPage(socket);
+      writeDefaultPage(socket, true);
       return;
     }
 
@@ -509,7 +511,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(!crypt)
     {
-      writeDefaultPage(socket);
+      writeDefaultPage(socket, true);
       return;
     }
 
@@ -801,7 +803,11 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 		     setting("gui/web_server_serve_local_content", false).
 		     toBool())
 		    {
-		      html.append(" | <a href=\"https://");
+		      if(!socket->isEncrypted())
+			html.append(" | <a href=\"http://");
+		      else
+			html.append(" | <a href=\"https://");
+
 		      html.append(address.first);
 		      html.append(":");
 		      html.append(address.second);
@@ -954,7 +960,7 @@ void spoton_web_server_thread::processLocal
 
   if(!crypt)
     {
-      writeDefaultPage(socket);
+      writeDefaultPage(socket, true);
       return;
     }
 
@@ -1002,13 +1008,7 @@ void spoton_web_server_thread::processLocal
   QSqlDatabase::removeDatabase(connectionName);
 
   if(html.isEmpty())
-    {
-      write(socket,
-	    "HTTP/1.1 200 OK\r\nContent-Length: " +
-	    QByteArray::number(s_search.length()) +
-	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(socket, s_search);
-    }
+    writeDefaultPage(socket, true);
   else
     write(socket, html);
 }
@@ -1043,11 +1043,37 @@ void spoton_web_server_thread::write
     }
 }
 
-void spoton_web_server_thread::writeDefaultPage(QSslSocket *socket)
+void spoton_web_server_thread::writeDefaultPage
+(QSslSocket *socket, const bool redirect)
 {
-  write(socket,
-	"HTTP/1.1 200 OK\r\nContent-Length: " +
-	QByteArray::number(s_search.length()) +
-	"\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+  if(!socket)
+    return;
+
+  if(redirect)
+    {
+      QByteArray location;
+
+      if(!socket->isEncrypted())
+	location = "http://";
+      else
+	location = "https://";
+
+      location.append(socket->localAddress().toString() +
+		      ":" +
+		      QByteArray::number(socket->localPort()));
+      write(socket,
+	    "HTTP/1.1 301 Moved Permanently\r\nContent-Length: " +
+	    QByteArray::number(s_search.length()) +
+	    "\r\nContent-Type: text/html; charset=utf-8\r\n"
+	    "Location: " +
+	    location +
+	    "\r\n\r\n");
+    }
+  else
+    write(socket,
+	  "HTTP/1.1 200 OK\r\nContent-Length: " +
+	  QByteArray::number(s_search.length()) +
+	  "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
+
   write(socket, s_search);
 }
