@@ -282,7 +282,7 @@ void spoton_web_server::slotTimeout(void)
   if(m_http->isListening())
     {
       int so_linger = spoton_kernel::setting
-	("WEB_SERVER_HTTP_SO_LINGER", 0).toInt();
+	("WEB_SERVER_HTTP_SO_LINGER", -1).toInt();
 
       spoton_socket_options::setSocketOptions
 	("so_linger=" + QString::number(so_linger),
@@ -302,7 +302,7 @@ void spoton_web_server::slotTimeout(void)
   if(m_https->isListening())
     {
       int so_linger = spoton_kernel::setting
-	("WEB_SERVER_HTTPS_SO_LINGER", 0).toInt();
+	("WEB_SERVER_HTTPS_SO_LINGER", -1).toInt();
 
       spoton_socket_options::setSocketOptions
 	("so_linger=" + QString::number(so_linger),

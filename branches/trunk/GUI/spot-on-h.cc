@@ -447,9 +447,9 @@ void spoton::prepareOtherOptions(void)
 	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
 	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
       m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_HTTP_SO_LINGER := 0");
+	("WEB_SERVER_HTTP_SO_LINGER := -1");
       m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_HTTPS_SO_LINGER := 0");
+	("WEB_SERVER_HTTPS_SO_LINGER := -1");
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_RSA_KEY_SIZE := " +
 	 QString::number(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
