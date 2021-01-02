@@ -33,6 +33,7 @@
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "Common/spot-on-socket-options.h"
 #include "spot-on-web-server.h"
 #include "spot-on-kernel.h"
 
@@ -278,6 +279,18 @@ void spoton_web_server::slotTimeout(void)
 	("spoton_web_server::slotTimeout(): m_http->listen() failure. "
 	 "This is a serious problem!");
 
+  if(m_http->isListening())
+    {
+      int so_linger = spoton_kernel::setting
+	("WEB_SERVER_HTTP_SO_LINGER", -1).toInt();
+
+      spoton_socket_options::setSocketOptions
+	("so_linger=" + QString::number(so_linger),
+	 "tcp",
+	 m_http->socketDescriptor(),
+	 0);
+    }
+
   if(!m_https->isListening() &&
      m_httpsClientCount->fetchAndAddOrdered(0) < maximumClients)
     if(!m_https->listen(spoton_misc::localAddressIPv4(),
@@ -285,6 +298,18 @@ void spoton_web_server::slotTimeout(void)
       spoton_misc::logError
 	("spoton_web_server::slotTimeout(): m_https->listen() failure. "
 	 "This is a serious problem!");
+
+  if(m_https->isListening())
+    {
+      int so_linger = spoton_kernel::setting
+	("WEB_SERVER_HTTPS_SO_LINGER", -1).toInt();
+
+      spoton_socket_options::setSocketOptions
+	("so_linger=" + QString::number(so_linger),
+	 "tcp",
+	 m_https->socketDescriptor(),
+	 0);
+    }
 }
 
 void spoton_web_server_thread::process
