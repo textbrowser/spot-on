@@ -821,11 +821,6 @@ spoton::spoton(void):QMainWindow()
 		this,
 		SLOT(slotFindInSearchInitialize(void)));
 #endif
-  m_optionsUi.theme->setCurrentIndex
-    (m_settings.value("gui/theme", -1).toInt());
-
-  if(m_optionsUi.theme->currentIndex() < 0)
-    m_optionsUi.theme->setCurrentIndex(3);
 
   /*
   ** Connect m_sb's items.
@@ -3464,7 +3459,11 @@ spoton::spoton(void):QMainWindow()
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
-  prepareStyleSheet();
+  m_optionsUi.theme->setCurrentIndex
+    (m_settings.value("gui/theme", -1).toInt());
+
+  if(m_optionsUi.theme->currentIndex() < 0)
+    m_optionsUi.theme->setCurrentIndex(3);
 }
 
 spoton::~spoton()

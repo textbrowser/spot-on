@@ -460,6 +460,8 @@ void spoton::prepareOtherOptions(void)
 
 void spoton::prepareStyleSheet(void)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   int index = m_settings.value("gui/theme", -1).toInt();
 
   if(index == 0 || index == 1 || index == 2)
@@ -477,11 +479,21 @@ void spoton::prepareStyleSheet(void)
 	{
 	  QTextStream textStream(&file);
 
-	  setStyleSheet(textStream.readAll());
+	  qobject_cast<QApplication *> (QApplication::instance())->
+	    setStyleSheet(textStream.readAll());
+	  setStyleSheet
+	    (qobject_cast<QApplication *> (QApplication::instance())->
+	     styleSheet());
 	}
     }
   else
-    setStyleSheet(m_defaultStyleSheet);
+    {
+      qobject_cast<QApplication *> (QApplication::instance())->setStyleSheet
+	(m_defaultStyleSheet);
+      setStyleSheet(m_defaultStyleSheet);
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::retrieveNeighbors(void)
