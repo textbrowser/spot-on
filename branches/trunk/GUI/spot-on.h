@@ -493,6 +493,7 @@ class spoton: public QMainWindow
   QSslSocket m_kernelSocket;
   QStandardItemModel *m_starbeamReceivedModel;
   QStandardItemModel *m_statisticsModel;
+  QString m_defaultStyleSheet;
   QString m_emailAddressAdded;
   QString m_urlQuery;
   QTimer m_buzzStatusTimer;
@@ -628,6 +629,7 @@ class spoton: public QMainWindow
   void prepareListenerIPCombo(void);
   void prepareOtherOptions(void);
   void prepareSMP(const QString &hash);
+  void prepareStyleSheet(void);
   void prepareTabIcons(void);
   void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
@@ -1030,6 +1032,7 @@ class spoton: public QMainWindow
   void slotStatisticsGathered(void);
   void slotStatusButtonClicked(void);
   void slotStatusChanged(int index);
+  void slotStyleSheetChanged(int index);
   void slotSuperEcho(int index);
   void slotTabChanged(int index);
   void slotTerminateKernelOnUIExit(bool state);

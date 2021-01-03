@@ -458,6 +458,32 @@ void spoton::prepareOtherOptions(void)
     }
 }
 
+void spoton::prepareStyleSheet(void)
+{
+  int index = m_settings.value("gui/theme", -1).toInt();
+
+  if(index == 0 || index == 1 || index == 2)
+    {
+      QFile file;
+
+      if(index == 0)
+	file.setFileName(":breeze/dark.qss");
+      else if(index == 1)
+	file.setFileName(":breeze/light.qss");
+      else
+	file.setFileName(":qdarkstyle/style.qss");
+
+      if(file.open(QFile::ReadOnly | QFile::Text))
+	{
+	  QTextStream textStream(&file);
+
+	  setStyleSheet(textStream.readAll());
+	}
+    }
+  else
+    setStyleSheet(m_defaultStyleSheet);
+}
+
 void spoton::retrieveNeighbors(void)
 {
   QFileInfo fileInfo
@@ -1452,6 +1478,16 @@ void spoton::slotShowReleaseNotes(void)
   m_releaseNotes->activateWindow();
   m_releaseNotes->raise();
   spoton_utilities::centerWidget(m_releaseNotes, this);
+}
+
+void spoton::slotStyleSheetChanged(int index)
+{
+  m_settings["gui/theme"] = index;
+
+  QSettings settings;
+
+  settings.setValue("gui/theme", index);
+  prepareStyleSheet();
 }
 
 void spoton::slotTerminateKernelOnUIExit(bool state)

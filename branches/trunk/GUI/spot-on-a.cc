@@ -380,6 +380,8 @@ int main(int argc, char *argv[])
 
 spoton::spoton(void):QMainWindow()
 {
+  m_defaultStyleSheet = qobject_cast<QApplication *>
+    (QApplication::instance())->styleSheet();
   m_urlCurrentPage = 1;
   m_urlLimit = 10;
   m_urlOffset = 0;
@@ -819,6 +821,11 @@ spoton::spoton(void):QMainWindow()
 		this,
 		SLOT(slotFindInSearchInitialize(void)));
 #endif
+  m_optionsUi.theme->setCurrentIndex
+    (m_settings.value("gui/theme", -1).toInt());
+
+  if(m_optionsUi.theme->currentIndex() < 0)
+    m_optionsUi.theme->setCurrentIndex(3);
 
   /*
   ** Connect m_sb's items.
@@ -1409,6 +1416,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTestSslControlString(void)));
+  connect(m_optionsUi.theme,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotStyleSheetChanged(int)));
   connect(m_optionsUi.urlAcceptSigned,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -3453,6 +3464,7 @@ spoton::spoton(void):QMainWindow()
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+  prepareStyleSheet();
 }
 
 spoton::~spoton()

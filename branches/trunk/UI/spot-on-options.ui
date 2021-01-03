@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1640</y>
+         <y>0</y>
          <width>719</width>
-         <height>4144</height>
+         <height>4184</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -246,6 +246,63 @@
              </item>
              <item>
               <spacer name="horizontalSpacer_3">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_20">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label_33">
+               <property name="text">
+                <string>Theme</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="theme">
+               <property name="currentIndex">
+                <number>3</number>
+               </property>
+               <property name="sizeAdjustPolicy">
+                <enum>QComboBox::AdjustToContents</enum>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Breeze Dark</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Breeze Light</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Dark</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Default</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_11">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -2799,6 +2856,7 @@ with the kernel process.</string>
   <tabstop>play_sounds</tabstop>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
+  <tabstop>theme</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
   <tabstop>buzz_maximum_lines</tabstop>
   <tabstop>chatAlternatingRowColors</tabstop>
