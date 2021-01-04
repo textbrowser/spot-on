@@ -3467,8 +3467,6 @@ spoton::spoton(void):QMainWindow()
 
   if(m_optionsUi.theme->currentIndex() < 0)
     m_optionsUi.theme->setCurrentIndex(3);
-
-  prepareStyleSheet();
 }
 
 spoton::~spoton()
