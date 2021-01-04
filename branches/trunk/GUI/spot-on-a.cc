@@ -663,10 +663,11 @@ spoton::spoton(void):QMainWindow()
      arg(spoton_misc::homePath()).
      arg(qversion).
 #ifdef SPOTON_GPGME_ENABLED
-     arg(GPGME_VERSION));
+     arg(GPGME_VERSION)
 #else
-     arg("0.0"));
+     arg("0.0")
 #endif
+     );
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);
   m_ui.statisticsBox->setVisible(false);
@@ -3466,6 +3467,8 @@ spoton::spoton(void):QMainWindow()
 
   if(m_optionsUi.theme->currentIndex() < 0)
     m_optionsUi.theme->setCurrentIndex(3);
+
+  prepareStyleSheet();
 }
 
 spoton::~spoton()

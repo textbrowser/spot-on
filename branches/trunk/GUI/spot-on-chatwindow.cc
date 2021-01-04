@@ -155,6 +155,12 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 	  ui.smp,
 	  SLOT(showMenu(void)));
   slotSetIcons();
+
+  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+    {
+      toolButton->setArrowType(Qt::NoArrow);
+      toolButton->setPopupMode(QToolButton::InstantPopup);
+    }
 }
 
 spoton_chatwindow::~spoton_chatwindow()

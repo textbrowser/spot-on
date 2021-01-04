@@ -497,6 +497,7 @@ void spoton::prepareStyleSheet(void)
     {
       toolButton->setArrowType(Qt::NoArrow);
       toolButton->setPopupMode(QToolButton::InstantPopup);
+      qDebug() << toolButton;
     }
 
   QApplication::restoreOverrideCursor();

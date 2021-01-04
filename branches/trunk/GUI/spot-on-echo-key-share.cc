@@ -124,6 +124,12 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+
+  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+    {
+      toolButton->setArrowType(Qt::NoArrow);
+      toolButton->setPopupMode(QToolButton::InstantPopup);
+    }
 }
 
 spoton_echo_key_share::~spoton_echo_key_share()
