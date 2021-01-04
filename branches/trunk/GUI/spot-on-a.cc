@@ -3452,10 +3452,12 @@ spoton::spoton(void):QMainWindow()
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 10px;}"
+       "QToolButton::menu-arrow {image: none;}"
        "QToolButton::menu-button {border: none;}");
 #else
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 15px;}"
+       "QToolButton::menu-arrow {image: none;}"
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif

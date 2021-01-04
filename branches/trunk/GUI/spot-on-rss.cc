@@ -335,6 +335,12 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+
+  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+    {
+      toolButton->setArrowType(Qt::NoArrow);
+      toolButton->setPopupMode(QToolButton::InstantPopup);
+    }
 }
 
 spoton_rss::~spoton_rss()

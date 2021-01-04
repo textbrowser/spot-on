@@ -493,6 +493,12 @@ void spoton::prepareStyleSheet(void)
       setStyleSheet(m_defaultStyleSheet);
     }
 
+  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+    {
+      toolButton->setArrowType(Qt::NoArrow);
+      toolButton->setPopupMode(QToolButton::InstantPopup);
+    }
+
   QApplication::restoreOverrideCursor();
 }
 
