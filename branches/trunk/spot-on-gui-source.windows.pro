@@ -53,7 +53,9 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-textedit.h
 
 RESOURCES	= Documentation\\documentation.qrc \
-		  Icons\\icons.qrc \
+                  Icons\\icons.qrc \
+                  Styles\\breeze\\breeze.qrc \
+                  Styles\\qdarkstyle\\style.qrc \
                   Translations\\translations.qrc
 
 SOURCES		= Common\\spot-on-crypt.cc \
