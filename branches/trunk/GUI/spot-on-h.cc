@@ -460,6 +460,7 @@ void spoton::prepareOtherOptions(void)
 
 void spoton::prepareStyleSheet(void)
 {
+  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   int index = m_settings.value("gui/theme", -1).toInt();
@@ -469,11 +470,11 @@ void spoton::prepareStyleSheet(void)
       QFile file;
 
       if(index == 0)
-	file.setFileName(":breeze/dark.qss");
+	file.setFileName(":qdarkstyle/qdarkstyle.qss");
       else if(index == 1)
-	file.setFileName(":breeze/light.qss");
-      else
-	file.setFileName(":qdarkstyle/style.qss");
+	file.setFileName(":darkstyle/darkstyle.qss");
+      else if(index == 2)
+	file.setFileName(":darkorange/darkorange.qss");
 
       if(file.open(QFile::ReadOnly | QFile::Text))
 	{
@@ -497,7 +498,6 @@ void spoton::prepareStyleSheet(void)
     {
       toolButton->setArrowType(Qt::NoArrow);
       toolButton->setPopupMode(QToolButton::InstantPopup);
-      qDebug() << toolButton;
     }
 
   QApplication::restoreOverrideCursor();

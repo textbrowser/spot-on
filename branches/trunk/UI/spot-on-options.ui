@@ -281,17 +281,17 @@
                </property>
                <item>
                 <property name="text">
-                 <string>Breeze Dark</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Breeze Light</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
                  <string>Dark</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Dark Fusion</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Dark Orange</string>
                 </property>
                </item>
                <item>
