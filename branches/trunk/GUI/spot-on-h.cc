@@ -463,6 +463,7 @@ void spoton::prepareStyleSheet(void)
   QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+  bool ok = true;
   int index = m_settings.value("gui/theme", -1).toInt();
 
   if(index == 0 || index == 1 || index == 2)
@@ -476,7 +477,7 @@ void spoton::prepareStyleSheet(void)
       else if(index == 2)
 	file.setFileName(":darkorange/darkorange.qss");
 
-      if(file.open(QFile::ReadOnly | QFile::Text))
+      if((ok = file.open(QFile::ReadOnly | QFile::Text)))
 	{
 	  QTextStream textStream(&file);
 
@@ -485,9 +486,15 @@ void spoton::prepareStyleSheet(void)
 	  setStyleSheet
 	    (qobject_cast<QApplication *> (QApplication::instance())->
 	     styleSheet());
+
+	  if(textStream.status() != QTextStream::Ok)
+	    ok = false;
 	}
     }
   else
+    ok = false;
+
+  if(!ok)
     {
       qobject_cast<QApplication *> (QApplication::instance())->setStyleSheet
 	(m_defaultStyleSheet);
