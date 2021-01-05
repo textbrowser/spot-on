@@ -576,6 +576,11 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  bool ok = true;
 
 	  originalSearch.replace("&#34;", "\"");
+	  originalSearch.replace("&#38;", "&");
+	  originalSearch.replace("&#47;", "/");
+	  originalSearch.replace("&#58;", ":");
+	  originalSearch.replace("&#61;", "=");
+	  originalSearch.replace("&#63;", "?");
 
 	  do
 	    {
