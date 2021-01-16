@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QHostInfo>
 #include <QSqlQuery>
 #include <QSslKey>
 #include <QSslSocket>
@@ -431,7 +432,11 @@ void spoton_web_server_thread::process
       about.append(QSysInfo::kernelVersion());
       about.append("<br>");
       about.append("Machine Host Name: ");
+#if QT_VERSION < 0x050600
+      about.append(QHostInfo::localHostName());
+#else
       about.append(QSysInfo::machineHostName());
+#endif
       about.append("<br>");
       about.append("Product Type: ");
       about.append(QSysInfo::productType());
