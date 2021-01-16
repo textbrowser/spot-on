@@ -72,10 +72,10 @@ QMAKE_LFLAGS_RELEASE   += -Wl,-rpath,/usr/local/spot-on/Lib
 INCLUDEPATH	+= . \
                    ../../. \
                    ../../libNTL/unix.d/include \
-                   /usr/include/postgresql
-                   GUI \
+                   /usr/include/postgresql \
+                   GUI
 LIBS		+= -L../../libNTL/unix.d/src/.libs \
-                   -L../../libNTRU
+                   -L../../libNTRU \
                    -L../../libSpotOn \
                    -lGeoIP \
                    -lcrypto \
