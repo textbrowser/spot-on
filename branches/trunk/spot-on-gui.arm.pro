@@ -51,6 +51,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wextra \
                           -Wl,-z,relro \
                           -Wno-expansion-to-defined \
+                          -Wno-shift-count-overflow \
                           -Wno-unused \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
