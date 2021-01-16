@@ -15,7 +15,6 @@ libspoton.o:	libspoton.c libspoton.h
 	-Wextra \
 	-Wfloat-equal \
 	-Wformat=2 \
-	-Wformat-overflow=2 \
 	-Wlogical-op \
 	-Wpointer-arith \
 	-Wshadow \
