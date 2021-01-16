@@ -129,7 +129,11 @@ static QCryptographicHash::Algorithm qt_preferred_hash_algorithm =
   QCryptographicHash::Sha3_512;
 static bool gcryctl_set_thread_cbs_set = false;
 static bool ssl_library_initialized = false;
+#if GCRYPT_VERSION_NUMBER < 0x010700
+static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
+#else
 static int digital_signature_hash_algorithm = GCRY_MD_SHA3_512;
+#endif
 
 spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 			   const QByteArray &publicKey)
