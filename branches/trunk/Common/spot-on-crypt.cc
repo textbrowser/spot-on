@@ -3897,7 +3897,11 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
+#if OPENSSL_VERSION_NUMBER < 0x10101000L
+  if(X509_sign(x509, pk, EVP_sha512()) == 0)
+#else
   if(X509_sign(x509, pk, EVP_sha3_512()) == 0)
+#endif
     {
       error = QObject::tr("X509_sign() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
