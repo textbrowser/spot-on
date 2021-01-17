@@ -107,9 +107,9 @@ libgeoip1.files = ..\\..\\GeoIP\\Data\\*.dat
 libgeoip1.path = release\\.
 libgeoip2.files = ..\\..\\libGeoIP\\Libraries.win32\\*.dll
 libgeoip2.path = release\\.
-libgpgme1.files = ..\\..\\libGPGME\\*.dll
+libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
 libgpgme1.path = release\\.
-libgpgme2.files = ..\\..\\libGPGME\\.*exe
+libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\.*exe
 libgpgme2.path = release\\.
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
@@ -125,17 +125,17 @@ postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
 postgresql2.path= release\\.
 qt.files = Qt\\qt.conf
 qt.path = release\\.
-qtlibraries.files = $$[QT_INSTALL_BIN]\\Qt5Core.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5Gui.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5Multimedia.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5Network.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5PrintSupport.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5Sql.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5WebSockets.dll \
-                    $$[QT_INSTALL_BIN]\\Qt5Widgets.dll \
-                    $$[QT_INSTALL_BIN]\\libgcc_s_dw2-1.dll \
-                    $$[QT_INSTALL_BIN]\\libstdc++-6.dll \
-                    $$[QT_INSTALL_BIN]\\libwinpthread-1.dll
+qtlibraries.files = $$[QT_INSTALL_BINS]\\Qt5Core.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5Gui.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5Multimedia.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5Network.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5PrintSupport.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5Sql.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5WebSockets.dll \
+                    $$[QT_INSTALL_BINS]\\Qt5Widgets.dll \
+                    $$[QT_INSTALL_BINS]\\libgcc_s_dw2-1.dll \
+                    $$[QT_INSTALL_BINS]\\libstdc++-6.dll \
+                    $$[QT_INSTALL_BINS]\\libwinpthread-1.dll
 qtlibraries.path = release\\.
 sounds.files = Sounds
 sounds.path = release\\.
