@@ -95,6 +95,8 @@ RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On
 TEMPLATE        = app
 
+data.files = Data\\*.txt
+data.path = release\\.
 libcurl1.files = ..\\..\\libcURL\\*.crt
 libcurl1.path = release\\.
 libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
@@ -118,9 +120,18 @@ libspoton.path = release\\.
 postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
 postgresql1.path = release\\.
 postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
-postgresql2.path = release\\.
+postgresql2.path= release\\.
+qt.files = Qt\\qt.conf
+qt.path = release\\.
+sounds.files = Sounds
+sounds.path = release\\.
+sql1.files = SQL\\README*
+sql1.path = release\\SQL\\.
+sql2.files = SQL\\*.sql
+sql2.path = release\\SQL\\.
 
-INSTALLS = libcurl1 \
+INSTALLS = data \
+           libcurl1 \
            libcurl2 \
            libgeoip1 \
            libgeoip2 \
@@ -131,4 +142,8 @@ INSTALLS = libcurl1 \
            libopenssl \
            libspoton \
            postgresql1 \
-           postgresql2
+           postgresql2 \
+           qt \
+           sounds \
+           sql1 \
+           sql2
