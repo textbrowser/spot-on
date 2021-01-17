@@ -21,6 +21,7 @@ Summary of Spot-On
 <li>GPG-lite via Rosetta.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
+<li>Mac and Windows install targets: make install!</li>
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Natively compiled on Alpha, ARM, PowerPC, Sparc64, X86, X86_64.</li>
