@@ -123,8 +123,14 @@ libspoton2.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
 libspoton2.path = release\\.
 libspoton3.files = ..\\..\\libSpotOn\\Libraries.win32\\thread.d\\*.dll
 libspoton3.path = release\\.
-plugins.files = $$[QT_INSTALL_PLUGINS]\\*
-plugins.path = release\\plugins\\.
+plugins1.files = $$[QT_INSTALL_PLUGINS]\\*
+plugins1.path = release\\plugins\\.
+plugins2.files = $$[QT_INSTALL_PLUGINS]\\gamepads\\xinputgamepad.dll
+plugins2.path = release\\plugins\\gamepads\\.
+plugins3.files = $$[QT_INSTALL_PLUGINS]\\platforms\\qdirect2d.dll
+plugins3.path = release\\plugins\\platforms\\.
+plugins4.files = $$[QT_INSTALL_PLUGINS]\\renderplugins\\scene2d.dll
+plugins4.path = release\\plugins\\renderplugins\\.
 pluginspurge.extra = del /q /s *d.dll
 pluginspurge.path = release\\.
 postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
@@ -154,7 +160,7 @@ sql2.path = release\\SQL\\.
 translations.files = Translations\\*.qm
 translations.path = release\\Translations\\.
 
-INSTALLS = plugins \
+INSTALLS = plugins1 \
            pluginspurge \
            data \
            documentation \
@@ -170,6 +176,9 @@ INSTALLS = plugins \
            libspoton1 \
            libspoton2 \
            libspoton3 \
+           plugins2 \
+           plugins3 \
+           plugins4 \
            postgresql1 \
            postgresql2 \
            qt \
