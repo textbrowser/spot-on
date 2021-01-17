@@ -97,6 +97,8 @@ TEMPLATE        = app
 
 data.files = Data\\*.txt
 data.path = release\\.
+documentation.files = Documentation
+documentation.path = release\\.
 libcurl1.files = ..\\..\\libcURL\\*.crt
 libcurl1.path = release\\.
 libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
@@ -129,8 +131,11 @@ sql1.files = SQL\\README*
 sql1.path = release\\SQL\\.
 sql2.files = SQL\\*.sql
 sql2.path = release\\SQL\\.
+translations.files = Translations\\*.qm
+translations.path = release\\Translations\\.
 
 INSTALLS = data \
+           documentation \
            libcurl1 \
            libcurl2 \
            libgeoip1 \
@@ -146,4 +151,5 @@ INSTALLS = data \
            qt \
            sounds \
            sql1 \
-           sql2
+           sql2 \
+           translations
