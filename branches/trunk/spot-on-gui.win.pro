@@ -125,7 +125,7 @@ libspoton3.files = ..\\..\\libSpotOn\\Libraries.win32\\thread.d\\*.dll
 libspoton3.path = release\\.
 plugins.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins.path = release\\plugins\\.
-pluginspurge.extra = del release\\plugins\\*\\*d.dll
+pluginspurge.extra = del /q /s *d.dll
 pluginspurge.path = release\\.
 postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
 postgresql1.path = release\\.
@@ -154,7 +154,9 @@ sql2.path = release\\SQL\\.
 translations.files = Translations\\*.qm
 translations.path = release\\Translations\\.
 
-INSTALLS = data \
+INSTALLS = plugins \
+           pluginspurge \
+           data \
            documentation \
            libcurl1 \
            libcurl2 \
@@ -168,8 +170,6 @@ INSTALLS = data \
            libspoton1 \
            libspoton2 \
            libspoton3 \
-           plugins \
-           pluginspurge \
            postgresql1 \
            postgresql2 \
            qt \
