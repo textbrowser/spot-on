@@ -94,3 +94,8 @@ PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On
 TEMPLATE        = app
+
+libspoton.files = ..\\..\\libSpotOn\\*.dll
+libspoton.path = \\release\\.
+
+INSTALLS = libspoton
