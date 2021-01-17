@@ -97,17 +97,38 @@ TEMPLATE        = app
 
 libcurl1.files = ..\\..\\libcURL\\*.crt
 libcurl1.path = release\\.
-libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\*.dll
+libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
 libcurl2.path = release\\.
-libspoton.files = ..\\..\\libSpotOn\\*.dll
-libspoton.path = release\\.
 libgeoip1.files = ..\\..\\GeoIP\\Data\\*.dat
 libgeoip1.path = release\\.
 libgeoip2.files = ..\\..\\libGeoIP\\Libraries.win32\\*.dll
 libgeoip2.path = release\\.
+libgpgme1.files = ..\\..\\libGPGME\\*.dll
+libgpgme1.path = release\\.
+libgpgme2.files = ..\\..\\libGPGME\\.*exe
+libgpgme2.path = release\\.
+libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
+libntl.path = release\\.
+libntru.files = ..\\..\\libNTRU\\*.dll
+libntru.path = release\\.
+libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
+libopenssl.path = release\\.
+libspoton.files = ..\\..\\libSpotOn\\*.dll
+libspoton.path = release\\.
+postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
+postgresql1.path = release\\.
+postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
+postgresql2.path = release\\.
 
 INSTALLS = libcurl1 \
            libcurl2 \
            libgeoip1 \
            libgeoip2 \
-           libspoton
+           libgpgme1 \
+           libgpgme2 \
+           libntl \
+           libntru \
+           libopenssl \
+           libspoton \
+           postgresql1 \
+           postgresql2
