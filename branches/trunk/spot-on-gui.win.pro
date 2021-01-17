@@ -117,8 +117,12 @@ libntru.files = ..\\..\\libNTRU\\*.dll
 libntru.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
 libopenssl.path = release\\.
-libspoton.files = ..\\..\\libSpotOn\\*.dll
-libspoton.path = release\\.
+libspoton1.files = ..\\..\\libSpotOn\\*.dll
+libspoton1.path = release\\.
+libspoton2.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
+libspoton2.path = release\\.
+libspoton3.files = ..\\..\\libSpotOn\\Libraries.win32\\thread.d\\*.dll
+libspoton3.path = release\\.
 postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
 postgresql1.path = release\\.
 postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
@@ -157,7 +161,9 @@ INSTALLS = data \
            libntl \
            libntru \
            libopenssl \
-           libspoton \
+           libspoton1 \
+           libspoton2 \
+           libspoton3 \
            postgresql1 \
            postgresql2 \
            qt \
