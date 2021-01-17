@@ -38,6 +38,7 @@ Summary of Spot-On
 <li>Simple software firewall.</li>
 <li>Socialist Millionaires Protocol.</li>
 <li>Sparc.</li>
+<li>Themes.</li>
 <li>Threefish CBC.</li>
 <li>UDP multicast, unicast.</li>
 <li>Ultra StarBeam file sharing.</li>
