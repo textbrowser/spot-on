@@ -95,7 +95,19 @@ RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On
 TEMPLATE        = app
 
+libcurl1.files = ..\\..\\libcURL\\*.crt
+libcurl1.path = release\\.
+libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\*.dll
+libcurl2.path = release\\.
 libspoton.files = ..\\..\\libSpotOn\\*.dll
-libspoton.path = \\release\\.
+libspoton.path = release\\.
+libgeoip1.files = ..\\..\\GeoIP\\Data\\*.dat
+libgeoip1.path = release\\.
+libgeoip2.files = ..\\..\\libGeoIP\\Libraries.win32\\*.dll
+libgeoip2.path = release\\.
 
-INSTALLS = libspoton
+INSTALLS = libcurl1 \
+           libcurl2 \
+           libgeoip1 \
+           libgeoip2 \
+           libspoton
