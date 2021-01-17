@@ -65,7 +65,7 @@ extern "C"
 #include <openssl/opensslv.h>
 }
 
-#define SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING "sha3-512"
+#define SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING "sha512"
 
 #ifndef SPOTON_LINKED_WITH_LIBPTHREAD
 #include <QMutex>
@@ -132,7 +132,7 @@ static bool ssl_library_initialized = false;
 #if GCRYPT_VERSION_NUMBER < 0x010700
 static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #else
-static int digital_signature_hash_algorithm = GCRY_MD_SHA3_512;
+static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #endif
 
 spoton_crypt::spoton_crypt(const QByteArray &privateKey,
