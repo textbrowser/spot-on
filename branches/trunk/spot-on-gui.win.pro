@@ -125,17 +125,17 @@ postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
 postgresql2.path= release\\.
 qt.files = Qt\\qt.conf
 qt.path = release\\.
-qtlibraries.files = $$[QT_INSTALL_LIBS]\\Qt5Core.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5Gui.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5Multimedia.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5Network.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5PrintSupport.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5Sql.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5WebSockets.dll \
-                    $$[QT_INSTALL_LIBS]\\Qt5Widgets.dll \
-                    $$[QT_INSTALL_LIBS]\\libgcc_s_dw2-1.dll \
-                    $$[QT_INSTALL_LIBS]\\libstdc++-6.dll \
-                    $$[QT_INSTALL_LIBS]\\libwinpthread-1.dll
+qtlibraries.files = $$[QT_INSTALL_BIN]\\Qt5Core.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5Gui.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5Multimedia.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5Network.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5PrintSupport.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5Sql.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5WebSockets.dll \
+                    $$[QT_INSTALL_BIN]\\Qt5Widgets.dll \
+                    $$[QT_INSTALL_BIN]\\libgcc_s_dw2-1.dll \
+                    $$[QT_INSTALL_BIN]\\libstdc++-6.dll \
+                    $$[QT_INSTALL_BIN]\\libwinpthread-1.dll
 qtlibraries.path = release\\.
 sounds.files = Sounds
 sounds.path = release\\.
