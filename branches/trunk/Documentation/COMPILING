@@ -38,4 +38,4 @@ make
 Windows
 
 qmake -o Makefile spot-on.win.pro
-mingw32-make
+mingw32-make install
