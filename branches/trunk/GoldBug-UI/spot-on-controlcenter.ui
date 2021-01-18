@@ -10811,23 +10811,59 @@ QPushButton:pressed {
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="logo">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GoldBug logo uses the &lt;b&gt;Neuland &lt;/b&gt;font: &amp;quot;Neuland is a German typeface that was designed in 1923 by Rudolf Koch. It is often used today when an “exotic” or “primitive” look is desired, such as the logos for the Jurassic Park films. &amp;quot; - Wikipedia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="pixmap">
-             <pixmap resource="../Icons/icons.qrc">:/Logo/goldbug-neuland.png</pixmap>
-            </property>
-            <property name="scaledContents">
-             <bool>false</bool>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_14">
+            <item>
+             <spacer name="horizontalSpacer_36">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="logo">
+              <property name="maximumSize">
+               <size>
+                <width>512</width>
+                <height>512</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GoldBug logo uses the &lt;b&gt;Neuland &lt;/b&gt;font: &amp;quot;Neuland is a German typeface that was designed in 1923 by Rudolf Koch. It is often used today when an “exotic” or “primitive” look is desired, such as the logos for the Jurassic Park films. &amp;quot; - Wikipedia.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap resource="../Icons/icons.qrc">:/Logo/goldbug-neuland.png</pixmap>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_43">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QLabel" name="label_31">
