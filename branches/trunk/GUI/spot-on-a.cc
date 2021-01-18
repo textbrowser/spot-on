@@ -4105,13 +4105,17 @@ void spoton::slotAbout(void)
     arg(SPOTON_VERSION_STR);
   mb.setIconPixmap(pixmap);
 #else
+  QPixmap pixmap(":/Logo/goldbug-neuland.png");
+
+  pixmap = pixmap.scaled
+    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   str = QString("<html>GoldBug, version %1, is an open-source "
 		"application published under "
 		"the Revised BSD License.<br>"
 		"Please visit <a href=\"https://goldbug.sourceforge.io\">"
 		"https://goldbug.sourceforge.io</a> for more information.").
     arg(SPOTON_VERSION_STR);
-  mb.setIconPixmap(*m_ui.logo->pixmap());
+  mb.setIconPixmap(pixmap);
 #endif
   str.append("</html>");
   mb.setStandardButtons(QMessageBox::Ok);

@@ -60,7 +60,10 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-textedit.h
 
 RESOURCES	= Documentation/documentation.qrc \
-		  Icons/icons.qrc \
+                  Icons/icons.qrc \
+                  Styles/darkorange/darkorange.qrc \
+                  Styles/darkstyle/darkstyle.qrc \
+                  Styles/qdarkstyle/qdarkstyle.qrc \
 		  Translations/translations.qrc
 
 SOURCES		= Common/spot-on-crypt.cc \
