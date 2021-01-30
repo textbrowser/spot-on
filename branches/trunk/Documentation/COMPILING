@@ -25,6 +25,12 @@ Homebrew is required for OS X.
 qmake -o Makefile spot-on.osx.pro
 sudo make install
 
+OS/2
+
+The macro LIBSPOTON_OS_OS2 must be defined in the project files.
+qmake -o Makefile spot-on.win.pro
+make
+
 OpenBSD
 
 qmake -o Makefile spot-on.openbsd.pro
