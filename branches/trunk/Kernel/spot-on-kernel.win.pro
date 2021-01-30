@@ -3,9 +3,6 @@ include(spot-on-kernel-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\..\\..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
-libspoton.commands = $(MAKE) -C ..\\..\\..\\libSpotOn library
-libspoton.depends =
-libspoton.target = libspoton.dll
 purge.commands = del /F *~
 
 CONFIG		+= qt release warn_on
@@ -22,14 +19,11 @@ DEFINES         += SPOTON_LINKED_WITH_LIBGEOIP \
 		   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTRU and libSpotOn.
+# about the internals of libNTRU.
 
 QMAKE_CLEAN            += ..\\..\\..\\libNTRU\\libntru.dll \
                           ..\\..\\..\\libNTRU\\src\\*.o \
                           ..\\..\\..\\libNTRU\\src\\*.s \
-                          ..\\..\\..\\libSpotOn\\*.o \
-                          ..\\..\\..\\libSpotOn\\libspoton.dll \
-                          ..\\..\\..\\libSpotOn\\test.exe \
                           ..\\..\\release\\Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -52,7 +46,7 @@ QMAKE_DISTCLEAN        += -r debug \
                           .qmake.stash \
                           object_script.Spot-On-Kernel.Debug \
                           object_script.Spot-On-Kernel.Release
-QMAKE_EXTRA_TARGETS    = libntru libspoton purge
+QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ..\\. \
@@ -66,7 +60,6 @@ INCLUDEPATH	+= . \
 LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\..\\libNTL\\windows.d\\libraries.d \
                    -L..\\..\\..\\libNTRU \
-                   -L..\\..\\..\\libSpotOn \
 		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
@@ -79,10 +72,11 @@ LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
                    -lntl \
                    -lntru \
                    -lpq \
-                   -lspoton \
+                   -lpthread \
+                   -lsqlite3 \
                    -lssl-1_1 \
                    -lws2_32
-PRE_TARGETDEPS  = libntru.dll libspoton.dll
+PRE_TARGETDEPS  = libntru.dll
 PROJECTNAME	= Spot-On-Kernel
 TARGET		= ..\\..\\release\\Spot-On-Kernel
 TEMPLATE        = app
