@@ -3,9 +3,6 @@ include(goldbug-gui-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
-libspoton.commands = $(MAKE) -C ..\\..\\libSpotOn library
-libspoton.depends =
-libspoton.target = libspoton.dll
 
 TEMPLATE	= app
 LANGUAGE	= C++
@@ -19,7 +16,8 @@ QT		+= concurrent \
                    widgets
 CONFIG		+= qt release warn_on
 
-DEFINES         += SPOTON_GOLDBUG \
+DEFINES         += LIBSPOTON_OS_WINDOWS \
+                   SPOTON_GOLDBUG \
 		   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
@@ -28,14 +26,11 @@ DEFINES         += SPOTON_GOLDBUG \
 		   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTRU and libSpotOn.
+# about the internals of libNTRU.
 
 QMAKE_CLEAN     += ..\\..\\libNTRU.dll \
                    ..\\..\\libNTRU\\src\\*.o \
                    ..\\..\\libNTRU\\src\\*.s \
-                   ..\\..\\libSpotOn\\*.o \
-                   ..\\..\\libSpotOn\\libspoton.dll \
-                   ..\\..\\libSpotOn\\test.exe \
                    GoldBug
 QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -Wcast-align \
@@ -55,7 +50,7 @@ QMAKE_DISTCLEAN        += -r debug \
                           .qmake.stash \
                           object_script.GoldBug.Debug \
                           object_script.GoldBug.Release
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
+QMAKE_EXTRA_TARGETS = libntru
 INCLUDEPATH	+= . \
                    ..\\..\\. \
                    ..\\..\\PostgreSQL\\Include.win32 \
@@ -70,7 +65,6 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\libNTL\\windows.d\\libraries.d \
                    -L..\\..\\libNTRU \
                    -L..\\..\\libOpenSSL\\Libraries.win32 \
-                   -L..\\..\\libSpotOn \
                    -L..\\..\\libSpotOn\\Libraries.win32 \
                    -L..\\..\\libcURL\\Win32.d\bin \
                    -lGeoIP-1 \
@@ -80,11 +74,12 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -lgpg-error-0 \
 		   -lntl \
                    -lntru \
-                   -lpq -lpthread \
-                   -lspoton \
+                   -lpq \
+                   -lpthread \
+                   -lsqlite3 \
                    -lssl-1_1 \
                    -lws2_32
-PRE_TARGETDEPS = libntru.dll libspoton.dll
+PRE_TARGETDEPS = libntru.dll
 
 RC_FILE		= Icons\\Resources\\goldbug.rc
 
@@ -113,12 +108,10 @@ libntru.files = ..\\..\\libNTRU\\*.dll
 libntru.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
 libopenssl.path = release\\.
-libspoton1.files = ..\\..\\libSpotOn\\*.dll
+libspoton1.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
 libspoton1.path = release\\.
-libspoton2.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
+libspoton2.files = ..\\..\\libSpotOn\\Libraries.win32\\thread.d\\*.dll
 libspoton2.path = release\\.
-libspoton3.files = ..\\..\\libSpotOn\\Libraries.win32\\thread.d\\*.dll
-libspoton3.path = release\\.
 plugins1.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins1.path = release\\plugins\\.
 plugins2.files = $$[QT_INSTALL_PLUGINS]\\gamepads\\xinputgamepad.dll
@@ -171,7 +164,6 @@ INSTALLS = plugins1 \
            libopenssl \
            libspoton1 \
            libspoton2 \
-           libspoton3 \
            plugins2 \
            plugins3 \
            plugins4 \

@@ -3,9 +3,6 @@ include(goldbug-gui-source.pro)
 libntru.target = libntru.so
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
-libspoton.target = libspoton.so
-libspoton.commands = $(MAKE) -C ../../libSpotOn library
-libspoton.depends =
 
 TEMPLATE	= app
 LANGUAGE	= C++
@@ -30,14 +27,11 @@ DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTRU and libSpotOn.
+# about the internals of libNTRU.
 
 QMAKE_CLEAN     += ../../libNTRU/*.so \
                    ../../libNTRU/src/*.o \
                    ../../libNTRU/src/*.s \
-                   ../../libSpotOn/*.o \
-                   ../../libSpotOn/*.so \
-                   ../../libSpotOn/test \
                    GoldBug
 QMAKE_DISTCLEAN += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -Wall \
@@ -58,14 +52,13 @@ QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -pie \
                           -std=c++11
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/goldbug/Lib
-QMAKE_EXTRA_TARGETS = libntru libspoton purge
+QMAKE_EXTRA_TARGETS = libntru
 QMAKE_LFLAGS_RPATH =
 INCLUDEPATH	+= . \
                    ../../. \
                    /usr/include/postgresql \
                    GUI
 LIBS		+= -L../../libNTRU \
-                   -L../../libSpotOn \
                    -lGeoIP \
                    -lcrypto \
                    -lcurl \
@@ -73,9 +66,10 @@ LIBS		+= -L../../libNTRU \
                    -lgpg-error \
                    -lntru \
                    -lpq \
-                   -lspoton \
+                   -lpthread \
+                   -lsqlite3 \
                    -lssl
-PRE_TARGETDEPS = libntru.so libspoton.so
+PRE_TARGETDEPS = libntru.so
 OBJECTS_DIR = temp/obj
 UI_DIR = temp/ui
 MOC_DIR = temp/moc
