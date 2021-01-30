@@ -268,6 +268,7 @@ Completed Items
 195.   Re-encode GPG keys.
 196.   E-mail pagination.
 197.   Manual retrieval of Poptastic. Cancel automatic.
+198.   Remove libspoton from project files.
 
 Ignored Items
 
@@ -314,4 +315,3 @@ Remaining Items
 8.     Cryptographic discovery.
 9.     Rosetta Spell checker.
 10.    Future proof.
-11.    Remove libspoton from project files.
