@@ -3231,7 +3231,7 @@ bool spoton_misc::publicKeyExists(const qint64 oid)
   bool exists = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    QSqlDatabase db = database(connectionName);
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() +
