@@ -6,9 +6,6 @@ libntl.target = libntl.so
 libntru.commands = $(MAKE) -C ../../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
-libspoton.commands = $(MAKE) -C ../../../libSpotOn library
-libspoton.depends =
-libspoton.target = libspoton.so
 purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
@@ -31,16 +28,13 @@ DEFINES += QT_DEPRECATED_WARNINGS \
            SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTL, libNTRU, and libSpotOn.
+# about the internals of libNTL, and libNTRU.
 
 QMAKE_CLEAN            += ../../../libNTL/unix.d/src/*.lo \
                           ../../../libNTL/unix.d/src/*.o \
                           ../../../libNTRU/*.so \
                           ../../../libNTRU/src/*.o \
                           ../../../libNTRU/src/*.s \
-                          ../../../libSpotOn/*.o \
-                          ../../../libSpotOn/*.so \
-                          ../../../libSpotOn/test \
                           ../Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -69,7 +63,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pie \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
-QMAKE_EXTRA_TARGETS    = libntl libntru libspoton purge
+QMAKE_EXTRA_TARGETS    = libntl libntru purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
@@ -80,7 +74,6 @@ INCLUDEPATH	+= . \
                    /usr/include/postgresql
 LIBS		+= -L../../../libNTL/unix.d/src/.libs \
                    -L../../../libNTRU \
-                   -L../../../libSpotOn \
                    -lGeoIP \
                    -lcrypto \
                    -lcurl \
@@ -89,11 +82,12 @@ LIBS		+= -L../../../libNTL/unix.d/src/.libs \
                    -lntl \
                    -lntru \
                    -lpq \
-                   -lspoton \
+                   -lpthread \
+                   -lsqlite3 \
                    -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
-PRE_TARGETDEPS  = libntl.so libntru.so libspoton.so
+PRE_TARGETDEPS  = libntl.so libntru.so
 PROJECTNAME	= Spot-On-Kernel
 RCC_DIR         = temp/rcc
 TARGET		= ../Spot-On-Kernel
