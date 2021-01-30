@@ -57,7 +57,6 @@
 extern "C"
 {
 #endif
-
   typedef enum
     {
      LIBSPOTON_ERROR_NONE = 0,
@@ -95,8 +94,7 @@ extern "C"
      LIBSPOTON_ERROR_SQLITE_OPEN_V2,
      LIBSPOTON_ERROR_SQLITE_PREPARE_V2,
      LIBSPOTON_ERROR_SQLITE_STEP
-    }
-    libspoton_error_code_t;
+    } libspoton_error_code_t;
 
   struct libspoton_handle_struct_t
   {
@@ -687,15 +685,16 @@ extern "C"
     */
 
     pthread_mutex_lock(&sqlite_mutex);
-    rv = sqlite3_exec(libspotonHandle->m_sqliteHandle,
-		      "CREATE TRIGGER IF NOT EXISTS kernel_registration_trigger "
-		      "BEFORE INSERT ON kernel_registration "
-		      "BEGIN "
-		      "DELETE FROM kernel_registration; "
-		      "END",
-		      0,
-		      0,
-		      0);
+    rv = sqlite3_exec
+      (libspotonHandle->m_sqliteHandle,
+       "CREATE TRIGGER IF NOT EXISTS kernel_registration_trigger "
+       "BEFORE INSERT ON kernel_registration "
+       "BEGIN "
+       "DELETE FROM kernel_registration; "
+       "END",
+       0,
+       0,
+       0);
     pthread_mutex_unlock(&sqlite_mutex);
 
     if(rv != SQLITE_OK)
