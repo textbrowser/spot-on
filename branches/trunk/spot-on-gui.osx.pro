@@ -121,6 +121,8 @@ sounds.files                = Sounds/*.wav
 sounds.path                 = /Applications/Spot-On.d/Spot-On.app/Contents/MacOS/Sounds
 translations.files	    = Translations/*.qm
 translations.path	    = /Applications/Spot-On.d/Translations
+zzz.extra		    = chown -Rh root:wheel /Applications/Spot-On.d
+zzz.path		    = /Applications/Spot-On.d
 
 # Order is important.
 
@@ -135,4 +137,5 @@ INSTALLS	= preinstall \
                   macdeployqt \
                   copyssl \
                   install_name_tool \
-                  libntru_install
+                  libntru_install \
+                  zzz
