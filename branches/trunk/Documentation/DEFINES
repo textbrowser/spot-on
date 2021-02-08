@@ -8,7 +8,7 @@ Enable Bluetooth. Define if the system supports Bluetooth. Requires Qt support.
 
 SPOTON_DATELESS_COMPILATION
 
-If enabled, the current date-time is included in the binary.
+If enabled, the current date-time is not included in the binary.
 
 SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 
@@ -24,11 +24,11 @@ Define if preparing GoldBug.
 
 SPOTON_GPGME_ENABLED
 
-Enable GPGME. Requires GPGME support.
+Enable GPGME. Requires the GPGME library.
 
 SPOTON_LINKED_WITH_LIBGEOIP
 
-Enable if GeoIP is desired. Requires GeoIP support.
+Enable if GeoIP is desired. Requires the GeoIP library.
 
 SPOTON_LINKED_WITH_LIBNTRU
 
@@ -52,11 +52,11 @@ Enable SCTP. Requires system support.
 
 SPOTON_WEBENGINE_ENABLED
 
-Enable WebEngine. Requires Qt support.
+Enable WebEngine. Please do not enable WebKit. Requires Qt support.
 
 SPOTON_WEBKIT_ENABLED
 
-Enable WebKit. Requires Qt support.
+Enable WebKit. Please do not enable WebEngine. Requires Qt support.
 
 SPOTON_WEBSOCKETS_ENABLED
 
