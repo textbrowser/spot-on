@@ -1,0 +1,39 @@
+SPOTON_BLUETOOTH_ENABLED
+
+Enable Bluetooth. Define if the system supports Bluetooth. Requires Qt support.
+
+SPOTON_DTLS_DISABLED
+
+DTLS is disabled if the option is provided. DTLS requires Qt support.
+
+SPOTON_GPGME_ENABLED
+
+Enable GPGME. Requires GPGME support.
+
+SPOTON_LINKED_WITH_LIBNTRU
+
+Enable if the NTRU library is available.
+
+SPOTON_MCELIECE_ENABLED
+
+Enable if McEliece is desired. Requires the NTL library.
+
+SPOTON_POPTASTIC_SUPPORTED
+
+Enable Poptastic.
+
+SPOTON_SCTP_ENABLED
+
+Enable SCTP. Requires system support.
+
+SPOTON_WEBENGINE_ENABLED
+
+Enable WebEngine. Requires Qt support.
+
+SPOTON_WEBKIT_ENABLED
+
+Enable WebKit. Requires Qt support.
+
+SPOTON_WEBSOCKETS_ENABLED
+
+Enable Web sockets. Requires Qt support.
