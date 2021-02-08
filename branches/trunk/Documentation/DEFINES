@@ -1,6 +1,14 @@
+SPOTON_APPLICATION_NAME
+
+Set to GoldBug or Spot-On.
+
 SPOTON_BLUETOOTH_ENABLED
 
 Enable Bluetooth. Define if the system supports Bluetooth. Requires Qt support.
+
+SPOTON_DATELESS_COMPILATION
+
+If enabled, the current date-time is included in the binary.
 
 SPOTON_DTLS_DISABLED
 
@@ -10,9 +18,17 @@ SPOTON_GPGME_ENABLED
 
 Enable GPGME. Requires GPGME support.
 
+SPOTON_LINKED_WITH_LIBGEOIP
+
+Enable if GeoIP is desired. Requires GeoIP support.
+
 SPOTON_LINKED_WITH_LIBNTRU
 
 Enable if the NTRU library is available.
+
+SPOTON_LINKED_WITH_LIBPTHREAD
+
+Enable if Spot-On is linked with the pthread library.
 
 SPOTON_MCELIECE_ENABLED
 
