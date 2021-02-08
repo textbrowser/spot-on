@@ -10,9 +10,17 @@ SPOTON_DATELESS_COMPILATION
 
 If enabled, the current date-time is included in the binary.
 
+SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
+
+Define the digital signature hash algorithm.
+
 SPOTON_DTLS_DISABLED
 
 DTLS is disabled if the option is provided. DTLS requires Qt support.
+
+SPOTON_GOLDBUG
+
+Define if preparing GoldBug.
 
 SPOTON_GPGME_ENABLED
 
