@@ -17,6 +17,7 @@ QT		+= concurrent \
 CONFIG		+= qt release warn_on
 
 DEFINES         += LIBSPOTON_OS_WINDOWS \
+		   SPOTON_DATELESS_COMPILATION \
                    SPOTON_GOLDBUG \
 		   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
