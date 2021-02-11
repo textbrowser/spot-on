@@ -26,26 +26,27 @@ fi
 
 # OpenSSL 1.1.1
 
-openssl=openssl-1.1.1h-win32-mingw
+openssl=mingw-w64-i686-openssl-1.1.1.i-1-any.pkg.tar.zst
 
-rm -f $openssl.zip
-rm -fr $openssl
-rm -fr libOpenSSL/Include.win32/openssl
-wget --output-document=$openssl.zip \
+rm -f $openssl
+wget --output-document=$openssl \
      --progress=bar \
-     https://bintray.com/vszakats/generic/download_file?file_path=$openssl.zip
+     https://repo.msys2.org/mingw/i686/$openssl
 
-if [ -r "$openssl.zip" ]; then
-    unzip -q -o $openssl.zip
-    mv $openssl/include/openssl libOpenSSL/Include.win32/.
-    mv $openssl/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
-    mv $openssl/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+if [ -r "$openssl" ]; then
+    tar -I zstd -vxf $openssl
+    rm -rf libOpenSSL/Include.win32/openssl
+    mv mingw32/include/openssl libOpenSSL/Include.win32/.
+    mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
+    mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
     chmod +w,-x libOpenSSL/Libraries.win32/*.dll
-    rm -f $openssl.zip
-    rm -fr $openssl
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -f $openssl
 else
-    echo "Cannot read $openssl.zip."
+    echo "Cannot read $openssl."
 fi
+
+exit 0
 
 # PostgreSQL
 
