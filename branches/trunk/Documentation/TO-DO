@@ -125,7 +125,6 @@ Completed Items
 90.    Use super-secure memory? Used here and there.
 91.    Include licenses of other software where applicable.
        Satisfy the license soldiers.
-91.    Provide a total silent mode.
 92.    Entering geminis is difficult.
 93.    Notify user of potential replays.
 94.    Prioritize keep-alive messages. Not required.
@@ -269,6 +268,7 @@ Completed Items
 196.   E-mail pagination.
 197.   Manual retrieval of Poptastic. Cancel automatic.
 198.   Remove libspoton from project files.
+199.   Provide a total silent mode.
 
 Ignored Items
 
