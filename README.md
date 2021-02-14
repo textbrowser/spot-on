@@ -27,6 +27,7 @@ Summary of Spot-On
 <li>Natively compiled on Alpha, ARM, PowerPC, Sparc64, X86, X86_64.</li>
 <li>Offline e-mail.</li>
 <li>Optional SSL/TLS.</li>
+<li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>PowerPC.</li>
 <li>Private applications. Stream through Spot-On.</li>
 <li>Private group communications.</li>
