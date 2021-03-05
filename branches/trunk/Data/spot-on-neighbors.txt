@@ -15,4 +15,4 @@ connect=true&echo_mode=full&ip_address=tulip-ipv4.tilaa.cloud&orientation=packet
 
 # An IPv6 TCP neighbor.
 
-connect=true&echo_mode=full&ip_address=2a02:2770::21a:4aff:fe7a:cba5&orientation=packet&port=4710&protocol=IPv6&scope_id=&ssl_key_size=3072&transport=tcp
+connect=true&echo_mode=full&ip_address=2a02:2770::21a:4aff:fec6:31ea&orientation=packet&port=4710&protocol=IPv6&scope_id=&ssl_key_size=3072&transport=tcp
