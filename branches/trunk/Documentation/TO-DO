@@ -313,5 +313,6 @@ Remaining Items
 6.     Windows NTL. Impossible to build.
 7.     Single Rosetta attachments.
 8.     Cryptographic discovery.
-9.     Rosetta Spell checker.
+9.     Rosetta spell checker.
 10.    Future proof.
+11.    libgcrypt from https://repo.msys2.org/mingw/i686/.
