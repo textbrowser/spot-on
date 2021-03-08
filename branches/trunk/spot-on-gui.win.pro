@@ -16,7 +16,8 @@ QT		+= concurrent \
                    websockets \
                    widgets
 
-DEFINES         += SPOTON_DATELESS_COMPILATION \
+DEFINES         += LIBSPOTON_OS_WINDOWS \
+                   SPOTON_DATELESS_COMPILATION \
 		   SPOTON_GPGME_ENABLED \
                    SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
