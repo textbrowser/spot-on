@@ -303,6 +303,9 @@ Ignored Items
 23.    McEliece Pointcheval.
 24.    Pre-future SOSS tasks.
 25.    Accept link from participant and download content; new panel.
+26.    Windows BT. Requires Qt 5.14.
+27.    Windows NTL. Impossible to build.
+28.    McEliece signatures.
 
 Remaining Items
 
@@ -310,9 +313,7 @@ Remaining Items
 2.     Which key types to export and import? A new selection dialog.
 3.     SQLite silent mode; limit synchronization. Partially completed.
 4.     IMAP and optional removal of messages; retrieve latest.
-5.     Windows BT. Requires Qt 5.14.
-6.     Windows NTL. Impossible to build.
-7.     Single Rosetta attachments.
-8.     Cryptographic discovery.
-9.     Rosetta spell checker.
-10.    Future proof.
+5.     Single Rosetta attachments.
+6.     Cryptographic discovery.
+7.     Rosetta spell checker.
+8.     Future proof.
