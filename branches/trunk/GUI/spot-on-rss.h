@@ -65,6 +65,7 @@ class spoton_rss: public QMainWindow
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
   QTimer m_importTimer;
+  QTimer m_purgeTimer;
   QTimer m_statisticsTimer;
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;

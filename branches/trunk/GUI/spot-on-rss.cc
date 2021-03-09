@@ -75,6 +75,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotStatisticsTimeout(void)));
+  connect(&m_purgeTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotRemoveMalformed(void)));
   connect(m_ui.action_Descriptions_in_Timeline,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -355,9 +359,10 @@ spoton_rss::~spoton_rss()
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
+  m_purgeTimer.stop();
+  m_statisticsTimer.stop();
   m_importFuture.cancel();
   m_importFuture.waitForFinished();
-  m_statisticsTimer.stop();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
 }
@@ -2829,22 +2834,27 @@ void spoton_rss::slotRefreshTimeline(void)
 
 void spoton_rss::slotRemoveMalformed(void)
 {
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove all malformed links?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
+  if(qobject_cast<QAction *> (sender()))
     {
+      QMessageBox mb(this);
+
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText
+	(tr("Are you sure that you wish to remove all malformed links?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
       QApplication::processEvents();
-      return;
     }
 
-  QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
@@ -2859,8 +2869,7 @@ void spoton_rss::slotRemoveMalformed(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM rss_feeds_links WHERE "
-		   "visited = 2");
+	query.exec("DELETE FROM rss_feeds_links WHERE visited = 2");
       }
 
     db.close();
@@ -2868,7 +2877,9 @@ void spoton_rss::slotRemoveMalformed(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
-  slotRefreshTimeline();
+
+  if(qobject_cast<QAction *> (sender()))
+    slotRefreshTimeline();
 }
 
 void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
