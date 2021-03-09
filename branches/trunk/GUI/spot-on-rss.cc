@@ -317,6 +317,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
     m_ui.action_Publication_Date->setChecked(true);
 
   m_importTimer.setInterval(2500);
+  m_purgeTimer.setInterval(2500);
   m_statisticsTimer.start(2500);
 
   if(m_ui.activate->isChecked())
@@ -327,6 +328,9 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 
   if(m_ui.periodic_import->isChecked())
     m_importTimer.start();
+
+  if(m_ui.purge_malformed->isChecked())
+    m_purgeTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   prepareDatabases();
@@ -2564,6 +2568,14 @@ void spoton_rss::slotPurgeMalformed(bool state)
   QSettings settings;
 
   settings.setValue("gui/rss_purge_malformed", state);
+
+  if(state)
+    {
+      if(!m_purgeTimer.isActive())
+	m_purgeTimer.start();
+    }
+  else
+    m_purgeTimer.stop();
 }
 
 void spoton_rss::slotRecordNotices(bool state)
