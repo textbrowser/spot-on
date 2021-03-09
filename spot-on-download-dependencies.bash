@@ -44,6 +44,26 @@ else
     echo "Cannot read $gcrypt."
 fi
 
+# Gpg-error
+
+gpgerror=mingw-w64-i686-libgpg-error-1.41-3-any.pkg.tar.zst
+
+rm -f $gpgerror
+wget --output-document=$gpgerror \
+     --progress=bar \
+     https://repo.msys2.org/mingw/i686/$gpgerror
+
+if [ -r "$gpgerror" ]; then
+    tar -I zstd -vxf $gpgerror
+    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
+    mv mingw32/include/gpg-error.h libSpotOn/Include.win32/.
+    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -f $gpgerror
+else
+    echo "Cannot read $gpgerror."
+fi
+
 # OpenSSL 1.1.1
 
 openssl=mingw-w64-i686-openssl-1.1.1.j-1-any.pkg.tar.zst
