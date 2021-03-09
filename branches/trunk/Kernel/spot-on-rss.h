@@ -56,6 +56,7 @@ class spoton_rss: public QObject
   QTimer m_downloadTimer;
   QTimer m_importTimer;
   QTimer m_populateTimer;
+  QTimer m_purgeTimer;
   QVector<QFuture<void > > m_importFutures;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
@@ -81,6 +82,7 @@ class spoton_rss: public QObject
   void slotImport(void);
   void slotLogError(const QString &error);
   void slotPopulateFeeds(void);
+  void slotPurgeMalformed(void);
   void slotReplyError(QNetworkReply::NetworkError code);
 
  signals:

@@ -61,6 +61,10 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPopulateFeeds(void)));
+  connect(&m_purgeTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPurgeMalformed(void)));
   connect(this,
 	  SIGNAL(logError(const QString &)),
 	  this,
@@ -85,6 +89,7 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
   m_importTimer.start();
   m_populateTimer.setInterval(10000);
   m_populateTimer.start();
+  m_purgeTimer.start(2500);
   prepareDatabases();
 }
 
@@ -1506,6 +1511,32 @@ void spoton_rss::slotLogError(const QString &error)
 void spoton_rss::slotPopulateFeeds(void)
 {
   populateFeeds();
+}
+
+void spoton_rss::slotPurgeMalformed(void)
+{
+  if(!spoton_kernel::setting("gui/rss_purge_malformed", false).toBool())
+    return;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.exec("DELETE FROM rss_feeds_links WHERE visited = 2");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)
