@@ -1320,6 +1320,9 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 
 	  if(m_wizardUi->prepare_sqlite_urls_db->isChecked())
 	    slotPrepareUrlDatabases();
+
+	  if(m_wizardUi->launch_kernel->isChecked())
+	    slotActivateKernel();
 	}
       else
 	{
