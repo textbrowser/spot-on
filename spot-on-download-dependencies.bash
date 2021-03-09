@@ -24,6 +24,26 @@ else
     echo "Cannot read $curl."
 fi
 
+# Gcrypt
+
+gcrypt=mingw-w64-i686-libgcrypt-1.9.2-1-any.pkg.tar.zst
+
+rm -f $gcrypt
+wget --output-document=$gcrypt \
+     --progress=bar \
+     https://repo.msys2.org/mingw/i686/$gcrypt
+
+if [ -r "$gcrypt" ]; then
+    tar -I zstd -vxf $gcrypt
+    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
+    mv mingw32/include/*.h libSpotOn/Include.win32/.
+    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -f $gcrypt
+else
+    echo "Cannot read $gcrypt."
+fi
+
 # OpenSSL 1.1.1
 
 openssl=mingw-w64-i686-openssl-1.1.1.j-1-any.pkg.tar.zst
@@ -36,9 +56,9 @@ wget --output-document=$openssl \
 if [ -r "$openssl" ]; then
     tar -I zstd -vxf $openssl
     rm -rf libOpenSSL/Include.win32/openssl
-    mv mingw32/include/openssl libOpenSSL/Include.win32/.
     mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
     mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+    mv mingw32/include/openssl libOpenSSL/Include.win32/.
     chmod +w,-x libOpenSSL/Libraries.win32/*.dll
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
     rm -f $openssl
