@@ -187,6 +187,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotPurgeDaysChanged(int)));
+  connect(m_ui.purge_malformed,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotPurgeMalformed(bool)));
   connect(m_ui.record_notices,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -298,6 +302,8 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
      settings.value("gui/rss_purge_days", 1).toInt(),
      m_ui.purge_days->maximum());
   m_ui.purge_days->setValue(ivalue);
+  m_ui.purge_malformed->setChecked
+    (settings.value("gui/rss_purge_malformed", false).toBool());
   str = settings.value("gui/rss_time_order", "publication_date").toString().
     toLower().trimmed();
 
@@ -2546,6 +2552,13 @@ void spoton_rss::slotPurgeDaysChanged(int value)
   QSettings settings;
 
   settings.setValue("gui/rss_purge_days", value);
+}
+
+void spoton_rss::slotPurgeMalformed(bool state)
+{
+  QSettings settings;
+
+  settings.setValue("gui/rss_purge_malformed", state);
 }
 
 void spoton_rss::slotRecordNotices(bool state)
