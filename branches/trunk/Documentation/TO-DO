@@ -269,6 +269,7 @@ Completed Items
 197.   Manual retrieval of Poptastic. Cancel automatic.
 198.   Remove libspoton from project files.
 199.   Provide a total silent mode.
+200.   libgcrypt from https://repo.msys2.org/mingw/i686/.
 
 Ignored Items
 
@@ -315,4 +316,3 @@ Remaining Items
 8.     Cryptographic discovery.
 9.     Rosetta spell checker.
 10.    Future proof.
-11.    libgcrypt from https://repo.msys2.org/mingw/i686/.

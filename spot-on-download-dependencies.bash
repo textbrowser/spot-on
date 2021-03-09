@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Download dependencies for Windows.
+# Download and install dependencies for Windows.
 # Must be executed in the top-level source directory.
 
 # CURL
@@ -44,7 +44,7 @@ else
     echo "Cannot read $gcrypt."
 fi
 
-# Gpg-error
+# Gpg-Error
 
 gpgerror=mingw-w64-i686-libgpg-error-1.41-3-any.pkg.tar.zst
 
