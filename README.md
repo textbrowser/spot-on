@@ -25,7 +25,6 @@ Summary of Spot-On
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Natively compiled on Alpha, ARM, PowerPC, Sparc64, X86, X86_64.</li>
-<li>Offline e-mail.</li>
 <li>Optional SSL/TLS.</li>
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>PowerPC.</li>
@@ -33,6 +32,7 @@ Summary of Spot-On
 <li>Private group communications.</li>
 <li>RSS feeder.</li>
 <li>Raspberry Pi.</li>
+<li>Record e-mail of offline destinations.</li>
 <li>Remote accounts.</li>
 <li>Rosetta stationery.</li>
 <li>Search engine via PostgreSQL and SQLite.</li>
