@@ -34,7 +34,7 @@ Summary of Spot-On
 <li>RSS feeder.</li>
 <li>Raspberry Pi.</li>
 <li>Remote accounts.</li>
-<li>Rosetta offline pad.</li>
+<li>Rosetta stationery.</li>
 <li>Search engine via PostgreSQL and SQLite.</li>
 <li>Simple software firewall.</li>
 <li>Socialist Millionaires Protocol.</li>
