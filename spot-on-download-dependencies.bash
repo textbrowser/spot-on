@@ -115,7 +115,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3340100.zip
+sqlite=sqlite-dll-win32-x86-3350000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
@@ -131,7 +131,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3340100.zip
+sqlite=sqlite-amalgamation-3350000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
