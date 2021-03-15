@@ -218,6 +218,11 @@ int main(int argc, char *argv[])
   QApplication::setStyle("fusion");
 #endif
   qInstallMessageHandler(qt_message_handler);
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+  QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+  QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+#endif
+#endif
 
   QApplication qapplication(argc, argv);
 
