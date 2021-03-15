@@ -56,8 +56,13 @@ ICON		  =
 INCLUDEPATH	  += . \
                      ../. ../../../. \
                      /usr/local/Cellar/openssl@1.1/1.1.1j/include \
-                     /usr/local/include /usr/local/opt \
-                     /usr/local/opt/curl/include
+                     /usr/local/opt \
+                     /usr/local/opt/curl/include \
+                     /usr/local/opt/geoip/include \
+                     /usr/local/opt/libgcrypt/include \
+                     /usr/local/opt/libgpg-error/include \
+                     /usr/local/opt/ntl/include \
+                     /usr/local/opt/postgres/include
 LIBS		  += -L../../../libNTRU \
                      -L/usr/local/Cellar/openssl@1.1/1.1.1j/lib \
                      -L/usr/local/lib \

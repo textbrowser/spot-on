@@ -1,3 +1,4 @@
+
 cache()
 include(spot-on-gui-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
@@ -60,9 +61,14 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 INCLUDEPATH	  += . \
                      ../../. \
                      /usr/local/Cellar/openssl@1.1/1.1.1j/include \
-                     /usr/local/include \
                      /usr/local/opt \
                      /usr/local/opt/curl/include \
+		     /usr/local/opt/geoip/include \
+		     /usr/local/opt/gpgme/include \
+		     /usr/local/opt/libgcrypt/include \
+		     /usr/local/opt/libgpg-error/include \
+		     /usr/local/opt/ntl/include \
+		     /usr/local/opt/postgres/include \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU \
