@@ -109,6 +109,8 @@ macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot
 macdeployqt.path            = Spot-On-Kernel.app
 preinstall.extra            = rm -rf /Applications/Spot-On.d/Spot-On-Kernel.app/*
 preinstall.path             = /Applications/Spot-On.d
+zzz.extra                   = chown -Rh root:wheel /Applications/Spot-On.d
+zzz.path                    = /Applications/Spot-On.d
 
 # Order is important.
 
@@ -118,4 +120,5 @@ INSTALLS	= preinstall \
                   copyssl \
                   install_name_tool \
                   libgeoip_data_install \
-                  libntru_install
+                  libntru_install \
+		  zzz
