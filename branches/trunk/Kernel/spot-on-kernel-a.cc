@@ -246,17 +246,23 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
-  /*
-  ** Disable JIT.
-  */
-
-  qputenv("QT_ENABLE_REGEXP_JIT", "0");
-  qputenv("QV4_FORCE_INTERPRETER", "1");
   spoton_misc::prepareSignalHandler(signal_handler);
-  PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
 
   for(int i = 1; i < argc; i++)
-    if(argv[i] && qstrcmp(argv[i], "--version") == 0)
+    if(argv[i] && qstrcmp(argv[i], "--help") == 0)
+      {
+	fprintf(stdout,
+		"Spot-On-Kernel:\n"
+		"--disable-ui-server     Disable the user interface server.\n"
+		"--passphrase            Prompt for credentials.\n"
+		"--question-answer       Prompt for credentials.\n"
+		"--terminate             Attempt to terminate the "
+		"Spot-On-Kernel process.\n"
+		"--vacuum                Vacuum SQLite databases.\n"
+		"--version               Display version information\n");
+	exit(EXIT_SUCCESS);
+      }
+    else if(argv[i] && qstrcmp(argv[i], "--version") == 0)
       {
 	fprintf(stdout, "Spot-On-Kernel. Compiled on %s, %s. Version %s.\n",
 #ifdef SPOTON_DATELESS_COMPILATION
@@ -268,6 +274,13 @@ int main(int argc, char *argv[])
 	exit(EXIT_SUCCESS);
       }
 
+  /*
+  ** Disable JIT.
+  */
+
+  qputenv("QT_ENABLE_REGEXP_JIT", "0");
+  qputenv("QV4_FORCE_INTERPRETER", "1");
+  PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
