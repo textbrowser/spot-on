@@ -306,15 +306,14 @@ Ignored Items
 26.    Windows BT. Requires Qt 5.14.
 27.    Windows NTL. Impossible to build.
 28.    McEliece signatures.
+29.    Which key types to export and import? A new selection dialog.
 
 Remaining Items
 
 1.     Open Library.
-2.     Which key types to export and import? A new selection dialog.
-3.     SQLite silent mode; limit synchronization. Partially completed.
-4.     IMAP and optional removal of messages; retrieve latest.
-5.     Single Rosetta attachments.
-6.     Cryptographic discovery.
-7.     Rosetta spell checker.
-8.     Future proof.
-9.     Download Windows GPGME files.
+2.     SQLite silent mode; limit synchronization. Partially completed.
+3.     IMAP and optional removal of messages; retrieve latest.
+4.     Single Rosetta attachments.
+5.     Cryptographic discovery.
+6.     Rosetta spell checker.
+7.     Future proof.
