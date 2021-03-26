@@ -66,7 +66,7 @@ fi
 
 # OpenSSL 1.1.1
 
-openssl=mingw-w64-i686-openssl-1.1.1.j-1-any.pkg.tar.zst
+openssl=mingw-w64-i686-openssl-1.1.1.k-1-any.pkg.tar.zst
 
 rm -f $openssl
 wget --output-document=$openssl \
