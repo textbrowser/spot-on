@@ -66,7 +66,7 @@ fi
 
 # OpenSSL 1.1.1
 
-openssl=mingw-w64-i686-openssl-1.1.1.j-1-any.pkg.tar.zst
+openssl=mingw-w64-i686-openssl-1.1.1.k-1-any.pkg.tar.zst
 
 rm -f $openssl
 wget --output-document=$openssl \
@@ -115,7 +115,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3350000.zip
+sqlite=sqlite-dll-win32-x86-3350200.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
@@ -131,7 +131,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3350000.zip
+sqlite=sqlite-amalgamation-3350200.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
@@ -143,7 +143,7 @@ else
     echo "Cannot read $sqlite."
 fi
 
-sqlite=sqlite-amalgamation-3340100
+sqlite=sqlite-amalgamation-3350200
 
 if [ -r $sqlite ]; then
     mv $sqlite/*.h libSpotOn/Include.win32/.
