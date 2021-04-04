@@ -11,7 +11,7 @@ make
 FreeBSD
 
 qmake -o Makefile spot-on.freebsd.pro
-make
+gmake
 
 Linux
 
