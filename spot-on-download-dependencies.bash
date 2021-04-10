@@ -5,8 +5,8 @@
 
 # CURL
 
-curl=curl-7.75.0-win32-mingw
-dlcurl=dl-7.75.0
+curl=curl-7.76.0-win32-mingw
+dlcurl=dl-7.76.0
 
 rm -f $curl.zip
 rm -fr $curl
@@ -115,7 +115,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3350200.zip
+sqlite=sqlite-dll-win32-x86-3350400.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
@@ -131,7 +131,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3350200.zip
+sqlite=sqlite-amalgamation-3350400.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2021/$sqlite
@@ -143,7 +143,7 @@ else
     echo "Cannot read $sqlite."
 fi
 
-sqlite=sqlite-amalgamation-3350200
+sqlite=sqlite-amalgamation-3350400
 
 if [ -r $sqlite ]; then
     mv $sqlite/*.h libSpotOn/Include.win32/.
