@@ -44,6 +44,26 @@ else
     echo "Cannot read $gcrypt."
 fi
 
+# GeoIP
+
+geoip=mingw-w64-i686-geoip-1.6.12-1-any.pkg.tar.xz
+
+rm -f $geoip
+wget --output-document=$geoip \
+     --progress=bar \
+     https://repo.msys2.org/mingw/i686/$geoip
+
+if [ -r "$geoip" ]; then
+    tar -vxf $geoip
+    mv mingw32/bin/*.dll libGeoIP/Libraries.win32/.
+    mv mingw32/include/*.h libGeoIP/Include.win32/.
+    chmod +w,-x libGeoIP/Libraries.win32/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -f $geoip
+else
+    echo "Cannot read $geoip."
+fi
+
 # Gpg-Error
 
 gpgerror=mingw-w64-i686-libgpg-error-1.41-3-any.pkg.tar.zst
