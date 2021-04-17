@@ -5,8 +5,8 @@
 
 # CURL
 
-curl=curl-7.76.0-win32-mingw
-dlcurl=dl-7.76.0
+curl=curl-7.76.1-win32-mingw
+dlcurl=dl-7.76.1
 
 rm -f $curl.zip
 rm -fr $curl
