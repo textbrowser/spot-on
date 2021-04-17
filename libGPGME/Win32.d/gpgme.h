@@ -42,11 +42,11 @@ extern "C" {
  * instead.  The purpose of this macro is to let autoconf (using the
  * AM_PATH_GPGME macro) check that this header matches the installed
  * library.  */
-#define GPGME_VERSION "1.14.0"
+#define GPGME_VERSION "1.15.1"
 
 /* The version number of this header.  It may be used to handle minor
  * API incompatibilities.  */
-#define GPGME_VERSION_NUMBER 0x010e00
+#define GPGME_VERSION_NUMBER 0x010f01
 
 
 /* System specific typedefs.  */
@@ -1876,6 +1876,13 @@ gpgme_error_t gpgme_op_set_uid_flag       (gpgme_ctx_t ctx,
                                            gpgme_key_t key, const char *userid,
                                            const char *name, const char *value);
 
+/* Change the expiry of a key.  */
+gpgme_error_t gpgme_op_setexpire_start (gpgme_ctx_t ctx,
+                                        gpgme_key_t key, unsigned long expires,
+                                        const char *subfprs, unsigned int reserved);
+gpgme_error_t gpgme_op_setexpire       (gpgme_ctx_t ctx,
+                                        gpgme_key_t key, unsigned long expires,
+                                        const char *subfprs, unsigned int reserved);
 
 /* Retrieve a pointer to the result of a genkey, createkey, or
  * createsubkey operation.  */
@@ -1920,6 +1927,20 @@ gpgme_error_t gpgme_op_keysign       (gpgme_ctx_t ctx,
                                       unsigned int flags);
 
 
+/* Flags for the signature revoking functions.  */
+#define GPGME_REVSIG_LFSEP   (1 << 8)  /* Indicate LF separated user ids. */
+
+/* Revoke the signatures made with SIGNING_KEY on the USERID(s) of KEY.  */
+gpgme_error_t gpgme_op_revsig_start (gpgme_ctx_t ctx,
+                                     gpgme_key_t key,
+                                     gpgme_key_t signing_key,
+                                     const char *userid,
+                                     unsigned int flags);
+gpgme_error_t gpgme_op_revsig       (gpgme_ctx_t ctx,
+                                     gpgme_key_t key,
+                                     gpgme_key_t signing_key,
+                                     const char *userid,
+                                     unsigned int flags);
 
 
 /*
@@ -2563,7 +2584,8 @@ typedef enum
     GPGME_STATUS_TOFU_STATS_LONG = 97,
     GPGME_STATUS_NOTATION_FLAGS = 98,
     GPGME_STATUS_DECRYPTION_COMPLIANCE_MODE = 99,
-    GPGME_STATUS_VERIFICATION_COMPLIANCE_MODE = 100
+    GPGME_STATUS_VERIFICATION_COMPLIANCE_MODE = 100,
+    GPGME_STATUS_CANCELED_BY_USER = 101
   }
 gpgme_status_code_t;
 

@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.39"
-#define GPGRT_VERSION     "1.39"
+#define GPG_ERROR_VERSION "1.41"
+#define GPGRT_VERSION     "1.41"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012700
-#define GPGRT_VERSION_NUMBER     0x012700
+#define GPG_ERROR_VERSION_NUMBER 0x012900
+#define GPGRT_VERSION_NUMBER     0x012900
 
 
 #ifdef __GNUC__
@@ -1164,6 +1164,9 @@ gpg_err_code_t gpgrt_chdir (const char *name);
 
 /* Return the current WD as a malloced string.  */
 char *gpgrt_getcwd (void);
+
+/* A wrapper around access to handle UTF-8 on Windows.  */
+gpg_err_code_t gpgrt_access (const char *fname, int mode);
 
 
 
