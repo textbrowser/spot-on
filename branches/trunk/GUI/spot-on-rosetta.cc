@@ -51,7 +51,6 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = 0;
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
-  m_parent = 0;
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
