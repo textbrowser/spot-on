@@ -38,7 +38,7 @@ class spoton_rosetta_gpg_import: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton_rosetta_gpg_import(spoton *parent);
+  spoton_rosetta_gpg_import(QWidget *parent, spoton *spoton);
   ~spoton_rosetta_gpg_import();
   static QString dump(const QByteArray &data);
   static QString email(const QByteArray &data);
@@ -47,7 +47,7 @@ class spoton_rosetta_gpg_import: public QMainWindow
   void showNormal(void);
 
  private:
-  QPointer<spoton> m_parent;
+  QPointer<spoton> m_spoton;
   Ui_spoton_rosetta_gpg_import m_ui;
   void showCurrentDump(void);
 

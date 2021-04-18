@@ -40,10 +40,10 @@ extern "C"
 #include "spot-on-defines.h"
 #include "spot-on-rosetta-gpg-import.h"
 
-spoton_rosetta_gpg_import::spoton_rosetta_gpg_import(spoton *parent):
-  QMainWindow(parent)
+spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
+(QWidget *parent, spoton *spoton):QMainWindow(parent)
 {
-  m_parent = parent;
+  m_spoton = spoton;
   m_ui.setupUi(this);
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),
@@ -185,7 +185,7 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 void spoton_rosetta_gpg_import::showCurrentDump(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  spoton_crypt *crypt = m_parent->crypts().value("rosetta", 0);
+  spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
 
   if(!crypt)
     return;
@@ -206,8 +206,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT public_keys FROM gpg") &&
-	   query.next())
+	if(query.exec("SELECT public_keys FROM gpg") && query.next())
 	  {
 	    QByteArray publicKey
 	      (QByteArray::fromBase64(query.value(0).toByteArray()));
@@ -219,10 +218,10 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	    spoton_crypt::memzero(publicKey);
 	  }
 	else
-	  m_ui.public_keys_dump->setText(tr("GPG Dump"));
+	  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
       }
     else
-      m_ui.public_keys_dump->setText(tr("GPG Dump"));
+      m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
 
     db.close();
   }
@@ -241,7 +240,7 @@ void spoton_rosetta_gpg_import::showNormal(void)
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
   m_ui.public_keys->clear();
-  m_ui.public_keys_dump->setText(tr("GPG Dump"));
+  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
 }
 
 void spoton_rosetta_gpg_import::slotImport(void)
@@ -266,7 +265,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys TEXT NOT NULL, "
 		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
-	spoton_crypt *crypt = m_parent->crypts().value("rosetta", 0);
+	spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
 
 	if(crypt)
 	  {
@@ -378,7 +377,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 	query.exec("PRAGMA secure_delete = ON");
 
 	if(query.exec("DELETE FROM gpg"))
-	  m_ui.public_keys_dump->setText(tr("GPG Dump"));
+	  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
       }
 
     db.close();
