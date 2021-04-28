@@ -318,3 +318,4 @@ Remaining Items
 6.     Rosetta spell checker.
 7.     Future proof.
 8.     Simplify OpenSSL paths in OS X project files.
+9.     OS X bundle is missing libraries.
