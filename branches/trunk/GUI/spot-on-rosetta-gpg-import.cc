@@ -349,7 +349,8 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to remove your GPG keys?"));
+  mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
+		"The keys will not be removed from the GPG ring."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::WindowModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
