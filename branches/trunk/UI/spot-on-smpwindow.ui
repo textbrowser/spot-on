@@ -38,7 +38,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-438</y>
              <width>922</width>
              <height>946</height>
             </rect>
@@ -60,8 +60,9 @@
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -192,8 +193,9 @@
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -223,8 +225,9 @@
                    </property>
                    <property name="styleSheet">
                     <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>

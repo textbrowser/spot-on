@@ -988,7 +988,7 @@
           <widget class="QWidget" name="scrollAreaWidgetContents_6">
            <property name="geometry">
             <rect>
-             <x>-324</x>
+             <x>0</x>
              <y>0</y>
              <width>1075</width>
              <height>679</height>
@@ -5014,8 +5014,9 @@
                      </property>
                      <property name="styleSheet">
                       <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5065,8 +5066,9 @@
                      </property>
                      <property name="styleSheet">
                       <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5172,8 +5174,9 @@
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5412,8 +5415,9 @@
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5618,8 +5622,9 @@
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5649,8 +5654,9 @@
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
@@ -5680,8 +5686,9 @@
                        </property>
                        <property name="styleSheet">
                         <string notr="true">QLabel {
- border: 1px solid gray;
  background-color: lightgreen;
+ border: 1px solid gray;
+ border-radius: 5px;
  margin: 2px;
  padding: 2px;
  }</string>
