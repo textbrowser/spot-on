@@ -25,7 +25,7 @@ Summary of Spot-On
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Native virtual keyboard.</li>
-<li>Natively compiled on Alpha, ARM, PowerPC, Sparc64, X86, X86_64.</li>
+<li>Natively compiled on ARM, Alpha, PowerPC, Sparc64, X86, X86_64.</li>
 <li>Optional SSL/TLS.</li>
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
