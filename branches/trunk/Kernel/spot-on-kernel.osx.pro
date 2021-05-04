@@ -55,18 +55,18 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 ICON		  =
 INCLUDEPATH	  += . \
                      ../. ../../../. \
+                     /usr/local/Cellar/openssl@1.1/1.1.1k/include \
                      /usr/local/opt \
                      /usr/local/opt/curl/include \
                      /usr/local/opt/geoip/include \
                      /usr/local/opt/libgcrypt/include \
                      /usr/local/opt/libgpg-error/include \
                      /usr/local/opt/ntl/include \
-                     /usr/local/opt/openssl/include \
                      /usr/local/opt/postgres/include
 LIBS		  += -L../../../libNTRU \
+                     -L/usr/local/Cellar/openssl@1.1/1.1.1k/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
-                     -L/usr/local/opt/openssl/lib \
                      -framework Cocoa \
                      -lGeoIP \
                      -lcrypto \
@@ -97,9 +97,9 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra            = cp -r ../Spot-On-Kernel.app /Applications/Spot-On.d/.
 copyspoton.path             = /Applications/Spot-On.d
-copyssl.extra               = cp /usr/local/opt/openssl/lib/*.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
+copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1k/lib/*.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/opt/openssl/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1k/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = /Applications/Spot-On.d/GeoIP
