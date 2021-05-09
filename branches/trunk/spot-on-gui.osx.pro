@@ -122,6 +122,10 @@ lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
 lupdate.path                = .
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On.d/Spot-On.app -executable=/Applications/Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 macdeployqt.path            = Spot-On.app
+other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
+other_libraries1.path       = .
+other_libraries2.extra      = install_name_tool -change /usr/local/Cellar/openldap/2.4.58/lib/liblber-2.4.2.dylib @executable_path/../Frameworks/liblber-2.4.2.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libldap-2.4.2.dylib
+other_libraries2.path       = .
 preinstall.extra            = rm -rf /Applications/Spot-On.d/Spot-On.app/*
 preinstall.path             = /Applications/Spot-On.d
 sounds.files                = Sounds/*.wav
@@ -145,4 +149,6 @@ INSTALLS	= preinstall \
                   copyssl \
                   install_name_tool \
                   libntru_install \
+                  other_libraries1 \
+                  other_libraries2 \
                   zzz
