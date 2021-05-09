@@ -107,7 +107,7 @@ libntru_install.extra       = cp ../../../libNTRU/libntru.dylib /Applications/Sp
 libntru_install.path        = .
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On.d/Spot-On-Kernel.app -executable=/Applications/Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
 macdeployqt.path            = Spot-On-Kernel.app
-other_libraries1.extra      = cp ./Cellar.original/brotli/1.0.9/lib/libbrotlicommon.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
+other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
 other_libraries1.path       = .
 other_libraries2.extra      = install_name_tool -change /usr/local/Cellar/openldap/2.4.58/lib/liblber-2.4.2.dylib @executable_path/../Frameworks/liblber-2.4.2.dylib /Applications/Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libldap-2.4.2.dylib
 other_libraries2.path       = .
