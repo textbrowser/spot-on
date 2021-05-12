@@ -447,6 +447,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   QString passphrase("");
   bool ok = true;
 
+  QApplication::restoreOverrideCursor();
   passphrase = QInputDialog::getText
     (s_rosetta,
      tr("%1: GPG Passphrase").arg(SPOTON_APPLICATION_NAME),
@@ -456,7 +457,10 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
      &ok);
 
   if(!ok || passphrase.isEmpty())
-    return GPG_ERR_NO_PASSPHRASE;
+    {
+      spoton_crypt::memzero(passphrase);
+      return GPG_ERR_NO_PASSPHRASE;
+    }
 
   gpgme_ssize_t rc = gpgme_io_writen
     (fd,
