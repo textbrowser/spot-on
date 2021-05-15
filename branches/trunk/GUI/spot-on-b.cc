@@ -765,7 +765,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle
 	    (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -794,7 +794,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 			"that you wish to accept the foreign key pair?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
@@ -838,7 +838,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  mb.setText(tr("Invalid %1 public key signature. Accept?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
@@ -860,7 +860,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	  mb.setText(tr("Invalid %1 signature public key signature. Accept?").
 		     arg(keyType.constData()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
@@ -3857,7 +3857,7 @@ void spoton::slotEmptyTrash(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to empty the Trash folder?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").
 		    arg(SPOTON_APPLICATION_NAME));
 
@@ -4200,7 +4200,7 @@ void spoton::slotKernelStatus(void)
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -5647,7 +5647,7 @@ void spoton::slotRemoveEmailParticipants(void)
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"E-Mail participant(s)?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -5716,7 +5716,7 @@ void spoton::slotRemoveParticipants(void)
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"Chat participant(s)?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -5911,7 +5911,7 @@ void spoton::slotReply(void)
 	      mb.setText
 		(tr("Would you like to save the e-mail address %1?").arg(str));
 	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowModality(Qt::ApplicationModal);
 	      mb.setWindowTitle
 		(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -5945,7 +5945,7 @@ void spoton::slotResetAll(void)
 		"removed separately.").
 	     arg(SPOTON_APPLICATION_NAME));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -6619,7 +6619,7 @@ void spoton::slotSendMail(void)
 	mb.setIcon(QMessageBox::Information);
 	mb.setText(tr("E-mail has been queued."));
 	mb.setWindowIcon(windowIcon());
-	mb.setWindowModality(Qt::WindowModal);
+	mb.setWindowModality(Qt::ApplicationModal);
 	mb.setWindowTitle(tr("GoldBug: Confirmation"));
 	mb.exec();
 	QApplication::processEvents();

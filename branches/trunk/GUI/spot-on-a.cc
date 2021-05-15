@@ -4053,7 +4053,7 @@ void spoton::sendKeysToKernel(void)
 		     "the keys with the kernel process?").
 		  arg(m_ui.pid->text()));
 	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowModality(Qt::ApplicationModal);
 	      mb.setWindowTitle
 		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
@@ -5702,7 +5702,7 @@ void spoton::slotDeactivateKernel(void)
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
       mb.setText(tr("Are you sure that you wish to deactivate the kernel?"));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -9434,7 +9434,7 @@ void spoton::slotSetPassphrase(void)
 		      "and the kernel will be deactivated."));
 
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -9572,7 +9572,7 @@ void spoton::slotSetPassphrase(void)
 	      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	      mb.setText(tr("Would you like to generate public key pairs?"));
 	      mb.setWindowIcon(windowIcon());
-	      mb.setWindowModality(Qt::WindowModal);
+	      mb.setWindowModality(Qt::ApplicationModal);
 	      mb.setWindowTitle
 		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
@@ -9603,7 +9603,7 @@ void spoton::slotSetPassphrase(void)
 		     "to zero. Continue with the key-generation process?").
 		  arg(SPOTON_APPLICATION_NAME));
 		mb.setWindowIcon(windowIcon());
-		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowModality(Qt::ApplicationModal);
 		mb.setWindowTitle
 		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
@@ -10039,7 +10039,7 @@ void spoton::slotSetPassphrase(void)
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText(tr("Would you like the kernel to be activated?"));
 		mb.setWindowIcon(windowIcon());
-		mb.setWindowModality(Qt::WindowModal);
+		mb.setWindowModality(Qt::ApplicationModal);
 		mb.setWindowTitle
 		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 

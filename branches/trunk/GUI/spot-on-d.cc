@@ -152,7 +152,7 @@ bool spoton::promptBeforeExit(void)
 		    "Are you sure that you wish to exit %1?").
 		 arg(SPOTON_APPLICATION_NAME));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -176,7 +176,7 @@ bool spoton::promptBeforeExit(void)
 		      "sure that you wish to exit %1?").
 		   arg(SPOTON_APPLICATION_NAME));
 	mb.setWindowIcon(windowIcon());
-	mb.setWindowModality(Qt::WindowModal);
+	mb.setWindowModality(Qt::ApplicationModal);
 	mb.setWindowTitle(tr("%1: Question").
 			  arg(SPOTON_APPLICATION_NAME));
 

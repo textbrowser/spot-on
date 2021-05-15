@@ -80,7 +80,7 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
       mb.setText(tr("Are you sure that you wish to open %1?").
 		 arg(url.toString()));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() == QMessageBox::Yes)

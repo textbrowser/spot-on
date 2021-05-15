@@ -2992,7 +2992,7 @@ void spoton::slotImportNeighbors(void)
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
@@ -3049,7 +3049,7 @@ void spoton::slotImportPublicKeys(void)
 	     arg(fileInfo.absoluteFilePath()).
 	     arg(fileInfo.size()));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 
@@ -3959,7 +3959,7 @@ void spoton::slotRegenerateKey(void)
 		  "key pair? The kernel will be deactivated."));
 
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -3987,7 +3987,7 @@ void spoton::slotRegenerateKey(void)
 		    "to zero. Continue with the key-generation process?").
 		 arg(SPOTON_APPLICATION_NAME));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -4091,7 +4091,7 @@ void spoton::slotRemoveUrlParticipants(void)
   mb.setText(tr("Are you sure that you wish to remove the selected "
 		"URLs participant(s)?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)

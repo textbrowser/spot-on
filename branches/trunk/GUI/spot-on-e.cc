@@ -1078,7 +1078,7 @@ void spoton::slotDeletePoptasticAccount(void)
   mb.setText(tr("Are you sure that you wish to delete the specified "
 		"Poptastic account?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1436,7 +1436,7 @@ void spoton::slotPoptasticSettingsReset(void)
   mb.setText(tr("Are you sure that you wish to reset your Poptastic "
 		"settings?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
