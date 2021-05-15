@@ -2014,7 +2014,7 @@ void spoton_rss::slotDeleteAllFeeds(void)
   mb.setText(tr("Are you sure that you wish to delete all of the RSS "
 		"feeds?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -2058,7 +2058,7 @@ void spoton_rss::slotDeleteFeed(void)
   mb.setText(tr("Are you sure that you wish to delete the selected RSS "
 		"feed?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -2514,7 +2514,7 @@ void spoton_rss::slotPurge(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to purge obsolete links?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -2855,7 +2855,7 @@ void spoton_rss::slotRemoveMalformed(void)
       mb.setText
 	(tr("Are you sure that you wish to remove all malformed links?"));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -3333,7 +3333,7 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
       mb.setText(tr("Are you sure that you wish to remove %1?").
 		 arg(spoton_misc::urlToEncoded(u).constData()));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)

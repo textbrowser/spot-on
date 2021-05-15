@@ -779,7 +779,7 @@ void spoton::slotDeleteKey(void)
 		  "key pair? The kernel will be deactivated."));
 
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1286,7 +1286,7 @@ void spoton::slotLinkClicked(const QUrl &url)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to access the URL %1?").arg(str));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1311,7 +1311,7 @@ void spoton::slotLock(void)
 		    "All other windows will be closed. Buzz windows will be "
 		    "united with the main window."));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
 

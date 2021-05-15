@@ -884,7 +884,7 @@ void spoton_rosetta::slotAddContact(void)
 		    "public key for comparison. Continue?").
 		 arg(keyType.constData()));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
 
@@ -909,7 +909,7 @@ void spoton_rosetta::slotAddContact(void)
 		    "public key for comparison. Continue?").
 		 arg(keyType.constData()));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
 
@@ -1859,7 +1859,7 @@ void spoton_rosetta::slotDelete(void)
       (tr("Are you sure that you wish to remove the selected contact?"));
 
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -2012,7 +2012,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
   mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
 		"The keys will not be removed from the GPG ring."));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)

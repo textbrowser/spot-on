@@ -566,7 +566,7 @@ void spoton::slotCorrectUrlDatabases(void)
 	  "Proceed?"));
 
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -726,7 +726,7 @@ void spoton::slotDeleteAllUrls(void)
 		"Please also verify that you have proper administrator "
 		"privileges."));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -851,7 +851,7 @@ void spoton::slotDropUrlTables(void)
 		"a considerable amount of time to complete. The "
 		"RSS mechanism and the kernel will be deactivated."));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1093,7 +1093,7 @@ void spoton::slotImportUrls(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Did you prepare your URL databases and URL distillers?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
@@ -1552,7 +1552,7 @@ void spoton::slotPrepareUrlDatabases(void)
 		    "The RSS mechanism and the kernel will be deactivated. "
 		    "Proceed?"));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -1789,7 +1789,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
   mb->setText(tr("In order to save new Common Credentials, "
 		 "the RSS mechanism and the kernel will be deactivated. "
 		 "Proceed?"));
-  mb->setWindowModality(Qt::WindowModal);
+  mb->setWindowModality(Qt::ApplicationModal);
   mb->setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb->exec() != QMessageBox::Yes)
@@ -2025,7 +2025,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       mb.setText(tr("Are you sure that you wish to remove the URL %1?").
 		 arg(str));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
@@ -2210,7 +2210,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       mb.setText(tr("Are you sure that you wish to share the URL %1?").
 		 arg(spoton_misc::urlToEncoded(original).constData()));
       mb.setWindowIcon(windowIcon());
-      mb.setWindowModality(Qt::WindowModal);
+      mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").
 			arg(SPOTON_APPLICATION_NAME));
 
@@ -2349,7 +2349,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  mb.setText(tr("Are you sure that you wish to access the URL %1?").
 		     arg(str));
 	  mb.setWindowIcon(windowIcon());
-	  mb.setWindowModality(Qt::WindowModal);
+	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle(tr("%1: Confirmation").
 			    arg(SPOTON_APPLICATION_NAME));
 

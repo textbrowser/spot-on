@@ -1136,7 +1136,7 @@ void spoton_smpwindow::slotRemove(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText(tr("Are you sure that you wish to remove the selected secret?"));
   mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::WindowModal);
+  mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
   if(mb.exec() != QMessageBox::Yes)
