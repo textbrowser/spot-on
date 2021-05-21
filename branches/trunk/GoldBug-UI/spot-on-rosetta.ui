@@ -133,10 +133,10 @@ color: rgb(255, 255, 255);
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>-358</x>
+         <x>0</x>
          <y>0</y>
          <width>977</width>
-         <height>551</height>
+         <height>497</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -219,6 +219,9 @@ color: rgb(255, 255, 255);
                       </item>
                       <item>
                        <widget class="QPushButton" name="convertDecrypt">
+                        <property name="toolTip">
+                         <string>A dialog may be displayed prompting for the password of the key ring.</string>
+                        </property>
                         <property name="text">
                          <string>Convert</string>
                         </property>
@@ -529,6 +532,9 @@ color: rgb(255, 255, 255);
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="text">
                          <string>&amp;Sign message.</string>
                         </property>
@@ -783,7 +789,7 @@ color: rgb(255, 255, 255);
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
