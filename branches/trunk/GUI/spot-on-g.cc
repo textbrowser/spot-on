@@ -1957,10 +1957,10 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 void spoton::slotShowAddParticipant(void)
 {
 #if SPOTON_GOLDBUG == 0
+  spoton_utilities::centerWidget(m_addParticipantWindow, this);
   m_addParticipantWindow->showNormal();
   m_addParticipantWindow->activateWindow();
   m_addParticipantWindow->raise();
-  spoton_utilities::centerWidget(m_addParticipantWindow, this);
 #endif
 }
 
@@ -1982,10 +1982,10 @@ void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
 
 void spoton::slotShowDocumentation(void)
 {
+  spoton_utilities::centerWidget(m_documentation, this);
   m_documentation->showNormal();
   m_documentation->activateWindow();
   m_documentation->raise();
-  spoton_utilities::centerWidget(m_documentation, this);
 }
 
 void spoton::slotShowMainTabContextMenu(const QPoint &point)
@@ -2056,11 +2056,11 @@ void spoton::slotShowNeighborStatistics(void)
 	      SLOT(deleteLater(void)));
     }
 
+  spoton_utilities::centerWidget(s, this);
   s->show(); // Custom.
   s->showNormal();
   s->activateWindow();
   s->raise();
-  spoton_utilities::centerWidget(s, this);
 #endif
 }
 
@@ -2068,12 +2068,12 @@ void spoton::slotShowNotificationsWindow(void)
 {
   bool wasVisible = m_notificationsWindow->isVisible();
 
+  if(!wasVisible)
+    spoton_utilities::centerWidget(m_notificationsWindow, this);
+
   m_notificationsWindow->showNormal();
   m_notificationsWindow->activateWindow();
   m_notificationsWindow->raise();
-
-  if(!wasVisible)
-    spoton_utilities::centerWidget(m_notificationsWindow, this);
 }
 
 void spoton::slotShowSMPWindow(void)
@@ -2081,8 +2081,8 @@ void spoton::slotShowSMPWindow(void)
   menuBar()->repaint();
   repaint();
   QApplication::processEvents();
-  m_smpWindow->show(this);
   spoton_utilities::centerWidget(m_smpWindow, this);
+  m_smpWindow->show(this);
 }
 
 void spoton::slotUnifyBuzz(void)

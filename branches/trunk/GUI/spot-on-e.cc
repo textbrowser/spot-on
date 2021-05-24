@@ -2252,11 +2252,11 @@ void spoton::slotShareStarBeam(void)
 
 void spoton::slotShowOptions(void)
 {
+  spoton_utilities::centerWidget(m_optionsWindow, this);
   m_optionsWindow->showNormal();
   m_optionsWindow->activateWindow();
   m_optionsWindow->raise();
   m_optionsUi.scrollArea->setFocus();
-  spoton_utilities::centerWidget(m_optionsWindow, this);
 }
 
 void spoton::slotTestPoptasticPop3Settings(void)

@@ -1990,10 +1990,10 @@ void spoton_rosetta::slotImportGPGKeys(void)
 	      SLOT(slotGPGKeysRemoved(void)));
     }
 
+  spoton_utilities::centerWidget(m_gpgImport, this);
   m_gpgImport->showNormal();
   m_gpgImport->activateWindow();
   m_gpgImport->raise();
-  spoton_utilities::centerWidget(m_gpgImport, this);
 #endif
 }
 

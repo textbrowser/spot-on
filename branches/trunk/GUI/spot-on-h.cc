@@ -866,8 +866,8 @@ void spoton::slotNewEmailWindow(void)
 	  SIGNAL(configurePoptastic(void)),
 	  this,
 	  SLOT(slotConfigurePoptastic(void)));
-  window->show();
   spoton_utilities::centerWidget(window, this);
+  window->show();
 #endif
 }
 
@@ -1500,10 +1500,10 @@ void spoton::slotShowErrorMessage(void)
 
 void spoton::slotShowReleaseNotes(void)
 {
+  spoton_utilities::centerWidget(m_releaseNotes, this);
   m_releaseNotes->showNormal();
   m_releaseNotes->activateWindow();
   m_releaseNotes->raise();
-  spoton_utilities::centerWidget(m_releaseNotes, this);
 }
 
 void spoton::slotStyleSheetChanged(int index)

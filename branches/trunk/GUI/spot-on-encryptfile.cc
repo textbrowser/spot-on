@@ -100,10 +100,10 @@ void spoton_encryptfile::keyPressEvent(QKeyEvent *event)
 
 void spoton_encryptfile::show(QWidget *parent)
 {
+  spoton_utilities::centerWidget(this, parent);
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_encryptfile::slotClose(void)

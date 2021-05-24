@@ -2102,10 +2102,10 @@ void spoton::slotShowRss(void)
 
 void spoton::slotShowStatisticsWindow(void)
 {
+  spoton_utilities::centerWidget(m_statisticsWindow, this);
   m_statisticsWindow->showNormal();
   m_statisticsWindow->activateWindow();
   m_statisticsWindow->raise();
-  spoton_utilities::centerWidget(m_statisticsWindow, this);
 }
 
 void spoton::slotStarBeamFragmented(bool state)

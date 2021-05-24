@@ -401,10 +401,10 @@ void spoton_smpwindow::show(spoton *parent)
 
   statusBar()->showMessage
     (tr("A total of %1 SMP objects are registered.").arg(m_smps.size()));
+  spoton_utilities::centerWidget(this, m_parent);
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, m_parent);
 }
 
 void spoton_smpwindow::showError(const QString &error)
