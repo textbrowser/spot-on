@@ -2094,10 +2094,10 @@ void spoton::slotShowPage(bool state)
 
 void spoton::slotShowRss(void)
 {
+  m_rss->center(this);
   m_rss->showNormal();
   m_rss->activateWindow();
   m_rss->raise();
-  m_rss->center(this);
 }
 
 void spoton::slotShowStatisticsWindow(void)

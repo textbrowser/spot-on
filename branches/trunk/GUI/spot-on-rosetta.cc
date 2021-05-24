@@ -618,9 +618,6 @@ void spoton_rosetta::show(spoton *parent)
       restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
 
   m_parent = parent;
-  showNormal();
-  activateWindow();
-  raise();
 
   if(m_parent)
     {
@@ -641,6 +638,9 @@ void spoton_rosetta::show(spoton *parent)
       move(X, Y);
     }
 
+  showNormal();
+  activateWindow();
+  raise();
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
