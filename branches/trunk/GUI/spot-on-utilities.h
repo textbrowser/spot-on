@@ -81,7 +81,7 @@ class spoton_utilities
 
     QWidgetList list = QApplication::topLevelWidgets();
 
-    for(int i = 0; (extraw == 0 || extrah == 0) && i < list.size(); ++i)
+    for(int i = 0; (extrah == 0 || extraw == 0) && i < list.size(); ++i)
       {
 	QWidget *current = list.at(i);
 
@@ -90,12 +90,12 @@ class spoton_utilities
 	    int frameh = current->geometry().y() - current->y();
 	    int framew = current->geometry().x() - current->x();
 
-	    extraw = qMax(extraw, framew);
 	    extrah = qMax(extrah, frameh);
+	    extraw = qMax(extraw, framew);
 	  }
       }
 
-    if(extraw == 0 || extrah == 0 || extraw >= 10 || extrah >= 40)
+    if(extrah == 0 || extrah >= 40 || extraw == 0 || extraw >= 10)
       {
 	extrah = 40;
 	extraw = 10;
