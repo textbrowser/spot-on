@@ -1112,10 +1112,15 @@ void spoton_rosetta::slotConvertDecrypt(void)
 #ifdef SPOTON_GPGME_ENABLED
   {
     QByteArray data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
+    const char begin[] = "-----BEGIN PGP MESSAGE-----";
+    const char end[] = "-----END PGP MESSAGE-----";
+    int index1 = data.indexOf(begin);
+    int index2 = data.indexOf(end);
 
-    if(data.endsWith("-----END PGP MESSAGE-----") &&
-       data.startsWith("-----BEGIN PGP MESSAGE-----"))
+    if(index1 >= 0 && index1 < index2)
       {
+	data = data.mid
+	  (index1, index2 - index1 + static_cast<int> (qstrlen(end)));
 	gpgme_check_version(0);
 
 	QColor signatureColor(240, 128, 128); // Light coral!
