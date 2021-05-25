@@ -85,7 +85,7 @@ class spoton_utilities
       {
 	QWidget *current = list.at(i);
 
-	if(current->isVisible())
+	if(current && current->isVisible())
 	  {
 	    int frameh = current->geometry().y() - current->y();
 	    int framew = current->geometry().x() - current->x();
