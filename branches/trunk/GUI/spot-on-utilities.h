@@ -56,7 +56,7 @@ class spoton_utilities
 #endif
 
     QPoint p(0, 0);
-    int extraw = 0, extrah = 0, scrn = 0;
+    int extrah = 0, extraw = 0, scrn = 0;
 
     if(parent)
       parent = parent->window();
