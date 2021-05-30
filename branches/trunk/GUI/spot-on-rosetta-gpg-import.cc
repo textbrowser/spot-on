@@ -313,8 +313,6 @@ void spoton_rosetta_gpg_import::slotImport(void)
 			       "provided keys are correct.");
 		    ok = false;
 		  }
-		else
-		  m_ui.public_keys_dump->setText(dump(publicKey));
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
 			      "(public_keys, public_keys_hash) VALUES (?, ?)");
@@ -360,6 +358,8 @@ void spoton_rosetta_gpg_import::slotImport(void)
     }
   else
     m_ui.public_keys->selectAll();
+
+  showCurrentDump();
 #endif
 }
 
