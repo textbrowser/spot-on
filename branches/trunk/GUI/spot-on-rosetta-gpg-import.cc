@@ -53,6 +53,10 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotRemoveGPGKeys(void)));
+  connect(m_ui.email_addresses,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotShowCurrentDump(int)));
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -201,6 +205,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+  QMap<QString, QByteArray> map;
   QString connectionName("");
 
   {
@@ -220,11 +225,20 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	    {
 	      QByteArray publicKey
 		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      QString email("");
 	      bool ok = true;
 
 	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
-	      m_ui.public_keys->setPlainText(publicKey);
-	      m_ui.public_keys_dump->setText(dump(publicKey));
+
+	      if(!(email = this->email(publicKey)).isEmpty())
+		map[email] = publicKey;
+
+	      if(m_ui.public_keys->toPlainText().isEmpty())
+		{
+		  m_ui.public_keys->setPlainText(publicKey);
+		  m_ui.public_keys_dump->setText(dump(publicKey));
+		}
+
 	      spoton_crypt::memzero(publicKey);
 	    }
 	else
@@ -237,6 +251,13 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  if(!map.isEmpty())
+    {
+      m_ui.email_addresses->addItems(map.keys());
+      m_ui.email_addresses->setCurrentIndex(0);
+    }
+
   QApplication::restoreOverrideCursor();
 #endif
 }
@@ -385,4 +406,9 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_rosetta_gpg_import::slotShowCurrentDump(int index)
+{
+  Q_UNUSED(index);
 }
