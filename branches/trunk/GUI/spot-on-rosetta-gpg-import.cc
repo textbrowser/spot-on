@@ -193,6 +193,11 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
       m_ui.email_addresses->addItem(tr("(Empty)"));
       return;
     }
+  else
+    {
+      m_ui.public_keys->clear();
+      m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+    }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -210,22 +215,23 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT public_keys FROM gpg") && query.next())
-	  {
-	    QByteArray publicKey
-	      (QByteArray::fromBase64(query.value(0).toByteArray()));
-	    bool ok = true;
+	if(query.exec("SELECT public_keys FROM gpg"))
+	  while(query.next())
+	    {
+	      QByteArray publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      bool ok = true;
 
-	    publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
-	    m_ui.public_keys->setPlainText(publicKey);
-	    m_ui.public_keys_dump->setText(dump(publicKey));
-	    spoton_crypt::memzero(publicKey);
-	  }
+	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
+	      m_ui.public_keys->setPlainText(publicKey);
+	      m_ui.public_keys_dump->setText(dump(publicKey));
+	      spoton_crypt::memzero(publicKey);
+	    }
 	else
-	  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
+	  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
       }
     else
-      m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
+      m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 
     db.close();
   }
@@ -244,7 +250,7 @@ void spoton_rosetta_gpg_import::showNormal(void)
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
   m_ui.public_keys->clear();
-  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
+  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 }
 
 void spoton_rosetta_gpg_import::slotImport(void)
@@ -372,7 +378,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 	query.exec("PRAGMA secure_delete = ON");
 
 	if(query.exec("DELETE FROM gpg"))
-	  m_ui.public_keys_dump->setText(tr("Empty GPG Dump"));
+	  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
       }
 
     db.close();
