@@ -188,7 +188,11 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
 
   if(!crypt)
-    return;
+    {
+      m_ui.email_addresses->clear();
+      m_ui.email_addresses->addItem(tr("(Empty)"));
+      return;
+    }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -285,16 +289,6 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		  }
 		else
 		  m_ui.public_keys_dump->setText(dump(publicKey));
-
-		if(ok)
-		  {
-		    /*
-		    ** Remove all other entries.
-		    */
-
-		    query.exec("PRAGMA secure_delete = ON");
-		    query.exec("DELETE FROM gpg");
-		  }
 
 		query.prepare("INSERT OR REPLACE INTO gpg "
 			      "(public_keys, public_keys_hash) VALUES (?, ?)");

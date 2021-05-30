@@ -23,6 +23,30 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QComboBox" name="email_addresses">
+           <property name="sizeAdjustPolicy">
+            <enum>QComboBox::AdjustToContents</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
         <widget class="QLabel" name="label_2">
          <property name="text">
           <string>gpg --armor --export you@you.org</string>
@@ -92,7 +116,7 @@
      <x>0</x>
      <y>0</y>
      <width>600</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -132,6 +156,7 @@
   </action>
  </widget>
  <tabstops>
+  <tabstop>email_addresses</tabstop>
   <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
  </tabstops>
