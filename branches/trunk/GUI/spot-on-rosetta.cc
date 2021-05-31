@@ -1752,6 +1752,14 @@ void spoton_rosetta::slotCopyEncrypted(void)
 
 void spoton_rosetta::slotCopyMyGPGKeys(void)
 {
+  QClipboard *clipboard = QApplication::clipboard();
+
+  if(!clipboard)
+    return;
+
+  repaint();
+  QApplication::processEvents();
+
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!eCrypt)
@@ -1759,6 +1767,7 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+  QByteArray bytes;
   QString connectionName("");
 
   {
@@ -1774,28 +1783,25 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_keys FROM gpg");
 
-	if(query.exec() && query.next())
-	  {
-	    QByteArray publicKey;
+	if(query.exec())
+	  while(query.next())
+	    {
+	      QByteArray publicKey = eCrypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
 
-	    publicKey = eCrypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).toByteArray()), 0);
-
-	    QClipboard *clipboard = QApplication::clipboard();
-
-	    if(clipboard)
-	      {
-		repaint();
-		QApplication::processEvents();
-		clipboard->setText(publicKey);
-	      }
-	  }
+	      if(!publicKey.isEmpty())
+		{
+		  bytes.append(publicKey);
+		  bytes.append("\r\n");
+		}
+	    }
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  clipboard->setText(bytes.trimmed());
   QApplication::restoreOverrideCursor();
 }
 
