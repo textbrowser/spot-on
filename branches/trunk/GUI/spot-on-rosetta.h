@@ -79,6 +79,7 @@ class spoton_rosetta: public QMainWindow
 #endif
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
+  void populateGPGEmailAddresses(void);
   void resizeEvent(QResizeEvent *event);
   void sortContacts(void);
   void toDesktop(void) const;
@@ -101,6 +102,7 @@ class spoton_rosetta: public QMainWindow
   void slotDelete(void);
   void slotImportGPGKeys(void);
   void slotParticipantAdded(const QString &type);
+  void slotPopulateGPGEmailAddresses(void);
   void slotRemoveGPGKeys(void);
   void slotRename(void);
   void slotSaveName(void);

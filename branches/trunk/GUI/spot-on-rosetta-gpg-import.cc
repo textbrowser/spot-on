@@ -254,6 +254,8 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
   if(m_ui.email_addresses->count() > 0)
     m_ui.email_addresses->setCurrentIndex(0);
+  else
+    m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
 
   QApplication::restoreOverrideCursor();
 #endif
@@ -267,6 +269,8 @@ void spoton_rosetta_gpg_import::showNormal(void)
 
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
+  m_ui.email_addresses->clear();
+  m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 }
@@ -403,6 +407,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  emit gpgKeysRemoved();
 }
 
 void spoton_rosetta_gpg_import::slotShowCurrentDump(int index)

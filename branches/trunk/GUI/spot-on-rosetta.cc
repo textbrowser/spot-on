@@ -638,6 +638,13 @@ void spoton_rosetta::populateContacts(void)
       ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
     }
 
+  populateGPGEmailAddresses();
+  QApplication::restoreOverrideCursor();
+  slotContactsChanged(0);
+}
+
+void spoton_rosetta::populateGPGEmailAddresses(void)
+{
   ui.gpg_email_addresses->clear();
 
   QMapIterator<QString, QByteArray> it(gpgEmailAddresses());
@@ -652,9 +659,6 @@ void spoton_rosetta::populateContacts(void)
     ui.gpg_email_addresses->setCurrentIndex(0);
   else
     ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
-
-  QApplication::restoreOverrideCursor();
-  slotContactsChanged(0);
 }
 
 void spoton_rosetta::resizeEvent(QResizeEvent *event)
@@ -2060,6 +2064,10 @@ void spoton_rosetta::slotImportGPGKeys(void)
   if(!m_gpgImport)
     {
       m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
+      connect(m_gpgImport,
+	      SIGNAL(gpgKeysRemoved(void)),
+	      this,
+	      SLOT(slotPopulateGPGEmailAddresses(void)));
       connect(this,
 	      SIGNAL(gpgKeysRemoved(void)),
 	      m_gpgImport,
@@ -2077,6 +2085,11 @@ void spoton_rosetta::slotParticipantAdded(const QString &type)
 {
   if(type == "rosetta")
     populateContacts();
+}
+
+void spoton_rosetta::slotPopulateGPGEmailAddresses(void)
+{
+  populateGPGEmailAddresses();
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
@@ -2120,6 +2133,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
     db.close();
   }
 
+  populateGPGEmailAddresses();
   QSqlDatabase::removeDatabase(connectionName);
 }
 
