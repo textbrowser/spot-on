@@ -1162,8 +1162,13 @@ void spoton_rosetta::slotContactsChanged(int index)
 					 currentIndex()).toByteArray()),
 	 true,
 	 eCrypt);
-      ui.dump->setText(spoton_rosetta_gpg_import::dump(publicKey));
-      ui.dump->setVisible(!ui.dump->text().isEmpty());
+      ui.dump->setText(spoton_rosetta_gpg_import::dump(publicKey).trimmed());
+
+      if(tr("GPG Empty Data") == ui.dump->text() || ui.dump->text().isEmpty())
+	ui.dump->setVisible(false);
+      else
+	ui.dump->setVisible(true);
+
       ui.gpg_email_addresses->setCurrentIndex(0);
       ui.gpg_email_addresses->setEnabled(true);
     }

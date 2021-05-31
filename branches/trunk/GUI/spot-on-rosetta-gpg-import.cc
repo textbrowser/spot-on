@@ -45,6 +45,7 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 {
   m_spoton = spoton;
   m_ui.setupUi(this);
+  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),
 	  m_ui.public_keys,
@@ -72,11 +73,11 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(data.trimmed().isEmpty())
-    return "";
+    return tr("Empty GPG Data");
 
   gpgme_check_version(0);
 
-  QString dump("");
+  QString dump(tr("Empty GPG Data"));
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
@@ -134,7 +135,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
   return dump;
 #else
   Q_UNUSED(data);
-  return "";
+  return tr("Empty GPG Data");
 #endif
 }
 
