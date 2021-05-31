@@ -59,7 +59,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("The GnuPG Made Easy library is not available."));
   ui.action_Remove_GPG_Keys->setEnabled(false);
   ui.action_Remove_GPG_Keys->setToolTip(ui.action_Import_GPG_Keys->toolTip());
-  ui.gpg_email_addresses->addItem("Empty");
+  ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
   ui.gpg_email_addresses->setEnabled(false);
   ui.gpg_email_addresses->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
@@ -1094,6 +1094,7 @@ void spoton_rosetta::slotClear(void)
     {
       ui.cipher->setCurrentIndex(0);
       ui.desktop->setChecked(false);
+      ui.gpg_email_addresses->setCurrentIndex(0);
       ui.hash->setCurrentIndex(0);
       ui.inputEncrypt->clear();
       ui.sign->setChecked(true);
@@ -1134,8 +1135,6 @@ void spoton_rosetta::slotContactsChanged(int index)
       ui.convertEncrypt->setEnabled(false);
       ui.deleteContact->setEnabled(false);
       ui.dump->setVisible(false);
-      ui.gpg_email_addresses->setCurrentIndex(0);
-      ui.gpg_email_addresses->setEnabled(false);
       ui.rename->setEnabled(false);
       ui.sign->setChecked(true);
       ui.sign->setEnabled(false);
@@ -1559,31 +1558,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
 				toByteArray()));
       QByteArray receiver
 	(spoton_misc::publicKeyFromHash(publicKeyHash, true, eCrypt));
-      QByteArray sender;
-      QString connectionName("");
+      QByteArray sender(ui.gpg_email_addresses->currentData().toByteArray());
 
-      {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.setForwardOnly(true);
-	    query.prepare("SELECT public_keys FROM gpg");
-
-	    if(query.exec() && query.next())
-	      sender = eCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
       ui.outputEncrypt->setText(gpgEncrypt(receiver, sender));
       ui.outputEncrypt->selectAll();
       toDesktop();
