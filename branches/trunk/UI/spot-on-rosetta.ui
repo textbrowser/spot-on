@@ -107,8 +107,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>977</width>
-         <height>497</height>
+         <width>1030</width>
+         <height>520</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -452,6 +452,30 @@
                      <number>5</number>
                     </property>
                     <item>
+                     <layout class="QHBoxLayout" name="horizontalLayout_13">
+                      <item>
+                       <widget class="QComboBox" name="email_addresses">
+                        <property name="sizeAdjustPolicy">
+                         <enum>QComboBox::AdjustToContents</enum>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_6">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_2">
                       <property name="spacing">
                        <number>5</number>
@@ -764,7 +788,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>23</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
