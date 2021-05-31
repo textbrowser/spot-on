@@ -189,18 +189,16 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 void spoton_rosetta_gpg_import::showCurrentDump(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  m_ui.email_addresses->clear();
+  m_ui.public_keys->clear();
+  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+
   spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
 
   if(!crypt)
     {
-      m_ui.email_addresses->clear();
       m_ui.email_addresses->addItem(tr("(Empty)"));
       return;
-    }
-  else
-    {
-      m_ui.public_keys->clear();
-      m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
