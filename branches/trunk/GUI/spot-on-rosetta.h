@@ -68,6 +68,7 @@ class spoton_rosetta: public QMainWindow
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(const QByteArray &receiver,
 			const QByteArray &sender) const;
+  QMap<QString, QByteArray> gpgEmailAddresses(void) const;
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;
   static gpgme_error_t gpgPassphrase(void *hook,

@@ -59,6 +59,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("The GnuPG Made Easy library is not available."));
   ui.action_Remove_GPG_Keys->setEnabled(false);
   ui.action_Remove_GPG_Keys->setToolTip(ui.action_Import_GPG_Keys->toolTip());
+  ui.gpg_email_addresses->addItem("Empty");
+  ui.gpg_email_addresses->setEnabled(false);
+  ui.gpg_email_addresses->setToolTip
+    (tr("The GnuPG Made Easy library is not available."));
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
@@ -432,6 +436,53 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 #endif
 }
 
+QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
+{
+  QMap<QString, QByteArray> map;
+  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+
+  if(!crypt)
+    return map;
+
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT public_keys FROM gpg"))
+	  while(query.next())
+	    {
+	      QByteArray publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      QString email("");
+	      bool ok = true;
+
+	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
+
+	      if(!(email =
+		   spoton_rosetta_gpg_import::email(publicKey)).isEmpty())
+		map[email] = publicKey;
+
+	      spoton_crypt::memzero(publicKey);
+	    }
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return map;
+}
+
 #ifdef SPOTON_GPGME_ENABLED
 gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 					    const char *uid_hint,
@@ -586,6 +637,21 @@ void spoton_rosetta::populateContacts(void)
       ui.contacts->addItem("Empty"); // Please do not translate Empty.
       ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
     }
+
+  ui.gpg_email_addresses->clear();
+
+  QMapIterator<QString, QByteArray> it(gpgEmailAddresses());
+
+  while(it.hasNext())
+    {
+      it.next();
+      ui.gpg_email_addresses->addItem(it.key(), it.value());
+    }
+
+  if(ui.gpg_email_addresses->count() > 0)
+    ui.gpg_email_addresses->setCurrentIndex(0);
+  else
+    ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
 
   QApplication::restoreOverrideCursor();
   slotContactsChanged(0);

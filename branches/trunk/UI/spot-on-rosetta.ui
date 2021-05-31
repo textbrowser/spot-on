@@ -454,7 +454,17 @@
                     <item>
                      <layout class="QHBoxLayout" name="horizontalLayout_13">
                       <item>
-                       <widget class="QComboBox" name="email_addresses">
+                       <widget class="QLabel" name="label_6">
+                        <property name="text">
+                         <string>&amp;GPG E-Mail Address</string>
+                        </property>
+                        <property name="buddy">
+                         <cstring>gpg_email_addresses</cstring>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QComboBox" name="gpg_email_addresses">
                         <property name="sizeAdjustPolicy">
                          <enum>QComboBox::AdjustToContents</enum>
                         </property>
@@ -877,6 +887,7 @@
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>
   <tabstop>rename</tabstop>
+  <tabstop>gpg_email_addresses</tabstop>
   <tabstop>cipher</tabstop>
   <tabstop>hash</tabstop>
   <tabstop>sign</tabstop>
