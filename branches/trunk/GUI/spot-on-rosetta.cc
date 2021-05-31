@@ -1130,6 +1130,8 @@ void spoton_rosetta::slotContactsChanged(int index)
       ui.convertEncrypt->setEnabled(false);
       ui.deleteContact->setEnabled(false);
       ui.dump->setVisible(false);
+      ui.gpg_email_addresses->setCurrentIndex(0);
+      ui.gpg_email_addresses->setEnabled(false);
       ui.rename->setEnabled(false);
       ui.sign->setChecked(true);
       ui.sign->setEnabled(false);
@@ -1158,11 +1160,15 @@ void spoton_rosetta::slotContactsChanged(int index)
 	 eCrypt);
       ui.dump->setText(spoton_rosetta_gpg_import::dump(publicKey));
       ui.dump->setVisible(!ui.dump->text().isEmpty());
+      ui.gpg_email_addresses->setCurrentIndex(0);
+      ui.gpg_email_addresses->setEnabled(true);
     }
   else
     {
       ui.dump->setText("");
       ui.dump->setVisible(false);
+      ui.gpg_email_addresses->setCurrentIndex(0);
+      ui.gpg_email_addresses->setEnabled(false);
     }
 
   ui.hash->setCurrentIndex(0);
@@ -2333,6 +2339,6 @@ void spoton_rosetta::toDesktop(void) const
      ".asc");
 
   file.setFileName(fileName);
-  file.open(QIODevice::WriteOnly);
+  file.open(QIODevice::Truncate | QIODevice::WriteOnly);
   file.write(ui.outputEncrypt->toPlainText().toUtf8());
 }
