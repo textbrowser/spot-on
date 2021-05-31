@@ -715,7 +715,7 @@ void spoton_rosetta::slotAddContact(void)
 	    QMessageBox::critical
 	      (this,
 	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	       "GPGME error. Cannot add the key block to the keyring.");
+	       tr("GPGME error. Cannot add the key block to the keyring."));
 	    QApplication::processEvents();
 	    return;
 	  }
@@ -820,8 +820,7 @@ void spoton_rosetta::slotAddContact(void)
 
   if(key.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Empty key(s). Really?"));
       QApplication::processEvents();
       return;

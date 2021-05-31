@@ -197,7 +197,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
   if(!crypt)
     {
-      m_ui.email_addresses->addItem(tr("(Empty)"));
+      m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
       return;
     }
 
