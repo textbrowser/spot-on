@@ -359,7 +359,10 @@ void spoton_rosetta_gpg_import::slotImport(void)
       QApplication::processEvents();
     }
   else
-    m_ui.public_keys->selectAll();
+    {
+      m_ui.public_keys->selectAll();
+      emit gpgKeysImported();
+    }
 
   showCurrentDump();
 #endif
@@ -386,6 +389,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
   QApplication::processEvents();
 
   QString connectionName("");
+  bool ok = false;
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -400,14 +404,22 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 	query.exec("PRAGMA secure_delete = ON");
 
 	if(query.exec("DELETE FROM gpg"))
-	  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+	  ok = true;
       }
 
     db.close();
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  emit gpgKeysRemoved();
+
+  if(ok)
+    {
+      m_ui.email_addresses->clear();
+      m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
+      m_ui.public_keys->clear();
+      m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+      emit gpgKeysRemoved();
+    }
 }
 
 void spoton_rosetta_gpg_import::slotShowCurrentDump(int index)

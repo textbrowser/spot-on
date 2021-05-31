@@ -2065,6 +2065,10 @@ void spoton_rosetta::slotImportGPGKeys(void)
     {
       m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
       connect(m_gpgImport,
+	      SIGNAL(gpgKeysImported(void)),
+	      this,
+	      SLOT(slotPopulateGPGEmailAddresses(void)));
+      connect(m_gpgImport,
 	      SIGNAL(gpgKeysRemoved(void)),
 	      this,
 	      SLOT(slotPopulateGPGEmailAddresses(void)));

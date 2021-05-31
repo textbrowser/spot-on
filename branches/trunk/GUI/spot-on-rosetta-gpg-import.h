@@ -58,6 +58,7 @@ class spoton_rosetta_gpg_import: public QMainWindow
   void slotShowCurrentDump(int index);
 
  signals:
+  void gpgKeysImported(void);
   void gpgKeysRemoved(void);
 };
 
