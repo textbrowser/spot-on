@@ -369,6 +369,10 @@ void spoton_rosetta_gpg_import::slotImport(void)
 #endif
 }
 
+void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
+{
+}
+
 void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 {
   QMessageBox mb(this);
