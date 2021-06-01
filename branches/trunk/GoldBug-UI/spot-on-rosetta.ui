@@ -133,7 +133,7 @@ color: rgb(255, 255, 255);
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>-292</x>
+         <x>0</x>
          <y>0</y>
          <width>1030</width>
          <height>520</height>
@@ -495,6 +495,9 @@ color: rgb(255, 255, 255);
                        <widget class="QComboBox" name="gpg_email_addresses">
                         <property name="sizeAdjustPolicy">
                          <enum>QComboBox::AdjustToContents</enum>
+                        </property>
+                        <property name="minimumContentsLength">
+                         <number>15</number>
                         </property>
                        </widget>
                       </item>

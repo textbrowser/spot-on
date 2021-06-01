@@ -29,6 +29,16 @@
            <property name="sizeAdjustPolicy">
             <enum>QComboBox::AdjustToContents</enum>
            </property>
+           <property name="minimumContentsLength">
+            <number>15</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="deleteContact">
+           <property name="text">
+            <string>Remove</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -157,6 +167,7 @@
  </widget>
  <tabstops>
   <tabstop>email_addresses</tabstop>
+  <tabstop>deleteContact</tabstop>
   <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
  </tabstops>
