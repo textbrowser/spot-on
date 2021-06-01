@@ -1169,7 +1169,9 @@ void spoton_rosetta::slotContactsChanged(int index)
 	ui.dump->setVisible(true);
 
       ui.gpg_email_addresses->setCurrentIndex(0);
+#ifdef SPOTON_GPGME_ENABLED
       ui.gpg_email_addresses->setEnabled(true);
+#endif
     }
   else
     {
