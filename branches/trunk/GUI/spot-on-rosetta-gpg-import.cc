@@ -62,6 +62,10 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotImport(void)));
+  connect(m_ui.deleteContact,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRemoveGPGKey(void)));
   setWindowTitle(tr("%1: Rosetta GPG Import").arg(SPOTON_APPLICATION_NAME));
 }
 
@@ -371,6 +375,93 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
 {
+  QByteArray publicKey(m_ui.email_addresses->currentData().toByteArray());
+
+  if(publicKey.isEmpty())
+    return;
+
+  spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
+
+  if(!crypt)
+    {
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
+      QApplication::processEvents();
+      return;
+    }
+
+  QMessageBox mb(this);
+  QString email(this->email(publicKey));
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+
+  if(!email.isEmpty())
+    mb.setText
+      (tr("Are you sure that you wish to remove the GPG keys "
+	  "for %1? The keys will not be removed from the GPG ring.").
+       arg(email));
+  else
+    mb.setText
+      (tr("Are you sure that you wish to remove the GPG keys "
+	  "for the selected e-mail address? The keys will not be removed "
+	  "from the GPG ring."));
+
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::ApplicationModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
+
+  QString connectionName("");
+  bool ok = false;
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare("DELETE FROM gpg WHERE public_keys_hash = ?");
+	query.addBindValue
+	  (crypt->keyedHash(spoton_crypt::fingerprint(publicKey), &ok).
+	   toBase64());
+
+	if(query.exec())
+	  ok = true;
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+
+  if(ok)
+    {
+      m_ui.email_addresses->removeItem(m_ui.email_addresses->currentIndex());
+
+      if(m_ui.email_addresses->count() == 0)
+	{
+	  m_ui.email_addresses->addItem
+	    ("Empty"); // Please do not translate Empty.
+	  m_ui.public_keys->clear();
+	  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+	}
+
+      emit gpgKeysRemoved();
+    }
 }
 
 void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
