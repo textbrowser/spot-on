@@ -270,6 +270,7 @@ Completed Items
 198.   Remove libspoton from project files.
 199.   Provide a total silent mode.
 200.   libgcrypt from https://repo.msys2.org/mingw/i686/.
+201.   GPG key rings allow for multiple private keys.
 
 Ignored Items
 
@@ -317,4 +318,3 @@ Remaining Items
 5.     Cryptographic discovery.
 6.     Rosetta spell checker.
 7.     Future proof.
-8.     GPG key rings allow for multiple private keys.
