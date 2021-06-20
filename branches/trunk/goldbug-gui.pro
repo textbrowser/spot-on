@@ -48,7 +48,6 @@ QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=native \
                           -pedantic \
                           -pie \
                           -std=c++11

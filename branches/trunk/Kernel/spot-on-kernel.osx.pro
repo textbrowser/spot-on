@@ -45,7 +45,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
-                          -mtune=generic \
                           -pedantic \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
