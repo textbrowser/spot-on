@@ -1092,6 +1092,27 @@ void spoton_rosetta::slotClear(void)
     ui.newContact->clear();
   else if(sender() == ui.clearInput)
     {
+      if(!ui.inputEncrypt->toPlainText().trimmed().isEmpty())
+	{
+	  QMessageBox mb(this);
+
+	  mb.setIcon(QMessageBox::Question);
+	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+	  mb.setText
+	    (tr("Are you sure that you wish to clear the text?"));
+
+	  mb.setWindowIcon(windowIcon());
+	  mb.setWindowModality(Qt::ApplicationModal);
+	  mb.setWindowTitle
+	    (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+	  if(mb.exec() != QMessageBox::Yes)
+	    {
+	      QApplication::processEvents();
+	      return;
+	    }
+	}
+
       ui.cipher->setCurrentIndex(0);
       ui.desktop->setChecked(false);
       ui.gpg_email_addresses->setCurrentIndex(0);
