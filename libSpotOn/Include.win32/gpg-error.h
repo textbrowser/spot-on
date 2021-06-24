@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.41-unknown"
-#define GPGRT_VERSION     "1.41-unknown"
+#define GPG_ERROR_VERSION "1.42-unknown"
+#define GPGRT_VERSION     "1.42-unknown"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012900
-#define GPGRT_VERSION_NUMBER     0x012900
+#define GPG_ERROR_VERSION_NUMBER 0x012a00
+#define GPGRT_VERSION_NUMBER     0x012a00
 
 
 #ifdef __GNUC__
@@ -122,6 +122,7 @@ typedef enum
     GPG_ERR_SOURCE_KLEO = 13,
     GPG_ERR_SOURCE_G13 = 14,
     GPG_ERR_SOURCE_ASSUAN = 15,
+    GPG_ERR_SOURCE_TPM2D = 16,
     GPG_ERR_SOURCE_TLS = 17,
     GPG_ERR_SOURCE_ANY = 31,
     GPG_ERR_SOURCE_USER_1 = 32,
