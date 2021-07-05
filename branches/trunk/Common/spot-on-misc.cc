@@ -1256,7 +1256,7 @@ QString spoton_misc::formattedSize(const qint64 size)
 
 QString spoton_misc::homePath(void)
 {
-  QByteArray homepath(qgetenv("SPOTON_HOME"));
+  QByteArray homepath(qgetenv("SPOTON_HOME").trimmed());
 
   if(homepath.isEmpty())
 #if defined(Q_OS_WIN)
