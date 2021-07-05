@@ -43,8 +43,6 @@ extern "C"
 
 static const size_t Nr = 72;
 static const size_t Nw = 4;
-static const uint8_t *Pi = 0;
-static const uint8_t *RPi = 0;
 static const uint8_t Pi_4[4] = {0, 3, 2, 1};
 static const uint8_t RPi_4[4] = {0, 3, 2, 1};
 static const uint8_t R_4[8][2] = {{14, 16},
@@ -191,9 +189,6 @@ static void threefish_decrypt(char *D,
       return;
     }
 
-  if(!RPi)
-    RPi = RPi_4;
-
   threefish_decrypt_implementation(D, K, T, C, C_size, block_size, ok);
 }
 
@@ -291,10 +286,10 @@ static void threefish_decrypt_implementation(char *D,
 
   for(size_t d = Nr - 1;; d--)
     {
-      f[0] = v[RPi[0]];
-      f[1] = v[RPi[1]];
-      f[2] = v[RPi[2]];
-      f[3] = v[RPi[3]];
+      f[0] = v[RPi_4[0]];
+      f[1] = v[RPi_4[1]];
+      f[2] = v[RPi_4[2]];
+      f[3] = v[RPi_4[3]];
       mix_inverse(f[0], f[1], d, 0, &x0, &x1, block_size);
       v[0] = x0;
       v[1] = x1;
@@ -361,9 +356,6 @@ static void threefish_encrypt(char *E,
 
       return;
     }
-
-  if(!Pi)
-    Pi = Pi_4;
 
   threefish_encrypt_implementation(E, K, T, P, P_size, block_size, ok);
 }
@@ -471,10 +463,10 @@ static void threefish_encrypt_implementation(char *E,
       mix(v[2], v[3], d, 1, &y0, &y1, block_size);
       f[2] = y0;
       f[3] = y1;
-      v[0] = f[Pi[0]];
-      v[1] = f[Pi[1]];
-      v[2] = f[Pi[2]];
-      v[3] = f[Pi[3]];
+      v[0] = f[Pi_4[0]];
+      v[1] = f[Pi_4[1]];
+      v[2] = f[Pi_4[2]];
+      v[3] = f[Pi_4[3]];
       memset(f, 0, sizeof(*f) * static_cast<size_t> (Nw));
     }
 
