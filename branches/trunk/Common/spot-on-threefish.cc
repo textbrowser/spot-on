@@ -321,7 +321,7 @@ static void threefish_decrypt_implementation(char *D,
   if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
 
-  memset(t, 0, sizeof(t));
+  spoton_crypt::memset_s(t, 0, sizeof(t));
 
   if(Q_LIKELY(v))
     memset(v, 0, sizeof(*v) * static_cast<size_t> (Nw));
@@ -485,7 +485,7 @@ static void threefish_encrypt_implementation(char *E,
   if(Q_LIKELY(k))
     memset(k, 0, sizeof(*k) * static_cast<size_t> (Nw + 1));
 
-  memset(t, 0, sizeof(t));
+  spoton_crypt::memset_s(t, 0, sizeof(t));
 
   if(Q_LIKELY(v))
     memset(v, 0, sizeof(*v) * static_cast<size_t> (Nw));

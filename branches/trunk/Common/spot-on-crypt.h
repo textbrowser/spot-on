@@ -169,6 +169,18 @@ class spoton_crypt
 			      QString &error);
   static void init(const int secureMemorySize, const bool cbc_cts_enabled);
   static void memcmp_test(void);
+
+  static void memset_s(void *s, int c, size_t n)
+  {
+    if(!s)
+      return;
+
+    volatile auto v = static_cast<unsigned char *> (s);
+
+    while(n--)
+      *v++ = (unsigned char) c;
+  }
+
   static void memzero(QByteArray &bytes);
   static void memzero(QString &str);
   static void purgeDatabases(void);

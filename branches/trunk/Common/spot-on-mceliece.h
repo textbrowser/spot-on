@@ -52,7 +52,7 @@ class spoton_mceliece_private_key
   enum Conversions
   {
     FOA = 0, // Fujisaki-Okamoto Model A
-    FOB,     // Fujisaki-Okamoto Model A
+    FOB,     // Fujisaki-Okamoto Model B
     PCA,     // Pointcheval Model A
     ZZZ
   };
