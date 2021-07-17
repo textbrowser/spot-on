@@ -243,7 +243,7 @@ $(function() {
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160; </div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> memset_s(<span class="keywordtype">void</span> *s, <span class="keywordtype">int</span> c, <span class="keywordtype">size_t</span> n)</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  {</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordflow">if</span>(!s)</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    <span class="keywordflow">if</span>(!n || !s)</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;      <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160; </div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keyword">volatile</span> <span class="keyword">auto</span> v = <span class="keyword">static_cast&lt;</span><span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> *<span class="keyword">&gt;</span> (s);</div>

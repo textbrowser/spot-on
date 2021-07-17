@@ -172,7 +172,7 @@ class spoton_crypt
 
   static void memset_s(void *s, int c, size_t n)
   {
-    if(!s)
+    if(!n || !s)
       return;
 
     volatile auto v = static_cast<unsigned char *> (s);
