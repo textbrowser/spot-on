@@ -1,0 +1,2 @@
+For server-less TCP connections over a managed switch, consider
+disabling TCP-Blat attacks.
