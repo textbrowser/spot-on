@@ -632,6 +632,7 @@ spoton_neighbor::spoton_neighbor
  const QByteArray &privateApplicationCredentials,
  const int silenceTime,
  const QString &socketOptions,
+ const QString &bindIpAddress,
  QObject *parent):QThread(parent)
 {
   Q_UNUSED(priority);
@@ -641,6 +642,7 @@ spoton_neighbor::spoton_neighbor
   m_accountPassword = accountPassword;
   m_address = ipAddress.trimmed();
   m_allowExceptions = allowExceptions;
+  m_bindIpAddress = bindIpAddress.trimmed();
   m_bytesDiscardedOnWrite = 0;
   m_bytesRead = 0;
   m_bytesWritten = 0;
@@ -1097,6 +1099,10 @@ spoton_neighbor::spoton_neighbor
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotLifetimeExpired(void)));
+  connect(&m_specialPeerTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotSpecialTimerTimeout(void)));
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1110,6 +1116,18 @@ spoton_neighbor::spoton_neighbor
     (spoton_kernel::
      setting("kernel/server_account_verification_window_msecs",
 	     15000).toInt());
+
+  if(!m_bindIpAddress.isEmpty())
+    if(m_tcpSocket)
+      {
+	m_tcpSocket->bind
+	  (QHostAddress(m_bindIpAddress),
+	   m_port,
+	   QAbstractSocket::ReuseAddressHint | QAbstractSocket::ShareAddress);
+
+	if(m_tcpSocket->state() & QAbstractSocket::BoundState)
+	  m_specialPeerTimer.start(1);
+      }
 
   if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() == 30)
     m_externalAddressDiscovererTimer.setInterval(30000);
@@ -1140,6 +1158,7 @@ spoton_neighbor::~spoton_neighbor()
   m_externalAddressDiscovererTimer.stop();
   m_keepAliveTimer.stop();
   m_lifetime.stop();
+  m_specialPeerTimer.stop();
   m_timer.stop();
 
   if(m_id != -1)
@@ -1707,7 +1726,16 @@ void spoton_neighbor::slotEncrypted(void)
 
 void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 {
-  if(error == QAbstractSocket::DatagramTooLargeError ||
+  if(error == QAbstractSocket::ConnectionRefusedError)
+    {
+      if(!m_bindIpAddress.isEmpty())
+	/*
+	** Server-less!
+	*/
+
+	return;
+    }
+  else if(error == QAbstractSocket::DatagramTooLargeError ||
      error == QAbstractSocket::TemporaryError)
     return;
   else if(error == QAbstractSocket::SslHandshakeFailedError)
@@ -3026,14 +3054,17 @@ void spoton_neighbor::slotTimeout(void)
 	  }
 	else if(m_tcpSocket)
 	  {
-	    if(m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
+	    if(m_bindIpAddress.isEmpty())
 	      {
-		saveStatus("connecting");
+		if(m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
+		  {
+		    saveStatus("connecting");
 
-		if(m_useSsl)
-		  m_tcpSocket->connectToHostEncrypted(m_address, m_port);
-		else
-		  m_tcpSocket->connectToHost(m_address, m_port);
+		    if(m_useSsl)
+		      m_tcpSocket->connectToHostEncrypted(m_address, m_port);
+		    else
+		      m_tcpSocket->connectToHost(m_address, m_port);
+		  }
 	      }
 	  }
 	else if(m_udpSocket)

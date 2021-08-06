@@ -5210,13 +5210,15 @@ void spoton_misc::prepareDatabases(void)
 		   "silence_time INTEGER NOT NULL DEFAULT 90 "
 		   "CHECK (silence_time >= 0 AND silence_time <= %6), "
 		   "buffered_content INTEGER NOT NULL DEFAULT 0 "
-		   "CHECK (buffered_content >= 0))").
+		   "CHECK (buffered_content >= 0), "
+		   "bind_ip_address TEXT)").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(999999999));
+	query.exec("ALTER TABLE neighbors ADD bind_ip_address TEXT");
       }
 
     db.close();

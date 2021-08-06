@@ -4859,10 +4859,11 @@ void spoton::slotAddNeighbor(void)
 		      "account_password, "
 		      "transport, "
 		      "orientation, "
-		      "ssl_control_string) "
+		      "ssl_control_string, "
+		      "bind_ip_address) "
 		      "VALUES "
 		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
-		      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+		      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 	query.bindValue(0, QVariant(QVariant::String));
 	query.bindValue(1, QVariant(QVariant::String));
@@ -5103,6 +5104,10 @@ void spoton::slotAddNeighbor(void)
 #endif
 
 	query.bindValue(27, sslCS);
+	query.bindValue
+	  (28,
+	   crypt->encryptedThenHashed(m_ui.bind_ip->text().
+				      trimmed().toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();

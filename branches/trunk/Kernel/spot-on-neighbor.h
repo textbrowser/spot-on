@@ -214,6 +214,7 @@ class spoton_neighbor: public QThread
 		  const QByteArray &privateApplicationCredentials,
 		  const int silenceTime,
 		  const QString &socketOptions,
+		  const QString &bindIpAddress,
 		  QObject *parent);
 
   /*
@@ -329,6 +330,7 @@ class spoton_neighbor: public QThread
   QSslConfiguration m_udpSslConfiguration;
 #endif
   QString m_address;
+  QString m_bindIpAddress;
   QString m_echoMode;
   QString m_ipAddress;
   QString m_motd;
@@ -344,6 +346,7 @@ class spoton_neighbor: public QThread
   QTimer m_externalAddressDiscovererTimer;
   QTimer m_keepAliveTimer;
   QTimer m_lifetime;
+  QTimer m_specialPeerTimer; // Server-less.
   QTimer m_timer;
   QUuid m_receivedUuid;
   bool m_allowExceptions;
@@ -548,6 +551,7 @@ class spoton_neighbor: public QThread
   void slotSendMessage(const QByteArray &data,
 		       const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
+  void slotSpecialTimerTimeout(void);
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
   void slotTimeout(void);

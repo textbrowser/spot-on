@@ -27,6 +27,7 @@ Summary of Spot-On
 <li>Native virtual keyboard.</li>
 <li>Natively compiled on ARM, Alpha, PowerPC, Sparc64, X86, X86_64.</li>
 <li>Optional SSL/TLS.</li>
+<li>P2P TCP server-less (without accept()) connections. SSL/TLS not supported.</li>
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
 <li>PowerPC.</li>

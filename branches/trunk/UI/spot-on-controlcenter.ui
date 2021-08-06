@@ -90,8 +90,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>592</height>
+             <width>776</width>
+             <height>605</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -521,8 +521,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>762</width>
-                <height>582</height>
+                <width>419</width>
+                <height>464</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -990,8 +990,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1075</width>
-             <height>679</height>
+             <width>1130</width>
+             <height>602</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2334,8 +2334,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>592</height>
+             <width>686</width>
+             <height>360</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3053,8 +3053,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>327</width>
-                     <height>1520</height>
+                     <width>363</width>
+                     <height>1422</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3621,8 +3621,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>592</height>
+             <width>776</width>
+             <height>605</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4026,8 +4026,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>735</width>
-                  <height>603</height>
+                  <width>744</width>
+                  <height>562</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4083,33 +4083,30 @@
                           <property name="spacing">
                            <number>5</number>
                           </property>
-                          <item row="0" column="1">
-                           <widget class="QLineEdit" name="neighborIP">
-                            <property name="placeholderText">
-                             <string>Neighbor IP Address</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="QLabel" name="label_24">
-                            <property name="sizePolicy">
-                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                              <horstretch>0</horstretch>
-                              <verstretch>0</verstretch>
-                             </sizepolicy>
-                            </property>
+                          <item row="1" column="2">
+                           <widget class="QLabel" name="label_13">
                             <property name="layoutDirection">
                              <enum>Qt::RightToLeft</enum>
                             </property>
                             <property name="text">
-                             <string>&amp;IP</string>
+                             <string>&amp;Port</string>
                             </property>
                             <property name="buddy">
-                             <cstring>neighborIP</cstring>
+                             <cstring>neighborPort</cstring>
                             </property>
                            </widget>
                           </item>
-                          <item row="0" column="3">
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_66">
+                            <property name="text">
+                             <string>&amp;Transport</string>
+                            </property>
+                            <property name="buddy">
+                             <cstring>neighborTransport</cstring>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="3">
                            <widget class="QSpinBox" name="neighborPort">
                             <property name="minimum">
                              <number>1</number>
@@ -4122,7 +4119,33 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="0" column="5">
+                          <item row="2" column="0">
+                           <widget class="QLabel" name="neighborScopeIdLabel">
+                            <property name="text">
+                             <string>&amp;Scope ID</string>
+                            </property>
+                            <property name="buddy">
+                             <cstring>neighborScopeId</cstring>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="4">
+                           <widget class="QRadioButton" name="dynamicdns">
+                            <property name="sizePolicy">
+                             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                              <horstretch>0</horstretch>
+                              <verstretch>0</verstretch>
+                             </sizepolicy>
+                            </property>
+                            <property name="toolTip">
+                             <string>Dynamic DNS</string>
+                            </property>
+                            <property name="text">
+                             <string>&amp;DDNS</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="5">
                            <widget class="QRadioButton" name="ipv4Neighbor">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -4141,37 +4164,31 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="0" column="2">
-                           <widget class="QLabel" name="label_13">
-                            <property name="layoutDirection">
-                             <enum>Qt::RightToLeft</enum>
+                          <item row="3" column="3">
+                           <widget class="QComboBox" name="neighborsEchoMode">
+                            <property name="sizeAdjustPolicy">
+                             <enum>QComboBox::AdjustToContents</enum>
                             </property>
-                            <property name="text">
-                             <string>&amp;Port</string>
-                            </property>
-                            <property name="buddy">
-                             <cstring>neighborPort</cstring>
-                            </property>
+                            <item>
+                             <property name="text">
+                              <string>Full Echo</string>
+                             </property>
+                            </item>
+                            <item>
+                             <property name="text">
+                              <string>Half Echo</string>
+                             </property>
+                            </item>
                            </widget>
                           </item>
-                          <item row="1" column="0">
-                           <widget class="QLabel" name="neighborScopeIdLabel">
-                            <property name="text">
-                             <string>&amp;Scope ID</string>
-                            </property>
-                            <property name="buddy">
-                             <cstring>neighborScopeId</cstring>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
+                          <item row="2" column="1">
                            <widget class="QLineEdit" name="neighborScopeId">
                             <property name="placeholderText">
                              <string>Neighbor Scope ID</string>
                             </property>
                            </widget>
                           </item>
-                          <item row="1" column="5">
+                          <item row="2" column="5">
                            <widget class="QRadioButton" name="ipv6Neighbor">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
@@ -4187,33 +4204,33 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="0" column="4">
-                           <widget class="QRadioButton" name="dynamicdns">
+                          <item row="1" column="1">
+                           <widget class="QLineEdit" name="neighborIP">
+                            <property name="placeholderText">
+                             <string>Neighbor IP Address</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_24">
                             <property name="sizePolicy">
                              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
-                            <property name="toolTip">
-                             <string>Dynamic DNS</string>
+                            <property name="layoutDirection">
+                             <enum>Qt::RightToLeft</enum>
                             </property>
                             <property name="text">
-                             <string>&amp;DDNS</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="0">
-                           <widget class="QLabel" name="label_66">
-                            <property name="text">
-                             <string>&amp;Transport</string>
+                             <string>&amp;IP</string>
                             </property>
                             <property name="buddy">
-                             <cstring>neighborTransport</cstring>
+                             <cstring>neighborIP</cstring>
                             </property>
                            </widget>
                           </item>
-                          <item row="2" column="1">
+                          <item row="3" column="1">
                            <layout class="QHBoxLayout" name="horizontalLayout_60">
                             <property name="spacing">
                              <number>5</number>
@@ -4268,7 +4285,7 @@
                             </item>
                            </layout>
                           </item>
-                          <item row="2" column="2">
+                          <item row="3" column="2">
                            <widget class="QLabel" name="label_39">
                             <property name="text">
                              <string>&amp;Echo Mode</string>
@@ -4278,21 +4295,21 @@
                             </property>
                            </widget>
                           </item>
-                          <item row="2" column="3">
-                           <widget class="QComboBox" name="neighborsEchoMode">
-                            <property name="sizeAdjustPolicy">
-                             <enum>QComboBox::AdjustToContents</enum>
+                          <item row="0" column="0">
+                           <widget class="QLabel" name="label_86">
+                            <property name="text">
+                             <string>Bind IP</string>
                             </property>
-                            <item>
-                             <property name="text">
-                              <string>Full Echo</string>
-                             </property>
-                            </item>
-                            <item>
-                             <property name="text">
-                              <string>Half Echo</string>
-                             </property>
-                            </item>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QLineEdit" name="bind_ip">
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bind to the specified local IP address. Spot-On will attempt to establish a connection with the remote IP without creating a listening socket. The remote entity must prepare a similar neighbor. Please note that SSL / TLS is not supported!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
+                            <property name="placeholderText">
+                             <string>TCP Bind IP Address</string>
+                            </property>
                            </widget>
                           </item>
                          </layout>
@@ -4864,8 +4881,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>592</height>
+             <width>623</width>
+             <height>383</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -4950,8 +4967,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>795</width>
-                 <height>677</height>
+                 <width>866</width>
+                 <height>616</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5971,8 +5988,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>907</width>
-             <height>1293</height>
+             <width>993</width>
+             <height>1166</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7208,8 +7225,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>751</width>
-             <height>704</height>
+             <width>640</width>
+             <height>664</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8403,8 +8420,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>767</width>
-             <height>795</height>
+             <width>796</width>
+             <height>747</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9179,8 +9196,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>772</width>
-             <height>592</height>
+             <width>289</width>
+             <height>147</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9421,7 +9438,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -9917,6 +9934,7 @@
   <tabstop>neighborsTemporarilyPause</tabstop>
   <tabstop>neighbors</tabstop>
   <tabstop>scrollArea_12</tabstop>
+  <tabstop>bind_ip</tabstop>
   <tabstop>neighborIP</tabstop>
   <tabstop>neighborPort</tabstop>
   <tabstop>dynamicdns</tabstop>

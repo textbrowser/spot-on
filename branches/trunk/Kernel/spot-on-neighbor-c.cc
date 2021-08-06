@@ -4366,7 +4366,15 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
     {
     case QAbstractSocket::BoundState:
       {
-	query.addBindValue("connected");
+	if(m_isUserDefined)
+	  query.addBindValue("bound");
+	else
+	  /*
+	  ** Server socket.
+	  */
+
+	  query.addBindValue("connected");
+
 	break;
       }
     case QAbstractSocket::ClosingState:

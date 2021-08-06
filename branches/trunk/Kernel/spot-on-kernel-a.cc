@@ -2544,7 +2544,8 @@ void spoton_kernel::prepareNeighbors(void)
 		      "private_application_credentials, " // 28
 		      "silence_time, "                    // 29
 		      "socket_options, "                  // 30
-		      "OID "                              // 31
+		      "bind_ip_address, "                 // 31
+		      "OID "                              // 32
 		      "FROM neighbors"))
 	  while(query.next())
 	    {
@@ -2733,6 +2734,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 list.value(28).toByteArray(),
 				 list.value(29).toInt(),
 				 list.value(30).toString(),
+				 list.value(31).toString(),
 				 this);
 			    }
 			  catch(...)

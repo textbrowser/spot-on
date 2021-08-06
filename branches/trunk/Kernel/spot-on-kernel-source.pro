@@ -36,6 +36,7 @@ SOURCES		= ../Common/spot-on-crypt.cc \
 		  spot-on-neighbor-a.cc \
                   spot-on-neighbor-b.cc \
                   spot-on-neighbor-c.cc \
+                  spot-on-neighbor-d.cc \
                   spot-on-rss.cc \
 		  spot-on-sctp-server.cc \
 		  spot-on-sctp-socket.cc \

@@ -1400,7 +1400,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		      "echo_mode, certificate, protocol, "
 		      "account_name, account_password, transport, "
 		      "orientation, ae_token, ae_token_type, "
-		      "private_application_credentials "
+		      "private_application_credentials, bind_ip_address "
 		      "FROM neighbors"))
 	  while(query.next())
 	    {
@@ -1411,6 +1411,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QString accountPassword("");
 	      QString aeToken("");
 	      QString aeTokenType("");
+	      QString bindIpAddress("");
 	      QString country("");
 	      QString echoMode("");
 	      QString ipAddress("");
@@ -1452,7 +1453,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "orientation = ?, "
 				  "ae_token = ?, "
 				  "ae_token_type = ?, "
-				  "private_application_credentials = ? "
+				  "private_application_credentials = ?, "
+				  "bind_ip_address = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::
@@ -1612,6 +1614,13 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		     &ok);
 
 	      if(ok)
+		if(!query.isNull(21))
+		  bindIpAddress = oldCrypt->
+		    decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(21).toByteArray()),
+		     &ok);
+
+	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed(ipAddress.
 						    toLatin1(),
@@ -1754,8 +1763,19 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 					   toLatin1(), &ok).toBase64());
 		}
 
+	      if(ok)
+		{
+		  if(bindIpAddress.isEmpty())
+		    updateQuery.bindValue(23, QVariant::String);
+		  else
+		    updateQuery.bindValue
+		      (23, newCrypt->
+		       encryptedThenHashed(bindIpAddress.toLatin1(), &ok).
+		       toBase64());
+		}
+
 	      updateQuery.bindValue
-		(23, query.value(4));
+		(24, query.value(4));
 
 	      if(ok)
 		updateQuery.exec();
