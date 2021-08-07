@@ -319,3 +319,6 @@ Remaining Items
 6.     Rosetta spell checker.
 7.     Future proof.
 8.     Newer TLS allows for client authentication. Accounts successor.
+9.     Poptastic is capable of supporting multiple devices using a single
+       account. Store the destination's digest in the subject.
+       See IMAP.
