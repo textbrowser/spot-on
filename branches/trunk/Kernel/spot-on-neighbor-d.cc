@@ -39,20 +39,7 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
   if(client)
     {
-      QByteArray certificate;
-      QByteArray privateKey;
-      QByteArray publicKey;
       QSslConfiguration configuration;
-      QString error("");
-
-      spoton_crypt::generateSslKeys
-	(m_keySize,
-	 certificate,
-	 privateKey,
-	 publicKey,
-	 QHostAddress(),
-	 0, // Days are not used.
-	 error);
 
       configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
@@ -107,32 +94,11 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
     {
       QSslConfiguration configuration;
 
-      if(certificate.isEmpty() || privateKey.isEmpty())
-	{
-	  QByteArray certificate;
-	  QByteArray privateKey;
-	  QByteArray publicKey;
-	  QString error("");
-
-	  spoton_crypt::generateSslKeys
-	    (m_keySize,
-	     certificate,
-	     privateKey,
-	     publicKey,
-	     QHostAddress(),
-	     0, // Days are not used.
-	     error);
-
-	  configuration.setLocalCertificate(QSslCertificate(certificate));
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-	}
-      else
-	configuration.setLocalCertificate(QSslCertificate(certificate));
+      configuration.setLocalCertificate(QSslCertificate(certificate));
 
       if(!configuration.localCertificate().isNull())
 	{
-	  if(!privateKey.isEmpty())
-	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
 	  if(!configuration.privateKey().isNull())
 	    {
@@ -221,7 +187,20 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
   if(m_tcpSocket->isEncrypted())
     return;
 
-  prepareSslConfiguration(QByteArray(), QByteArray(), client);
+  QByteArray certificate;
+  QByteArray privateKey;
+  QByteArray publicKey;
+  QString error("");
+
+  spoton_crypt::generateSslKeys
+    (m_keySize,
+     certificate,
+     privateKey,
+     publicKey,
+     QHostAddress(),
+     0, // Days are not used.
+     error);
+  prepareSslConfiguration(certificate, privateKey, client);
 
   if(client)
     m_tcpSocket->startClientEncryption();
