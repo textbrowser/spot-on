@@ -198,7 +198,7 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
      privateKey,
      publicKey,
      QHostAddress(),
-     0, // Days are not used.
+     31536000L,
      error);
   prepareSslConfiguration(certificate, privateKey, client);
 

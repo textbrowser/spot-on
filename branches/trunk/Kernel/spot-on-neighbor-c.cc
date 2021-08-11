@@ -3526,6 +3526,9 @@ void spoton_neighbor::processData(void)
 
 void spoton_neighbor::recordCertificateOrAbort(void)
 {
+  if(!m_bindIpAddress.isEmpty())
+    return;
+
   QSslCertificate certificate;
   bool save = false;
 
