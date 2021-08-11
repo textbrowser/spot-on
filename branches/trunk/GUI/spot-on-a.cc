@@ -10331,6 +10331,12 @@ void spoton::slotShowContextMenu(const QPoint &point)
 		     this,
 		     SLOT(slotShowNeighborStatistics(void)));
 #endif
+      menu.addSeparator();
+      menu.addAction
+	(tr("Initiate SSL/TLS Session..."),
+	 this,
+	 SLOT(slotInitiateSSLTLSSession(void)))->setEnabled
+	(neighborSupportsSslTls);
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.neighbors->mapToGlobal(point));
     }

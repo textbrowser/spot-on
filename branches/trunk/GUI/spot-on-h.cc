@@ -755,6 +755,10 @@ void spoton::slotGenerateInstitutionKeyPair(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::slotInitiateSSLTLSSession(void)
+{
+}
+
 void spoton::slotKeysIndexChanged(const QString &text)
 {
 #ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
