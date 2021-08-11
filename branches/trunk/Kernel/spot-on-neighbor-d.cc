@@ -52,7 +52,7 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 	 publicKey,
 	 QHostAddress(),
 	 0, // Days are not used.
-	 error);qDebug()<<error<<certificate.size()<<privateKey.size();
+	 error);
 
       configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
