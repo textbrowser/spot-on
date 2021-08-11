@@ -10174,6 +10174,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
     {
       QAction *action = 0;
       QMenu menu(this);
+      bool neighborSupportsSslTls = this->neighborSupportsSslTls();
 
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
@@ -10226,7 +10227,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addAction(tr("&Reset Certificate"),
 		     this,
 		     SLOT(slotResetCertificate(void)))->
-	setEnabled(neighborSupportsSslTls());
+	setEnabled(neighborSupportsSslTls);
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
@@ -10273,7 +10274,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction(tr("Set &SSL Control String..."),
 		     this, SLOT(slotSetNeighborSSLControlString(void)))->
-	setEnabled(neighborSupportsSslTls());
+	setEnabled(neighborSupportsSslTls);
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
 			      this, SLOT(slotSetSocketOptions(void)));

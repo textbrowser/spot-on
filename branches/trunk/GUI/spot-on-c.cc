@@ -1062,6 +1062,7 @@ void spoton::prepareContextMenuMirrors(void)
 
       QAction *action = 0;
       QMenu *menu = 0;
+      bool neighborSupportsSslTls = this->neighborSupportsSslTls();
 
       if(m_ui.neighborsActionMenu->menu())
 	menu = m_ui.neighborsActionMenu->menu();
@@ -1120,7 +1121,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addAction(tr("&Reset Certificate"),
 		      this,
 		      SLOT(slotResetCertificate(void)))->setEnabled
-	(neighborSupportsSslTls());
+	(neighborSupportsSslTls);
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
@@ -1167,7 +1168,7 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
 		      this, SLOT(slotSetNeighborSSLControlString(void)))->
-	setEnabled(neighborSupportsSslTls());
+	setEnabled(neighborSupportsSslTls);
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
 			       this, SLOT(slotSetSocketOptions(void)));
