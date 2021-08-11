@@ -654,6 +654,18 @@ void spoton_gui_server::slotReadyRead(void)
 	      if(list.size() == 7)
 		emit forwardSecrecyResponseReceivedFromUI(list);
 	    }
+	  else if(message.startsWith("initiatessltls_"))
+	    {
+	      message.remove
+		(0, static_cast<int> (qstrlen("initiatessltls_")));
+
+	      QList<QByteArray> list(message.split('_'));
+
+	      if(list.size() == 2)
+		emit initiateSSLTLSSession
+		  (list.value(0).toInt() == 1,
+		   list.value(1).toLongLong());
+	    }
 	  else if(message.startsWith("keys_"))
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("keys_")));

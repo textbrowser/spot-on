@@ -1755,6 +1755,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	      neighbor,
 	      SLOT(slotSMPMessageReceivedFromUI(const QByteArrayList &)),
 	      Qt::UniqueConnection);
+      connect(m_guiServer,
+	      SIGNAL(initiateSSLTLSSession(const bool, const qint64)),
+	      neighbor,
+	      SLOT(slotInitiateSSLTLSSession(const bool, const qint64)),
+	      Qt::UniqueConnection);
       connect(neighbor,
 	      SIGNAL(authenticationRequested(const QString &)),
 	      m_guiServer,

@@ -1226,11 +1226,18 @@ void spoton::prepareContextMenuMirrors(void)
 		      SLOT(slotShowNeighborStatistics(void)));
 #endif
       menu->addSeparator();
-      menu->addAction
-	(tr("Initiate SSL/TLS Session..."),
+      action = menu->addAction
+	(tr("Initiate SSL/TLS Client Session..."),
 	 this,
-	 SLOT(slotInitiateSSLTLSSession(void)))->setEnabled
-	(neighborSupportsSslTls);
+	 SLOT(slotInitiateSSLTLSSession(void)));
+      action->setEnabled(neighborSupportsSslTls);
+      action->setProperty("mode", "client");
+      action = menu->addAction
+	(tr("Initiate SSL/TLS Server Session..."),
+	 this,
+	 SLOT(slotInitiateSSLTLSSession(void)));
+      action->setEnabled(neighborSupportsSslTls);
+      action->setProperty("mode", "server");
       m_ui.neighborsActionMenu->setMenu(menu);
       connect(m_ui.neighborsActionMenu,
 	      SIGNAL(clicked(void)),

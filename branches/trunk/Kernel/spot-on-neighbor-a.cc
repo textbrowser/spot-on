@@ -28,7 +28,6 @@
 #include <QAuthenticator>
 #include <QSqlError>
 #include <QSqlQuery>
-#include <QSslKey>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #ifndef Q_OS_MAC
 #include <qbluetoothhostinfo.h>
@@ -79,6 +78,7 @@ spoton_neighbor::spoton_neighbor
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
  QWebSocket *web_socket,
 #endif
+ const int keySize,
  QObject *parent):QThread(parent)
 {
   Q_UNUSED(priority);
@@ -91,7 +91,7 @@ spoton_neighbor::spoton_neighbor
 #else
 #endif
   m_kernelInterfaces = spoton_kernel::interfaces();
-  m_keySize = 0;
+  m_keySize = qAbs(keySize);
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
 		       spoton_common::LANE_WIDTH_MAXIMUM);
@@ -349,74 +349,7 @@ spoton_neighbor::spoton_neighbor
   m_waitforbyteswritten_msecs = 0;
 
   if(m_useSsl)
-    {
-      if(m_tcpSocket || m_udpSocket)
-	{
-	  QSslConfiguration configuration;
-
-	  configuration.setLocalCertificate(QSslCertificate(certificate));
-
-	  if(!configuration.localCertificate().isNull())
-	    {
-	      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-
-	      if(!configuration.privateKey().isNull())
-		{
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableCompression, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableEmptyFragments, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableLegacyRenegotiation, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableSessionTickets, true);
-#if QT_VERSION >= 0x050501
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableSessionPersistence, true);
-		  configuration.setSslOption
-		    (QSsl::SslOptionDisableSessionSharing, true);
-#endif
-		  spoton_crypt::setSslCiphers
-		    (configuration.supportedCiphers(), m_sslControlString,
-		     configuration);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
-		  if(m_udpSocket)
-		    {
-		      m_udpSslConfiguration = configuration;
-		      m_udpSslConfiguration.
-			setDtlsCookieVerificationEnabled(true);
-		      m_udpSslConfiguration.setPeerVerifyMode
-			(QSslSocket::QueryPeer);
-		      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
-		    }
-#endif
-
-		  if(m_tcpSocket)
-		    m_tcpSocket->setSslConfiguration(configuration);
-		}
-	      else
-		{
-		  m_useSsl = false;
-		  spoton_misc::logError
-		    (QString("spoton_neighbor::spoton_neighbor(): "
-			     "empty private key for %1:%2. SSL disabled.").
-		     arg(m_address).
-		     arg(m_port));
-		}
-	    }
-	  else
-	    {
-	      m_useSsl = false;
-	      spoton_misc::logError
-		(QString("spoton_neighbor::spoton_neighbor(): "
-			 "invalid local certificate for %1:%2. "
-			 "SSL disabled.").
-		 arg(m_address).
-		 arg(m_port));
-	    }
-	}
-    }
+    prepareSslConfiguration(certificate, privateKey, false);
 
   if(!m_useSsl)
     m_sslControlString = "N/A";
@@ -660,8 +593,7 @@ spoton_neighbor::spoton_neighbor
   if(transport == "tcp" || transport == "udp" || transport == "websocket")
     {
       if(m_keySize != 0)
-	if(!(m_keySize == 2048 || m_keySize == 3072 ||
-	     m_keySize == 4096))
+	if(!(m_keySize == 2048 || m_keySize == 3072 || m_keySize == 4096))
 	  m_keySize = 2048;
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
@@ -817,88 +749,38 @@ spoton_neighbor::spoton_neighbor
 #endif
     }
 
-  QByteArray certificate;
-  QByteArray privateKey;
-  QByteArray publicKey;
-  QString error("");
-
-  if((m_transport == "tcp" ||
-      m_transport == "udp" ||
-      m_transport == "websocket") && m_useSsl)
+  if(m_bindIpAddress.isEmpty())
     {
-      spoton_crypt::generateSslKeys
-	(m_keySize,
-	 certificate,
-	 privateKey,
-	 publicKey,
-	 QHostAddress(),
-	 0, // Days are not used.
-	 error);
+      QByteArray certificate;
+      QByteArray privateKey;
+      QByteArray publicKey;
+      QString error("");
 
-      if(!error.isEmpty())
-	spoton_misc::logError
-	  (QString("spoton_neighbor:: "
-		   "spoton_neighbor(): "
-		   "generateSslKeys() failure (%1) for %2:%3.").
-	   arg(error).
-	   arg(ipAddress).
-	   arg(port));
-    }
-
-  if(!privateKey.isEmpty())
-    {
-      if(m_tcpSocket || m_udpSocket || m_webSocket)
+      if((m_transport == "tcp" ||
+	  m_transport == "udp" ||
+	  m_transport == "websocket") && m_useSsl)
 	{
-	  QSslConfiguration configuration;
+	  spoton_crypt::generateSslKeys
+	    (m_keySize,
+	     certificate,
+	     privateKey,
+	     publicKey,
+	     QHostAddress(),
+	     0, // Days are not used.
+	     error);
 
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
-
-	  if(!configuration.privateKey().isNull())
-	    {
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableCompression, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableEmptyFragments, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableLegacyRenegotiation, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableSessionTickets, true);
-#if QT_VERSION >= 0x050501
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableSessionPersistence, true);
-	      configuration.setSslOption
-		(QSsl::SslOptionDisableSessionSharing, true);
-#endif
-	      configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
-	      spoton_crypt::setSslCiphers
-		(configuration.supportedCiphers(), m_sslControlString,
-		 configuration);
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
-	      if(m_udpSocket)
-		{
-		  m_udpSslConfiguration = configuration;
-		  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
-		}
-#endif
-	      if(m_tcpSocket)
-		m_tcpSocket->setSslConfiguration(configuration);
-
-#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-	      if(m_webSocket)
-		m_webSocket->setSslConfiguration(configuration);
-#endif
-	    }
-	  else
-	    {
-	      m_useSsl = m_requireSsl;
-	      spoton_misc::logError
-		(QString("spoton_neighbor::spoton_neighbor(): "
-			 "empty private key for %1:%2.").
-		 arg(ipAddress).
-		 arg(port));
-	    }
+	  if(!error.isEmpty())
+	    spoton_misc::logError
+	      (QString("spoton_neighbor:: "
+		       "spoton_neighbor(): "
+		       "generateSslKeys() failure (%1) for %2:%3.").
+	       arg(error).
+	       arg(m_ipAddress).
+	       arg(m_port));
 	}
+
+      if(!privateKey.isEmpty())
+	prepareSslConfiguration(certificate, privateKey, true);
     }
 
   if(m_transport != "bluetooth")

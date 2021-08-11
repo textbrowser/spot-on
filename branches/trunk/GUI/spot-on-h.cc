@@ -757,6 +757,57 @@ void spoton::slotGenerateInstitutionKeyPair(void)
 
 void spoton::slotInitiateSSLTLSSession(void)
 {
+  QAction *action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    return;
+
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return;
+
+  if(m_ui.neighborsActionMenu->menu())
+    m_ui.neighborsActionMenu->menu()->repaint();
+
+  repaint();
+  QApplication::processEvents();
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString oid("");
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item = m_ui.neighbors->item
+	(row, m_ui.neighbors->columnCount() - 1); // OID
+
+      if(item)
+	oid = item->text();
+    }
+
+  if(oid.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QByteArray message;
+  int mode = action->property("mode").toString() == "client" ? 1 : 0;
+
+  message.append("initiatessltls_");
+  message.append(QByteArray::number(mode));
+  message.append("_");
+  message.append(oid.toUtf8());
+  message.append("\n");
+
+  if(!writeKernelSocketData(message))
+    spoton_misc::logError
+      (QString("spoton::slotInitiateSSLTLSSession(): write() failure "
+	       "for %1:%2.").
+       arg(m_kernelSocket.peerAddress().toString()).
+       arg(m_kernelSocket.peerPort()));
+
+  QApplication::restoreOverrideCursor();
+
 }
 
 void spoton::slotKeysIndexChanged(const QString &text)

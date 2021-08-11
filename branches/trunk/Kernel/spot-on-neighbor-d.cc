@@ -25,7 +25,172 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QSslConfiguration>
+#include <QSslKey>
+
 #include "spot-on-neighbor.h"
+
+void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
+					      const QByteArray &privateKey,
+					      const bool client)
+{
+  if(!((m_tcpSocket || m_udpSocket || m_webSocket) && m_useSsl))
+    return;
+
+  if(client)
+    {
+      QByteArray certificate;
+      QByteArray privateKey;
+      QByteArray publicKey;
+      QSslConfiguration configuration;
+      QString error("");
+
+      spoton_crypt::generateSslKeys
+	(m_keySize,
+	 certificate,
+	 privateKey,
+	 publicKey,
+	 QHostAddress(),
+	 0, // Days are not used.
+	 error);qDebug()<<error<<certificate.size()<<privateKey.size();
+
+      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+
+      if(!configuration.privateKey().isNull())
+	{
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableCompression, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableEmptyFragments, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionTickets, true);
+#if QT_VERSION >= 0x050501
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionPersistence, true);
+	  configuration.setSslOption
+	    (QSsl::SslOptionDisableSessionSharing, true);
+#endif
+	  configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
+	  spoton_crypt::setSslCiphers
+	    (configuration.supportedCiphers(),
+	     m_sslControlString,
+	     configuration);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
+	  if(m_udpSocket)
+	    {
+	      m_udpSslConfiguration = configuration;
+	      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
+	    }
+#endif
+	  if(m_tcpSocket)
+	    m_tcpSocket->setSslConfiguration(configuration);
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+	  if(m_webSocket)
+	    m_webSocket->setSslConfiguration(configuration);
+#endif
+	}
+      else
+	{
+	  m_useSsl = m_requireSsl;
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::prepareSslConfiguration(): "
+		     "empty private key for %1:%2.").
+	     arg(m_ipAddress).
+	     arg(m_port));
+	}
+    }
+  else
+    {
+      QSslConfiguration configuration;
+
+      if(certificate.isEmpty() || privateKey.isEmpty())
+	{
+	  QByteArray certificate;
+	  QByteArray privateKey;
+	  QByteArray publicKey;
+	  QString error("");
+
+	  spoton_crypt::generateSslKeys
+	    (m_keySize,
+	     certificate,
+	     privateKey,
+	     publicKey,
+	     QHostAddress(),
+	     0, // Days are not used.
+	     error);
+
+	  configuration.setLocalCertificate(QSslCertificate(certificate));
+	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	}
+      else
+	configuration.setLocalCertificate(QSslCertificate(certificate));
+
+      if(!configuration.localCertificate().isNull())
+	{
+	  if(!privateKey.isEmpty())
+	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+
+	  if(!configuration.privateKey().isNull())
+	    {
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableCompression, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableEmptyFragments, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableLegacyRenegotiation, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionTickets, true);
+#if QT_VERSION >= 0x050501
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionPersistence, true);
+	      configuration.setSslOption
+		(QSsl::SslOptionDisableSessionSharing, true);
+#endif
+	      spoton_crypt::setSslCiphers
+		(configuration.supportedCiphers(),
+		 m_sslControlString,
+		 configuration);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
+	      if(m_udpSocket)
+		{
+		  m_udpSslConfiguration = configuration;
+		  m_udpSslConfiguration.
+		    setDtlsCookieVerificationEnabled(true);
+		  m_udpSslConfiguration.setPeerVerifyMode
+		    (QSslSocket::QueryPeer);
+		  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
+		}
+#endif
+
+	      if(m_tcpSocket)
+		m_tcpSocket->setSslConfiguration(configuration);
+	    }
+	  else
+	    {
+	      m_useSsl = false;
+	      spoton_misc::logError
+		(QString("spoton_neighbor::prepareSslConfiguration(): "
+			 "empty private key for %1:%2. SSL disabled.").
+		 arg(m_address).
+		 arg(m_port));
+	    }
+	}
+      else
+	{
+	  m_useSsl = false;
+	  spoton_misc::logError
+	    (QString("spoton_neighbor::prepareSslConfiguration(): "
+		     "invalid local certificate for %1:%2. SSL disabled.").
+	     arg(m_address).
+	     arg(m_port));
+	}
+    }
+}
 
 void spoton_neighbor::slotSpecialTimerTimeout(void)
 {
@@ -42,4 +207,24 @@ void spoton_neighbor::slotSpecialTimerTimeout(void)
   else if(m_tcpSocket->state() == QAbstractSocket::BoundState ||
 	  m_tcpSocket->state() == QAbstractSocket::UnconnectedState)
     m_tcpSocket->connectToHost(m_address, m_port);
+}
+
+void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
+						const qint64 oid)
+{
+  if(m_bindIpAddress.isEmpty() ||
+     m_id != oid ||
+     m_tcpSocket == nullptr ||
+     m_useSsl != true)
+    return;
+
+  if(m_tcpSocket->isEncrypted())
+    return;
+
+  prepareSslConfiguration(QByteArray(), QByteArray(), client);
+
+  if(client)
+    m_tcpSocket->startClientEncryption();
+  else
+    m_tcpSocket->startServerEncryption();
 }

@@ -899,6 +899,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 	 0,
 #endif
+	 m_keySize,
 	 this);
     }
   catch(...)
@@ -1471,6 +1472,7 @@ void spoton_listener::slotNewConnection(void)
 #ifdef SPOTON_WEBSOCKETS_ENABLED
 	 0, // WebSocket.
 #endif
+	 m_keySize,
 	 this);
     }
   catch(...)
@@ -2219,6 +2221,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	 0, // Bluetooth.
 #endif
 	 socket,
+	 m_keySize,
 	 this);
     }
   catch(...)

@@ -248,6 +248,7 @@ class spoton_neighbor: public QThread
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
 		  QWebSocket *web_socket,
 #endif
+		  const int keySize,
 		  QObject *parent);
   ~spoton_neighbor();
   QAbstractSocket::SocketState state(void) const;
@@ -384,6 +385,9 @@ class spoton_neighbor: public QThread
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   void prepareDtls(void);
 #endif
+  void prepareSslConfiguration(const QByteArray &certificate,
+			       const QByteArray &privateKey,
+			       const bool client);
   void process0000(int length,
 		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);
@@ -513,6 +517,7 @@ class spoton_neighbor: public QThread
   void slotExternalAddressDiscovered(const QHostAddress &address);
   void slotHandshakeTimeout(void);
   void slotHostFound(const QHostInfo &hostInfo);
+  void slotInitiateSSLTLSSession(const bool client, const qint64 oid);
   void slotLifetimeExpired(void);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotNewDatagram(const QByteArray &datagram,
