@@ -1308,7 +1308,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>693</width>
-             <height>814</height>
+             <height>581</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -4224,7 +4224,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>638</width>
-             <height>814</height>
+             <height>765</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -4912,7 +4912,7 @@ color: rgb(255, 255, 255);</string>
                       <item row="0" column="1">
                        <widget class="QLineEdit" name="bind_ip">
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bind to the specified local IP address. GoldBug will attempt to establish a connection with the remote IP without creating a listening socket. The remote entity must prepare a similar neighbor. Please note that SSL / TLS is not supported!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bind to the specified local IP address. GoldBug will attempt to establish a connection with the remote IP without creating a listening socket. The remote entity must prepare a similar neighbor.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="placeholderText">
                          <string>TCP Bind IP Address</string>
@@ -5365,7 +5365,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>614</width>
-             <height>814</height>
+             <height>335</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -6692,7 +6692,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>888</width>
+             <width>928</width>
              <height>1239</height>
             </rect>
            </property>
@@ -8268,8 +8268,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>595</width>
-             <height>989</height>
+             <width>497</width>
+             <height>1023</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9634,7 +9634,7 @@ color: rgb(255, 255, 255);
              <x>0</x>
              <y>0</y>
              <width>672</width>
-             <height>814</height>
+             <height>781</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
