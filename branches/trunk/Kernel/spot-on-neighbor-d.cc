@@ -181,10 +181,9 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
   if(m_bindIpAddress.isEmpty() ||
      m_id != oid ||
      m_tcpSocket == nullptr ||
+     m_tcpSocket->isEncrypted() ||
+     m_tcpSocket->state() != QAbstractSocket::ConnectedState ||
      m_useSsl != true)
-    return;
-
-  if(m_tcpSocket->isEncrypted())
     return;
 
   QByteArray certificate;
