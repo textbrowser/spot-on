@@ -2018,58 +2018,77 @@ void spoton_neighbor::slotReadyRead(void)
       data.append(m_tcpSocket->readAll());
   else if(m_udpSocket)
     {
-      while(m_udpSocket->bytesAvailable() > 0)
-	data.append(m_udpSocket->readAll());
+      while(m_udpSocket->hasPendingDatagrams())
+	{
+	  QByteArray datagram;
+	  QHostAddress peerAddress;
+	  quint16 peerPort = 0;
+	  qint64 size = qMax
+	    (static_cast<qint64> (0), m_udpSocket->pendingDatagramSize());
+
+	  datagram.resize(static_cast<int> (size));
+	  size = m_udpSocket->readDatagram
+	    (datagram.data(), size, &peerAddress, &peerPort);
+
+	  if(size <= 0)
+	    continue;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) &&	\
   !defined(SPOTON_DTLS_DISABLED)
-      if(m_dtls && m_isUserDefined)
-	{
-	  m_bytesRead += static_cast<quint64> (data.length());
-
-	  if(m_dtls->isConnectionEncrypted())
+	  if(m_dtls && m_isUserDefined)
 	    {
-	      data = m_dtls->decryptDatagram(m_udpSocket, data);
+	      m_bytesRead += static_cast<quint64> (datagram.length());
 
-	      if(m_dtls->dtlsError() == QDtlsError::RemoteClosedConnectionError)
+	      if(m_dtls->isConnectionEncrypted())
 		{
-		  spoton_misc::logError
-		    (QString("spoton_neighbor::slotReadyRead(): "
-			     "%1:%2 closed the connection. Aborting.").
-		     arg(m_address).
-		     arg(m_port));
-		  deleteLater();
-		  return;
-		}
-	      else
-		m_lastReadTime = QDateTime::currentDateTime();
-	    }
-	  else
-	    {
-	      if(!m_dtls->doHandshake(m_udpSocket, data))
-		{
-		  if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
-		       m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
+		  datagram = m_dtls->decryptDatagram(m_udpSocket, datagram);
+
+		  if(m_dtls->dtlsError() ==
+		     QDtlsError::RemoteClosedConnectionError)
 		    {
-		      m_dtls->abortHandshake(m_udpSocket);
 		      spoton_misc::logError
 			(QString("spoton_neighbor::slotReadyRead(): "
-				 "DTLS error (%1) for %2:%3. Aborting.").
-			 arg(m_dtls->dtlsErrorString()).
+				 "%1:%2 closed the connection. Aborting.").
 			 arg(m_address).
 			 arg(m_port));
 		      deleteLater();
+		      return;
+		    }
+		  else
+		    {
+		      data.append(datagram);
+		      m_lastReadTime = QDateTime::currentDateTime();
 		    }
 		}
-	      else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
-		recordCertificateOrAbort();
+	      else
+		{
+		  if(!m_dtls->doHandshake(m_udpSocket, datagram))
+		    {
+		      if(!(m_dtls->dtlsError() == QDtlsError::NoError ||
+			   m_dtls->dtlsError() == QDtlsError::TlsNonFatalError))
+			{
+			  m_dtls->abortHandshake(m_udpSocket);
+			  spoton_misc::logError
+			    (QString("spoton_neighbor::slotReadyRead(): "
+				     "DTLS error (%1) for %2:%3. Aborting.").
+			     arg(m_dtls->dtlsErrorString()).
+			     arg(m_address).
+			     arg(m_port));
+			  deleteLater();
+			}
+		    }
+		  else if(m_dtls->handshakeState() == QDtls::HandshakeComplete)
+		    recordCertificateOrAbort();
 
-	      return;
+		  return;
+		}
 	    }
-
-	  goto next_label;
-	}
+	  else
+	    data.append(datagram);
+#else
+	  data.append(datagram);
 #endif
+	}
 
       while(m_udpSocket->multicastSocket() &&
 	    m_udpSocket->multicastSocket()->hasPendingDatagrams())
@@ -2089,11 +2108,6 @@ void spoton_neighbor::slotReadyRead(void)
     }
 
   m_bytesRead += static_cast<quint64> (data.length());
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) &&	\
-  !defined(SPOTON_DTLS_DISABLED)
- next_label:
-#endif
 
   {
     QWriteLocker locker
