@@ -7957,11 +7957,11 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    "Wait-For-Bytes-Written: %28<br>"
 	    "Silence Time: %29<br>"
 	    "Socket Options: %30<br>"
-	    "Buffered Content: %31</html>")).
+	    "Buffered Content: %31<br>"
+	    "Bind IP: %32</html>")).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(1).
+					fromBase64(query->value(1).
 						   toByteArray()),
 					&ok).constData()).
 	arg(query->value(2).toString().toLower()).
@@ -7970,50 +7970,42 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	arg(query->value(6).toString()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(7).
+					fromBase64(query->value(7).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(9).
+					fromBase64(query->value(9).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(10).
+					fromBase64(query->value(10).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(11).
+					fromBase64(query->value(11).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(12).
+					fromBase64(query->value(12).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(14).
+					fromBase64(query->value(14).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(15).
+					fromBase64(query->value(15).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(18).
+					fromBase64(query->value(18).
 						   toByteArray()),
 					&ok).constData()).
 	arg(isEncrypted ? "Secure" : "Insecure").
@@ -8033,8 +8025,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	arg(sslSessionCipher.constData()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(25).
+					fromBase64(query->value(25).
 						   toByteArray()),
 					&ok).constData()).
 	arg(crypt->
@@ -8054,8 +8045,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 		    constData()).toUpper()).
 	arg(crypt->
 	    decryptedAfterAuthenticated(QByteArray::
-					fromBase64(query->
-						   value(28).
+					fromBase64(query->value(28).
 						   toByteArray()),
 					&ok).constData()).
 	arg(query->value(34).toString()).
@@ -8065,7 +8055,12 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	arg(locale.toString(query->value(38).toInt())).
 	arg(query->value(40).toInt()).
 	arg(query->value(41).toString()).
-	arg(query->value(42).toInt());
+	arg(query->value(42).toInt()).
+	arg(crypt->
+	    decryptedAfterAuthenticated(QByteArray::
+					fromBase64(query->value(43).
+						   toByteArray()),
+					&ok).constData());
 
       {
 	spoton_table_widget_item *item = new spoton_table_widget_item();
@@ -8096,7 +8091,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	     i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
 					       i <= 15) ||
 	     i == 18 || i == 25 || i == 27 || i == 28 ||
-	     i == 32 || i == 33 || i == 39)
+	     i == 32 || i == 33 || i == 39 || i == 43)
 	    {
 	      if(query->isNull(i))
 		item = new spoton_table_widget_item();

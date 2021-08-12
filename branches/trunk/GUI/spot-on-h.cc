@@ -591,7 +591,8 @@ void spoton::retrieveNeighbors(void)
 		       "silence_time, "                    // 40
 		       "socket_options, "                  // 41
 		       "buffered_content, "                // 42
-		       "OID "                              // 43
+		       "bind_ip_address, "                 // 43
+		       "OID "                              // 44
 		       "FROM neighbors WHERE status_control <> 'deleted'"))
 	  {
 	    while(query->next())
