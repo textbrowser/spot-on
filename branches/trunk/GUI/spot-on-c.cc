@@ -1062,6 +1062,7 @@ void spoton::prepareContextMenuMirrors(void)
 
       QAction *action = 0;
       QMenu *menu = 0;
+      bool neighborSpecialClient = this->neighborSpecialClient();
       bool neighborSupportsSslTls = this->neighborSupportsSslTls();
 
       if(m_ui.neighborsActionMenu->menu())
@@ -1230,13 +1231,13 @@ void spoton::prepareContextMenuMirrors(void)
 	(tr("Initiate SSL/TLS Client Session"),
 	 this,
 	 SLOT(slotInitiateSSLTLSSession(void)));
-      action->setEnabled(neighborSupportsSslTls);
+      action->setEnabled(neighborSpecialClient && neighborSupportsSslTls);
       action->setProperty("mode", "client");
       action = menu->addAction
 	(tr("Initiate SSL/TLS Server Session"),
 	 this,
 	 SLOT(slotInitiateSSLTLSSession(void)));
-      action->setEnabled(neighborSupportsSslTls);
+      action->setEnabled(neighborSpecialClient && neighborSupportsSslTls);
       action->setProperty("mode", "server");
       m_ui.neighborsActionMenu->setMenu(menu);
       connect(m_ui.neighborsActionMenu,

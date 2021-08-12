@@ -563,6 +563,7 @@ class spoton: public QMainWindow
   bool deleteAllUrls(void);
   bool isKernelActive(void) const;
   bool listenerSupportsSslTls(void) const;
+  bool neighborSpecialClient(void) const;
   bool neighborSupportsSslTls(void) const;
   bool nodeExists(const QSqlDatabase &db,
 		  const QString &identifier,

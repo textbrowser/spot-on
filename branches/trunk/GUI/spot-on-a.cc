@@ -10169,6 +10169,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
     {
       QAction *action = 0;
       QMenu menu(this);
+      bool neighborSpecialClient = this->neighborSpecialClient();
       bool neighborSupportsSslTls = this->neighborSupportsSslTls();
 
       menu.addAction(QIcon(QString(":/%1/share.png").
@@ -10331,13 +10332,13 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	(tr("Initiate SSL/TLS Client Session"),
 	 this,
 	 SLOT(slotInitiateSSLTLSSession(void)));
-      action->setEnabled(neighborSupportsSslTls);
+      action->setEnabled(neighborSpecialClient && neighborSupportsSslTls);
       action->setProperty("mode", "client");
       action = menu.addAction
 	(tr("Initiate SSL/TLS Server Session"),
 	 this,
 	 SLOT(slotInitiateSSLTLSSession(void)));
-      action->setEnabled(neighborSupportsSslTls);
+      action->setEnabled(neighborSpecialClient && neighborSupportsSslTls);
       action->setProperty("mode", "server");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.neighbors->mapToGlobal(point));

@@ -160,6 +160,31 @@ bool spoton::listenerSupportsSslTls(void) const
   return false;
 }
 
+bool spoton::neighborSpecialClient(void) const
+{
+  int row = -1;
+
+  if((row = m_ui.neighbors->currentRow()) >= 0)
+    {
+      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3); // SSL Key Size
+      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27); // Transport
+      QTableWidgetItem *item3 = m_ui.neighbors->item
+	(row, 43); // Bind IP Address
+
+      if(item1 && item2 && item3)
+	{
+	  QString string1(item2->text().toLower().trimmed());
+	  QString string2(item3->text().toLower().trimmed());
+
+	  return item1->text().toInt() > 0 &&
+	    string1 == "tcp" &&
+	    string2.length() > 0;
+	}
+    }
+
+  return false;
+}
+
 bool spoton::neighborSupportsSslTls(void) const
 {
   int row = -1;
