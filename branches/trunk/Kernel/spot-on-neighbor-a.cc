@@ -1849,6 +1849,9 @@ void spoton_neighbor::slotPeerVerifyError(const QSslError &error)
       return;
     }
 
+  if(!m_bindIpAddress.isEmpty())
+    return;
+
   if(!m_allowExceptions)
     if(m_isUserDefined)
       if(m_tcpSocket)
