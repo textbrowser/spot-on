@@ -199,6 +199,10 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
      QHostAddress(),
      31536000L,
      error);
+
+  if(!error.isEmpty())
+    return;
+
   prepareSslConfiguration(certificate, privateKey, client);
 
   if(client)
