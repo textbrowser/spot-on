@@ -251,15 +251,16 @@ int main(int argc, char *argv[])
   for(int i = 1; i < argc; i++)
     if(argv[i] && qstrcmp(argv[i], "--help") == 0)
       {
-	fprintf(stdout,
-		"Spot-On-Kernel:\n"
-		"--disable-ui-server     Disable the user interface server.\n"
-		"--passphrase            Prompt for credentials.\n"
-		"--question-answer       Prompt for credentials.\n"
-		"--terminate             Attempt to terminate the "
-		"Spot-On-Kernel process.\n"
-		"--vacuum                Vacuum SQLite databases.\n"
-		"--version               Display version information\n");
+	fprintf
+	  (stdout,
+	   "Spot-On-Kernel:\n"
+	   "--disable-ui-server     Disable the user interface server.\n"
+	   "--passphrase            Prompt for credentials.\n"
+	   "--question-answer       Prompt for credentials.\n"
+	   "--status                Display statistics.\n"
+	   "--terminate             Attempt to terminate Spot-On-Kernel.\n"
+	   "--vacuum                Vacuum SQLite databases.\n"
+	   "--version               Display version information\n");
 	exit(EXIT_SUCCESS);
       }
     else if(argv[i] && qstrcmp(argv[i], "--version") == 0)
@@ -332,7 +333,40 @@ int main(int argc, char *argv[])
   QSettings::setDefaultFormat(QSettings::IniFormat);
 
   for(int i = 1; i < argc; i++)
-    if(argv && argv[i] && qstrcmp(argv[i], "--terminate") == 0)
+    if(argv && argv[i] && qstrcmp(argv[i], "--status") == 0)
+      {
+	QString connectionName("");
+
+	{
+	  QSqlDatabase db = spoton_misc::database(connectionName);
+
+	  db.setDatabaseName
+	    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	  if(db.open())
+	    {
+	      QSqlQuery query(db);
+
+	      query.setForwardOnly(true);
+	      query.prepare("SELECT statistic, value FROM kernel_statistics");
+
+	      if(query.exec())
+		while(query.next())
+		  {
+		    std::cerr << query.value(0).toString().toStdString();
+		    std::cerr << " : ";
+		    std::cerr << query.value(1).toString().toStdString();
+		    std::cerr << std::endl;
+		  }
+	    }
+
+	  db.close();
+	}
+
+	QSqlDatabase::removeDatabase(connectionName);
+	return EXIT_SUCCESS;
+      }
+    else if(argv && argv[i] && qstrcmp(argv[i], "--terminate") == 0)
       {
 	QString sharedPath
 	  (spoton_misc::homePath() + QDir::separator() + "shared.db");
