@@ -348,7 +348,8 @@ int main(int argc, char *argv[])
 	      QSqlQuery query(db);
 
 	      query.setForwardOnly(true);
-	      query.prepare("SELECT statistic, value FROM kernel_statistics");
+	      query.prepare
+		("SELECT statistic, value FROM kernel_statistics ORDER BY 1");
 
 	      if(query.exec())
 		while(query.next())
