@@ -186,10 +186,6 @@ extern "C"
 	  rerr = LIBSPOTON_ERROR_GCRY_CHECK_VERSION;
 	else if(secure_memory_pool_size == 0)
 	  {
-	    if(stderr)
-	      fprintf(stderr, "libspoton::initialize_libgcrypt(): "
-		      "disabling secure memory.\n");
-
 	    gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
 	    gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
 	  }

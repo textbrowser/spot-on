@@ -4326,8 +4326,6 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 
       if(secureMemorySize == 0)
 	{
-	  std::cerr << "spoton_crypt::init(): disabling secure memory."
-		    << std::endl;
 	  spoton_misc::logError
 	    ("spoton_crypt::init(): disabling secure memory.");
 	  gcry_control(GCRYCTL_DISABLE_SECMEM, 0);

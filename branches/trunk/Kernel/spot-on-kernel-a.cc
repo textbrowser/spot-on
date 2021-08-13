@@ -395,7 +395,11 @@ int main(int argc, char *argv[])
 
   for(int i = 1; i < argc; i++)
     if(argv && argv[i] && qstrcmp(argv[i], "--vacuum") == 0)
-      spoton_misc::vacuumAllDatabases();
+      {
+	std::cerr << "Vacuuming SQLite databases. Please be patient... ";
+	spoton_misc::vacuumAllDatabases();
+	std::cerr << "Completed." << std::endl;
+      }
 
   QSettings settings;
 
