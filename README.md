@@ -45,7 +45,7 @@ Summary of Spot-On
 <li>Themes.</li>
 <li>Threefish CBC.</li>
 <li>UDP multicast, unicast.</li>
-<li>Ultra StarBeam file sharing.</li>
+<li>Ultra StarBeam file sharing. TCP through the Echo.</li>
 <li>WebSockets.</li>
 <li>Windows portable.</li>
 </ul>
