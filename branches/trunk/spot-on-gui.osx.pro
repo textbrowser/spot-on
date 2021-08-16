@@ -59,21 +59,21 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 
 INCLUDEPATH	  += . \
                      ../../. \
-                     /usr/local/Cellar/openssl@1.1/1.1.1k/include \
-                     /usr/local/opt \
-                     /usr/local/opt/curl/include \
 		     /usr/local/opt/geoip/include \
 		     /usr/local/opt/gpgme/include \
 		     /usr/local/opt/libgcrypt/include \
 		     /usr/local/opt/libgpg-error/include \
 		     /usr/local/opt/ntl/include \
 		     /usr/local/opt/postgres/include \
+                     /usr/local/opt \
+                     /usr/local/opt/curl/include \
+                     /usr/local/opt/openssl/include \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU \
-                     -L/usr/local/Cellar/openssl@1.1/1.1.1k/lib \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
+                     -L/usr/local/opt/openssl/lib \
                      -framework AppKit \
                      -framework Cocoa \
                      -lGeoIP \
@@ -123,7 +123,7 @@ macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot
 macdeployqt.path            = Spot-On.app
 other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
 other_libraries1.path       = .
-other_libraries2.extra      = install_name_tool -change /usr/local/Cellar/openldap/2.5.5/lib/liblber-2.5.0.dylib @executable_path/../Frameworks/liblber-2.5.0.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libldap-2.5.0.dylib
+other_libraries2.extra      = install_name_tool -change /usr/local/Cellar/openldap/2.5.6/lib/liblber-2.5.0.dylib @executable_path/../Frameworks/liblber-2.5.0.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libldap-2.5.0.dylib
 other_libraries2.path       = .
 preinstall.extra            = rm -rf /Applications/Spot-On.d/Spot-On.app/*
 preinstall.path             = /Applications/Spot-On.d
