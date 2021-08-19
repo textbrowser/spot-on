@@ -1,11 +1,11 @@
 Preparing /usr/local/spot-on:
 
+cd ~/spot-on.d/branches/trunk
 mkdir -p ./usr/local/spot-on/Documentation
 mkdir -p ./usr/local/spot-on/Lib
 mkdir -p ./usr/local/spot-on/SQL
 mkdir -p ./usr/local/spot-on/Sounds
 mkdir -p ./usr/local/spot-on/Translations
-cd ~/spot-on.d/branches/trunk
 qmake -o Makefile spot-on.pro && make -j 4
 cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./usr/local/spot-on/Lib/.
 cp -p ../../libNTRU/libntru.so ./usr/local/spot-on/Lib/.
@@ -26,13 +26,12 @@ rm ./usr/local/spot-on/Documentation/*.qrc
 
 Preparing Spot-On-x_amd64.deb:
 
-cd
 mkdir -p spot-on-debian/usr/local
 mkdir -p spot-on-debian/usr/share/applications
-cp -p ./spot-on.d/branches/trunk/spot-on.desktop \
-      spot-on-debian/usr/share/applications/.
-cp -pr ./spot-on.d/branches/trunk/DEBIAN spot-on-debian/.
+cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
+cp -pr ./DEBIAN spot-on-debian/.
 cp -r ./usr/local/spot-on spot-on-debian/usr/local/.
 dpkg-deb --build spot-on-debian Spot-On-2021.08.19_amd64.deb
 make distclean
 rm -fr ./usr
+rm -fr ./spot-on-debian
