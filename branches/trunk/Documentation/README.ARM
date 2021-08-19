@@ -1,4 +1,4 @@
-Preparing /usr/local/spot-on:
+Preparing ./usr/local/spot-on:
 
 cd ~/spot-on.d/branches/trunk
 mkdir -p ./usr/local/spot-on/Documentation
