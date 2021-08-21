@@ -112,7 +112,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet

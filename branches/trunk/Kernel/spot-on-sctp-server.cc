@@ -52,7 +52,7 @@ extern "C"
 #include <sys/types.h>
 #include <unistd.h>
 }
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
 extern "C"
 {
 #include <arpa/inet.h>
@@ -91,7 +91,7 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #endif
 #ifdef SPOTON_SCTP_ENABLED
   m_backlog = 30;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 #else
   m_timer.setInterval(100);
   connect(&m_timer,
@@ -101,7 +101,7 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
 #endif
 #else
   m_backlog = 0;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 #endif
 #endif
 }
@@ -372,7 +372,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       m_isListening = true;
       m_serverAddress = address;
       m_serverPort  = port;
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       if(m_socketNotifier)
 	m_socketNotifier->deleteLater();
 
@@ -464,7 +464,7 @@ void spoton_sctp_server::close(void)
 #else
   m_socketDescriptor = -1;
 #endif
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
   if(m_socketNotifier)
     m_socketNotifier->deleteLater();
 #else
@@ -482,13 +482,13 @@ void spoton_sctp_server::setMaxPendingConnections(const int numConnections)
 #endif
 }
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 void spoton_sctp_server::slotActivated(int socketDescriptor)
 #else
 void spoton_sctp_server::slotTimeout(void)
 #endif
 {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
   Q_UNUSED(socketDescriptor);
 #endif
 #ifdef SPOTON_SCTP_ENABLED
@@ -555,7 +555,7 @@ void spoton_sctp_server::slotTimeout(void)
 #else
 	      ::close(socketDescriptor);
 #endif
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 	      spoton_misc::logError
 		(QString("spoton_sctp_server::slotActivated(): "
 			 "connection from %1 denied for %2:%3.").
@@ -579,7 +579,7 @@ void spoton_sctp_server::slotTimeout(void)
 #else
 	      ::close(socketDescriptor);
 #endif
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 	      spoton_misc::logError
 		(QString("spoton_sctp_server::slotActivated(): "
 			 "connection from %1 denied for %2:%3.").
@@ -676,7 +676,7 @@ void spoton_sctp_server::slotTimeout(void)
 #else
 	      ::close(socketDescriptor);
 #endif
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 	      spoton_misc::logError
 		(QString("spoton_sctp_server::slotActivated(): "
 			 "connection from %1 denied for %2:%3.").
@@ -700,7 +700,7 @@ void spoton_sctp_server::slotTimeout(void)
 #else
 	      ::close(socketDescriptor);
 #endif
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 	      spoton_misc::logError
 		(QString("spoton_sctp_server::slotActivated(): "
 			 "connection from %1 denied for %2:%3.").

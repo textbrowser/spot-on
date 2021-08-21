@@ -36,7 +36,7 @@ extern "C"
 #include <QtGlobal>
 #include <iostream>
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #endif
@@ -294,7 +294,7 @@ int main(int argc, char *argv[])
     qDebug() << "Cannot set the main thread's priority because "
       "the main thread does not exist.";
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   /*
   ** Eliminate pool errors on OS X.
   */
@@ -418,7 +418,7 @@ spoton::spoton(void):QMainWindow()
 					  << "15360";
 
   {
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
     /*
     ** Anomaly.
     */
@@ -762,17 +762,17 @@ spoton::spoton(void):QMainWindow()
   m_sb.warning->setVisible(false);
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   m_notificationsWindow->setWindowFlags
     (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     toolButton->setStyleSheet
     ("QToolButton {border: none;}"
@@ -2562,7 +2562,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.generate->setEnabled(false);
   m_ui.pairFrame->setEnabled(false);
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   if(m_settings.contains("gui/kernelPath") &&
      QFileInfo(m_settings.value("gui/kernelPath").toString()).
      isBundle())
@@ -2858,7 +2858,7 @@ spoton::spoton(void):QMainWindow()
     (m_settings.value("gui/limit_sqlite_synchronization", false).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
 #else
@@ -3452,7 +3452,7 @@ spoton::spoton(void):QMainWindow()
       QTimer::singleShot(2500, this, SLOT(slotAfterFirstShow(void)));
     }
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
@@ -4147,7 +4147,7 @@ void spoton::slotActivateKernel(void)
 
   QFileInfo fileInfo(m_ui.kernelPath->text());
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
 #elif defined(Q_OS_WIN)
   if(fileInfo.isReadable() && fileInfo.size() > 0)
@@ -4174,7 +4174,7 @@ void spoton::slotActivateKernel(void)
   bool status = false;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   if(QFileInfo(program).isBundle())
     {
       QStringList list;
@@ -4191,7 +4191,7 @@ void spoton::slotActivateKernel(void)
   status = QProcess::startDetached(program, QStringList());
 #endif
 #else
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   if(QFileInfo(program).isBundle())
     {
       QStringList list;

@@ -52,7 +52,7 @@ extern "C"
 #include <sys/types.h>
 #include <unistd.h>
 }
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
 extern "C"
 {
 #include <arpa/inet.h>

@@ -32,7 +32,7 @@
 #include <qbluetoothlocaldevice.h>
 #endif
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 extern "C"
 {
 #include <signal.h>
@@ -1303,7 +1303,7 @@ bool spoton::isKernelActive(void) const
     return true;
   else if(pid > 0)
     {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       return kill(pid, 0) == 0;
 #elif defined(Q_OS_WIN)
       DWORD PID = (DWORD) pid;
@@ -1740,7 +1740,7 @@ void spoton::highlightPaths(void)
   m_optionsUi.geoipPath6->setPalette(palette);
   fileInfo.setFile(m_ui.kernelPath->text());
 
-#if defined(Q_OS_MAC)
+#if defined(Q_OS_MACOS)
   if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
 #elif defined(Q_OS_WIN)
   if(fileInfo.isReadable() && fileInfo.size() > 0)

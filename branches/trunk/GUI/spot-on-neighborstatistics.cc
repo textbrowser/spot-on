@@ -48,7 +48,7 @@ spoton_neighborstatistics::spoton_neighborstatistics(spoton *parent):
 	  SLOT(slotTimeout(void)));
   m_timer.setInterval(2500);
   m_timer.start();
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
 }

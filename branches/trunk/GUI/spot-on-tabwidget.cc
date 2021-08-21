@@ -39,7 +39,7 @@ spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
 	  SLOT(slotTimeout(void)));
   m_parent = 0;
   m_timer.start(2500);
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   setStyleSheet("QTabWidget::tab-bar {alignment: left;}");
 #endif
 }

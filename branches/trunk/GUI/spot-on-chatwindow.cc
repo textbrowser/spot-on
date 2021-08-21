@@ -58,7 +58,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
 
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())
@@ -414,7 +414,7 @@ void spoton_chatwindow::showError(const QString &error)
 
 void spoton_chatwindow::showNormal(void)
 {
-#if defined(Q_OS_MAC) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   QSettings settings;
 
   if(settings.value("gui/ontopChatDialogs", false).toBool())

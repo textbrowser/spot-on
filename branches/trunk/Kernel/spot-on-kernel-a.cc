@@ -45,7 +45,7 @@ extern "C"
 #include <process.h>
 #endif
 #include <signal.h>
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
 #include <termios.h>
 #include <unistd.h>
 #else
@@ -70,7 +70,7 @@ extern "C"
 #include "spot-on-urldistribution.h"
 #include "spot-on-web-server.h"
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 #include "Common/CocoaInitializer.h"
 #endif
 
@@ -287,7 +287,7 @@ int main(int argc, char *argv[])
 #endif
   libspoton_enable_sqlite_cache();
 
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
   struct sigaction act;
 
   /*
@@ -316,7 +316,7 @@ int main(int argc, char *argv[])
 
   QCoreApplication qapplication(argc, argv);
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   /*
   ** Eliminate pool errors on OS X.
   */

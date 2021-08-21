@@ -29,7 +29,7 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
 #endif
@@ -706,7 +706,7 @@ spoton_neighbor::spoton_neighbor
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
       QList<QBluetoothHostInfo> list(QBluetoothLocalDevice::allDevices());
 
       if(list.isEmpty())
@@ -2875,7 +2875,7 @@ void spoton_neighbor::slotTimeout(void)
 	if(m_transport == "bluetooth")
 	  {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
 	    QList<QBluetoothServiceInfo> list;
 
 	    if(m_bluetoothServiceDiscoveryAgent && !m_bluetoothSocket)
@@ -2888,7 +2888,7 @@ void spoton_neighbor::slotTimeout(void)
 	      }
 #endif
 
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
 	    for(int i = 0; i < 1; i++)
 #else
 	    for(int i = 0; i < list.size(); i++)
@@ -2908,7 +2908,7 @@ void spoton_neighbor::slotTimeout(void)
 		serviceUuid.append("-0000-0000-");
 		serviceUuid.append(QString(m_address).remove(":"));
 
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
 		if(QBluetoothUuid(serviceUuid) == list.at(i).serviceUuid())
 #endif
 		  {

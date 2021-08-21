@@ -51,7 +51,7 @@
 #include <QWebSocket>
 #endif
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
 #include <qbluetoothservicediscoveryagent.h>
 #endif
 #include <qbluetoothsocket.h>
@@ -296,7 +296,7 @@ class spoton_neighbor: public QThread
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
   QPair<quint64, quint64> m_privateApplicationSequences;
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MACOS
   QPointer<QBluetoothServiceDiscoveryAgent> m_bluetoothServiceDiscoveryAgent;
 #endif
   QPointer<QBluetoothSocket> m_bluetoothSocket;

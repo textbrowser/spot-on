@@ -337,7 +337,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   QApplication::restoreOverrideCursor();
   restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
   restoreState(settings.value("gui/rss_window_state").toByteArray());
-#ifdef Q_OS_MAC
+#ifdef Q_OS_MACOS
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet

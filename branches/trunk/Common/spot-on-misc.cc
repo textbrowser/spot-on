@@ -42,7 +42,7 @@ extern "C"
 #include <sys/socket.h>
 #include <unistd.h>
 }
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
 extern "C"
 {
 #include <sys/socket.h>
@@ -3783,7 +3783,7 @@ qint64 spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
 	   SIOCOUTQ,
 	   &count) == -1)
     count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
   socklen_t length = (socklen_t) sizeof(count);
 
   if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
@@ -5405,13 +5405,13 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
   QList<int> list;
 
   list << SIGABRT
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
        << SIGBUS
 #endif
        << SIGFPE
        << SIGILL
        << SIGINT
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
        << SIGQUIT
 #endif
        << SIGSEGV
@@ -5419,7 +5419,7 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
 
   for(int i = 0; i < list.size(); i++)
     {
-#if defined(Q_OS_LINUX) || defined(Q_OS_MAC) || defined(Q_OS_UNIX)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       struct sigaction act;
 
       act.sa_flags = 0;

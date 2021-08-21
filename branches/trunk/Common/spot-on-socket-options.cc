@@ -55,7 +55,7 @@ extern "C"
 #include <sys/socket.h>
 #include <sys/types.h>
 }
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_MACOS)
 extern "C"
 {
 #include <netinet/in.h>
