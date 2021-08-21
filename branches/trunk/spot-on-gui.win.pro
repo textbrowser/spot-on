@@ -94,6 +94,8 @@ data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation
 documentation.path = release\\.
+executables.files = ..\\..\\Windows.d\\*.exe
+executables.path = release\\.
 libcurl1.files = ..\\..\\libcURL\\*.crt
 libcurl1.path = release\\.
 libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
@@ -157,6 +159,7 @@ INSTALLS = plugins1 \
            pluginspurge \
            data \
            documentation \
+           executables \
            libcurl1 \
            libcurl2 \
            libgeoip1 \
