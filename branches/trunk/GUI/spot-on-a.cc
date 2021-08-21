@@ -772,7 +772,7 @@ spoton::spoton(void):QMainWindow()
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     toolButton->setStyleSheet
     ("QToolButton {border: none;}"
@@ -2564,8 +2564,7 @@ spoton::spoton(void):QMainWindow()
 
 #ifdef Q_OS_MACOS
   if(m_settings.contains("gui/kernelPath") &&
-     QFileInfo(m_settings.value("gui/kernelPath").toString()).
-     isBundle())
+     QFileInfo(m_settings.value("gui/kernelPath").toString()).isBundle())
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else if(m_settings.contains("gui/kernelPath") &&
 	  QFileInfo(m_settings.value("gui/kernelPath").toString()).
@@ -3452,7 +3451,7 @@ spoton::spoton(void):QMainWindow()
       QTimer::singleShot(2500, this, SLOT(slotAfterFirstShow(void)));
     }
 
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet

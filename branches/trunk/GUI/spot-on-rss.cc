@@ -337,7 +337,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   QApplication::restoreOverrideCursor();
   restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
   restoreState(settings.value("gui/rss_window_state").toByteArray());
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
@@ -349,12 +349,6 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
-
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
-    {
-      toolButton->setArrowType(Qt::NoArrow);
-      toolButton->setPopupMode(QToolButton::InstantPopup);
-    }
 }
 
 spoton_rss::~spoton_rss()

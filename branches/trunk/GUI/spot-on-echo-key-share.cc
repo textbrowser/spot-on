@@ -112,7 +112,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
@@ -124,12 +124,6 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
-
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
-    {
-      toolButton->setArrowType(Qt::NoArrow);
-      toolButton->setPopupMode(QToolButton::InstantPopup);
-    }
 }
 
 spoton_echo_key_share::~spoton_echo_key_share()
