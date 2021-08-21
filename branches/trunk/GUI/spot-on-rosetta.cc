@@ -245,7 +245,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 
   slotDecryptClear();
-#if defined(OS_MACOS) || defined(Q_OS_WIN)
+#if defined(OS_MACOS)
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet

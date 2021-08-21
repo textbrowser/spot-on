@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
   libspoton_enable_sqlite_cache();
 #if defined(Q_OS_WIN)
   QApplication::addLibraryPath("plugins");
-  QApplication::setStyle("fusion");
+  QApplication::setStyle("windows");
 #endif
   qInstallMessageHandler(qt_message_handler);
 #if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
@@ -772,7 +772,7 @@ spoton::spoton(void):QMainWindow()
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS)
   foreach(QToolButton *toolButton, m_sbWidget->findChildren<QToolButton *> ())
     toolButton->setStyleSheet
     ("QToolButton {border: none;}"
@@ -3451,7 +3451,7 @@ spoton::spoton(void):QMainWindow()
       QTimer::singleShot(2500, this, SLOT(slotAfterFirstShow(void)));
     }
 
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS)
   foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
