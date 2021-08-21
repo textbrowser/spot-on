@@ -1435,11 +1435,11 @@ uint8_t ntru_invert_64(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq) {
     return 1;
 }
 
-uint8_t (*ntru_invert)(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq);
-uint8_t (*ntru_mult_int)(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-uint8_t (*ntru_mult_tern)(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask);
-void (*ntru_mod_mask)(NtruIntPoly *p, uint16_t mod_mask);
-void (*ntru_to_arr)(NtruIntPoly *p, uint16_t q, uint8_t *a);
+uint8_t (*ntru_invert)(NtruPrivPoly *a, uint16_t mod_mask, NtruIntPoly *Fq) = 0;
+uint8_t (*ntru_mult_int)(NtruIntPoly *a, NtruIntPoly *b, NtruIntPoly *c, uint16_t mod_mask) = 0;
+uint8_t (*ntru_mult_tern)(NtruIntPoly *a, NtruTernPoly *b, NtruIntPoly *c, uint16_t mod_mask) = 0;
+void (*ntru_mod_mask)(NtruIntPoly *p, uint16_t mod_mask) = 0;
+void (*ntru_to_arr)(NtruIntPoly *p, uint16_t q, uint8_t *a) = 0;
 
 void ntru_set_optimized_impl_poly() {
 #ifdef NTRU_DETECT_SIMD
