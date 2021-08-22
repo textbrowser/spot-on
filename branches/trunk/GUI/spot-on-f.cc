@@ -927,8 +927,8 @@ void spoton::slotEstablishForwardSecrecy(void)
 
   QModelIndexList names;
   QModelIndexList publicKeyHashes;
-  QProgressDialog progress(this);
   QScopedPointer<QDialog> dialog;
+  QScopedPointer<QProgressDialog> progress;
   QString algorithm("");
   QString error("");
   QString keySize("");
@@ -1057,23 +1057,24 @@ void spoton::slotEstablishForwardSecrecy(void)
     algorithm = "rsa";
 
   keySize = ui.encryptionKeySize->currentText();
-  progress.setLabelText(tr("Generating key pairs. Please be patient."));
-  progress.setMaximum(publicKeyHashes.size());
-  progress.setMinimum(0);
-  progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Generating Key Pairs").
-			  arg(SPOTON_APPLICATION_NAME));
-  progress.show();
-  progress.repaint();
+  progress.reset(new QProgressDialog(this));
+  progress->setLabelText(tr("Generating key pairs. Please be patient."));
+  progress->setMaximum(publicKeyHashes.size());
+  progress->setMinimum(0);
+  progress->setModal(true);
+  progress->setWindowTitle
+    (tr("%1: Generating Key Pairs").arg(SPOTON_APPLICATION_NAME));
+  progress->show();
+  progress->repaint();
   QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  for(int i = 0; i < publicKeyHashes.size() && !progress.wasCanceled(); i++)
+  for(int i = 0; i < publicKeyHashes.size() && !progress->wasCanceled(); i++)
     {
-      if(i + 1 <= progress.maximum())
-	progress.setValue(i + 1);
+      if(i + 1 <= progress->maximum())
+	progress->setValue(i + 1);
 
-      progress.repaint();
+      progress->repaint();
       QApplication::processEvents();
 
       bool temporary = publicKeyHashes.at(i).data(Qt::UserRole).toBool();
@@ -1133,7 +1134,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	}
     }
 
-  progress.close();
+  progress->close();
   QApplication::restoreOverrideCursor();
 
  done_label:
