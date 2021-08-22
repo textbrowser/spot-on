@@ -122,7 +122,7 @@ $(function() {
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="preprocessor">#include &lt;QWebSocket&gt;</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050501 &amp;&amp; defined(SPOTON_BLUETOOTH_ENABLED)</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#ifndef Q_OS_MAC</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#ifndef Q_OS_MACOS</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#include &lt;qbluetoothservicediscoveryagent.h&gt;</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#include &lt;qbluetoothsocket.h&gt;</span></div>
@@ -367,7 +367,7 @@ $(function() {
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  QPair&lt;QByteArray, QByteArray&gt; m_adaptiveEchoPair;</div>
 <div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  QPair&lt;quint64, quint64&gt; m_privateApplicationSequences;</div>
 <div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050501 &amp;&amp; defined(SPOTON_BLUETOOTH_ENABLED)</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#ifndef Q_OS_MAC</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;<span class="preprocessor">#ifndef Q_OS_MACOS</span></div>
 <div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  QPointer&lt;QBluetoothServiceDiscoveryAgent&gt; m_bluetoothServiceDiscoveryAgent;</div>
 <div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  QPointer&lt;QBluetoothSocket&gt; m_bluetoothSocket;</div>

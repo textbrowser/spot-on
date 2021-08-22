@@ -4925,9 +4925,9 @@ void spoton::slotReceivedKernelMessage(void)
 
 	      if(!list.isEmpty())
 		{
-		  QString name = spoton_misc::nameFromPublicKeyHash
-		    (list.value(0), m_crypts.value("chat", 0));
 		  QString keyType = spoton_misc::keyTypeFromPublicKeyHash
+		    (list.value(0), m_crypts.value("chat", 0));
+		  QString name = spoton_misc::nameFromPublicKeyHash
 		    (list.value(0), m_crypts.value("chat", 0));
 
 		  if(name.isEmpty())
