@@ -215,7 +215,6 @@ int main(int argc, char *argv[])
   libspoton_enable_sqlite_cache();
 #if defined(Q_OS_WIN)
   QApplication::addLibraryPath("plugins");
-  QApplication::setStyle("windows");
 #endif
   qInstallMessageHandler(qt_message_handler);
 #if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
