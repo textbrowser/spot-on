@@ -271,6 +271,7 @@ Completed Items
 199.   Provide a total silent mode.
 200.   libgcrypt from https://repo.msys2.org/mingw/i686/.
 201.   GPG key rings allow for multiple private keys.
+202.   Document server-less P2P.
 
 Ignored Items
 
@@ -322,4 +323,3 @@ Remaining Items
 9.     Poptastic is capable of supporting multiple devices using a single
        account. Store the destination's digest in the subject.
        See IMAP.
-10.    Document server-less P2P.
