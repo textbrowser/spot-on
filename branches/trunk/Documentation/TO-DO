@@ -322,3 +322,4 @@ Remaining Items
 9.     Poptastic is capable of supporting multiple devices using a single
        account. Store the destination's digest in the subject.
        See IMAP.
+10.    Document server-less P2P.
