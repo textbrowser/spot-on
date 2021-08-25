@@ -49,3 +49,5 @@ Summary of Spot-On
 <li>WebSockets.</li>
 <li>Windows portable.</li>
 </ul>
+
+![alt text](https://github.com/textbrowser/spot-on/blob/master/Wiki/Videos/p2p-serverless.mp4)
