@@ -460,12 +460,16 @@ void spoton::prepareOtherOptions(void)
 	(it.key() + " := " + it.value().toString());
     }
 
+  m_optionsUi.other_options->appendPlainText("");
+
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
 	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
 	 QString::number(spoton_common::
 			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
+      m_optionsUi.other_options->appendPlainText
+	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
       m_optionsUi.other_options->appendPlainText
 	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText
@@ -480,6 +484,7 @@ void spoton::prepareOtherOptions(void)
 	 QString::number(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
+      m_optionsUi.other_options->appendPlainText("");
     }
 }
 

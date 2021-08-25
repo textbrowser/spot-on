@@ -1008,7 +1008,11 @@ spoton_neighbor::spoton_neighbor
 	   QAbstractSocket::ReuseAddressHint | QAbstractSocket::ShareAddress);
 
 	if(m_tcpSocket->state() & QAbstractSocket::BoundState)
-	  m_specialPeerTimer.start(1);
+	  m_specialPeerTimer.start
+	    (qBound(0,
+		    spoton_kernel::
+		    setting("P2P_SERVERLESS_CONNECT_INTERVAL_MS", 1).toInt(),
+		    1500));
       }
 
   if(spoton_kernel::setting("gui/kernelExternalIpInterval", -1).toInt() == 30)

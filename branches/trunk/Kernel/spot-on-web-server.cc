@@ -556,9 +556,9 @@ void spoton_web_server_thread::process(QSslSocket *socket,
   if(db.isOpen())
     {
       QString link(list.value(1).toLower());
+      QString particles(data.mid(data.indexOf("current=")));
       QString querystr("");
       QString search("");
-      QString particles(data.mid(data.indexOf("current=")));
       quint64 count = 0;
 
       search = list.value(3);

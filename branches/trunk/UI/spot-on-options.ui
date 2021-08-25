@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>726</width>
-         <height>3948</height>
+         <y>-1824</y>
+         <width>719</width>
+         <height>4208</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1590,6 +1590,13 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
+            <widget class="QLabel" name="label_34">
+             <property name="text">
+              <string>Clear and Apply to reset.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPlainTextEdit" name="other_options">
              <property name="toolTip">
               <string>Option := Value</string>
@@ -2831,7 +2838,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>750</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
