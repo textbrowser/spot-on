@@ -3,6 +3,7 @@ include(spot-on-gui-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
+mceliece_supported = "false"
 
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
@@ -22,9 +23,12 @@ DEFINES         += LIBSPOTON_OS_WINDOWS \
                    SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_MCELIECE_ENABLED \
                    SPOTON_POPTASTIC_SUPPORTED \
 		   SPOTON_WEBSOCKETS_ENABLED
+
+equals(mceliece_supported, "true") {
+DEFINES         += SPOTON_MCELIECE_ENABLED
+}
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
@@ -58,15 +62,18 @@ INCLUDEPATH	+= . \
                    ..\\..\\PostgreSQL\\Include.win32 \
                    ..\\..\\libGPGME\\Win32.d \
                    ..\\..\\libGeoIP\\Include.win32 \
-                   ..\\..\\libNTL\\windows.d\\include \
                    ..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\libSpotOn\\Include.win32 \
                    ..\\..\\libcURL\\Win32.d\\include \
                    GUI
+
+equals(mceliece_supported, "true") {
+INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
+}
+
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -L..\\..\\libGPGME\\Win32.d \
 		   -L..\\..\\libGeoIP\\Libraries.win32 \
-		   -L..\\..\\libNTL\\windows.d\\libraries.d \
 		   -L..\\..\\libNTRU \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
                    -L..\\..\\libSpotOn\\Libraries.win32 \
@@ -77,13 +84,17 @@ LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lgpgme-11 \
-                   -lntl \
                    -lntru \
                    -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl-1_1 \
                    -lws2_32
+
+equals(mceliece_supported, "true") {
+LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
+}
+
 PRE_TARGETDEPS  = libntru.dll
 PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
@@ -108,8 +119,12 @@ libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
 libgpgme1.path = release\\.
 libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\*.exe
 libgpgme2.path = release\\.
+
+equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
+}
+
 libntru.files = ..\\..\\libNTRU\\*.dll
 libntru.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
