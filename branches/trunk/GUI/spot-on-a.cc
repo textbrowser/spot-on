@@ -228,6 +228,12 @@ int main(int argc, char *argv[])
   qapplication.setAttribute(Qt::AA_DontUseNativeDialogs, true);
 #endif
   qapplication.setAttribute(Qt::AA_DontUseNativeMenuBar, true);
+
+  QFont font(qapplication.font());
+
+  font.setStyleStrategy
+    (QFont::StyleStrategy(QFont::PreferAntialias | QFont::PreferQuality));
+  qapplication.setFont(font);
 #if SPOTON_GOLDBUG == 0
   qapplication.setWindowIcon(QIcon(":/Logo/spot-on-logo.png"));
 #else
