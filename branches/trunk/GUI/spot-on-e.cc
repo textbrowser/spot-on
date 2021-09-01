@@ -2349,7 +2349,8 @@ void spoton::slotTestPoptasticPop3Settings(void)
 
 	      if(fileInfo.isReadable())
 		curl_easy_setopt
-		  (curl, CURLOPT_CAINFO,
+		  (curl,
+		   CURLOPT_CAINFO,
 		   fileInfo.absoluteFilePath().toUtf8().constData());
 
 	      curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
