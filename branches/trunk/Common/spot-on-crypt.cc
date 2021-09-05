@@ -3802,7 +3802,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(addressString.isEmpty() || address == QHostAddress::LocalHost)
+  if(addressString.isEmpty())
     addressString = "Spot-On-" + weakRandomBytes(10).toHex();
 
   if(std::numeric_limits<int>::max() - addressString.toLatin1().length() < 1)
