@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1824</y>
+         <y>-3798</y>
          <width>719</width>
          <height>4208</height>
         </rect>
@@ -1004,6 +1004,9 @@
                   <property name="placeholderText">
                    <string>GeoIP IPv4 File Path</string>
                   </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -1035,6 +1038,9 @@
                   <property name="placeholderText">
                    <string>GeoIP IPv6 File Path</string>
                   </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -1065,6 +1071,9 @@
                   </property>
                   <property name="placeholderText">
                    <string>External IP URL</string>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>
@@ -1285,6 +1294,9 @@
                   </property>
                   <property name="placeholderText">
                    <string>SSL Control String</string>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>

@@ -87,6 +87,9 @@
        <property name="placeholderText">
         <string>PostgreSQL Database Name</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -103,6 +106,9 @@
       <widget class="QLineEdit" name="name">
        <property name="placeholderText">
         <string>Account Name</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -124,6 +130,9 @@
        <property name="placeholderText">
         <string>Account Password</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="4" column="0">
@@ -143,6 +152,9 @@
        </property>
        <property name="placeholderText">
         <string>Hostname</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -189,6 +201,9 @@
        </property>
        <property name="placeholderText">
         <string>Connection Options</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

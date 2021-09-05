@@ -77,6 +77,9 @@
           <property name="placeholderText">
            <string>Destination Path</string>
           </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -107,6 +110,9 @@
          <widget class="QLineEdit" name="file">
           <property name="placeholderText">
            <string>Origin Path</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -145,6 +151,9 @@
           <property name="placeholderText">
            <string>Secret</string>
           </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
         <item>
@@ -168,6 +177,9 @@
          <widget class="QLineEdit" name="pin">
           <property name="placeholderText">
            <string>PIN</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

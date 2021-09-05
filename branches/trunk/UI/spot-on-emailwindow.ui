@@ -52,6 +52,9 @@
         <property name="placeholderText">
          <string>Subject</string>
         </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item row="3" column="0">
@@ -141,6 +144,9 @@
          <widget class="QLineEdit" name="emailNameEditable">
           <property name="placeholderText">
            <string>Your Name</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>
@@ -266,6 +272,9 @@
           </property>
           <property name="placeholderText">
            <string>Optional Secret</string>
+          </property>
+          <property name="clearButtonEnabled">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

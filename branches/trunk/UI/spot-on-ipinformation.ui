@@ -60,6 +60,9 @@
        <property name="placeholderText">
         <string>IP Address</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item row="1" column="0">
@@ -96,6 +99,9 @@
       <widget class="QLineEdit" name="scope">
        <property name="placeholderText">
         <string>Scope ID</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

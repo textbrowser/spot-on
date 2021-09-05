@@ -47,6 +47,9 @@
        <property name="placeholderText">
         <string>Passphrase</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
@@ -77,6 +80,9 @@
        <property name="placeholderText">
         <string>Question</string>
        </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
@@ -93,6 +99,9 @@
       <widget class="QLineEdit" name="answer">
        <property name="placeholderText">
         <string>Answer</string>
+       </property>
+       <property name="clearButtonEnabled">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

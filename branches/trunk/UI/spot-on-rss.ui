@@ -77,6 +77,9 @@
                 <property name="placeholderText">
                  <string>Hostname</string>
                 </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="0" column="0">
@@ -156,6 +159,9 @@
                 <property name="placeholderText">
                  <string>Username</string>
                 </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item row="2" column="2">
@@ -178,6 +184,9 @@
                 </property>
                 <property name="placeholderText">
                  <string>Password</string>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -493,6 +502,9 @@
                <property name="placeholderText">
                 <string>Feed(s)</string>
                </property>
+               <property name="clearButtonEnabled">
+                <bool>true</bool>
+               </property>
               </widget>
              </item>
              <item>
@@ -527,8 +539,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>360</width>
-             <height>223</height>
+             <width>693</width>
+             <height>563</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -698,6 +710,9 @@
                 </property>
                 <property name="placeholderText">
                  <string>Find</string>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>

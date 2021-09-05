@@ -3475,6 +3475,14 @@ spoton::spoton(void):QMainWindow()
 
   if(m_optionsUi.theme->currentIndex() < 0)
     m_optionsUi.theme->setCurrentIndex(3);
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  foreach(QLineEdit *lineEdit, findChildren<QLineEdit *> ())
+    if(!lineEdit->isReadOnly() && !lineEdit->objectName().contains("spinbox"))
+      lineEdit->setClearButtonEnabled(true);
+
+  QApplication::restoreOverrideCursor();
 }
 
 spoton::~spoton()
