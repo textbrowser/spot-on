@@ -1097,7 +1097,7 @@ void spoton_web_server_thread::writeDefaultPage
       else
 	location = "https://";
 
-      location.append(socket->localAddress().toString() +
+      location.append(socket->localAddress().toString().toUtf8() +
 		      ":" +
 		      QByteArray::number(socket->localPort()));
       write(socket,
