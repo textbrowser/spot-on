@@ -6275,6 +6275,11 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('RSS URLs Imported', ?)");
+	query.bindValue(0, locale.toString(m_rss->imported()));
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('Total Neighbors KiB Read / Written', ?)");
 
 	QReadLocker locker4(&s_totalNeighborsBytesReadWrittenMutex);

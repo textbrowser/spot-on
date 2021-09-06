@@ -44,6 +44,7 @@ static char s_user_agent[] = "Spot-On";
 spoton_rss::spoton_rss(QObject *parent):QObject(parent)
 {
   m_cancelImport = 0;
+  m_imported = 0;
   m_lastUniqueId = QPair<QByteArray, qint64> (QByteArray(), -1);
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
@@ -132,6 +133,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
   db.close();
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
+  m_imported.fetchAndAddOrdered(imported ? 1 : 0);
 
   if(!error.isEmpty())
     emit logError(error);
@@ -141,6 +143,11 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
        arg(spoton_misc::urlToEncoded(url).constData()));
 
   return imported;
+}
+
+quint64 spoton_rss::imported(void) const
+{
+  return m_imported.loadAcquire();
 }
 
 spoton_crypt *spoton_rss::urlCommonCrypt(void) const

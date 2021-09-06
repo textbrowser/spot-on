@@ -43,10 +43,12 @@ class spoton_rss: public QObject
  public:
   spoton_rss(QObject *parent);
   ~spoton_rss();
+  quint64 imported(void) const;
   void deactivate(void);
 
  private:
   QAtomicInt m_cancelImport;
+  QAtomicInteger<quint64> m_imported;
   QByteArray m_feedDownloadContent;
   QFuture<void> m_parseXmlFuture;
   QNetworkAccessManager m_contentNetworkAccessManager;
