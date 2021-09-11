@@ -3713,7 +3713,8 @@ void spoton_crypt::freeSymmetricKey(void)
     m_symmetricKeyMutex.unlock();
 }
 
-void spoton_crypt::generateCertificate(RSA *rsa,
+void spoton_crypt::generateCertificate(const int keySize,
+				       void *key,
 				       QByteArray &certificate,
 				       const QHostAddress &address,
 				       const long int days,
@@ -3723,6 +3724,7 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   BUF_MEM *bptr;
   EVP_PKEY *pk = 0;
   QString addressString(address.toString().trimmed());
+  RSA *rsa = 0;
   X509 *x509 = 0;
   X509_NAME *name = 0;
   X509_NAME *subject = 0;
@@ -3737,12 +3739,17 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   if(!error.isEmpty())
     goto done_label;
 
-  if(!rsa)
+  if(keySize > 1024)
     {
-      error = QObject::tr("rsa container is zero");
-      spoton_misc::logError("spoton_crypt::generateCertificate(): "
-			    "rsa container is zero.");
-      goto done_label;
+      rsa = (RSA *) key;
+
+      if(!rsa)
+	{
+	  error = QObject::tr("rsa container is zero");
+	  spoton_misc::logError("spoton_crypt::generateCertificate(): "
+				"rsa container is zero.");
+	  goto done_label;
+	}
     }
 
   if(!(pk = EVP_PKEY_new()))
@@ -3763,13 +3770,14 @@ void spoton_crypt::generateCertificate(RSA *rsa,
       goto done_label;
     }
 
-  if(EVP_PKEY_assign_RSA(pk, rsa) == 0)
-    {
-      error = QObject::tr("EVP_PKEY_assign_RSA() returned zero");
-      spoton_misc::logError("spoton_crypt::generateCertificate(): "
-			    "EVP_PKEY_assign_RSA() failure.");
-      goto done_label;
-    }
+  if(rsa)
+    if(EVP_PKEY_assign_RSA(pk, rsa) == 0)
+      {
+	error = QObject::tr("EVP_PKEY_assign_RSA() returned zero");
+	spoton_misc::logError("spoton_crypt::generateCertificate(): "
+			      "EVP_PKEY_assign_RSA() failure.");
+	goto done_label;
+      }
 
   /*
   ** Set some attributes.
@@ -3973,17 +3981,18 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   free(commonName);
 }
 
-void spoton_crypt::generateECCKeys(const int keySize,
-				   const int long days,
-				   QByteArray &privateKey,
+void spoton_crypt::generateECCKeys(QByteArray &privateKey,
 				   QByteArray &publicKey,
-				   QString &error)
+				   QString &error,
+				   const QHostAddress &address,
+				   const int keySize)
 {
   BIO *privateMemory = 0;
   BIO *publicMemory = 0;
   BUF_MEM *bptr;
   EC_KEY *ecc = 0;
   EVP_PKEY *pk = 0;
+  QByteArray certificate;
   char *privateBuffer = 0;
   char *publicBuffer = 0;
   int eccGroup = 0;
@@ -4112,6 +4121,9 @@ void spoton_crypt::generateSslKeys(const int keySize,
   char *privateBuffer = 0;
   char *publicBuffer = 0;
 
+  if(!error.isEmpty())
+    goto done_label;
+
   if(keySize <= 0)
     {
       error = QObject::tr("keySize is less than or equal to zero");
@@ -4119,6 +4131,8 @@ void spoton_crypt::generateSslKeys(const int keySize,
 			    "keySize is less than or equal to zero.");
       goto done_label;
     }
+  else if(keySize < 1024)
+    goto ecc_label;
   else if(keySize > 4096)
     {
       error = QObject::tr("keySize is greater than 4096");
@@ -4228,8 +4242,12 @@ void spoton_crypt::generateSslKeys(const int keySize,
   publicBuffer[bptr->length] = 0;
   publicKey = publicBuffer;
 
-  if(days > 0)
-    generateCertificate(rsa, certificate, address, days, error);
+ ecc_label:
+
+  if(keySize < 1024)
+    generateECCKeys(privateKey, publicKey, error, address, keySize);
+  else
+    generateCertificate(keySize, rsa, certificate, address, days, error);
 
  done_label:
 

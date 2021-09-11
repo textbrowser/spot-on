@@ -152,11 +152,11 @@ class spoton_crypt
 							 */
   static size_t cipherKeyLength(const QByteArray &cipherType);
   static size_t ivLength(const QString &cipherType);
-  static void generateECCKeys(const int keySize,
-			      const int long days,
-			      QByteArray &privateKey,
+  static void generateECCKeys(QByteArray &privateKey,
 			      QByteArray &publicKey,
-			      QString &error);
+			      QString &error,
+			      const QHostAddress &address,
+			      const int keySize);
   static void generateMcElieceKeys(const QString &keySize,
 				   QByteArray &privateKey,
 				   QByteArray &publicKey,
@@ -306,7 +306,8 @@ class spoton_crypt
   static bool setInitializationVector(QByteArray &iv,
 				      const int algorithm,
 				      gcry_cipher_hd_t cipherHandle);
-  static void generateCertificate(RSA *rsa,
+  static void generateCertificate(const int keySize,
+				  void *key,
 				  QByteArray &certificate,
 				  const QHostAddress &address,
 				  const long int days,
