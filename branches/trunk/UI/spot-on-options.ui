@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-3798</y>
-         <width>719</width>
-         <height>4208</height>
+         <y>-2751</y>
+         <width>726</width>
+         <height>3971</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -2157,9 +2157,20 @@ does not apply to data destined for institutions.</string>
                 </item>
                 <item>
                  <widget class="QComboBox" name="publishedKeySize">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please select a size less than 1024 for ECC.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="currentIndex">
+                   <number>1</number>
+                  </property>
                   <property name="sizeAdjustPolicy">
                    <enum>QComboBox::AdjustToContents</enum>
                   </property>
+                  <item>
+                   <property name="text">
+                    <string>521</string>
+                   </property>
+                  </item>
                   <item>
                    <property name="text">
                     <string>2048</string>
@@ -2850,7 +2861,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>750</width>
-     <height>30</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
