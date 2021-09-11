@@ -3973,7 +3973,130 @@ void spoton_crypt::generateCertificate(RSA *rsa,
   free(commonName);
 }
 
-void spoton_crypt::generateSslKeys(const int rsaKeySize,
+void spoton_crypt::generateECCKeys(const int keySize,
+				   const int long days,
+				   QByteArray &privateKey,
+				   QByteArray &publicKey,
+				   QString &error)
+{
+  BIO *privateMemory = 0;
+  BIO *publicMemory = 0;
+  BUF_MEM *bptr;
+  EC_KEY *ecc = 0;
+  EVP_PKEY *pk = 0;
+  char *privateBuffer = 0;
+  char *publicBuffer = 0;
+  int eccGroup = 0;
+
+  if((eccGroup = OBJ_txt2nid("secp521r1")) == NID_undef)
+    {
+      error = QObject::tr("OBJ_txt2nid() failure");
+      goto done_label;
+    }
+
+  if(!(ecc = EC_KEY_new_by_curve_name(eccGroup)))
+    {
+      error = QObject::tr("EC_KEY_new_by_curve_name() returned zero");
+      goto done_label;
+    }
+
+  if(!(privateMemory = BIO_new(BIO_s_mem())))
+    {
+      error = QObject::tr("BIO_new() returned zero");
+      goto done_label;
+    }
+
+  if(!(publicMemory = BIO_new(BIO_s_mem())))
+    {
+      error = QObject::tr("BIO_new() returned zero");
+      goto done_label;
+    }
+
+  EC_KEY_set_asn1_flag(ecc, OPENSSL_EC_NAMED_CURVE);
+
+  if(EC_KEY_generate_key(ecc) == 0)
+    {
+      error = QObject::tr("EC_KEY_generate_key() failure");
+      goto done_label;
+    }
+
+  if(!(pk = EVP_PKEY_new()))
+    {
+      error = QObject::tr("EVP_PKEY_new() returned zero");
+      goto done_label;
+    }
+
+  if(EVP_PKEY_assign_EC_KEY(pk, ecc) == 0)
+    {
+      error = QObject::tr("EVP_PKEY_assign_EC_KEY() failure");
+      goto done_label;
+    }
+
+  if(!(ecc = EVP_PKEY_get1_EC_KEY(pk)))
+    {
+      error = QObject::tr("EVP_PKEY_get1_EC_KEY() failure");
+      goto done_label;
+    }
+
+  if(!PEM_write_bio_PrivateKey(privateMemory, pk, 0, 0, 0, 0, 0))
+    {
+      error = QObject::tr("PEM_write_bio_PrivateKey() failure");
+      goto done_label;
+    }
+
+  if(!PEM_write_bio_PUBKEY(publicMemory, pk))
+    {
+      error = QObject::tr("PEM_write_bio_PUBKEY() failure");
+      goto done_label;
+    }
+
+  BIO_get_mem_ptr(privateMemory, &bptr);
+
+  if(bptr->length + 1 <= 0 ||
+     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
+     !(privateBuffer = static_cast<char *> (calloc(bptr->length + 1,
+						   sizeof(char)))))
+    {
+      error = QObject::tr("calloc() failure or bptr->length + 1 is irregular");
+      goto done_label;
+    }
+
+  memcpy(privateBuffer, bptr->data, bptr->length);
+  privateBuffer[bptr->length] = 0;
+  privateKey = privateBuffer;
+  BIO_get_mem_ptr(publicMemory, &bptr);
+
+  if(bptr->length + 1 <= 0 ||
+     std::numeric_limits<size_t>::max() - bptr->length < 1 ||
+     !(publicBuffer = static_cast<char *> (calloc(bptr->length + 1,
+						  sizeof(char)))))
+    {
+      error = QObject::tr("calloc() failure or bptr->length + 1 is irregular");
+      goto done_label;
+    }
+
+  memcpy(publicBuffer, bptr->data, bptr->length);
+  publicBuffer[bptr->length] = 0;
+  publicKey = publicBuffer;
+
+ done_label:
+
+  if(!error.isEmpty())
+    {
+      memzero(privateKey);
+      memzero(publicKey);
+      spoton_misc::logError("spoton_crypt::generateECCKeys(): " + error + ".");
+    }
+
+  BIO_free(privateMemory);
+  BIO_free(publicMemory);
+  EC_KEY_free(ecc);
+  EVP_PKEY_free(pk);
+  free(privateBuffer);
+  free(publicBuffer);
+}
+
+void spoton_crypt::generateSslKeys(const int keySize,
 				   QByteArray &certificate,
 				   QByteArray &privateKey,
 				   QByteArray &publicKey,
@@ -3989,18 +4112,18 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
   char *privateBuffer = 0;
   char *publicBuffer = 0;
 
-  if(rsaKeySize <= 0)
+  if(keySize <= 0)
     {
-      error = QObject::tr("rsaKeySize is less than or equal to zero");
+      error = QObject::tr("keySize is less than or equal to zero");
       spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "rsaKeySize is less than or equal to zero.");
+			    "keySize is less than or equal to zero.");
       goto done_label;
     }
-  else if(rsaKeySize > 4096)
+  else if(keySize > 4096)
     {
-      error = QObject::tr("rsaKeySize is greater than 4096");
+      error = QObject::tr("keySize is greater than 4096");
       spoton_misc::logError("spoton_crypt::generateSslKeys(): "
-			    "rsaKeySize is greater than 4096.");
+			    "keySize is greater than 4096.");
       goto done_label;
     }
 
@@ -4028,7 +4151,7 @@ void spoton_crypt::generateSslKeys(const int rsaKeySize,
       goto done_label;
     }
 
-  if(RSA_generate_key_ex(rsa, rsaKeySize, f4, 0) == -1)
+  if(RSA_generate_key_ex(rsa, keySize, f4, 0) == -1)
     {
       error = QObject::tr("RSA_generate_key_ex() returned negative one");
       spoton_misc::logError("spoton_crypt::generateSslKeys(): "
