@@ -329,10 +329,6 @@ void spoton_web_server_thread::process
   ** Prepare the socket!
   */
 
-  auto keySize =
-    qMax(0,
-	 spoton_kernel::setting("WEB_SERVER_KEY_SIZE",
-				spoton_common::WEB_SERVER_KEY_SIZE).toInt());
   auto readBufferSize =
     qMax(0,
 	 spoton_kernel::

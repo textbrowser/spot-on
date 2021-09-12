@@ -4027,7 +4027,14 @@ void spoton_crypt::generateECCKeys(QByteArray &certificate,
   char *publicBuffer = 0;
   int eccGroup = 0;
 
-  if((eccGroup = OBJ_txt2nid("secp521r1")) == NID_undef)
+  if(keySize == 256)
+    eccGroup = OBJ_txt2nid("prime256v1");
+  else if(keySize == 384)
+    eccGroup = OBJ_txt2nid("secp384r1");
+  else
+    eccGroup = OBJ_txt2nid("secp521r1");
+
+  if(eccGroup == NID_undef)
     {
       error = QObject::tr("OBJ_txt2nid() failure");
       goto done_label;

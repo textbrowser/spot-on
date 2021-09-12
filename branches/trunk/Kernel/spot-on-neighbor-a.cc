@@ -593,7 +593,9 @@ spoton_neighbor::spoton_neighbor
   if(transport == "tcp" || transport == "udp" || transport == "websocket")
     {
       if(m_keySize != 0)
-	if(!(m_keySize == 512 ||
+	if(!(m_keySize == 256 ||
+	     m_keySize == 384 ||
+	     m_keySize == 512 ||
 	     m_keySize == 2048 ||
 	     m_keySize == 3072 ||
 	     m_keySize == 4096))
