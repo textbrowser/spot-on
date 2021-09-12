@@ -1802,11 +1802,12 @@ void spoton::initializeKernelSocket(void)
 
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-	  if(m_ui.kernelKeySize->currentText().toInt() < 1024)
-	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Ec));
-	  else
-	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	  QSslKey key(privateKey, QSsl::Ec);
 
+	  if(key.isNull())
+	    key = QSslKey(privateKey, QSsl::Rsa);
+
+	  configuration.setPrivateKey(key);
 	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableEmptyFragments, true);
@@ -4191,8 +4192,7 @@ void spoton::slotKernelKeySizeChanged(const QString &text)
   QSettings settings;
 
   settings.setValue
-    ("gui/kernelKeySize",
-     m_settings.value("gui/kernelKeySize"));
+    ("gui/kernelKeySize", m_settings.value("gui/kernelKeySize"));
 }
 
 void spoton::slotKernelStatus(void)

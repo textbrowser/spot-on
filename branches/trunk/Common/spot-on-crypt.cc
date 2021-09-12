@@ -4027,12 +4027,24 @@ void spoton_crypt::generateECCKeys(QByteArray &certificate,
   char *publicBuffer = 0;
   int eccGroup = 0;
 
-  if(keySize == 256)
-    eccGroup = OBJ_txt2nid("prime256v1");
-  else if(keySize == 384)
-    eccGroup = OBJ_txt2nid("secp384r1");
-  else
-    eccGroup = OBJ_txt2nid("secp521r1");
+  switch(keySize)
+    {
+    case 256:
+      {
+	eccGroup = OBJ_txt2nid("prime256v1");
+	break;
+      }
+    case 384:
+      {
+	eccGroup = OBJ_txt2nid("secp384r1");
+	break;
+      }
+    default:
+      {
+	eccGroup = OBJ_txt2nid("secp521r1");
+	break;
+      }
+    }
 
   if(eccGroup == NID_undef)
     {

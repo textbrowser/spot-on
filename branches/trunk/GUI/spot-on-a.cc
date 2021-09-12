@@ -2625,7 +2625,7 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelKeySize->setCurrentIndex
       (m_ui.kernelKeySize->findText(keySize));
   else
-    m_ui.kernelKeySize->setCurrentIndex(2); // 2048
+    m_ui.kernelKeySize->setCurrentIndex(4); // 2048
 
   m_kernelSocket.setProperty
     ("key_size", m_ui.kernelKeySize->currentText().toInt());
@@ -2635,7 +2635,7 @@ spoton::spoton(void):QMainWindow()
     m_optionsUi.publishedKeySize->setCurrentIndex
       (m_optionsUi.publishedKeySize->findText(keySize));
   else
-    m_optionsUi.publishedKeySize->setCurrentIndex(1);
+    m_optionsUi.publishedKeySize->setCurrentIndex(3); // 2048
 
   QByteArray status
     (m_settings.value("gui/my_status", "Online").toByteArray().toLower());
