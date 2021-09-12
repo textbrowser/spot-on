@@ -247,7 +247,10 @@ spoton_listener::spoton_listener
 	  m_transport == "websocket")
     {
       if(m_keySize != 0)
-	if(!(m_keySize == 2048 || m_keySize == 3072 || m_keySize == 4096))
+	if(!(m_keySize == 512 ||
+	     m_keySize == 2048 ||
+	     m_keySize == 3072 ||
+	     m_keySize == 4096))
 	  m_keySize = 2048;
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))
@@ -658,10 +661,12 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
 	  if(!configuration.localCertificate().isNull())
 	    {
-	      if(m_keySize < 1024)
-		configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Ec));
-	      else
-		configuration.setPrivateKey(QSslKey(m_privateKey, QSsl::Rsa));
+	      QSslKey key(m_privateKey, QSsl::Ec);
+
+	      if(key.isNull())
+		key = QSslKey(m_privateKey, QSsl::Rsa);
+
+	      configuration.setPrivateKey(key);
 
 	      if(!configuration.privateKey().isNull())
 		{

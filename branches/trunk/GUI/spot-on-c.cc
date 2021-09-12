@@ -259,7 +259,9 @@ void spoton::importNeighbors(const QString &filePath)
 			token = token.trimmed();
 
 			if(!(token == "0" ||
-			     token == "2048" || token == "3072" ||
+			     token == "512" ||
+			     token == "2048" ||
+			     token == "3072" ||
 			     token == "4096"))
 			  fine = false;
 			else

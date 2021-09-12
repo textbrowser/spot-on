@@ -593,7 +593,10 @@ spoton_neighbor::spoton_neighbor
   if(transport == "tcp" || transport == "udp" || transport == "websocket")
     {
       if(m_keySize != 0)
-	if(!(m_keySize == 2048 || m_keySize == 3072 || m_keySize == 4096))
+	if(!(m_keySize == 512 ||
+	     m_keySize == 2048 ||
+	     m_keySize == 3072 ||
+	     m_keySize == 4096))
 	  m_keySize = 2048;
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 12, 0))

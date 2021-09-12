@@ -354,11 +354,12 @@ void spoton_web_server_thread::process
       configuration.setLocalCertificate(QSslCertificate(credentials.first));
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-      if(keySize < 1024)
-	configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Ec));
-      else
-	configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
+      QSslKey key(credentials.second, QSsl::Ec);
 
+      if(key.isNull())
+	key = QSslKey(credentials.second, QSsl::Rsa);
+
+      configuration.setPrivateKey(key);
       configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
       configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
       configuration.setSslOption
