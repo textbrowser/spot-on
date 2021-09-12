@@ -5034,8 +5034,7 @@ void spoton::slotAddNeighbor(void)
 	   m_ui.neighborTransport->currentIndex() == 4)   // WebSocket
 	  {
 	    if(m_ui.requireSsl->isChecked())
-	      query.bindValue
-		(19, m_ui.neighborKeySize->currentText().toInt());
+	      query.bindValue(19, m_ui.neighborKeySize->currentText().toInt());
 	    else
 	      query.bindValue(19, 0);
 	  }
