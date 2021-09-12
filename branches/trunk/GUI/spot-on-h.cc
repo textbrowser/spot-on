@@ -480,8 +480,8 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_HTTPS_SO_LINGER := -1");
       m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_RSA_KEY_SIZE := " +
-	 QString::number(spoton_common::WEB_SERVER_RSA_KEY_SIZE));
+	("WEB_SERVER_KEY_SIZE := " +
+	 QString::number(spoton_common::WEB_SERVER_KEY_SIZE));
       m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
       m_optionsUi.other_options->appendPlainText("");
@@ -1702,13 +1702,13 @@ void spoton::slotWebServerValueChangedTimeout(void)
 
       m_sb.status->setText
 	(tr("Generating %1-bit SSL/TLS data. Please be patient.").
-	 arg(m_settings.value("WEB_SERVER_RSA_KEY_SIZE",
-			      spoton_common::WEB_SERVER_RSA_KEY_SIZE).
+	 arg(m_settings.value("WEB_SERVER_KEY_SIZE",
+			      spoton_common::WEB_SERVER_KEY_SIZE).
 	     toInt()));
       m_sb.status->repaint();
       spoton_crypt::generateSslKeys
-	(m_settings.value("WEB_SERVER_RSA_KEY_SIZE",
-			  spoton_common::WEB_SERVER_RSA_KEY_SIZE).toInt(),
+	(m_settings.value("WEB_SERVER_KEY_SIZE",
+			  spoton_common::WEB_SERVER_KEY_SIZE).toInt(),
 	 certificate,
 	 privateKey,
 	 publicKey,

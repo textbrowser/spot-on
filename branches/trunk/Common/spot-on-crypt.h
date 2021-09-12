@@ -152,11 +152,13 @@ class spoton_crypt
 							 */
   static size_t cipherKeyLength(const QByteArray &cipherType);
   static size_t ivLength(const QString &cipherType);
-  static void generateECCKeys(QByteArray &privateKey,
+  static void generateECCKeys(QByteArray &certificate,
+			      QByteArray &privateKey,
 			      QByteArray &publicKey,
 			      QString &error,
 			      const QHostAddress &address,
-			      const int keySize);
+			      const int keySize,
+			      const long int days);
   static void generateMcElieceKeys(const QString &keySize,
 				   QByteArray &privateKey,
 				   QByteArray &publicKey,

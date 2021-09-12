@@ -1801,7 +1801,12 @@ void spoton::initializeKernelSocket(void)
 			      spoton_common::SSL_CONTROL_STRING).toString());
 
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+
+	  if(m_ui.kernelKeySize->currentText().toInt() < 1024)
+	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Ec));
+	  else
+	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+
 	  configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
 	  configuration.setSslOption
 	    (QSsl::SslOptionDisableEmptyFragments, true);

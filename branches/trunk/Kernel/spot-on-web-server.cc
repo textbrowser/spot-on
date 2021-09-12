@@ -329,6 +329,10 @@ void spoton_web_server_thread::process
   ** Prepare the socket!
   */
 
+  auto keySize =
+    qMax(0,
+	 spoton_kernel::setting("WEB_SERVER_KEY_SIZE",
+				spoton_common::WEB_SERVER_KEY_SIZE).toInt());
   auto readBufferSize =
     qMax(0,
 	 spoton_kernel::
@@ -349,7 +353,12 @@ void spoton_web_server_thread::process
 
       configuration.setLocalCertificate(QSslCertificate(credentials.first));
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
-      configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
+
+      if(keySize < 1024)
+	configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Ec));
+      else
+	configuration.setPrivateKey(QSslKey(credentials.second, QSsl::Rsa));
+
       configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
       configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
       configuration.setSslOption

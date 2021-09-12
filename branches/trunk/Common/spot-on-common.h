@@ -122,7 +122,7 @@ class spoton_common
 								  ** UDP) are
 								  ** changed.
 								  */
-  static const int WEB_SERVER_RSA_KEY_SIZE = 3072;
+  static const int WEB_SERVER_KEY_SIZE = 3072;
   static const long int WEB_SERVER_CERTIFICATE_LIFETIME =
     365L * 60L * 60L * 24L;
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;

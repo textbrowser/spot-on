@@ -3722,6 +3722,7 @@ void spoton_crypt::generateCertificate(const int keySize,
 {
   BIO *memory = 0;
   BUF_MEM *bptr;
+  EC_KEY *ecc = 0;
   EVP_PKEY *pk = 0;
   QString addressString(address.toString().trimmed());
   RSA *rsa = 0;
@@ -3739,7 +3740,19 @@ void spoton_crypt::generateCertificate(const int keySize,
   if(!error.isEmpty())
     goto done_label;
 
-  if(keySize > 1024)
+  if(keySize < 1024)
+    {
+      ecc = (EC_KEY *) key;
+
+      if(!ecc)
+	{
+	  error = QObject::tr("ecc container is zero");
+	  spoton_misc::logError("spoton_crypt::generateCertificate(): "
+				"ecc container is zero.");
+	  goto done_label;
+	}
+    }
+  else
     {
       rsa = (RSA *) key;
 
@@ -3769,6 +3782,15 @@ void spoton_crypt::generateCertificate(const int keySize,
 	 "X509_new() failure.");
       goto done_label;
     }
+
+  if(ecc)
+    if(EVP_PKEY_assign_EC_KEY(pk, ecc) == 0)
+      {
+	error = QObject::tr("EVP_PKEY_assign_EC_KEY() returned zero");
+	spoton_misc::logError("spoton_crypt::generateCertificate(): "
+			      "EVP_PKEY_assign_EC_KEY() failure.");
+	goto done_label;
+      }
 
   if(rsa)
     if(EVP_PKEY_assign_RSA(pk, rsa) == 0)
@@ -3912,7 +3934,7 @@ void spoton_crypt::generateCertificate(const int keySize,
 #if OPENSSL_VERSION_NUMBER < 0x10101000L
   if(X509_sign(x509, pk, EVP_sha512()) == 0)
 #else
-  if(X509_sign(x509, pk, EVP_sha3_512()) == 0)
+  if(X509_sign(x509, pk, EVP_sha512()) == 0)
 #endif
     {
       error = QObject::tr("X509_sign() returned zero");
@@ -3966,6 +3988,13 @@ void spoton_crypt::generateCertificate(const int keySize,
   if(!error.isEmpty())
     memzero(certificate);
 
+  if(ecc)
+    EC_KEY_up_ref(ecc);  /*
+			 ** Reference counter. ecc rsa object will be
+			 ** destroyed separately via EC_KEY_free().
+			 ** See also EVP_PKEY_free().
+			 */
+
   if(rsa)
     RSA_up_ref(rsa); /*
 		     ** Reference counter. The rsa object will be
@@ -3981,18 +4010,19 @@ void spoton_crypt::generateCertificate(const int keySize,
   free(commonName);
 }
 
-void spoton_crypt::generateECCKeys(QByteArray &privateKey,
+void spoton_crypt::generateECCKeys(QByteArray &certificate,
+				   QByteArray &privateKey,
 				   QByteArray &publicKey,
 				   QString &error,
 				   const QHostAddress &address,
-				   const int keySize)
+				   const int keySize,
+				   const long int days)
 {
   BIO *privateMemory = 0;
   BIO *publicMemory = 0;
   BUF_MEM *bptr;
   EC_KEY *ecc = 0;
   EVP_PKEY *pk = 0;
-  QByteArray certificate;
   char *privateBuffer = 0;
   char *publicBuffer = 0;
   int eccGroup = 0;
@@ -4096,6 +4126,8 @@ void spoton_crypt::generateECCKeys(QByteArray &privateKey,
       memzero(publicKey);
       spoton_misc::logError("spoton_crypt::generateECCKeys(): " + error + ".");
     }
+  else
+    generateCertificate(keySize, ecc, certificate, address, days, error);
 
   BIO_free(privateMemory);
   BIO_free(publicMemory);
@@ -4245,7 +4277,8 @@ void spoton_crypt::generateSslKeys(const int keySize,
  ecc_label:
 
   if(keySize < 1024)
-    generateECCKeys(privateKey, publicKey, error, address, keySize);
+    generateECCKeys
+      (certificate, privateKey, publicKey, error, address, keySize, days);
   else
     generateCertificate(keySize, rsa, certificate, address, days, error);
 

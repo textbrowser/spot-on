@@ -41,7 +41,10 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
     {
       QSslConfiguration configuration;
 
-      configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+      if(m_keySize < 1024)
+	configuration.setPrivateKey(QSslKey(privateKey, QSsl::Ec));
+      else
+	configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
       if(!configuration.privateKey().isNull())
 	{
@@ -98,7 +101,10 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
       if(!configuration.localCertificate().isNull())
 	{
-	  configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
+	  if(m_keySize < 1024)
+	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Ec));
+	  else
+	    configuration.setPrivateKey(QSslKey(privateKey, QSsl::Rsa));
 
 	  if(!configuration.privateKey().isNull())
 	    {
