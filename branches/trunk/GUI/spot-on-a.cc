@@ -58,6 +58,14 @@ extern "C"
 #include <qbluetooth.h>
 #endif
 
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
+extern "C"
+{
+#include <signal.h>
+#include <sys/types.h>
+}
+#endif
+
 #ifdef SPOTON_GPGME_ENABLED
 extern "C"
 {
@@ -5780,10 +5788,17 @@ void spoton::slotDeactivateKernel(void)
     {
       QApplication::processEvents();
 
-      if(m_ui.pid->text().toLongLong() <= 0)
+      pid_t pid = static_cast<pid_t> (m_ui.pid->text().toLongLong());
+
+      if(pid <= 0)
 	break;
       else if(time.hasExpired(10000))
-	break;
+	{
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
+	  kill(pid, SIGTERM);
+#endif
+	  break;
+	}
     }
   while(!m_quit);
 
