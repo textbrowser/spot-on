@@ -4392,6 +4392,9 @@
                           </item>
                           <item>
                            <widget class="QComboBox" name="neighborKeySize">
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please set if a server-less connection is desired. All other neighbors will ignore this value.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
                             <property name="currentIndex">
                              <number>3</number>
                             </property>
@@ -6032,8 +6035,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>963</width>
-             <height>1183</height>
+             <width>993</width>
+             <height>1166</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">

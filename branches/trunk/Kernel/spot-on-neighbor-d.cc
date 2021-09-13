@@ -30,6 +30,24 @@
 
 #include "spot-on-neighbor.h"
 
+QSslConfiguration spoton_neighbor::sslConfiguration(void) const
+{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
+  if(m_dtls)
+    return m_dtls->dtlsConfiguration();
+#endif
+
+  if(m_tcpSocket)
+    return m_tcpSocket->sslConfiguration();
+
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  if(m_webSocket)
+    return m_webSocket->sslConfiguration();
+#endif
+
+  return QSslConfiguration();
+}
+
 void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 					      const QByteArray &privateKey,
 					      const bool client)
@@ -39,60 +57,37 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
   if(client)
     {
-      QSslConfiguration configuration;
-      QSslKey key(privateKey, QSsl::Ec);
+      QSslConfiguration configuration(sslConfiguration());
 
-      if(key.isNull())
-	key = QSslKey(privateKey, QSsl::Rsa);
-
-      configuration.setPrivateKey(key);
-
-      if(!configuration.privateKey().isNull())
-	{
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableCompression, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableEmptyFragments, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableLegacyRenegotiation, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionTickets, true);
+      configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
+      configuration.setSslOption(QSsl::SslOptionDisableCompression, true);
+      configuration.setSslOption(QSsl::SslOptionDisableEmptyFragments, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableLegacyRenegotiation, true);
+      configuration.setSslOption(QSsl::SslOptionDisableSessionTickets, true);
 #if QT_VERSION >= 0x050501
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionPersistence, true);
-	  configuration.setSslOption
-	    (QSsl::SslOptionDisableSessionSharing, true);
+      configuration.setSslOption
+	(QSsl::SslOptionDisableSessionPersistence, true);
+      configuration.setSslOption(QSsl::SslOptionDisableSessionSharing, true);
 #endif
-	  configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
-	  spoton_crypt::setSslCiphers
-	    (configuration.supportedCiphers(),
-	     m_sslControlString,
-	     configuration);
+      spoton_crypt::setSslCiphers
+	(configuration.supportedCiphers(), m_sslControlString, configuration);
+
+      if(m_tcpSocket)
+	m_tcpSocket->setSslConfiguration(configuration);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
-	  if(m_udpSocket)
-	    {
-	      m_udpSslConfiguration = configuration;
-	      m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
-	    }
+      if(m_udpSocket)
+	{
+	  m_udpSslConfiguration = configuration;
+	  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
+	}
 #endif
-	  if(m_tcpSocket)
-	    m_tcpSocket->setSslConfiguration(configuration);
 
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-	  if(m_webSocket)
-	    m_webSocket->setSslConfiguration(configuration);
+      if(m_webSocket)
+	m_webSocket->setSslConfiguration(configuration);
 #endif
-	}
-      else
-	{
-	  m_useSsl = m_requireSsl;
-	  spoton_misc::logError
-	    (QString("spoton_neighbor::prepareSslConfiguration(): "
-		     "empty private key for %1:%2.").
-	     arg(m_ipAddress).
-	     arg(m_port));
-	}
     }
   else
     {
@@ -111,6 +106,7 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
 	  if(!configuration.privateKey().isNull())
 	    {
+	      configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 	      configuration.setSslOption
 		(QSsl::SslOptionDisableCompression, true);
 	      configuration.setSslOption
@@ -130,6 +126,9 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 		 m_sslControlString,
 		 configuration);
 
+	      if(m_tcpSocket)
+		m_tcpSocket->setSslConfiguration(configuration);
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
 	      if(m_udpSocket)
 		{
@@ -141,9 +140,6 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 		  m_udpSslConfiguration.setProtocol(QSsl::DtlsV1_2OrLater);
 		}
 #endif
-
-	      if(m_tcpSocket)
-		m_tcpSocket->setSslConfiguration(configuration);
 	    }
 	  else
 	    {

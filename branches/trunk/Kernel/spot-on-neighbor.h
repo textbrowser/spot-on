@@ -368,6 +368,7 @@ class spoton_neighbor: public QThread
   quint64 m_bytesDiscardedOnWrite;
   quint64 m_bytesRead;
   quint64 m_bytesWritten;
+  QSslConfiguration sslConfiguration(void) const;
   QString findMessageType
     (const QByteArray &data,
      QList<QByteArray> &symmetricKeys,

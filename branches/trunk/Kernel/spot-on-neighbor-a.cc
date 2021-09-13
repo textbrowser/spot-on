@@ -755,38 +755,7 @@ spoton_neighbor::spoton_neighbor
     }
 
   if(m_bindIpAddress.isEmpty())
-    {
-      QByteArray certificate;
-      QByteArray privateKey;
-      QByteArray publicKey;
-      QString error("");
-
-      if((m_transport == "tcp" ||
-	  m_transport == "udp" ||
-	  m_transport == "websocket") && m_useSsl)
-	{
-	  spoton_crypt::generateSslKeys
-	    (m_keySize,
-	     certificate,
-	     privateKey,
-	     publicKey,
-	     QHostAddress(),
-	     0, // Days are not used.
-	     error);
-
-	  if(!error.isEmpty())
-	    spoton_misc::logError
-	      (QString("spoton_neighbor:: "
-		       "spoton_neighbor(): "
-		       "generateSslKeys() failure (%1) for %2:%3.").
-	       arg(error).
-	       arg(m_ipAddress).
-	       arg(m_port));
-	}
-
-      if(!privateKey.isEmpty())
-	prepareSslConfiguration(certificate, privateKey, true);
-    }
+    prepareSslConfiguration(QByteArray(), QByteArray(), true);
 
   if(m_transport != "bluetooth")
     if(m_address.isEmpty())
