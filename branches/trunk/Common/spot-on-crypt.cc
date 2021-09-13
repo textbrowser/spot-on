@@ -4572,6 +4572,10 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 #else
       ssl_library_initialized = OPENSSL_init_ssl(0, NULL) == 1;
 #endif
+
+      if(!ssl_library_initialized)
+	spoton_misc::logError
+	  ("spoton_crypt::init(): OpenSSL initialization failure.");
     }
 }
 
