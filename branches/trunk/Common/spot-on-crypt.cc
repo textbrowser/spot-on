@@ -3720,6 +3720,13 @@ void spoton_crypt::generateCertificate(const int keySize,
 				       const long int days,
 				       QString &error)
 {
+  if(!ssl_library_initialized)
+    {
+      error = QObject::tr
+	("OpenSSL is not initialized (generateCertificate()).");
+      return;
+    }
+
   BIO *memory = 0;
   BUF_MEM *bptr;
   EC_KEY *ecc = 0;
@@ -4018,6 +4025,12 @@ void spoton_crypt::generateECCKeys(QByteArray &certificate,
 				   const int keySize,
 				   const long int days)
 {
+  if(!ssl_library_initialized)
+    {
+      error = QObject::tr("OpenSSL is not initialized (generateECCKeys()).");
+      return;
+    }
+
   BIO *privateMemory = 0;
   BIO *publicMemory = 0;
   BUF_MEM *bptr;
@@ -4164,6 +4177,12 @@ void spoton_crypt::generateSslKeys(const int keySize,
 				   const long int days,
 				   QString &error)
 {
+  if(!ssl_library_initialized)
+    {
+      error = QObject::tr("OpenSSL is not initialized (generateSslKeys()).");
+      return;
+    }
+
   BIGNUM *f4 = 0;
   BIO *privateMemory = 0;
   BIO *publicMemory = 0;
