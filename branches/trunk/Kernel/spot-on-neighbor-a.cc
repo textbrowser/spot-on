@@ -2547,6 +2547,18 @@ void spoton_neighbor::slotSharePublicKey(const QByteArray &keyType,
 
 void spoton_neighbor::slotSslErrors(const QList<QSslError> &errors)
 {
+#if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
+  if(m_webSocket)
+    for(int i = 0; i < errors.size(); i++)
+      if(errors.at(i).error() == QSslError::CertificateUntrusted ||
+	 errors.at(i).error() == QSslError::HostNameMismatch ||
+	 errors.at(i).error() == QSslError::SelfSignedCertificate)
+	{
+	  m_webSocket->ignoreSslErrors();
+	  break;
+	}
+#endif
+
   for(int i = 0; i < errors.size(); i++)
     spoton_misc::logError(QString("spoton_neighbor::slotSslErrors(): "
 				  "error (%1) occurred from %2:%3.").
