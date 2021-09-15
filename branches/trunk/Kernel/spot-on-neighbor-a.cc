@@ -1596,7 +1596,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 	return;
     }
   else if(error == QAbstractSocket::DatagramTooLargeError ||
-     error == QAbstractSocket::TemporaryError)
+	  error == QAbstractSocket::TemporaryError)
     return;
   else if(error == QAbstractSocket::SslHandshakeFailedError)
     {
