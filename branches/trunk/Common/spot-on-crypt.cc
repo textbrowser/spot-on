@@ -3997,7 +3997,7 @@ void spoton_crypt::generateCertificate(const int keySize,
 
   if(ecc)
     EC_KEY_up_ref(ecc);  /*
-			 ** Reference counter. ecc rsa object will be
+			 ** Reference counter. The ecc object will be
 			 ** destroyed separately via EC_KEY_free().
 			 ** See also EVP_PKEY_free().
 			 */
