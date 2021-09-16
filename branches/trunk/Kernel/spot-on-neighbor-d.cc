@@ -202,7 +202,7 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
      privateKey,
      publicKey,
      QHostAddress(),
-     31536000L,
+     31536000L, // One year.
      error);
 
   if(!error.isEmpty())
