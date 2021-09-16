@@ -89,7 +89,7 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 	m_webSocket->setSslConfiguration(configuration);
 #endif
     }
-  else
+  else if(m_tcpSocket || m_udpSocket)
     {
       QSslConfiguration configuration;
 
