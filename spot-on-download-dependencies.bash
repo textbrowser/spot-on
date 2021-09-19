@@ -5,13 +5,13 @@
 
 # CURL
 
-curl=curl-7.79.0-win32-mingw
-dlcurl=dl-7.79.0
+curl=curl-7.79.0_1-win32-mingw
+dlcurl=dl-7.79.0_1
 
 rm -f $curl.zip
 rm -fr $curl
 wget --progress=bar \
-     https://curl.haxx.se/windows/$dlcurl/$curl.zip
+     https://curl.se/windows/$dlcurl/$curl.zip
 
 if [ -r "$curl.zip" ]; then
     unzip -q $curl.zip -d curl-temporary.d
