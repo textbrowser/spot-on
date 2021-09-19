@@ -62,11 +62,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.9.2-unknown"
+#define GCRYPT_VERSION "1.9.4-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010902
+#define GCRYPT_VERSION_NUMBER 0x010904
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -1274,7 +1274,7 @@ enum gcry_md_algos
     GCRY_MD_BLAKE2S_128   = 325,
     GCRY_MD_SM3           = 326,
     GCRY_MD_SHA512_256    = 327,
-    GCRY_MD_SHA512_224    = 328,
+    GCRY_MD_SHA512_224    = 328
   };
 
 /* Flags used with the open function.  */
