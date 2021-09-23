@@ -3742,6 +3742,7 @@ void spoton_crypt::generateCertificate(const int keySize,
     reinterpret_cast<const unsigned char *>
     ("Spot-On Origami Self-Signed Certificate");
   int length = 0;
+  int rc = 0;
   unsigned char *commonName = 0;
 
   if(!error.isEmpty())
@@ -3938,11 +3939,20 @@ void spoton_crypt::generateCertificate(const int keySize,
       goto done_label;
     }
 
-#if OPENSSL_VERSION_NUMBER < 0x10101000L
-  if(X509_sign(x509, pk, EVP_sha512()) == 0)
+  /*
+  ** ECC and SHA-3 are not compatible.
+  */
+
+#if OPENSSL_VERSION_NUMBER < 0x10101000L || defined(Q_OS_OPENBSD)
+  rc = X509_sign(x509, pk, EVP_sha512());
 #else
-  if(X509_sign(x509, pk, EVP_sha512()) == 0)
+  if(ecc)
+    rc = X509_sign(x509, pk, EVP_sha512());
+  else
+    rc = X509_sign(x509, pk, EVP_sha3_512());
 #endif
+
+  if(rc == 0)
     {
       error = QObject::tr("X509_sign() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "

@@ -1,22 +1,31 @@
-2021.09.20 (Final)
+2021.10.01 (Final)
 <br>
-<b>New</b>
-<ul>
+<b>Corrections</b>
+<ol>
   <li>Corrected WebSocket implementation.</li>
+</ol>
+<b>New</b>
+<ol>
+  <li>CURL 7.79.1; Windows.</li>
   <li>ECC SSL/TLS. Curves supported: prime256v1, secp384r1, secp521r1.</li>
+  <li>GCRYPT 1.9.4; Windows.</li>
   <li>New miscellaneous option P2P_SERVERLESS_CONNECT_INTERVAL_MS. The default value is 1 millisecond. Range is [0, 1500].</li>
   <li>OpenSSL 1.1.1l; W32.</li>
+  <li>PostgreSQL 10.18; Windows.</li>
   <li>Removed McEliece support from the Windows build as the NTL library is flawed.</li>
   <li>Removed redundant creation of SSL/TLS keys.</li>
   <li>Renamed Miscellaneous options WEB_SERVER_RSA_KEY_SIZE to WEB_SERVER_KEY_SIZE.</li>
-</ul>
+</ol>
 2021.08.19 (Final)
 <br>
+<b>Corrections</b>
+<ol>
+  <li>Corrected processing of DTLS packets received by clients.</li>
+</ol>
 <b>New</b>
-<ul>
+<ol>
   <li>CURL 7.78; Windows.</li>
   <li>Confirm clearing of Rosetta text.</li>
-  <li>Corrected processing of DTLS packets received by clients.</li>
   <li>GPG-Error 1.42; Windows.</li>
   <li>NTL 11.5.1; Linux.</li>
   <li>New --status kernel option.</li>
@@ -26,7 +35,7 @@
   <li>Removed redundant pointers in Threefish.</li>
   <li>SQLite 3.36; Windows.</li>
   <li>Server-less TCP connections. SSL/TLS supported. STUN not required.</li>
-</ul>
+</ol>
 2021.06.06 (Final)
 <br>
 <b>Corrections</b>
