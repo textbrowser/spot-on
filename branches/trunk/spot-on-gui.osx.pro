@@ -105,11 +105,11 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On.d/.
 copyspoton.path             = /Applications/Spot-On.d
-copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/1.1.1k/lib/*.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
+copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On.d
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = /Applications/Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1k/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/opt/openssl@1.1/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = /Applications/Spot-On.d/GeoIP
