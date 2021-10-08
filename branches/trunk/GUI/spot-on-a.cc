@@ -4124,6 +4124,7 @@ void spoton::slotAbout(void)
     (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
   str = QString
     ("<html>Spot-On Version %1 (Final)<br>"
+     "Made with love by X.<br>"
      "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
      "https://textbrowser.github.io/spot-on</a> for more information.").
     arg(SPOTON_VERSION_STR);
@@ -4136,6 +4137,7 @@ void spoton::slotAbout(void)
   str = QString("<html>GoldBug, version %1, is an open-source "
 		"application published under "
 		"the Revised BSD License.<br>"
+		"Made with love by X.<br>"
 		"Please visit <a href=\"https://goldbug.sourceforge.io\">"
 		"https://goldbug.sourceforge.io</a> for more information.").
     arg(SPOTON_VERSION_STR);
