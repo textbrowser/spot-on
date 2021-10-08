@@ -321,5 +321,5 @@ Remaining Items
 7.     Future proof.
 8.     Newer TLS allows for client authentication. Accounts successor.
 9.     Poptastic is capable of supporting multiple devices using a single
-       account. Store the destination's digest in the subject.
-       See IMAP.
+       account. Store the destination's digest in the subject. See IMAP.
+10.    Qt 6.2 LTS.
