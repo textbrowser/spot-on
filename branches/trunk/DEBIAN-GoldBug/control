@@ -4,7 +4,7 @@ Maintainer: f83043e79dc03a0abfbcbc376879a97d66f2cacb@protonmail.ch
 Package: GoldBug
 Priority: optional
 Section: Science
-Version: 2021.08.19
+Version: 2021.10.10
 Description: GoldBug
  Welcome to GoldBug!
  A goldbug.desktop file will also be installed in /usr/share/applications/.
