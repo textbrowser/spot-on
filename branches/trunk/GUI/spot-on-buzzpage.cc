@@ -171,7 +171,6 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 
 spoton_buzzpage::~spoton_buzzpage()
 {
-  spoton_crypt::memzero(m_key);
   m_statusTimer.stop();
 
   if(m_kernelSocket &&
@@ -192,6 +191,8 @@ spoton_buzzpage::~spoton_buzzpage()
 	     arg(m_kernelSocket->peerAddress().toString()).
 	     arg(m_kernelSocket->peerPort()));
       }
+
+  spoton_crypt::memzero(m_key);
 }
 
 QByteArray spoton_buzzpage::channel(void) const

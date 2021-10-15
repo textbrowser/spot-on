@@ -2888,12 +2888,12 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   QSqlDatabase::removeDatabase(connectionName);
 
  done_label:
+  free(buffer);
+  gcry_free(keyPair_t);
+  gcry_free(key_t);
+  gcry_free(parameters_t);
   memzero(privateKey);
   memzero(publicKey);
-  free(buffer);
-  gcry_free(key_t);
-  gcry_free(keyPair_t);
-  gcry_free(parameters_t);
   return keys;
 }
 
