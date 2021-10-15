@@ -180,7 +180,7 @@ spoton_buzzpage::~spoton_buzzpage()
       {
 	QByteArray message("removebuzz_");
 
-	message.append(key().toBase64());
+	message.append(m_key.toBase64());
 	message.append("\n");
 
 	if(m_kernelSocket->write(message.constData(), message.length()) !=
