@@ -5,8 +5,8 @@
 
 # CURL
 
-curl=curl-7.79.1-win32-mingw
-dlcurl=dl-7.79.1
+curl=curl-7.80.0-win32-mingw
+dlcurl=dl-7.80.0
 
 rm -f $curl.zip
 rm -fr $curl
@@ -113,7 +113,7 @@ postgresql=postgresql.zip
 rm -f $postgresql
 wget --output-document=$postgresql \
      --progress=bar \
-     "https://get.enterprisedb.com/postgresql/postgresql-10.18-2-windows-binaries.zip"
+     "https://get.enterprisedb.com/postgresql/postgresql-10.19-1-windows-binaries.zip"
 
 if [ -r $postgresql ]; then
     unzip -q $postgresql
