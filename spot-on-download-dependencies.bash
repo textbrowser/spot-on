@@ -24,7 +24,7 @@ else
     echo "Cannot read $curl."
 fi
 
-# Gcrypt
+# GCrypt
 
 gcrypt=mingw-w64-i686-libgcrypt-1.9.4-1-any.pkg.tar.zst
 
@@ -42,6 +42,26 @@ if [ -r "$gcrypt" ]; then
     rm -f $gcrypt
 else
     echo "Cannot read $gcrypt."
+fi
+
+# GPG-Error
+
+gpgerror=mingw-w64-i686-libgpg-error-1.42-1-any.pkg.tar.zst
+
+rm -f $gpgerror
+wget --output-document=$gpgerror \
+     --progress=bar \
+     https://repo.msys2.org/mingw/i686/$gpgerror
+
+if [ -r "$gpgerror" ]; then
+    tar -I zstd -vxf $gpgerror
+    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
+    mv mingw32/include/gpg-error.h libSpotOn/Include.win32/.
+    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -f $gpgerror
+else
+    echo "Cannot read $gpgerror."
 fi
 
 # GeoIP
@@ -62,26 +82,6 @@ if [ -r "$geoip" ]; then
     rm -f $geoip
 else
     echo "Cannot read $geoip."
-fi
-
-# Gpg-Error
-
-gpgerror=mingw-w64-i686-libgpg-error-1.42-1-any.pkg.tar.zst
-
-rm -f $gpgerror
-wget --output-document=$gpgerror \
-     --progress=bar \
-     https://repo.msys2.org/mingw/i686/$gpgerror
-
-if [ -r "$gpgerror" ]; then
-    tar -I zstd -vxf $gpgerror
-    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
-    mv mingw32/include/gpg-error.h libSpotOn/Include.win32/.
-    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
-    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
-    rm -f $gpgerror
-else
-    echo "Cannot read $gpgerror."
 fi
 
 # OpenSSL 1.1.1
