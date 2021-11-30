@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.42-unknown"
-#define GPGRT_VERSION     "1.42-unknown"
+#define GPG_ERROR_VERSION "1.43-unknown"
+#define GPGRT_VERSION     "1.43-unknown"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012a00
-#define GPGRT_VERSION_NUMBER     0x012a00
+#define GPG_ERROR_VERSION_NUMBER 0x012b00
+#define GPGRT_VERSION_NUMBER     0x012b00
 
 
 #ifdef __GNUC__
