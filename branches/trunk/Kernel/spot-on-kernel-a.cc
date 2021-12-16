@@ -246,7 +246,23 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
-  spoton_misc::prepareSignalHandler(signal_handler);
+  for(int i = 1; i < argc; i++)
+    if(argv[i])
+      {
+	if(!(qstrcmp(argv[i], "--disable-ui-server") == 0 ||
+	     qstrcmp(argv[i], "--help") == 0 ||
+	     qstrcmp(argv[i], "--passphrase") == 0 ||
+	     qstrcmp(argv[i], "--question-answer") == 0 ||
+	     qstrcmp(argv[i], "--status") == 0 ||
+	     qstrcmp(argv[i], "--terminate") == 0 ||
+	     qstrcmp(argv[i], "--vacuum") == 0 ||
+	     qstrcmp(argv[i], "--version") == 0))
+	  {
+	    fprintf
+	      (stderr, "Spot-On-Kernel: specified option is not supported.\n");
+	    exit(EXIT_FAILURE);
+	  }
+      }
 
   for(int i = 1; i < argc; i++)
     if(argv[i] && qstrcmp(argv[i], "--help") == 0)
@@ -274,6 +290,8 @@ int main(int argc, char *argv[])
 		SPOTON_VERSION_STR);
 	exit(EXIT_SUCCESS);
       }
+
+  spoton_misc::prepareSignalHandler(signal_handler);
 
   /*
   ** Disable JIT.
