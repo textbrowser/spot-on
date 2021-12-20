@@ -4308,7 +4308,7 @@ void spoton::slotAddListener(void)
       if(m_ui.recordIPAddress->isChecked())
 	address = m_externalAddress->address();
       else
-	address = m_ui.listenerIP->text().trimmed();
+	address = QHostAddress(m_ui.listenerIP->text().trimmed());
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_sb.status->setText
