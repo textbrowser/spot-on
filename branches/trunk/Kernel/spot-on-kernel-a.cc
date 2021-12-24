@@ -1823,6 +1823,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	      SLOT(slotAuthenticationRequested(const QString &)),
 	      Qt::UniqueConnection);
       connect(neighbor,
+	      SIGNAL(bytesReceived(const qint64)),
+	      m_guiServer,
+	      SLOT(slotBytesReceived(const qint64)),
+	      Qt::UniqueConnection);
+      connect(neighbor,
 	      SIGNAL(forwardSecrecyRequest(const QByteArrayList &)),
 	      m_guiServer,
 	      SLOT(slotForwardSecrecyRequest(const QByteArrayList &)),

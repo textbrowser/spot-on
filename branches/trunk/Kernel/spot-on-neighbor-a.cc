@@ -2085,6 +2085,9 @@ void spoton_neighbor::slotReadyRead(void)
 	}
     }
 
+  if(!data.isEmpty())
+    emit bytesReceived(static_cast<qint64> (data.length()));
+
   m_bytesRead += static_cast<quint64> (data.length());
 
   {

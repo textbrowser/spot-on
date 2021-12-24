@@ -4854,6 +4854,8 @@ void spoton::slotReceivedKernelMessage(void)
 	      else if(list.size() == 4)
 		page->appendMessage(list);
 	    }
+	  else if(data.startsWith("bytes_received_"))
+	    emit dataReceived(data.mid(15).toLongLong());
 	  else if(data.startsWith("chat_status_"))
 	    {
 	      data.remove

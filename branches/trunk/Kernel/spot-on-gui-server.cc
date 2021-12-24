@@ -234,6 +234,19 @@ void spoton_gui_server::slotAuthenticationRequested
   sendMessageToUIs(message);
 }
 
+void spoton_gui_server::slotBytesReceived(const qint64 size)
+{
+  if(spoton_kernel::interfaces() == 0)
+    return;
+
+  QByteArray message;
+
+  message.append("bytes_received_");
+  message.append(QString::number(size));
+  message.append("\n");
+  sendMessageToUIs(message);
+}
+
 void spoton_gui_server::slotClientConnected(void)
 {
   QSslSocket *socket = qobject_cast<QSslSocket *> (nextPendingConnection());

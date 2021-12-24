@@ -584,6 +584,7 @@ class spoton_neighbor: public QThread
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   void bluetooth(const QBluetoothServiceInfo &serviceInfo);
 #endif
+  void bytesReceived(const qint64 size);
   void callParticipant(const QByteArray &publicKeyHash,
 		       const QByteArray &gemini,
 		       const QByteArray &geminiHashKey);
