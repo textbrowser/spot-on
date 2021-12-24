@@ -644,7 +644,12 @@ int spoton_neighbor::write(const char *data,
 	emit dropped(QByteArray(d, size));
     }
 
-  return static_cast<int> (static_cast<qint64> (size) - remaining);
+  int total = static_cast<int> (static_cast<qint64> (size) - remaining);
+
+  if(total > 0)
+    emit bytesSent(static_cast<qint64> (total));
+
+  return total;
 }
 
 qint64 spoton_neighbor::id(void) const

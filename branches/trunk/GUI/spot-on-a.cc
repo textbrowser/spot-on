@@ -912,6 +912,10 @@ spoton::spoton(void):QMainWindow()
 	  m_statusActivity,
 	  SLOT(slotDataReceived(const qint64)));
   connect(this,
+	  SIGNAL(dataSent(const qint64)),
+	  m_statusActivity,
+	  SLOT(slotDataSent(const qint64)));
+  connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_encryptFile,
 	  SLOT(slotSetIcons(void)));

@@ -1828,6 +1828,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	      SLOT(slotBytesReceived(const qint64)),
 	      Qt::UniqueConnection);
       connect(neighbor,
+	      SIGNAL(bytesSent(const qint64)),
+	      m_guiServer,
+	      SLOT(slotBytesSent(const qint64)),
+	      Qt::UniqueConnection);
+      connect(neighbor,
 	      SIGNAL(forwardSecrecyRequest(const QByteArrayList &)),
 	      m_guiServer,
 	      SLOT(slotForwardSecrecyRequest(const QByteArrayList &)),

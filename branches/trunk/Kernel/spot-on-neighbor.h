@@ -585,6 +585,7 @@ class spoton_neighbor: public QThread
   void bluetooth(const QBluetoothServiceInfo &serviceInfo);
 #endif
   void bytesReceived(const qint64 size);
+  void bytesSent(const qint64 size);
   void callParticipant(const QByteArray &publicKeyHash,
 		       const QByteArray &gemini,
 		       const QByteArray &geminiHashKey);

@@ -1074,6 +1074,7 @@ class spoton: public QMainWindow
  signals:
   void buzzNameChanged(const QByteArray &name);
   void dataReceived(const qint64 size);
+  void dataSent(const qint64 size);
   void iconsChanged(void);
   void neighborsQueryReady(QSqlDatabase *db,
 			   QSqlQuery *query,

@@ -91,6 +91,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
  private slots:
   void slotAuthenticationRequested(const QString &peerInformation);
   void slotBytesReceived(const qint64 size);
+  void slotBytesSent(const qint64 size);
   void slotClientConnected(void);
   void slotClientDisconnected(void);
   void slotEncrypted(void);
