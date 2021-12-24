@@ -655,75 +655,77 @@ $(function() {
 <div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;<span class="preprocessor">#if QT_VERSION &gt;= 0x050501 &amp;&amp; defined(SPOTON_BLUETOOTH_ENABLED)</span></div>
 <div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;  <span class="keywordtype">void</span> bluetooth(<span class="keyword">const</span> QBluetoothServiceInfo &amp;serviceInfo);</div>
 <div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="keywordtype">void</span> callParticipant(<span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;               <span class="keyword">const</span> QByteArray &amp;gemini,</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;               <span class="keyword">const</span> QByteArray &amp;geminiHashKey);</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;  <span class="keywordtype">void</span> disconnected(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  <span class="keywordtype">void</span> dropped(<span class="keyword">const</span> QByteArray &amp;data);</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="keywordtype">void</span> forwardSecrecyRequest(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  <span class="keywordtype">void</span> newData(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;  <span class="keywordtype">void</span> newEMailArrived(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  <span class="keywordtype">void</span> notification(<span class="keyword">const</span> QString &amp;text);</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;  <span class="keywordtype">void</span> publicizeListenerPlaintext(<span class="keyword">const</span> QByteArray &amp;data, <span class="keyword">const</span> qint64 <span class="keywordtype">id</span>);</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;  <span class="keywordtype">void</span> receivedBuzzMessage(<span class="keyword">const</span> QByteArrayList &amp;list,</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;               <span class="keyword">const</span> QByteArrayList &amp;symmetricKeys);</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  <span class="keywordtype">void</span> receivedChatMessage(<span class="keyword">const</span> QByteArray &amp;data);</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;  <span class="keywordtype">void</span> receivedMessage</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;    (<span class="keyword">const</span> QByteArray &amp;data,</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;     <span class="keyword">const</span> qint64 <span class="keywordtype">id</span>,</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;     <span class="keyword">const</span> QPairByteArrayByteArray &amp;adaptiveEchoPair);</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;  <span class="keywordtype">void</span> receivedPublicKey(<span class="keyword">const</span> QByteArray &amp;name, <span class="keyword">const</span> QByteArray publicKey);</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;  <span class="keywordtype">void</span> resetKeepAlive(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;  <span class="keywordtype">void</span> retrieveMail(<span class="keyword">const</span> QByteArray &amp;data,</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;            <span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;            <span class="keyword">const</span> QByteArray &amp;timestamp,</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;            <span class="keyword">const</span> QByteArray &amp;signature,</div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;            <span class="keyword">const</span> QPairByteArrayByteArray &amp;adaptiveEchoPair);</div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;  <span class="keywordtype">void</span> saveForwardSecrecySessionKeys(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
-<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;  <span class="keywordtype">void</span> scrambleRequest(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;  <span class="keywordtype">void</span> sharePublicKey(<span class="keyword">const</span> QByteArray &amp;keyType,</div>
-<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;              <span class="keyword">const</span> QByteArray &amp;name,</div>
-<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;              <span class="keyword">const</span> QByteArray &amp;publicKey,</div>
-<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;              <span class="keyword">const</span> QByteArray &amp;signature,</div>
-<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;              <span class="keyword">const</span> QByteArray &amp;sPublicKey,</div>
-<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;              <span class="keyword">const</span> QByteArray &amp;sSignature);</div>
-<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;  <span class="keywordtype">void</span> smpMessage(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
-<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;  <span class="keywordtype">void</span> statusMessageReceived(<span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
-<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;                 <span class="keyword">const</span> QString &amp;status);</div>
-<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  <span class="keywordtype">void</span> stopTimer(QTimer *timer);</div>
-<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;  <span class="keywordtype">void</span> writeParsedApplicationData(<span class="keyword">const</span> QByteArray &amp;data);</div>
-<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;};</div>
-<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160; </div>
-<div class="line"><a name="l00626"></a><span class="lineno"><a class="line" href="classspoton__neighbor__worker.html">  626</a></span>&#160;<span class="keyword">class </span><a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>: <span class="keyword">public</span> QObject</div>
-<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160;{</div>
-<div class="line"><a name="l00628"></a><span class="lineno">  628</span>&#160;  Q_OBJECT</div>
-<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160; </div>
-<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160;  <a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>(<a class="code" href="classspoton__neighbor.html">spoton_neighbor</a> *neighbor):QObject(0)</div>
-<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160;  {</div>
-<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;    m_neighbor = neighbor;</div>
-<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  }</div>
-<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160; </div>
-<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;  ~<a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>()</div>
-<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160;  {</div>
-<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;  }</div>
-<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160; </div>
-<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160;  QPointer&lt;spoton_neighbor&gt; m_neighbor;</div>
-<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160; </div>
-<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160; <span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160;  <span class="keywordtype">void</span> slotNewData(<span class="keywordtype">void</span>)</div>
-<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160;  {</div>
-<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;    <span class="keywordflow">if</span>(m_neighbor)</div>
-<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;      m_neighbor-&gt;processData();</div>
-<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;  }</div>
-<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;};</div>
-<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  <span class="keywordtype">void</span> bytesReceived(<span class="keyword">const</span> qint64 size);</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <span class="keywordtype">void</span> bytesSent(<span class="keyword">const</span> qint64 size);</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;  <span class="keywordtype">void</span> callParticipant(<span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;               <span class="keyword">const</span> QByteArray &amp;gemini,</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;               <span class="keyword">const</span> QByteArray &amp;geminiHashKey);</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="keywordtype">void</span> disconnected(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  <span class="keywordtype">void</span> dropped(<span class="keyword">const</span> QByteArray &amp;data);</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;  <span class="keywordtype">void</span> forwardSecrecyRequest(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  <span class="keywordtype">void</span> newData(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;  <span class="keywordtype">void</span> newEMailArrived(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;  <span class="keywordtype">void</span> notification(<span class="keyword">const</span> QString &amp;text);</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;  <span class="keywordtype">void</span> publicizeListenerPlaintext(<span class="keyword">const</span> QByteArray &amp;data, <span class="keyword">const</span> qint64 <span class="keywordtype">id</span>);</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  <span class="keywordtype">void</span> receivedBuzzMessage(<span class="keyword">const</span> QByteArrayList &amp;list,</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;               <span class="keyword">const</span> QByteArrayList &amp;symmetricKeys);</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  <span class="keywordtype">void</span> receivedChatMessage(<span class="keyword">const</span> QByteArray &amp;data);</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;  <span class="keywordtype">void</span> receivedMessage</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    (<span class="keyword">const</span> QByteArray &amp;data,</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;     <span class="keyword">const</span> qint64 <span class="keywordtype">id</span>,</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;     <span class="keyword">const</span> QPairByteArrayByteArray &amp;adaptiveEchoPair);</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;  <span class="keywordtype">void</span> receivedPublicKey(<span class="keyword">const</span> QByteArray &amp;name, <span class="keyword">const</span> QByteArray publicKey);</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;  <span class="keywordtype">void</span> resetKeepAlive(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;  <span class="keywordtype">void</span> retrieveMail(<span class="keyword">const</span> QByteArray &amp;data,</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;            <span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;            <span class="keyword">const</span> QByteArray &amp;timestamp,</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;            <span class="keyword">const</span> QByteArray &amp;signature,</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;            <span class="keyword">const</span> QPairByteArrayByteArray &amp;adaptiveEchoPair);</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;  <span class="keywordtype">void</span> saveForwardSecrecySessionKeys(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;  <span class="keywordtype">void</span> scrambleRequest(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;  <span class="keywordtype">void</span> sharePublicKey(<span class="keyword">const</span> QByteArray &amp;keyType,</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;              <span class="keyword">const</span> QByteArray &amp;name,</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;              <span class="keyword">const</span> QByteArray &amp;publicKey,</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;              <span class="keyword">const</span> QByteArray &amp;signature,</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160;              <span class="keyword">const</span> QByteArray &amp;sPublicKey,</div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;              <span class="keyword">const</span> QByteArray &amp;sSignature);</div>
+<div class="line"><a name="l00621"></a><span class="lineno">  621</span>&#160;  <span class="keywordtype">void</span> smpMessage(<span class="keyword">const</span> QByteArrayList &amp;list);</div>
+<div class="line"><a name="l00622"></a><span class="lineno">  622</span>&#160;  <span class="keywordtype">void</span> statusMessageReceived(<span class="keyword">const</span> QByteArray &amp;publicKeyHash,</div>
+<div class="line"><a name="l00623"></a><span class="lineno">  623</span>&#160;                 <span class="keyword">const</span> QString &amp;status);</div>
+<div class="line"><a name="l00624"></a><span class="lineno">  624</span>&#160;  <span class="keywordtype">void</span> stopTimer(QTimer *timer);</div>
+<div class="line"><a name="l00625"></a><span class="lineno">  625</span>&#160;  <span class="keywordtype">void</span> writeParsedApplicationData(<span class="keyword">const</span> QByteArray &amp;data);</div>
+<div class="line"><a name="l00626"></a><span class="lineno">  626</span>&#160;};</div>
+<div class="line"><a name="l00627"></a><span class="lineno">  627</span>&#160; </div>
+<div class="line"><a name="l00628"></a><span class="lineno"><a class="line" href="classspoton__neighbor__worker.html">  628</a></span>&#160;<span class="keyword">class </span><a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>: <span class="keyword">public</span> QObject</div>
+<div class="line"><a name="l00629"></a><span class="lineno">  629</span>&#160;{</div>
+<div class="line"><a name="l00630"></a><span class="lineno">  630</span>&#160;  Q_OBJECT</div>
+<div class="line"><a name="l00631"></a><span class="lineno">  631</span>&#160; </div>
+<div class="line"><a name="l00632"></a><span class="lineno">  632</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00633"></a><span class="lineno">  633</span>&#160;  <a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>(<a class="code" href="classspoton__neighbor.html">spoton_neighbor</a> *neighbor):QObject(0)</div>
+<div class="line"><a name="l00634"></a><span class="lineno">  634</span>&#160;  {</div>
+<div class="line"><a name="l00635"></a><span class="lineno">  635</span>&#160;    m_neighbor = neighbor;</div>
+<div class="line"><a name="l00636"></a><span class="lineno">  636</span>&#160;  }</div>
+<div class="line"><a name="l00637"></a><span class="lineno">  637</span>&#160; </div>
+<div class="line"><a name="l00638"></a><span class="lineno">  638</span>&#160;  ~<a class="code" href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a>()</div>
+<div class="line"><a name="l00639"></a><span class="lineno">  639</span>&#160;  {</div>
+<div class="line"><a name="l00640"></a><span class="lineno">  640</span>&#160;  }</div>
+<div class="line"><a name="l00641"></a><span class="lineno">  641</span>&#160; </div>
+<div class="line"><a name="l00642"></a><span class="lineno">  642</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00643"></a><span class="lineno">  643</span>&#160;  QPointer&lt;spoton_neighbor&gt; m_neighbor;</div>
+<div class="line"><a name="l00644"></a><span class="lineno">  644</span>&#160; </div>
+<div class="line"><a name="l00645"></a><span class="lineno">  645</span>&#160; <span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00646"></a><span class="lineno">  646</span>&#160;  <span class="keywordtype">void</span> slotNewData(<span class="keywordtype">void</span>)</div>
+<div class="line"><a name="l00647"></a><span class="lineno">  647</span>&#160;  {</div>
+<div class="line"><a name="l00648"></a><span class="lineno">  648</span>&#160;    <span class="keywordflow">if</span>(m_neighbor)</div>
+<div class="line"><a name="l00649"></a><span class="lineno">  649</span>&#160;      m_neighbor-&gt;processData();</div>
+<div class="line"><a name="l00650"></a><span class="lineno">  650</span>&#160;  }</div>
+<div class="line"><a name="l00651"></a><span class="lineno">  651</span>&#160;};</div>
+<div class="line"><a name="l00652"></a><span class="lineno">  652</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassspoton__neighbor__tcp__socket_html"><div class="ttname"><a href="classspoton__neighbor__tcp__socket.html">spoton_neighbor_tcp_socket</a></div><div class="ttdef"><b>Definition:</b> spot-on-neighbor.h:68</div></div>
 <div class="ttc" id="aclassspoton__neighbor_html"><div class="ttname"><a href="classspoton__neighbor.html">spoton_neighbor</a></div><div class="ttdef"><b>Definition:</b> spot-on-neighbor.h:180</div></div>
 <div class="ttc" id="aclassspoton__neighbor__udp__socket_html"><div class="ttname"><a href="classspoton__neighbor__udp__socket.html">spoton_neighbor_udp_socket</a></div><div class="ttdef"><b>Definition:</b> spot-on-neighbor.h:83</div></div>
-<div class="ttc" id="aclassspoton__neighbor__worker_html"><div class="ttname"><a href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a></div><div class="ttdef"><b>Definition:</b> spot-on-neighbor.h:626</div></div>
+<div class="ttc" id="aclassspoton__neighbor__worker_html"><div class="ttname"><a href="classspoton__neighbor__worker.html">spoton_neighbor_worker</a></div><div class="ttdef"><b>Definition:</b> spot-on-neighbor.h:628</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">
