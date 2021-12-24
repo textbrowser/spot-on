@@ -25,14 +25,15 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "spot_on_status_activity.h"
+#include <QTimer>
+
+#include "spot-on-status-activity.h"
 
 spot_on_status_activity::spot_on_status_activity(QWidget *parent):
   QWidget(parent)
 {
   m_dataReceived = 0;
   m_dataSent = 0;
-  m_ui.setupUi(this);
 }
 
 spot_on_status_activity::
@@ -43,25 +44,19 @@ spot_on_status_activity::
 void spot_on_status_activity::slotDataReceived(const qint64 size)
 {
   m_dataReceived += qAbs(size);
-  m_ui.down->setPixmap(QPixmap(":/down_blue.png"));
-  m_ui.down->setToolTip(QString::number(m_dataReceived));
   QTimer::singleShot(10, this, SLOT(slotNormalDown(void)));
 }
 
 void spot_on_status_activity::slotDataSent(const qint64 size)
 {
   m_dataSent += qAbs(size);
-  m_ui.up->setPixmap(QPixmap(":/up_blue.png"));
-  m_ui.up->setToolTip(QString::number(m_dataSent));
   QTimer::singleShot(10, this, SLOT(slotNormalUp(void)));
 }
 
 void spot_on_status_activity::slotNormalDown(void)
 {
-  m_ui.down->setPixmap(QPixmap(":/down.png"));
 }
 
 void spot_on_status_activity::slotNormalUp(void)
 {
-  m_ui.up->setPixmap(QPixmap(":/up.png"));
 }

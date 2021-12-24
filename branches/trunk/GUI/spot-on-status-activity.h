@@ -28,6 +28,8 @@
 #ifndef _spot_on_status_activity_h_
 #define _spot_on_status_activity_h_
 
+#include <QWidget>
+
 class spot_on_status_activity: public QWidget
 {
   Q_OBJECT

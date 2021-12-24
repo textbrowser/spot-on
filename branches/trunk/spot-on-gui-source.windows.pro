@@ -47,7 +47,8 @@ HEADERS		= Common\\spot-on-external-address.h \
 		  GUI\\spot-on-rosetta.h \
 		  GUI\\spot-on-rosetta-gpg-import.h \
 		  GUI\\spot-on-rss.h \
-		  GUI\\spot-on-smpwindow.h \
+                  GUI\\spot-on-smpwindow.h \
+                  GUI\\spot-on-status-activity.h \
                   GUI\\spot-on-tabwidget.h \
 		  GUI\\spot-on-textbrowser.h \
 		  GUI\\spot-on-textedit.h
@@ -90,7 +91,8 @@ SOURCES		= Common\\spot-on-crypt.cc \
 		  GUI\\spot-on-rosetta-gpg-import.cc \
 		  GUI\\spot-on-rss.cc \
 		  GUI\\spot-on-smp.cc \
-		  GUI\\spot-on-smpwindow.cc \
+                  GUI\\spot-on-smpwindow.cc \
+                  GUI\\spot-on-status-activity.cc \
 		  GUI\\spot-on-tabwidget.cc \
 		  GUI\\spot-on-textbrowser.cc \
 		  GUI\\spot-on-textedit.cc \
