@@ -28,17 +28,21 @@
 #ifndef _spot_on_status_activity_h_
 #define _spot_on_status_activity_h_
 
+#include <QLabel>
+#include <QPointer>
 #include <QWidget>
 
-class spot_on_status_activity: public QWidget
+class spoton_status_activity: public QWidget
 {
   Q_OBJECT
 
  public:
-  spot_on_status_activity(QWidget *parent);
-  ~spot_on_status_activity();
+  spoton_status_activity(QLabel *down, QLabel *up, QWidget *parent);
+  ~spoton_status_activity();
 
  private:
+  QPointer<QLabel> m_down;
+  QPointer<QLabel> m_up;
   qint64 m_dataReceived;
   qint64 m_dataSent;
 

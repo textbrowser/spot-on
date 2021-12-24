@@ -27,36 +27,58 @@
 
 #include <QTimer>
 
+#include "Common/spot-on-misc.h"
 #include "spot-on-status-activity.h"
 
-spot_on_status_activity::spot_on_status_activity(QWidget *parent):
-  QWidget(parent)
+spoton_status_activity::spoton_status_activity
+(QLabel *down, QLabel *up, QWidget *parent):QWidget(parent)
 {
   m_dataReceived = 0;
   m_dataSent = 0;
+  m_down = down;
+  m_up = up;
 }
 
-spot_on_status_activity::
-~spot_on_status_activity()
+spoton_status_activity::~spoton_status_activity()
 {
 }
 
-void spot_on_status_activity::slotDataReceived(const qint64 size)
+void spoton_status_activity::slotDataReceived(const qint64 size)
 {
   m_dataReceived += qAbs(size);
+
+  if(m_down)
+    {
+      m_down->setPixmap(QPixmap(":/generic/down_bright.png"));
+      m_down->setToolTip
+	(spoton_misc::prettyFileSize(m_dataReceived));
+    }
+
   QTimer::singleShot(10, this, SLOT(slotNormalDown(void)));
 }
 
-void spot_on_status_activity::slotDataSent(const qint64 size)
+void spoton_status_activity::slotDataSent(const qint64 size)
 {
   m_dataSent += qAbs(size);
+
+  if(m_up)
+    {
+      m_up->setPixmap(QPixmap(":/generic/up_bright.png"));
+      m_up->setToolTip
+	(spoton_misc::prettyFileSize(m_dataSent));
+    }
+
   QTimer::singleShot(10, this, SLOT(slotNormalUp(void)));
 }
 
-void spot_on_status_activity::slotNormalDown(void)
+void spoton_status_activity::slotNormalDown(void)
 {
+  if(m_down)
+    m_down->setPixmap(QPixmap(":/generic/down.png"));
 }
 
-void spot_on_status_activity::slotNormalUp(void)
+void spoton_status_activity::slotNormalUp(void)
 {
+  if(m_up)
+    m_up->setPixmap(QPixmap(":/generic/up.png"));
 }

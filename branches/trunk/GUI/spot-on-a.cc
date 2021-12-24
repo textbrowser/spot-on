@@ -82,6 +82,7 @@ extern "C"
 #include "spot-on-reencode.h"
 #include "spot-on-rss.h"
 #include "spot-on-smp.h"
+#include "spot-on-status-activity.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
@@ -511,6 +512,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.setupUi(this);
   m_sbWidget = new QWidget(this);
   m_sb.setupUi(m_sbWidget);
+  m_statusActivity = new spoton_status_activity(m_sb.down, m_sb.up, m_sbWidget);
   m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.dooble_import_groupbox->setVisible(false);
   m_ui.email_page->addItem("1");
@@ -906,6 +908,10 @@ spoton::spoton(void):QMainWindow()
   */
 
   connect(this,
+	  SIGNAL(dataReceived(const qint64)),
+	  m_statusActivity,
+	  SLOT(slotDataReceived(const qint64)));
+  connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  &m_encryptFile,
 	  SLOT(slotSetIcons(void)));
@@ -1001,6 +1007,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotGeneralTimerTimeout(void)));
+  connect(&m_kernelSocket,
+	  SIGNAL(bytesWritten(const qint64)),
+	  m_statusActivity,
+	  SLOT(slotDataSent(const qint64)));
   connect(&m_kernelSocket,
 	  SIGNAL(connected(void)),
 	  this,

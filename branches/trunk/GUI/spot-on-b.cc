@@ -4771,7 +4771,14 @@ void spoton::slotPublishedKeySizeChanged(const QString &text)
 
 void spoton::slotReceivedKernelMessage(void)
 {
-  m_kernelSocketData.append(m_kernelSocket.readAll());
+  {
+    QByteArray data(m_kernelSocket.readAll());
+
+    if(!data.isEmpty())
+      emit dataReceived(static_cast<qint64> (data.length()));
+
+    m_kernelSocketData.append(data);
+  }
 
   if(m_kernelSocketData.endsWith("\n"))
     {

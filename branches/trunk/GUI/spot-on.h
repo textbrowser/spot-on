@@ -394,7 +394,7 @@ class spoton_documentation;
 class spoton_echo_key_share;
 class spoton_rss;
 class spoton_smp;
-
+class spoton_status_activity;
 class spoton_forward_secrecy
 {
  public:
@@ -488,6 +488,7 @@ class spoton: public QMainWindow
 				     ** QTabWidget does not provide
 				     ** a method for hiding individual pages.
 				     */
+  QPointer<spoton_status_activity> m_statusActivity;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -1072,6 +1073,7 @@ class spoton: public QMainWindow
 
  signals:
   void buzzNameChanged(const QByteArray &name);
+  void dataReceived(const qint64 size);
   void iconsChanged(void);
   void neighborsQueryReady(QSqlDatabase *db,
 			   QSqlQuery *query,
