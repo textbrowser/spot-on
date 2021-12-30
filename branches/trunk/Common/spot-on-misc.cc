@@ -4321,7 +4321,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
   else if(!(integer == 0 ||
 	    integer == 256 ||
 	    integer == 384 ||
-	    integer == 512 ||
+	    integer == 521 ||
 	    integer == 2048 ||
 	    integer == 3072 ||
 	    integer == 4096))
@@ -4394,7 +4394,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     integer = 2048;
   else if(!(integer == 256 ||
 	    integer == 384 ||
-	    integer == 512 ||
+	    integer == 521 ||
 	    integer == 2048 ||
 	    integer == 3072 ||
 	    integer == 4096))
@@ -6290,7 +6290,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 		  keySize = 2048;
 		else if(!(keySize == 256 ||
 			  keySize == 384 ||
-			  keySize == 512 ||
+			  keySize == 521 ||
 			  keySize == 2048 ||
 			  keySize == 3072 ||
 			  keySize == 4096))

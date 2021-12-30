@@ -261,7 +261,7 @@ void spoton::importNeighbors(const QString &filePath)
 			if(!(token == "0" ||
 			     token == "256" ||
 			     token == "384" ||
-			     token == "512" ||
+			     token == "521" ||
 			     token == "2048" ||
 			     token == "3072" ||
 			     token == "4096"))
