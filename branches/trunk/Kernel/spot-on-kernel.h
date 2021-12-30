@@ -128,7 +128,7 @@ class spoton_kernel: public QObject
  private:
   QAtomicInt m_urlImportFutureInterrupt;
   QDateTime m_lastPoptasticStatus;
-  QDateTime m_uptime;
+  QElapsedTimer m_uptime;
   QFileSystemWatcher m_settingsWatcher;
   QFuture<void> m_checkForTerminationFuture;
   QFuture<void> m_future;
@@ -243,7 +243,8 @@ class spoton_kernel: public QObject
 			   const QByteArray &timestamp,
 			   const QByteArray &signature,
 			   const QString &messageType);
-  void updateStatistics(const QDateTime &uptime, const QVector<int> &integers);
+  void updateStatistics
+    (const QElapsedTimer &uptime, const QVector<int> &integers);
 
  private slots:
   void slotBuzzMagnetReceivedFromUI(const qint64 oid,

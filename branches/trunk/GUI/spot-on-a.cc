@@ -7985,7 +7985,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    "Proxy Hostname: %11 Proxy Port: %12<br>"
 	    "Echo Mode: %13<br>"
 	    "Communications Mode: %14<br>"
-	    "Uptime: %15 Minutes<br>"
+	    "Uptime: %15 Minute(s)<br>"
 	    "Allow Certificate Exceptions: %16<br>"
 	    "Bytes Read: %17<br>"
 	    "Bytes Written: %18<br>"

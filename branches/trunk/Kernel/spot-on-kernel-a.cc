@@ -543,7 +543,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   m_activeStarbeams = 0;
   m_initialized = false;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_uptime = QDateTime::currentDateTime();
+  m_uptime.start();
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
   s_institutionLastModificationTime = QDateTime();
@@ -6127,7 +6127,7 @@ void spoton_kernel::slotUpdateSettings(void)
     m_messagingCachePurgeTimer.start(integer);
 }
 
-void spoton_kernel::updateStatistics(const QDateTime &uptime,
+void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 				     const QVector<int> &integers)
 {
   QString connectionName("");
@@ -6364,8 +6364,7 @@ void spoton_kernel::updateStatistics(const QDateTime &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Uptime', ?)");
 	query.bindValue
-	  (0, QString("%1 Minutes").
-	   arg(qAbs(uptime.secsTo(QDateTime::currentDateTime())) / 60));
+	  (0, QString("%1 Minute(s)").arg(uptime.elapsed() / 60000));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
