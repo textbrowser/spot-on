@@ -245,7 +245,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	int v = string.toInt();
 
-	if(!string.isEmpty() && v >= 0)
+	if(!string.isEmpty())
 	  {
 	    int rc = 0;
 	    socklen_t length = 0;
@@ -257,16 +257,16 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	      u_short l_linger;
 	    } l;
 
-	    l.l_onoff = 1;
-	    l.l_linger = static_cast<u_short> (v);
+	    l.l_linger = static_cast<u_short> (qAbs(v));
+	    l.l_onoff = v < 0 ? 0 : 1;
 	    length = (socklen_t) sizeof(l);
 	    rc = setsockopt
 	      (socket, SOL_SOCKET, SO_LINGER, (const char *) &l, (int) length);
 #else
-	    struct linger l;
+	    struct linger l = {};
 
-	    l.l_onoff = 1;
-	    l.l_linger = v;
+	    l.l_linger = qAbs(v);
+	    l.l_onoff = v < 0 ? 0 : 1;
 	    length = (socklen_t) sizeof(l);
 	    rc = setsockopt((int) socket, SOL_SOCKET, SO_LINGER, &l, length);
 #endif
