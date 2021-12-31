@@ -242,7 +242,7 @@ void spoton_gui_server::slotBytesReceived(const qint64 size)
   QByteArray message;
 
   message.append("bytes_received_");
-  message.append(QString::number(size));
+  message.append(QByteArray::number(size));
   message.append("\n");
   sendMessageToUIs(message);
 }
@@ -255,7 +255,7 @@ void spoton_gui_server::slotBytesSent(const qint64 size)
   QByteArray message;
 
   message.append("bytes_sent_");
-  message.append(QString::number(size));
+  message.append(QByteArray::number(size));
   message.append("\n");
   sendMessageToUIs(message);
 }
