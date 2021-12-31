@@ -6211,7 +6211,9 @@ void spoton::slotGeneralTimerTimeout(void)
 	m_participantsLastModificationTime = QDateTime();
     }
 
-  if(isKernelActive())
+  bool isKernelActive = this->isKernelActive();
+
+  if(isKernelActive)
     if(m_kernelSocket.state() == QAbstractSocket::UnconnectedState)
       {
 	QString connectionName("");
@@ -6252,7 +6254,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
   slotKernelSocketState();
 
-  if(isKernelActive())
+  if(isKernelActive)
     {
       if(!m_buzzPages.isEmpty())
 	{
@@ -6282,7 +6284,7 @@ void spoton::slotGeneralTimerTimeout(void)
 	}
     }
 
-  if(isKernelActive())
+  if(isKernelActive)
     {
       if(m_kernelSocket.isEncrypted())
 	{
@@ -6322,7 +6324,7 @@ void spoton::slotGeneralTimerTimeout(void)
 	  (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
     }
 
-  if(!isKernelActive() ||
+  if(!isKernelActive ||
      m_sb.status->text() != tr("<html><a href=\"authenticate\">"
 			       "The kernel requires your authentication "
 			       "and encryption keys.</a></html>"))
@@ -6338,7 +6340,7 @@ void spoton::slotGeneralTimerTimeout(void)
     if(m_starbeamDigestFutures.at(i).isFinished())
       m_starbeamDigestFutures.removeAt(i);
 
-  if(isKernelActive())
+  if(isKernelActive)
     if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
        m_kernelSocket.write("\n", 1) != 1)
       if(!m_crypts.isEmpty())
@@ -6352,7 +6354,7 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       QHash<QString, QVariant> settings;
 
-      settings["is_kernel_active"] = isKernelActive();
+      settings["is_kernel_active"] = isKernelActive;
       settings["keep_only_user_defined_neighbors"] = m_optionsUi.
 	keepOnlyUserDefinedNeighbors->isChecked();
       m_generalFuture = QtConcurrent::run
