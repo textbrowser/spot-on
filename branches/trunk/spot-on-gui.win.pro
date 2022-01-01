@@ -33,7 +33,7 @@ DEFINES         += SPOTON_MCELIECE_ENABLED
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ..\\..\\libNTRU.dll \
+QMAKE_CLEAN            += ..\\..\\libNTRU\\libNTRU.dll \
                           ..\\..\\libNTRU\\src\\*.o \
                           ..\\..\\libNTRU\\src\\*.s \
                           Spot-On
@@ -125,8 +125,8 @@ libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
 }
 
-libntru.files = ..\\..\\libNTRU\\*.dll
-libntru.path = release\\.
+libntrudll.files = ..\\..\\libNTRU\\*.dll
+libntrudll.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
 libopenssl.path = release\\.
 libspoton1.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
@@ -182,7 +182,7 @@ INSTALLS = plugins1 \
            libgpgme1 \
            libgpgme2 \
            libntl \
-           libntru \
+           libntrudll \
            libopenssl \
            libspoton1 \
            libspoton2 \
