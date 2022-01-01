@@ -33,7 +33,7 @@ DEFINES         += SPOTON_MCELIECE_ENABLED
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ..\\..\\libNTRU\\libNTRU.dll \
+QMAKE_CLEAN            += ..\\..\\libNTRU\\libntru.dll \
                           ..\\..\\libNTRU\\src\\*.o \
                           ..\\..\\libNTRU\\src\\*.s \
                           Spot-On
