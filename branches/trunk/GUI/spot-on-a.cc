@@ -482,12 +482,12 @@ spoton::spoton(void):QMainWindow()
   m_keysShared["keys_sent_to_kernel"] = "false";
   m_buzzStatusTimer.setInterval(15000);
   m_buzzFavoritesLastModificationTime = QDateTime();
-  m_magnetsLastModificationTime = QDateTime();
-  m_listenersLastModificationTime = QDateTime();
   m_documentation = new spoton_documentation(QUrl("qrc:/Spot-On.html"), 0);
   m_documentation->setWindowTitle
     (tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
+  m_magnetsLastModificationTime = QDateTime();
+  m_listenersLastModificationTime = QDateTime();
   m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
     (QUrl("qrc:/Documentation/RELEASE-NOTES.html"), 0);
@@ -520,8 +520,10 @@ spoton::spoton(void):QMainWindow()
   m_ui.etpMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.importUrls->setVisible(false);
   m_ui.listeners->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.listeners->setItemDelegate(new spoton_table_item_delegate(this));
   m_ui.mail->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.neighbors->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.neighbors->setItemDelegate(new spoton_table_item_delegate(this));
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.tab->setSpotOn(this);
@@ -1980,10 +1982,6 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotTransportChanged(int)));
-  connect(m_ui.neighbors,
-	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
-	  this,
-	  SLOT(slotShowNeighborStatistics(void)));
   connect(m_ui.newKeys,
 	  SIGNAL(toggled(bool)),
 	  m_ui.encryptionKeySize,
@@ -7663,7 +7661,9 @@ void spoton::slotPopulateListeners(void)
 		      {
 			if(!(i == 0 || i == 12 || i == 21))
 			  item->setFlags
-			    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+			    (Qt::ItemIsEditable |
+			     Qt::ItemIsEnabled |
+			     Qt::ItemIsSelectable);
 
 			item->setToolTip(tooltip);
 			m_ui.listeners->setItem(row, i, item);
@@ -8476,7 +8476,9 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
 	  if(item)
 	    {
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setFlags(Qt::ItemIsEditable |
+			     Qt::ItemIsEnabled |
+			     Qt::ItemIsSelectable);
 
 	      if(i == 2)
 		{

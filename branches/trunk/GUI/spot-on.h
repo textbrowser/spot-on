@@ -41,6 +41,7 @@
 #include <QFutureWatcher>
 #include <QHash>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <QLocale>
 #include <QMainWindow>
 #include <QMediaPlayer>
@@ -64,6 +65,7 @@
 #include <QSqlRecord>
 #include <QSslSocket>
 #include <QStyle>
+#include <QStyledItemDelegate>
 #include <QThread>
 #include <QTimer>
 #include <QTranslator>
@@ -90,6 +92,29 @@ extern "C"
 
 class QStandardItemModel;
 
+class spoton_table_item_delegate: public QStyledItemDelegate
+{
+  Q_OBJECT
+
+ public:
+  spoton_table_item_delegate(QObject *parent):QStyledItemDelegate(parent)
+  {
+  }
+
+  QWidget *createEditor(QWidget *parent,
+			const QStyleOptionViewItem &option,
+			const QModelIndex &index) const
+  {
+    Q_UNUSED(option);
+
+    QLineEdit *lineEdit = new QLineEdit(parent);
+
+    lineEdit->setReadOnly(true);
+    lineEdit->setText(index.data().toString());
+    return lineEdit;
+  }
+};
+
 class spoton_virtual_keyboard: public QDialog
 {
   Q_OBJECT
@@ -98,8 +123,6 @@ class spoton_virtual_keyboard: public QDialog
   spoton_virtual_keyboard(QWidget *parent):QDialog(parent)
   {
     m_ui.setupUi(this);
-    setWindowTitle
-      (tr("%1: Virtual Keyboard").arg(SPOTON_APPLICATION_NAME));
     m_ui.passphrase->clear();
     m_ui.passphrase->setEchoMode(QLineEdit::Password);
     connect(m_ui.back,
@@ -272,6 +295,8 @@ class spoton_virtual_keyboard: public QDialog
 		SIGNAL(clicked(void)),
 		this,
 		SLOT(slotKeyPressed(void)));
+
+    setWindowTitle(tr("%1: Virtual Keyboard").arg(SPOTON_APPLICATION_NAME));
   }
 
   ~spoton_virtual_keyboard()
@@ -395,6 +420,7 @@ class spoton_echo_key_share;
 class spoton_rss;
 class spoton_smp;
 class spoton_status_activity;
+
 class spoton_forward_secrecy
 {
  public:
