@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.44-unknown"
-#define GPGRT_VERSION     "1.44-unknown"
+#define GPG_ERROR_VERSION "1.45-unknown"
+#define GPGRT_VERSION     "1.45-unknown"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012c00
-#define GPGRT_VERSION_NUMBER     0x012c00
+#define GPG_ERROR_VERSION_NUMBER 0x012d00
+#define GPGRT_VERSION_NUMBER     0x012d00
 
 
 #ifdef __GNUC__
@@ -1102,6 +1102,22 @@ size_t  gpgrt_w32_iconv (gpgrt_w32_iconv_t cd,
 # define iconv_close(a)   gpgrt_w32_iconv_close ((a))
 # define iconv(a,b,c,d,e) gpgrt_w32_iconv ((a),(b),(c),(d),(e))
 #endif /*GPGRT_ENABLE_W32_ICONV_MACROS*/
+
+/* Release a wchar_t * buffer.  */
+void gpgrt_free_wchar (wchar_t *wstring);
+
+/* Convert an UTF-8 encoded file name to wchar.
+ * Prepend a '\\?\' prefix if needed.  */
+wchar_t *gpgrt_fname_to_wchar (const char *fname);
+
+/* Convert an UTF8 string to a WCHAR string.  Caller should use
+ * gpgrt_free_wchar to release the result.
+ * Returns NULL on error and sets ERRNO. */
+wchar_t *gpgrt_utf8_to_wchar (const char *string);
+
+/* Convert a WCHAR string to UTF-8.  Caller should use gpgrt_free to
+ * release the result.   Returns NULL on error and sets ERRNO.  */
+char *gpgrt_wchar_to_utf8 (const wchar_t *wstring);
 
 /* Query a string in the registry.  */
 char *gpgrt_w32_reg_query_string (const char *root,

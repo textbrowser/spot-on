@@ -46,7 +46,7 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-i686-libgpg-error-1.44-1-any.pkg.tar.zst
+gpgerror=mingw-w64-i686-libgpg-error-1.45-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
