@@ -1,6 +1,9 @@
 include(spot-on-gui.win.pro)
 
 DEFINES         += SPOTON_GOLDBUG
+DEFINES         -= SPOTON_GPGME_ENABLED
+INSTALLS        -= libgpgme1 \
+                   libgpgme2
 PROJECTNAME	= GoldBug
 QMAKE_CLEAN     += GoldBug
 QMAKE_DISTCLEAN += -r debug \
