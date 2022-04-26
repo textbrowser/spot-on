@@ -3,8 +3,9 @@ include(goldbug-gui-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
+mceliece_supported = "false"
 
-TEMPLATE	= app
+CONFIG		+= qt release warn_on
 LANGUAGE	= C++
 QT		+= concurrent \
                    gui \
@@ -14,17 +15,20 @@ QT		+= concurrent \
                    sql \
                    websockets \
                    widgets
-CONFIG		+= qt release warn_on
 
 DEFINES         += LIBSPOTON_OS_WINDOWS \
 		   SPOTON_DATELESS_COMPILATION \
                    SPOTON_GOLDBUG \
+                   SPOTON_GPGME_ENABLED \
 		   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
 		   SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_MCELIECE_ENABLED \
                    SPOTON_POPTASTIC_SUPPORTED \
 		   SPOTON_WEBSOCKETS_ENABLED
+                   
+equals(mceliece_supported, "true") {
+DEFINES         += SPOTON_MCELIECE_ENABLED
+}
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
@@ -33,10 +37,10 @@ QMAKE_CLEAN     += ..\\..\\libNTRU.dll \
                    ..\\..\\libNTRU\\src\\*.o \
                    ..\\..\\libNTRU\\src\\*.s \
                    GoldBug
-QMAKE_CXXFLAGS_RELEASE += -Wall \
+QMAKE_CXXFLAGS_RELEASE += -O3 \
+                          -Wall \
                           -Wcast-align \
                           -Wcast-qual \
-                          -Wdouble-promotion \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
@@ -45,51 +49,64 @@ QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -pedantic \
                           -pie \
                           -std=c++11
+QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r debug \
                           .qmake.cache \
                           .qmake.stash \
                           object_script.GoldBug.Debug \
                           object_script.GoldBug.Release
 QMAKE_EXTRA_TARGETS = libntru
+
 INCLUDEPATH	+= . \
                    ..\\..\\. \
                    ..\\..\\PostgreSQL\\Include.win32 \
+                   ..\\..\\libGPGME\\Win32.d \
                    ..\\..\\libGeoIP\\Include.win32 \
-                   ..\\..\\libNTL\\windows.d\\include \
                    ..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\libSpotOn\\Include.win32 \
-                   ..\\..\\libcURL\\Win32.d\include \
+                   ..\\..\\libcURL\\Win32.d\\include \
                    GUI
+
+equals(mceliece_supported, "true") {
+INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
+}
+
 LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
-                   -L..\\..\\libGeoIP\\Libraries.win32 \
-                   -L..\\..\\libNTL\\windows.d\\libraries.d \
-                   -L..\\..\\libNTRU \
-                   -L..\\..\\libOpenSSL\\Libraries.win32 \
+                   -L..\\..\\libGPGME\\Win32.d \
+		   -L..\\..\\libGeoIP\\Libraries.win32 \
+		   -L..\\..\\libNTRU \
+		   -L..\\..\\libOpenSSL\\Libraries.win32 \
                    -L..\\..\\libSpotOn\\Libraries.win32 \
-                   -L..\\..\\libcURL\\Win32.d\bin \
+                   -L..\\..\\libcURL\\Win32.d\\bin \
                    -lGeoIP-1 \
                    -lcrypto-1_1 \
                    -lcurl \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
-		   -lntl \
+                   -lgpgme-11 \
                    -lntru \
                    -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl-1_1 \
                    -lws2_32
+
+equals(mceliece_supported, "true") {
+LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
+}
+
 PRE_TARGETDEPS = libntru.dll
-
-RC_FILE		= Icons\\Resources\\goldbug.rc
-
-TARGET		= GoldBug
 PROJECTNAME	= GoldBug
+RC_FILE		= Icons\\Resources\\goldbug.rc
+TARGET		= GoldBug
+TEMPLATE	= app
 
 data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation
 documentation.path = release\\.
+executables.files = ..\\..\\Windows\\*.exe
+executables.path = release\\.
 libcurl1.files = ..\\..\\libcURL\\*.crt
 libcurl1.path = release\\.
 libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
@@ -102,10 +119,14 @@ libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
 libgpgme1.path = release\\.
 libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\*.exe
 libgpgme2.path = release\\.
+
+equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
-libntru.files = ..\\..\\libNTRU\\*.dll
-libntru.path = release\\.
+}
+
+libntrudll.files = ..\\..\\libNTRU\\*.dll
+libntrudll.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
 libopenssl.path = release\\.
 libspoton1.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
@@ -153,6 +174,7 @@ INSTALLS = plugins1 \
            pluginspurge \
            data \
            documentation \
+           executables \
            libcurl1 \
            libcurl2 \
            libgeoip1 \
@@ -160,7 +182,7 @@ INSTALLS = plugins1 \
            libgpgme1 \
            libgpgme2 \
            libntl \
-           libntru \
+           libntrudll \
            libopenssl \
            libspoton1 \
            libspoton2 \
