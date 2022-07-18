@@ -1,6 +1,19 @@
-Preparing ./usr/local/goldbug:
+#!/usr/bin/bash
+# Alexis Megas.
 
-cd ~/spot-on.d/branches/trunk
+if [ ! -x /usr/bin/dpkg-deb ]; then
+    echo "Please install dpkg-deb."
+    exit
+fi
+
+if [ ! -x /usr/bin/fakeroot ]; then
+    echo "Please install fakeroot."
+    exit 1
+fi
+
+# Preparing ./usr/local/goldbug:
+
+make distclean 2>/dev/null
 mkdir -p ./usr/local/goldbug/Documentation
 mkdir -p ./usr/local/goldbug/Lib
 mkdir -p ./usr/local/goldbug/SQL
@@ -23,7 +36,7 @@ chmod -x ./usr/local/goldbug/Lib/lib*
 find ./usr/local/goldbug -type f -exec chmod g+w {} \;
 rm ./usr/local/spot-on/Documentation/*.qrc
 
-Preparing GoldBug-x_amd64.deb:
+# Preparing GoldBug-x_amd64.deb:
 
 mkdir -p goldbug-debian/usr/local
 mkdir -p goldbug-debian/usr/share/applications
@@ -32,5 +45,5 @@ cp -pr ./spot-on.d/branches/trunk/DEBIAN-GoldBug goldbug-debian/DEBIAN
 cp -r ./usr/local/goldbug goldbug-debian/usr/local/.
 fakeroot dpkg-deb --build goldbug-debian GoldBug-2022.07.20_amd64.deb
 make distclean
-rm -fr ./usr
 rm -fr ./goldbug-debian
+rm -fr ./usr
