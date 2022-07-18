@@ -41,7 +41,7 @@ rm ./usr/local/spot-on/Documentation/*.qrc
 mkdir -p goldbug-debian/usr/local
 mkdir -p goldbug-debian/usr/share/applications
 cp -p ./goldbug.desktop goldbug-debian/usr/share/applications/.
-cp -pr ./spot-on.d/branches/trunk/DEBIAN-GoldBug goldbug-debian/DEBIAN
+cp -pr ./DEBIAN-GoldBug goldbug-debian/DEBIAN
 cp -r ./usr/local/goldbug goldbug-debian/usr/local/.
 fakeroot dpkg-deb --build goldbug-debian GoldBug-2022.07.20_amd64.deb
 make distclean
