@@ -2671,7 +2671,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.neighborsEchoMode->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
   m_ui.neighborsSslControlString->setVisible(!state);
-  m_ui.postgresql_recommendation_label->setVisible(!state);
   m_ui.proxy->setVisible(!state);
   m_ui.publicKeysBox->setVisible(!state);
   m_ui.pulseSize->setVisible(!state);
@@ -2680,7 +2679,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.saveBuzzName->setVisible(!state);
   m_ui.searchfor->setVisible(!state);
   m_ui.selectKernelPath->setVisible(true);
-  m_ui.settings_frame->setVisible(!state);
   m_ui.shareBuzzMagnet->setVisible(!state);
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
