@@ -309,6 +309,7 @@ Ignored Items
 27.    Windows NTL. Impossible to build.
 28.    McEliece signatures.
 29.    Which key types to export and import? A new selection dialog.
+30.    GB window icon is incorrect in Windows.
 
 Remaining Items
 
