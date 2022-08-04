@@ -1,4 +1,5 @@
 include(spot-on-gui.win.pro)
+include(goldbug-gui-source.windows.pro)
 
 DEFINES         += SPOTON_GOLDBUG
 DEFINES         -= SPOTON_GPGME_ENABLED
