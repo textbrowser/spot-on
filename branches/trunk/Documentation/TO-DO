@@ -272,6 +272,7 @@ Completed Items
 200.   libgcrypt from https://repo.msys2.org/mingw/i686/.
 201.   GPG key rings allow for multiple private keys.
 202.   Document server-less P2P.
+203.   GB window icon is incorrect in Windows. Incorrect UI files.
 
 Ignored Items
 
@@ -309,7 +310,6 @@ Ignored Items
 27.    Windows NTL. Impossible to build.
 28.    McEliece signatures.
 29.    Which key types to export and import? A new selection dialog.
-30.    GB window icon is incorrect in Windows.
 
 Remaining Items
 
