@@ -1253,19 +1253,23 @@ QString spoton_misc::formattedSize(const qint64 size)
     return QString("%1 GiB").
       arg(static_cast<double> (size) / 1073741824.0, 0, 'f', 2);
 }
-
+#include<iostream>
 QString spoton_misc::homePath(void)
 {
-  QByteArray homepath(qgetenv("SPOTON_HOME").trimmed());
+  QByteArray homePath(qgetenv("SPOTON_HOME").trimmed());
 
-  if(homepath.isEmpty())
+  if(homePath.isEmpty())
 #if defined(Q_OS_WIN)
     return QDir::currentPath() + QDir::separator() + ".spot-on";
 #else
     return QDir::homePath() + QDir::separator() + ".spot-on";
 #endif
   else
-    return homepath.mid(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH);
+    {
+      homePath = homePath.mid
+	(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH);
+      return homePath;
+    }
 }
 
 QString spoton_misc::htmlEncode(const QString &string)
