@@ -77,6 +77,7 @@ extern "C"
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #include <QRandomGenerator>
 #endif
+#include <QRegularExpression>
 #include <QSettings>
 #include <QSqlDatabase>
 #include <QSqlError>
@@ -1256,7 +1257,7 @@ QString spoton_misc::formattedSize(const qint64 size)
 #include<iostream>
 QString spoton_misc::homePath(void)
 {
-  QByteArray homePath(qgetenv("SPOTON_HOME").trimmed());
+  QString homePath(qgetenv("SPOTON_HOME").trimmed());
 
   if(homePath.isEmpty())
 #if defined(Q_OS_WIN)
@@ -1268,6 +1269,13 @@ QString spoton_misc::homePath(void)
     {
       homePath = homePath.mid
 	(0, spoton_common::SPOTON_HOME_MAXIMUM_PATH_LENGTH);
+      homePath.replace
+	(QRegularExpression(QString("[%1%1]+").arg(QDir::separator())),
+	 QDir::separator());
+
+      if(homePath.endsWith(QDir::separator()))
+	homePath = homePath.mid(0, homePath.length() - 1);
+
       return homePath;
     }
 }
