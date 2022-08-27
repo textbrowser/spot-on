@@ -1254,7 +1254,7 @@ QString spoton_misc::formattedSize(const qint64 size)
     return QString("%1 GiB").
       arg(static_cast<double> (size) / 1073741824.0, 0, 'f', 2);
 }
-#include<iostream>
+
 QString spoton_misc::homePath(void)
 {
   QString homePath(qgetenv("SPOTON_HOME").trimmed());
