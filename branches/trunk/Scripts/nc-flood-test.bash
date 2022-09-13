@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # A test script.
 
 cat Spot-On Spot-On Spot-On Spot-On Spot-On Spot-On \

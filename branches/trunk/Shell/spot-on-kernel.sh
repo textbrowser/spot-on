@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 if [ -r /usr/local/spot-on/Spot-On-Kernel ] && \
    [ -x /usr/local/spot-on/Spot-On-Kernel ]
