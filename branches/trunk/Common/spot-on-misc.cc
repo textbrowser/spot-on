@@ -1479,7 +1479,7 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
   ** We cannot trust the source.
   */
 
-  return QString(text).remove(QRegExp("<[^>]*>"));
+  return QString(text).remove(QRegularExpression("<[^>]*>"));
 }
 
 QString spoton_misc::wrap(const QString &t, const int c)
@@ -2066,12 +2066,12 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).
-	 split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+	 split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).
-	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
+	 split(QRegularExpression("\\W+"), QString::SkipEmptyParts));
 #endif
       int count = 0;
 
@@ -3424,8 +3424,13 @@ bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 
 	if(gemini.first.isEmpty() || gemini.second.isEmpty())
 	  {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	    query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	    query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	    query.bindValue(0, QVariant(QVariant::String));
 	    query.bindValue(1, QVariant(QVariant::String));
+#endif
 	  }
 	else
 	  {
@@ -3442,8 +3447,13 @@ bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 	      }
 	    else
 	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+		query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 		query.bindValue(0, QVariant(QVariant::String));
 		query.bindValue(1, QVariant(QVariant::String));
+#endif
 	      }
 	  }
 
@@ -3486,13 +3496,21 @@ bool spoton_misc::saveReceivedStarBeamHashes(const QSqlDatabase &db,
     ("UPDATE received SET hash = ?, sha3_512_hash = ? WHERE OID = ?");
 
   if(hash1.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+#else
     query.bindValue(0, QVariant::String);
+#endif
   else
     query.bindValue
       (0, crypt->encryptedThenHashed(hash1.toHex(), &ok).toBase64());
 
   if(hash2.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
     query.bindValue(1, QVariant::String);
+#endif
   else
     query.bindValue
       (1, crypt->encryptedThenHashed(hash2.toHex(), &ok).toBase64());
@@ -5963,8 +5981,13 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 	   "ssl_control_string) "
 	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	query.bindValue(0, QVariant(QVariant::String));
 	query.bindValue(1, QVariant(QVariant::String));
+#endif
 	query.bindValue(2, crypt->encryptedThenHashed("", &ok).toBase64());
 
 	if(ok)
@@ -6178,8 +6201,13 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	   "ssl_control_string) "
 	   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 	   "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	query.bindValue(0, QVariant(QVariant::String));
 	query.bindValue(1, QVariant(QVariant::String));
+#endif
 
 	if(address.protocol() == QAbstractSocket::IPv4Protocol)
 	  query.bindValue

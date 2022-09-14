@@ -2379,9 +2379,12 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	    {
 	      QSslCipher cipher;
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 	      if(protocol == "SslV3")
 		cipher = QSslCipher(next, QSsl::SslV3);
-	      else if(protocol == "TlsV1_0")
+	      else
+#endif
+	      if(protocol == "TlsV1_0")
 		cipher = QSslCipher(next, QSsl::TlsV1_0);
 	      else if(protocol == "TlsV1_1")
 		cipher = QSslCipher(next, QSsl::TlsV1_1);
@@ -4780,7 +4783,7 @@ void spoton_crypt::memzero(QByteArray &bytes)
 
 void spoton_crypt::memzero(QString &str)
 {
-  str.replace(0, str.length(), QString(str.length(), 0));
+  str.replace(0, str.length(), QString(str.length(), QChar(0)));
   str.clear();
 }
 
