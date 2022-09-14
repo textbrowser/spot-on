@@ -36,6 +36,7 @@ extern "C"
 #include <QtGlobal>
 #include <iostream>
 
+#include <QActionGroup>
 #ifdef Q_OS_MACOS
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -322,13 +323,14 @@ int main(int argc, char *argv[])
 
   QTranslator qtTranslator;
 
-  qtTranslator.load("qt_" + QLocale::system().name(), "Translations");
+  Q_UNUSED(qtTranslator.load("qt_" + QLocale::system().name(), "Translations"));
   qapplication.installTranslator(&qtTranslator);
 
   QTranslator myappTranslator;
 
-  myappTranslator.load("spot-on_" + QLocale::system().name(),
-		       "Translations");
+  Q_UNUSED
+    (myappTranslator.
+     load("spot-on_" + QLocale::system().name(), "Translations"));
   qapplication.installTranslator(&myappTranslator);
   QCoreApplication::setApplicationName("SpotOn");
   QCoreApplication::setOrganizationName("SpotOn");
@@ -839,9 +841,15 @@ spoton::spoton(void):QMainWindow()
     (m_optionsUi.position->model()->index(2, 0), 0, Qt::UserRole - 1);
 #else
   m_ui.find->setPlaceholderText(tr("Find Text"));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F),
+		this,
+		SLOT(slotFindInSearchInitialize(void)));
+#else
   new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F),
 		this,
 		SLOT(slotFindInSearchInitialize(void)));
+#endif
 #endif
 
   /*
@@ -4901,8 +4909,13 @@ void spoton::slotAddNeighbor(void)
 		      "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 		      "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	query.bindValue(0, QVariant(QVariant::String));
 	query.bindValue(1, QVariant(QVariant::String));
+#endif
 	query.bindValue
 	  (2, crypt->
 	   encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
@@ -6355,8 +6368,13 @@ void spoton::slotGeneralTimerTimeout(void)
       settings["is_kernel_active"] = isKernelActive;
       settings["keep_only_user_defined_neighbors"] = m_optionsUi.
 	keepOnlyUserDefinedNeighbors->isChecked();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_generalFuture = QtConcurrent::run
+	(&spoton::generalConcurrentMethod, this, settings);
+#else
       m_generalFuture = QtConcurrent::run
 	(this, &spoton::generalConcurrentMethod, settings);
+#endif
     }
 
   /*
