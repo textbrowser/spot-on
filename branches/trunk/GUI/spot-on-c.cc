@@ -28,6 +28,7 @@
 #include "spot-on-defines.h"
 #include "spot-on.h"
 
+#include <QActionGroup>
 #include <QCheckBox>
 #include <QPlainTextEdit>
 #include <QStandardItemModel>
@@ -329,8 +330,13 @@ void spoton::importNeighbors(const QString &filePath)
 		       "VALUES "
 		       "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
 		       "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+		    query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    query.bindValue(0, QVariant(QVariant::String));
 		    query.bindValue(1, QVariant(QVariant::String));
+#endif
 		    query.bindValue
 		      (2, crypt->
 		       encryptedThenHashed
@@ -1924,7 +1930,11 @@ void spoton::slotComputeFileHash(void)
 	     arg(field));
 
 	if(hash.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	  query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+#else
 	  query.bindValue(0, QVariant::String);
+#endif
 	else
 	  query.bindValue
 	    (0, crypt->encryptedThenHashed(hash.toHex(), &ok).
@@ -2887,7 +2897,11 @@ void spoton::slotGatherStatistics(void)
   if(!m_statisticsFuture.isFinished())
     return;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  m_statisticsFuture = QtConcurrent::run(&spoton::gatherStatistics, this);
+#else
   m_statisticsFuture = QtConcurrent::run(this, &spoton::gatherStatistics);
+#endif
   m_statisticsFutureWatcher.setFuture(m_statisticsFuture);
 }
 
@@ -3586,6 +3600,16 @@ void spoton::slotPopulateStars(void)
 		      if(m_settings.value("gui/starbeamAutoVerify",
 					  false).toBool())
 			if(hash.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+			  m_starbeamDigestFutures.append
+			    (QtConcurrent::run(&spoton::computeFileDigests,
+					       this,
+					       fileName,
+					       query.
+					       value(query.record().
+						     count() - 1).toString(),
+					       crypt));
+#else
 			  m_starbeamDigestFutures.append
 			    (QtConcurrent::run(this,
 					       &spoton::computeFileDigests,
@@ -3594,6 +3618,7 @@ void spoton::slotPopulateStars(void)
 					       value(query.record().
 						     count() - 1).toString(),
 					       crypt));
+#endif
 		    }
 		}
 

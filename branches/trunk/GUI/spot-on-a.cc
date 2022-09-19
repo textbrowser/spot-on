@@ -6407,8 +6407,13 @@ void spoton::slotGeneralTimerTimeout(void)
 				toByteArray()), &ok);
 
 		if(ok)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		  m_pqUrlDatabaseFuture = QtConcurrent::run
+		    (&spoton::inspectPQUrlDatabase, this, name, password);
+#else
 		  m_pqUrlDatabaseFuture = QtConcurrent::run
 		    (this, &spoton::inspectPQUrlDatabase, name, password);
+#endif
 	      }
 	  }
 
@@ -7294,14 +7299,17 @@ void spoton::slotPopulateListeners(void)
 			    QWidget *widget = combinationBoxForTable();
 
 			    box = widget->findChild<QComboBox *> ();
-			    items << QBluetooth::Authentication
-				  << QBluetooth::Authorization
-				  << QBluetooth::Encryption
-				  << QBluetooth::Secure;
-			    map[QBluetooth::Authentication] = "Authentication";
-			    map[QBluetooth::Authorization] = "Authorization";
-			    map[QBluetooth::Encryption] = "Encryption";
-			    map[QBluetooth::Secure] = "Secure";
+			    items << QBluetooth::Security::Authentication
+				  << QBluetooth::Security::Authorization
+				  << QBluetooth::Security::Encryption
+				  << QBluetooth::Security::Secure;
+			    map[QBluetooth::Security::Authentication] =
+			      "Authentication";
+			    map[QBluetooth::Security::Authorization] =
+			      "Authorization";
+			    map[QBluetooth::Security::Encryption] =
+			      "Encryption";
+			    map[QBluetooth::Security::Secure] = "Secure";
 
 			    for(int ii = 0; ii < items.size(); ii++)
 			      {

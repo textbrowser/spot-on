@@ -28,7 +28,11 @@
 #ifndef _spoton_utilities_h_
 #define _spoton_utilities_h_
 
+#include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#else
 #include <QDesktopWidget>
+#endif
 #include <QScreen>
 #include <QWidget>
 
@@ -56,12 +60,15 @@ class spoton_utilities
 #endif
 
     QPoint p(0, 0);
-    int extrah = 0, extraw = 0, scrn = 0;
+    int extrah = 0, extraw = 0;
 
     if(parent)
       parent = parent->window();
 
     QRect desk;
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    int scrn = 0;
 
     if(parent)
       scrn = QApplication::desktop()->screenNumber(parent);
@@ -77,6 +84,12 @@ class spoton_utilities
 #else
     desk = QGuiApplication::screens().value(scrn) ?
       QGuiApplication::screens().value(scrn)->geometry() : QRect();
+#endif
+#else
+    auto screen = QGuiApplication::screenAt(child->pos());
+
+    if(screen)
+      desk = screen->geometry();
 #endif
 
     QWidgetList list = QApplication::topLevelWidgets();

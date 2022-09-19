@@ -25,6 +25,10 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QAudioOutput>
+#endif
 #include <QDateTime>
 #include <QMediaPlayer>
 #include <QMessageBox>
@@ -348,9 +352,18 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
 	  if(!(!fileInfo.isReadable() || fileInfo.size() < 8192))
 	    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	      auto output = new QAudioOutput();
+
+	      output->setVolume(100);
+	      player = new QMediaPlayer(this);
+	      player->setAudioOutput(output);
+	      player->setSource(QUrl::fromLocalFile(str));
+#else
 	      player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
 	      player->setMedia(QUrl::fromLocalFile(str));
 	      player->setVolume(100);
+#endif
 	      player->play();
 	    }
 	}
