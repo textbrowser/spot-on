@@ -80,13 +80,13 @@ QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
 QHash<QByteArray, QList<QByteArray> > spoton_kernel::s_buzzKeys;
 QHash<QByteArray, char> spoton_kernel::s_messagingCache;
-QHash<QByteArray, uint> spoton_kernel::s_emailRequestCache;
-QHash<QByteArray, uint> spoton_kernel::s_geminisCache;
+QHash<QByteArray, qint64> spoton_kernel::s_emailRequestCache;
+QHash<QByteArray, qint64> spoton_kernel::s_geminisCache;
 QHash<QString, QVariant> spoton_kernel::s_settings;
 QHash<QString, spoton_crypt *> spoton_kernel::s_crypts;
 QMultiHash<qint64,
 	   QPointer<spoton_neighbor> > spoton_kernel::s_connectionCounts;
-QMultiMap<uint, QByteArray> spoton_kernel::s_messagingCacheLookup;
+QMultiMap<qint64, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
 QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
 QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
@@ -2171,7 +2171,13 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 
   QWriteLocker locker(&s_emailRequestCacheMutex);
 
-  s_emailRequestCache.insert(hash, QDateTime::currentDateTime().toTime_t());
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  s_emailRequestCache.insert
+    (hash, QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
+  s_emailRequestCache.insert
+    (hash, static_cast<qint64> (QDateTime::currentDateTime().toTime_t()));
+#endif
 }
 
 void spoton_kernel::geminisCacheAdd(const QByteArray &data)
@@ -2189,7 +2195,13 @@ void spoton_kernel::geminisCacheAdd(const QByteArray &data)
 
   QWriteLocker locker(&s_geminisCacheMutex);
 
-  s_geminisCache.insert(hash, QDateTime::currentDateTime().toTime_t());
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  s_geminisCache.insert
+    (hash, QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
+  s_geminisCache.insert
+    (hash, static_cast<qint64> (QDateTime::currentDateTime().toTime_t()));
+#endif
 }
 
 void spoton_kernel::messagingCacheAdd(const QByteArray &data,
@@ -2235,8 +2247,13 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    query.exec("PRAGMA synchronous = OFF");
 	    query.prepare("INSERT INTO congestion_control "
 			  "(date_time_inserted, hash) VALUES (?, ?)");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	    query.bindValue
+	      (0, QDateTime::currentDateTime().toSecsSinceEpoch());
+#else
 	    query.bindValue
 	      (0, QDateTime::currentDateTime().toTime_t());
+#endif
 	    query.bindValue(1, hash.toBase64());
 	    query.exec();
 	  }
@@ -2249,7 +2266,6 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
   else
     {
       int cost = setting("gui/congestionCost", 10000).toInt();
-
       QWriteLocker locker(&s_messagingCacheMutex);
 
       if(!s_messagingCache.contains(hash))
@@ -2258,9 +2274,17 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    return;
 
 	  s_messagingCache.insert(hash, 0);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	  s_messagingCacheLookup.insert
-	    (QDateTime::currentDateTime().addMSecs(add_msecs).toTime_t(),
+	    (QDateTime::currentDateTime().
+	     addMSecs(add_msecs).toSecsSinceEpoch(),
 	     hash);
+#else
+	  s_messagingCacheLookup.insert
+	    (static_cast<qint64> (QDateTime::currentDateTime().
+				  addMSecs(add_msecs).toTime_t()),
+	     hash);
+#endif
 	}
     }
 }
@@ -3349,17 +3373,22 @@ void spoton_kernel::purgeMessagingCache(void)
   */
 
   QWriteLocker locker1(&s_emailRequestCacheMutex);
-  QMutableHashIterator<QByteArray, uint> it1(s_emailRequestCache);
+  QMutableHashIterator<QByteArray, qint64> it1(s_emailRequestCache);
 
   while(it1.hasNext())
     {
       it1.next();
 
-      uint now = QDateTime::currentDateTime().toTime_t();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+#else
+      qint64 now = static_cast<qint64>
+	(QDateTime::currentDateTime().toTime_t());
+#endif
 
       if(now > it1.value())
-	if(now - it1.value() > static_cast<uint> (spoton_common::
-						  MAIL_TIME_DELTA_MAXIMUM))
+	if(now - it1.value() > static_cast<qint64> (spoton_common::
+						    MAIL_TIME_DELTA_MAXIMUM))
 	  it1.remove();
 
       if(m_future.isCanceled())
@@ -3373,17 +3402,22 @@ void spoton_kernel::purgeMessagingCache(void)
   */
 
   QWriteLocker locker2(&s_geminisCacheMutex);
-  QMutableHashIterator<QByteArray, uint> it2(s_geminisCache);
+  QMutableHashIterator<QByteArray, qint64> it2(s_geminisCache);
 
   while(it2.hasNext())
     {
       it2.next();
 
-      uint now = QDateTime::currentDateTime().toTime_t();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+#else
+      qint64 now = static_cast<qint64>
+	(QDateTime::currentDateTime().toTime_t());
+#endif
 
       if(now > it2.value())
-	if(now - it2.value() > static_cast<uint> (spoton_common::
-						  GEMINI_TIME_DELTA_MAXIMUM))
+	if(now - it2.value() > static_cast<qint64> (spoton_common::
+						    GEMINI_TIME_DELTA_MAXIMUM))
 	  it2.remove();
 
       if(m_future.isCanceled())
@@ -3415,7 +3449,11 @@ void spoton_kernel::purgeMessagingCache(void)
 	    query.exec
 	      (QString("DELETE FROM congestion_control WHERE "
 		       "%1 - date_time_inserted > %2").
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	       arg(QDateTime::currentDateTime().toSecsSinceEpoch()).
+#else
 	       arg(QDateTime::currentDateTime().toTime_t()).
+#endif
 	       arg(spoton_common::CACHE_TIME_DELTA_MAXIMUM));
 	  }
 
@@ -3427,7 +3465,11 @@ void spoton_kernel::purgeMessagingCache(void)
   else
     {
       QWriteLocker locker3(&s_messagingCacheMutex);
-      QMutableMapIterator<uint, QByteArray> it3(s_messagingCacheLookup);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      QMutableMultiMapIterator<qint64, QByteArray> it3(s_messagingCacheLookup);
+#else
+      QMutableMapIterator<qint64, QByteArray> it3(s_messagingCacheLookup);
+#endif
       int i = 0;
       int maximum = qMax(250, qCeil(0.15 * s_messagingCacheLookup.size()));
 
@@ -3440,11 +3482,16 @@ void spoton_kernel::purgeMessagingCache(void)
 
 	  it3.next();
 
-	  uint now = QDateTime::currentDateTime().toTime_t();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	  auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+#else
+	  qint64 now = static_cast<qint64>
+	    (QDateTime::currentDateTime().toTime_t());
+#endif
 
 	  if(now > it3.key())
-	    if(now - it3.key() > static_cast<uint> (spoton_common::
-						    CACHE_TIME_DELTA_MAXIMUM))
+	    if(now - it3.key() > static_cast<qint64> (spoton_common::
+						      CACHE_TIME_DELTA_MAXIMUM))
 	      {
 		QList<QByteArray> values
 		  (s_messagingCacheLookup.values(it3.key()));
@@ -4617,8 +4664,11 @@ void spoton_kernel::slotMessageReceivedFromUI
 void spoton_kernel::slotMessagingCachePurge(void)
 {
   if(m_future.isFinished())
-    m_future = QtConcurrent::run
-      (this, &spoton_kernel::purgeMessagingCache);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_future = QtConcurrent::run(&spoton_kernel::purgeMessagingCache, this);
+#else
+    m_future = QtConcurrent::run(this, &spoton_kernel::purgeMessagingCache);
+#endif
 }
 
 void spoton_kernel::slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor)
@@ -4647,10 +4697,26 @@ void spoton_kernel::slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor)
 void spoton_kernel::slotPollDatabase(void)
 {
   if(m_checkForTerminationFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_checkForTerminationFuture = QtConcurrent::run
+      (&spoton_kernel::checkForTermination, this);
+#else
     m_checkForTerminationFuture = QtConcurrent::run
       (this, &spoton_kernel::checkForTermination);
+#endif
 
   if(m_statisticsFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_statisticsFuture = QtConcurrent::run
+      (&spoton_kernel::updateStatistics,
+       this,
+       m_uptime,
+       QVector<int> () << interfaces()
+                       << m_activeListeners
+	               << m_activeNeighbors
+	               << m_activeStarbeams
+	               << m_urlImportFutures.size());
+#else
     m_statisticsFuture = QtConcurrent::run
       (this,
        &spoton_kernel::updateStatistics,
@@ -4660,6 +4726,7 @@ void spoton_kernel::slotPollDatabase(void)
 	               << m_activeNeighbors
 	               << m_activeStarbeams
 	               << m_urlImportFutures.size());
+#endif
 }
 
 void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
@@ -4857,8 +4924,13 @@ void spoton_kernel::slotRequestScramble(void)
 void spoton_kernel::slotRetrieveMail(void)
 {
   if(m_poptasticPopFuture.isFinished())
-    m_poptasticPopFuture =
-      QtConcurrent::run(this, &spoton_kernel::popPoptastic);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_poptasticPopFuture = QtConcurrent::run
+      (&spoton_kernel::popPoptastic, this);
+#else
+    m_poptasticPopFuture = QtConcurrent::run
+      (this, &spoton_kernel::popPoptastic);
+#endif
 
   spoton_crypt *s_crypt = crypt("email-signature");
 
@@ -6189,7 +6261,7 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	size = s_messagingCache.size() *
 	  (2 * s_messagingCache.keys().value(0).length() +
 	   static_cast<int> (sizeof(char)) +
-	   static_cast<int> (sizeof(uint)));
+	   static_cast<int> (sizeof(qint64)));
 	v1 = s_messagingCache.size() + s_messagingCacheLookup.size();
 	locker2.unlock();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "

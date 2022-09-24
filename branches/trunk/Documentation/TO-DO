@@ -323,6 +323,7 @@ Remaining Items
 8.     Newer TLS allows for client authentication. Accounts successor.
 9.     Poptastic is capable of supporting multiple devices using a single
        account. Store the destination's digest in the subject. See IMAP.
-10.    Qt 6.2 LTS.
+10.    Qt 6.2 LTS:
+       GUI/spot-on-textbrowser.cc
 11.    NTL for Windows.
 12.    QComboBox's currentIndexChanged(const QString &) is obsolete.

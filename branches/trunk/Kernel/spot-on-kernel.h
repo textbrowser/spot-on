@@ -179,13 +179,13 @@ class spoton_kernel: public QObject
   static QDateTime s_institutionLastModificationTime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;
   static QHash<QByteArray, char> s_messagingCache;
-  static QHash<QByteArray, uint> s_emailRequestCache;
-  static QHash<QByteArray, uint> s_geminisCache;
+  static QHash<QByteArray, qint64> s_emailRequestCache;
+  static QHash<QByteArray, qint64> s_geminisCache;
   static QHash<QString, QVariant> s_settings;
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QList<QByteArray> > s_institutionKeys;
   static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
-  static QMultiMap<uint, QByteArray> s_messagingCacheLookup;
+  static QMultiMap<qint64, QByteArray> s_messagingCacheLookup;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
   static QReadWriteLock s_cryptsMutex;
