@@ -133,7 +133,7 @@ void spoton::discoverUrls(void)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	  QStringList list
-	    (bundle.split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+	    (bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
 	  QStringList list
 	    (bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
@@ -190,7 +190,8 @@ void spoton::discoverUrls(void)
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
       QStringList list
-	(search.toLower().trimmed().split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+	(search.toLower().trimmed().
+	 split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
       QStringList list
 	(search.toLower().trimmed().

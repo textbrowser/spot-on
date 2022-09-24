@@ -67,6 +67,13 @@ QMAKE_EXTRA_TARGETS    = libntl libntru purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
+greaterThan(QT_MAJOR_VERSION, 5) {
+QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1 \
+                          -std=c++17
+QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5 \
+                          -std=c++11
+}
+
 INCLUDEPATH	+= . \
                    ../. \
                    ../../../. \

@@ -31,6 +31,7 @@
 #include <QPrinter>
 #include <QProgressDialog>
 #include <QSqlDriver>
+#include <QStandardPaths>
 
 #include "spot-on-defines.h"
 #include "spot-on-pageviewer.h"
