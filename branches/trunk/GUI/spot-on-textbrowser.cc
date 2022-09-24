@@ -25,6 +25,11 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QRegularExpression>
+#endif
+
 #include "spot-on-textbrowser.h"
 
 spoton_textbrowser::spoton_textbrowser(QWidget *parent):QTextBrowser(parent)
@@ -44,8 +49,14 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
   QString html(text);
 
   {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QRegularExpression rx
+      ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>",
+       QRegularExpression::CaseInsensitiveOption);
+#else
     QRegExp rx
       ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
+#endif
     int pos = 0;
 
     do
@@ -62,8 +73,14 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
   }
 
   {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    QRegularExpression rx
+      ("\\<img[^\\>]*\\s*=\\s*\'([^\']*)\'[^\\>]*\\>",
+       QRegularExpression::CaseInsensitiveOption);
+#else
     QRegExp rx
       ("\\<img[^\\>]*\\s*=\\s*\'([^\']*)\'[^\\>]*\\>", Qt::CaseInsensitive);
+#endif
     int pos = 0;
 
     do

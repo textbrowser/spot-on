@@ -90,12 +90,20 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 		  QByteArray bytes
 		    (QByteArray::fromBase64(query.value(i).toByteArray()));
 		  QPair<QString, QString> pair;
+		  QSqlRecord record(query.record());
 		  QString text("");
 
-		  pair.first = query.record().fieldName(i);
+		  pair.first = record.fieldName(i);
 
-		  if(query.record().field(i).type() != QVariant::ByteArray &&
-		     query.record().field(i).type() != QVariant::String)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		  if(QMetaType::Type(record.field(i).metaType().id()) !=
+		     QMetaType::QByteArray &&
+		     QMetaType::Type(record.field(i).metaType().id()) !=
+		     QMetaType::QString)
+#else
+		  if(record.field(i).type() != QVariant::ByteArray &&
+		     record.field(i).type() != QVariant::String)
+#endif
 		    text = query.value(i).toString();
 		  else
 		    {
@@ -105,7 +113,7 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 
 		      if(ok)
 			{
-			  if(query.record().field(i).name() == "certificate")
+			  if(record.field(i).name() == "certificate")
 			    {
 			      text = bytes;
 			      text.append("\n");
@@ -283,7 +291,11 @@ void spoton_neighborstatistics::slotTimeout(void)
 {
   if(m_future.isFinished())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_future = QtConcurrent::run(&spoton_neighborstatistics::query, this);
+#else
       m_future = QtConcurrent::run(this, &spoton_neighborstatistics::query);
+#endif
       m_futureWatcher.setFuture(m_future);
     }
 }

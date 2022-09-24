@@ -973,14 +973,23 @@ void spoton::slotPopulateNeighbors(void)
     return;
 
   if(m_neighborsFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_neighborsFuture = QtConcurrent::run(&spoton::retrieveNeighbors, this);
+#else
     m_neighborsFuture = QtConcurrent::run(this, &spoton::retrieveNeighbors);
+#endif
 }
 
 void spoton::slotPopulateParticipants(void)
 {
   if(m_participantsFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_participantsFuture = QtConcurrent::run
+      (&spoton::retrieveParticipants, this, m_crypts.value("chat", 0));
+#else
     m_participantsFuture = QtConcurrent::run
       (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
+#endif
 }
 
 void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)

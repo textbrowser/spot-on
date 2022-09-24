@@ -25,6 +25,7 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <QActionGroup>
 #include <QDir>
 #include <QMessageBox>
 #include <QNetworkProxy>
@@ -2414,8 +2415,13 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_parseXmlFuture = QtConcurrent::run
+	(&spoton_rss::parseXmlContent, this, m_feedDownloadContent, url);
+#else
       m_parseXmlFuture = QtConcurrent::run
 	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
+#endif
 
   m_feedDownloadContent.clear();
 }
@@ -2459,8 +2465,13 @@ void spoton_rss::slotImport(void)
     return;
 
   if(m_importFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_importFuture = QtConcurrent::run
+      (&spoton_rss::import, this, m_ui.maximum_keywords->value());
+#else
     m_importFuture = QtConcurrent::run
       (this, &spoton_rss::import, m_ui.maximum_keywords->value());
+#endif
 }
 
 void spoton_rss::slotLogError(const QString &error)

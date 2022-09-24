@@ -1957,7 +1957,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		{
-		  QSqlQuery updateQuery(query);
+		  QSqlQuery updateQuery(db);
 
 		  updateQuery.prepare("UPDATE rss_feeds SET "
 				      "feed = ?, "
@@ -2034,7 +2034,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		{
-		  QSqlQuery updateQuery(query);
+		  QSqlQuery updateQuery(db);
 
 		  updateQuery.prepare("UPDATE rss_feeds_links SET "
 				      "content = ?, "
@@ -2118,7 +2118,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		{
-		  QSqlQuery updateQuery(query);
+		  QSqlQuery updateQuery(db);
 
 		  updateQuery.prepare("UPDATE rss_proxy SET "
 				      "enabled = ?, "
@@ -2196,7 +2196,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		{
-		  QSqlQuery updateQuery(query);
+		  QSqlQuery updateQuery(db);
 
 		  updateQuery.prepare("UPDATE secrets SET "
 				      "generated_data = ?, "

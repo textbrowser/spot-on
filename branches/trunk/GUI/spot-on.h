@@ -882,6 +882,7 @@ class spoton: public QMainWindow
   void slotMaximumEmailFileSizeChanged(int value);
   void slotMaximumUrlKeywordsChanged(int value);
   void slotMediaError(QMediaPlayer::Error error);
+  void slotMediaError(QMediaPlayer::Error error, const QString &errorString);
   void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);
   void slotMessagesAnchorClicked(const QUrl &link);
   void slotModeChanged(QSslSocket::SslMode mode);

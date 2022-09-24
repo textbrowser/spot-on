@@ -603,7 +603,12 @@ void spoton_rosetta::populateContacts(void)
 		}
 	    }
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	QMultiMapIterator<QString, QPair<DestinationTypes, QByteArray> >
+	  it(names);
+#else
 	QMapIterator<QString, QPair<DestinationTypes, QByteArray> > it(names);
+#endif
 
 	while(it.hasNext())
 	  {
@@ -2327,7 +2332,11 @@ void spoton_rosetta::sortContacts(void)
 
   ui.contacts->clear();
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  QMultiMapIterator<QString, QPair<DestinationTypes, QVariant> > it(map);
+#else
   QMapIterator<QString, QPair<DestinationTypes, QVariant> > it(map);
+#endif
 
   while(it.hasNext())
     {

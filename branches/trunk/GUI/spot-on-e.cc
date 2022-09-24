@@ -32,6 +32,10 @@ extern "C"
 }
 #endif
 
+#include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QAudioOutput>
+#endif
 #include <QCoreApplication>
 #include <QSettings>
 
@@ -537,17 +541,30 @@ void spoton::playSound(const QString &name)
   if(!fileInfo.isReadable() || fileInfo.size() < 8192)
     return;
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  auto output = new QAudioOutput();
+
+  output->setVolume(100);
+  player = new QMediaPlayer(this);
+  player->setAudioOutput(output);
+  player->setSource(QUrl::fromLocalFile(str));
+  connect(player,
+	  SIGNAL(errorOccurred(QMediaPlayer::Error, const QString &)),
+	  this,
+	  SLOT(slotMediaError(QMediaPlayer::Error, const QString &)));
+#else
   player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
   connect(player,
 	  SIGNAL(error(QMediaPlayer::Error)),
 	  this,
 	  SLOT(slotMediaError(QMediaPlayer::Error)));
+  player->setMedia(QUrl::fromLocalFile(str));
+  player->setVolume(100);
+#endif
   connect(player,
 	  SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
 	  this,
 	  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
-  player->setMedia(QUrl::fromLocalFile(str));
-  player->setVolume(100);
   player->play();
 }
 
@@ -1374,6 +1391,18 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
 }
 
 void spoton::slotMediaError(QMediaPlayer::Error error)
+{
+  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+
+  if(!player)
+    return;
+
+  if(error != QMediaPlayer::NoError)
+    player->deleteLater();
+}
+
+void spoton::slotMediaError(QMediaPlayer::Error error,
+			    const QString &errorString)
 {
   QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
 

@@ -685,12 +685,23 @@ void spoton_encryptfile_page::slotConvert(void)
 	      if(destination.endsWith(".enc"))
 		destination = destination.mid(0, destination.length() - 4);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	      m_future = QtConcurrent::run
-		(this, &spoton_encryptfile_page::decrypt,
+		(&spoton_encryptfile_page::decrypt,
+		 this,
 		 fileInfo.absoluteFilePath(),
 		 destination,
 		 list,
 		 modeOfOperation);
+#else
+	      m_future = QtConcurrent::run
+		(this,
+		 &spoton_encryptfile_page::decrypt,
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+#endif
 	    }
 	  else
 	    {
@@ -699,13 +710,25 @@ void spoton_encryptfile_page::slotConvert(void)
 	      destination.append(QDir::separator());
 	      destination.append(fileInfo.fileName());
 	      destination.append(".enc");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	      m_future = QtConcurrent::run
-		(this, &spoton_encryptfile_page::encrypt,
+		(&spoton_encryptfile_page::encrypt,
+		 this,
 		 ui.sign->isChecked(),
 		 fileInfo.absoluteFilePath(),
 		 destination,
 		 list,
 		 modeOfOperation);
+#else
+	      m_future = QtConcurrent::run
+		(this,
+		 &spoton_encryptfile_page::encrypt,
+		 ui.sign->isChecked(),
+		 fileInfo.absoluteFilePath(),
+		 destination,
+		 list,
+		 modeOfOperation);
+#endif
 	    }
         }
 
@@ -720,20 +743,43 @@ void spoton_encryptfile_page::slotConvert(void)
   else
     {
       if(ui.decrypt->isChecked())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	m_future = QtConcurrent::run
-	  (this, &spoton_encryptfile_page::decrypt,
+	  (&spoton_encryptfile_page::decrypt,
+	   this,
 	   fileInfo.absoluteFilePath(),
 	   destination.absoluteFilePath(),
 	   list,
 	   modeOfOperation);
-      else
+#else
 	m_future = QtConcurrent::run
-	  (this, &spoton_encryptfile_page::encrypt,
+	  (this,
+	   &spoton_encryptfile_page::decrypt,
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+#endif
+      else
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	m_future = QtConcurrent::run
+	  (&spoton_encryptfile_page::encrypt,
+	   this,
 	   ui.sign->isChecked(),
 	   fileInfo.absoluteFilePath(),
 	   destination.absoluteFilePath(),
 	   list,
 	   modeOfOperation);
+#else
+	m_future = QtConcurrent::run
+	  (this,
+	   &spoton_encryptfile_page::encrypt,
+	   ui.sign->isChecked(),
+	   fileInfo.absoluteFilePath(),
+	   destination.absoluteFilePath(),
+	   list,
+	   modeOfOperation);
+#endif
     }
 
  done_label:
