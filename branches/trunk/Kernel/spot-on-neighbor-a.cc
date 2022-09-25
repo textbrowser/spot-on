@@ -295,7 +295,7 @@ spoton_neighbor::spoton_neighbor
 #endif
     }
 
-  m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
+  m_receivedUuid = QUuid("{00000000-0000-0000-0000-000000000000}");
   m_silenceTime = spoton_common::NEIGHBOR_SILENCE_TIME;
   m_sslControlString = sslControlString.trimmed();
 
@@ -637,7 +637,7 @@ spoton_neighbor::spoton_neighbor
   m_privateApplicationSequences.first = m_privateApplicationSequences.second =
     1;
   m_protocol = protocol;
-  m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
+  m_receivedUuid = QUuid("{00000000-0000-0000-0000-000000000000}");
   m_requireSsl = requireSsl;
   m_silenceTime = qBound(0, silenceTime, std::numeric_limits<int>::max());
   m_socketOptions = socketOptions;
@@ -1140,6 +1140,15 @@ void spoton_neighbor::readyRead(const QByteArray &data)
 
 		m_privateApplicationSequences.first += 1;
 		locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		m_privateApplicationFutures << QtConcurrent::run
+		  (&spoton_neighbor::bundlePrivateApplicationData,
+		   this,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+#else
 		m_privateApplicationFutures << QtConcurrent::run
 		  (this,
 		   &spoton_neighbor::bundlePrivateApplicationData,
@@ -1147,6 +1156,7 @@ void spoton_neighbor::readyRead(const QByteArray &data)
 		   m_privateApplicationCredentials,
 		   m_id,
 		   sequence);
+#endif
 	      }
 	    else
 	      {
@@ -1155,6 +1165,15 @@ void spoton_neighbor::readyRead(const QByteArray &data)
 
 		m_privateApplicationSequences.second += 1;
 		locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		m_privateApplicationFutures << QtConcurrent::run
+		  (&spoton_neighbor::bundlePrivateApplicationData,
+		   this,
+		   data,
+		   m_privateApplicationCredentials,
+		   m_id,
+		   sequence);
+#else
 		m_privateApplicationFutures << QtConcurrent::run
 		  (this,
 		   &spoton_neighbor::bundlePrivateApplicationData,
@@ -1162,6 +1181,7 @@ void spoton_neighbor::readyRead(const QByteArray &data)
 		   m_privateApplicationCredentials,
 		   m_id,
 		   sequence);
+#endif
 	      }
 
 	    return;
@@ -1676,7 +1696,11 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  if(error == QBluetoothSocket::SocketError::NoSocketError)
+#else
   if(error == QBluetoothSocket::NoSocketError)
+#endif
     return;
 
   if(m_bluetoothSocket)
@@ -1685,8 +1709,8 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
        arg(m_bluetoothSocket->errorString()).arg(m_address).arg(m_port));
 
   spoton_misc::logError
-    (QString("spoton_neighbor::slotError(): socket error (%1) for %2:%3.").
-     arg(error).arg(m_address).arg(m_port));
+    (QString("spoton_neighbor::slotError(): socket error for %1:%2.").
+     arg(m_address).arg(m_port));
 
   if(error != QBluetoothSocket::UnknownSocketError)
     {
@@ -3133,12 +3157,21 @@ void spoton_neighbor::slotWrite
 
   if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
     {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_privateApplicationFutures << QtConcurrent::run
+	(&spoton_neighbor::parsePrivateApplicationData,
+	 this,
+	 data,
+	 m_privateApplicationCredentials,
+	 m_maximumContentLength);
+#else
       m_privateApplicationFutures << QtConcurrent::run
 	(this,
 	 &spoton_neighbor::parsePrivateApplicationData,
 	 data,
 	 m_privateApplicationCredentials,
 	 m_maximumContentLength);
+#endif
       return;
     }
 

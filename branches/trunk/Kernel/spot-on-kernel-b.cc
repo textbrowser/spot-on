@@ -537,10 +537,10 @@ void spoton_kernel::popPoptastic(void)
 		      QString str(list.at(i).toLower().trimmed());
 
 		      if(str.contains("exists"))
-			exists = str.remove(QRegExp("[^\\d]")).
+			exists = str.remove(QRegularExpression("[^\\d]")).
 			  toLongLong();
 		      else if(str.contains("uidnext"))
-			uidnext = str.remove(QRegExp("[^\\d]")).
+			uidnext = str.remove(QRegularExpression("[^\\d]")).
 			  toLongLong();
 		    }
 
@@ -1130,8 +1130,13 @@ void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
 
 	if(geminis.first.isEmpty() || geminis.second.isEmpty())
 	  {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	    query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	    query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	    query.bindValue(0, QVariant(QVariant::String));
 	    query.bindValue(1, QVariant(QVariant::String));
+#endif
 	  }
 	else
 	  {
@@ -1150,8 +1155,13 @@ void spoton_kernel::saveGeminiPoptastic(const QByteArray &publicKeyHash,
 	      }
 	    else
 	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+		query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 		query.bindValue(0, QVariant(QVariant::String));
 		query.bindValue(1, QVariant(QVariant::String));
+#endif
 	      }
 	  }
 
@@ -2319,7 +2329,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		  break;
 		else
 		  {
-		    QRegExp rx("[^a-zA-Z0-9+/=]");
+		    QRegularExpression rx("[^a-zA-Z0-9+/=]");
 
 		    if(rx.indexIn(list.value(i).trimmed().constData()) == -1)
 		      bytes.append(list.value(i).trimmed());
@@ -2502,15 +2512,25 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 void spoton_kernel::slotPoptasticPop(void)
 {
   if(m_poptasticPopFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_poptasticPopFuture =
+      QtConcurrent::run(&spoton_kernel::popPoptastic, this);
+#else
     m_poptasticPopFuture =
       QtConcurrent::run(this, &spoton_kernel::popPoptastic);
+#endif
 }
 
 void spoton_kernel::slotPoptasticPost(void)
 {
   if(m_poptasticPostFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_poptasticPostFuture =
+      QtConcurrent::run(&spoton_kernel::postPoptastic, this);
+#else
     m_poptasticPostFuture =
       QtConcurrent::run(this, &spoton_kernel::postPoptastic);
+#endif
 }
 
 void spoton_kernel::slotSaveForwardSecrecySessionKeys
@@ -2652,8 +2672,13 @@ void spoton_kernel::slotUrlImportTimerExpired(void)
   for(int i = 0; i < m_urlImportFutures.size(); i++)
     if(m_urlImportFutures.at(i).isFinished())
       {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	m_urlImportFutures.replace
+	  (i, QtConcurrent::run(&spoton_kernel::importUrls, this));
+#else
 	m_urlImportFutures.replace
 	  (i, QtConcurrent::run(this, &spoton_kernel::importUrls));
+#endif
 	break;
       }
 }
