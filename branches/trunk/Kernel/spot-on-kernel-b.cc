@@ -2330,8 +2330,10 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 		else
 		  {
 		    QRegularExpression rx("[^a-zA-Z0-9+/=]");
+		    QRegularExpressionMatch match
+		      (rx.match(list.value(i).trimmed()));
 
-		    if(rx.indexIn(list.value(i).trimmed().constData()) == -1)
+		    if(!match.hasMatch())
 		      bytes.append(list.value(i).trimmed());
 		    else
 		      break;
