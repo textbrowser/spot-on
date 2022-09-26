@@ -53,6 +53,25 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
     QRegularExpression rx
       ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>",
        QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match;
+    int pos = 0;
+
+    do
+      {
+	while((match = rx.match(html, pos)).hasMatch())
+	  {
+	    html.remove(pos, match.capturedLength());
+	    pos += match.capturedLength();
+	  }
+
+	match = rx.match(html);
+
+	if(!match.hasMatch())
+	  break;
+	else
+	  pos = match.capturedLength();
+      }
+    while(pos >= 0);
 #else
     QRegExp rx
       ("\\<img[^\\>]*\\s*=\\s*\"([^\"]*)\"[^\\>]*\\>", Qt::CaseInsensitive);
@@ -77,6 +96,25 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
     QRegularExpression rx
       ("\\<img[^\\>]*\\s*=\\s*\'([^\']*)\'[^\\>]*\\>",
        QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match;
+    int pos = 0;
+
+    do
+      {
+	while((match = rx.match(html, pos)).hasMatch())
+	  {
+	    html.remove(pos, match.capturedLength());
+	    pos += match.capturedLength();
+	  }
+
+	match = rx.match(html);
+
+	if(!match.hasMatch())
+	  break;
+	else
+	  pos = match.capturedLength();
+      }
+    while(pos >= 0);
 #else
     QRegExp rx
       ("\\<img[^\\>]*\\s*=\\s*\'([^\']*)\'[^\\>]*\\>", Qt::CaseInsensitive);
