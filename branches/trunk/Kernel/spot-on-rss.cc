@@ -1478,8 +1478,13 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_parseXmlFuture = QtConcurrent::run
+	(&spoton_rss::parseXmlContent, this, m_feedDownloadContent, url);
+#else
       m_parseXmlFuture = QtConcurrent::run
 	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
+#endif
 
   m_feedDownloadContent.clear();
 }
@@ -1497,12 +1502,21 @@ void spoton_rss::slotImport(void)
   for(int i = 0; i < m_importFutures.size(); i++)
     if(m_importFutures.at(i).isFinished())
       {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	m_importFutures.replace
+	  (i,
+	   QtConcurrent::run(&spoton_rss::import,
+			     this,
+			     spoton_kernel::
+			     setting("gui/rss_maximum_keywords", 50).toInt()));
+#else
 	m_importFutures.replace
 	  (i,
 	   QtConcurrent::run(this,
 			     &spoton_rss::import,
 			     spoton_kernel::
 			     setting("gui/rss_maximum_keywords", 50).toInt()));
+#endif
 	break;
       }
 }

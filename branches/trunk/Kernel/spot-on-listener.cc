@@ -235,11 +235,13 @@ spoton_listener::spoton_listener
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-      if(m_keySize > static_cast<unsigned int > (QBluetooth::Authentication |
-						 QBluetooth::Authorization |
-						 QBluetooth::Encryption |
-						 QBluetooth::Secure))
-	m_keySize = QBluetooth::NoSecurity;
+      if(m_keySize >
+	 static_cast<unsigned int > (QBluetooth::Security::Authentication |
+				     QBluetooth::Security::Authorization |
+				     QBluetooth::Security::Encryption |
+				     QBluetooth::Security::Secure))
+	m_keySize = static_cast<unsigned int>
+	  (QBluetooth::Security::NoSecurity);
 #endif
     }
   else if(m_transport == "tcp" ||
@@ -575,7 +577,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QBluetoothServiceInfo::Sequence classId;
 
 	  classId << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::SerialPort));
+	    (QBluetoothUuid(QBluetoothUuid::ServiceClassUuid::SerialPort));
 	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BluetoothProfileDescriptorList, classId);
 	  classId.prepend(QVariant::fromValue(QBluetoothUuid(serviceUuid)));
@@ -598,7 +600,8 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QBluetoothServiceInfo::Sequence publicBrowse;
 
 	  publicBrowse << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::PublicBrowseGroup));
+	    (QBluetoothUuid(QBluetoothUuid::ServiceClassUuid::
+			    PublicBrowseGroup));
 	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BrowseGroupList, publicBrowse);
 
@@ -606,11 +609,12 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QBluetoothServiceInfo::Sequence protocolDescriptorList;
 
 	  protocol << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::L2cap));
+	    (QBluetoothUuid(QBluetoothUuid::ProtocolUuid::L2cap));
 	  protocolDescriptorList.append(QVariant::fromValue(protocol));
 	  protocol.clear();
 	  protocol
-	    << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::Rfcomm))
+	    << QVariant::fromValue(QBluetoothUuid(QBluetoothUuid::
+						  ProtocolUuid::Rfcomm))
 	    << QVariant::fromValue(quint8(m_bluetoothServer->serverPort()));
 	  protocolDescriptorList.append(QVariant::fromValue(protocol));
 	  m_bluetoothServiceInfo->setAttribute
@@ -702,7 +706,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  spoton_socket_options::setSocketOptions
 	    (m_socketOptions,
 	     m_transport,
-	     static_cast<qint64> (m_webSocketServer->nativeDescriptor()),
+	     static_cast<qint64> (m_webSocketServer->socketDescriptor()),
 	     0);
 #endif
 	  return true;

@@ -715,6 +715,15 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 
 	      m_privateApplicationSequences.first += 1;
 	      locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	      m_privateApplicationFutures << QtConcurrent::run
+		(&spoton_neighbor::bundlePrivateApplicationData,
+		 this,
+		 datagram,
+		 m_privateApplicationCredentials,
+		 m_id,
+		 sequence);
+#else
 	      m_privateApplicationFutures << QtConcurrent::run
 		(this,
 		 &spoton_neighbor::bundlePrivateApplicationData,
@@ -722,6 +731,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 		 m_privateApplicationCredentials,
 		 m_id,
 		 sequence);
+#endif
 	    }
 	  else
 	    {
@@ -730,6 +740,15 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 
 	      m_privateApplicationSequences.second += 1;
 	      locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	      m_privateApplicationFutures << QtConcurrent::run
+		(&spoton_neighbor::bundlePrivateApplicationData,
+		 this,
+		 datagram,
+		 m_privateApplicationCredentials,
+		 m_id,
+		 sequence);
+#else
 	      m_privateApplicationFutures << QtConcurrent::run
 		(this,
 		 &spoton_neighbor::bundlePrivateApplicationData,
@@ -737,6 +756,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 		 m_privateApplicationCredentials,
 		 m_id,
 		 sequence);
+#endif
 	    }
 
 	  return;

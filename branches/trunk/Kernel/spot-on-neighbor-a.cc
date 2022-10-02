@@ -1696,11 +1696,7 @@ void spoton_neighbor::slotError(QAbstractSocket::SocketError error)
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 {
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
   if(error == QBluetoothSocket::SocketError::NoSocketError)
-#else
-  if(error == QBluetoothSocket::NoSocketError)
-#endif
     return;
 
   if(m_bluetoothSocket)
@@ -1712,7 +1708,7 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
     (QString("spoton_neighbor::slotError(): socket error for %1:%2.").
      arg(m_address).arg(m_port));
 
-  if(error != QBluetoothSocket::UnknownSocketError)
+  if(error != QBluetoothSocket::SocketError::UnknownSocketError)
     {
       if(m_bluetoothSocket)
 	emit notification
@@ -1720,13 +1716,13 @@ void spoton_neighbor::slotError(QBluetoothSocket::SocketError error)
 	   arg(m_address).arg(m_port).arg(m_bluetoothSocket->errorString()));
       else
 	emit notification
-	  (QString("The neighbor %1:%2 generated a fatal error (%3).").
-	   arg(m_address).arg(m_port).arg(error));
+	  (QString("The neighbor %1:%2 generated a fatal error.").
+	   arg(m_address).arg(m_port));
 
       spoton_misc::logError
 	(QString("spoton_neighbor::slotError(): "
-		 "socket error (%1) for %2:%3. Aborting.").
-	 arg(error).arg(m_address).arg(m_port));
+		 "socket error for %1:%2. Aborting.").
+	 arg(m_address).arg(m_port));
       deleteLater();
     }
 }

@@ -483,13 +483,13 @@ int spoton_neighbor::write(const char *data,
 		 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
 		{
 		  if(m_bluetoothSocket->state() ==
-		     QBluetoothSocket::ConnectedState &&
+		     QBluetoothSocket::SocketState::ConnectedState &&
 		     m_waitforbyteswritten_msecs > 0)
 		    m_bluetoothSocket->waitForBytesWritten
 		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
 		}
 	      else if(m_bluetoothSocket->state() ==
-		      QBluetoothSocket::ConnectedState &&
+		      QBluetoothSocket::SocketState::ConnectedState &&
 		      m_waitforbyteswritten_msecs > 0)
 		m_bluetoothSocket->waitForBytesWritten
 		  (m_waitforbyteswritten_msecs);
@@ -1791,7 +1791,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       m_receivedUuid = uuid;
 
       if(m_receivedUuid.isNull())
-	m_receivedUuid = "{00000000-0000-0000-0000-000000000000}";
+	m_receivedUuid = QUuid("{00000000-0000-0000-0000-000000000000}");
 
       locker.unlock();
 
@@ -3380,7 +3380,12 @@ void spoton_neighbor::processData(void)
 	  if(indexOf > -1)
 	    data = data.mid(0, indexOf + 2);
 
-	  QRegExp rx("(type=[0-9][0-9][0-9][0-9][a-z]{0,1}&){0,1}content=");
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	  QRegularExpression rx
+#else
+	  QRegExp rx
+#endif
+	    ("(type=[0-9][0-9][0-9][0-9][a-z]{0,1}&){0,1}content=");
 
 	  indexOf = QString(data).indexOf(rx);
 
