@@ -706,7 +706,11 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  spoton_socket_options::setSocketOptions
 	    (m_socketOptions,
 	     m_transport,
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	     static_cast<qint64> (m_webSocketServer->socketDescriptor()),
+#else
+	     static_cast<qint64> (m_webSocketServer->nativeDescriptor()),
+#endif
 	     0);
 #endif
 	  return true;
