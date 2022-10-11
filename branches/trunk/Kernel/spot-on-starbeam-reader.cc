@@ -706,12 +706,21 @@ void spoton_starbeam_reader::slotTimeout(void)
 				<QPair<QByteArray, qint64> > ();
 			    }
 			  else if(m_readFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+			    m_readFuture = QtConcurrent::run
+			      (&spoton_starbeam_reader::read,
+			       this,
+			       fileName,
+			       pulseSize,
+			       m_position);
+#else
 			    m_readFuture = QtConcurrent::run
 			      (this,
 			       &spoton_starbeam_reader::read,
 			       fileName,
 			       pulseSize,
 			       m_position);
+#endif
 			}
 		    }
 		}

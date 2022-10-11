@@ -614,7 +614,11 @@ void spoton_urldistribution::slotTimeout(void)
     m_timer.setInterval(1000 * spoton_common::KERNEL_URL_DISPATCHER_INTERVAL);
 
   if(m_future.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_future = QtConcurrent::run(&spoton_urldistribution::run, this);
+#else
     m_future = QtConcurrent::run(this, &spoton_urldistribution::run);
+#endif
 }
 
 void spoton_urldistribution::start(void)

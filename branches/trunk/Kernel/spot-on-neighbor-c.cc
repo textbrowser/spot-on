@@ -3391,8 +3391,15 @@ void spoton_neighbor::processData(void)
 
 	  if(indexOf > -1)
 	    {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	      auto match = rx.match(data);
+
+	      data.remove(0, indexOf + match.capturedLength());
+	      length -= match.capturedLength();
+#else
 	      data.remove(0, indexOf + rx.matchedLength());
 	      length -= rx.matchedLength();
+#endif
 	    }
 
 	  if(data.length() == length)
@@ -3981,8 +3988,13 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 
 	if(geminis.first.isEmpty() || geminis.second.isEmpty())
 	  {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	    query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+	    query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 	    query.bindValue(0, QVariant(QVariant::String));
 	    query.bindValue(1, QVariant(QVariant::String));
+#endif
 	  }
 	else
 	  {
@@ -4001,8 +4013,13 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	      }
 	    else
 	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		query.bindValue(0, QVariant(QMetaType(QMetaType::QString)));
+		query.bindValue(1, QVariant(QMetaType(QMetaType::QString)));
+#else
 		query.bindValue(0, QVariant(QVariant::String));
 		query.bindValue(1, QVariant(QVariant::String));
+#endif
 	      }
 	  }
 

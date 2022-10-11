@@ -48,7 +48,6 @@ class spoton_starbeam_writer: public QObject
   ~spoton_starbeam_writer();
   bool append(const QByteArray &data,
 	      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
-  void processData(const QByteArray &data, const QStringByteArrayHash &magnet);
   void start(void);
   void stop(void);
 

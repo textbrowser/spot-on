@@ -26,6 +26,7 @@
 */
 
 #include <QHostInfo>
+#include <QRegularExpression>
 #include <QSqlQuery>
 #include <QSslKey>
 #include <QSslSocket>
@@ -617,7 +618,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	      QStringList list
-		(bundle.split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+		(bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
 	      QStringList list
 		(bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
@@ -659,7 +660,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	  QStringList list
 	    (originalSearch.toLower().trimmed().
-	     split(QRegExp("\\W+"), Qt::SkipEmptyParts));
+	     split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
 	  QStringList list
 	    (originalSearch.toLower().trimmed().

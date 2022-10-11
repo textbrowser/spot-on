@@ -168,8 +168,13 @@ bool spoton_starbeam_writer::append
       */
 
       if(m_future.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	m_future = QtConcurrent::run
+	  (&spoton_starbeam_writer::processData, this);
+#else
 	m_future = QtConcurrent::run
 	  (this, &spoton_starbeam_writer::processData);
+#endif
     }
 
   return !magnet.isEmpty();

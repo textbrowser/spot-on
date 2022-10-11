@@ -273,6 +273,7 @@ Completed Items
 201.   GPG key rings allow for multiple private keys.
 202.   Document server-less P2P.
 203.   GB window icon is incorrect in Windows. Incorrect UI files.
+204.   Qt 6.2 LTS!
 
 Ignored Items
 
@@ -323,6 +324,5 @@ Remaining Items
 8.     Newer TLS allows for client authentication. Accounts successor.
 9.     Poptastic is capable of supporting multiple devices using a single
        account. Store the destination's digest in the subject. See IMAP.
-10.    Qt 6.2 LTS.
-11.    NTL for Windows.
-12.    QComboBox's currentIndexChanged(const QString &) is obsolete.
+10.    NTL for Windows.
+11.    QComboBox's currentIndexChanged(const QString &) is obsolete.
