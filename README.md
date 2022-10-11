@@ -31,6 +31,7 @@ Summary of Spot-On
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
 <li>PowerPC.</li>
+<li>Qt 5 LTS, Qt 6 LTS!</li>
 <li>Private applications. Stream through Spot-On.</li>
 <li>Private group communications.</li>
 <li>RSS feeder.</li>

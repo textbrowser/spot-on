@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.45-unknown"
-#define GPGRT_VERSION     "1.45-unknown"
+#define GPG_ERROR_VERSION "1.46-unknown"
+#define GPGRT_VERSION     "1.46-unknown"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012d00
-#define GPGRT_VERSION_NUMBER     0x012d00
+#define GPG_ERROR_VERSION_NUMBER 0x012e00
+#define GPGRT_VERSION_NUMBER     0x012e00
 
 
 #ifdef __GNUC__
@@ -1335,7 +1335,7 @@ struct _gpgrt_syshd
   enum gpgrt_syshd_types type;
   union {
     int fd;
-    int sock;
+    uintptr_t sock;
     int rvid;
     void *handle;
   } u;
