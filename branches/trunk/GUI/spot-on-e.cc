@@ -1404,6 +1404,8 @@ void spoton::slotMediaError(QMediaPlayer::Error error)
 void spoton::slotMediaError(QMediaPlayer::Error error,
 			    const QString &errorString)
 {
+  Q_UNUSED(errorString);
+
   QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
 
   if(!player)
