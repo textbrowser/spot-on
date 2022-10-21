@@ -326,3 +326,4 @@ Remaining Items
        account. Store the destination's digest in the subject. See IMAP.
 10.    NTL for Windows.
 11.    QComboBox's currentIndexChanged(const QString &) is obsolete.
+12.    OpenSSL 3.
