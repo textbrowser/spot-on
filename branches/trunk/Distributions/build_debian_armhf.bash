@@ -43,7 +43,7 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./DEBIAN-ARM spot-on-debian/DEBIAN
 cp -r ./usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2022.07.20_armhf.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2022.11.11_armhf.deb
 make distclean
 rm -fr ./spot-on-debian
 rm -fr ./usr

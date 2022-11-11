@@ -250,13 +250,13 @@ $(function() {
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keyword">static</span> QDateTime s_institutionLastModificationTime;</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, QList&lt;QByteArray&gt; &gt; s_buzzKeys;</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, char&gt; s_messagingCache;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, uint&gt; s_emailRequestCache;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, uint&gt; s_geminisCache;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, qint64&gt; s_emailRequestCache;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keyword">static</span> QHash&lt;QByteArray, qint64&gt; s_geminisCache;</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keyword">static</span> QHash&lt;QString, QVariant&gt; s_settings;</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keyword">static</span> QHash&lt;QString, spoton_crypt *&gt; s_crypts;</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keyword">static</span> QList&lt;QList&lt;QByteArray&gt; &gt; s_institutionKeys;</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keyword">static</span> QList&lt;QPair&lt;QByteArray, QByteArray&gt; &gt; s_adaptiveEchoPairs;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keyword">static</span> QMultiMap&lt;uint, QByteArray&gt; s_messagingCacheLookup;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keyword">static</span> QMultiMap&lt;qint64, QByteArray&gt; s_messagingCacheLookup;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keyword">static</span> QReadWriteLock s_adaptiveEchoPairsMutex;</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">static</span> QReadWriteLock s_buzzKeysMutex;</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="keyword">static</span> QReadWriteLock s_cryptsMutex;</div>

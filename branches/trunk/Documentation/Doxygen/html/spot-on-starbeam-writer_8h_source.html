@@ -119,47 +119,46 @@ $(function() {
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  ~<a class="code" href="classspoton__starbeam__writer.html">spoton_starbeam_writer</a>();</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">bool</span> append(<span class="keyword">const</span> QByteArray &amp;data,</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;          QPair&lt;QByteArray, QByteArray&gt; &amp;discoveredAdaptiveEchoPair);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> processData(<span class="keyword">const</span> QByteArray &amp;data, <span class="keyword">const</span> QStringByteArrayHash &amp;magnet);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> start(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> stop(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  QAtomicInt m_abort;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  QFuture&lt;void&gt; m_future;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  QHash&lt;QString, spoton_starbeam_writer_statistics&gt; m_statistics;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  QList&lt;QByteArray&gt; m_novas;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  QList&lt;QHash&lt;QString, QByteArray&gt; &gt; m_magnets;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  QQueue&lt;QPair&lt;QByteArray, QHash&lt;QString, QByteArray&gt; &gt; &gt; m_queue;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  QReadWriteLock m_keyMutex;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  QReadWriteLock m_queueMutex;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  QReadWriteLock m_statisticsMutex;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  QTimer m_etaTimer;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  QByteArray eta(<span class="keyword">const</span> QString &amp;fileName);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">void</span> processData(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; <span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> slotETATimerTimeout(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">void</span> slotReadKeys(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; signals:</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">void</span> notifyStarBeamReader(<span class="keyword">const</span> qint64 <span class="keywordtype">id</span>, <span class="keyword">const</span> qint64 position);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> writeMessage0061(<span class="keyword">const</span> QByteArray &amp;data);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classspoton__starbeam__writer__statistics.html">   78</a></span>&#160;<span class="keyword">class </span><a class="code" href="classspoton__starbeam__writer__statistics.html">spoton_starbeam_writer_statistics</a></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  QString m_fileName;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">int</span> m_stalled;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  qint64 m_position;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  qint64 m_previousPosition;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  qint64 m_rate;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  qint64 m_time0;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  qint64 m_totalSize;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassspoton__starbeam__writer__statistics_html"><div class="ttname"><a href="classspoton__starbeam__writer__statistics.html">spoton_starbeam_writer_statistics</a></div><div class="ttdef"><b>Definition:</b> spot-on-starbeam-writer.h:79</div></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> start(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> stop(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  QAtomicInt m_abort;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  QFuture&lt;void&gt; m_future;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  QHash&lt;QString, spoton_starbeam_writer_statistics&gt; m_statistics;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  QList&lt;QByteArray&gt; m_novas;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  QList&lt;QHash&lt;QString, QByteArray&gt; &gt; m_magnets;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  QQueue&lt;QPair&lt;QByteArray, QHash&lt;QString, QByteArray&gt; &gt; &gt; m_queue;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  QReadWriteLock m_keyMutex;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  QReadWriteLock m_queueMutex;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  QReadWriteLock m_statisticsMutex;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  QTimer m_etaTimer;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  QByteArray eta(<span class="keyword">const</span> QString &amp;fileName);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">void</span> processData(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; <span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">void</span> slotETATimerTimeout(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> slotReadKeys(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; signals:</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">void</span> notifyStarBeamReader(<span class="keyword">const</span> qint64 <span class="keywordtype">id</span>, <span class="keyword">const</span> qint64 position);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">void</span> writeMessage0061(<span class="keyword">const</span> QByteArray &amp;data);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classspoton__starbeam__writer__statistics.html">   77</a></span>&#160;<span class="keyword">class </span><a class="code" href="classspoton__starbeam__writer__statistics.html">spoton_starbeam_writer_statistics</a></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;{</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  QString m_fileName;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">int</span> m_stalled;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  qint64 m_position;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  qint64 m_previousPosition;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  qint64 m_rate;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  qint64 m_time0;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  qint64 m_totalSize;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;};</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassspoton__starbeam__writer__statistics_html"><div class="ttname"><a href="classspoton__starbeam__writer__statistics.html">spoton_starbeam_writer_statistics</a></div><div class="ttdef"><b>Definition:</b> spot-on-starbeam-writer.h:78</div></div>
 <div class="ttc" id="aclassspoton__starbeam__writer_html"><div class="ttname"><a href="classspoton__starbeam__writer.html">spoton_starbeam_writer</a></div><div class="ttdef"><b>Definition:</b> spot-on-starbeam-writer.h:43</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
