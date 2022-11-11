@@ -27,5 +27,5 @@
 
 #ifndef _spoton_version_h_
 #define _spoton_version_h_
-#define SPOTON_VERSION_STR "2022.07.20"
+#define SPOTON_VERSION_STR "2022.11.11"
 #endif
