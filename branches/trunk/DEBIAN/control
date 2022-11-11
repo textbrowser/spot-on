@@ -22,7 +22,7 @@ Depends: libcurl3-gnutls (>= 4.5.0),
 	 libqt5svg5 (>= 5.11.0),
 	 libqt5websockets5 (>= 5.11.0),
 	 libqt5widgets5 (>= 5.11.0),
-	 libssl1.1 (>= 1.1.1)
+	 libssl3 (>= 3.0.0)
 Maintainer: f83043e79dc03a0abfbcbc376879a97d66f2cacb@protonmail.ch
 Package: Spot-On
 Priority: optional
