@@ -1,9 +1,9 @@
 Architecture: powerpc
 Depends: libcurl3-gnutls (>= 4.5.0),
-	 libgcrypt20 (>= 1.8.0),
+	 libgcrypt20 (>= 1.6.5),
 	 libgpg-error0 (>= 0.24.0),
-	 libgeoip1 (>= 1.6.10),
-	 libgpgme11 (>= 1.10.0),
+	 libgeoip1 (>= 1.6.9),
+	 libgpgme11 (>= 1.6.0),
 	 libpq5 (>= 5.10),
 	 libqt5bluetooth5 (>= 5.5.0),
 	 libqt5concurrent5 (>= 5.5.0),
@@ -22,7 +22,7 @@ Depends: libcurl3-gnutls (>= 4.5.0),
 	 libqt5svg5 (>= 5.5.0),
 	 libqt5websockets5 (>= 5.5.0),
 	 libqt5widgets5 (>= 5.5.0),
-	 libssl1.1 (>= 1.1.1)
+	 libssl1.1 (>= 1.0.2)
 Maintainer: f83043e79dc03a0abfbcbc376879a97d66f2cacb@protonmail.ch
 Package: Spot-On
 Priority: optional
