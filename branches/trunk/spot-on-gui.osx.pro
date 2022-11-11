@@ -55,7 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -std=c++11
 QMAKE_EXTRA_TARGETS    = libntru purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
 INCLUDEPATH	  += . \
                      ../../. \
@@ -64,7 +64,7 @@ INCLUDEPATH	  += . \
 		     /usr/local/opt/libgcrypt/include \
 		     /usr/local/opt/libgpg-error/include \
 		     /usr/local/opt/ntl/include \
-		     /usr/local/opt/postgres/include \
+		     /usr/local/opt/postgresql/include/postgresql@14 \
                      /usr/local/opt \
                      /usr/local/opt/curl/include \
                      /usr/local/opt/openssl/include \
