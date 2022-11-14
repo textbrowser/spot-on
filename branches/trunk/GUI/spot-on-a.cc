@@ -10832,7 +10832,8 @@ void spoton::slotValidatePassphrase(void)
 	error = "keyed hash failure";
     }
 
-  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+  if(!computedHash.isEmpty() &&
+     !saltedPassphraseHash.isEmpty() &&
      spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
     if(error.isEmpty())
       {

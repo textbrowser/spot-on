@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>950</width>
-    <height>55</height>
+    <height>45</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="minimumSize">
    <size>
     <width>0</width>
-    <height>35</height>
+    <height>45</height>
    </size>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
@@ -38,30 +38,6 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
-   <item>
-    <widget class="QToolButton" name="lock">
-     <property name="toolTip">
-      <string>Lock the application. Similar to a screen saver.</string>
-     </property>
-     <property name="text">
-      <string>Lock</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="pop_poptastic">
-     <property name="toolTip">
-      <string>Pop Poptastic messages.</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../Icons/icons.qrc">
-       <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QLabel" name="status">
      <property name="minimumSize">
@@ -114,24 +90,12 @@
         <property name="text">
          <string/>
         </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
        </widget>
       </item>
       <item>
        <widget class="QToolButton" name="buzz">
         <property name="toolTip">
          <string>Buzz activity detected!</string>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -143,12 +107,6 @@
         <property name="text">
          <string/>
         </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
        </widget>
       </item>
       <item>
@@ -158,12 +116,6 @@
         </property>
         <property name="text">
          <string/>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -175,12 +127,6 @@
         <property name="text">
          <string/>
         </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
        </widget>
       </item>
       <item>
@@ -188,33 +134,13 @@
         <property name="text">
          <string/>
         </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="listeners">
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="QToolButton" name="listeners"/>
       </item>
       <item>
-       <widget class="QToolButton" name="neighbors">
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="QToolButton" name="neighbors"/>
       </item>
       <item>
        <widget class="QToolButton" name="errorlog">
@@ -223,12 +149,6 @@
         </property>
         <property name="text">
          <string/>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -243,12 +163,6 @@
         <property name="icon">
          <iconset resource="../Icons/icons.qrc">
           <normaloff>:/generic/warning.png</normaloff>:/generic/warning.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>16</width>
-          <height>16</height>
-         </size>
         </property>
        </widget>
       </item>
@@ -290,14 +204,36 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QToolButton" name="lock">
+        <property name="toolTip">
+         <string>Lock the application. Similar to a screen saver.</string>
+        </property>
+        <property name="text">
+         <string>Lock</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="pop_poptastic">
+        <property name="toolTip">
+         <string>Pop Poptastic messages.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../Icons/icons.qrc">
+          <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>lock</tabstop>
-  <tabstop>pop_poptastic</tabstop>
   <tabstop>authentication_request</tabstop>
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>

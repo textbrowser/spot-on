@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>917</width>
+    <width>950</width>
     <height>55</height>
    </rect>
   </property>
@@ -38,30 +38,6 @@
    <property name="bottomMargin">
     <number>5</number>
    </property>
-   <item>
-    <widget class="QToolButton" name="lock">
-     <property name="toolTip">
-      <string>Lock the application. Similar to a screen saver.</string>
-     </property>
-     <property name="text">
-      <string>Lock</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QToolButton" name="pop_poptastic">
-     <property name="toolTip">
-      <string>Pop Poptastic messages.</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="../Icons/icons.qrc">
-       <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QLabel" name="status">
      <property name="minimumSize">
@@ -256,8 +232,8 @@
        <widget class="QLabel" name="down">
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>32</width>
+          <height>32</height>
          </size>
         </property>
         <property name="pixmap">
@@ -275,8 +251,8 @@
        <widget class="QLabel" name="up">
         <property name="maximumSize">
          <size>
-          <width>20</width>
-          <height>20</height>
+          <width>32</width>
+          <height>32</height>
          </size>
         </property>
         <property name="pixmap">
@@ -290,14 +266,36 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QToolButton" name="lock">
+        <property name="toolTip">
+         <string>Lock the application. Similar to a screen saver.</string>
+        </property>
+        <property name="text">
+         <string>Lock</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="pop_poptastic">
+        <property name="toolTip">
+         <string>Pop Poptastic messages.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../Icons/icons.qrc">
+          <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>lock</tabstop>
-  <tabstop>pop_poptastic</tabstop>
   <tabstop>authentication_request</tabstop>
   <tabstop>buzz</tabstop>
   <tabstop>chat</tabstop>
