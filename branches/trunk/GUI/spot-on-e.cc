@@ -757,7 +757,7 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
   message.append("_");
   message.append(QByteArray("1").toBase64()); // Artificial sequence number.
   message.append("_");
-  message.append(QDateTime::currentDateTime().toUTC().
+  message.append(QDateTime::currentDateTimeUtc().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 

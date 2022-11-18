@@ -804,7 +804,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 		 << signature
 		 << sPublicKey
 		 << sSignature
-		 << QDateTime::currentDateTime().toUTC().
+		 << QDateTime::currentDateTimeUtc().
 	            toString("MMddyyyyhhmmss").toLatin1();
 
 	  if(stream.status() != QDataStream::Ok)

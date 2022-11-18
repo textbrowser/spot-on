@@ -1613,7 +1613,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
-		      (QDateTime::currentDateTime().toUTC().
+		      (QDateTime::currentDateTimeUtc().
 		       toString("MMddyyyyhhmm").
 		       toLatin1() + salt,
 		       name + password,
@@ -1630,7 +1630,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
-		      (QDateTime::currentDateTime().toUTC().addSecs(60).
+		      (QDateTime::currentDateTimeUtc().addSecs(60).
 		       toString("MMddyyyyhhmm").
 		       toLatin1() + salt,
 		       name + password,

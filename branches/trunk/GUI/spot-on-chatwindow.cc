@@ -307,7 +307,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 			m_parent->m_chatSequenceNumbers[m_id] :
 			1).toBase64());
   message.append("_");
-  message.append(QDateTime::currentDateTime().toUTC().
+  message.append(QDateTime::currentDateTimeUtc().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 

@@ -43,7 +43,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
   if(!adaptiveEchoPair.first.isEmpty() && !adaptiveEchoPair.second.isEmpty())
     {
       QByteArray timestamp
-	(QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
 	 toLatin1());
       int length = static_cast<int>
 	(spoton_crypt::cipherKeyLength(spoton_crypt::

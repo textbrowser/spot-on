@@ -579,7 +579,7 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("_");
     message.append(m_hashType.toBase64());
     message.append("_");
-    message.append(QDateTime::currentDateTime().toUTC().
+    message.append(QDateTime::currentDateTimeUtc().
 		   toString("MMddyyyyhhmmss").toLatin1().toBase64());
     message.append("\n");
 
@@ -642,7 +642,7 @@ void spoton_buzzpage::slotSendStatus(void)
   message.append("_");
   message.append(m_hashType.toBase64());
   message.append("_");
-  message.append(QDateTime::currentDateTime().toUTC().
+  message.append(QDateTime::currentDateTimeUtc().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("\n");
 

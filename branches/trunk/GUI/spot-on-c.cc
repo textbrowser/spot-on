@@ -1604,7 +1604,6 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   QString error("");
   QString magnet("");
   QString origin(tr("StarBeam"));
-  QStringList list;
   bool ok = true;
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 

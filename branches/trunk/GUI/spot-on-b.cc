@@ -2571,7 +2571,7 @@ void spoton::sendMessage(bool *ok)
 	    (QByteArray::number(m_chatSequenceNumbers[data.toString()]).
 	     toBase64());
 	  message.append("_");
-	  message.append(QDateTime::currentDateTime().toUTC().
+	  message.append(QDateTime::currentDateTimeUtc().
 			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
 	  message.append("\n");
 	  addMessageToReplayQueue(msg, message, publicKeyHash);
