@@ -1662,7 +1662,7 @@ void spoton_kernel::checkForTermination(void)
 		     "shared.db");
   bool registered = false;
 
-  if(QFileInfo(sharedPath).exists())
+  if(QFileInfo::exists(sharedPath))
     {
       libspoton_error_t err = LIBSPOTON_ERROR_NONE;
       libspoton_handle_t libspotonHandle;

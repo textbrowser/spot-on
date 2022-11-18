@@ -685,7 +685,7 @@ void spoton_starbeam_writer::processData(void)
 
   stream << QByteArray("0061")
 	 << QByteArray::number(position)
-	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+	 << QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
             toLatin1()
 	 << QByteArray::number(fileId);
 

@@ -336,7 +336,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << data
 	 << pulseSize.toLatin1()
 	 << hash
-	 << QDateTime::currentDateTime().toUTC().toString("MMddyyyyhhmmss").
+	 << QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
             toLatin1()
 	 << QByteArray::number(m_id)
 	 << QByteArray::number(m_ultra)

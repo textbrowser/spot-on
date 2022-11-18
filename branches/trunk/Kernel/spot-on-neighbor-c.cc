@@ -2405,7 +2405,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
 	      if(ok)
 		newHash = spoton_crypt::keyedHash
-		  (QDateTime::currentDateTime().toUTC().
+		  (QDateTime::currentDateTimeUtc().
 		   toString("MMddyyyyhhmm").
 		   toLatin1() + accountClientSentSalt + salt,
 		   name + password,
@@ -2424,7 +2424,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		  else
 		    {
 		      newHash = spoton_crypt::keyedHash
-			(QDateTime::currentDateTime().toUTC().addSecs(60).
+			(QDateTime::currentDateTimeUtc().addSecs(60).
 			 toString("MMddyyyyhhmm").
 			 toLatin1() + accountClientSentSalt + salt,
 			 name + password,
@@ -4120,8 +4120,7 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
 {
   saveParticipantStatus
     (name, publicKeyHash, QByteArray(),
-     QDateTime::currentDateTime().toUTC().
-     toString("MMddyyyyhhmmss").toLatin1());
+     QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toLatin1());
 }
 
 void spoton_neighbor::saveParticipantStatus(const QByteArray &name,

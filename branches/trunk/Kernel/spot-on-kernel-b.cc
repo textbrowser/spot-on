@@ -841,8 +841,8 @@ void spoton_kernel::postPoptastic(void)
 
 	      curl_payload_text.clear();
 	      curl_payload_text.append
-		(QString("Date: %1\r\n").arg(QDateTime::currentDateTime().
-					     toUTC().toString()).toLatin1());
+		(QString("Date: %1\r\n").arg(QDateTime::currentDateTimeUtc().
+					     toString()).toLatin1());
 
 	      if(values.size() == 4)
 		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
@@ -1331,7 +1331,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     sign = false;
 
   QByteArray signature;
-  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+  QByteArray utcDate(QDateTime::currentDateTimeUtc().
 		     toString("MMddyyyyhhmmss").toLatin1());
 
   if(sign)
@@ -1544,7 +1544,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
   else if(keyType == "url" && !setting("gui/urlSignMessages", true).toBool())
     sign = false;
 
-  QByteArray utcDate(QDateTime::currentDateTime().toUTC().
+  QByteArray utcDate(QDateTime::currentDateTimeUtc().
 		     toString("MMddyyyyhhmmss").toLatin1());
   QByteArray signature;
 
@@ -1674,7 +1674,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 							     ** Key Hash
 							     */
 	     QByteArray(),                                   // Status
-	     QDateTime::currentDateTime().toUTC().
+	     QDateTime::currentDateTimeUtc().
 	     toString("MMddyyyyhhmmss").
 	     toLatin1(),                                     // Timestamp
 	     2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
