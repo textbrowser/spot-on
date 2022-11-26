@@ -608,7 +608,7 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
       item->setToolTip(item->text());
       m_statisticsModel->setItem(row, 1, item);
 
-      if(list.at(i).first.toLower().contains("percent consumed"))
+      if(list.at(i).first.contains("percent consumed", Qt::CaseInsensitive))
 	{
 	  double percent = list.at(i).second.toString().remove('%').toDouble();
 
@@ -619,9 +619,9 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 	  else
 	    item->setBackground(QBrush(QColor(240, 128, 128)));
 	}
-      else if(list.at(i).first.toLower().contains("live listeners"))
+      else if(list.at(i).first.contains("live listeners", Qt::CaseInsensitive))
 	activeListeners = list.at(i).second.toInt();
-      else if(list.at(i).first.toLower().contains("live neighbors"))
+      else if(list.at(i).first.contains("live neighbors", Qt::CaseInsensitive))
 	activeNeighbors = list.at(i).second.toInt();
 
       row += 1;

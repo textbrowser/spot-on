@@ -303,13 +303,11 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
     }
   else
     {
-      gcry_error_t err = 0;
-
-      if((err = gcry_cipher_decrypt(m_cipherHandle,
-				    decrypted.data(),
-				    static_cast<size_t> (decrypted.length()),
-				    0,
-				    0)) == 0)
+      if(gcry_cipher_decrypt(m_cipherHandle,
+			     decrypted.data(),
+			     static_cast<size_t> (decrypted.length()),
+			     0,
+			     0) == 0)
 	{
 	  QByteArray originalLength;
 	  int s = 0;

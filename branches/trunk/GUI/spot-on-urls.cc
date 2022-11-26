@@ -363,24 +363,24 @@ void spoton::saveUrlIniPath(const QString &path)
 	QString key(settings.allKeys().at(i));
 	QVariant value(settings.value(key));
 
-	if(key.toLower().contains("ciphertype"))
+	if(key.contains("ciphertype", Qt::CaseInsensitive))
 	  {
 	    if(m_ui.urlCipher->findText(value.toString()) >= 0)
 	      m_ui.urlCipher->setCurrentIndex
 		(m_ui.urlCipher->findText(value.toString()));
 	  }
-	else if(key.toLower().contains("hash") &&
+	else if(key.contains("hash", Qt::CaseInsensitive) &&
 		value.toByteArray().length() >= 64)
 	  m_ui.urlIniHash->setText(value.toByteArray().toHex());
-	else if(key.toLower().contains("hashtype"))
+	else if(key.contains("hashtype", Qt::CaseInsensitive))
 	  {
 	    if(m_ui.urlHash->findText(value.toString()) >= 0)
 	      m_ui.urlHash->setCurrentIndex
 		(m_ui.urlHash->findText(value.toString()));
 	  }
-	else if(key.toLower().contains("iteration"))
+	else if(key.contains("iteration", Qt::CaseInsensitive))
 	  m_ui.urlIteration->setValue(value.toInt());
-	else if(key.toLower().contains("salt") &&
+	else if(key.contains("salt", Qt::CaseInsensitive) &&
 		value.toByteArray().length() >= 100)
 	  m_ui.urlSalt->setText(value.toByteArray().toHex());
       }

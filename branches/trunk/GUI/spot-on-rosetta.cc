@@ -513,13 +513,11 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
       return GPG_ERR_NO_PASSPHRASE;
     }
 
-  gpgme_ssize_t rc = gpgme_io_writen
-    (fd,
-     passphrase.toUtf8().constData(),
-     static_cast<size_t> (passphrase.toUtf8().length()));
-
-  Q_UNUSED(rc);
-  rc = gpgme_io_writen(fd, "\n", static_cast<size_t> (1));
+  Q_UNUSED
+    (gpgme_io_writen(fd,
+		     passphrase.toUtf8().constData(),
+		     static_cast<size_t> (passphrase.toUtf8().length())));
+  Q_UNUSED(gpgme_io_writen(fd, "\n", static_cast<size_t> (1)));
   spoton_crypt::memzero(passphrase);
   return GPG_ERR_NO_ERROR;
 }
@@ -2004,7 +2002,7 @@ void spoton_rosetta::slotDelete(void)
 	    err = gpgme_op_keylist_next(ctx, &key);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    err = gpgme_op_delete_ext(ctx, key, GPGME_DELETE_FORCE);
+	    gpgme_op_delete_ext(ctx, key, GPGME_DELETE_FORCE);
 
 	  gpgme_data_release(keydata);
 	  gpgme_key_unref(key);
