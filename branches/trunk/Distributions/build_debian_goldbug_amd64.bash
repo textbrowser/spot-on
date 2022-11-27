@@ -43,7 +43,7 @@ mkdir -p goldbug-debian/usr/share/applications
 cp -p ./goldbug.desktop goldbug-debian/usr/share/applications/.
 cp -pr ./DEBIAN-GoldBug goldbug-debian/DEBIAN
 cp -r ./usr/local/goldbug goldbug-debian/usr/local/.
-fakeroot dpkg-deb --build goldbug-debian GoldBug-2022.11.11_amd64.deb
+fakeroot dpkg-deb --build goldbug-debian GoldBug-2022.12.10_amd64.deb
 make distclean
 rm -fr ./goldbug-debian
 rm -fr ./usr
