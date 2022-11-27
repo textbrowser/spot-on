@@ -19,6 +19,7 @@ DEFINES += LIBSPOTON_OS_MAC \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
+           SPOTON_POSTGRESQL_DISABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -52,6 +53,10 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
 ICON		  =
+
+# Removed.
+# /usr/local/opt/postgresql/include/postgresql@14
+
 INCLUDEPATH	  += . \
                      ../. ../../../. \
                      /usr/local/opt \
@@ -60,8 +65,11 @@ INCLUDEPATH	  += . \
                      /usr/local/opt/libgcrypt/include \
                      /usr/local/opt/libgpg-error/include \
                      /usr/local/opt/ntl/include \
-                     /usr/local/opt/openssl/include \
-                     /usr/local/opt/postgresql/include/postgresql@14
+                     /usr/local/opt/openssl/include
+
+# Removed.
+# -lpq
+
 LIBS		  += -L../../../libNTRU \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \
@@ -75,7 +83,6 @@ LIBS		  += -L../../../libNTRU \
                      -lgpg-error \
                      -lntl \
                      -lntru \
-                     -lpq \
 		     -lpthread \
                      -lsqlite3 \
                      -lssl

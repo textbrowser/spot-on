@@ -76,7 +76,7 @@ ICON		  = Icons/Logo/spot-on-logo.icns
 
 # Removed.
 # -lpq
-                   
+
 LIBS		  += -L../../libNTRU \
                      -L/usr/local/lib \
                      -L/usr/local/opt/curl/lib \

@@ -40,7 +40,9 @@ extern "C"
 {
 #include "libSpotOn/libspoton.h"
 #include <fcntl.h>
+#ifndef SPOTON_POSTGRESQL_DISABLED
 #include <libpq-fe.h>
+#endif
 #if defined(Q_OS_WIN)
 #include <process.h>
 #endif
@@ -299,7 +301,9 @@ int main(int argc, char *argv[])
 
   qputenv("QT_ENABLE_REGEXP_JIT", "0");
   qputenv("QV4_FORCE_INTERPRETER", "1");
+#ifndef SPOTON_POSTGRESQL_DISABLED
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
+#endif
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
