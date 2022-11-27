@@ -27,7 +27,9 @@
 
 extern "C"
 {
+#ifndef SPOTON_POSTGRESQL_DISABLED
 #include <libpq-fe.h>
+#endif
 }
 
 #include <QShortcut>
@@ -161,14 +163,13 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
 
 void spoton::cancelUrlQuery(void)
 {
-  if(m_urlDatabase.driverName() != "QPSQL")
-    return;
-  else if(!m_urlDatabase.driver())
+#ifndef SPOTON_POSTGRESQL_DISABLED
+  if(!m_urlDatabase.driver() || m_urlDatabase.driverName() != "QPSQL")
     return;
 
   QVariant handle(m_urlDatabase.driver()->handle());
 
-  if(handle.typeName() != QString("PGconn") || !handle.isValid())
+  if(!handle.isValid() || handle.typeName() != QString("PGconn"))
     return;
 
   PGconn *connection = *static_cast<PGconn **> (handle.data());
@@ -183,6 +184,7 @@ void spoton::cancelUrlQuery(void)
 
   PQcancel(cancel, 0, 0);
   PQfreeCancel(cancel);
+#endif
 }
 
 void spoton::joinBuzzChannel(const QUrl &url)
