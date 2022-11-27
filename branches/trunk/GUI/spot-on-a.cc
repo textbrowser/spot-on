@@ -30,7 +30,9 @@ extern "C"
 #ifdef SPOTON_POPTASTIC_SUPPORTED
 #include <curl/curl.h>
 #endif
+#ifndef SPOTON_POSTGRESQL_DISABLED
 #include <libpq-fe.h>
+#endif
 }
 
 #include <QtGlobal>
@@ -218,7 +220,9 @@ int main(int argc, char *argv[])
   qputenv("QT_ENABLE_REGEXP_JIT", "0");
   qputenv("QV4_FORCE_INTERPRETER", "1");
   spoton_misc::prepareSignalHandler(signal_handler);
+#ifndef SPOTON_POSTGRESQL_DISABLED
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
+#endif
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
@@ -705,6 +709,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.postgresql_credentials->setEnabled(false);
   m_ui.postgresql_credentials->setVisible(false);
 
+#ifndef SPOTON_POSTGRESQL_DISABLED
   foreach(const QString &driver, QSqlDatabase::drivers())
     if(driver.contains("qpsql", Qt::CaseInsensitive))
       {
@@ -715,6 +720,7 @@ spoton::spoton(void):QMainWindow()
 	   Qt::UserRole - 1);
 	break;
       }
+#endif
 
 #if QT_VERSION >= 0x050501
   m_ui.message->setPlaceholderText(tr("Please type a message..."));

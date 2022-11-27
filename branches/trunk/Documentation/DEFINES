@@ -46,6 +46,10 @@ SPOTON_POPTASTIC_SUPPORTED
 
 Enable Poptastic.
 
+SPOTON_POSTGRESQL_DISABLED
+
+PostgreSQL is disabled.
+
 SPOTON_SCTP_ENABLED
 
 Enable SCTP. Requires system support.
