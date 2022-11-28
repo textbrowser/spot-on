@@ -63,14 +63,14 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 
 INCLUDEPATH	  += . \
                      ../../. \
-		     /usr/local/Cellar/geoip/include \
-		     /usr/local/Cellar/gpgme/include \
-		     /usr/local/Cellar/libgcrypt/include \
-		     /usr/local/Cellar/libgpg-error/include \
-		     /usr/local/Cellar/ntl/include \
-                     /usr/local/Cellar \
-                     /usr/local/Cellar/curl/include \
-                     /usr/local/Cellar/openssl/include \
+		     /usr/local/opt/geoip/include \
+		     /usr/local/opt/gpgme/include \
+		     /usr/local/opt/libgcrypt/include \
+		     /usr/local/opt/libgpg-error/include \
+		     /usr/local/opt/ntl/include \
+                     /usr/local/opt \
+                     /usr/local/opt/curl/include \
+                     /usr/local/opt/openssl/include \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 
@@ -79,8 +79,8 @@ ICON		  = Icons/Logo/spot-on-logo.icns
 
 LIBS		  += -L../../libNTRU \
                      -L/usr/local/lib \
-                     -L/usr/local/Cellar/curl/lib \
-                     -L/usr/local/Cellar/openssl/lib \
+                     -L/usr/local/opt/curl/lib \
+                     -L/usr/local/opt/openssl/lib \
                      -framework AppKit \
                      -framework Cocoa \
                      -lGeoIP \
@@ -111,7 +111,7 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On.d/.
 copyspoton.path             = /Applications/Spot-On.d
-copyssl.extra               = cp /usr/local/Cellar/openssl@1.1/lib/*.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
+copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
 copyssl.path                = /Applications/Spot-On.d
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = /Applications/Spot-On.d
