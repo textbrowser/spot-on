@@ -1,4 +1,3 @@
-
 cache()
 include(spot-on-gui-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
