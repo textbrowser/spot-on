@@ -274,6 +274,7 @@ Completed Items
 202.   Document server-less P2P.
 203.   GB window icon is incorrect in Windows. Incorrect UI files.
 204.   Qt 6.2 LTS!
+205.   OpenSSL 3. New functions only.
 
 Ignored Items
 
@@ -308,9 +309,8 @@ Ignored Items
 24.    Pre-future SOSS tasks.
 25.    Accept link from participant and download content; new panel.
 26.    Windows BT. Requires Qt 5.14.
-27.    Windows NTL. Impossible to build.
-28.    McEliece signatures.
-29.    Which key types to export and import? A new selection dialog.
+27.    McEliece signatures.
+28.    Which key types to export and import? A new selection dialog.
 
 Remaining Items
 
@@ -326,4 +326,3 @@ Remaining Items
        account. Store the destination's digest in the subject. See IMAP.
 10.    NTL for Windows.
 11.    QComboBox's currentIndexChanged(const QString &) is obsolete.
-12.    OpenSSL 3.
