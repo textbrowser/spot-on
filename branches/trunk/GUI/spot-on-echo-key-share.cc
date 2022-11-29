@@ -35,6 +35,7 @@
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
 #include "spot-on.h"
+#include "spot-on-woody.h"
 
 spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 					     spoton *parent):
@@ -42,23 +43,24 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 {
   m_kernelSocket = kernelSocket;
   m_parent = parent;
-  ui.setupUi(this);
+  m_ui.setupUi(this);
+  m_woody = new woody_collapse_expand_tool_button(m_ui.tree);
   setWindowTitle
     (tr("%1: Echo Public Key Share").arg(SPOTON_APPLICATION_NAME));
-  connect(ui.action_Close,
+  connect(m_ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClose(void)));
-  ui.cipher->addItems(spoton_crypt::cipherTypes());
-  ui.hash->addItems(spoton_crypt::hashTypes());
+  m_ui.cipher->addItems(spoton_crypt::cipherTypes());
+  m_ui.hash->addItems(spoton_crypt::hashTypes());
 
-  if(ui.cipher->count() == 0)
-    ui.cipher->addItem("n/a");
+  if(m_ui.cipher->count() == 0)
+    m_ui.cipher->addItem("n/a");
 
-  if(ui.hash->count() == 0)
-    ui.hash->addItem("n/a");
+  if(m_ui.hash->count() == 0)
+    m_ui.hash->addItem("n/a");
 
-  ui.tree->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.tree->setContextMenuPolicy(Qt::CustomContextMenu);
 
   QMenu *menu = new QMenu(this);
 
@@ -103,12 +105,12 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 		  this,
 		  SLOT(slotMenuAction(void)));
   menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
-  ui.menu->setMenu(menu);
-  connect(ui.menu,
+  m_ui.menu->setMenu(menu);
+  connect(m_ui.menu,
 	  SIGNAL(clicked(void)),
-	  ui.menu,
+	  m_ui.menu,
 	  SLOT(showMenu(void)));
-  connect(ui.tree,
+  connect(m_ui.tree,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
@@ -411,7 +413,7 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 
 void spoton_echo_key_share::deleteSelected(void)
 {
-  QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
+  QTreeWidgetItem *item = m_ui.tree->selectedItems().value(0);
 
   if(!item)
     return;
@@ -504,7 +506,7 @@ void spoton_echo_key_share::populate(void)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  disconnect(ui.tree,
+  disconnect(m_ui.tree,
 	     SIGNAL(itemChanged(QTreeWidgetItem *, int)),
 	     this,
 	     SLOT(slotItemChanged(QTreeWidgetItem *, int)));
@@ -523,7 +525,7 @@ void spoton_echo_key_share::populate(void)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	ui.tree->clear();
+	m_ui.tree->clear();
 
 	if(query.exec("SELECT category, " // 0
 		      "OID "              // 1
@@ -547,7 +549,7 @@ void spoton_echo_key_share::populate(void)
 
 	      parent = new QTreeWidgetItem(strings);
 	      parent->setData(0, Qt::UserRole, query.value(1));
-	      ui.tree->addTopLevelItem(parent);
+	      m_ui.tree->addTopLevelItem(parent);
 
 	      QSqlQuery q(db);
 
@@ -644,15 +646,20 @@ void spoton_echo_key_share::populate(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-  ui.tree->resizeColumnToContents(1);
-  ui.tree->resizeColumnToContents(2);
-  ui.tree->resizeColumnToContents(4);
-  ui.tree->resizeColumnToContents(5);
-  ui.tree->resizeColumnToContents(6);
-  ui.tree->resizeColumnToContents(7);
-  ui.tree->sortItems(0, Qt::AscendingOrder);
-  ui.tree->expandAll();
-  connect(ui.tree,
+  m_ui.tree->resizeColumnToContents(1);
+  m_ui.tree->resizeColumnToContents(2);
+  m_ui.tree->resizeColumnToContents(4);
+  m_ui.tree->resizeColumnToContents(5);
+  m_ui.tree->resizeColumnToContents(6);
+  m_ui.tree->resizeColumnToContents(7);
+  m_ui.tree->sortItems(0, Qt::AscendingOrder);
+
+  if(m_woody->isChecked())
+    m_ui.tree->expandAll();
+  else
+    m_ui.tree->collapseAll();
+
+  connect(m_ui.tree,
 	  SIGNAL(itemChanged(QTreeWidgetItem *, int)),
 	  this,
 	  SLOT(slotItemChanged(QTreeWidgetItem *, int)));
@@ -661,15 +668,15 @@ void spoton_echo_key_share::populate(void)
 
 void spoton_echo_key_share::resetWidgets(void)
 {
-  ui.cipher->setCurrentIndex(0);
-  ui.hash->setCurrentIndex(0);
-  ui.iteration_count->setValue(250000);
-  ui.name->clear();
+  m_ui.cipher->setCurrentIndex(0);
+  m_ui.hash->setCurrentIndex(0);
+  m_ui.iteration_count->setValue(250000);
+  m_ui.name->clear();
 }
 
 void spoton_echo_key_share::shareSelected(const QString &keyType)
 {
-  ui.menu->menu()->repaint();
+  m_ui.menu->menu()->repaint();
   repaint();
 
   spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
@@ -702,9 +709,9 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   QStringList list;
 
-  for(int i = 0; i < ui.tree->topLevelItemCount(); i++)
+  for(int i = 0; i < m_ui.tree->topLevelItemCount(); i++)
     {
-      QTreeWidgetItem *item = ui.tree->topLevelItem(i);
+      QTreeWidgetItem *item = m_ui.tree->topLevelItem(i);
 
       if(!item)
 	continue;
@@ -946,13 +953,13 @@ void spoton_echo_key_share::slotMenuAction(void)
   if(!action)
     return;
 
-  int index = ui.menu->menu()->actions().indexOf(action);
+  int index = m_ui.menu->menu()->actions().indexOf(action);
 
   if(index == 0) // New Category
     addCategory();
   else if(index == 2) // Generate
     {
-      QTreeWidgetItem *item = ui.tree->selectedItems().value(0);
+      QTreeWidgetItem *item = m_ui.tree->selectedItems().value(0);
 
       if(!item || item->parent())
 	{
@@ -960,7 +967,7 @@ void spoton_echo_key_share::slotMenuAction(void)
 	  return;
 	}
 
-      QString name(ui.name->text().trimmed());
+      QString name(m_ui.name->text().trimmed());
 
       if(name.length() < 16)
 	{
@@ -969,7 +976,7 @@ void spoton_echo_key_share::slotMenuAction(void)
 	  return;
 	}
 
-      ui.menu->menu()->repaint();
+      m_ui.menu->menu()->repaint();
       repaint();
       QApplication::processEvents();
 
@@ -978,12 +985,12 @@ void spoton_echo_key_share::slotMenuAction(void)
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       keys = spoton_crypt::derivedKeys
-	(ui.cipher->currentText(),
-	 ui.hash->currentText(),
-	 static_cast<unsigned long int> (ui.iteration_count->value()),
+	(m_ui.cipher->currentText(),
+	 m_ui.hash->currentText(),
+	 static_cast<unsigned long int> (m_ui.iteration_count->value()),
 	 name.mid(0, 16).toUtf8(),
-	 ui.cipher->currentText().toLatin1().toHex() +
-	 ui.hash->currentText().toLatin1().toHex() +
+	 m_ui.cipher->currentText().toLatin1().toHex() +
+	 m_ui.hash->currentText().toLatin1().toHex() +
 	 name.mid(16).toUtf8(),
 	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
 	 false,
@@ -999,9 +1006,9 @@ void spoton_echo_key_share::slotMenuAction(void)
 	}
 
       if(!save(keys,
-	       ui.cipher->currentText(),
-	       ui.hash->currentText(),
-	       ui.iteration_count->value(),
+	       m_ui.cipher->currentText(),
+	       m_ui.hash->currentText(),
+	       m_ui.iteration_count->value(),
 	       name,
 	       item->data(0, Qt::UserRole)))
 	showError(tr("An error occurred while attempting to save "
@@ -1047,5 +1054,5 @@ void spoton_echo_key_share::slotMenuAction(void)
 
 void spoton_echo_key_share::slotShowContextMenu(const QPoint &point)
 {
-  ui.menu->menu()->exec(ui.tree->mapToGlobal(point));
+  m_ui.menu->menu()->exec(m_ui.tree->mapToGlobal(point));
 }

@@ -98,8 +98,11 @@
       <property name="animated">
        <bool>true</bool>
       </property>
+      <attribute name="headerMinimumSectionSize">
+       <number>150</number>
+      </attribute>
       <attribute name="headerDefaultSectionSize">
-       <number>250</number>
+       <number>225</number>
       </attribute>
       <column>
        <property name="text">

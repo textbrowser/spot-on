@@ -36,6 +36,7 @@ class QKeyEvent;
 class QSslSocket;
 class spoton;
 class spoton_crypt;
+class woody_collapse_expand_tool_button;
 
 class spoton_echo_key_share: public QMainWindow
 {
@@ -50,7 +51,8 @@ class spoton_echo_key_share: public QMainWindow
  private:
   QPointer<QSslSocket> m_kernelSocket;
   QPointer<spoton> m_parent;
-  Ui_spoton_echokeyshare ui;
+  Ui_spoton_echokeyshare m_ui;
+  woody_collapse_expand_tool_button *m_woody;
   bool save(const QPair<QByteArray, QByteArray> &keys,
 	    const QString &cipherType,
 	    const QString &hashType,
