@@ -534,6 +534,12 @@ void spoton::prepareStyleSheet(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton::prepareTearOffMenus(void)
+{
+  m_ui.menu_Tools->setTearOffEnabled(m_optionsUi.tear_off_menus->isChecked());
+  m_ui.menu_View->setTearOffEnabled(m_optionsUi.tear_off_menus->isChecked());
+}
+
 void spoton::retrieveNeighbors(void)
 {
   QFileInfo fileInfo
@@ -1603,6 +1609,16 @@ void spoton::slotStyleSheetChanged(int index)
 
   settings.setValue("gui/theme", index);
   prepareStyleSheet();
+}
+
+void spoton::slotTearOffMenusEnabled(bool state)
+{
+  m_settings["gui/tear_off_menus"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/tear_off_menus", state);
+  prepareTearOffMenus();
 }
 
 void spoton::slotTerminateKernelOnUIExit(bool state)

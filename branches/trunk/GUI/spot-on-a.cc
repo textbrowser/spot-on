@@ -1451,6 +1451,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotSuperEcho(int)));
+  connect(m_optionsUi.tear_off_menus,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotTearOffMenusEnabled(bool)));
   connect(m_optionsUi.terminate_kernel_on_ui_exit,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2518,6 +2522,8 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.postgresql_kernel_url_distribution_timeout->setValue
     (m_settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
      toInt());
+  m_optionsUi.tear_off_menus->setChecked
+    (m_settings.value("gui/tear_off_menus", true).toBool());
   m_optionsUi.terminate_kernel_on_ui_exit->setChecked
     (m_settings.value("gui/terminate_kernel_on_ui_exit", false).toBool());
   m_kernelUpdateTimer.start
@@ -3413,6 +3419,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.tab->setIconSize(size);
   prepareContextMenuMirrors();
   prepareOtherOptions();
+  prepareTearOffMenus();
   prepareTimeWidgets();
 
   QList<QWidget *> widgets;

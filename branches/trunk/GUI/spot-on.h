@@ -659,6 +659,7 @@ class spoton: public QMainWindow
   void prepareSMP(const QString &hash);
   void prepareStyleSheet(void);
   void prepareTabIcons(void);
+  void prepareTearOffMenus(void);
   void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
@@ -1065,6 +1066,7 @@ class spoton: public QMainWindow
   void slotStyleSheetChanged(int index);
   void slotSuperEcho(int index);
   void slotTabChanged(int index);
+  void slotTearOffMenusEnabled(bool state);
   void slotTerminateKernelOnUIExit(bool state);
   void slotTestPoptasticPop3Settings(void);
   void slotTestPoptasticSmtpSettings(void);

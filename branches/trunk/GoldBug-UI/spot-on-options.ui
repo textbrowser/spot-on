@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1845</y>
+         <y>-3280</y>
          <width>719</width>
-         <height>4208</height>
+         <height>4236</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -261,6 +261,16 @@
               </spacer>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="tear_off_menus">
+             <property name="text">
+              <string>Tear-off menus.</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_20">
@@ -2866,6 +2876,7 @@ with the kernel process.</string>
   <tabstop>play_sounds</tabstop>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
+  <tabstop>tear_off_menus</tabstop>
   <tabstop>theme</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
   <tabstop>buzz_maximum_lines</tabstop>
