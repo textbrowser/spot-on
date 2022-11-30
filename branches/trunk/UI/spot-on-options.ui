@@ -160,7 +160,7 @@
              <item>
               <widget class="QComboBox" name="iconsize">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="sizeAdjustPolicy">
                 <enum>QComboBox::AdjustToContents</enum>

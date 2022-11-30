@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-3280</y>
+         <y>0</y>
          <width>719</width>
          <height>4236</height>
         </rect>
@@ -160,7 +160,7 @@
              <item>
               <widget class="QComboBox" name="iconsize">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <property name="sizeAdjustPolicy">
                 <enum>QComboBox::AdjustToContents</enum>

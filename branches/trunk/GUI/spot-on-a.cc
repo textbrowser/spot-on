@@ -3392,7 +3392,7 @@ spoton::spoton(void):QMainWindow()
   slotSetIcons(m_optionsUi.icons->currentIndex());
 
 #if SPOTON_GOLDBUG == 0
-  QSize size(m_settings.value("gui/tabIconSize", QSize(24, 24)).toSize());
+  QSize size(m_settings.value("gui/tabIconSize", QSize(16, 16)).toSize());
 #else
   QSize size(m_settings.value("gui/tabIconSize", QSize(32, 32)).toSize());
 #endif
@@ -3408,8 +3408,8 @@ spoton::spoton(void):QMainWindow()
   else
     {
 #if SPOTON_GOLDBUG == 0
-      m_optionsUi.iconsize->setCurrentIndex(1);
-      size = QSize(24, 24);
+      m_optionsUi.iconsize->setCurrentIndex(0);
+      size = QSize(16, 16);
 #else
       m_optionsUi.iconsize->setCurrentIndex(2);
       size = QSize(32, 32);
