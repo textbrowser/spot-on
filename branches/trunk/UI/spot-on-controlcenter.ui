@@ -54,6 +54,9 @@
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
       </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
       <widget class="QWidget" name="tab_buzz">
        <attribute name="title">
         <string>Buzz</string>
@@ -90,8 +93,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>605</height>
+             <width>780</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -521,8 +524,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>766</width>
-                <height>595</height>
+                <width>770</width>
+                <height>584</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -990,8 +993,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1130</width>
-             <height>602</height>
+             <width>1079</width>
+             <height>681</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -1092,6 +1095,9 @@
               </property>
               <property name="currentIndex">
                <number>0</number>
+              </property>
+              <property name="documentMode">
+               <bool>true</bool>
               </property>
               <widget class="QWidget" name="tab_read_write">
                <attribute name="title">
@@ -2334,8 +2340,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>605</height>
+             <width>780</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3074,8 +3080,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>353</width>
-                     <height>1422</height>
+                     <width>327</width>
+                     <height>1520</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3642,8 +3648,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>605</height>
+             <width>780</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4052,8 +4058,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>744</width>
-                  <height>562</height>
+                  <width>743</width>
+                  <height>640</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4928,8 +4934,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>605</height>
+             <width>780</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5014,8 +5020,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>836</width>
-                 <height>616</height>
+                 <width>795</width>
+                 <height>677</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6035,8 +6041,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>993</width>
-             <height>1166</height>
+             <width>907</width>
+             <height>1293</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7287,8 +7293,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>762</width>
-             <height>664</height>
+             <width>759</width>
+             <height>706</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7311,6 +7317,9 @@
              <widget class="QTabWidget" name="etpTab">
               <property name="currentIndex">
                <number>0</number>
+              </property>
+              <property name="documentMode">
+               <bool>true</bool>
               </property>
               <widget class="QWidget" name="tab_magnets">
                <attribute name="title">
@@ -8482,8 +8491,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>796</width>
-             <height>747</height>
+             <width>759</width>
+             <height>797</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8862,6 +8871,9 @@
                  <widget class="QTabWidget" name="urlTab">
                   <property name="currentIndex">
                    <number>0</number>
+                  </property>
+                  <property name="documentMode">
+                   <bool>true</bool>
                   </property>
                   <widget class="QWidget" name="tab_download">
                    <attribute name="title">
@@ -9258,8 +9270,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>776</width>
-             <height>605</height>
+             <width>780</width>
+             <height>594</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9500,7 +9512,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
