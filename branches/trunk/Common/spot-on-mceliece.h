@@ -33,6 +33,9 @@
 #define _spoton_mceliece_h_
 
 #ifdef SPOTON_MCELIECE_ENABLED
+
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
 #include <NTL/GF2E.h>
 #include <NTL/GF2EX.h>
 #include <NTL/GF2EXFactoring.h>
