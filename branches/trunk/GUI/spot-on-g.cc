@@ -107,18 +107,19 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
       str2 = m_ui.answer->text();
     }
 
-  if(str1.length() < 8 || str2.length() < 8)
+  if(str1.length() < spoton_common::MINIMUM_PASSWORD_LENGTH ||
+     str2.length() < spoton_common::MINIMUM_PASSWORD_LENGTH)
     {
       if(m_ui.passphrase_rb->isChecked())
 	QMessageBox::critical(parent, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("The passphrases must contain at least "
-				 "eight characters each."));
+				 "four characters each."));
       else
 	QMessageBox::critical(parent, tr("%1: Error").
 			      arg(SPOTON_APPLICATION_NAME),
 			      tr("The answer and question must contain "
-				 "at least eight characters each."));
+				 "at least four characters each."));
 
       QApplication::processEvents();
 

@@ -90,6 +90,12 @@ class spoton_common
   static const int MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE = 4096;
   static const int MAXIMUM_PENDING_CONNECTIONS = USHRT_MAX;
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
+
+  /*
+  ** Please revise spoton::verifyInitializationPassphrase()!
+  */
+
+  static const int MINIMUM_PASSWORD_LENGTH = 4; // See aforementioned comment!
   static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 262144;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;

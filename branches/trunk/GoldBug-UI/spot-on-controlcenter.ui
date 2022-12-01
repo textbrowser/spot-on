@@ -131,7 +131,7 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
+             <width>603</width>
              <height>811</height>
             </rect>
            </property>
@@ -1307,8 +1307,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>658</width>
-             <height>790</height>
+             <width>662</width>
+             <height>652</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2954,7 +2954,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>584</width>
+             <width>533</width>
              <height>1993</height>
             </rect>
            </property>
@@ -4224,7 +4224,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>624</width>
-             <height>790</height>
+             <height>638</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -6697,7 +6697,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>882</width>
+             <width>843</width>
              <height>1380</height>
             </rect>
            </property>
@@ -7526,7 +7526,7 @@ top: 5px;
                    <item row="3" column="4">
                     <widget class="QLabel" name="label_58">
                      <property name="text">
-                      <string>Minimum of 8 characters.</string>
+                      <string>Minimum of four characters.</string>
                      </property>
                     </widget>
                    </item>
@@ -8274,7 +8274,7 @@ color: rgb(255, 255, 255);</string>
              <x>0</x>
              <y>0</y>
              <width>455</width>
-             <height>1070</height>
+             <height>1072</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9638,8 +9638,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>654</width>
-             <height>818</height>
+             <width>634</width>
+             <height>820</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">

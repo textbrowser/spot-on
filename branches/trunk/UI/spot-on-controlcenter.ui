@@ -5013,7 +5013,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-437</y>
+                 <y>0</y>
                  <width>795</width>
                  <height>677</height>
                 </rect>
@@ -6034,7 +6034,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-724</y>
+             <y>0</y>
              <width>907</width>
              <height>1293</height>
             </rect>
@@ -6668,7 +6668,7 @@
                    <item row="3" column="2">
                     <widget class="QLabel" name="label_58">
                      <property name="text">
-                      <string>Minimum of 8 characters.</string>
+                      <string>Minimum of four characters.</string>
                      </property>
                     </widget>
                    </item>
