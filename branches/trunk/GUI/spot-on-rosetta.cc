@@ -257,6 +257,9 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+#ifdef Q_OS_MACOS
+  spoton_utilities::enableTabDocumentMode(this);
+#endif
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const

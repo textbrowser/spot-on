@@ -142,6 +142,16 @@ class spoton_utilities
     child->move(p);
   }
 
+  static void enableTabDocumentMode(QWidget *parent)
+  {
+    if(!parent)
+      return;
+
+    foreach(auto tab, parent->findChildren<QTabWidget *> ())
+      if(tab)
+	tab->setDocumentMode(true);
+  }
+
  private:
   spoton_utilities(void);
 };

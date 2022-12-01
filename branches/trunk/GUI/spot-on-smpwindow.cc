@@ -150,6 +150,9 @@ spoton_smpwindow::spoton_smpwindow(spoton *parent):QMainWindow()
 	  SIGNAL(currentIndexChanged(const QString &)),
 	  this,
 	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+#ifdef Q_OS_MACOS
+  spoton_utilities::enableTabDocumentMode(this);
+#endif
 }
 
 spoton_smpwindow::~spoton_smpwindow()

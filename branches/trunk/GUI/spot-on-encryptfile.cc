@@ -57,6 +57,9 @@ spoton_encryptfile::spoton_encryptfile(void):QMainWindow()
      "}"
      );
   slotNewPage();
+#ifdef Q_OS_MACOS
+  spoton_utilities::enableTabDocumentMode(this);
+#endif
 }
 
 spoton_encryptfile::~spoton_encryptfile()

@@ -1030,6 +1030,9 @@ void spoton::slotEstablishForwardSecrecy(void)
     (ui.encryptionKeyType->model()->index(2, 0), 0, Qt::UserRole - 1);
 #endif
   ui.tab->setCurrentIndex(0);
+#ifdef Q_OS_MACOS
+  ui.tab->setDocumentMode(true);
+#endif
   ui.tab->setTabEnabled(1, false);
   ui.text_1->setText(tr("Please select."));
   connect(ui.encryptionKeyType,

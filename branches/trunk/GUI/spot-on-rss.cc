@@ -350,6 +350,9 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+#ifdef Q_OS_MACOS
+  spoton_utilities::enableTabDocumentMode(this);
+#endif
 }
 
 spoton_rss::~spoton_rss()

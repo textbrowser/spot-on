@@ -54,9 +54,6 @@
       <property name="elideMode">
        <enum>Qt::ElideLeft</enum>
       </property>
-      <property name="documentMode">
-       <bool>true</bool>
-      </property>
       <widget class="QWidget" name="tab_buzz">
        <attribute name="title">
         <string>Buzz</string>
@@ -93,8 +90,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>780</width>
-             <height>594</height>
+             <width>772</width>
+             <height>590</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -524,8 +521,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>770</width>
-                <height>584</height>
+                <width>762</width>
+                <height>580</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1095,9 +1092,6 @@
               </property>
               <property name="currentIndex">
                <number>0</number>
-              </property>
-              <property name="documentMode">
-               <bool>true</bool>
               </property>
               <widget class="QWidget" name="tab_read_write">
                <attribute name="title">
@@ -2340,8 +2334,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>780</width>
-             <height>594</height>
+             <width>772</width>
+             <height>590</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3648,8 +3642,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>780</width>
-             <height>594</height>
+             <width>772</width>
+             <height>590</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4058,7 +4052,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>743</width>
+                  <width>735</width>
                   <height>640</height>
                  </rect>
                 </property>
@@ -4934,8 +4928,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>780</width>
-             <height>594</height>
+             <width>772</width>
+             <height>590</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5019,7 +5013,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
+                 <y>-437</y>
                  <width>795</width>
                  <height>677</height>
                 </rect>
@@ -6040,7 +6034,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-724</y>
              <width>907</width>
              <height>1293</height>
             </rect>
@@ -7293,7 +7287,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>759</width>
+             <width>751</width>
              <height>706</height>
             </rect>
            </property>
@@ -7317,9 +7311,6 @@
              <widget class="QTabWidget" name="etpTab">
               <property name="currentIndex">
                <number>0</number>
-              </property>
-              <property name="documentMode">
-               <bool>true</bool>
               </property>
               <widget class="QWidget" name="tab_magnets">
                <attribute name="title">
@@ -8491,7 +8482,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>759</width>
+             <width>751</width>
              <height>797</height>
             </rect>
            </property>
@@ -8871,9 +8862,6 @@
                  <widget class="QTabWidget" name="urlTab">
                   <property name="currentIndex">
                    <number>0</number>
-                  </property>
-                  <property name="documentMode">
-                   <bool>true</bool>
                   </property>
                   <widget class="QWidget" name="tab_download">
                    <attribute name="title">
@@ -9270,8 +9258,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>780</width>
-             <height>594</height>
+             <width>772</width>
+             <height>590</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

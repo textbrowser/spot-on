@@ -86,6 +86,7 @@ extern "C"
 #include "spot-on-rss.h"
 #include "spot-on-smp.h"
 #include "spot-on-status-activity.h"
+#include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-password-prompt.h"
 
@@ -3523,6 +3524,9 @@ spoton::spoton(void):QMainWindow()
     if(!lineEdit->isReadOnly() && !lineEdit->objectName().contains("spinbox"))
       lineEdit->setClearButtonEnabled(true);
 
+#ifdef Q_OS_MACOS
+  spoton_utilities::enableTabDocumentMode(this);
+#endif
   QApplication::restoreOverrideCursor();
 }
 
