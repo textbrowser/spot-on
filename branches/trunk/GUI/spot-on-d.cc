@@ -2149,8 +2149,7 @@ void spoton::slotSaveMOTD(void)
 	query.bindValue(1, oid);
 
 	if(!query.exec())
-	  error = tr
-	    ("Database error. Unable to save the message of the day.");
+	  error = tr("Database error. Unable to save the message of the day.");
       }
     else
       error = tr("Unable to open listeners.db.");

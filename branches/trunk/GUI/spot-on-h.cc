@@ -311,7 +311,9 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 		       "external_ip_address = NULL, "
 		       "external_port = NULL, "
 		       "status = 'offline' WHERE "
-		       "connections > 0 OR status = 'online'");
+		       "connections > 0 OR "
+		       "status = 'asleep' OR "
+		       "status = 'online'");
 	  }
 
 	db.close();

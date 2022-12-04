@@ -521,6 +521,13 @@ bool spoton_listener::isListening(void) const
 
 bool spoton_listener::listen(const QString &address, const quint16 port)
 {
+  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+    /*
+    ** Do not listen!
+    */
+
+    return true;
+
   if(m_sctpServer || m_tcpServer || m_udpServer)
     {
       m_address = address;
@@ -789,6 +796,12 @@ void spoton_listener::close(void)
 #endif
 }
 
+void spoton_listener::closeIfFull(void)
+{
+  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+    close();
+}
+
 void spoton_listener::saveExternalAddress(const QHostAddress &address,
 					  const QSqlDatabase &db)
 {
@@ -847,8 +860,7 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
 {
   if(!db.isOpen())
     {
-      spoton_misc::logError
-	("spoton_listener::saveStatus(): db is closed.");
+      spoton_misc::logError("spoton_listener::saveStatus(): db is closed.");
       return;
     }
 
@@ -862,6 +874,9 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
 
   if(isListening())
     status = "online";
+  else if(spoton_kernel::s_connectionCounts.count(m_id) >=
+	  maxPendingConnections())
+    status = "asleep";
   else
     status = "offline";
 
@@ -1267,6 +1282,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
       spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
       neighbor->start(QThread::HighPriority);
       updateConnectionCount();
+      closeIfFull();
     }
   else
     {
@@ -1782,6 +1798,7 @@ void spoton_listener::slotNewConnection(void)
       spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
       neighbor->start(QThread::HighPriority);
       updateConnectionCount();
+      closeIfFull();
     }
   else
     {
@@ -1962,9 +1979,7 @@ void spoton_listener::slotTimeout(void)
 			 &ok);
 		  }
 
-		if(status == "offline")
-		  close();
-		else if(status == "online")
+		if(status == "asleep" || status == "online")
 		  {
 		    if(!isListening())
 		      {
@@ -1990,53 +2005,54 @@ void spoton_listener::slotTimeout(void)
 			  }
 		      }
 
-		    if(isListening())
-		      if(static_cast<int> (query.value(1).
-					   toLongLong()) !=
-			 maxPendingConnections())
-			{
-			  int maximumPendingConnections =
-			    qAbs(static_cast<int> (query.value(1).
-						   toLongLong()));
+		    if(maxPendingConnections() !=
+		       static_cast<int> (query.value(1).toLongLong()))
+		      {
+			int maximumPendingConnections =
+			  qAbs(static_cast<int> (query.value(1).toLongLong()));
 
-			  if(maximumPendingConnections > 0)
-			    {
-			      if(maximumPendingConnections != 1 &&
-				 maximumPendingConnections % 5 != 0)
-				maximumPendingConnections = 5;
-			    }
-			  else
-			    maximumPendingConnections =
-			      spoton_common::MAXIMUM_PENDING_CONNECTIONS;
+			if(maximumPendingConnections > 0)
+			  {
+			    if(maximumPendingConnections != 1 &&
+			       maximumPendingConnections % 5 != 0)
+			      maximumPendingConnections = 5;
+			  }
+			else
+			  maximumPendingConnections =
+			    spoton_common::MAXIMUM_PENDING_CONNECTIONS;
 
-			  if(maximumPendingConnections <= 0 ||
-			     maximumPendingConnections >=
-			     spoton_common::MAXIMUM_PENDING_CONNECTIONS)
-			    maximumPendingConnections =
-			      spoton_common::MAXIMUM_PENDING_CONNECTIONS;
+			if(maximumPendingConnections <= 0 ||
+			   maximumPendingConnections >=
+			   spoton_common::MAXIMUM_PENDING_CONNECTIONS)
+			  maximumPendingConnections =
+			    spoton_common::MAXIMUM_PENDING_CONNECTIONS;
 
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-			  if(m_bluetoothServer)
-			    m_bluetoothServer->setMaxPendingConnections
-			      (maximumPendingConnections);
+			if(m_bluetoothServer)
+			  m_bluetoothServer->setMaxPendingConnections
+			    (maximumPendingConnections);
 #endif
 
-			  if(m_sctpServer)
-			    m_sctpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
-			  else if(m_tcpServer)
-			    m_tcpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
-			  else if(m_udpServer)
-			    m_udpServer->setMaxPendingConnections
-			      (maximumPendingConnections);
+			if(m_sctpServer)
+			  m_sctpServer->setMaxPendingConnections
+			    (maximumPendingConnections);
+			else if(m_tcpServer)
+			  m_tcpServer->setMaxPendingConnections
+			    (maximumPendingConnections);
+			else if(m_udpServer)
+			  m_udpServer->setMaxPendingConnections
+			    (maximumPendingConnections);
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-			  else if(m_webSocketServer)
-			    m_webSocketServer->setMaxPendingConnections
-			      (maximumPendingConnections);
+			else if(m_webSocketServer)
+			  m_webSocketServer->setMaxPendingConnections
+			    (maximumPendingConnections);
 #endif
-			}
+
+			closeIfFull();
+		      }
 		  }
+		else if(status == "offline")
+		  close();
 
 		if(isListening() && m_externalAddress)
 		  {
@@ -2077,7 +2093,9 @@ void spoton_listener::slotTimeout(void)
 		    saveExternalAddress(QHostAddress(), db);
 		  }
 
-		if(status == "offline" || status == "online")
+		if(status == "asleep" ||
+		   status == "offline" ||
+		   status == "online")
 		  saveStatus(db);
 	      }
 	    else
@@ -2550,6 +2568,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
       spoton_kernel::s_connectionCounts.insert(m_id, neighbor);
       neighbor->start(QThread::HighPriority);
       updateConnectionCount();
+      closeIfFull();
     }
   else
     {
@@ -2578,12 +2597,10 @@ void spoton_listener::updateConnectionCount(void)
       {
 	QSqlQuery query(db);
 
-	query.prepare("UPDATE listeners SET connections = ? "
-		      "WHERE OID = ?");
-	query.bindValue
-	  (0, QString::number(spoton_kernel::
-			      s_connectionCounts.count(m_id)));
-	query.bindValue(1, m_id);
+	query.prepare("UPDATE listeners SET connections = ? WHERE OID = ?");
+	query.addBindValue
+	  (QString::number(spoton_kernel::s_connectionCounts.count(m_id)));
+	query.addBindValue(m_id);
 	query.exec();
       }
 

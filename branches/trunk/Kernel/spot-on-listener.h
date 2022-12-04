@@ -261,6 +261,7 @@ class spoton_listener: public QObject
   QString errorString(void) const;
   int maxPendingConnections(void) const;
   qint64 id(void) const;
+  void closeIfFull(void);
   void prepareNetworkInterface(void);
   void saveExternalAddress(const QHostAddress &address,
 			   const QSqlDatabase &db);

@@ -34,6 +34,10 @@
 
 #ifdef SPOTON_MCELIECE_ENABLED
 
+/*
+** Ignore some NTL warnings.
+*/
+
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <NTL/GF2E.h>

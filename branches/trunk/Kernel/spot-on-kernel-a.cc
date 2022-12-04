@@ -2374,23 +2374,7 @@ void spoton_kernel::prepareListeners(void)
 	      ** listeners that will listen.
 	      */
 
-	      if(status == "deleted" || status == "offline")
-		{
-		  listener = m_listeners.value(id);
-
-		  if(listener)
-		    {
-		      listener->close();
-		      listener->deleteLater();
-		    }
-
-		  m_listeners.remove(id);
-		  s_connectionCounts.remove(id);
-
-		  if(status == "deleted")
-		    cleanupListenersDatabase(db);
-		}
-	      else if(status == "online")
+	      if(status == "asleep" || status == "online")
 		{
 		  if(!m_listeners.contains(id))
 		    {
@@ -2555,6 +2539,22 @@ void spoton_kernel::prepareListeners(void)
 			  listener->listen(listener->serverAddress(),
 					   listener->serverPort());
 		    }
+		}
+	      else if(status == "deleted" || status == "offline")
+		{
+		  listener = m_listeners.value(id);
+
+		  if(listener)
+		    {
+		      listener->close();
+		      listener->deleteLater();
+		    }
+
+		  m_listeners.remove(id);
+		  s_connectionCounts.remove(id);
+
+		  if(status == "deleted")
+		    cleanupListenersDatabase(db);
 		}
 	    }
       }

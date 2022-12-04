@@ -5952,13 +5952,11 @@ void spoton::slotDeleteListener(void)
 	  {
 	    deleteListener = true;
 	    query.exec("PRAGMA secure_delete = ON");
-	    query.prepare("DELETE FROM listeners WHERE "
-			  "OID = ?");
+	    query.prepare("DELETE FROM listeners WHERE OID = ?");
 	  }
 	else
 	  query.prepare("UPDATE listeners SET status_control = 'deleted' "
-			"WHERE "
-			"OID = ? AND status_control <> 'deleted'");
+			"WHERE OID = ? AND status_control <> 'deleted'");
 
 	query.bindValue(0, oid);
 	query.exec();
@@ -6621,8 +6619,8 @@ void spoton::slotListenerChanged(QTableWidgetItem *item)
 	  }
 	else if(item->column() == 12)
 	  {
-	    query.prepare("UPDATE listeners SET "
-			  "use_accounts = ? WHERE OID = ?");
+	    query.prepare
+	      ("UPDATE listeners SET use_accounts = ? WHERE OID = ?");
 
 	    if(item->checkState() == Qt::Checked)
 	      query.bindValue(0, 1);
@@ -6634,9 +6632,7 @@ void spoton::slotListenerChanged(QTableWidgetItem *item)
 	  }
 	else if(item->column() == 21)
 	  {
-	    query.prepare("UPDATE listeners SET "
-			  "passthrough = ? "
-			  "WHERE OID = ?");
+	    query.prepare("UPDATE listeners SET passthrough = ? WHERE OID = ?");
 	    query.bindValue(0, item->checkState() == Qt::Checked ? 1 : 0);
 	    query.bindValue(1, oid);
 	    query.exec();
@@ -7713,10 +7709,11 @@ void spoton::slotPopulateListeners(void)
 
 			if(i == 1)
 			  {
-			    if(query.value(i).toString().
-			       toLower() == "online")
-			      item->setBackground
-				(QBrush(QColor("lightgreen")));
+			    auto state(query.value(i).toString());
+
+			    if(state.contains("asleep", Qt::CaseInsensitive) ||
+			       state.contains("online", Qt::CaseInsensitive))
+			      item->setBackground(QBrush(QColor("lightgreen")));
 			    else
 			      item->setBackground(QBrush());
 			  }

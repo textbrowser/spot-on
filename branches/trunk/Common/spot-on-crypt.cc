@@ -135,6 +135,10 @@ static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #endif
 
+/*
+** Ignore some OpenSSL 3 warnings.
+*/
+
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 spoton_crypt::spoton_crypt(const QByteArray &privateKey,
