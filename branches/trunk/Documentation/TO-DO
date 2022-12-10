@@ -275,6 +275,7 @@ Completed Items
 203.   GB window icon is incorrect in Windows. Incorrect UI files.
 204.   Qt 6.2 LTS!
 205.   OpenSSL 3. New functions only.
+206.   QComboBox's currentIndexChanged(const QString &) is obsolete.
 
 Ignored Items
 
@@ -325,4 +326,4 @@ Remaining Items
 9.     Poptastic is capable of supporting multiple devices using a single
        account. Store the destination's digest in the subject. See IMAP.
 10.    NTL for Windows.
-11.    QComboBox's currentIndexChanged(const QString &) is obsolete.
+11.    NTL warnings on FreeBSD.

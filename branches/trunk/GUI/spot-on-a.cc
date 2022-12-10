@@ -1397,9 +1397,9 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotPublishPeriodicallyToggled(bool)));
   connect(m_optionsUi.publishedKeySize,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotPublishedKeySizeChanged(const QString &)));
+	  SLOT(slotPublishedKeySizeChanged(int)));
   connect(m_optionsUi.refreshEmail,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1748,9 +1748,9 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotCommonBuzzChannelsActivated(int)));
   connect(m_ui.congestionAlgorithm,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotSaveCongestionAlgorithm(const QString &)));
+	  SLOT(slotSaveCongestionAlgorithm(int)));
   connect(m_ui.copyInstitution,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1930,9 +1930,9 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotKernelHashTypeChanged(int)));
   connect(m_ui.kernelKeySize,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotKernelKeySizeChanged(const QString &)));
+	  SLOT(slotKernelKeySizeChanged(int)));
   connect(m_ui.kernelLogEvents,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1946,9 +1946,9 @@ spoton::spoton(void):QMainWindow()
 	  this,
 	  SLOT(slotSecureMemoryPoolChanged(int)));
   connect(m_ui.keys,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotKeysIndexChanged(const QString &)));
+	  SLOT(slotKeysIndexChanged(int)));
   connect(m_ui.listenerIP,
 	  SIGNAL(returnPressed(void)),
 	  this,

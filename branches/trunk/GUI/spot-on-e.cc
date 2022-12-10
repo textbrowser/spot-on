@@ -931,9 +931,9 @@ void spoton::slotConfigurePoptastic(void)
   QStringList protocols(curl_protocols());
 
   connect(m_poptasticRetroPhoneSettingsUi.account,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotPoptasticAccountChanged(const QString &)),
+	  SLOT(slotPoptasticAccountChanged(int)),
 	  Qt::UniqueConnection);
   connect(m_poptasticRetroPhoneSettingsUi.
 	  buttonBox->button(QDialogButtonBox::Reset),
@@ -1435,9 +1435,10 @@ void spoton::slotOntopChatDialogs(bool state)
   settings.setValue("gui/ontopChatDialogs", state);
 }
 
-void spoton::slotPoptasticAccountChanged(const QString &text)
+void spoton::slotPoptasticAccountChanged(int index)
 {
   QList<QHash<QString, QVariant> > list;
+  auto text(m_poptasticRetroPhoneSettingsUi.account->itemText(index));
   bool ok = true;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));

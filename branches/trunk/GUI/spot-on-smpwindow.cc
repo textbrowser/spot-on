@@ -131,9 +131,9 @@ spoton_smpwindow::spoton_smpwindow(spoton *parent):QMainWindow()
   */
 
   connect(m_ui.generator_hash_type,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+	  SLOT(slotSaveCombinationBoxOption(int)));
   connect(m_ui.generator_stream_size,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -143,13 +143,13 @@ spoton_smpwindow::spoton_smpwindow(spoton *parent):QMainWindow()
 	  this,
 	  SLOT(slotSaveSpinBoxOption(int)));
   connect(m_ui.transfer_cipher_type,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+	  SLOT(slotSaveCombinationBoxOption(int)));
   connect(m_ui.transfer_hash_type,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotSaveCombinationBoxOption(const QString &)));
+	  SLOT(slotSaveCombinationBoxOption(int)));
 #ifdef Q_OS_MACOS
   spoton_utilities::enableTabDocumentMode(this);
 #endif
@@ -1458,18 +1458,27 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QApplication::restoreOverrideCursor();
 }
 
-void spoton_smpwindow::slotSaveCombinationBoxOption(const QString &text)
+void spoton_smpwindow::slotSaveCombinationBoxOption(int index)
 {
   QString str("");
+  QString text("");
 
   if(sender() == m_ui.generator_hash_type)
-    str = "smpwindow/generator_hash_type";
+    {
+      str = "smpwindow/generator_hash_type";
+      text = m_ui.generator_hash_type->itemText(index);
+    }
   else if(sender() == m_ui.transfer_cipher_type)
-    str = "smpwindow/transfer_cipher_type";
+    {
+      str = "smpwindow/transfer_cipher_type";
+      text = m_ui.transfer_cipher_type->itemText(index);
+    }
   else if(sender() == m_ui.transfer_hash_type)
-    str = "smpwindow/transfer_hash_type";
-
-  if(str.isEmpty())
+    {
+      str = "smpwindow/transfer_hash_type";
+      text = m_ui.transfer_hash_type->itemText(index);
+    }
+  else
     return;
 
   QSettings settings;

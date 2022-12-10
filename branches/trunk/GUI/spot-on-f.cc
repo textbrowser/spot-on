@@ -2043,9 +2043,10 @@ void spoton::slotRespondToForwardSecrecy(void)
     }
 }
 
-void spoton::slotSaveCongestionAlgorithm(const QString &text)
+void spoton::slotSaveCongestionAlgorithm(int index)
 {
   QString str("");
+  auto text(m_ui.congestionAlgorithm->itemText(index));
 
   if(text == "n/a")
     str = "sha224";

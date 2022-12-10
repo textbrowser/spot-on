@@ -4184,8 +4184,10 @@ void spoton::slotKernelHashTypeChanged(int index)
     ("gui/kernelHashType", m_settings.value("gui/kernelHashType"));
 }
 
-void spoton::slotKernelKeySizeChanged(const QString &text)
+void spoton::slotKernelKeySizeChanged(int index)
 {
+  auto text(m_ui.kernelKeySize->itemText(index));
+
   m_kernelSocket.setProperty("key_size", text.toInt());
   m_settings["gui/kernelKeySize"] = text.toInt();
 
@@ -4758,8 +4760,10 @@ void spoton::slotPublishPeriodicallyToggled(bool state)
   settings.setValue("gui/publishPeriodically", state);
 }
 
-void spoton::slotPublishedKeySizeChanged(const QString &text)
+void spoton::slotPublishedKeySizeChanged(int index)
 {
+  auto text(m_optionsUi.publishedKeySize->itemText(index));
+
   m_settings["gui/publishedKeySize"] = text.toInt();
 
   QSettings settings;

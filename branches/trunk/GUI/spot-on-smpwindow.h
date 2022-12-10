@@ -89,7 +89,7 @@ class spoton_smpwindow: public QMainWindow
   void slotRefresh(void);
   void slotRemove(void);
   void slotSMPMessageReceivedFromKernel(const QByteArrayList &list);
-  void slotSaveCombinationBoxOption(const QString &text);
+  void slotSaveCombinationBoxOption(int index);
   void slotSaveSpinBoxOption(int value);
   void slotSetIcons(void);
 };

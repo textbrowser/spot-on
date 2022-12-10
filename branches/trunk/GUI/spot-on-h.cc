@@ -843,15 +843,17 @@ void spoton::slotInitiateSSLTLSSession(void)
 
 }
 
-void spoton::slotKeysIndexChanged(const QString &text)
+void spoton::slotKeysIndexChanged(int index)
 {
 #ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
+  auto text(m_ui.keys->itemText(index));
+
   if(text == "Open Library")
     m_ui.regenerate->setEnabled(false);
   else
     m_ui.regenerate->setEnabled(true);
 #else
-  Q_UNUSED(text);
+  Q_UNUSED(index);
 #endif
 }
 

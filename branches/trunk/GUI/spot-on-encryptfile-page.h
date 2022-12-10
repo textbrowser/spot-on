@@ -59,7 +59,7 @@ class spoton_encryptfile_page: public QWidget
 
  private slots:
   void slotCancel(void);
-  void slotCipherTypeChanged(const QString &text);
+  void slotCipherTypeChanged(int index);
   void slotCompleted(const QString &error);
   void slotCompleted(const int percentage);
   void slotConvert(void);

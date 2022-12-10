@@ -58,9 +58,9 @@ spoton_encryptfile_page::spoton_encryptfile_page(QWidget *parent):
 	  this,
 	  SLOT(slotCancel(void)));
   connect(ui.cipher,
-	  SIGNAL(currentIndexChanged(const QString &)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
-	  SLOT(slotCipherTypeChanged(const QString &)));
+	  SLOT(slotCipherTypeChanged(int)));
   connect(ui.convert,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -501,8 +501,10 @@ void spoton_encryptfile_page::slotCancel(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton_encryptfile_page::slotCipherTypeChanged(const QString &text)
+void spoton_encryptfile_page::slotCipherTypeChanged(int index)
 {
+  auto text(ui.cipher->itemText(index));
+
 #if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
   Q_UNUSED(text);
   ui.gcm->setEnabled(false);

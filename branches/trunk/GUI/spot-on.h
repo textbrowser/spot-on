@@ -851,14 +851,14 @@ class spoton: public QMainWindow
   void slotKeepOnlyUserDefinedNeighbors(bool state);
   void slotKernelCipherTypeChanged(int index);
   void slotKernelHashTypeChanged(int index);
-  void slotKernelKeySizeChanged(const QString &text);
+  void slotKernelKeySizeChanged(int index);
   void slotKernelLogEvents(bool state);
   void slotKernelSocketError(QAbstractSocket::SocketError error);
   void slotKernelSocketSslErrors(const QList<QSslError> &errors);
   void slotKernelSocketState(void);
   void slotKernelStatus(void);
   void slotKernelUrlBatchSizeChanged(int value);
-  void slotKeysIndexChanged(const QString &text);
+  void slotKeysIndexChanged(int index);
   void slotLaneWidthChanged(int index);
   void slotLaunchKernelAfterAuthentication(bool state);
   void slotLimitConnections(int value);
@@ -908,7 +908,7 @@ class spoton: public QMainWindow
   void slotPassphraseRadioToggled(bool state);
   void slotPlaySounds(bool state);
   void slotPopPoptastic(void);
-  void slotPoptasticAccountChanged(const QString &text);
+  void slotPoptasticAccountChanged(int index);
   void slotPoptasticSettingsReset(bool state);
   void slotPoptasticSettingsReset(void);
   void slotPopulateBuzzFavorites(void);
@@ -940,7 +940,7 @@ class spoton: public QMainWindow
   void slotPublicizeAllListenersPlaintext(void);
   void slotPublicizeListenerPlaintext(void);
   void slotPublishPeriodicallyToggled(bool state);
-  void slotPublishedKeySizeChanged(const QString &text);
+  void slotPublishedKeySizeChanged(int index);
   void slotPurgeEphemeralKeyPair(void);
   void slotPurgeEphemeralKeys(void);
   void slotQuit(void);
@@ -978,7 +978,7 @@ class spoton: public QMainWindow
   void slotSaveBuzzAutoJoin(bool state);
   void slotSaveBuzzName(void);
   void slotSaveCommonUrlCredentials(void);
-  void slotSaveCongestionAlgorithm(const QString &text);
+  void slotSaveCongestionAlgorithm(int index);
   void slotSaveCustomStatus(void);
   void slotSaveDestination(void);
   void slotSaveEmailName(void);
