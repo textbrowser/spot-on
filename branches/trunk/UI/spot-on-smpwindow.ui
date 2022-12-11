@@ -406,7 +406,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Please do not modify the Generator Hash Type, Generator Stream Size, and Iteration Count unless you have notified other participants.</string>
+           <string>Please do not modify the Generator Hash Type, Generator Stream Size, and Iteration Count unless you have notified other participants. Please also review SMP_PREFERRED_HASH_ALGORITHM in the Miscellaneous section of the Options window.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>

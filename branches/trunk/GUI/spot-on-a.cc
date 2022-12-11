@@ -10108,6 +10108,7 @@ void spoton::slotSetPassphrase(void)
 	  QApplication::restoreOverrideCursor();
 	}
 
+      slotApplyOtherOptions(); // Initialize miscellaneous options.
       QMessageBox::information
 	(this, tr("%1: Information").
 	 arg(SPOTON_APPLICATION_NAME),
