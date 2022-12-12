@@ -289,29 +289,15 @@ Ignored Items
 7.     Account credentials should not be recorded via reversible encryption.
        Derive keys? Assume an upper bound during account discovery.
 8.     Database entries containing hashes can be maliciously twisted. Encrypt?
-9.     Qt 5.5.x supports serial ports.
+9.     Rosetta: Inbox, Drafts (?), Sent, Trash.
 10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
 11.    Remote kernel termination.
-12.    Limit the number of entries that are allowed to be inserted into
-       a database.
+12.    E-mail GPG.
 13.    QFSFileEngine::open: No file name specified: created from
        e-mail. Missing images?
-14.    1-N SCTP support.
+14.    Which key types to export and import? A new selection dialog.
 15.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-16.    The libgcrypt library supports GCRY_KDF_SCRYPT.
-17.    Weather feeds.
-18.    Separate NTRU implementation.
-19.    Rosetta: Inbox, Drafts (?), Sent, Trash.
-20.    E-mail GPG.
-21.    Audible.
-22.    Simple interface. Automatic UDP.
-23.    McEliece Pointcheval.
-24.    Pre-future SOSS tasks.
-25.    Accept link from participant and download content; new panel.
-26.    Windows BT. Requires Qt 5.14.
-27.    McEliece signatures.
-28.    Which key types to export and import? A new selection dialog.
 
 Remaining Items
 
@@ -319,11 +305,6 @@ Remaining Items
 2.     SQLite silent mode; limit synchronization. Partially completed.
 3.     IMAP and optional removal of messages; retrieve latest.
 4.     Single Rosetta attachments.
-5.     Cryptographic discovery.
-6.     Rosetta spell checker.
-7.     Future proof.
-8.     Newer TLS allows for client authentication. Accounts successor.
-9.     Poptastic is capable of supporting multiple devices using a single
-       account. Store the destination's digest in the subject. See IMAP.
-10.    NTL for Windows.
-11.    NTL warnings on FreeBSD.
+5.     Rosetta spell checker.
+6.     NTL for Windows.
+7.     NTL warnings on FreeBSD.
