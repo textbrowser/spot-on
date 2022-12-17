@@ -2324,7 +2324,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     {
       quint32 a = address.toIPv4Address();
 
-      if(!((a & 0xf0000000) == 0xe0000000))
+      if(!((a & 0xf0000000U) == 0xe0000000U))
 	return false;
       else
 	return true;
@@ -2333,7 +2333,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     {
       Q_IPV6ADDR a6 = address.toIPv6Address();
 
-      if(a6.c[0] != 0xff)
+      if(a6.c[0] != 0xffU)
 	return false;
       else
 	return true;
