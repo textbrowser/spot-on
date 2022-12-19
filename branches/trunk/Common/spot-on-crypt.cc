@@ -2029,6 +2029,9 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName)
 QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
 				      QAtomicInt &atomic)
 {
+  if(fileName.trimmed().isEmpty())
+    return QByteArray();
+
   QByteArray buffer(4096, 0);
   QCryptographicHash hash(QCryptographicHash::Sha1);
   QFile file(fileName);
@@ -2071,6 +2074,9 @@ QByteArray spoton_crypt::sha3_512FileHash(const QString &fileName,
 					  QAtomicInt &atomic)
 {
 #if QT_VERSION >= 0x050100
+  if(fileName.trimmed().isEmpty())
+    return QByteArray();
+
   QByteArray buffer(4096, 0);
   QCryptographicHash hash(QCryptographicHash::Sha3_512);
   QFile file(fileName);

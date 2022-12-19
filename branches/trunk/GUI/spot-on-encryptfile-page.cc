@@ -112,6 +112,9 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 				      const QList<QVariant> &credentials,
 				      const QString &modeOfOperation)
 {
+  if(destination.trimmed().isEmpty() || fileName.trimmed().isEmpty())
+    return;
+
   QFile file1(fileName);
   QFile file2(destination);
   QString error("");
@@ -343,6 +346,9 @@ void spoton_encryptfile_page::encrypt(const bool sign,
 				      const QList<QVariant> &credentials,
 				      const QString &modeOfOperation)
 {
+  if(destination.trimmed().isEmpty() || fileName.trimmed().isEmpty())
+    return;
+
   QFile file1(fileName);
   QFile file2(destination);
   QString error("");

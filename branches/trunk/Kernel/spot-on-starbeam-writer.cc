@@ -470,6 +470,9 @@ void spoton_starbeam_writer::processData(void)
      QString::fromUtf8(list.value(1).constData(),
 		       list.value(1).length()).replace(" ", "-"));
 
+  if(fileName.trimmed().isEmpty())
+    goto start_label;
+
   if(QFileInfo(fileName).size() == totalSize)
     goto start_label;
 

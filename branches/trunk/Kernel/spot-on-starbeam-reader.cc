@@ -212,6 +212,13 @@ QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
 QPair<QByteArray, qint64> spoton_starbeam_reader::read
 (const QString &fileName, const QString &pulseSize, const qint64 position)
 {
+  if(fileName.trimmed().isEmpty())
+    {
+      spoton_misc::logError
+	("spoton_starbeam_reader::read(): empty file name.");
+      return QPair<QByteArray, qint64> (QByteArray(), 0);
+    }
+
   if(position < 0)
     {
       spoton_misc::logError

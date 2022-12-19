@@ -322,6 +322,9 @@ void spoton::computeFileDigests(const QString &fileName,
 				const QString &oid,
 				spoton_crypt *crypt)
 {
+  if(fileName.trimmed().isEmpty())
+    return;
+
   QFile file;
 
   file.setFileName(fileName);

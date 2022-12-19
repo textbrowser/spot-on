@@ -1840,7 +1840,7 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
 	  file.setPermissions(s);
 	}
       else
-	file.setPermissions(file.permissions() | QFile::WriteOwner);
+	file.setPermissions(QFile::WriteOwner | file.permissions());
     }
 
   QString connectionName("");
@@ -2061,7 +2061,7 @@ void spoton::slotSaveAttachment(void)
 		      attachmentName = QString::fromUtf8(bytes.constData(),
 							 bytes.length());
 
-		    if(ok)
+		    if(attachmentName.trimmed().length() > 0 && ok)
 		      {
 			attachmentName.replace(" ", "-");
 

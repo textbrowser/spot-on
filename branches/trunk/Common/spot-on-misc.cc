@@ -1117,6 +1117,9 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
   else
     return QString("Unknown");
 
+  if(fileName.trimmed().isEmpty())
+    return QString("Unknown");
+
   GeoIP *gi = 0;
   QFileInfo fileInfo;
 

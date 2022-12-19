@@ -588,12 +588,16 @@ void spoton_emailwindow::slotSendMail(void)
 	    }
 
 	  QByteArray attachment;
-	  QFile file(fileName);
 
-	  if(file.open(QIODevice::ReadOnly))
-	    attachment = file.readAll();
+	  if(fileName.trimmed().length() > 0)
+	    {
+	      QFile file(fileName);
 
-	  file.close();
+	      if(file.open(QIODevice::ReadOnly))
+		attachment = file.readAll();
+
+	      file.close();
+	    }
 
 	  if(attachment.isEmpty() ||
 	     attachment.length() != static_cast<int> (fileInfo.size()))

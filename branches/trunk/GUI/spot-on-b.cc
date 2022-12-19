@@ -6186,11 +6186,19 @@ void spoton::slotSendMail(void)
 	  if(!fileInfo.exists() || !fileInfo.isReadable())
 	    {
 	      QApplication::restoreOverrideCursor();
-	      QMessageBox::critical
-		(this, tr("%1: Error").
-		 arg(SPOTON_APPLICATION_NAME),
-		 tr("The attachment %1 cannot be accessed.").
-		 arg(fileName));
+
+	      if(fileName.trimmed().isEmpty())
+		QMessageBox::critical
+		  (this, tr("%1: Error").
+		   arg(SPOTON_APPLICATION_NAME),
+		   tr("The attachment cannot be accessed."));
+	      else
+		QMessageBox::critical
+		  (this, tr("%1: Error").
+		   arg(SPOTON_APPLICATION_NAME),
+		   tr("The attachment %1 cannot be accessed.").
+		   arg(fileName));
+
 	      QApplication::processEvents();
 	      return;
 	    }
@@ -6210,12 +6218,16 @@ void spoton::slotSendMail(void)
 	    }
 
 	  QByteArray attachment;
-	  QFile file(fileName);
 
-	  if(file.open(QIODevice::ReadOnly))
-	    attachment = file.readAll();
+	  if(fileName.trimmed().length() > 0)
+	    {
+	      QFile file(fileName);
 
-	  file.close();
+	      if(file.open(QIODevice::ReadOnly))
+		attachment = file.readAll();
+
+	      file.close();
+	    }
 
 	  if(attachment.isEmpty() ||
 	     attachment.length() != static_cast<int> (fileInfo.size()))

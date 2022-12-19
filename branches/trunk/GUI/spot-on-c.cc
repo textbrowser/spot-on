@@ -122,7 +122,7 @@ void spoton::importNeighbors(const QString &filePath)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-  if(!crypt)
+  if(!crypt || filePath.trimmed().isEmpty())
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -141,13 +141,12 @@ void spoton::importNeighbors(const QString &filePath)
 
 	file.setFileName(filePath);
 
-	if(file.open(QIODevice::Text | QIODevice::ReadOnly))
+	if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 	  {
 	    QByteArray bytes(2048, 0);
 	    qint64 rc = 0;
 
-	    while((rc = file.readLine(bytes.data(),
-				      bytes.length())) > -1)
+	    while((rc = file.readLine(bytes.data(), bytes.length())) > -1)
 	      {
 		bytes = bytes.trimmed();
 
@@ -2731,7 +2730,8 @@ void spoton::slotExportListeners(void)
 
       file.setFileName(dialog.selectedFiles().value(0));
 
-      if(file.open(QIODevice::Text |
+      if(file.fileName().trimmed().length() > 0 &&
+	 file.open(QIODevice::Text |
 		   QIODevice::Truncate |
 		   QIODevice::WriteOnly))
 	for(int i = 0; i < m_ui.listeners->rowCount(); i++)
@@ -2803,7 +2803,8 @@ void spoton::slotExportPublicKeys(void)
 
       file.setFileName(dialog.selectedFiles().value(0));
 
-      if(file.open(QIODevice::Text |
+      if(file.fileName().trimmed().length() > 0 &&
+	 file.open(QIODevice::Text |
 		   QIODevice::Truncate |
 		   QIODevice::WriteOnly))
 	{
@@ -3066,8 +3067,7 @@ void spoton::slotImportPublicKeys(void)
 
       QFileInfo fileInfo;
 
-      fileInfo.setFile(dialog.directory(),
-		       dialog.selectedFiles().value(0));
+      fileInfo.setFile(dialog.directory(), dialog.selectedFiles().value(0));
 
       if(fileInfo.size() >= 32768)
 	{
@@ -3082,8 +3082,8 @@ void spoton::slotImportPublicKeys(void)
 	     arg(fileInfo.size()));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::ApplicationModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
+	  mb.setWindowTitle
+	    (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    {
@@ -3099,7 +3099,7 @@ void spoton::slotImportPublicKeys(void)
 
       file.setFileName(fileInfo.filePath());
 
-      if(file.open(QIODevice::Text | QIODevice::ReadOnly))
+      if(file.open(QIODevice::ReadOnly | QIODevice::Text))
 	bytes = file.readAll();
 
       file.close();
