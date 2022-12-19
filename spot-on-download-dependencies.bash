@@ -113,7 +113,7 @@ postgresql=postgresql.zip
 rm -f $postgresql
 wget --output-document=$postgresql \
      --progress=bar \
-     "https://get.enterprisedb.com/postgresql/postgresql-10.22-1-windows-binaries.zip"
+     "https://get.enterprisedb.com/postgresql/postgresql-10.23-1-windows-binaries.zip"
 
 if [ -r $postgresql ]; then
     unzip -q $postgresql
@@ -135,7 +135,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3390400.zip
+sqlite=sqlite-dll-win32-x86-3400000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2022/$sqlite
@@ -151,7 +151,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3390400.zip
+sqlite=sqlite-amalgamation-3400000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2022/$sqlite
@@ -163,7 +163,7 @@ else
     echo "Cannot read $sqlite."
 fi
 
-sqlite=sqlite-amalgamation-3390400
+sqlite=sqlite-amalgamation-3400000
 
 if [ -r $sqlite ]; then
     mv $sqlite/*.h libSpotOn/Include.win32/.
