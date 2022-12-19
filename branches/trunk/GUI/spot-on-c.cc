@@ -122,7 +122,9 @@ void spoton::importNeighbors(const QString &filePath)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-  if(!crypt || filePath.trimmed().isEmpty())
+  if(!QFileInfo(filePath).isReadable() ||
+     !crypt ||
+     filePath.trimmed().isEmpty())
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
