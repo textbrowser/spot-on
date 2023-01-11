@@ -277,7 +277,7 @@ Completed Items
 205.   OpenSSL 3. New functions only.
 206.   QComboBox's currentIndexChanged(const QString &) is obsolete.
 
-Ignored Items
+Interesting Items
 
 1.     Hybrid group communications based on deterministic key pairs.
 2.     Create a user's configuration database. Store key types too.
@@ -308,3 +308,4 @@ Remaining Items
 5.     Rosetta spell checker.
 6.     NTL for Windows.
 7.     NTL warnings on FreeBSD.
+8.     Human proxies.
