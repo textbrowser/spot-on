@@ -276,6 +276,8 @@ Completed Items
 204.   Qt 6.2 LTS!
 205.   OpenSSL 3. New functions only.
 206.   QComboBox's currentIndexChanged(const QString &) is obsolete.
+207.   QFSFileEngine::open: No file name specified: created from
+       e-mail. Missing images?
 
 Interesting Items
 
@@ -293,10 +295,8 @@ Interesting Items
 10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
 11.    Remote kernel termination.
 12.    E-mail GPG.
-13.    QFSFileEngine::open: No file name specified: created from
-       e-mail. Missing images?
-14.    Which key types to export and import? A new selection dialog.
-15.    There is some redundant deciphering of data: findMessageType()
+13.    Which key types to export and import? A new selection dialog.
+14.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
 
 Remaining Items
