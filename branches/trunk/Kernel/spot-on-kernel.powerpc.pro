@@ -49,7 +49,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fstack-protector-all \
                           -fwrapv \
                           -mabi=altivec \
-                          -mpowerpc \
+                          -mcpu=powerpc \
                           -mtune=powerpc \
                           -pedantic \
                           -pie \
