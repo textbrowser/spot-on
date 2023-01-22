@@ -19,6 +19,7 @@ Summary of Spot-On
 <li>End-to-End, not Hop-to-Hop encryption.</li>
 <li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
 <li>GPG-lite via Rosetta.</li>
+<li>Human Proxies project.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
 <li>Mac and Windows install targets: make install!</li>
