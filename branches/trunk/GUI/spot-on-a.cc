@@ -8880,6 +8880,15 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		{
 		  if(!temporary)
 		    {
+		      if(keyType == "chat")
+			{
+			  item->setCheckState(Qt::Unchecked);
+			  item->setFlags
+			    (Qt::ItemIsEnabled |
+			     Qt::ItemIsSelectable |
+			     Qt::ItemIsUserCheckable);
+			}
+
 		      if(status == "away")
 			item->setIcon
 			  (QIcon(QString(":/%1/away.png").
@@ -8942,24 +8951,27 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		}
 	      else if(i == 8)
 		{
-		  /*
-		  ** Forward Secrecy Information
-		  */
+		  if(!temporary)
+		    {
+		      /*
+		      ** Forward Secrecy Information
+		      */
 
-		  QList<QByteArray> list;
-		  bool ok = true;
+		      QList<QByteArray> list;
+		      bool ok = true;
 
-		  list = retrieveForwardSecrecyInformation(oid, &ok);
+		      list = retrieveForwardSecrecyInformation(oid, &ok);
 
-		  if(ok)
-		    item->setText
-		      (spoton_misc::forwardSecrecyMagnetFromList(list));
-		  else
-		    item->setText(tr("error"));
+		      if(ok)
+			item->setText
+			  (spoton_misc::forwardSecrecyMagnetFromList(list));
+		      else
+			item->setText(tr("error"));
+		    }
 		}
 
-	      item->setData(Qt::UserRole, temporary);
 	      item->setData(Qt::ItemDataRole(Qt::UserRole + 1), keyType);
+	      item->setData(Qt::UserRole, temporary);
 
 	      /*
 	      ** Delete the item if the participant is offline
