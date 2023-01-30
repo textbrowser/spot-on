@@ -777,6 +777,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  while(query.next())
 	    {
 	      QByteArray bytes;
+	      QString date(query.value(4).toString().trimmed());
 	      QString description("");
 	      QString title("");
 	      QString urlHash(query.value(3).toByteArray());
@@ -874,6 +875,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 			 arg(description));
 		    }
 
+		  html.append("<br>");
+		  html.append
+		    (QString("<font color=\"#2f4f4f\" size=2>%1</font>").
+		     arg(date));
 		  html.append("</p>");
 		  count += 1;
 		}
