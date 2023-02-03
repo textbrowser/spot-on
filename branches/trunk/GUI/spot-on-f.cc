@@ -481,15 +481,28 @@ void spoton::prepareTabIcons(void)
   QStringList list;
 
 #if SPOTON_GOLDBUG == 0
-  list << "buzz.png" << "chat.png" << "email.png"
-       << "add-listener.png" << "neighbors.png" << "search.png"
-       << "settings.png" << "starbeam.png" << "urls.png"
+  list << "buzz.png"
+       << "chat.png"
+       << "email.png"
+       << "add-listener.png"
+       << "neighbors.png"
+       << "search.png"
+       << "settings.png"
+       << "starbeam.png"
+       << "urls.png"
        << "spot-on-logo.png";
 #else
-  list << "buzz.png" << "chat.png" << "email.png"
-       << "server.png" << "connect.png" << "search.png"
-       << "settings.png" << "starbeam.png" << "urls.png"
-       << "key.png" << "goldbug.png";
+  list << "buzz.png"
+       << "chat.png"
+       << "email.png"
+       << "server.png"
+       << "connect.png"
+       << "search.png"
+       << "settings.png"
+       << "starbeam.png"
+       << "urls.png"
+       << "key.png"
+       << "goldbug.png";
 #endif
 
   for(int i = 0; i < list.size(); i++)

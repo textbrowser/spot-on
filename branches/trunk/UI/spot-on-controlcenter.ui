@@ -91,7 +91,7 @@
              <x>0</x>
              <y>0</y>
              <width>772</width>
-             <height>590</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_54">
@@ -522,7 +522,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>762</width>
-                <height>580</height>
+                <height>572</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -990,8 +990,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1079</width>
-             <height>681</height>
+             <width>1184</width>
+             <height>729</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2335,7 +2335,7 @@
              <x>0</x>
              <y>0</y>
              <width>772</width>
-             <height>590</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3074,8 +3074,8 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>327</width>
-                     <height>1520</height>
+                     <width>363</width>
+                     <height>1602</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3643,7 +3643,7 @@
              <x>0</x>
              <y>0</y>
              <width>772</width>
-             <height>590</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4052,8 +4052,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>735</width>
-                  <height>640</height>
+                  <width>771</width>
+                  <height>698</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -4929,7 +4929,7 @@
              <x>0</x>
              <y>0</y>
              <width>772</width>
-             <height>590</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5014,8 +5014,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>795</width>
-                 <height>677</height>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6035,8 +6035,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>907</width>
-             <height>1293</height>
+             <width>1013</width>
+             <height>1405</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7288,7 +7288,7 @@
              <x>0</x>
              <y>0</y>
              <width>751</width>
-             <height>706</height>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8482,8 +8482,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>751</width>
-             <height>797</height>
+             <width>840</width>
+             <height>833</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -9259,7 +9259,7 @@
              <x>0</x>
              <y>0</y>
              <width>772</width>
-             <height>590</height>
+             <height>582</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9303,8 +9303,20 @@
                 </item>
                 <item>
                  <widget class="QLabel" name="logo">
+                  <property name="maximumSize">
+                   <size>
+                    <width>256</width>
+                    <height>256</height>
+                   </size>
+                  </property>
                   <property name="text">
                    <string/>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="../Icons/icons.qrc">:/Logo/spot-on-logo.png</pixmap>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -9500,7 +9512,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>30</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
