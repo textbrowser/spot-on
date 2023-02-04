@@ -4499,12 +4499,12 @@ void spoton_kernel::slotMessageReceivedFromUI
 
   myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
-  QByteArray cipherType(setting("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
+  QByteArray cipherType
+    (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
   QByteArray data;
   QByteArray hashKey;
-  QByteArray hashType(setting("gui/kernelHashType", "sha512").
-		      toString().toLatin1());
+  QByteArray hashType
+    (setting("gui/kernelHashType", "sha512").toString().toLatin1());
   QByteArray keyInformation;
   QByteArray startsWith;
   QByteArray symmetricKey;
