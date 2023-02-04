@@ -3922,40 +3922,6 @@ void spoton::slotEnabledPostOffice(bool state)
   settings.setValue("gui/postoffice_enabled", state);
 }
 
-void spoton::slotGeminiChanged(QTableWidgetItem *item)
-{
-  if(!item)
-    return;
-  else if(!(item->column() == 6 ||
-	    item->column() == 7)) // Gemini Encryption Key, Gemini Hash Key
-    return;
-  else if(!m_ui.participants->item(item->row(), 1)) // OID
-    return;
-
-  QTableWidgetItem *item1 = 0;
-  QTableWidgetItem *item2 = 0;
-
-  if(item->column() == 6)
-    {
-      item1 = item;
-      item2 = m_ui.participants->item(item->row(), 7);
-    }
-  else
-    {
-      item1 = m_ui.participants->item(item->row(), 6);
-      item2 = item;
-    }
-
-  if(!item1 || !item2)
-    return;
-
-  QPair<QByteArray, QByteArray> gemini;
-
-  gemini.first = item1->text().toLatin1();
-  gemini.second = item2->text().toLatin1();
-  saveGemini(gemini, m_ui.participants->item(item->row(), 1)->text()); // OID
-}
-
 void spoton::slotGenerateGeminiInChat(void)
 {
   int row = m_ui.participants->currentRow();
@@ -3990,13 +3956,13 @@ void spoton::slotGenerateGeminiInChat(void)
       disconnect(m_ui.participants,
 		 SIGNAL(itemChanged(QTableWidgetItem *)),
 		 this,
-		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+		 SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
       item2->setText(gemini.first.toBase64());
       item3->setText(gemini.second.toBase64());
       connect(m_ui.participants,
 	      SIGNAL(itemChanged(QTableWidgetItem *)),
 	      this,
-	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+	      SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
     }
 
   QApplication::restoreOverrideCursor();
@@ -4692,6 +4658,40 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
   if(smp)
     chat->setSMPVerified(smp->passed());
+}
+
+void spoton::slotParticipantsItemChanged(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+  else if(!(item->column() == 6 ||
+	    item->column() == 7)) // Gemini Encryption Key, Gemini Hash Key
+    return;
+  else if(!m_ui.participants->item(item->row(), 1)) // OID
+    return;
+
+  QTableWidgetItem *item1 = 0;
+  QTableWidgetItem *item2 = 0;
+
+  if(item->column() == 6)
+    {
+      item1 = item;
+      item2 = m_ui.participants->item(item->row(), 7);
+    }
+  else
+    {
+      item1 = m_ui.participants->item(item->row(), 6);
+      item2 = item;
+    }
+
+  if(!item1 || !item2)
+    return;
+
+  QPair<QByteArray, QByteArray> gemini;
+
+  gemini.first = item1->text().toLatin1();
+  gemini.second = item2->text().toLatin1();
+  saveGemini(gemini, m_ui.participants->item(item->row(), 1)->text()); // OID
 }
 
 void spoton::slotPublicizeAllListenersPlaintext(void)

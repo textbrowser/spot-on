@@ -2036,7 +2036,7 @@ spoton::spoton(void):QMainWindow()
   connect(m_ui.participants,
 	  SIGNAL(itemChanged(QTableWidgetItem *)),
 	  this,
-	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
+	  SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
   connect(m_ui.participants,
 	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
 	  this,
@@ -8735,7 +8735,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   disconnect(m_ui.participants,
 	     SIGNAL(itemChanged(QTableWidgetItem *)),
 	     this,
-	     SLOT(slotGeminiChanged(QTableWidgetItem *)));
+	     SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
 
   QWidget *focusWidget = QApplication::focusWidget();
 
@@ -9179,7 +9179,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   connect(m_ui.participants,
 	  SIGNAL(itemChanged(QTableWidgetItem *)),
 	  this,
-	  SLOT(slotGeminiChanged(QTableWidgetItem *)));
+	  SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
   m_ui.emailParticipants->setSelectionMode(QAbstractItemView::MultiSelection);
   m_ui.participants->setSelectionMode(QAbstractItemView::MultiSelection);
   m_ui.urlParticipants->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -9200,6 +9200,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
+  m_ui.participants->resizeColumnToContents(0); // Name.
   m_ui.participants->resizeColumnToContents
     (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
   m_ui.participants->resizeColumnToContents

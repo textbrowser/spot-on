@@ -697,13 +697,13 @@ void spoton::slotChatSecretsActionSelected(void)
       disconnect(m_ui.participants,
 		 SIGNAL(itemChanged(QTableWidgetItem *)),
 		 this,
-		 SLOT(slotGeminiChanged(QTableWidgetItem *)));
+		 SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
       item2->setText(gemini.first);
       item3->setText(gemini.second);
       connect(m_ui.participants,
 	      SIGNAL(itemChanged(QTableWidgetItem *)),
 	      this,
-	      SLOT(slotGeminiChanged(QTableWidgetItem *)));
+	      SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
     }
 
   QApplication::restoreOverrideCursor();

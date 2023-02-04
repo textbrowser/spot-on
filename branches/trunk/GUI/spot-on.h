@@ -830,7 +830,6 @@ class spoton: public QMainWindow
   void slotForwardSecrecyEncryptionKeyChanged(int index);
   void slotGatherStatistics(void);
   void slotGatherUrlStatistics(void);
-  void slotGeminiChanged(QTableWidgetItem *item);
   void slotGeneralTimerTimeout(void);
   void slotGenerateEtpKeys(int index);
   void slotGenerateGeminiInChat(void);
@@ -903,6 +902,7 @@ class spoton: public QMainWindow
   void slotPQUrlDatabaseFaulty(void);
   void slotPageClicked(const QString &link);
   void slotParticipantDoubleClicked(QTableWidgetItem *item);
+  void slotParticipantsItemChanged(QTableWidgetItem *item);
   void slotPassphraseAuthenticateRadioToggled(bool state);
   void slotPassphraseChanged(const QString &text);
   void slotPassphraseRadioToggled(bool state);
