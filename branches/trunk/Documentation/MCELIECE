@@ -1,5 +1,5 @@
 The McEliece cryptographic system is only enabled for the FreeBSD, Linux,
-OS X, and Windows project files.
+and OS X project files.
 
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!

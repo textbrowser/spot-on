@@ -32,7 +32,7 @@ able to communicate via B.
 Example #2
 
 Let S, a, and e be client and server nodes. Let b, c, d, and f be client
-nodes. Let d be a server node. Suppose S, a, c, and f are aware of
+nodes. Suppose d is also a server node. Suppose S, a, c, and f are aware of
 the secret token t_1.
 
 The network topology is as follows (again, a drawing will help):
