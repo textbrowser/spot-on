@@ -2538,8 +2538,7 @@ void spoton::sendMessage(bool *ok)
 	  QByteArray name;
 
 	  if(keyType == "chat")
-	    name = m_settings.value("gui/nodeName", "unknown").
-	      toByteArray();
+	    name = m_settings.value("gui/nodeName", "unknown").toByteArray();
 	  else
 	    name = poptasticName();
 
@@ -2564,8 +2563,7 @@ void spoton::sendMessage(bool *ok)
 	  message.append(QString("%1_").arg(data.toString()).toUtf8());
 	  message.append(name.toBase64());
 	  message.append("_");
-	  message.append(m_ui.message->toPlainText().toUtf8().
-			 toBase64());
+	  message.append(m_ui.message->toPlainText().toUtf8().toBase64());
 	  message.append("_");
 	  message.append
 	    (QByteArray::number(m_chatSequenceNumbers[data.toString()]).
@@ -2584,8 +2582,7 @@ void spoton::sendMessage(bool *ok)
 
 	  if(!writeKernelSocketData(message))
 	    spoton_misc::logError
-	      (QString("spoton::sendMessage(): write() failure for "
-		       "%1:%2.").
+	      (QString("spoton::sendMessage(): write() failure for %1:%2.").
 	       arg(m_kernelSocket.peerAddress().toString()).
 	       arg(m_kernelSocket.peerPort()));
 	  else
