@@ -4664,11 +4664,35 @@ void spoton::slotParticipantsItemChanged(QTableWidgetItem *item)
 {
   if(!item)
     return;
-  else if(!(item->column() == 6 ||
-	    item->column() == 7)) // Gemini Encryption Key, Gemini Hash Key
+  else if(!(item->column() == 0 || // Participant
+	    item->column() == 6 || // Gemini Encryption Key
+	    item->column() == 7))  // Gemini Hash Key
     return;
   else if(!m_ui.participants->item(item->row(), 1)) // OID
     return;
+
+  if(item->column() == 0)
+    {
+      /*
+      ** Uncheck all other items.
+      */
+
+      disconnect(m_ui.participants,
+		 SIGNAL(itemChanged(QTableWidgetItem *)),
+		 this,
+		 SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
+
+      for(int i = 0; i < m_ui.participants->rowCount(); i++)
+	if(i != item->row() && m_ui.participants->item(i, 0))
+	  if(Qt::ItemIsUserCheckable & m_ui.participants->item(i, 0)->flags())
+	    m_ui.participants->item(i, 0)->setCheckState(Qt::Unchecked);
+
+      connect(m_ui.participants,
+	      SIGNAL(itemChanged(QTableWidgetItem *)),
+	      this,
+	      SLOT(slotParticipantsItemChanged(QTableWidgetItem *)));
+      return;
+    }
 
   QTableWidgetItem *item1 = 0;
   QTableWidgetItem *item2 = 0;

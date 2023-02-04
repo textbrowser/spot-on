@@ -9200,7 +9200,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
-  m_ui.participants->resizeColumnToContents(0); // Name.
+  m_ui.participants->resizeColumnToContents(0); // Participant.
   m_ui.participants->resizeColumnToContents
     (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
   m_ui.participants->resizeColumnToContents
