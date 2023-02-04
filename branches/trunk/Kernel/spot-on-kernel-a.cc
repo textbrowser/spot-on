@@ -873,6 +873,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					   const QByteArray &,
 					   const QByteArray &,
 					   const QByteArray &,
+					   const qint64,
 					   const QString &)),
 	      this,
 	      SLOT(slotMessageReceivedFromUI(const qint64,
@@ -880,6 +881,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 					     const QByteArray &,
 					     const QByteArray &,
 					     const QByteArray &,
+					     const qint64,
 					     const QString &)));
       connect
 	(m_guiServer,
@@ -4475,8 +4477,11 @@ void spoton_kernel::slotMessageReceivedFromUI
  const QByteArray &message,
  const QByteArray &sequenceNumber,
  const QByteArray &utcDate,
+ const qint64 hpOid,
  const QString &keyType)
 {
+  Q_UNUSED(hpOid);
+
   spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)

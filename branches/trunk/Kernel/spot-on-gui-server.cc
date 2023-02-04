@@ -802,13 +802,14 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      QList<QByteArray> list(message.split('_'));
 
-	      if(list.size() == 5)
+	      if(list.size() == 6)
 		emit messageReceivedFromUI
 		  (list.value(0).toLongLong(),
 		   QByteArray::fromBase64(list.value(1)),
 		   QByteArray::fromBase64(list.value(2)),
 		   QByteArray::fromBase64(list.value(3)),
 		   QByteArray::fromBase64(list.value(4)),
+		   list.value(5).toLongLong(),
 		   "chat");
 	    }
 	  else if(message.startsWith("poptasticmessage_") &&
@@ -819,13 +820,14 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      QList<QByteArray> list(message.split('_'));
 
-	      if(list.size() == 5)
+	      if(list.size() == 6)
 		emit messageReceivedFromUI
 		  (list.value(0).toLongLong(),
 		   QByteArray::fromBase64(list.value(1)),
 		   QByteArray::fromBase64(list.value(2)),
 		   QByteArray::fromBase64(list.value(3)),
 		   QByteArray::fromBase64(list.value(4)),
+		   -1,
 		   "poptastic");
 	    }
 	  else if(message.startsWith("poptasticpop"))
