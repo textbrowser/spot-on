@@ -791,6 +791,16 @@
                       </layout>
                      </item>
                      <item>
+                      <widget class="QLabel" name="label_123">
+                       <property name="text">
+                        <string>A checked participant will be considered a proxy. The participant must be online.</string>
+                       </property>
+                       <property name="wordWrap">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QTableWidget" name="participants">
                        <property name="verticalScrollBarPolicy">
                         <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -810,6 +820,9 @@
                        <property name="sortingEnabled">
                         <bool>true</bool>
                        </property>
+                       <attribute name="horizontalHeaderMinimumSectionSize">
+                        <number>150</number>
+                       </attribute>
                        <attribute name="horizontalHeaderDefaultSectionSize">
                         <number>275</number>
                        </attribute>
