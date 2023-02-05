@@ -3143,12 +3143,15 @@ void spoton_neighbor::process0100(int length,
 			      if(stream.status() == QDataStream::Ok)
 				{
 				  /*
-				  ** Echo the actual message after
-				  ** transforming it.
+				  ** Echo the actual message.
 				  */
 
+				  a = spoton_send::message0000
+				    (a,
+				     spoton_send::NORMAL_POST,
+				     m_adaptiveEchoPair);
 				  emit receivedMessage
-				    (dataIn, m_id, m_adaptiveEchoPair);
+				    (a, -1, m_adaptiveEchoPair);
 				  emit resetKeepAlive();
 				}
 			    }

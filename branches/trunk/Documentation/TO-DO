@@ -279,6 +279,7 @@ Completed Items
 207.   QFSFileEngine::open: No file name specified: created from
        e-mail. Missing images?
 208.   Include dates of documents in Web presentation.
+209.   Human proxies. Single-proxy completion.
 
 Interesting Items
 
@@ -309,5 +310,4 @@ Remaining Items
 5.     Rosetta spell checker.
 6.     NTL for Windows.
 7.     NTL warnings on FreeBSD.
-8.     Human proxies.
-9.     Optional human proxy session setting.
+8.     Optional human proxy session setting.

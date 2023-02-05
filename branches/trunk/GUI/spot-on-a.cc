@@ -8689,6 +8689,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   QModelIndexList listU
     (m_ui.urlParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
+  QString hpData; // Human Proxy
   QStringList hashes;
   QStringList hashesE;
   QStringList hashesU;
@@ -8725,6 +8726,15 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       if(!data.isNull() && data.isValid())
 	hashesU.append(data.toString());
     }
+
+  for(int i = 0; i < m_ui.participants->rowCount(); i++)
+    if(m_ui.participants->item(i, 0) &&
+       m_ui.participants->item(i, 0)->checkState() == Qt::Checked &&
+       m_ui.participants->item(i, 3))
+      {
+	hpData = m_ui.participants->item(i, 3)->text();
+	break;
+      }
 
   m_ui.emailParticipants->setSortingEnabled(false);
   m_ui.emailParticipants->setRowCount(0);
@@ -8806,7 +8816,8 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  */
 
 		  if(!((m_ui.hideOfflineParticipants->isChecked() &&
-			status == "offline") || publicKeyContainsPoptastic))
+			status == "offline") ||
+		       publicKeyContainsPoptastic))
 		    {
 		      row += 1;
 		      m_ui.participants->setRowCount(row);
@@ -8830,8 +8841,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		}
 	      else if(i == 4) // Status
 		{
-		  QString status(query->value(i).toString().
-				 trimmed());
+		  QString status(query->value(i).toString().trimmed());
 
 		  if(status.isEmpty())
 		    status = "offline";
@@ -8850,11 +8860,8 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  item->setToolTip(item->text());
 		  statusText = item->text();
 		}
-	      else if(i == 6 ||
-		      i == 7) /*
-			      ** Gemini Encryption Key
-			      ** Gemini Hash Key
-			      */
+	      else if(i == 6 || // Gemini Encryption Key
+		      i == 7)   // Gemini Hash Key
 		{
 		  if(query->isNull(i))
 		    item = new QTableWidgetItem();
@@ -8882,7 +8889,11 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		    {
 		      if(keyType == "chat")
 			{
-			  item->setCheckState(Qt::Unchecked);
+			  if(hpData == query->value(3).toString())
+			    item->setCheckState(Qt::Checked);
+			  else
+			    item->setCheckState(Qt::Unchecked);
+
 			  item->setFlags
 			    (Qt::ItemIsEnabled |
 			     Qt::ItemIsSelectable |
