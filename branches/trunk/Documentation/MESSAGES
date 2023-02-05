@@ -743,3 +743,21 @@ EOL
 	    Preceding Data and Encrypted Timestamp,
 	    Encrypted Timestamp (Base-64)
 }
+
+Human Proxy
+Groups: 3
+Gemini Encryption Key (Base-64)
+{
+	0 - 0100
+	1 - Message
+}
+EOL
+{
+	0 - Keyed (Gemini Digest Key) Message Code (Base-64)
+}
+EOL
+{
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
+}
