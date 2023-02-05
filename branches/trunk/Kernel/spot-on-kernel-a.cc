@@ -4428,8 +4428,7 @@ void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
     listener = m_listeners.value(listenerOid, 0);
   else
     spoton_misc::logError(QString("spoton_kernel::slotDetachNeighbors(): "
-				  "listener %1 not found.").
-			  arg(listenerOid));
+				  "listener %1 not found.").arg(listenerOid));
 
   if(listener)
     {
@@ -4480,8 +4479,6 @@ void spoton_kernel::slotMessageReceivedFromUI
  const qint64 hpOid,
  const QString &keyType)
 {
-  Q_UNUSED(hpOid);
-
   spoton_crypt *s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
@@ -4500,10 +4497,6 @@ void spoton_kernel::slotMessageReceivedFromUI
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash;
-
-  myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
-
   QByteArray cipherType
     (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
   QByteArray data;
@@ -4511,6 +4504,7 @@ void spoton_kernel::slotMessageReceivedFromUI
   QByteArray hashType
     (setting("gui/kernelHashType", "sha512").toString().toLatin1());
   QByteArray keyInformation;
+  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
   QByteArray startsWith;
   QByteArray symmetricKey;
   QDataStream stream(&keyInformation, QIODevice::WriteOnly);
@@ -4659,8 +4653,15 @@ void spoton_kernel::slotMessageReceivedFromUI
 	    }
 	  else
 	    {
-	      if(setting("gui/chatSendMethod",
-			 "Artificial_GET").toString().
+	      if(hpOid != -1 && hpOid != oid)
+		{
+		  /*
+		  ** Send data via the proxy. Gemini credentials are
+		  ** required as they simplify the process.
+		  */
+		}
+
+	      if(setting("gui/chatSendMethod", "Artificial_GET").toString().
 		 toLower() == "artificial_get")
 		emit sendMessage(data, spoton_send::ARTIFICIAL_GET);
 	      else

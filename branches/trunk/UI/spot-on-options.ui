@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>596</width>
-         <height>4236</height>
+         <y>-1155</y>
+         <width>669</width>
+         <height>4712</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1111,6 +1111,9 @@
                   </property>
                   <property name="sizeAdjustPolicy">
                    <enum>QComboBox::AdjustToContents</enum>
+                  </property>
+                  <property name="minimumContentsLength">
+                   <number>15</number>
                   </property>
                   <item>
                    <property name="text">
@@ -2881,7 +2884,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>30</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
