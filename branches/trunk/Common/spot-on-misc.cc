@@ -5576,8 +5576,7 @@ void spoton_misc::retrieveSymmetricData
       if(ok)
 	*ok = false;
 
-      logError
-	("spoton_misc::retrieveSymmetricData(): crypt is zero.");
+      logError("spoton_misc::retrieveSymmetricData(): crypt is zero.");
       return;
     }
 
@@ -5586,8 +5585,8 @@ void spoton_misc::retrieveSymmetricData
   {
     QSqlDatabase db = database(connectionName);
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -5617,8 +5616,7 @@ void spoton_misc::retrieveSymmetricData
 		  {
 		    if(!query.isNull(0))
 		      gemini.first = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(0).
-						toByteArray()),
+			(QByteArray::fromBase64(query.value(0).toByteArray()),
 			 ok);
 
 		    if(ok && *ok)
@@ -5632,21 +5630,18 @@ void spoton_misc::retrieveSymmetricData
 		    else if(!ok)
 		      if(!query.isNull(3))
 			gemini.second = crypt->decryptedAfterAuthenticated
-			  (QByteArray::fromBase64(query.value(3).
-						  toByteArray()),
+			  (QByteArray::fromBase64(query.value(3).toByteArray()),
 			   ok);
 
 		    neighborOid = query.value(1).toString();
 
 		    if(ok && *ok)
 		      publicKey = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(2).
-						toByteArray()),
+			(QByteArray::fromBase64(query.value(2).toByteArray()),
 			 ok);
 		    else if(!ok)
 		      publicKey = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(2).
-						toByteArray()),
+			(QByteArray::fromBase64(query.value(2).toByteArray()),
 			 ok);
 
 		    if((ok && *ok) || !ok)
@@ -5657,13 +5652,11 @@ void spoton_misc::retrieveSymmetricData
 
 		    if(ok && *ok)
 		      receiverName = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(4).
-						toByteArray()),
+			(QByteArray::fromBase64(query.value(4).toByteArray()),
 			 ok);
 		    else if(!ok)
 		      receiverName = crypt->decryptedAfterAuthenticated
-			(QByteArray::fromBase64(query.value(4).
-						toByteArray()),
+			(QByteArray::fromBase64(query.value(4).toByteArray()),
 			 ok);
 
 		    bool found = false;
