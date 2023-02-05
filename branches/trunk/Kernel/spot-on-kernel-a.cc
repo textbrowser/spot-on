@@ -4659,6 +4659,56 @@ void spoton_kernel::slotMessageReceivedFromUI
 		  ** Send data via the proxy. Gemini credentials are
 		  ** required as they simplify the process.
 		  */
+
+		  gemini = QPair<QByteArray, QByteArray> ();
+		  spoton_misc::retrieveSymmetricData(gemini,
+						     publicKey,
+						     symmetricKey,
+						     hashKey,
+						     startsWith,
+						     neighborOid,
+						     receiverName,
+						     cipherType,
+						     QString::number(hpOid),
+						     s_crypt1,
+						     &ok);
+
+		  if(!gemini.first.isEmpty() &&
+		     !gemini.second.isEmpty())
+		    {
+		      QByteArray bytes;
+		      QByteArray messageCode;
+		      QDataStream stream(&bytes, QIODevice::WriteOnly);
+		      spoton_crypt crypt
+			(spoton_crypt::preferredCipherAlgorithm(),
+			 spoton_crypt::preferredHashAlgorithm(),
+			 QByteArray(),
+			 gemini.first,
+			 gemini.second,
+			 0,
+			 0,
+			 "");
+
+		      ok = true;
+		      stream << QByteArray("0100")
+			     << data;
+
+		      if(stream.status() != QDataStream::Ok)
+			ok = false;
+
+		      if(ok)
+			data = crypt.encrypted(bytes, &ok);
+
+		      if(ok)
+			messageCode = crypt.keyedHash(data, &ok);
+
+		      if(ok)
+			{
+			  data = data.toBase64();
+			  data.append("\n");
+			  data.append(messageCode.toBase64());
+			}
+		    }
 		}
 
 	      if(setting("gui/chatSendMethod", "Artificial_GET").toString().

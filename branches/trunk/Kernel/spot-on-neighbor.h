@@ -449,6 +449,9 @@ class spoton_neighbor: public QThread
 		   const QList<QByteArray> &symmetricKeys);
   void process0095a(int length, const QByteArray &data);
   void process0095b(int length, const QByteArray &data);
+  void process0100(int length,
+		   const QByteArray &data,
+		   const QList<QByteArray> &symmetricKeys);
   void readyRead(const QByteArray &data);
   void recordCertificateOrAbort(void);
   void run(void);
@@ -554,8 +557,8 @@ class spoton_neighbor: public QThread
 		    const QString &messageType);
   void slotSendMailFromPostOffice
     (const QByteArray &data, const QPairByteArrayByteArray &adaptiveEchoPair);
-  void slotSendMessage(const QByteArray &data,
-		       const spoton_send::spoton_send_method sendMethod);
+  void slotSendMessage
+    (const QByteArray &data, const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
   void slotSpecialTimerTimeout(void);
   void slotSslErrors(const QList<QSslError> &errors);
@@ -612,6 +615,8 @@ class spoton_neighbor: public QThread
 		    const QPairByteArrayByteArray &adaptiveEchoPair);
   void saveForwardSecrecySessionKeys(const QByteArrayList &list);
   void scrambleRequest(void);
+  void sendMessage
+    (const QByteArray &data, const QPairByteArrayByteArray &adaptiveEchoPair);
   void sharePublicKey(const QByteArray &keyType,
 		      const QByteArray &name,
 		      const QByteArray &publicKey,

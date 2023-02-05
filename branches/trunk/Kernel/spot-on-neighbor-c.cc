@@ -91,18 +91,17 @@ QString spoton_neighbor::findMessageType
     }
 
   /*
-  ** Do not attempt to locate a gemini if an interface is not
-  ** attached to the kernel.
+  ** We may be a human proxy!
   */
 
-  if(interfaces > 0 &&
-     list.size() == 3 &&
+  if(list.size() == 3 &&
      s_crypt &&
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
       QPair<QByteArray, QByteArray> gemini
-	(spoton_misc::
-	 findGeminiInCosmos(list.value(0), list.value(1), s_crypt));
+	(spoton_misc::findGeminiInCosmos(list.value(0),
+					 list.value(1),
+					 s_crypt));
 
       if(!gemini.first.isEmpty())
 	{
@@ -129,7 +128,10 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(type == "0000" || type == "0000b" || type == "0013")
+	  if(type == "0000" ||
+	     type == "0000b" ||
+	     type == "0013" ||
+	     type == "0100")
 	    {
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append(spoton_crypt::preferredCipherAlgorithm());
@@ -183,8 +185,10 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(type == "0000" || type == "0000a" ||
-	     type == "0000c" || type == "0013")
+	  if(type == "0000" ||
+	     type == "0000a" ||
+	     type == "0000c" ||
+	     type == "0013")
 	    goto done_label;
 	  else
 	    type.clear();
@@ -2973,8 +2977,8 @@ void spoton_neighbor::process0091a(int length,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0091(length, dataIn, symmetricKeys,
-				 m_address, m_port, "0091a"));
+    (spoton_receive::
+     process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091a"));
 
   if(!list.isEmpty())
     emit forwardSecrecyRequest(list);
@@ -2985,8 +2989,8 @@ void spoton_neighbor::process0091b(int length,
 				   const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0091(length, dataIn, symmetricKeys,
-				 m_address, m_port, "0091b"));
+    (spoton_receive::
+     process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091b"));
 
   if(!list.isEmpty())
     emit saveForwardSecrecySessionKeys(list);
@@ -2997,8 +3001,8 @@ void spoton_neighbor::process0092(int length,
 				  const QList<QByteArray> &symmetricKeys)
 {
   QList<QByteArray> list
-    (spoton_receive::process0092(length, dataIn, symmetricKeys,
-				 m_address, m_port));
+    (spoton_receive::
+     process0092(length, dataIn, symmetricKeys, m_address, m_port));
 
   if(!list.isEmpty())
     emit smpMessage(list);
@@ -3074,6 +3078,93 @@ void spoton_neighbor::process0095b(int length, const QByteArray &dataIn)
 	       "Content-Length mismatch (advertised: %1, received: %2) "
 	       "for %3:%4.").
        arg(length).arg(data.length()).
+       arg(m_address).
+       arg(m_port));
+}
+
+void spoton_neighbor::process0100(int length,
+				  const QByteArray &dataIn,
+				  const QList<QByteArray> &symmetricKeys)
+{
+  QByteArray data(dataIn);
+
+  if(length == data.length())
+    {
+      data = data.trimmed();
+
+      QList<QByteArray> list(data.split('\n'));
+      bool ok = true;
+
+      if(list.size() == 3)
+	{
+	  for(int i = 0; i < list.size(); i++)
+	    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	  QPair<QByteArray, QByteArray> gemini;
+
+	  gemini.first = symmetricKeys.value(0);
+	  gemini.second = symmetricKeys.value(2);
+
+	  if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
+	    {
+	      QByteArray computedHash;
+	      QByteArray message(list.value(0));
+	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
+				 spoton_crypt::preferredHashAlgorithm(),
+				 QByteArray(),
+				 gemini.first,
+				 gemini.second,
+				 0,
+				 0,
+				 "");
+
+	      computedHash = crypt.keyedHash(message, &ok);
+
+	      if(ok)
+		{
+		  QByteArray messageCode(list.value(1));
+
+		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+		     spoton_crypt::memcmp(computedHash, messageCode))
+		    {
+		      message = crypt.decrypted(message, &ok);
+
+		      if(ok)
+			{
+			  QByteArray a;
+			  QDataStream stream(&message, QIODevice::ReadOnly);
+
+			  stream >> a; // Message Type
+
+			  if(stream.status() == QDataStream::Ok)
+			    {
+			      stream >> a; // Message
+
+			      if(stream.status() == QDataStream::Ok)
+				{
+				  /*
+				  ** Echo the actual message after
+				  ** transforming it.
+				  */
+
+				  emit receivedMessage
+				    (dataIn, m_id, m_adaptiveEchoPair);
+				  emit resetKeepAlive();
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	}
+    }
+  else
+    spoton_misc::logError
+      (QString("spoton_neighbor::process0100(): 0100 "
+	       "Content-Length mismatch (advertised: %1, received: %2) "
+	       "for %3:%4.").
+       arg(length).
+       arg(data.length()).
        arg(m_address).
        arg(m_port));
 }
@@ -3481,6 +3572,8 @@ void spoton_neighbor::processData(void)
 	    process0091b(length, data, symmetricKeys);
 	  else if(messageType == "0092")
 	    process0092(length, data, symmetricKeys);
+	  else if(messageType == "0100")
+     	    process0100(length, data, symmetricKeys);
 	  else
 	    messageType.clear();
 

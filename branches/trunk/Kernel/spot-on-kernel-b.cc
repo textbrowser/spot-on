@@ -1621,6 +1621,10 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 
 void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 {
+  /*
+  ** We popping Poptastic!
+  */
+
   QByteArray data
     (message.mid(message.indexOf("content=") +
 		 static_cast<int> (qstrlen("content="))));
