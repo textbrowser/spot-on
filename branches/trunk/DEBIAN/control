@@ -27,7 +27,7 @@ Maintainer: f83043e79dc03a0abfbcbc376879a97d66f2cacb@protonmail.ch
 Package: Spot-On
 Priority: optional
 Section: Science
-Version: 2023.01.15
+Version: 2023.06.06
 Description: Spot-On
  Welcome to Spot-On!
  A spot-on.desktop file will also be installed in /usr/share/applications/.

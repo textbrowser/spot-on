@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
+    <width>800</width>
     <height>450</height>
    </rect>
   </property>
@@ -43,8 +43,8 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1155</y>
-         <width>669</width>
+         <y>0</y>
+         <width>769</width>
          <height>4712</height>
         </rect>
        </property>
@@ -2883,7 +2883,7 @@ with the kernel process.</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>550</width>
+     <width>800</width>
      <height>34</height>
     </rect>
    </property>

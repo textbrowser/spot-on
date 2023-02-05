@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>660</width>
-    <height>945</height>
+    <height>953</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -944,6 +944,16 @@ QPushButton:pressed {
                 <number>3</number>
                </property>
                <item>
+                <widget class="QLabel" name="label_143">
+                 <property name="text">
+                  <string>A checked participant will be considered a proxy. The participant must be online.</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QSplitter" name="chatHorizontalSplitter">
                  <property name="frameShape">
                   <enum>QFrame::StyledPanel</enum>
@@ -1307,8 +1317,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>662</width>
-             <height>652</height>
+             <width>726</width>
+             <height>790</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_55">
@@ -2954,8 +2964,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>533</width>
-             <height>1993</height>
+             <width>582</width>
+             <height>2111</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_29">
@@ -4223,8 +4233,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>624</width>
-             <height>638</height>
+             <width>671</width>
+             <height>790</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_61">
@@ -5369,8 +5379,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>605</width>
-             <height>361</height>
+             <width>614</width>
+             <height>790</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5455,8 +5465,8 @@ color: rgb(255, 255, 255);
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>661</width>
-                 <height>703</height>
+                 <width>731</width>
+                 <height>779</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6697,8 +6707,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>843</width>
-             <height>1380</height>
+             <width>935</width>
+             <height>1486</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8273,8 +8283,8 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>455</width>
-             <height>1072</height>
+             <width>582</width>
+             <height>1096</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9638,8 +9648,8 @@ color: rgb(255, 255, 255);
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>634</width>
-             <height>820</height>
+             <width>711</width>
+             <height>862</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -11403,7 +11413,7 @@ border-style: inset;
      <x>0</x>
      <y>0</y>
      <width>660</width>
-     <height>30</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

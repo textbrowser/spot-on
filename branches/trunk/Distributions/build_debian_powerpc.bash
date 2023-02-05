@@ -43,7 +43,7 @@ mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./DEBIAN-POWERPC spot-on-debian/DEBIAN
 cp -r ./usr/local/spot-on spot-on-debian/usr/local/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2023.01.15_powerpc.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2023.06.06_powerpc.deb
 make distclean
 rm -fr ./spot-on-debian
 rm -fr ./usr
