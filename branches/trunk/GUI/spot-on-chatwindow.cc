@@ -309,6 +309,13 @@ void spoton_chatwindow::sendMessage(bool *ok)
   message.append("_");
   message.append(QDateTime::currentDateTimeUtc().
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+  message.append("_");
+
+  if(m_parent)
+    message.append(QByteArray::number(m_parent->selectedHumanProxyOID()));
+  else
+    message.append("-1");
+
   message.append("\n");
 
   if(m_parent)

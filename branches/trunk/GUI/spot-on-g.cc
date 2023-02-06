@@ -629,6 +629,8 @@ void spoton::slotBuzzInvite(void)
       message.append("_");
       message.append(QDateTime::currentDateTimeUtc().
 		     toString("MMddyyyyhhmmss").toLatin1().toBase64());
+      message.append("_");
+      message.append(QByteArray::number(selectedHumanProxyOID()));
       message.append("\n");
 
       if(!writeKernelSocketData(message))

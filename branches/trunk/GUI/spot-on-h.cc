@@ -248,6 +248,17 @@ bool spoton::writeKernelSocketData(const QByteArray &bytes)
   return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());
 }
 
+qint64 spoton::selectedHumanProxyOID(void) const
+{
+  for(int i = 0; i < m_ui.participants->rowCount(); i++)
+    if(m_ui.participants->item(i, 0) &&
+       m_ui.participants->item(i, 0)->checkState() == Qt::Checked &&
+       m_ui.participants->item(i, 1))
+      return m_ui.participants->item(i, 1)->text().toLongLong();
+
+  return -1;
+}
+
 void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 {
   if(!settings.value("is_kernel_active").toBool())

@@ -2470,7 +2470,6 @@ void spoton::sendMessage(bool *ok)
   QString error("");
   QString msg("");
   QString to("");
-  QVariant hpOid(-1); // Human Proxy OID
 
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     {
@@ -2500,15 +2499,6 @@ void spoton::sendMessage(bool *ok)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  for(int i = 0; i < m_ui.participants->rowCount(); i++)
-    if(m_ui.participants->item(i, 0) &&
-       m_ui.participants->item(i, 0)->checkState() == Qt::Checked &&
-       m_ui.participants->item(i, 1))
-      {
-	hpOid = m_ui.participants->item(i, 1)->text();
-	break;
-      }
 
   for(int i = 0; i < names.size(); i++)
     to.append(names.at(i).data().toString()).append(", ");
@@ -2582,7 +2572,7 @@ void spoton::sendMessage(bool *ok)
 	  message.append(QDateTime::currentDateTimeUtc().
 			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
 	  message.append("_");
-	  message.append(QByteArray::number(hpOid.toLongLong()));
+	  message.append(QByteArray::number(selectedHumanProxyOID()));
 	  message.append("\n");
 	  addMessageToReplayQueue(msg, message, publicKeyHash);
 
