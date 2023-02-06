@@ -86,8 +86,8 @@ void spoton_fireshare::slotTimeout(void)
 
   if(!s_crypt1)
     {
-      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
-			    "s_crypt1 is zero.");
+      spoton_misc::logError
+	("spoton_fireshare::slotTimeout(): s_crypt1 is zero.");
       return;
     }
 
@@ -95,8 +95,8 @@ void spoton_fireshare::slotTimeout(void)
 
   if(!s_crypt2)
     {
-      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
-			    "s_crypt2 is zero.");
+      spoton_misc::logError
+	("spoton_fireshare::slotTimeout(): s_crypt2 is zero.");
       return;
     }
 
@@ -124,8 +124,8 @@ void spoton_fireshare::slotTimeout(void)
 		      "permission "     // 1
 		      "FROM distillers WHERE "
 		      "direction_hash = ?");
-	query.bindValue(0, s_crypt1->keyedHash(QByteArray("upload"),
-					       &ok).toBase64());
+	query.bindValue
+	  (0, s_crypt1->keyedHash(QByteArray("upload"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -134,20 +134,12 @@ void spoton_fireshare::slotTimeout(void)
 	      QByteArray permission;
 	      bool ok = true;
 
-	      domain = s_crypt1->
-		decryptedAfterAuthenticated(QByteArray::
-					    fromBase64(query.
-						       value(0).
-						       toByteArray()),
-					    &ok);
+	      domain = s_crypt1->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
-		permission = s_crypt1->
-		  decryptedAfterAuthenticated(QByteArray::
-					      fromBase64(query.
-							 value(1).
-							 toByteArray()),
-					      &ok);
+		permission = s_crypt1->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
 		{
@@ -186,8 +178,8 @@ void spoton_fireshare::slotTimeout(void)
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -208,8 +200,7 @@ void spoton_fireshare::slotTimeout(void)
 	      bool ok = true;
 
 	      publicKey = s_crypt1->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		publicKeys.append(publicKey);
@@ -229,18 +220,18 @@ void spoton_fireshare::slotTimeout(void)
 
   if(publicKeys.isEmpty())
     {
-      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
-			    "publicKeys is empty.");
+      spoton_misc::logError
+	("spoton_fireshare::slotTimeout(): publicKeys is empty.");
       return;
     }
 
-  spoton_crypt *urlCommonCredentials =
-    spoton_misc::retrieveUrlCommonCredentials(s_crypt1);
+  spoton_crypt *urlCommonCredentials = spoton_misc::
+    retrieveUrlCommonCredentials(s_crypt1);
 
   if(!urlCommonCredentials)
     {
-      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
-			    "urlCommonCredentials is zero.");
+      spoton_misc::logError
+	("spoton_fireshare::slotTimeout(): urlCommonCredentials is zero.");
       return;
     }
 
@@ -315,8 +306,8 @@ void spoton_fireshare::slotTimeout(void)
 
 	while(true)
 	  {
-	    if(count > spoton_kernel::setting("gui/kernel_url_batch_size",
-					      5).toInt())
+	    if(count >
+	       spoton_kernel::setting("gui/kernel_url_batch_size", 5).toInt())
 	      break;
 
 	    QByteArray shareHash;
@@ -486,8 +477,7 @@ void spoton_fireshare::slotTimeout(void)
 
   if(data.isEmpty())
     {
-      spoton_misc::logError("spoton_fireshare::slotTimeout(): "
-			    "data is empty.");
+      spoton_misc::logError("spoton_fireshare::slotTimeout(): data is empty.");
       return;
     }
 
