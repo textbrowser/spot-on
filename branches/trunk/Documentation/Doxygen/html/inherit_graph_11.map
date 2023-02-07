@@ -1,4 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,5,89,32"/>
-<area shape="rect" id="node2" href="$classspoton__lineedit.html" title=" " alt="" coords="137,5,260,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,46,107,73"/>
+<area shape="rect" id="node2" href="$classspoton__listener__udp__server.html" title=" " alt="" coords="159,5,312,47"/>
+<area shape="rect" id="node3" href="$classspoton__neighbor__udp__socket.html" title=" " alt="" coords="155,71,316,112"/>
 </map>

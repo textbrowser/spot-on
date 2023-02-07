@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['libspoton_5fhandle_5fstruct_5ft_66',['libspoton_handle_struct_t',['../structlibspoton__handle__struct__t.html',1,'']]]
+  ['private_65',['Private',['../classCocoaInitializer_1_1Private.html',1,'CocoaInitializer']]]
 ];

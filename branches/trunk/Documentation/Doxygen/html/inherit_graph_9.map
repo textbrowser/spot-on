@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classspoton__forward__secrecy.html" title=" " alt="" coords="5,5,185,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,78,100,105"/>
+<area shape="rect" id="node2" href="$classspoton__gui__server__tcp__server.html" title=" " alt="" coords="151,5,319,47"/>
+<area shape="rect" id="node4" href="$classspoton__listener__tcp__server.html" title=" " alt="" coords="161,71,310,112"/>
+<area shape="rect" id="node5" href="$classspoton__web__server__tcp__server.html" title=" " alt="" coords="148,136,323,177"/>
+<area shape="rect" id="node3" href="$classspoton__gui__server.html" title=" " alt="" coords="371,13,512,39"/>
 </map>
