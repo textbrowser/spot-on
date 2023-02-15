@@ -5,8 +5,8 @@
 
 # CURL
 
-curl=curl-7.87.0-win32-mingw
-dlcurl=dl-7.87.0
+curl=curl-7.88.0-win32-mingw
+dlcurl=dl-7.88.0
 
 rm -f $curl.zip
 rm -fr $curl
@@ -15,6 +15,8 @@ wget --progress=bar \
 
 if [ -r "$curl.zip" ]; then
     unzip -q $curl.zip -d curl-temporary.d
+    mkdir -p libcURL/Win32.d/bin
+    mkdir -p libcURL/Win32.d/include/curl
     mv curl-temporary.d/*/bin/curl-ca-bundle.crt libcURL/.
     mv curl-temporary.d/*/bin/libcurl.dll libcURL/Win32.d/bin/.
     mv curl-temporary.d/*/include/curl/*.h libcURL/Win32.d/include/curl/.
@@ -26,7 +28,7 @@ fi
 
 # GCrypt
 
-gcrypt=mingw-w64-i686-libgcrypt-1.9.4-1-any.pkg.tar.zst
+gcrypt=mingw-w64-i686-libgcrypt-1.10.1-1-any.pkg.tar.zst
 
 rm -f $gcrypt
 wget --output-document=$gcrypt \
@@ -35,6 +37,8 @@ wget --output-document=$gcrypt \
 
 if [ -r "$gcrypt" ]; then
     tar -I zstd -vxf $gcrypt
+    mkdir -p libSpotOn/Include.win32
+    mkdir -p libSpotOn/Libraries.win32
     mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
     mv mingw32/include/*.h libSpotOn/Include.win32/.
     chmod +w,-x libSpotOn/Libraries.win32/*.dll*
@@ -46,7 +50,7 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-i686-libgpg-error-1.46-1-any.pkg.tar.zst
+gpgerror=mingw-w64-i686-libgpg-error-1.46-2-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
@@ -55,6 +59,8 @@ wget --output-document=$gpgerror \
 
 if [ -r "$gpgerror" ]; then
     tar -I zstd -vxf $gpgerror
+    mkdir -p libSpotOn/Include.win32
+    mkdir -p libSpotOn/Libraries.win32
     mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
     mv mingw32/include/gpg-error.h libSpotOn/Include.win32/.
     chmod +w,-x libSpotOn/Libraries.win32/*.dll*
@@ -75,6 +81,8 @@ wget --output-document=$geoip \
 
 if [ -r "$geoip" ]; then
     tar -vxf $geoip
+    mkdir -p libGeoIP/Include.win32
+    mkdir -p libGeoIP/Libraries.win32
     mv mingw32/bin/*.dll libGeoIP/Libraries.win32/.
     mv mingw32/include/*.h libGeoIP/Include.win32/.
     chmod +w,-x libGeoIP/Libraries.win32/*.dll*
@@ -95,6 +103,8 @@ wget --output-document=$openssl \
 
 if [ -r "$openssl" ]; then
     tar -I zstd -vxf $openssl
+    mkdir -p libOpenSSL/Include.win32
+    mkdir -p libOpenSSL/Libraries.win32
     rm -rf libOpenSSL/Include.win32/openssl
     mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
     mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
@@ -117,6 +127,8 @@ wget --output-document=$postgresql \
 
 if [ -r $postgresql ]; then
     unzip -q $postgresql
+    mkdir -p PostgreSQL/Libraries.win32
+    mkdir -p PostgreSQL/Include.win32
     mv pgsql/bin/libiconv-2.dll PostgreSQL/Libraries.win32/.
     mv pgsql/bin/libintl-8.dll PostgreSQL/Libraries.win32/.
     mv pgsql/bin/libpq.dll PostgreSQL/Libraries.win32/.
@@ -142,6 +154,7 @@ wget --progress=bar https://sqlite.org/2022/$sqlite
 
 if [ -r $sqlite ]; then
     unzip -q -o $sqlite
+    mkdir -p libSpotOn/Libraries.win32
     mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
     chmod +w,-x libSpotOn/Libraries.win32/*.dll*
     rm -f $sqlite
@@ -166,6 +179,7 @@ fi
 sqlite=sqlite-amalgamation-3400100
 
 if [ -r $sqlite ]; then
+    mkdir -p libSpotOn/Include.win32
     mv $sqlite/*.h libSpotOn/Include.win32/.
     rm -fr $sqlite
 else
