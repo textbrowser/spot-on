@@ -396,8 +396,7 @@ void spoton_web_server_thread::process
 
   for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForReadyRead)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
-       (socket->state() ==
-	QAbstractSocket::ConnectedState &&
+       (socket->state() == AbstractSocket::ConnectedState &&
 	socket->waitForReadyRead(s_waitForReadyRead)))
       break;
 
@@ -505,6 +504,8 @@ void spoton_web_server_thread::process
     }
   else if(!data.isEmpty())
     writeDefaultPage(socket.data(), true);
+
+  socket.abort();
 }
 
 void spoton_web_server_thread::process(QSslSocket *socket,
