@@ -87,7 +87,7 @@ void spoton::discoverUrls(void)
 			 "date_time_inserted, " // 3
 			 "LENGTH(content), "    // 4
 			 "url_hash "            // 5
-			 "FROM spot_on_urls_%1%2 UNION ").
+			 "FROM spot_on_urls_%1%2 UNION ALL ").
 		 arg(c1).arg(c2));
 	  }
 
@@ -232,7 +232,7 @@ void spoton::discoverUrls(void)
 	     arg(keywordHashHex.constData()));
 
 	  if(it.hasNext())
-	    keywordsearch.append(" UNION ");
+	    keywordsearch.append(" UNION ALL ");
 	}
 
       if(!keywords.isEmpty())
@@ -302,7 +302,7 @@ void spoton::discoverUrls(void)
 		 arg(it.key()).arg(it.value()));
 
 	      if(it.hasNext())
-		querystr.append(" UNION ");
+		querystr.append(" UNION ALL ");
 	    }
 
 	  querystr.append(" ORDER BY 4 DESC ");

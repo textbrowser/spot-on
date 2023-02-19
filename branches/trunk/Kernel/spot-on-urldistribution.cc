@@ -346,7 +346,7 @@ void spoton_urldistribution::run(void)
 			   "unique_id "           // 5
 			   "FROM spot_on_urls_%1%2 "
 			   "WHERE LENGTH(content) <= %3 AND unique_id > %4 "
-			   "UNION ").
+			   "UNION ALL ").
 		   arg(c1).arg(c2).
 		   arg(spoton_common::URL_CONTENT_SHARE_MAXIMUM_SIZE).
 		   arg(m_lastUniqueId));

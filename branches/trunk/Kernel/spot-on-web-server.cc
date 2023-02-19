@@ -96,7 +96,7 @@ spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
 		     "description, "       // 2
 		     "url_hash, "          // 3
 		     "date_time_inserted " // 4
-		     "FROM spot_on_urls_%1%2 UNION ").arg(c1).arg(c2));
+		     "FROM spot_on_urls_%1%2 UNION ALL ").arg(c1).arg(c2));
       }
 
   QFile file(":/search.html");
@@ -689,7 +689,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 		 arg(keywordHashHex.constData()));
 
 	      if(it.hasNext())
-		keywordsearch.append(" UNION ");
+		keywordsearch.append(" UNION ALL ");
 	    }
 
 	  if(!keywords.isEmpty())
@@ -746,7 +746,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 		     arg(it.key()).arg(it.value()));
 
 		  if(it.hasNext())
-		    querystr.append(" UNION ");
+		    querystr.append(" UNION ALL ");
 		}
 
 	      querystr.append(" ORDER BY 5 DESC ");
