@@ -504,9 +504,6 @@ void spoton_web_server_thread::process
     }
   else if(!data.isEmpty())
     writeDefaultPage(socket.data(), true);
-
-  socket->abort();
-  spoton_misc::closeSocket(socket->socketDescriptor());
 }
 
 void spoton_web_server_thread::process(QSslSocket *socket,
