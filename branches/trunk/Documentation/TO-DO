@@ -280,6 +280,8 @@ Completed Items
        e-mail. Missing images?
 208.   Include dates of documents in Web presentation.
 209.   Human proxies. Single-proxy completion.
+210.   Improve Web search query performance. Replaced UNION with UNION ALL.
+       The URL database tables contain unique sets.
 
 Interesting Items
 
@@ -312,4 +314,3 @@ Remaining Items
 7.     NTL warnings on FreeBSD.
 8.     Optional human proxy session setting.
 9.     Multiple proxies?
-10.    Improve Web search query performance.
