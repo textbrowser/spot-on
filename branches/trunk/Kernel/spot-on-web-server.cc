@@ -201,8 +201,6 @@ void spoton_web_server::slotHttpsThreadFinished(void)
 
 void spoton_web_server::slotTimeout(void)
 {
-  int maximumClients = spoton_kernel::setting
-    ("gui/soss_maximum_clients", 10).toInt();
   quint16 port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
@@ -213,6 +211,9 @@ void spoton_web_server::slotTimeout(void)
       m_https->close();
       return;
     }
+
+  int maximumClients = spoton_kernel::setting
+    ("gui/soss_maximum_clients", 10).toInt();
 
   if((m_http->isListening() && m_http->serverPort() != port) ||
      m_httpClientCount->fetchAndAddOrdered(0) >= maximumClients)
