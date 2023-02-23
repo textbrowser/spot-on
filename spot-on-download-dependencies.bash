@@ -28,7 +28,7 @@ fi
 
 # GCrypt
 
-gcrypt=mingw-w64-i686-libgcrypt-1.10.1-1-any.pkg.tar.zst
+gcrypt=mingw-w64-i686-libgcrypt-1.9.4-1-any.pkg.tar.zst
 
 rm -f $gcrypt
 wget --output-document=$gcrypt \

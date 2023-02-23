@@ -1,7 +1,6 @@
 /* gcrypt.h -  GNU Cryptographic Library Interface              -*- c -*-
- * Copyright (C) 2012-2022 g10 Code GmbH
- * Copyright (C) 2013-2022 Jussi Kivilinna
  * Copyright (C) 1998-2018 Free Software Foundation, Inc.
+ * Copyright (C) 2012-2018 g10 Code GmbH
  *
  * This file is part of Libgcrypt.
  *
@@ -33,11 +32,20 @@
 #include <sys/types.h>
 
 #if defined _WIN32 || defined __WIN32__
+# include <winsock2.h>
+# include <ws2tcpip.h>
+# include <time.h>
 # ifndef __GNUC__
   typedef long ssize_t;
   typedef int  pid_t;
 # endif /*!__GNUC__*/
-#endif /*_WIN32*/
+#else
+# include <sys/socket.h>
+# include <sys/time.h>
+#
+#endif /*!_WIN32*/
+
+typedef int gcry_socklen_t;
 
 /* This is required for error code compatibility. */
 #define _GCRY_ERR_SOURCE_DEFAULT GPG_ERR_SOURCE_GCRYPT
@@ -54,11 +62,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.10.1-unknown"
+#define GCRYPT_VERSION "1.9.4-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010a01
+#define GCRYPT_VERSION_NUMBER 0x010904
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -119,7 +127,7 @@ extern "C" {
 #ifdef _GCRYPT_IN_LIBGCRYPT
 #define _GCRY_ATTR_INTERNAL
 #else
-#define _GCRY_ATTR_INTERNAL     _GCRY_GCC_ATTR_DEPRECATED
+#define _GCRY_ATTR_INTERNAL	_GCRY_GCC_ATTR_DEPRECATED
 #endif
 
 /* Wrappers for the libgpg-error library.  */
@@ -326,11 +334,7 @@ enum gcry_ctl_cmds
     GCRYCTL_GET_TAGLEN = 76,
     GCRYCTL_REINIT_SYSCALL_CLAMP = 77,
     GCRYCTL_AUTO_EXPAND_SECMEM = 78,
-    GCRYCTL_SET_ALLOW_WEAK_KEY = 79,
-    GCRYCTL_SET_DECRYPTION_TAG = 80,
-    GCRYCTL_FIPS_SERVICE_INDICATOR_CIPHER = 81,
-    GCRYCTL_FIPS_SERVICE_INDICATOR_KDF = 82,
-    GCRYCTL_NO_FIPS_MODE = 83
+    GCRYCTL_SET_ALLOW_WEAK_KEY = 79
   };
 
 /* Perform various operations defined by CMD. */
@@ -384,7 +388,7 @@ gcry_error_t gcry_sexp_build (gcry_sexp_t *retsexp, size_t *erroff,
 /* Like gcry_sexp_build, but uses an array instead of variable
    function arguments.  */
 gcry_error_t gcry_sexp_build_array (gcry_sexp_t *retsexp, size_t *erroff,
-                                    const char *format, void **arg_list);
+				    const char *format, void **arg_list);
 
 /* Release the S-expression object SEXP */
 void gcry_sexp_release (gcry_sexp_t sexp);
@@ -971,9 +975,7 @@ enum gcry_cipher_modes
     GCRY_CIPHER_MODE_OCB      = 11,  /* OCB3 mode.  */
     GCRY_CIPHER_MODE_CFB8     = 12,  /* Cipher feedback (8 bit mode). */
     GCRY_CIPHER_MODE_XTS      = 13,  /* XTS mode.  */
-    GCRY_CIPHER_MODE_EAX      = 14,  /* EAX mode.  */
-    GCRY_CIPHER_MODE_SIV      = 15,  /* SIV mode.  */
-    GCRY_CIPHER_MODE_GCM_SIV  = 16   /* GCM-SIV mode.  */
+    GCRY_CIPHER_MODE_EAX      = 14   /* EAX mode.  */
   };
 
 /* Flags used with the open function. */
@@ -982,8 +984,7 @@ enum gcry_cipher_flags
     GCRY_CIPHER_SECURE      = 1,  /* Allocate in secure memory. */
     GCRY_CIPHER_ENABLE_SYNC = 2,  /* Enable CFB sync mode. */
     GCRY_CIPHER_CBC_CTS     = 4,  /* Enable CBC cipher text stealing (CTS). */
-    GCRY_CIPHER_CBC_MAC     = 8,  /* Enable CBC message auth. code (MAC).  */
-    GCRY_CIPHER_EXTENDED    = 16  /* Enable extended AES-WRAP.  */
+    GCRY_CIPHER_CBC_MAC     = 8   /* Enable CBC message auth. code (MAC). */
   };
 
 /* GCM works only with blocks of 128 bits */
@@ -997,9 +998,6 @@ enum gcry_cipher_flags
 
 /* XTS works only with blocks of 128 bits.  */
 #define GCRY_XTS_BLOCK_LEN  (128 / 8)
-
-/* SIV and GCM-SIV works only with blocks of 128 bits */
-#define GCRY_SIV_BLOCK_LEN  (128 / 8)
 
 /* Create a handle for algorithm ALGO to be used in MODE.  FLAGS may
    be given as an bitwise OR of the gcry_cipher_flags values. */
@@ -1102,11 +1100,6 @@ size_t gcry_cipher_get_algo_blklen (int algo);
 /* Return 0 if the algorithm A is available for use. */
 #define gcry_cipher_test_algo(a) \
             gcry_cipher_algo_info( (a), GCRYCTL_TEST_ALGO, NULL, NULL )
-
-/* Setup tag for decryption (for SIV and GCM-SIV mode). */
-#define gcry_cipher_set_decryption_tag(a, tag, taglen) \
-            gcry_cipher_ctl ((a), GCRYCTL_SET_DECRYPTION_TAG, \
-                             (void *)(tag), (taglen))
 
 
 /************************************
@@ -1592,16 +1585,7 @@ enum gcry_kdf_algos
     GCRY_KDF_ITERSALTED_S2K = 19,
     GCRY_KDF_PBKDF1 = 33,
     GCRY_KDF_PBKDF2 = 34,
-    GCRY_KDF_SCRYPT = 48,
-    GCRY_KDF_ARGON2   = 64,
-    GCRY_KDF_BALLOON  = 65
-  };
-
-enum gcry_kdf_subalgo_argon2
-  {
-    GCRY_KDF_ARGON2D  = 0,
-    GCRY_KDF_ARGON2I  = 1,
-    GCRY_KDF_ARGON2ID = 2
+    GCRY_KDF_SCRYPT = 48
   };
 
 /* Derive a key from a passphrase.  */
@@ -1611,33 +1595,8 @@ gpg_error_t gcry_kdf_derive (const void *passphrase, size_t passphraselen,
                              unsigned long iterations,
                              size_t keysize, void *keybuffer);
 
-/* Another API to derive a key from a passphrase.  */
-typedef struct gcry_kdf_handle *gcry_kdf_hd_t;
 
-typedef void (*gcry_kdf_job_fn_t) (void *priv);
-typedef int (*gcry_kdf_dispatch_job_fn_t) (void *jobs_context,
-                                           gcry_kdf_job_fn_t job_fn,
-                                           void *job_priv);
-typedef int (*gcry_kdf_wait_all_jobs_fn_t) (void *jobs_context);
 
-/* Exposed structure for KDF computation to decouple thread functionality.  */
-typedef struct gcry_kdf_thread_ops
-{
-  void *jobs_context;
-  gcry_kdf_dispatch_job_fn_t dispatch_job;
-  gcry_kdf_wait_all_jobs_fn_t wait_all_jobs;
-} gcry_kdf_thread_ops_t;
-
-gcry_error_t gcry_kdf_open (gcry_kdf_hd_t *hd, int algo, int subalgo,
-                            const unsigned long *param, unsigned int paramlen,
-                            const void *passphrase, size_t passphraselen,
-                            const void *salt, size_t saltlen,
-                            const void *key, size_t keylen,
-                            const void *ad, size_t adlen);
-gcry_error_t gcry_kdf_compute (gcry_kdf_hd_t h,
-                               const gcry_kdf_thread_ops_t *ops);
-gcry_error_t gcry_kdf_final (gcry_kdf_hd_t h, size_t resultlen, void *result);
-void gcry_kdf_close (gcry_kdf_hd_t h);
 
 /************************************
  *                                  *
@@ -1871,32 +1830,6 @@ int gcry_is_secure (const void *a) _GCRY_GCC_ATTR_PURE;
 /* Return true if Libgcrypt is in FIPS mode.  */
 #define gcry_fips_mode_active()  !!gcry_control (GCRYCTL_FIPS_MODE_P, 0)
 
-/* Variant of gcry_pk_sign which takes as additional parameter a HD
- * handle for hash and an optional context.  The hash algorithm used by the
- * handle needs to be enabled and input needs to be supplied beforehand.
- * DATA-TMPL specifies a template to compose an S-expression to be signed.
- * A template should include '(hash %s %b)' or '(hash ALGONAME %b)'.
- * For the former case, '%s' is substituted by the string of algorithm
- * of gcry_md_get_algo (HD) and when gcry_md_read is called, ALGO=0 is
- * used internally.  For the latter case, hash algorithm by ALGONAME
- * is used when gcry_md_read is called internally.
- * The hash handle must not yet been finalized; the function
- * takes a copy of the state and does a finalize on the copy.  This
- * function shall be used if a policy requires that hashing and signing
- * is done by the same function.  CTX is currently not used and should
- * be passed as NULL.  */
-gcry_error_t gcry_pk_hash_sign (gcry_sexp_t *result,
-                                const char *data_tmpl, gcry_sexp_t skey,
-                                gcry_md_hd_t hd, gcry_ctx_t ctx);
-
-/* Variant of gcry_pk_verify which takes as additional parameter a HD
- * handle for hash and an optional context.  Similar to gcry_pk_hash_sign.  */
-gcry_error_t gcry_pk_hash_verify (gcry_sexp_t sigval,
-                                  const char *data_tmpl, gcry_sexp_t pkey,
-                                  gcry_md_hd_t hd, gcry_ctx_t ctx);
-
-gcry_error_t gcry_pk_random_override_new (gcry_ctx_t *r_ctx,
-                                          const unsigned char *p, size_t len);
 
 #if 0 /* (Keep Emacsens' auto-indent happy.) */
 {
