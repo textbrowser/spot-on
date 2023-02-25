@@ -731,64 +731,63 @@
                       </widget>
                      </item>
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_17">
-                       <property name="spacing">
-                        <number>5</number>
-                       </property>
-                       <item>
-                        <widget class="QToolButton" name="chatActionMenu">
-                         <property name="toolTip">
-                          <string>Context Menu</string>
-                         </property>
-                         <property name="text">
-                          <string>Context Menu Reflection</string>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
-                         </property>
-                         <property name="popupMode">
-                          <enum>QToolButton::MenuButtonPopup</enum>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <widget class="QToolButton" name="chatSecrets">
-                         <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Secret Streams. The activated entry will be applied to the currently-selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                         </property>
-                         <property name="text">
-                          <string>Secret Streams</string>
-                         </property>
-                         <property name="icon">
-                          <iconset resource="../Icons/icons.qrc">
-                           <normaloff>:/generic/menu-secret-chat.png</normaloff>:/generic/menu-secret-chat.png</iconset>
-                         </property>
-                         <property name="popupMode">
-                          <enum>QToolButton::MenuButtonPopup</enum>
-                         </property>
-                         <property name="autoRaise">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_70">
-                         <property name="orientation">
-                          <enum>Qt::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
+                      <widget class="QFrame" name="chat_frame">
+                       <layout class="QHBoxLayout" name="horizontalLayout_17">
+                        <item>
+                         <widget class="QToolButton" name="chatActionMenu">
+                          <property name="toolTip">
+                           <string>Context Menu</string>
+                          </property>
+                          <property name="text">
+                           <string>Context Menu Reflection</string>
+                          </property>
+                          <property name="icon">
+                           <iconset resource="../Icons/icons.qrc">
+                            <normaloff>:/generic/menu.png</normaloff>:/generic/menu.png</iconset>
+                          </property>
+                          <property name="popupMode">
+                           <enum>QToolButton::MenuButtonPopup</enum>
+                          </property>
+                          <property name="autoRaise">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QToolButton" name="chatSecrets">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Secret Streams. The activated entry will be applied to the currently-selected participant.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="text">
+                           <string>Secret Streams</string>
+                          </property>
+                          <property name="icon">
+                           <iconset resource="../Icons/icons.qrc">
+                            <normaloff>:/generic/menu-secret-chat.png</normaloff>:/generic/menu-secret-chat.png</iconset>
+                          </property>
+                          <property name="popupMode">
+                           <enum>QToolButton::MenuButtonPopup</enum>
+                          </property>
+                          <property name="autoRaise">
+                           <bool>true</bool>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <spacer name="horizontalSpacer_70">
+                          <property name="orientation">
+                           <enum>Qt::Horizontal</enum>
+                          </property>
+                          <property name="sizeHint" stdset="0">
+                           <size>
+                            <width>315</width>
+                            <height>20</height>
+                           </size>
+                          </property>
+                         </spacer>
+                        </item>
+                       </layout>
+                      </widget>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_123">

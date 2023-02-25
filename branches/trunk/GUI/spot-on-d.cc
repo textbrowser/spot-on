@@ -2682,6 +2682,8 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #else
+  m_ui.buzz_details->setVisible(!state);
+  m_ui.chat_frame->setVisible(!state);
 #endif
   m_sb.errorlog->setHidden(state);
 }
