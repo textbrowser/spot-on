@@ -515,6 +515,7 @@ class spoton: public QMainWindow
 				     ** QTabWidget does not provide
 				     ** a method for hiding individual pages.
 				     */
+  QPointer<QWidget> m_careOfPage;
   QPointer<spoton_status_activity> m_statusActivity;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;

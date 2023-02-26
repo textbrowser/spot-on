@@ -73,26 +73,32 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="unify">
-       <property name="toolTip">
-        <string>Attach to the main window's Buzz page.</string>
-       </property>
-       <property name="text">
-        <string>Unify</string>
-       </property>
+      <widget class="QFrame" name="frame">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="unify">
+          <property name="toolTip">
+           <string>Attach to the main window's Buzz page.</string>
+          </property>
+          <property name="text">
+           <string>Unify</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -352,8 +358,8 @@
   <tabstop>copy</tabstop>
   <tabstop>remove</tabstop>
   <tabstop>unify</tabstop>
-  <tabstop>clearMessages</tabstop>
   <tabstop>messages</tabstop>
+  <tabstop>clearMessages</tabstop>
   <tabstop>clients</tabstop>
   <tabstop>sendMethod</tabstop>
   <tabstop>message</tabstop>

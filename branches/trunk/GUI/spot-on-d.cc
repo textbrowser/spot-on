@@ -2684,6 +2684,16 @@ void spoton::slotShowMinimalDisplay(bool state)
 #else
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);
+
+  if(state)
+    {
+      if(m_ui.mailTab->count() == 2)
+	m_careOfPage = m_ui.mailTab->widget(1);
+
+      m_ui.mailTab->removeTab(1);
+    }
+  else if(m_ui.mailTab->count() == 1)
+    m_ui.mailTab->addTab(m_careOfPage, tr("C/O"));
 #endif
   m_sb.errorlog->setHidden(state);
   emit minimal(state);
