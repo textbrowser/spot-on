@@ -2686,6 +2686,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.chat_frame->setVisible(!state);
 #endif
   m_sb.errorlog->setHidden(state);
+  emit minimal(state);
 }
 
 void spoton::slotSignatureKeyTypeChanged(int index)

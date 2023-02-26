@@ -1106,6 +1106,7 @@ class spoton: public QMainWindow
   void dataReceived(const qint64 size);
   void dataSent(const qint64 size);
   void iconsChanged(void);
+  void minimal(const bool state);
   void neighborsQueryReady(QSqlDatabase *db,
 			   QSqlQuery *query,
 			   const QString &connectionName,

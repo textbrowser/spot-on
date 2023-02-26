@@ -75,12 +75,13 @@ class spoton_buzzpage: public QWidget
   QPointer<QSslSocket> m_kernelSocket;
   QPointer<spoton> m_parent;
   QTimer m_statusTimer;
-  Ui_spoton_buzzPage ui;
+  Ui_spoton_buzzPage m_ui;
   unsigned long int m_iterationCount;
 
  private slots:
   void slotBuzzNameChanged(const QByteArray &name);
   void slotCopy(void);
+  void slotMinimal(const bool state);
   void slotRemove(void);
   void slotSave(void);
   void slotSendMessage(void);

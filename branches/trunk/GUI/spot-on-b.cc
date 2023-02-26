@@ -4067,8 +4067,13 @@ void spoton::slotJoinBuzzChannel(void)
 	  SIGNAL(iconsChanged(void)),
 	  page,
 	  SLOT(slotSetIcons(void)));
-  m_ui.buzzTab->addTab(page, QString::fromUtf8(channel.constData(),
-					       channel.length()));
+  connect(this,
+	  SIGNAL(minimal(const bool)),
+	  page,
+	  SLOT(slotMinimal(const bool)));
+  emit minimal(m_ui.action_Minimal_Display->isChecked());
+  m_ui.buzzTab->addTab
+    (page, QString::fromUtf8(channel.constData(), channel.length()));
   m_ui.buzzTab->setCurrentIndex(m_ui.buzzTab->count() - 1);
 
   if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)

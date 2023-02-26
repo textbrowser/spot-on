@@ -308,6 +308,11 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  SIGNAL(iconsChanged(void)),
 	  page,
 	  SLOT(slotSetIcons(void)));
+  connect(this,
+	  SIGNAL(minimal(const bool)),
+	  page,
+	  SLOT(slotMinimal(const bool)));
+  emit minimal(m_ui.action_Minimal_Display->isChecked());
 
   QMainWindow *mainWindow = new QMainWindow(0);
 
@@ -572,6 +577,11 @@ void spoton::slotBuzzInvite(void)
 	      SIGNAL(iconsChanged(void)),
 	      page,
 	      SLOT(slotSetIcons(void)));
+      connect(this,
+	      SIGNAL(minimal(const bool)),
+	      page,
+	      SLOT(slotMinimal(const bool)));
+      emit minimal(m_ui.action_Minimal_Display->isChecked());
 
       QMainWindow *mainWindow = new QMainWindow(0);
 

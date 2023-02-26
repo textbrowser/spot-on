@@ -51,7 +51,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 				 const QByteArray &key,
 				 spoton *parent):QWidget(parent)
 {
-  ui.setupUi(this);
+  m_ui.setupUi(this);
   m_channel = channel;
   m_parent = parent;
 
@@ -102,43 +102,43 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotStatusTimeout(void)));
-  connect(ui.clearMessages,
+  connect(m_ui.clearMessages,
 	  SIGNAL(clicked(void)),
-	  ui.messages,
+	  m_ui.messages,
 	  SLOT(clear(void)));
-  connect(ui.copy,
+  connect(m_ui.copy,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotCopy(void)));
-  connect(ui.favorite,
+  connect(m_ui.favorite,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSave(void)));
-  connect(ui.message,
+  connect(m_ui.message,
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSendMessage(void)));
-  connect(ui.remove,
+  connect(m_ui.remove,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRemove(void)));
-  connect(ui.sendMessage,
+  connect(m_ui.sendMessage,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSendMessage(void)));
-  connect(ui.unify,
+  connect(m_ui.unify,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SIGNAL(unify(void)));
-  ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
-  ui.clients->setColumnHidden(1, true); // ID
-  ui.clients->setColumnHidden(2, true); // Time
+  m_ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  m_ui.clients->setColumnHidden(1, true); // ID
+  m_ui.clients->setColumnHidden(2, true); // Time
 #if QT_VERSION >= 0x050501
-  ui.message->setPlaceholderText(tr("Please type a message..."));
+  m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
-  ui.splitter->setStretchFactor(0, 1);
-  ui.splitter->setStretchFactor(1, 0);
-  ui.unify->setVisible(false);
+  m_ui.splitter->setStretchFactor(0, 1);
+  m_ui.splitter->setStretchFactor(1, 0);
+  m_ui.unify->setVisible(false);
 
   QByteArray data;
 
@@ -150,7 +150,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   data.append(QString("hk=%1&").arg(m_hashKey.constData()).toUtf8());
   data.append(QString("ht=%1&").arg(m_hashType.constData()).toUtf8());
   data.append("xt=urn:buzz");
-  ui.magnet->setText(data);
+  m_ui.magnet->setText(data);
   slotSetIcons();
 
   QByteArray name;
@@ -222,7 +222,7 @@ QByteArray spoton_buzzpage::key(void) const
 
 QString spoton_buzzpage::magnet(void) const
 {
-  return ui.magnet->text();
+  return m_ui.magnet->text();
 }
 
 void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
@@ -284,18 +284,18 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
   int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
 
   if(lines >= 0)
-    if(lines <= ui.messages->document()->blockCount())
-      ui.messages->clear();
+    if(lines <= m_ui.messages->document()->blockCount())
+      m_ui.messages->clear();
 
-  ui.messages->append(msg);
-  ui.messages->verticalScrollBar()->setValue
-    (ui.messages->verticalScrollBar()->maximum());
+  m_ui.messages->append(msg);
+  m_ui.messages->verticalScrollBar()->setValue
+    (m_ui.messages->verticalScrollBar()->maximum());
   emit changed();
 }
 
 void spoton_buzzpage::showUnify(const bool state)
 {
-  ui.unify->setVisible(state);
+  m_ui.unify->setVisible(state);
 }
 
 void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
@@ -315,7 +315,16 @@ void spoton_buzzpage::slotCopy(void)
   if(!clipboard)
     return;
   else
-    clipboard->setText(ui.magnet->text());
+    clipboard->setText(m_ui.magnet->text());
+}
+
+void spoton_buzzpage::slotMinimal(const bool state)
+{
+  m_ui.copy->setVisible(!state);
+  m_ui.favorite->setVisible(!state);
+  m_ui.label->setVisible(!state);
+  m_ui.magnet->setVisible(!state);
+  m_ui.remove->setVisible(!state);
 }
 
 void spoton_buzzpage::slotRemove(void)
@@ -525,7 +534,7 @@ void spoton_buzzpage::slotSendMessage(void)
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
     }
-  else if(ui.message->toPlainText().isEmpty())
+  else if(m_ui.message->toPlainText().isEmpty())
     {
       error = tr("Please provide a real message.");
       goto done_label;
@@ -540,15 +549,15 @@ void spoton_buzzpage::slotSendMessage(void)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   message.append(tr("<b>me:</b> "));
-  message.append(ui.message->toPlainText());
-  ui.messages->append(message);
-  ui.messages->verticalScrollBar()->setValue
-    (ui.messages->verticalScrollBar()->maximum());
+  message.append(m_ui.message->toPlainText());
+  m_ui.messages->append(message);
+  m_ui.messages->verticalScrollBar()->setValue
+    (m_ui.messages->verticalScrollBar()->maximum());
 
 #if SPOTON_GOLDBUG == 1
   sendMethod = "Normal_POST";
 #else
-  if(ui.sendMethod->currentIndex() == 0)
+  if(m_ui.sendMethod->currentIndex() == 0)
     sendMethod = "Normal_POST";
   else
     sendMethod = "Artificial_GET";
@@ -571,7 +580,7 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("_");
     message.append(m_id.toBase64());
     message.append("_");
-    message.append(ui.message->toPlainText().toUtf8().toBase64());
+    message.append(m_ui.message->toPlainText().toUtf8().toBase64());
     message.append("_");
     message.append(sendMethod.toBase64());
     message.append("_");
@@ -597,7 +606,7 @@ void spoton_buzzpage::slotSendMessage(void)
       }
   }
 
-  ui.message->clear();
+  m_ui.message->clear();
 
  done_label:
 
@@ -666,22 +675,22 @@ void spoton_buzzpage::slotSetIcons(void)
        iconSet == "nuvola"))
     iconSet = "nouve";
 
-  ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
-  ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+  m_ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  m_ui.sendMessage->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }
 
 void spoton_buzzpage::slotStatusTimeout(void)
 {
   QDateTime now(QDateTime::currentDateTime());
 
-  for(int i = ui.clients->rowCount() - 1; i >= 0; i--)
+  for(int i = m_ui.clients->rowCount() - 1; i >= 0; i--)
     {
-      QTableWidgetItem *item = ui.clients->item(i, 1);
+      QTableWidgetItem *item = m_ui.clients->item(i, 1);
 
       if(item && item->text() == m_id)
 	continue;
 
-      item = ui.clients->item(i, 2);
+      item = m_ui.clients->item(i, 2);
 
       if(item)
 	{
@@ -690,7 +699,7 @@ void spoton_buzzpage::slotStatusTimeout(void)
 
 	  if(qAbs(dateTime.secsTo(now)) >= 60)
 	    {
-	      QTableWidgetItem *item = ui.clients->item(i, 0);
+	      QTableWidgetItem *item = m_ui.clients->item(i, 0);
 
 	      if(item)
 		{
@@ -715,16 +724,16 @@ void spoton_buzzpage::slotStatusTimeout(void)
 		    ("gui/buzz_maximum_lines", -1).toInt();
 
 		  if(lines >= 0)
-		    if(lines <= ui.messages->document()->blockCount())
-		      ui.messages->clear();
+		    if(lines <= m_ui.messages->document()->blockCount())
+		      m_ui.messages->clear();
 
-		  ui.messages->append(msg);
-		  ui.messages->verticalScrollBar()->setValue
-		    (ui.messages->verticalScrollBar()->maximum());
+		  m_ui.messages->append(msg);
+		  m_ui.messages->verticalScrollBar()->setValue
+		    (m_ui.messages->verticalScrollBar()->maximum());
 		  emit changed();
 		}
 
-	      ui.clients->removeRow(i);
+	      m_ui.clients->removeRow(i);
 	    }
 	}
     }
@@ -750,16 +759,16 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
   QByteArray name
     (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
   QList<QTableWidgetItem *> items
-    (spoton::findItems(ui.clients, id, 1));
+    (spoton::findItems(m_ui.clients, id, 1));
 
   if(name.isEmpty() || name == "unknown")
     name = id.mid(0, 16) + "-unknown";
 
-  ui.clients->setSortingEnabled(false);
+  m_ui.clients->setSortingEnabled(false);
 
   if(items.isEmpty())
     {
-      ui.clients->setRowCount(ui.clients->rowCount() + 1);
+      m_ui.clients->setRowCount(m_ui.clients->rowCount() + 1);
 
       QTableWidgetItem *item = 0;
 
@@ -771,14 +780,14 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	item->setBackground(QBrush(QColor(254, 229, 172)));
 
       item->setToolTip(id.mid(0, 16) + "..." + id.right(16));
-      ui.clients->setItem(ui.clients->rowCount() - 1, 0, item);
+      m_ui.clients->setItem(m_ui.clients->rowCount() - 1, 0, item);
       item = new QTableWidgetItem(QString(id));
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      ui.clients->setItem(ui.clients->rowCount() - 1, 1, item);
+      m_ui.clients->setItem(m_ui.clients->rowCount() - 1, 1, item);
       item = new QTableWidgetItem
 	(QDateTime::currentDateTime().toString(Qt::ISODate));
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      ui.clients->setItem(ui.clients->rowCount() - 1, 2, item);
+      m_ui.clients->setItem(m_ui.clients->rowCount() - 1, 2, item);
 
       QDateTime now(QDateTime::currentDateTime());
       QString msg("");
@@ -800,12 +809,12 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
       int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
 
       if(lines >= 0)
-	if(lines <= ui.messages->document()->blockCount())
-	  ui.messages->clear();
+	if(lines <= m_ui.messages->document()->blockCount())
+	  m_ui.messages->clear();
 
-      ui.messages->append(msg);
-      ui.messages->verticalScrollBar()->setValue
-	(ui.messages->verticalScrollBar()->maximum());
+      m_ui.messages->append(msg);
+      m_ui.messages->verticalScrollBar()->setValue
+	(m_ui.messages->verticalScrollBar()->maximum());
       emit changed();
     }
   else
@@ -815,7 +824,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	  if(!items.at(i))
 	    continue;
 
-	  QTableWidgetItem *item = ui.clients->item(items.at(i)->row(), 0);
+	  QTableWidgetItem *item = m_ui.clients->item(items.at(i)->row(), 0);
 
 	  if(item)
 	    {
@@ -846,12 +855,12 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 		    ("gui/buzz_maximum_lines", -1).toInt();
 
 		  if(lines >= 0)
-		    if(lines <= ui.messages->document()->blockCount())
-		      ui.messages->clear();
+		    if(lines <= m_ui.messages->document()->blockCount())
+		      m_ui.messages->clear();
 
-		  ui.messages->append(msg);
-		  ui.messages->verticalScrollBar()->setValue
-		    (ui.messages->verticalScrollBar()->maximum());
+		  m_ui.messages->append(msg);
+		  m_ui.messages->verticalScrollBar()->setValue
+		    (m_ui.messages->verticalScrollBar()->maximum());
 		  item->setText(QString::fromUtf8(name.constData(),
 						  name.length()));
 		  emit changed();
@@ -861,7 +870,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	      ** Update the client's time.
 	      */
 
-	      item = ui.clients->item(item->row(), 2);
+	      item = m_ui.clients->item(item->row(), 2);
 
 	      if(item) // Not a critical change. Do not notify the UI.
 		item->setText
@@ -870,7 +879,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	}
     }
 
-  ui.clients->setSortingEnabled(true);
-  ui.clients->resizeColumnToContents(0);
-  ui.clients->horizontalHeader()->setStretchLastSection(true);
+  m_ui.clients->setSortingEnabled(true);
+  m_ui.clients->resizeColumnToContents(0);
+  m_ui.clients->horizontalHeader()->setStretchLastSection(true);
 }
