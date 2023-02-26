@@ -505,6 +505,7 @@ class spoton: public QMainWindow
 				       ** Unlike m_chatWindows, m_smps
 				       ** purging is less rigid.
 				       */
+  QIcon m_careOfPageIcon;
   QList<QFuture<void> > m_starbeamDigestFutures;
   QMainWindow *m_addParticipantWindow;
   QMainWindow *m_notificationsWindow;

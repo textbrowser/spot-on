@@ -276,9 +276,16 @@ void spoton::joinBuzzChannel(const QUrl &url)
     }
 
   page = new spoton_buzzpage
-    (&m_kernelSocket, channel.toLatin1(), channelSalt.toLatin1(),
-     channelType.toLatin1(), id, iterationCount, hashKey.toLatin1(),
-     hashType.toLatin1(), keys.first, this);
+    (&m_kernelSocket,
+     channel.toLatin1(),
+     channelSalt.toLatin1(),
+     channelType.toLatin1(),
+     id,
+     iterationCount,
+     hashKey.toLatin1(),
+     hashType.toLatin1(),
+     keys.first,
+     this);
   m_buzzPages[page->key()] = page;
   connect(&m_buzzStatusTimer,
 	  SIGNAL(timeout(void)),
@@ -546,8 +553,16 @@ void spoton::slotBuzzInvite(void)
 	}
 
       page = new spoton_buzzpage
-	(&m_kernelSocket, channel, channelSalt, channelType,
-	 id, iterationCount, hashKey, hashType, keys.first, this);
+	(&m_kernelSocket,
+	 channel,
+	 channelSalt,
+	 channelType,
+	 id,
+	 iterationCount,
+	 hashKey,
+	 hashType,
+	 keys.first,
+	 this);
       m_buzzPages[page->key()] = page;
       connect(&m_buzzStatusTimer,
 	      SIGNAL(timeout(void)),

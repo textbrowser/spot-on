@@ -4036,8 +4036,16 @@ void spoton::slotJoinBuzzChannel(void)
   m_ui.buzzHashKey->clear();
   m_ui.buzzHashType->setCurrentIndex(0);
   page = new spoton_buzzpage
-    (&m_kernelSocket, channel, channelSalt, channelType,
-     id, iterationCount, hashKey, hashType, keys.first, this);
+    (&m_kernelSocket,
+     channel,
+     channelSalt,
+     channelType,
+     id,
+     iterationCount,
+     hashKey,
+     hashType,
+     keys.first,
+     this);
   m_buzzPages[page->key()] = page;
   connect(&m_buzzStatusTimer,
 	  SIGNAL(timeout(void)),
@@ -6788,8 +6796,14 @@ void spoton::slotSetIcons(int index)
   list << "email.png" << "database.png";
 
   for(int i = 0; i < list.size(); i++)
-    m_ui.mailTab->setTabIcon
-      (i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
+    {
+      m_ui.mailTab->setTabIcon
+	(i, QIcon(QString(":/%1/%2").arg(iconSet).arg(list.at(i))));
+
+      if(i == 1)
+	m_careOfPageIcon = QIcon
+	  (QString(":/%1/%2").arg(iconSet).arg(list.at(i)));
+    }
 
   // Listeners
 

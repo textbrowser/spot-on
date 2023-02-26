@@ -2688,12 +2688,18 @@ void spoton::slotShowMinimalDisplay(bool state)
   if(state)
     {
       if(m_ui.mailTab->count() == 2)
-	m_careOfPage = m_ui.mailTab->widget(1);
+	{
+	  m_careOfPage = m_ui.mailTab->widget(1);
+	  m_careOfPageIcon = m_ui.mailTab->tabIcon(1);
+	}
 
       m_ui.mailTab->removeTab(1);
     }
   else if(m_ui.mailTab->count() == 1)
-    m_ui.mailTab->addTab(m_careOfPage, tr("C/O"));
+    {
+      m_ui.mailTab->addTab(m_careOfPage, tr("C/O"));
+      m_ui.mailTab->setTabIcon(1, m_careOfPageIcon);
+    }
 #endif
   m_sb.errorlog->setHidden(state);
   emit minimal(state);
