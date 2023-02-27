@@ -2587,23 +2587,30 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4",
 		      "/usr/share/GeoIP/GeoIP.dat").toString());
+  m_optionsUi.geoipPath4->setCursorPosition(0);
   m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6",
 		      "/usr/share/GeoIP/GeoIP.dat").toString());
+  m_optionsUi.geoipPath6->setCursorPosition(0);
 #elif defined(Q_OS_WIN)
   m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4", "GeoIP.dat").toString());
+  m_optionsUi.geoipPath4->setCursorPosition(0);
   m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6", "GeoIP.dat").toString());
+  m_optionsUi.geoipPath6->setCursorPosition(0);
 #else
   m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4", "GeoIP.dat").toString());
+  m_optionsUi.geoipPath4->setCursorPosition(0);
   m_optionsUi.geoipPath6->setText
     (m_settings.value("gui/geoipPath6", "GeoIP.dat").toString());
+  m_optionsUi.geoipPath6->setCursorPosition(0);
 #endif
 #endif
   m_ui.urlIniPath->setText
     (m_settings.value("gui/urlIniPath", "").toString());
+  m_ui.urlIniPath->setCursorPosition(0);
   m_ui.magnetRadio->setChecked(true);
   m_ui.generate->setEnabled(false);
   m_ui.pairFrame->setEnabled(false);
@@ -2644,6 +2651,8 @@ spoton::spoton(void):QMainWindow()
       m_ui.kernelPath->setText(path);
     }
 #endif
+
+  m_ui.kernelPath->setCursorPosition(0);
 
   if(m_settings.value("gui/chatSendMethod", "Artificial_GET").
      toString().toLower() == "artificial_get")

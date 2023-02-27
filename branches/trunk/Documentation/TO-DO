@@ -314,3 +314,4 @@ Remaining Items
 7.     NTL warnings on FreeBSD.
 8.     Optional human proxy session setting.
 9.     Multiple proxies?
+10.    Set the cursor position to 0 after setText().
