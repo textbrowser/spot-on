@@ -151,6 +151,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   data.append(QString("ht=%1&").arg(m_hashType.constData()).toUtf8());
   data.append("xt=urn:buzz");
   m_ui.magnet->setText(data);
+  m_ui.magnet->setCursorPosition(0);
   slotSetIcons();
 
   QByteArray name;

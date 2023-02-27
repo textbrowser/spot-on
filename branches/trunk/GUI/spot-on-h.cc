@@ -1059,6 +1059,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
     (settings.
      value("gui/postgresql_web_connection_options",
 	   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).toString().trimmed());
+  ui.connection_options->setCursorPosition(0);
   ui.database->setEnabled(false);
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());

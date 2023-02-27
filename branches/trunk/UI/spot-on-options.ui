@@ -51,9 +51,6 @@
        <layout class="QVBoxLayout" name="verticalLayout_25">
         <item>
          <widget class="QGroupBox" name="general">
-          <property name="styleSheet">
-           <string notr="true">QGroupBox#general::title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
-          </property>
           <property name="title">
            <string>General</string>
           </property>
@@ -1607,9 +1604,6 @@
         </item>
         <item>
          <widget class="QGroupBox" name="miscellaneous">
-          <property name="styleSheet">
-           <string notr="true">QGroupBox#miscellaneous:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
-          </property>
           <property name="title">
            <string>Miscellaneous</string>
           </property>
@@ -1660,9 +1654,6 @@
         </item>
         <item>
          <widget class="QGroupBox" name="permissions">
-          <property name="styleSheet">
-           <string notr="true">QGroupBox#permissions:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
-          </property>
           <property name="title">
            <string>Permissions</string>
           </property>
@@ -2456,9 +2447,6 @@ with the kernel process.</string>
         </item>
         <item>
          <widget class="QGroupBox" name="time">
-          <property name="styleSheet">
-           <string notr="true">QGroupBox#time:title {background-color: qlineargradient(spread:reflect, x1:0.023, y1:0.988636, x2:0.028, y2:0.011, stop:0 rgba(218, 232, 255, 255), stop:1 rgba(170, 85, 255, 255));}</string>
-          </property>
           <property name="title">
            <string>Time</string>
           </property>

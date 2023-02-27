@@ -111,6 +111,7 @@ class spoton_table_item_delegate: public QStyledItemDelegate
 
     lineEdit->setReadOnly(true);
     lineEdit->setText(index.data().toString());
+    lineEdit->setCursorPosition(0);
     return lineEdit;
   }
 };
