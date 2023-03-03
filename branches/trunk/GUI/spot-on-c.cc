@@ -122,9 +122,7 @@ void spoton::importNeighbors(const QString &filePath)
 {
   spoton_crypt *crypt = m_crypts.value("chat", 0);
 
-  if(!QFileInfo(filePath).isReadable() ||
-     !crypt ||
-     filePath.trimmed().isEmpty())
+  if(!crypt || filePath.trimmed().isEmpty())
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -161,8 +159,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 		QHash<QString, QByteArray> hash;
 		QList<QByteArray> list
-		  (bytes.mid(0, static_cast<int> (rc)).trimmed().
-		   split('&'));
+		  (bytes.mid(0, static_cast<int> (rc)).trimmed().split('&'));
 		bool fine = true;
 
 		for(int i = 0; i < list.size(); i++)

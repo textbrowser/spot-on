@@ -10130,7 +10130,7 @@ void spoton::slotSetPassphrase(void)
 	  m_sb.status->setText
 	    (tr("Importing spot-on-neighbors.txt. Please be patient."));
 	  m_sb.status->repaint();
-	  importNeighbors("spot-on-neighbors.txt");
+	  importNeighbors(":/Data/spot-on-neighbors.txt");
 
 	  QSettings settings;
 
@@ -11111,7 +11111,7 @@ void spoton::slotValidatePassphrase(void)
 	    if(!m_settings.value("gui/spot_on_neighbors_txt_processed",
 				 false).toBool())
 	      {
-		importNeighbors("spot-on-neighbors.txt");
+		importNeighbors(":/Data/spot-on-neighbors.txt");
 
 		QSettings settings;
 
