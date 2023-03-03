@@ -4218,6 +4218,7 @@ void spoton::slotListenerIPComboChanged(int index)
   else
     {
       m_ui.listenerIP->setText(m_ui.listenerIPCombo->currentText());
+      m_ui.listenerIP->setCursorPosition(0);
       m_ui.listenerIP->setEnabled(false);
     }
 }
@@ -5924,6 +5925,7 @@ void spoton::slotReply(void)
     m_ui.outgoingMessage->setPlainText("\n\n" + message);
 
   m_ui.outgoingSubject->setText(tr("Re: ") + subject);
+  m_ui.outgoingSubject->setCursorPosition(0);
 
   /*
   ** The original author may have vanished.
@@ -6127,6 +6129,7 @@ void spoton::slotSaveBuzzName(void)
   else
     m_ui.buzzName->setText(str.trimmed());
 
+  m_ui.buzzName->setCursorPosition(0);
   m_settings["gui/buzzName"] = str.toUtf8();
 
   QSettings settings;
@@ -6152,6 +6155,7 @@ void spoton::slotSaveEmailName(void)
       m_ui.emailNameEditable->setText(str.trimmed());
     }
 
+  m_ui.emailNameEditable->setCursorPosition(0);
   m_settings["gui/emailName"] = str.toUtf8();
 
   QSettings settings;
@@ -6173,6 +6177,7 @@ void spoton::slotSaveNodeName(void)
   else
     m_ui.nodeName->setText(str.trimmed());
 
+  m_ui.nodeName->setCursorPosition(0);
   m_settings["gui/nodeName"] = str.toUtf8();
 
   QSettings settings;

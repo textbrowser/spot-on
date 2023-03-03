@@ -1392,6 +1392,7 @@ void spoton::saveDestination(const QString &path)
 
   settings.setValue("gui/etpDestinationPath", path);
   m_ui.destination->setText(path);
+  m_ui.destination->setCursorPosition(0);
   m_ui.destination->setToolTip(path);
   m_ui.destination->selectAll();
 }
@@ -1819,12 +1820,15 @@ void spoton::slotBuzzActionsActivated(int index)
 	(spoton_crypt::strongRandomBytes(static_cast<size_t> (m_ui.channel->
 							      maxLength())).
 	 toBase64());
+      m_ui.channel->setCursorPosition(0);
       m_ui.channelSalt->setText
 	(spoton_crypt::strongRandomBytes(512).toBase64());
+      m_ui.channelSalt->setCursorPosition(0);
       m_ui.buzzHashKey->setText
 	(spoton_crypt::
 	 strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
 	 toBase64());
+      m_ui.buzzHashKey->setCursorPosition(0);
     }
 
   disconnect(m_ui.buzzActions,
@@ -2926,22 +2930,30 @@ void spoton::slotGenerateEtpKeys(int index)
 	     strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
 						    maxLength())).
 	     toBase64());
+	  m_ui.etpEncryptionKey->setCursorPosition(0);
 	  m_ui.etpMacKey->setText
 	    (spoton_crypt::
 	     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
 	     toBase64());
+	  m_ui.etpMacKey->setCursorPosition(0);
 	}
       else if(index == 2)
-	m_ui.etpEncryptionKey->setText
-	  (spoton_crypt::
-	   strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
-						  maxLength())).
-	   toBase64());
+	{
+	  m_ui.etpEncryptionKey->setText
+	    (spoton_crypt::
+	     strongRandomBytes(static_cast<size_t> (m_ui.etpEncryptionKey->
+						    maxLength())).
+	     toBase64());
+	  m_ui.etpEncryptionKey->setCursorPosition(0);
+	}
       else if(index == 3)
-	m_ui.etpMacKey->setText
-	  (spoton_crypt::
-	   strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-	   toBase64());
+	{
+	  m_ui.etpMacKey->setText
+	    (spoton_crypt::
+	     strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
+	     toBase64());
+	  m_ui.etpMacKey->setCursorPosition(0);
+	}
 
       disconnect(m_ui.generate,
 		 SIGNAL(activated(int)),
@@ -2966,6 +2978,7 @@ void spoton::slotGenerateNova(void)
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 
   m_ui.transmitNova->setText(nova.toBase64());
+  m_ui.transmitNova->setCursorPosition(0);
 }
 
 void spoton::slotImpersonate(bool state)
@@ -4461,6 +4474,7 @@ void spoton::slotSaveUrlName(void)
   else
     m_ui.urlName->setText(str.trimmed());
 
+  m_ui.urlName->setCursorPosition(0);
   m_settings["gui/urlName"] = str.toUtf8();
 
   QSettings settings;
@@ -4522,6 +4536,7 @@ void spoton::slotSelectTransmitFile(void)
     {
       QApplication::processEvents();
       m_ui.transmittedFile->setText(dialog.selectedFiles().value(0));
+      m_ui.transmittedFile->setCursorPosition(0);
     }
 
   QApplication::processEvents();

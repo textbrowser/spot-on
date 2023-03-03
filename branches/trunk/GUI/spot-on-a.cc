@@ -2723,6 +2723,7 @@ spoton::spoton(void):QMainWindow()
 		       toByteArray().constData(),
 		       m_settings.value("gui/buzzName", "unknown").
 		       toByteArray().length()).trimmed());
+  m_ui.buzzName->setCursorPosition(0);
   m_ui.channel->setMaxLength
     (static_cast<int> (spoton_crypt::
 		       cipherKeyLength(spoton_crypt::
@@ -2734,12 +2735,14 @@ spoton::spoton(void):QMainWindow()
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().length()).trimmed());
   m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
+  m_ui.emailNameEditable->setCursorPosition(0);
   m_ui.nodeName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.nodeName->setText
     (QString::fromUtf8(m_settings.value("gui/nodeName", "unknown").
 		       toByteArray().constData(),
 		       m_settings.value("gui/nodeName", "unknown").
 		       toByteArray().length()).trimmed());
+  m_ui.nodeName->setCursorPosition(0);
   m_ui.pulseSize->setMaximum(spoton_common::MAXIMUM_STARBEAM_PULSE_SIZE);
   m_ui.urlName->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.urlName->setText
@@ -2747,6 +2750,7 @@ spoton::spoton(void):QMainWindow()
 		       toByteArray().constData(),
 		       m_settings.value("gui/urlName", "unknown").
 		       toByteArray().length()).trimmed());
+  m_ui.urlName->setCursorPosition(0);
   m_ui.username->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   m_ui.receiveNova->setMaxLength
     (static_cast<int> (spoton_crypt::
@@ -2755,9 +2759,11 @@ spoton::spoton(void):QMainWindow()
   m_optionsUi.external_ip_url->setText
     (m_settings.value("gui/external_ip_url",
 		      "https://api.ipify.org").toString());
+  m_optionsUi.external_ip_url->setCursorPosition(0);
   m_optionsUi.sslControlString->setText
     (m_settings.value("gui/sslControlString",
 		      spoton_common::SSL_CONTROL_STRING).toString());
+  m_optionsUi.sslControlString->setCursorPosition(0);
   m_ui.etpEncryptionKey->setMaxLength
     (static_cast<int> (spoton_crypt::
 		       cipherKeyLength(spoton_crypt::
@@ -3189,6 +3195,7 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.destination->setText(m_settings.value("gui/etpDestinationPath", "").
 			    toString());
+  m_ui.destination->setCursorPosition(0);
   m_optionsUi.guiSecureMemoryPool->setValue
     (m_settings.value("gui/gcryctl_init_secmem",
 		      spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt());
@@ -3543,8 +3550,8 @@ spoton::~spoton()
 {
 }
 
-void spoton::authenticate(spoton_crypt *crypt, const QString &oid,
-			  const QString &message)
+void spoton::authenticate
+(spoton_crypt *crypt, const QString &oid, const QString &message)
 {
   if(!crypt)
     return;
@@ -3821,6 +3828,7 @@ void spoton::demagnetize(void)
 	{
 	  str.remove(0, 3);
 	  m_ui.channel->setText(str);
+	  m_ui.channel->setCursorPosition(0);
 	}
       else if(str.startsWith("xf="))
 	{
@@ -3831,6 +3839,7 @@ void spoton::demagnetize(void)
 	{
 	  str.remove(0, 3);
 	  m_ui.channelSalt->setText(str);
+	  m_ui.channelSalt->setCursorPosition(0);
 	}
       else if(str.startsWith("ct="))
 	{
@@ -3844,6 +3853,7 @@ void spoton::demagnetize(void)
 	{
 	  str.remove(0, 3);
 	  m_ui.buzzHashKey->setText(str);
+	  m_ui.buzzHashKey->setCursorPosition(0);
 	}
       else if(str.startsWith("ht="))
 	{
@@ -3994,12 +4004,14 @@ void spoton::saveGeoIPPath(const int version, const QString &path)
   if(version == 4)
     {
       m_optionsUi.geoipPath4->setText(path);
+      m_optionsUi.geoipPath4->setCursorPosition(0);
       m_optionsUi.geoipPath4->setToolTip(path);
       m_optionsUi.geoipPath4->selectAll();
     }
   else
     {
       m_optionsUi.geoipPath6->setText(path);
+      m_optionsUi.geoipPath6->setCursorPosition(0);
       m_optionsUi.geoipPath6->setToolTip(path);
       m_optionsUi.geoipPath6->selectAll();
     }
@@ -4013,6 +4025,7 @@ void spoton::saveKernelPath(const QString &path)
 
   settings.setValue("gui/kernelPath", path);
   m_ui.kernelPath->setText(path);
+  m_ui.kernelPath->setCursorPosition(0);
   m_ui.kernelPath->setToolTip(path);
   m_ui.kernelPath->selectAll();
 }
@@ -4228,6 +4241,7 @@ void spoton::slotActivateKernel(void)
     return; // Incorrect executable!
 
   m_ui.pid->setText("0");
+  m_ui.pid->setCursorPosition(0);
 
   QColor color(240, 128, 128); // Light coral!
   QPalette palette(m_ui.pid->palette());
@@ -6170,9 +6184,11 @@ void spoton::slotFavoritesActivated(int index)
     list.replace(i, QByteArray::fromBase64(list.at(i)));
 
   m_ui.channel->setText(list.value(0));
+  m_ui.channel->setCursorPosition(0);
   m_ui.buzzIterationCount->setValue
     (static_cast<int> (list.value(1).toULong()));
   m_ui.channelSalt->setText(list.value(2));
+  m_ui.channelSalt->setCursorPosition(0);
 
   if(m_ui.channelType->findText(list.value(3)) > -1)
     m_ui.channelType->setCurrentIndex
@@ -6181,6 +6197,7 @@ void spoton::slotFavoritesActivated(int index)
     m_ui.channelType->setCurrentIndex(0);
 
   m_ui.buzzHashKey->setText(list.value(4));
+  m_ui.buzzHashKey->setCursorPosition(0);
 
   if(m_ui.buzzHashType->findText(list.value(5)) > -1)
     m_ui.buzzHashType->setCurrentIndex
@@ -6211,6 +6228,7 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       m_ui.pid->setPalette(pidPalette);
       m_ui.pid->setText("0");
+      m_ui.pid->setCursorPosition(0);
     }
   else
     {
@@ -6220,6 +6238,7 @@ void spoton::slotGeneralTimerTimeout(void)
       palette.setColor(m_ui.pid->backgroundRole(), color);
       m_ui.pid->setPalette(palette);
       m_ui.pid->setText(item->text());
+      m_ui.pid->setCursorPosition(0);
 #if SPOTON_GOLDBUG == 1
       m_ui.activateKernel->setStyleSheet("background-color: lightgreen;"
 					 "border-style: outset;"
@@ -9455,8 +9474,11 @@ void spoton::slotSaveSslControlString(void)
     str = spoton_common::SSL_CONTROL_STRING;
 
   m_ui.listenersSslControlString->setText(str.trimmed());
+  m_ui.listenersSslControlString->setCursorPosition(0);
   m_ui.neighborsSslControlString->setText(str.trimmed());
+  m_ui.neighborsSslControlString->setCursorPosition(0);
   m_optionsUi.sslControlString->setText(str.trimmed());
+  m_optionsUi.sslControlString->setCursorPosition(0);
   m_optionsUi.sslControlString->selectAll();
   m_settings["gui/sslControlString"] = str;
 
@@ -10098,11 +10120,15 @@ void spoton::slotSetPassphrase(void)
       settings.setValue("gui/spot_on_neighbors_txt_processed", true);
       settings.setValue("gui/urlName", m_settings["gui/urlName"]);
       m_ui.buzzName->setText(m_ui.username->text());
+      m_ui.buzzName->setCursorPosition(0);
       m_ui.emailName->clear();
       m_ui.emailName->addItem(m_ui.username->text());
       m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
+      m_ui.emailNameEditable->setCursorPosition(0);
       m_ui.nodeName->setText(m_ui.username->text());
+      m_ui.nodeName->setCursorPosition(0);
       m_ui.urlName->setText(m_ui.username->text());
+      m_ui.urlName->setCursorPosition(0);
 
       if(!m_settings.value("gui/initial_url_distillers_defined",
 			   false).toBool())
