@@ -163,6 +163,8 @@ qtlibraries.files = $$[QT_INSTALL_BINS]\\Qt5Core.dll \
 qtlibraries.path = release\\.
 sounds.files = Sounds
 sounds.path = release\\.
+spotonbat.files = Shell\\*.bat
+spotonbat.path = release\\.
 sql1.files = SQL\\README*
 sql1.path = release\\SQL\\.
 sql2.files = SQL\\*.sql
@@ -194,6 +196,7 @@ INSTALLS = plugins1 \
            qt \
            qtlibraries \
            sounds \
+           spotonbat \
            sql1 \
            sql2 \
            translations
