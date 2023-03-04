@@ -55,7 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -std=c++11
 QMAKE_EXTRA_TARGETS    = libntru purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
 
 # Removed.
 # /usr/local/opt/postgresql/include/postgresql@14

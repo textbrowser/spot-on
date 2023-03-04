@@ -38,6 +38,7 @@
 ** Ignore some NTL warnings.
 */
 
+#pragma GCC diagnostic ignored "-Wdeprecated-copy-with-user-provided-copy"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <NTL/GF2E.h>
