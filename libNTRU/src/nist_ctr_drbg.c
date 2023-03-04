@@ -124,12 +124,16 @@ check_int_alignment(const void* p)
 	 * It would be great if "intptr_t" could be found in
 	 * some standard place.
 	 */
+
+#ifdef MACOS
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnull-pointer-subtraction"
-
+#endif
 	ptrdiff_t ip = (const char *)p - (const char *)0;
 
+#ifdef MACOS
 #pragma GCC diagnostic pop
+#endif
 	if (ip & (sizeof(int) - 1))
 		return 0;
 	

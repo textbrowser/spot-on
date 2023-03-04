@@ -38,7 +38,11 @@
 ** Ignore some NTL warnings.
 */
 
+#include <QtGlobal>
+
+#ifdef Q_OS_MACOS
 #pragma GCC diagnostic ignored "-Wdeprecated-copy-with-user-provided-copy"
+#endif
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #include <NTL/GF2E.h>
