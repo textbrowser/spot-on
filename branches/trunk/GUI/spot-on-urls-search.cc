@@ -245,7 +245,6 @@ void spoton::discoverUrls(void)
 
       searchfor.append("</html>");
       m_ui.searchfor->setText(searchfor);
-      m_ui.searchfor->setCursorPosition(0);
       keywordsearch.clear();
 
       QMap<QString, QString> prefixes;
