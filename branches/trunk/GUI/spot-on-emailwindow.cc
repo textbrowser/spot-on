@@ -56,6 +56,7 @@ spoton_emailwindow::spoton_emailwindow
   m_ui.goldbug->setEnabled(false);
   m_ui.outgoingMessage->append(message);
   m_ui.outgoingSubject->setText(subject);
+  m_ui.outgoingSubject->setCursorPosition(0);
 
   if(m_parent)
     m_ui.sign_this_email->setChecked
@@ -209,6 +210,7 @@ void spoton_emailwindow::slotEmailSecretsActionSelected(void)
     return;
 
   m_ui.goldbug->setText(action->property("stream").toString());
+  m_ui.goldbug->setCursorPosition(0);
 }
 
 void spoton_emailwindow::slotNewEmailName(const QString &text)
@@ -280,6 +282,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		       m_settings.value("gui/emailName", "unknown").
 		       toByteArray().length()).trimmed());
   m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
+  m_ui.emailNameEditable->setCursorPosition(0);
 
   QList<QHash<QString, QVariant> > list
     (spoton_misc::poptasticSettings("", crypt, 0));

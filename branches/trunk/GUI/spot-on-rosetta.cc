@@ -682,6 +682,7 @@ void spoton_rosetta::resizeEvent(QResizeEvent *event)
 void spoton_rosetta::setName(const QString &text)
 {
   ui.name->setText(text);
+  ui.name->setCursorPosition(0);
   slotSaveName();
 }
 
@@ -722,6 +723,7 @@ void spoton_rosetta::show(spoton *parent)
 		       toByteArray().constData(),
 		       settings.value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
+  ui.name->setCursorPosition(0);
   populateContacts();
 }
 
@@ -2262,6 +2264,8 @@ void spoton_rosetta::slotSaveName(void)
     }
   else
     ui.name->setText(str.trimmed());
+
+  ui.name->setCursorPosition(0);
 
   QSettings settings;
 

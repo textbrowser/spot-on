@@ -1174,9 +1174,11 @@ void spoton::slotAssignNewIPToNeighbor(void)
     }
 
   ui.ip->setText(remoteIP);
+  ui.ip->setCursorPosition(0);
   ui.ip->selectAll();
   ui.port->setValue(remotePort.toInt());
   ui.scope->setText(scopeId);
+  ui.scope->setCursorPosition(0);
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -1305,6 +1307,7 @@ void spoton::slotCommonBuzzChannelsActivated(int index)
   QApplication::processEvents();
   m_ui.demagnetize->setText
     (m_ui.commonBuzzChannels->itemData(index).toString());
+  m_ui.demagnetize->setCursorPosition(0);
   demagnetize();
   m_ui.demagnetize->clear();
   m_ui.buzzActions->setCurrentIndex(0);

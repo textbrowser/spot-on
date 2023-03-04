@@ -792,10 +792,12 @@ void spoton::slotGenerateInstitutionKeyPair(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.institutionName->setText(spoton_crypt::strongRandomBytes(32).toBase64());
+  m_ui.institutionName->setCursorPosition(0);
   m_ui.institutionPostalAddress->setText
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
      toBase64());
+  m_ui.institutionPostalAddress->setCursorPosition(0);
   QApplication::restoreOverrideCursor();
 }
 
@@ -1063,17 +1065,25 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   ui.database->setEnabled(false);
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());
+  ui.database->setCursorPosition(0);
   ui.database->selectAll();
   ui.database->setFocus();
   ui.host->setEnabled(false);
   ui.host->setText
     (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  ui.host->setCursorPosition(0);
 
   if(ok)
-    ui.name->setText(name);
+    {
+      ui.name->setText(name);
+      ui.name->setCursorPosition(0);
+    }
 
   if(ok)
-    ui.password->setText(password);
+    {
+      ui.password->setText(password);
+      ui.password->setCursorPosition(0);
+    }
 
   ui.port->setEnabled(false);
   ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
@@ -1183,6 +1193,7 @@ void spoton::slotSaveExternalIPUrl(void)
 {
   m_optionsUi.external_ip_url->setText
     (m_optionsUi.external_ip_url->text().trimmed());
+  m_optionsUi.external_ip_url->setCursorPosition(0);
   m_optionsUi.external_ip_url->selectAll();
   m_settings["gui/external_ip_url"] = m_optionsUi.external_ip_url->text();
 

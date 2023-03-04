@@ -352,6 +352,7 @@ void spoton::saveUrlIniPath(const QString &path)
 
   settings.setValue("gui/urlIniPath", path);
   m_ui.urlIniPath->setText(path);
+  m_ui.urlIniPath->setCursorPosition(0);
   m_ui.urlIniPath->setToolTip(path);
   m_ui.urlIniPath->selectAll();
 
@@ -371,7 +372,10 @@ void spoton::saveUrlIniPath(const QString &path)
 	  }
 	else if(key.contains("hash", Qt::CaseInsensitive) &&
 		value.toByteArray().length() >= 64)
-	  m_ui.urlIniHash->setText(value.toByteArray().toHex());
+	  {
+	    m_ui.urlIniHash->setText(value.toByteArray().toHex());
+	    m_ui.urlIniHash->setCursorPosition(0);
+	  }
 	else if(key.contains("hashtype", Qt::CaseInsensitive))
 	  {
 	    if(m_ui.urlHash->findText(value.toString()) >= 0)
@@ -382,7 +386,10 @@ void spoton::saveUrlIniPath(const QString &path)
 	  m_ui.urlIteration->setValue(value.toInt());
 	else if(key.contains("salt", Qt::CaseInsensitive) &&
 		value.toByteArray().length() >= 100)
-	  m_ui.urlSalt->setText(value.toByteArray().toHex());
+	  {
+	    m_ui.urlSalt->setText(value.toByteArray().toHex());
+	    m_ui.urlSalt->setCursorPosition(0);
+	  }
       }
   }
 }
@@ -1416,18 +1423,27 @@ void spoton::slotPostgreSQLConnect(void)
     (settings.
      value("gui/postgresql_connection_options",
 	   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).toString().trimmed());
+  ui.connection_options->setCursorPosition(0);
   ui.database->setText
     (settings.value("gui/postgresql_database", "").toString().trimmed());
+  ui.database->setCursorPosition(0);
   ui.database->selectAll();
   ui.database->setFocus();
   ui.host->setText
     (settings.value("gui/postgresql_host", "localhost").toString().trimmed());
+  ui.host->setCursorPosition(0);
 
   if(ok)
-    ui.name->setText(name);
+    {
+      ui.name->setText(name);
+      ui.name->setCursorPosition(0);
+    }
 
   if(ok)
-    ui.password->setText(password);
+    {
+      ui.password->setText(password);
+      ui.password->setCursorPosition(0);
+    }
 
   ui.port->setValue(settings.value("gui/postgresql_port", 5432).toInt());
   ui.ssltls->setChecked

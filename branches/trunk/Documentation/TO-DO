@@ -282,6 +282,7 @@ Completed Items
 209.   Human proxies. Single-proxy completion.
 210.   Improve Web search query performance. Replaced UNION with UNION ALL.
        The URL database tables contain unique sets.
+211.   Set the cursor position to 0 after setText().
 
 Interesting Items
 
@@ -314,4 +315,3 @@ Remaining Items
 7.     NTL warnings on FreeBSD.
 8.     Optional human proxy session setting.
 9.     Multiple proxies?
-10.    Set the cursor position to 0 after setText().

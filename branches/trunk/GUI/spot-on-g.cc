@@ -101,6 +101,8 @@ bool spoton::verifyInitializationPassphrase(QWidget *parent)
   else
     m_ui.username->setText(str3.trimmed());
 
+  m_ui.username->setCursorPosition(0);
+
   if(!m_ui.passphrase_rb->isChecked())
     {
       str1 = m_ui.question->text();
@@ -972,6 +974,7 @@ void spoton::slotEmailSecretsActionSelected(void)
     return;
 
   m_ui.goldbug->setText(action->property("stream").toString());
+  m_ui.goldbug->setCursorPosition(0);
 }
 
 void spoton::slotGenerateOneYearListenerCertificate(void)
@@ -1150,6 +1153,7 @@ void spoton::slotGoldBugDialogActionSelected(void)
     return;
 
   lineEdit->setText(action->property("stream").toString());
+  lineEdit->setCursorPosition(0);
 }
 
 void spoton::slotListenerSourceOfRandomnessChanged(int value)
@@ -1239,9 +1243,13 @@ void spoton::slotNewGlobalName(void)
   m_rosetta.setName(text);
   m_settings["gui/rosettaName"] = text.toUtf8();
   m_ui.buzzName->setText(text);
+  m_ui.buzzName->setCursorPosition(0);
   m_ui.emailNameEditable->setText(text);
+  m_ui.emailNameEditable->setCursorPosition(0);
   m_ui.nodeName->setText(text);
+  m_ui.nodeName->setCursorPosition(0);
   m_ui.urlName->setText(text);
+  m_ui.urlName->setCursorPosition(0);
   slotSaveBuzzName();
   slotSaveEmailName();
   slotSaveNodeName();
@@ -2168,7 +2176,10 @@ void spoton::slotWizardButtonClicked(void)
 	QByteArray tmp(qgetenv("USERNAME").mid(0, 256).trimmed());
 
 	if(!tmp.isEmpty())
-	  m_ui.username->setText(tmp);
+	  {
+	    m_ui.username->setText(tmp);
+	    m_ui.username->setCursorPosition(0);
+	  }
 #endif
 	break;
       }

@@ -588,12 +588,14 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.in_password->setText
     (hash.value("in_password").toString());
+  m_poptasticRetroPhoneSettingsUi.in_password->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.in_password->setToolTip
     (m_poptasticRetroPhoneSettingsUi.in_password->text());
   m_poptasticRetroPhoneSettingsUi.in_remove_remote->setChecked
     (hash.value("in_remove_remote").toBool());
   m_poptasticRetroPhoneSettingsUi.in_server_address->setText
     (hash.value("in_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.in_server_address->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.in_server_port->setValue
     (hash.value("in_server_port").toInt());
   index = m_poptasticRetroPhoneSettingsUi.in_ssltls->findText
@@ -606,6 +608,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.in_username->setText
     (hash.value("in_username").toString());
+  m_poptasticRetroPhoneSettingsUi.in_username->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.in_verify_host->setChecked
     (hash.value("in_verify_host").toBool());
   m_poptasticRetroPhoneSettingsUi.in_verify_peer->setChecked
@@ -620,10 +623,12 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.out_password->setText
     (hash.value("out_password").toString());
+  m_poptasticRetroPhoneSettingsUi.out_password->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.out_password->setToolTip
     (m_poptasticRetroPhoneSettingsUi.out_password->text());
   m_poptasticRetroPhoneSettingsUi.out_server_address->setText
     (hash.value("out_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.out_server_address->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.out_server_port->setValue
     (hash.value("out_server_port").toInt());
   index = m_poptasticRetroPhoneSettingsUi.out_ssltls->findText
@@ -636,6 +641,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.out_username->setText
     (hash.value("out_username").toString());
+  m_poptasticRetroPhoneSettingsUi.out_username->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.out_verify_host->setChecked
     (hash.value("out_verify_host").toBool());
   m_poptasticRetroPhoneSettingsUi.out_verify_peer->setChecked
@@ -646,8 +652,10 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
     (hash.value("proxy_enabled").toBool());
   m_poptasticRetroPhoneSettingsUi.proxy_password->setText
     (hash.value("proxy_password").toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_password->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.proxy_server_address->setText
     (hash.value("proxy_server_address").toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_server_address->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.proxy_server_port->setValue
     (hash.value("proxy_server_port").toInt());
 
@@ -658,8 +666,10 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
   m_poptasticRetroPhoneSettingsUi.proxy_username->setText
     (hash.value("proxy_username").toString());
+  m_poptasticRetroPhoneSettingsUi.proxy_username->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText
     (hash.value("smtp_localname", "localhost").toString());
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setCursorPosition(0);
 }
 
 void spoton::prepareSMP(const QString &hash)
@@ -676,7 +686,10 @@ void spoton::prepareSMP(const QString &hash)
   spoton_virtual_keyboard dialog(QApplication::activeWindow());
 
   if(smp)
-    dialog.m_ui.passphrase->setText(smp->guessString());
+    {
+      dialog.m_ui.passphrase->setText(smp->guessString());
+      dialog.m_ui.passphrase->setCursorPosition(0);
+    }
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -981,6 +994,7 @@ void spoton::slotConfigurePoptastic(void)
      arg(SPOTON_APPLICATION_NAME));
   m_poptasticRetroPhoneSettingsUi.capath->setText
     (m_settings.value("gui/poptasticCAPath", "").toString());
+  m_poptasticRetroPhoneSettingsUi.capath->setCursorPosition(0);
   m_poptasticRetroPhoneSettingsUi.number_of_messages->setValue
     (m_settings.value("gui/poptasticNumberOfMessages", 15).toInt());
   m_poptasticRetroPhoneSettingsUi.poptasticRefresh->setValue
@@ -1518,6 +1532,7 @@ void spoton::slotPoptasticSettingsReset(void)
   m_poptasticRetroPhoneSettingsUi.proxy_type->setCurrentIndex(0);
   m_poptasticRetroPhoneSettingsUi.proxy_username->clear();
   m_poptasticRetroPhoneSettingsUi.smtp_localname->setText("localhost");
+  m_poptasticRetroPhoneSettingsUi.smtp_localname->setCursorPosition(0);
   m_settings["gui/poptasticCAPath"] = "";
   m_settings["gui/poptasticName"] = "";
   m_settings["gui/poptasticNameEmail"] = "";
@@ -1849,6 +1864,7 @@ void spoton::slotSelectCAPath(void)
 	  fileName = dialog.selectedFiles().value(0);
 	  m_poptasticRetroPhoneSettingsUi.capath->setText
 	    (dialog.selectedFiles().value(0));
+	  m_poptasticRetroPhoneSettingsUi.capath->setCursorPosition(0);
 	}
 
       QApplication::processEvents();

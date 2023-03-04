@@ -851,6 +851,7 @@ void spoton_encryptfile_page::slotSelect(void)
 	  QString str(dialog.selectedFiles().value(0));
 
 	  ui.file->setText(str);
+	  ui.file->setCursorPosition(0);
 
 	  if(ui.destination->text().trimmed().isEmpty())
 	    {
@@ -863,6 +864,8 @@ void spoton_encryptfile_page::slotSelect(void)
 	}
       else
 	ui.destination->setText(dialog.selectedFiles().value(0));
+
+      ui.destination->setCursorPosition(0);
     }
 
   QApplication::processEvents();

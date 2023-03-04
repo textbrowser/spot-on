@@ -1330,9 +1330,11 @@ void spoton_rss::prepareAfterAuthentication(void)
 		      m_ui.proxyHostname->setText
 			(QString::fromUtf8(list.value(1).constData(),
 					   list.value(1).length()));
+		      m_ui.proxyHostname->setCursorPosition(0);
 		      m_ui.proxyPassword->setText
 			(QString::fromUtf8(list.value(2).constData(),
 					   list.value(2).length()));
+		      m_ui.proxyPassword->setCursorPosition(0);
 		      m_ui.proxyPort->setValue
 			(list.value(3).toInt());
 
@@ -1373,6 +1375,7 @@ void spoton_rss::prepareAfterAuthentication(void)
 		      m_ui.proxyUsername->setText
 			(QString::fromUtf8(list.value(5).constData(),
 					   list.value(5).length()));
+		      m_ui.proxyUsername->setCursorPosition(0);
 		      m_ui.proxy_frame->setVisible(true);
 
 		      if(proxy.type() != QNetworkProxy::NoProxy)
