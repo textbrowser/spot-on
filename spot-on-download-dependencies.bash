@@ -94,27 +94,49 @@ fi
 
 # OpenSSL 1.1.1
 
-openssl=mingw-w64-i686-openssl-1.1.1.s-1-any.pkg.tar.zst
+openssl=openssl-1.1.1t.zip
+
+# openssl=mingw-w64-i686-openssl-1.1.1.s-1-any.pkg.tar.zst
 
 rm -f $openssl
+
 wget --output-document=$openssl \
      --progress=bar \
-     https://repo.msys2.org/mingw/i686/$openssl
+     https://download.firedaemon.com/FireDaemon-OpenSSL/$openssl
 
 if [ -r "$openssl" ]; then
-    tar -I zstd -vxf $openssl
+    unzip $openssl
     mkdir -p libOpenSSL/Include.win32
     mkdir -p libOpenSSL/Libraries.win32
     rm -rf libOpenSSL/Include.win32/openssl
-    mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
-    mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
-    mv mingw32/include/openssl libOpenSSL/Include.win32/.
+    mv openssl-1.1/x86/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
+    mv openssl-1.1/x86/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+    mv openssl-1.1/x86/include/openssl libOpenSSL/Include.win32/.
     chmod +w,-x libOpenSSL/Libraries.win32/*.dll
-    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -fr openssl-1.1
     rm -f $openssl
 else
     echo "Cannot read $openssl."
 fi
+
+# wget --output-document=$openssl \
+#      --progress=bar \
+#      https://repo.msys2.org/mingw/i686/$openssl
+
+# if [ -r "$openssl" ]; then
+#    tar -I zstd -vxf $openssl
+#    mkdir -p libOpenSSL/Include.win32
+#    mkdir -p libOpenSSL/Libraries.win32
+#    rm -rf libOpenSSL/Include.win32/openssl
+#    mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
+#    mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
+#    mv mingw32/include/openssl libOpenSSL/Include.win32/.
+#    chmod +w,-x libOpenSSL/Libraries.win32/*.dll
+#    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+#    rm -f $openssl
+# else
+#    echo "Cannot read $openssl."
+# fi
 
 # PostgreSQL
 
