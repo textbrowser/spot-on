@@ -99,7 +99,6 @@ openssl=openssl-1.1.1t.zip
 # openssl=mingw-w64-i686-openssl-1.1.1.s-1-any.pkg.tar.zst
 
 rm -f $openssl
-
 wget --output-document=$openssl \
      --progress=bar \
      https://download.firedaemon.com/FireDaemon-OpenSSL/$openssl
