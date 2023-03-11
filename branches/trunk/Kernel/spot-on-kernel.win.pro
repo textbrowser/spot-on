@@ -44,7 +44,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -pie \
-                          -std=c++11
+                          -std=c++17
 QMAKE_DISTCLEAN        += -r debug \
                           -r release \
                           .qmake.cache \

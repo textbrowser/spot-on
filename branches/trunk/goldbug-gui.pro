@@ -50,7 +50,7 @@ QMAKE_CXXFLAGS_RELEASE += -Wall \
                           -fwrapv \
                           -pedantic \
                           -pie \
-                          -std=c++11
+                          -std=c++17
 QMAKE_LFLAGS_RELEASE += -Wl,-rpath,/usr/local/goldbug/Lib
 QMAKE_EXTRA_TARGETS = libntru
 QMAKE_LFLAGS_RPATH =

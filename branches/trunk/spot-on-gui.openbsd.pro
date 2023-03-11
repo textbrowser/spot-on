@@ -45,7 +45,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fstack-protector-all \
                           -fwrapv \
                           -pedantic \
-                          -std=c++11
+                          -std=c++17
 QMAKE_DISTCLEAN        += -r temp
 QMAKE_EXTRA_TARGETS    = libntru purge
 
