@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-	<file>../../Documentation/RELEASE-NOTES.html</file>
+	<file>../../Documentation/ReleaseNotes.html</file>
 	<file>../Data/spot-on-neighbors.txt</file>
 	<file>Spot-On.html</file>
     </qresource>
