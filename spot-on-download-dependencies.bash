@@ -168,10 +168,10 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3400100.zip
+sqlite=sqlite-dll-win32-x86-3410100.zip
 
 rm -f $sqlite
-wget --progress=bar https://sqlite.org/2022/$sqlite
+wget --progress=bar https://sqlite.org/2023/$sqlite
 
 if [ -r $sqlite ]; then
     unzip -q -o $sqlite
@@ -185,10 +185,10 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3400100.zip
+sqlite=sqlite-amalgamation-3410100.zip
 
 rm -f $sqlite
-wget --progress=bar https://sqlite.org/2022/$sqlite
+wget --progress=bar https://sqlite.org/2023/$sqlite
 
 if [ -r $sqlite ]; then
     unzip -q -o $sqlite
@@ -197,7 +197,7 @@ else
     echo "Cannot read $sqlite."
 fi
 
-sqlite=sqlite-amalgamation-3400100
+sqlite=sqlite-amalgamation-3410100
 
 if [ -r $sqlite ]; then
     mkdir -p libSpotOn/Include.win32
