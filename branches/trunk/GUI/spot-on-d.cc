@@ -2685,6 +2685,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #else
+  m_settings["gui/minimal"] = state;
   m_ui.action_Listeners->setChecked(false);
   m_ui.action_Neighbors->setChecked(false);
   m_ui.action_Search->setChecked(false);
@@ -2714,6 +2715,10 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.showStatistics->setChecked(false);
   m_ui.showStatistics->setVisible(!state);
   m_ui.statisticsBox->setVisible(false);
+
+  QSettings settings;
+
+  settings.setValue("gui/minimal", state);
 #endif
   m_sb.errorlog->setHidden(state);
   emit minimal(state);

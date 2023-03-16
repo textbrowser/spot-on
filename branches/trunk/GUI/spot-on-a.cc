@@ -3461,6 +3461,9 @@ spoton::spoton(void):QMainWindow()
   */
 
   m_ui.action_Minimal_Display->setChecked(true);
+#else
+  m_ui.action_Minimal_Display->setChecked
+    (m_settings.value("gui/minimal").toBool());
 #endif
   show();
   update();
@@ -3528,8 +3531,7 @@ spoton::spoton(void):QMainWindow()
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
-  m_optionsUi.theme->setCurrentIndex
-    (m_settings.value("gui/theme", -1).toInt());
+  m_optionsUi.theme->setCurrentIndex(m_settings.value("gui/theme", -1).toInt());
 
   if(m_optionsUi.theme->currentIndex() < 0)
     m_optionsUi.theme->setCurrentIndex(3);
@@ -10208,6 +10210,11 @@ void spoton::slotSetPassphrase(void)
 #endif
       playSound("login.wav");
     }
+
+#if SPOTON_GOLDBUG == 1
+#else
+  slotShowMinimalDisplay(m_settings.value("gui/minimal").toBool());
+#endif
 }
 
 void spoton::slotShowContextMenu(const QPoint &point)
@@ -11173,4 +11180,9 @@ void spoton::slotValidatePassphrase(void)
       m_ui.passphrase->setFocus();
       updatePublicKeysLabel();
     }
+
+#if SPOTON_GOLDBUG == 1
+#else
+  slotShowMinimalDisplay(m_settings.value("gui/minimal").toBool());
+#endif
 }
