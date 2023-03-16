@@ -2685,6 +2685,10 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #else
+  m_ui.action_Listeners->setChecked(false);
+  m_ui.action_Neighbors->setChecked(false);
+  m_ui.action_Search->setChecked(false);
+  m_ui.action_Urls->setChecked(false);
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);
 
@@ -2703,6 +2707,13 @@ void spoton::slotShowMinimalDisplay(bool state)
       m_ui.mailTab->addTab(m_careOfPage, tr("C/O"));
       m_ui.mailTab->setTabIcon(1, m_careOfPageIcon);
     }
+
+  m_ui.passphraseGroupBox->setVisible(!state);
+  m_ui.publicKeysBox->setVisible(!state);
+  m_ui.settingsKernelSubBox->setVisible(!state);
+  m_ui.showStatistics->setChecked(false);
+  m_ui.showStatistics->setVisible(!state);
+  m_ui.statisticsBox->setVisible(false);
 #endif
   m_sb.errorlog->setHidden(state);
   emit minimal(state);
