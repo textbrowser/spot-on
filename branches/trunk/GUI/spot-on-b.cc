@@ -7272,9 +7272,15 @@ void spoton::slotStatusButtonClicked(void)
       slotRefreshMail();
     }
   else if(toolButton == m_sb.listeners)
-    m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
+    {
+      m_ui.action_Listeners->setChecked(true);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
+    }
   else if(toolButton == m_sb.neighbors)
-    m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
+    {
+      m_ui.action_Neighbors->setChecked(true);
+      m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
+    }
 }
 
 void spoton::slotStatusChanged(int index)
