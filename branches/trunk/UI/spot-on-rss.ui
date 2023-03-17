@@ -451,6 +451,9 @@
           <attribute name="horizontalHeaderStretchLastSection">
            <bool>true</bool>
           </attribute>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
           <column>
            <property name="text">
             <string>Feed</string>
@@ -540,7 +543,7 @@
              <x>0</x>
              <y>0</y>
              <width>693</width>
-             <height>582</height>
+             <height>603</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">

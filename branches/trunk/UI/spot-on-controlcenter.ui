@@ -828,6 +828,9 @@
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
                        </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
                        <column>
                         <property name="text">
                          <string>Participant</string>
@@ -1270,6 +1273,9 @@
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
                        </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
                        <column>
                         <property name="text">
                          <string>Date</string>
@@ -1593,6 +1599,9 @@
                           </attribute>
                           <attribute name="horizontalHeaderStretchLastSection">
                            <bool>true</bool>
+                          </attribute>
+                          <attribute name="verticalHeaderVisible">
+                           <bool>false</bool>
                           </attribute>
                           <column>
                            <property name="text">
@@ -1933,6 +1942,9 @@
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
                   </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
                   <column>
                    <property name="text">
                     <string>Date</string>
@@ -2048,6 +2060,9 @@
                        </attribute>
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
+                       </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
                        </attribute>
                        <column>
                         <property name="text">
@@ -2463,6 +2478,9 @@
                   </attribute>
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
                   </attribute>
                   <column>
                    <property name="text">
@@ -3310,6 +3328,9 @@
                          <attribute name="horizontalHeaderStretchLastSection">
                           <bool>true</bool>
                          </attribute>
+                         <attribute name="verticalHeaderVisible">
+                          <bool>false</bool>
+                         </attribute>
                          <column>
                           <property name="text">
                            <string>Token</string>
@@ -3826,6 +3847,9 @@
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
                   </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
                   <column>
                    <property name="text">
                     <string>Sticky</string>
@@ -4081,12 +4105,6 @@
                      </property>
                      <item>
                       <widget class="QGroupBox" name="groupBox_addip_2">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="title">
                         <string>Add Neighbor</string>
                        </property>
@@ -6046,7 +6064,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-5</y>
+             <y>0</y>
              <width>1029</width>
              <height>1424</height>
             </rect>
@@ -6878,6 +6896,9 @@
                    <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
                    </attribute>
+                   <attribute name="verticalHeaderVisible">
+                    <bool>false</bool>
+                   </attribute>
                    <column>
                     <property name="text">
                      <string>Key Type</string>
@@ -7246,6 +7267,9 @@
                    <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
                    </attribute>
+                   <attribute name="verticalHeaderVisible">
+                    <bool>false</bool>
+                   </attribute>
                   </widget>
                  </item>
                 </layout>
@@ -7428,6 +7452,9 @@
                   </attribute>
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
                   </attribute>
                   <column>
                    <property name="text">
@@ -7994,6 +8021,9 @@
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
+                      </attribute>
                       <column>
                        <property name="text">
                         <string>Locked</string>
@@ -8170,6 +8200,9 @@
                        <attribute name="horizontalHeaderStretchLastSection">
                         <bool>true</bool>
                        </attribute>
+                       <attribute name="verticalHeaderVisible">
+                        <bool>false</bool>
+                       </attribute>
                        <column>
                         <property name="text">
                          <string>Paused</string>
@@ -8329,6 +8362,9 @@
                       </attribute>
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
                       </attribute>
                       <column>
                        <property name="text">
@@ -8825,6 +8861,9 @@
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
                   </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
+                  </attribute>
                   <column>
                    <property name="text">
                     <string>Participant</string>
@@ -8940,6 +8979,9 @@
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
+                      </attribute>
                       <column>
                        <property name="text">
                         <string>Domain</string>
@@ -9010,6 +9052,9 @@
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
                       </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
+                      </attribute>
                       <column>
                        <property name="text">
                         <string>Domain</string>
@@ -9079,6 +9124,9 @@
                       </attribute>
                       <attribute name="horizontalHeaderStretchLastSection">
                        <bool>true</bool>
+                      </attribute>
+                      <attribute name="verticalHeaderVisible">
+                       <bool>false</bool>
                       </attribute>
                       <column>
                        <property name="text">

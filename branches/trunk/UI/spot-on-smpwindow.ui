@@ -40,7 +40,7 @@
              <x>0</x>
              <y>0</y>
              <width>922</width>
-             <height>946</height>
+             <height>982</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -101,6 +101,9 @@
                   </attribute>
                   <attribute name="horizontalHeaderStretchLastSection">
                    <bool>true</bool>
+                  </attribute>
+                  <attribute name="verticalHeaderVisible">
+                   <bool>false</bool>
                   </attribute>
                   <column>
                    <property name="text">
@@ -311,6 +314,9 @@
                    </attribute>
                    <attribute name="horizontalHeaderStretchLastSection">
                     <bool>true</bool>
+                   </attribute>
+                   <attribute name="verticalHeaderVisible">
+                    <bool>false</bool>
                    </attribute>
                    <column>
                     <property name="text">
@@ -587,7 +593,7 @@
      <x>0</x>
      <y>0</y>
      <width>975</width>
-     <height>30</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
