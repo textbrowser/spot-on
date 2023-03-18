@@ -1334,7 +1334,7 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
 	      this,
 	      SLOT(slotWizardButtonClicked(void)));
       dialog.show();
-      dialog.resize(dialog.sizeHint());
+      dialog.resize(dialog.minimumSize());
       spoton_utilities::centerWidget(&dialog, this);
 
       if(dialog.exec() == QDialog::Accepted)

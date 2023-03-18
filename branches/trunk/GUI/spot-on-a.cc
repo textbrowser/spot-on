@@ -2626,12 +2626,10 @@ spoton::spoton(void):QMainWindow()
   else
 #if SPOTON_GOLDBUG == 0
     m_ui.kernelPath->setText
-      ("/Applications/Spot-On_Qt5.d/Spot-On-Kernel.app/"
-       "Contents/MacOS/Spot-On-Kernel");
+      ("./Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel");
 #else
     m_ui.kernelPath->setText
-      ("/Applications/GoldBug_Qt5.d/Spot-On-Kernel.app/"
-       "Contents/MacOS/Spot-On-Kernel");
+      ("./Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel");
 #endif
 #else
   if(m_settings.contains("gui/kernelPath") &&
@@ -3455,6 +3453,8 @@ spoton::spoton(void):QMainWindow()
       widgets.at(i)->setFont(font);
     }
 
+  m_ui.action_Minimal_Display->setEnabled(false);
+
 #if SPOTON_GOLDBUG == 1
   /*
   ** Enable a minimal view after all other UI preparations.
@@ -3463,7 +3463,7 @@ spoton::spoton(void):QMainWindow()
   m_ui.action_Minimal_Display->setChecked(true);
 #else
   m_ui.action_Minimal_Display->setChecked
-    (m_settings.value("gui/minimal").toBool());
+    (m_settings.value("gui/minimal", false).toBool());
 #endif
   show();
   update();
@@ -10037,6 +10037,7 @@ void spoton::slotSetPassphrase(void)
       m_ui.action_Export_Public_Keys->setEnabled(true);
       m_ui.action_Import_Neighbors->setEnabled(true);
       m_ui.action_Import_Public_Keys->setEnabled(true);
+      m_ui.action_Minimal_Display->setEnabled(true);
       m_ui.action_New_Global_Name->setEnabled(true);
       m_ui.action_Notifications_Window->setEnabled(true);
       m_ui.action_Options->setEnabled(true);
@@ -10213,7 +10214,8 @@ void spoton::slotSetPassphrase(void)
 
 #if SPOTON_GOLDBUG == 1
 #else
-  slotShowMinimalDisplay(m_settings.value("gui/minimal").toBool());
+  if(m_settings.contains("gui/minimal"))
+    slotShowMinimalDisplay(m_settings.value("gui/minimal", false).toBool());
 #endif
 }
 
@@ -11001,6 +11003,7 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.action_Export_Public_Keys->setEnabled(true);
 	    m_ui.action_Import_Neighbors->setEnabled(true);
 	    m_ui.action_Import_Public_Keys->setEnabled(true);
+	    m_ui.action_Minimal_Display->setEnabled(true);
 	    m_ui.action_New_Global_Name->setEnabled(true);
 	    m_ui.action_Notifications_Window->setEnabled(true);
 	    m_ui.action_Options->setEnabled(true);
@@ -11183,6 +11186,7 @@ void spoton::slotValidatePassphrase(void)
 
 #if SPOTON_GOLDBUG == 1
 #else
-  slotShowMinimalDisplay(m_settings.value("gui/minimal").toBool());
+  if(m_settings.contains("gui/minimal"))
+    slotShowMinimalDisplay(m_settings.value("gui/minimal", false).toBool());
 #endif
 }
