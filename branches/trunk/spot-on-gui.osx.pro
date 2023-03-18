@@ -55,7 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -std=c++17
 QMAKE_EXTRA_TARGETS    = libntru purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 13.0
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
 # Removed.
 # /usr/local/opt/postgresql/include/postgresql@14
@@ -108,36 +108,32 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
-copyspoton.extra            = cp -r ./Spot-On.app /Applications/Spot-On.d/.
-copyspoton.path             = /Applications/Spot-On.d
-copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
-copyssl.path                = /Applications/Spot-On.d
+copyspoton.extra            = cp -r ./Spot-On.app ./Spot-On.d/.
+copyspoton.path             = ./Spot-On.d
+copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
+copyssl.path                = ./Spot-On.d
 install1.files              = ./Data/spot-on-neighbors.txt
-install1.path               = /Applications/Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1s/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
+install1.path               = ./Spot-On.d
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1t/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
-libgeoip_data_install.path  = /Applications/Spot-On.d/GeoIP
-libntru_install.extra       = cp ../../libNTRU/libntru.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib /Applications/Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
+libgeoip_data_install.path  = ./Spot-On.d/GeoIP
+libntru_install.extra       = cp ../../libNTRU/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 libntru_install.path        = .
 lrelease.extra              = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.osx.pro
 lrelease.path               = .
 lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
 lupdate.path                = .
-macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt /Applications/Spot-On.d/Spot-On.app -executable=/Applications/Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
+macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 macdeployqt.path            = Spot-On.app
-other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/.
+other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
 other_libraries1.path       = .
-other_libraries2.extra      = install_name_tool -change /usr/local/Cellar/openldap/2.6.3/lib/liblber.2.dylib @executable_path/../Frameworks/liblber.2.dylib /Applications/Spot-On.d/Spot-On.app/Contents/Frameworks/libldap.2.dylib
-other_libraries2.path       = .
-preinstall.extra            = rm -rf /Applications/Spot-On.d/Spot-On.app/*
-preinstall.path             = /Applications/Spot-On.d
+preinstall.extra            = rm -rf ./Spot-On.d/Spot-On.app/*
+preinstall.path             = ./Spot-On.d
 sounds.files                = Sounds/*.wav
-sounds.path                 = /Applications/Spot-On.d/Spot-On.app/Contents/MacOS/Sounds
+sounds.path                 = ./Spot-On.d/Spot-On.app/Contents/MacOS/Sounds
 translations.files	    = Translations/*.qm
-translations.path	    = /Applications/Spot-On.d/Translations
-zzz.extra		    = chown -Rh root:wheel /Applications/Spot-On.d
-zzz.path		    = /Applications/Spot-On.d
+translations.path	    = ./Spot-On.d/Translations
 
 # Order is important.
 
@@ -153,6 +149,4 @@ INSTALLS	= preinstall \
                   copyssl \
                   install_name_tool \
                   libntru_install \
-                  other_libraries1 \
-                  other_libraries2 \
-                  zzz
+                  other_libraries1
