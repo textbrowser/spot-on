@@ -2561,7 +2561,7 @@ Ausrichtung: %12</translation>
         <translation>Kopiere ALLE öffentl. Schlüsselpaare</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="2950"/>
+        <location filename="../GUI/spot-on-a.cc" line="2948"/>
         <source>&lt;html&gt;Please place the Sounds directory in the directory which houses the %1 executable.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2756,10 +2756,10 @@ Ausrichtung: %12</translation>
         <translation type="vanished">Qt 5.x ist für Media Sound erforderlich.</translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-a.cc" line="3356"/>
-        <location filename="../GUI/spot-on-a.cc" line="3360"/>
-        <location filename="../GUI/spot-on-a.cc" line="3364"/>
-        <location filename="../GUI/spot-on-a.cc" line="3368"/>
+        <location filename="../GUI/spot-on-a.cc" line="3354"/>
+        <location filename="../GUI/spot-on-a.cc" line="3358"/>
+        <location filename="../GUI/spot-on-a.cc" line="3362"/>
+        <location filename="../GUI/spot-on-a.cc" line="3366"/>
         <source>Select All</source>
         <translation>Wähle alle</translation>
     </message>
