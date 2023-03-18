@@ -497,7 +497,7 @@ spoton::spoton(void):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
-    (QUrl("qrc:/Documentation/RELEASE-NOTES.html"), 0);
+    (QUrl("qrc:/Documentation/ReleaseNotes.html"), 0);
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(this);
@@ -610,7 +610,7 @@ spoton::spoton(void):QMainWindow()
 #endif
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
-	     "spot-on/blob/master/branches/Documentation/RELEASE-NOTES.html\">"
+	     "spot-on/blob/master/branches/Documentation/ReleaseNotes.html\">"
 	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
 	     "%1 Version %2</span></a></p></body></html>").
      arg(SPOTON_APPLICATION_NAME).
@@ -2625,11 +2625,9 @@ spoton::spoton(void):QMainWindow()
     m_ui.kernelPath->setText(m_settings.value("gui/kernelPath").toString());
   else
 #if SPOTON_GOLDBUG == 0
-    m_ui.kernelPath->setText
-      ("./Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel");
+    m_ui.kernelPath->setText("Spot-On-Kernel.app");
 #else
-    m_ui.kernelPath->setText
-      ("./Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel");
+    m_ui.kernelPath->setText("Spot-On-Kernel.app");
 #endif
 #else
   if(m_settings.contains("gui/kernelPath") &&
