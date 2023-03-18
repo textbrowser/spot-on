@@ -2686,10 +2686,10 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.urlDistributionModel->setVisible(!state);
 #else
   m_settings["gui/minimal"] = state;
-  m_ui.action_Listeners->setChecked(false);
-  m_ui.action_Neighbors->setChecked(false);
-  m_ui.action_Search->setChecked(false);
-  m_ui.action_Urls->setChecked(false);
+  m_ui.action_Listeners->setChecked(!state);
+  m_ui.action_Neighbors->setChecked(!state);
+  m_ui.action_Search->setChecked(!state);
+  m_ui.action_Urls->setChecked(!state);
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);
 
