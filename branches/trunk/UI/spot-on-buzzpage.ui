@@ -97,13 +97,6 @@
          <number>0</number>
         </property>
         <item>
-         <widget class="QPushButton" name="close">
-          <property name="text">
-           <string>Close</string>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="QPushButton" name="unify">
           <property name="toolTip">
            <string>Attach to the main window's Buzz page.</string>
@@ -388,7 +381,6 @@
   <tabstop>favorite</tabstop>
   <tabstop>copy</tabstop>
   <tabstop>remove</tabstop>
-  <tabstop>close</tabstop>
   <tabstop>unify</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>clearMessages</tabstop>

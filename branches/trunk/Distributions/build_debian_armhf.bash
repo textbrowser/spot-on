@@ -19,7 +19,10 @@ mkdir -p ./usr/local/spot-on/Lib
 mkdir -p ./usr/local/spot-on/SQL
 mkdir -p ./usr/local/spot-on/Sounds
 mkdir -p ./usr/local/spot-on/Translations
-qmake -o Makefile spot-on.arm.pro && make -j $(nproc)
+qmake -o Makefile spot-on.arm.pro
+lupdate spot-on.arm.pro
+lrelease spot-on.arm.pro
+make -j $(nproc)
 cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./usr/local/spot-on/Lib/.
 cp -p ../../libNTRU/libntru.so ./usr/local/spot-on/Lib/.
 cp -p ./Data/spot-on-neighbors.txt ./usr/local/spot-on/.

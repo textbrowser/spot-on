@@ -683,6 +683,9 @@ void spoton::slotBuzzPageDestroyed(QObject *object)
       if(!it.value())
 	it.remove();
     }
+
+  if(m_buzzPages.isEmpty())
+    m_buzzStatusTimer.stop();
 }
 
 void spoton::slotChatSecretsActionSelected(void)

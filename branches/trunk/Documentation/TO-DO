@@ -314,5 +314,6 @@ Remaining Items
 6.     NTL for Windows.
 7.     NTL warnings on FreeBSD.
 8.     Optional human proxy session setting.
-9.     Multiple proxies?
+9.     Multiple proxies. Far future.
 10.    Optional GCRYPT. Android and OpenSSL.
+11.    Close button is not visible on Buzz tab on MacOS.

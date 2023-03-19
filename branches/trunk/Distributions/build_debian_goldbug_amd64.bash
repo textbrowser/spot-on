@@ -19,7 +19,10 @@ mkdir -p ./usr/local/goldbug/Lib
 mkdir -p ./usr/local/goldbug/SQL
 mkdir -p ./usr/local/goldbug/Sounds
 mkdir -p ./usr/local/goldbug/Translations
-qmake -o Makefile goldbug.pro && make -j $(nproc)
+qmake -o Makefile goldbug.pro
+lupdate goldbug.pro
+lrelease goldbug.pro
+make -j $(nproc)
 cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./usr/local/goldbug/Lib/.
 cp -p ../../libNTRU/libntru.so ./usr/local/goldbug/Lib/.
 cp -p ./Data/spot-on-neighbors.txt ./usr/local/goldbug/.
