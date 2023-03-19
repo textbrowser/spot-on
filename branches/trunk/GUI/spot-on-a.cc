@@ -11088,9 +11088,6 @@ void spoton::slotValidatePassphrase(void)
 	    QApplication::restoreOverrideCursor();
 	    m_rss->prepareAfterAuthentication();
 	    m_smpWindow->populateSecrets();
-	    m_ui.tab->setCurrentIndex
-	      (m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
-	       toInt());
 
 	    QString name("");
 	    QString nameEmail("");
@@ -11192,5 +11189,9 @@ void spoton::slotValidatePassphrase(void)
 	slotShowMinimalDisplay
 	  (m_settings.value("gui/minimal", false).toBool());
 #endif
+
+      m_ui.tab->setCurrentIndex
+	(m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
+	 toInt());
     }
 }
