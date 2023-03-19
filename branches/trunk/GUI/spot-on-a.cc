@@ -3464,8 +3464,10 @@ spoton::spoton(void):QMainWindow()
 
   m_ui.action_Minimal_Display->setChecked(true);
 #else
+  m_ui.action_Minimal_Display->blockSignals(true);
   m_ui.action_Minimal_Display->setChecked
     (m_settings.value("gui/minimal", false).toBool());
+  m_ui.action_Minimal_Display->blockSignals(false);
 #endif
   show();
   update();
@@ -10212,13 +10214,13 @@ void spoton::slotSetPassphrase(void)
       slotConnectAllNeighbors();
 #endif
       playSound("login.wav");
-    }
 
-#if SPOTON_GOLDBUG == 1
-#else
-  if(m_settings.contains("gui/minimal"))
-    slotShowMinimalDisplay(m_settings.value("gui/minimal", false).toBool());
+#if SPOTON_GOLDBUG == 0
+      if(m_settings.contains("gui/minimal"))
+	slotShowMinimalDisplay
+	  (m_settings.value("gui/minimal", false).toBool());
 #endif
+    }
 }
 
 void spoton::slotShowContextMenu(const QPoint &point)
@@ -11184,11 +11186,11 @@ void spoton::slotValidatePassphrase(void)
       playSound("login.wav");
       m_ui.passphrase->setFocus();
       updatePublicKeysLabel();
-    }
 
-#if SPOTON_GOLDBUG == 1
-#else
-  if(m_settings.contains("gui/minimal"))
-    slotShowMinimalDisplay(m_settings.value("gui/minimal", false).toBool());
+#if SPOTON_GOLDBUG == 0
+      if(m_settings.contains("gui/minimal"))
+	slotShowMinimalDisplay
+	  (m_settings.value("gui/minimal", false).toBool());
 #endif
+    }
 }
