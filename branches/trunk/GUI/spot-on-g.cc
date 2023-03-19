@@ -1594,9 +1594,7 @@ void spoton::slotSeparateBuzzPage(void)
      arg(SPOTON_APPLICATION_NAME).
      arg(page->channel().constData()));
   mainWindow->show();
-  new QShortcut(tr("Ctrl+W"),
-		mainWindow,
-		SLOT(close(void)));
+  new QShortcut(tr("Ctrl+W"), mainWindow, SLOT(close(void)));
   page->show();
   page->showUnify(true);
 }
