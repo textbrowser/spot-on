@@ -418,6 +418,7 @@ void spoton::prepareVisiblePages(void)
   actions["listeners"] = m_ui.action_Listeners;
   actions["neighbors"] = m_ui.action_Neighbors;
   actions["search"] = m_ui.action_Search;
+  actions["settings"] = m_ui.action_Settings;
   actions["starbeam"] = m_ui.action_StarBeam;
   actions["urls"] = m_ui.action_Urls;
   pages["buzz"] = 0;

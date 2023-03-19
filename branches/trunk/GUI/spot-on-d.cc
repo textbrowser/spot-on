@@ -2689,6 +2689,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.action_Listeners->setChecked(!state);
   m_ui.action_Neighbors->setChecked(!state);
   m_ui.action_Search->setChecked(!state);
+  m_ui.action_Settings->setChecked(!state);
   m_ui.action_Urls->setChecked(!state);
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);
@@ -2708,13 +2709,6 @@ void spoton::slotShowMinimalDisplay(bool state)
       m_ui.mailTab->addTab(m_careOfPage, tr("C/O"));
       m_ui.mailTab->setTabIcon(1, m_careOfPageIcon);
     }
-
-  m_ui.passphraseGroupBox->setVisible(!state);
-  m_ui.publicKeysBox->setVisible(!state);
-  m_ui.settingsKernelSubBox->setVisible(!state);
-  m_ui.showStatistics->setChecked(false);
-  m_ui.showStatistics->setVisible(!state);
-  m_ui.statisticsBox->setVisible(false);
 
   QSettings settings;
 

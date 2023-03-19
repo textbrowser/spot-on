@@ -1607,6 +1607,10 @@ spoton::spoton(void):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
+  connect(m_ui.action_Settings,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_StarBeam,
 	  SIGNAL(toggled(bool)),
 	  this,

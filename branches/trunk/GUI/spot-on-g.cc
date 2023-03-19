@@ -755,6 +755,8 @@ void spoton::slotCloseTab(void)
     m_ui.action_Neighbors->setChecked(false);
   else if(name == "search")
     m_ui.action_Search->setChecked(false);
+  else if(name == "settings")
+    m_ui.action_Settings->setChecked(false);
   else if(name == "starbeam")
     m_ui.action_StarBeam->setChecked(false);
   else if(name == "urls")
@@ -2054,8 +2056,13 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
 
   bool enabled = true;
 
-  if(!(name == "buzz" || name == "listeners" || name == "neighbors" ||
-       name == "search" || name == "starbeam" || name == "urls"))
+  if(!(name == "buzz" ||
+       name == "listeners" ||
+       name == "neighbors" ||
+       name == "search" ||
+       name == "settings" ||
+       name == "starbeam" ||
+       name == "urls"))
     enabled = false;
   else if(name.isEmpty())
     enabled = false;
