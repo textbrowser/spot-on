@@ -2096,6 +2096,8 @@ void spoton::slotShowPage(bool state)
     str = "gui/showNeighborsPage";
   else if(action == m_ui.action_Search)
     str = "gui/showSearchPage";
+  else if(action == m_ui.action_Settings)
+    str = "gui/showSettingsPage";
   else if(action == m_ui.action_StarBeam)
     str = "gui/showStarBeamPage";
   else if(action == m_ui.action_Urls)

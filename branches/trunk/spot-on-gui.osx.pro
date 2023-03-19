@@ -141,8 +141,6 @@ INSTALLS	= preinstall \
                   copyspoton \
                   install1 \
                   libgeoip_data_install \
-                  lupdate \
-                  lrelease \
                   sounds \
                   translations \
                   macdeployqt \
