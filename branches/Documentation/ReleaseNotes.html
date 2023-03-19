@@ -8,9 +8,13 @@
 	<li>Launch Spot-On in a dark mode, if available, on Windows. Please see spot-on-darkmode.bat.</li>
 	<li>Minimal Spot-On. Retain setting.</li>
 	<li>NTL 2021.06.23; Windows.</li>
+	<li>OpenSSL 1.1.1t; MacOS.</li>
 	<li>OpenSSL 1.1.1t; Windows. New download site https://download.firedaemon.com/FireDaemon-OpenSSL.</li>
+	<li>Qt 5.15.8; MacOS.</li>
+	<li>Removed vertical headers from table widgets.</li>
 	<li>SQLite 3.41.1; Windows.</li>
 	<li>Set cursor position after setText().</li>
+	<li>Settings page may now be closed.</li>
 	<li>The file spot-on-neighbors.txt is now bundled into the executables.</li>
       </ul>
     </p>
@@ -121,7 +125,7 @@
 	<li>ECC SSL/TLS. Curves supported: prime256v1, secp384r1, secp521r1.</li>
 	<li>GCRYPT 1.9.4; Windows.</li>
 	<li>New miscellaneous option P2P_SERVERLESS_CONNECT_INTERVAL_MS. The default value is 1 millisecond. Range is [0, 1500].</li>
-	<li>OpenSSL 1.1.1l; W32.</li>
+	<li>OpenSSL 1.1.1l; Win32.</li>
 	<li>PostgreSQL 10.18; Windows.</li>
 	<li>Removed McEliece support from the Windows build as the NTL library is flawed.</li>
 	<li>Removed redundant creation of SSL/TLS keys.</li>
@@ -175,18 +179,18 @@
     <p>
       <ul>
 	<li>Activate kernel in a wizardly fashion.</li>
-	<li>CURL 7.75; W32.</li>
+	<li>CURL 7.75; Win32.</li>
 	<li>Corrected Debian package. Thank you Umer.</li>
 	<li>GB styles.</li>
-	<li>GCRYPT 1.9.2; W32.</li>
+	<li>GCRYPT 1.9.2; Win32.</li>
 	<li>NTL 2021.03.05; Debian.</li>
 	<li>New Windows download site.</li>
 	<li>Non-library Spot-On library file.</li>
-	<li>OpenSSL 1.1.1j; W32.</li>
+	<li>OpenSSL 1.1.1j; Win32.</li>
 	<li>Periodically purge malformed RSS content.</li>
-	<li>PostgreSQL 9.6.21; W32.</li>
+	<li>PostgreSQL 9.6.21; Win32.</li>
 	<li>Removed dates from binaries.</li>
-	<li>SQLite 3.35; W32.</li>
+	<li>SQLite 3.35; Win32.</li>
 	<li>Windows High DPI. May or may not be functional.</li>
       </ul>
     </p>
@@ -194,7 +198,7 @@
     Welcome to the 2021.01.15 release of Spot-On. Corrections and new features are detailed below.
     <p>
       <ul>
-	<li>CURL 7.74.0 on W32.</li>
+	<li>CURL 7.74.0 on Win32.</li>
 	<li>Compressed Rosetta messages.</li>
 	<li>Ctrl + W shortcuts.</li>
 	<li>E-mail pagination.</li>
@@ -206,20 +210,20 @@
 	<li>Manual Poptastic pop.</li>
 	<li>New options; please see Options.</li>
 	<li>OpenPGP Rosetta messaging.</li>
-	<li>OpenSSL 1.1.1h; W32.</li>
+	<li>OpenSSL 1.1.1h; Win32.</li>
 	<li>Optional Poptastic.</li>
 	<li>Optional SQLite synchronization.</li>
-	<li>PostgreSQL 9.6.20; W32.</li>
+	<li>PostgreSQL 9.6.20; Win32.</li>
 	<li>Presentable key bundles.</li>
-	<li>Qt 5.12.10; W32.</li>
-	<li>Qt 5.15.2; OS X.</li>
+	<li>Qt 5.12.10; Win32.</li>
+	<li>Qt 5.15.2; MacOS.</li>
 	<li>Replaced key-bundling delimiter "\n" with "|".</li>
 	<li>Resolved Qt 5.15 LTS warnings.</li>
-	<li>SQLite 3.34; W32.</li>
+	<li>SQLite 3.34; Win32.</li>
 	<li>Speedy populating of Rosetta contacts. Decreased memory utilization.</li>
 	<li>Themes.</li>
 	<li>Web server improvements: URL redirection, segmented delivery of lengthy content.</li>
-	<li>libgcrypt 1.8.6 on W32.</li>
+	<li>libgcrypt 1.8.6 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2020.08.19</u></h4>
@@ -230,17 +234,17 @@
 	<li>Allow for the limiting of the number of Spot-On Search Server (SOSS) clients.</li>
 	<li>Beautiful text hints.</li>
 	<li>Close Spot-On Search Server (SOSS) sockets after the maximum client counts are reached.</li>
-	<li>CURL 7.71.1 on W32.</li>
+	<li>CURL 7.71.1 on Win32.</li>
 	<li>Deprecated Qt 4.x.</li>
 	<li>High DPI monitors support.</li>
 	<li>Increased kernel URL batch size to 50.</li>
 	<li>Kernel RSS. Container-less!</li>
 	<li>Modal print preview dialogs.</li>
-	<li>PostgreSQL 9.6.19; W32.</li>
+	<li>PostgreSQL 9.6.19; Win32.</li>
 	<li>Prepared the applications for Qt 5.15 LTS.</li>
-	<li>Qt 5.12.9; W32.</li>
-	<li>Qt 5.15.0; OS X.</li>
-	<li>SQLite 3.33.0; W32.</li>
+	<li>Qt 5.12.9; Win32.</li>
+	<li>Qt 5.15.0; MacOS.</li>
+	<li>SQLite 3.33.0; Win32.</li>
 	<li>Task-safe spoton_kernel::s_crypts.</li>
 	<li>Type of Service socket option. Not available on Windows.</li>
 	<li>Various numeric conversions corrections.</li>
@@ -252,19 +256,19 @@
       <ul>
 	<li>Abort DTLS handshakes on extreme errors.</li>
 	<li>Bluetooth listening status now examines both service and socket statuses.</li>
-	<li>CURL 7.70.0 on W32.</li>
+	<li>CURL 7.70.0 on Win32.</li>
 	<li>Corrected private-application context menu items for listeners and neighbors.</li>
 	<li>Do not partition data over Web Sockets.</li>
 	<li>Dropped packets statistics.</li>
 	<li>Estimated time of arrival and rates; StarBeams. Please remove starbeam.db.</li>
 	<li>HTTP and HTTPS Web searches.</li>
 	<li>Number of pages in search engine URLs.</li>
-	<li>OpenSSL 1.1.1g on W32.</li>
+	<li>OpenSSL 1.1.1g on Win32.</li>
 	<li>PowerPC and Qt 5.</li>
 	<li>Prevent surreptitious forwarding for e-mail. Previous versions of Spot-On are not compatible with this release.</li>
 	<li>Purge expired Forward Secrecy keys.</li>
-	<li>Qt 5.12.8 on W32.</li>
-	<li>Removed SCTP on OS X as it's not properly supported by the operating system.</li>
+	<li>Qt 5.12.8 on Win32.</li>
+	<li>Removed SCTP on MacOS as it's not properly supported by the operating system.</li>
 	<li>Replaced deprecated Qt methods.</li>
 	<li>StarBeam optimizations: decreased allowable read-rate interval, removed Unix file synchronization. Please remove starbeam.db.</li>
 	<li>StarBeam writer queues.</li>
@@ -281,12 +285,12 @@
 	<li>Maximum pending connections set to 65535 on all listeners.</li>
 	<li>NTL 11.4.3 on Unix.</li>
 	<li>New Origin StarBeam magnet field. Please remove starbeam.db.</li>
-	<li>PostgreSQL 9.6.17 on W32.</li>
+	<li>PostgreSQL 9.6.17 on Win32.</li>
 	<li>Record DTLS certificates for user-defined nodes.</li>
-	<li>SQLite 3.31.1 on W32.</li>
+	<li>SQLite 3.31.1 on Win32.</li>
 	<li>Temporary containers for dropped packets.</li>
 	<li>WebSockets. Qt 5.3 required.</li>
-	<li>libgcrypt 1.8.5 on W32.</li>
+	<li>libgcrypt 1.8.5 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2020.01.20</u></h4>
@@ -295,7 +299,7 @@
       <ul>
 	<li>ARM Qt 5 Debian package.</li>
 	<li>Allow cancellation of silence timeouts.</li>
-	<li>CURL 7.68 on W32.</li>
+	<li>CURL 7.68 on Win32.</li>
 	<li>Container optimizations; replaced first().</li>
 	<li>Corrected initialization of m_externalAddress in the UI.</li>
 	<li>Custom PostgreSQL connection timeouts.</li>
@@ -332,7 +336,7 @@
 	<li>Custom external IP URL.</li>
 	<li>Multitasking SOSS server.</li>
 	<li>Optional RSS notices.</li>
-	<li>PostgreSQL 9.6.16 on W32.</li>
+	<li>PostgreSQL 9.6.16 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2019.11.11</u></h4>
@@ -342,7 +346,7 @@
 	<li>A listener may cause a kernel delay during initialization via QBluetoothServiceInfo. Initialize the QBluetoothServiceInfo object only if required.</li>
 	<li>Allow copying of all RSS links to the clipboard buffer.</li>
 	<li>Allow searching of local or remote URLs via remote clients. New Web server. Please see URLs panel.</li>
-	<li>CURL 7.67 on W32.</li>
+	<li>CURL 7.67 on Win32.</li>
 	<li>Close socket descriptors on failures.</li>
 	<li>Create default URL distillers during the URL database-preparation process.</li>
 	<li>Detection of StarBeam duplicate data bundles.</li>
@@ -356,7 +360,7 @@
 	<li>RSS feed-scheduling requires an active process; disable options.</li>
 	<li>Removed obsolete widget Permanent Certificate from Listeners page.</li>
 	<li>Retrieve correct PostgreSQL URLs database password on connection validation.</li>
-	<li>SQLite 3.30.1 on W32.</li>
+	<li>SQLite 3.30.1 on Win32.</li>
 	<li>Separated RSS network access managers: feeds and links.</li>
 	<li>Set certificate version to 3; new certificates only.</li>
 	<li>Set listener's certificate's CN if an external IP address is not available.</li>
@@ -364,7 +368,7 @@
 	<li>Threefish optimizations.</li>
 	<li>URL statistics.</li>
 	<li>WAL journal mode for SQLite URL database.</li>
-	<li>libgcrypt at version 1.8.4 on W32.</li>
+	<li>libgcrypt at version 1.8.4 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2019.09.30</u></h4>
@@ -379,13 +383,13 @@
       Welcome to the 2019.09.25 release of Spot-On. Corrections and new features are detailed below.
       <ul>
 	<li>BLAKE2x hash algorithm, where available.</li>
-	<li>CURL 7.66.0 on W32.</li>
+	<li>CURL 7.66.0 on Win32.</li>
 	<li>Do not overflow Qt's TCP internal buffer.</li>
 	<li>Fancy menu item icons.</li>
 	<li>Lovely file encryption revolts.</li>
 	<li>NTL 11.3.4 on Linux. The configure script must be executed manually.</li>
-	<li>OpenSSL 1.0.2t and 1.1.1d on W32.</li>
-	<li>PostgreSQL 9.6.15.2 on W32.</li>
+	<li>OpenSSL 1.0.2t and 1.1.1d on Win32.</li>
+	<li>PostgreSQL 9.6.15.2 on Win32.</li>
 	<li>Process UI events.</li>
 	<li>SHA3-512 StarBeam digests where available. Please remove starbeam.db.</li>
 	<li>Search within search. Spot-On only.</li>
@@ -413,16 +417,16 @@
       Welcome to the 2019.08.08 release of Spot-On. Corrections and new features are detailed below.
       <ul>
 	<li>Allow cancellation of URL imports.</li>
-	<li>CURL 7.65.3 on W32.</li>
+	<li>CURL 7.65.3 on Win32.</li>
 	<li>Close SMP and documentation windows on application lock.</li>
 	<li>Correctly pause rapid StarBeams.</li>
 	<li>Do not delete paused StarBeams.</li>
 	<li>Do not disable journal_mode and synchronous for important SQLite databases such as rss.db and urls.db.</li>
 	<li>Fancy context menus.</li>
 	<li>NTL 11.3.2 on Linux. The configure script must be executed manually.</li>
-	<li>OpenSSL 1.0.2s on W32. Qt 5.9.8 expects OpenSSL 1.0.0.</li>
+	<li>OpenSSL 1.0.2s on Win32. Qt 5.9.8 expects OpenSSL 1.0.0.</li>
 	<li>Populate e-mail participants on separated e-mail windows on global name change.</li>
-	<li>PostgreSQL 9.6.14.3 on W32.</li>
+	<li>PostgreSQL 9.6.14.3 on Win32.</li>
 	<li>Remove shared.db on forced kernel registration.</li>
 	<li>StarBeam Missing Links have been deprecated.</li>
 	<li>Ultra StarBeams.</li>
@@ -434,15 +438,15 @@
       <ul>
 	<li>Allow gcry_check_version() failures.</li>
 	<li>Buffered-content Neighbors data points.</li>
-	<li>CURL 7.65.0 on W32.</li>
+	<li>CURL 7.65.0 on Win32.</li>
 	<li>Congestion overflow watercolors.</li>
 	<li>Corrected URL encoding in RSS.</li>
 	<li>Cute tool tips in Statistics.</li>
-	<li>OpenSSL 1.1.1c on W32.</li>
-	<li>PostgreSQL 9.6.14.1 on W32.</li>
-	<li>Qt 5.9.8 on W32.</li>
+	<li>OpenSSL 1.1.1c on Win32.</li>
+	<li>PostgreSQL 9.6.14.1 on Win32.</li>
+	<li>Qt 5.9.8 on Win32.</li>
 	<li>Removed Dooble import widgets.</li>
-	<li>SQLite 3.28.0 on W32.</li>
+	<li>SQLite 3.28.0 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2019.04.04</u></h4>
@@ -450,7 +454,7 @@
       Welcome to the 2019.04.04 release of Spot-On. Corrections and new features are detailed below.
       <ul>
 	<li>Allow QNetworkAccessManager to determine network accessibility.</li>
-	<li>CURL 7.64.1 on W32.</li>
+	<li>CURL 7.64.1 on Win32.</li>
 	<li>Close multicast sockets if required.</li>
 	<li>Compare previously-established credentials with random credentials; cascading encryption. Abort on failure.</li>
 	<li>Copying of large keys into the clipboard buffer is not permitted.</li>
@@ -462,14 +466,14 @@
 	<li>Echo modes supersede private applications.</li>
 	<li>Gorgeous document provided by Maxwell.</li>
 	<li>New neighbors database status constraints. The file neighbors.db must be removed.</li>
-	<li>OpenSSL 1.1.1a on W32.</li>
-	<li>PQ 9.6.12 on W32.</li>
+	<li>OpenSSL 1.1.1a on Win32.</li>
+	<li>PQ 9.6.12 on Win32.</li>
 	<li>Process peer-specific UDP datagrams only.</li>
 	<li>Removed McEliece container from the kernel as this can be memory-expensive.</li>
 	<li>Removed Tulip.</li>
 	<li>Removed read_uncomitted from SQLite queries.</li>
 	<li>Resize poptastic.png logically.</li>
-	<li>SQLite 3.27.2 on W32.</li>
+	<li>SQLite 3.27.2 on Win32.</li>
 	<li>TLS 1.3. Qt 5.12 and newer required.</li>
 	<li>Terminate on most memory-allocation failures.</li>
       </ul>
@@ -482,12 +486,12 @@
 	<li>Corrected UI widget states if SCTP is not available.</li>
 	<li>Detect a severed PostgreSQL URLs database connection in the UI and adjust widget states.</li>
 	<li>Enable recording of extreme kernel errors in Windows.</li>
-	<li>Enable resize grips on Mac.</li>
+	<li>Enable resize grips on MacOS.</li>
 	<li>Initialize NTL on decrypt().</li>
 	<li>McEliece keys are galactic. Let's repaint.</li>
-	<li>Neighbors Statistics windows and on-top hints for Mac and W32.</li>
+	<li>Neighbors Statistics windows and on-top hints for MacOS and Win32.</li>
 	<li>PostgreSQL 9.6.11 on Windows.</li>
-	<li>Removed Qt::WA_MacMetalStyle and Qt::WindowFullscreenButtonHint properties for Mac.</li>
+	<li>Removed Qt::WA_MacMetalStyle and Qt::WindowFullscreenButtonHint properties for MacOS.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2018.11.11</u></h4>
@@ -530,10 +534,10 @@
     <p>
       Welcome to the 2018.04.30 release of Spot-On. Corrections and new features are detailed below.
       <ul>
-	<li>Archived OS X GoldBug project files as these files are not maintained.</li>
+	<li>Archived MacOS GoldBug project files as these files are not maintained.</li>
 	<li>Corrected GoldBug UI files. Missing widgets.</li>
 	<li>Inspect the kernel's process identifier via kill() for a finer UI experience. Schmidt-inspired. Unix operating systems only.</li>
-  	<li>OS X now requires clang 6.0.0 for NTL. Please install via brew install llvm.</li>
+  	<li>MacOS now requires clang 6.0.0 for NTL. Please install via brew install llvm.</li>
   	<li>PostgreSQL at version 9.6.8 on Win32.</li>
   	<li>SQLite at version 3.23.0 on Win32.</li>
   	<li>The Debian package has been curtailed. Built using Qt 5.9.5.</li>
@@ -572,7 +576,7 @@
 	<li>Multiple interfaces will reset some statistics on launch. The kernel must compensate.</li>
 	<li>New rosemary-ipv4.tilaa.cloud and rosemary-ipv6.tilaa.cloud TCP services.</li>
 	<li>OpenBSD support.</li>
-	<li>Qt 5.9.4 on W32.</li>
+	<li>Qt 5.9.4 on Win32.</li>
 	<li>Qt 5.10.1 on Linux.</li>
 	<li>Query shared.db on kernel state.</li>
 	<li>Removed legacy SQLite ALTER statements.</li>
@@ -608,7 +612,7 @@
 	<li>Retain the selected Poptastic account after a save-account event.</li>
 	<li>Retrieve infinitely-many IMAP/POP3 messages. Please review Poptastic settings.</li>
 	<li>Secure memory sizes are now zero for new installations.</li>
-	<li>Upgraded SQLite to version 3.22.0 on W32.</li>
+	<li>Upgraded SQLite to version 3.22.0 on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2018.01.05</u></h4>
@@ -626,7 +630,7 @@
 	<li>Debian package lacked multimedia support.</li>
 	<li>QAbstractSocket::setSocketDescriptor() may fail. Provided descriptor must be closed.</li>
 	<li>Removed OS/2 support.</li>
-	<li>Removed Qt 4.x OS X project files.</li>
+	<li>Removed Qt 4.x MacOS project files.</li>
 	<li>Replaced Q_OS_WIN32 with Q_OS_WIN.</li>
 	<li>Spot-On now supports Qt 4.8.7 and Qt 5.5.1 and newer.</li>
 	<li>Terminate the kernel on exit, if enabled. Please see Options::Settings.</li>
@@ -638,9 +642,9 @@
     <p>
       Welcome to the 2017.12.27 release of Spot-On. Corrections and new features are detailed below.
       <ul>
-  	<li>Include the SCTP library in the OS X bundle.</li>
+  	<li>Include the SCTP library in the MacOS bundle.</li>
   	<li>OpenSSL 1.1.0g on Windows.</li>
-  	<li>Removed SCTP support on W32.</li>
+  	<li>Removed SCTP support on Win32.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2017.12.25</u></h4>
