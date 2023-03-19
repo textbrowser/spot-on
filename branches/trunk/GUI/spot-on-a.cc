@@ -11181,7 +11181,6 @@ void spoton::slotValidatePassphrase(void)
       slotConnectAllNeighbors();
 #endif
       playSound("login.wav");
-      m_ui.passphrase->setFocus();
       updatePublicKeysLabel();
 
 #if SPOTON_GOLDBUG == 0
@@ -11193,5 +11192,6 @@ void spoton::slotValidatePassphrase(void)
       m_ui.tab->setCurrentIndex
 	(m_settings.value("gui/currentTabIndex", m_ui.tab->count() - 1).
 	 toInt());
+      m_ui.tab->widget(m_ui.tab->currentIndex())->setFocus();
     }
 }

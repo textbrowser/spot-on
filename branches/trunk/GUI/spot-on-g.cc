@@ -1585,6 +1585,7 @@ void spoton::slotSeparateBuzzPage(void)
 
   QMainWindow *mainWindow = new QMainWindow(0);
 
+  mainWindow->resize(500, 600);
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
   mainWindow->setWindowIcon(windowIcon());
