@@ -1597,6 +1597,7 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setModal(true);
   progress.setWindowTitle(tr("%1: Creating URL Databases").
     arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
