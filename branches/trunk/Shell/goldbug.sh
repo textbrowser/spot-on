@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# Alexis Megas.
 
 if [ -r /usr/local/goldbug/GoldBug ] && [ -x /usr/local/goldbug/GoldBug ]
 then
