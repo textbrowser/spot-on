@@ -303,6 +303,7 @@ Interesting Items
 13.    Which key types to export and import? A new selection dialog.
 14.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
+15.    Multiple proxies. Far future.
 
 Remaining Items
 
@@ -314,6 +315,5 @@ Remaining Items
 6.     NTL for Windows.
 7.     NTL warnings on FreeBSD.
 8.     Optional human proxy session setting.
-9.     Multiple proxies. Far future.
-10.    Optional GCRYPT. Android and OpenSSL.
-11.    Close button is not visible on Buzz tab on MacOS.
+9.     Optional GCRYPT. Android and OpenSSL.
+10.    Close button is not visible on Buzz tab on MacOS.
