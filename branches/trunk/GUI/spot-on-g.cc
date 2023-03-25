@@ -671,8 +671,6 @@ void spoton::slotBuzzInvite(void)
 
 void spoton::slotBuzzPageDestroyed(QObject *object)
 {
-  Q_UNUSED(object);
-
   QMutableHashIterator<QByteArray, QPointer<spoton_buzzpage> > it
     (m_buzzPages);
 
@@ -683,6 +681,10 @@ void spoton::slotBuzzPageDestroyed(QObject *object)
       if(!it.value())
 	it.remove();
     }
+
+  for(int i = m_ui.buzzTab->count() - 1; i >= 0; i--)
+    if(m_ui.buzzTab->widget(i) == object)
+      m_ui.buzzTab->removeTab(i);
 
   if(m_buzzPages.isEmpty())
     m_buzzStatusTimer.stop();
@@ -1585,6 +1587,10 @@ void spoton::slotSeparateBuzzPage(void)
 
   QMainWindow *mainWindow = new QMainWindow(0);
 
+  connect(page,
+	  SIGNAL(destroyed(void)),
+	  mainWindow,
+	  SLOT(deleteLater(void)));
   mainWindow->resize(500, 600);
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
@@ -2017,7 +2023,8 @@ void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
   QAction *action = 0;
   QMenu menu(this);
 
-  action = menu.addAction(tr("&Separate..."), this,
+  action = menu.addAction(tr("&Separate..."),
+			  this,
 			  SLOT(slotSeparateBuzzPage(void)));
   action->setProperty("index", m_ui.buzzTab->tabBar()->tabAt(point));
   menu.exec(m_ui.buzzTab->tabBar()->mapToGlobal(point));

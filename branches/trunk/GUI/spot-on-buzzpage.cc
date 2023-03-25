@@ -106,6 +106,10 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
 	  SIGNAL(clicked(void)),
 	  m_ui.messages,
 	  SLOT(clear(void)));
+  connect(m_ui.close,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(deleteLater(void)));
   connect(m_ui.copy,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -133,12 +137,12 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
   m_ui.clients->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
   m_ui.clients->setColumnHidden(1, true); // ID
   m_ui.clients->setColumnHidden(2, true); // Time
-  m_ui.frame->setVisible(false);
 #if QT_VERSION >= 0x050501
   m_ui.message->setPlaceholderText(tr("Please type a message..."));
 #endif
   m_ui.splitter->setStretchFactor(0, 1);
   m_ui.splitter->setStretchFactor(1, 0);
+  m_ui.unify->setVisible(false);
 
   QByteArray data;
 
@@ -296,7 +300,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
 
 void spoton_buzzpage::showUnify(const bool state)
 {
-  m_ui.frame->setVisible(state);
+  m_ui.unify->setVisible(state);
 }
 
 void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)

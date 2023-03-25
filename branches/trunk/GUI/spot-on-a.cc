@@ -520,6 +520,7 @@ spoton::spoton(void):QMainWindow()
   m_sbWidget = new QWidget(this);
   m_sb.setupUi(m_sbWidget);
   m_statusActivity = new spoton_status_activity(m_sb.down, m_sb.up, m_sbWidget);
+  m_ui.buzzTab->setTabsClosable(false);
   m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.dooble_import_groupbox->setVisible(false);
   m_ui.email_page->addItem("1");
