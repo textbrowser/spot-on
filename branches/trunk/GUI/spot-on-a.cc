@@ -238,12 +238,6 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication qapplication(argc, argv);
-
-#if QT_VERSION >= 0x050700
-  qapplication.setAttribute(Qt::AA_DontUseNativeDialogs, true);
-#endif
-  qapplication.setAttribute(Qt::AA_DontUseNativeMenuBar, true);
-
   QFont font(qapplication.font());
 
   font.setStyleStrategy
