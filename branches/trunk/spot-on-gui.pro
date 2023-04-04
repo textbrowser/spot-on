@@ -72,7 +72,8 @@ QMAKE_LFLAGS_RPATH     =
 
 greaterThan(QT_MAJOR_VERSION, 5) {
 QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
-QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
+QMAKE_CXXFLAGS_RELEASE -= -Wredundant-decls \
+                          -Wstrict-overflow=5
 }
 
 INCLUDEPATH	+= . \
