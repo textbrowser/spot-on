@@ -916,7 +916,6 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 		SLOT(slotFindInSearchInitialize(void)));
 #endif
 #endif
-
   splash->showMessage
     (tr("Connecting signals."),
      Qt::AlignBottom | Qt::AlignHCenter,
