@@ -416,6 +416,7 @@ class spoton_lineedit: public QLineEdit
 #include "ui_spot-on-wizard.h"
 
 class QProgressDialog;
+class QSplashScreen;
 class spoton_documentation;
 class spoton_echo_key_share;
 class spoton_rss;
@@ -436,7 +437,7 @@ class spoton: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton(void);
+  spoton(QSplashScreen *splash);
   ~spoton();
   QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;

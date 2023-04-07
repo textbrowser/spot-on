@@ -46,6 +46,7 @@ extern "C"
 #include <QProgressDialog>
 #include <QScopedPointer>
 #include <QShortcut>
+#include <QSplashScreen>
 #include <QStandardItemModel>
 #ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineProfile>
@@ -239,7 +240,16 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
   QFont font(qapplication.font());
+  QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
 
+  splash.setEnabled(false);
+  
+  splash.show();
+  splash.showMessage
+    (QObject::tr("Preparing directories."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash.repaint();
   font.setStyleStrategy
     (QFont::StyleStrategy(QFont::PreferAntialias | QFont::PreferQuality));
   qapplication.setFont(font);
@@ -250,6 +260,11 @@ int main(int argc, char *argv[])
 #endif
   QDir().mkdir(spoton_misc::homePath());
 #ifdef SPOTON_WEBENGINE_ENABLED
+  splash.showMessage
+    (QObject::tr("Preparing WebEngine."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash.replaint();
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
   QWebEngineProfile::defaultProfile()->setCachePath
     (spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
@@ -338,6 +353,11 @@ int main(int argc, char *argv[])
   QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
                      spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
+  splash.showMessage
+    (QObject::tr("Initializing settings."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash.repaint();
 
   QSettings settings;
 
@@ -370,6 +390,12 @@ int main(int argc, char *argv[])
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);
 
+  splash.showMessage
+    (QObject::tr("Initializing cryptographic containers."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash.repaint();
+
   bool ok = true;
   int integer = settings.value("gui/gcryctl_init_secmem",
 			       spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
@@ -387,8 +413,9 @@ int main(int argc, char *argv[])
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
 
   int rc = 0;
-  spoton spoton;
+  spoton spoton(&splash);
 
+  splash.finish(&spoton);
   rc = qapplication.exec();
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_cleanup();
@@ -397,8 +424,13 @@ int main(int argc, char *argv[])
   return rc;
 }
 
-spoton::spoton(void):QMainWindow()
+spoton::spoton(QSplashScreen *splash):QMainWindow()
 {
+  splash->showMessage
+    (tr("Preparing static variables."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   m_defaultStyleSheet = qobject_cast<QApplication *>
     (QApplication::instance())->styleSheet();
   m_urlCurrentPage = 1;
@@ -447,6 +479,12 @@ spoton::spoton(void):QMainWindow()
 #endif
   }
 
+  splash->showMessage
+    (tr("Preparing URL prefixes."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
+
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
       {
@@ -479,6 +517,11 @@ spoton::spoton(void):QMainWindow()
   spoton_threefish::test1();
   spoton_threefish::test2();
   spoton_threefish::test3();
+  splash->showMessage
+    (tr("Creating containers."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   m_keysShared["buzz_channels_sent_to_kernel"] = "false";
   m_keysShared["keys_sent_to_kernel"] = "false";
   m_buzzStatusTimer.setInterval(15000);
@@ -537,6 +580,12 @@ spoton::spoton(void):QMainWindow()
   QSettings settings;
 
 #if SPOTON_GOLDBUG == 0
+  splash->showMessage
+    (tr("Preparing style sheets."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   foreach(QWidget *widget, findChildren<QWidget *> ())
@@ -853,6 +902,12 @@ spoton::spoton(void):QMainWindow()
 		SLOT(slotFindInSearchInitialize(void)));
 #endif
 #endif
+
+  splash->showMessage
+    (tr("Connecting signals."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
 
   /*
   ** Connect m_sb's items.
@@ -2404,6 +2459,11 @@ spoton::spoton(void):QMainWindow()
   m_ui.urlParticipants->setStyleSheet
     ("QTableWidget {selection-background-color: lightgreen}");
 #endif
+  splash->showMessage
+    (tr("Removing obsolete INI entries."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   settings.remove("gui/acceptUrlDL");
   settings.remove("gui/acceptUrlUL");
   settings.remove("gui/acceptedIPs");
@@ -2442,8 +2502,18 @@ spoton::spoton(void):QMainWindow()
     m_settings[settings.allKeys().at(i)] = settings.value
       (settings.allKeys().at(i));
 
+  splash->showMessage
+    (tr("Reviewing settings values."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
+  splash->showMessage
+    (tr("Applying settings."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   m_externalAddress->setUrl
     (QUrl::fromUserInput(m_settings.value("gui/external_ip_url").toString()));
   m_ui.activeUrlDistribution->setChecked
@@ -3429,6 +3499,11 @@ spoton::spoton(void):QMainWindow()
     }
 
   m_ui.tab->setIconSize(size);
+  splash->showMessage
+    (tr("Preparing widget states."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   prepareContextMenuMirrors();
   prepareOtherOptions();
   prepareTearOffMenus();
