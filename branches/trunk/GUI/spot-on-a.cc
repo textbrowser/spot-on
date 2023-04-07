@@ -241,13 +241,20 @@ int main(int argc, char *argv[])
   QApplication qapplication(argc, argv);
   QFont font(qapplication.font());
 #if SPOTON_GOLDBUG == 0
-  QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
+  QPixmap pixmap(":/Logo/spot-on-splash.png");
+  QSplashScreen splash
+    (pixmap.scaled(QSize(360, 240),
+		   Qt::KeepAspectRatio,
+		   Qt::SmoothTransformation));
 #else
-  QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
+  QPixmap pixmap(":/Logo/goldbug.png");
+  QSplashScreen splash
+    (pixmap.scaled(QSize(256, 256),
+		   Qt::KeepAspectRatio,
+		   Qt::SmoothTransformation));
 #endif
 
   splash.setEnabled(false);
-  
   splash.show();
   splash.showMessage
     (QObject::tr("Preparing directories."),
