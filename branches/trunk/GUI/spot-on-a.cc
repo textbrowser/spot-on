@@ -514,13 +514,6 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 #else
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #endif
-  spoton_crypt::memcmp_test();
-  spoton_smp::test1();
-  spoton_smp::test2();
-  spoton_smp::test3();
-  spoton_threefish::test1();
-  spoton_threefish::test2();
-  spoton_threefish::test3();
   splash->showMessage
     (tr("Creating containers."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -557,11 +550,21 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_statisticsModel->setHorizontalHeaderLabels(list);
   list.clear();
   m_urlCommonCrypt = 0;
+  splash->showMessage
+    (tr("Creating the primary interface."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   m_ui.setupUi(this);
   m_sbWidget = new QWidget(this);
   m_sb.setupUi(m_sbWidget);
   m_statusActivity = new spoton_status_activity(m_sb.down, m_sb.up, m_sbWidget);
   m_ui.buzzTab->setTabsClosable(false);
+  splash->showMessage
+    (tr("Preparing context-menu policies."),
+     Qt::AlignBottom | Qt::AlignHCenter,
+     QColor(Qt::white));
+  splash->repaint();
   m_ui.buzzTab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.dooble_import_groupbox->setVisible(false);
   m_ui.email_page->addItem("1");
