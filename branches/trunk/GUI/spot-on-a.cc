@@ -240,7 +240,11 @@ int main(int argc, char *argv[])
 
   QApplication qapplication(argc, argv);
   QFont font(qapplication.font());
+#if SPOTON_GOLDBUG == 0
   QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
+#else
+  QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
+#endif
 
   splash.setEnabled(false);
   
