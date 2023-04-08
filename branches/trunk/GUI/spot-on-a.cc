@@ -241,11 +241,7 @@ int main(int argc, char *argv[])
   QApplication qapplication(argc, argv);
   QFont font(qapplication.font());
 #if SPOTON_GOLDBUG == 0
-  QPixmap pixmap(":/Logo/spot-on-splash.png");
-  QSplashScreen splash
-    (pixmap.scaled(QSize(360, 240),
-		   Qt::KeepAspectRatio,
-		   Qt::SmoothTransformation));
+  QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
 #else
   QPixmap pixmap(":/Logo/goldbug.png");
   QSplashScreen splash
@@ -365,7 +361,7 @@ int main(int argc, char *argv[])
                      spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
   splash.showMessage
-    (QObject::tr("Initializing settings."),
+    (QObject::tr("Processing INI values."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash.repaint();
@@ -522,7 +518,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   qsrand(static_cast<uint> (QTime(0, 0, 0).secsTo(QTime::currentTime())));
 #endif
   splash->showMessage
-    (tr("Creating containers."),
+    (tr("Creating various containers."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
@@ -558,7 +554,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   list.clear();
   m_urlCommonCrypt = 0;
   splash->showMessage
-    (tr("Creating the primary interface."),
+    (tr("Creating the primary interface object."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
@@ -2516,14 +2512,14 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
       (settings.allKeys().at(i));
 
   splash->showMessage
-    (tr("Reviewing settings values."),
+    (tr("Validating INI values."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
   spoton_misc::correctSettingsContainer(m_settings);
   spoton_misc::setTimeVariables(m_settings);
   splash->showMessage
-    (tr("Applying settings."),
+    (tr("Applying INI values."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
