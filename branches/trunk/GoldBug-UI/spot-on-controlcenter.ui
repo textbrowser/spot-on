@@ -946,7 +946,7 @@ QPushButton:pressed {
                <item>
                 <widget class="QLabel" name="label_143">
                  <property name="text">
-                  <string>A checked participant will be considered a proxy. The participant must be online.</string>
+                  <string>A checked participant will be considered a proxy. Gemini keys are required and the participant must be online.</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>
@@ -2964,7 +2964,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>582</width>
+             <width>593</width>
              <height>2111</height>
             </rect>
            </property>
@@ -6707,7 +6707,7 @@ color: rgb(255, 255, 255);</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>935</width>
+             <width>979</width>
              <height>1486</height>
             </rect>
            </property>
