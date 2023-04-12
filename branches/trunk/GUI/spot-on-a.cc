@@ -243,11 +243,7 @@ int main(int argc, char *argv[])
 #if SPOTON_GOLDBUG == 0
   QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
 #else
-  QPixmap pixmap(":/Logo/goldbug.png");
-  QSplashScreen splash
-    (pixmap.scaled(QSize(256, 256),
-		   Qt::KeepAspectRatio,
-		   Qt::SmoothTransformation));
+  QPixmap pixmap(":/Logo/goldbug-splash.png");
 #endif
 
   splash.setEnabled(false);
