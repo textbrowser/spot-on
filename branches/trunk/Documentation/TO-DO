@@ -285,6 +285,7 @@ Completed Items
 211.   Set the cursor position to 0 after setText().
 212.   Close button is not visible on Buzz tab on MacOS. New Close widget.
 213.   Splash screen.
+214.   NTL warnings on FreeBSD.
 
 Interesting Items
 
@@ -315,6 +316,5 @@ Remaining Items
 4.     Single Rosetta attachments.
 5.     Rosetta spell checker.
 6.     NTL for Windows.
-7.     NTL warnings on FreeBSD.
-8.     Optional human proxy session setting.
-9.     Optional GCRYPT. Android and OpenSSL.
+7.     Optional human proxy session setting.
+8.     Optional GCRYPT. Android and OpenSSL.
