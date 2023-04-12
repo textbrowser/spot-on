@@ -41,7 +41,7 @@ ifeq ($(SIMD), auto)
 endif
 OPTFLAGS=-O2
 bench: OPTFLAGS=-O3 $(BENCH_ARCH_OPTION)
-CFLAGS+=$(OPTFLAGS)
+CFLAGS+=$(OPTFLAGS) -DBSD
 
 ifneq ($(shell uname), OpenBSD)
     LIBS+=-lrt

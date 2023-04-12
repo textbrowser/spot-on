@@ -40,6 +40,10 @@
 
 #include <QtGlobal>
 
+#ifdef Q_OS_FREEBSD
+#pragma GCC diagnostic ignored "-Wcast-align"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy-with-user-provided-copy"
+#endif
 #ifdef Q_OS_MACOS
 #pragma GCC diagnostic ignored "-Wdeprecated-copy-with-user-provided-copy"
 #endif

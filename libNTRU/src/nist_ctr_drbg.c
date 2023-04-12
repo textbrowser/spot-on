@@ -25,6 +25,10 @@
 #include <stdio.h>
 #include <stddef.h>
 
+#ifdef BSD
+#pragma GCC diagnostic ignored "-Wnull-pointer-subtraction"
+#endif
+
 /*
  * NIST SP 800-90 March 2007
  * 10.4.2 Derivation Function Using a Block Cipher Algorithm
