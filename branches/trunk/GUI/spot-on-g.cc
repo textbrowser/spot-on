@@ -760,8 +760,10 @@ void spoton::slotCloseTab(void)
     m_ui.action_Neighbors->setChecked(false);
   else if(name == "search")
     m_ui.action_Search->setChecked(false);
+#if SPOTON_GOLDBUG == 0
   else if(name == "settings")
     m_ui.action_Settings->setChecked(false);
+#endif
   else if(name == "starbeam")
     m_ui.action_StarBeam->setChecked(false);
   else if(name == "urls")

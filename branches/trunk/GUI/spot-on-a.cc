@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 #if SPOTON_GOLDBUG == 0
   QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
 #else
-  QPixmap pixmap(":/Logo/goldbug-splash.png");
+  QSplashScreen splash(QPixmap(":/Logo/goldbug-splash.png"));
 #endif
 
   splash.setEnabled(false);
@@ -1662,10 +1662,12 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
+#if SPOTON_GOLDBUG == 0
   connect(m_ui.action_Settings,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowPage(bool)));
+#endif
   connect(m_ui.action_StarBeam,
 	  SIGNAL(toggled(bool)),
 	  this,

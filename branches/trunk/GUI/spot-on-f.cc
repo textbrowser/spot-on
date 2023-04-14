@@ -418,7 +418,9 @@ void spoton::prepareVisiblePages(void)
   actions["listeners"] = m_ui.action_Listeners;
   actions["neighbors"] = m_ui.action_Neighbors;
   actions["search"] = m_ui.action_Search;
+#if SPOTON_GOLDBUG == 0
   actions["settings"] = m_ui.action_Settings;
+#endif
   actions["starbeam"] = m_ui.action_StarBeam;
   actions["urls"] = m_ui.action_Urls;
   pages["buzz"] = 0;
@@ -2096,8 +2098,10 @@ void spoton::slotShowPage(bool state)
     str = "gui/showNeighborsPage";
   else if(action == m_ui.action_Search)
     str = "gui/showSearchPage";
+#if SPOTON_GOLDBUG == 0
   else if(action == m_ui.action_Settings)
     str = "gui/showSettingsPage";
+#endif
   else if(action == m_ui.action_StarBeam)
     str = "gui/showStarBeamPage";
   else if(action == m_ui.action_Urls)
