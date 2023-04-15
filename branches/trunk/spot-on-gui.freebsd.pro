@@ -6,8 +6,7 @@ libntru.target = libntru.so
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth \
-                   concurrent \
+QT		+= concurrent \
                    gui \
                    multimedia \
                    network \

@@ -7,7 +7,7 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth concurrent network sql websockets
+QT		+= concurrent network sql websockets
 QT              -= gui
 
 qtHaveModule(bluetooth) {
