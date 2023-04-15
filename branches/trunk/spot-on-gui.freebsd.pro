@@ -16,9 +16,13 @@ QT		+= bluetooth \
                    websockets \
                    widgets
 
+qtHaveModule(bluetooth) {
+DEFINES += SPOTON_BLUETOOTH_ENABLED
+QT += bluetooth
+}
+
 DEFINES	+= LIBSPOTON_IGNORE_GCRY_CONTROL_GCRYCTL_INIT_SECMEM_RETURN_VALUE \
            LIBSPOTON_OS_FREEBSD \
-           SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
