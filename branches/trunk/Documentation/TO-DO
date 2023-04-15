@@ -318,3 +318,4 @@ Remaining Items
 6.     NTL for Windows.
 7.     Optional human proxy session setting.
 8.     Optional GCRYPT. Android and OpenSSL.
+9.     Qt 6.2 LTS and QSqlQuery bind-value warnings.
