@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Alexis Megas.
 
 # Download and install dependencies for Windows.
 # Must be executed in the top-level source directory.
@@ -112,8 +113,8 @@ if [ -r "$openssl" ]; then
     mv openssl-1.1/x86/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
     mv openssl-1.1/x86/include/openssl libOpenSSL/Include.win32/.
     chmod +w,-x libOpenSSL/Libraries.win32/*.dll
-    rm -fr openssl-1.1
     rm -f $openssl
+    rm -fr openssl-1.1
 else
     echo "Cannot read $openssl."
 fi
