@@ -4474,7 +4474,11 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
   spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
 
   if(cipher.isNull() || !s_crypt)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    query.addBindValue(QVariant(QMetaType(QMetaType::QString)));
+#else
     query.addBindValue(QVariant::String);
+#endif
   else
     query.addBindValue
       (s_crypt->

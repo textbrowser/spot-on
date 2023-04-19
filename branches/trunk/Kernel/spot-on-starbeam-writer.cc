@@ -625,7 +625,11 @@ void spoton_starbeam_writer::processData(void)
 	}
 
 	if(hash.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	  query.addBindValue(QVariant(QMetaType(QMetaType::QString)));
+#else
 	  query.addBindValue(QVariant::String);
+#endif
 	else if(ok)
 	  query.addBindValue
 	    (s_crypt->encryptedThenHashed(hash, &ok).toBase64());
@@ -633,7 +637,11 @@ void spoton_starbeam_writer::processData(void)
 	if(ok)
 	  {
 	    if(sha3_512_hash.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	      query.addBindValue(QVariant(QMetaType(QMetaType::QString)));
+#else
 	      query.addBindValue(QVariant::String);
+#endif
 	    else
 	      query.addBindValue
 		(s_crypt->encryptedThenHashed(sha3_512_hash, &ok).toBase64());
@@ -792,7 +800,11 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 
 	    if(QFileInfo(it.key()).size() == it.value().m_totalSize)
 	      {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		query.addBindValue(QVariant(QMetaType(QMetaType::QString)));
+#else
 		query.addBindValue(QVariant::String);
+#endif
 		remove = true;
 	      }
 	    else
