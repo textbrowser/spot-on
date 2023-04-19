@@ -726,7 +726,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (0, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(0, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (0, newCrypt->encryptedThenHashed(gemini,
@@ -736,7 +741,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(1))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (1, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(1, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (1,
@@ -768,7 +778,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(6))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (6, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(6, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (6, newCrypt->encryptedThenHashed(fsAuthAlg, &ok).
@@ -778,7 +793,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(7))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (7, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(7, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (7, newCrypt->encryptedThenHashed(fsAuthKey, &ok).
@@ -788,7 +808,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(8))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (8, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(8, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (8, newCrypt->encryptedThenHashed(fsEncAlg, &ok).
@@ -798,7 +823,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(query.isNull(9))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (9, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(9, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (9, newCrypt->encryptedThenHashed(fsEncKey, &ok).
@@ -1160,7 +1190,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(privateApplicationCredentials.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (11, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(11, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (11, newCrypt->
@@ -1733,7 +1768,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(aeToken.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (20, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(20, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (20, newCrypt->
@@ -1744,7 +1784,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(aeTokenType.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (21, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(21, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (21, newCrypt->
@@ -1755,7 +1800,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(privateApplicationCredentials.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (22, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(22, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (22, newCrypt->
@@ -1766,7 +1816,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		{
 		  if(bindIpAddress.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (23, QVariant(QMetaType(QMetaType::QString)));
+#else
 		    updateQuery.bindValue(23, QVariant::String);
+#endif
 		  else
 		    updateQuery.bindValue
 		      (23, newCrypt->
@@ -2364,7 +2419,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		      else
 			{
 			  if(query.isNull(i))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+			    updateQuery.addBindValue
+			      (QVariant(QMetaType(QMetaType::QString)));
+#else
 			    updateQuery.addBindValue(QVariant::String);
+#endif
 			  else
 			    updateQuery.addBindValue
 			      (newCrypt->
@@ -2485,7 +2545,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		      else
 			{
 			  if(query.isNull(i))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+			    updateQuery.addBindValue
+			      (QVariant(QMetaType(QMetaType::QString)));
+#else
 			    updateQuery.addBindValue(QVariant::String);
+#endif
 			  else
 			    updateQuery.addBindValue
 			      (newCrypt->
