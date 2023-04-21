@@ -40,7 +40,6 @@ QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
-                          -Wdouble-promotion \
                           -Wextra \
                           -Wno-cast-align \
                           -Wno-deprecated \
