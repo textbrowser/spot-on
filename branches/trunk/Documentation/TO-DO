@@ -286,6 +286,7 @@ Completed Items
 212.   Close button is not visible on Buzz tab on MacOS. New Close widget.
 213.   Splash screen.
 214.   NTL warnings on FreeBSD.
+215.   Qt 6.2 LTS and QSqlQuery bind-value warnings.
 
 Interesting Items
 
@@ -318,4 +319,3 @@ Remaining Items
 6.     NTL for Windows.
 7.     Optional human proxy session setting.
 8.     Optional GCRYPT. Android and OpenSSL.
-9.     Qt 6.2 LTS and QSqlQuery bind-value warnings.
