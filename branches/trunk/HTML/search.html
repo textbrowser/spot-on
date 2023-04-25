@@ -77,7 +77,9 @@
 	  .topnav .search-container {
 	      float: none;
 	  }
-	  .topnav a, .topnav input[type=text], .topnav .search-container button {
+	  .topnav a,
+	  .topnav input[type=text],
+	  .topnav .search-container button {
 	      display: block;
 	      float: none;
 	      margin: 0;
@@ -93,13 +95,17 @@
     <body>
       <div class="topnav">
 	<a class="active" href=".">Spot-On Search</a>
-	<a href="https://github.com/textbrowser/spot-on" target="_blank">Contact</a>
+	<a href="https://github.com/textbrowser/spot-on" target="_blank">
+	  Contact</a>
 	<div class="search-container">
 	  <form action="." method="post" name="input">
 	    <input class="" name="current" type="hidden" value="0"></input>
 	    <input class="" name="link" type="hidden" value="n"></input>
 	    <input class="" name="pages" type="hidden" value="0"></input>
-	    <input name="search" placeholder="Search Spot-On..." type="text" value="">
+	    <input name="search"
+		   placeholder="Search Spot-On..."
+		   type="text"
+		   value="">
 	    <button type="submit">&#128269;</button>
 	    </input>
 	  </form>
