@@ -12,5 +12,6 @@ then
     cd /usr/local/goldbug && exec ./GoldBug "$@"
     exit $?
 else
+    echo "Could not locate /usr/local/goldbug/GoldBug."
     exit 1
 fi

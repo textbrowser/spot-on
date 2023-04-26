@@ -12,5 +12,6 @@ then
     cd /usr/local/spot-on && exec ./Spot-On "$@"
     exit $?
 else
+    echo "Could not locate /usr/local/spot-on/Spot-On."
     exit 1
 fi

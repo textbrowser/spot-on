@@ -8,5 +8,6 @@ then
     cd /usr/local/spot-on && exec ./Spot-On-Kernel "$@"
     exit $?
 else
+    echo "Could not locate /usr/local/spot-on/Spot-On-Kernel."
     exit 1
 fi

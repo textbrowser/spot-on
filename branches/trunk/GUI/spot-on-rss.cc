@@ -297,6 +297,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
      settings.value("gui/rss_download_interval", 1.50).toDouble(),
      m_ui.download_interval->maximum());
   m_downloadTimer.setInterval(static_cast<int> (60000.0 * dvalue));
+  m_ui.download_interval->setToolTip
+    (tr("The kernel monitors this setting. [%1, %2]").
+     arg(m_ui.download_interval->minimum()).
+     arg(m_ui.download_interval->maximum()));
   m_ui.download_interval->setValue(dvalue);
   m_ui.periodic_import->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());

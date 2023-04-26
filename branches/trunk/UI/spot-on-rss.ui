@@ -333,9 +333,6 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="download_interval">
-            <property name="toolTip">
-             <string>Kernel monitors this setting.</string>
-            </property>
             <property name="suffix">
              <string> minute(s)</string>
             </property>
