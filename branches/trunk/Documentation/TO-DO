@@ -1,3 +1,29 @@
+Archived Items
+
+1.     Hybrid group communications based on deterministic key pairs.
+2.     Create a user's configuration database. Store key types too.
+3.     Create a commanding language. The language could be used to
+       navigate private Spot-On nodes remotely.
+4.     Zero-knowledge passphrase authentication.
+5.     Allow for other ciphers besides AES for e-mail Gold Bugs.
+6.     Per-participant permissions.
+7.     Account credentials should not be recorded via reversible encryption.
+       Derive keys? Assume an upper bound during account discovery.
+8.     Database entries containing hashes can be maliciously twisted. Encrypt?
+9.     Rosetta: Inbox, Drafts (?), Sent, Trash.
+10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
+11.    Remote kernel termination.
+12.    E-mail GPG.
+13.    Which key types to export and import? A new selection dialog.
+14.    There is some redundant deciphering of data: findMessageType()
+       followed by process() routines.
+15.    Multiple proxies.
+16.    Open Library.
+17.    IMAP and optional removal of messages; retrieve latest.
+18.    Optional GCRYPT. Android and OpenSSL.
+19.    Single Rosetta attachments.
+20.    Rosetta spell checker.
+
 Completed Items
 
 1.     Inform the kernel of the key.
@@ -288,34 +314,8 @@ Completed Items
 214.   NTL warnings on FreeBSD.
 215.   Qt 6.2 LTS and QSqlQuery bind-value warnings.
 
-Interesting Items
-
-1.     Hybrid group communications based on deterministic key pairs.
-2.     Create a user's configuration database. Store key types too.
-3.     Create a commanding language. The language could be used to
-       navigate private Spot-On nodes remotely.
-4.     Zero-knowledge passphrase authentication.
-5.     Allow for other ciphers besides AES for e-mail Gold Bugs.
-6.     Per-participant permissions.
-7.     Account credentials should not be recorded via reversible encryption.
-       Derive keys? Assume an upper bound during account discovery.
-8.     Database entries containing hashes can be maliciously twisted. Encrypt?
-9.     Rosetta: Inbox, Drafts (?), Sent, Trash.
-10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
-11.    Remote kernel termination.
-12.    E-mail GPG.
-13.    Which key types to export and import? A new selection dialog.
-14.    There is some redundant deciphering of data: findMessageType()
-       followed by process() routines.
-15.    Multiple proxies. Far future.
-
 Remaining Items
 
-1.     Open Library.
-2.     SQLite silent mode; limit synchronization. Partially completed.
-3.     IMAP and optional removal of messages; retrieve latest.
-4.     Single Rosetta attachments.
-5.     Rosetta spell checker.
-6.     NTL for Windows.
-7.     Optional human proxy session setting.
-8.     Optional GCRYPT. Android and OpenSSL.
+1.     SQLite silent mode; limit synchronization. Partially completed.
+2.     NTL for Windows.
+3.     Optional human proxy session setting.
