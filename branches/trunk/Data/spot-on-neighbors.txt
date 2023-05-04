@@ -5,9 +5,9 @@
 # this file must reside in the same directory as the Spot-On
 # executable.
 
-# A faraway TCP neighbor. Please do not abuse this service!
+# A local TCP neighbor.
 
-connect=true&echo_mode=full&ip_address=5.180.182.220&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=3072&transport=tcp
+connect=true&echo_mode=full&ip_address=192.168.178.1&orientation=packet&port=4710&protocol=IPv4&scope_id=&ssl_key_size=3072&transport=tcp
 
 # A local multicast UDP neighbor.
 
