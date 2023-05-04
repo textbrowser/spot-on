@@ -54,5 +54,3 @@ Summary of Spot-On
 </ul>
 
 Please visit https://github.com/textbrowser/spot-on/tree/master/branches/trunk/Documentation for more information.
-
-Sometimes, https://5.180.182.220:8085 is online.
