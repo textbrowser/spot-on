@@ -100,9 +100,6 @@ extern "C" {
 #ifndef OPENSSL_NO_UBSAN
 # define OPENSSL_NO_UBSAN
 #endif
-#ifndef OPENSSL_NO_UI_CONSOLE
-# define OPENSSL_NO_UI_CONSOLE
-#endif
 #ifndef OPENSSL_NO_UNIT_TEST
 # define OPENSSL_NO_UNIT_TEST
 #endif

@@ -1,5 +1,5 @@
 /* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
- * Copyright (C) 2001-2020 g10 Code GmbH
+ * Copyright (C) 2001-2023 g10 Code GmbH
  *
  * This file is part of libgpg-error (aka libgpgrt).
  *
@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this program; if not, see <https://www.gnu.org/licenses/>.
- * SPDX-License-Identifier: LGPL-2.1+
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * Do not edit.  Generated from gpg-error.h.in for:
                  i686-w64-mingw32
@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.46-unknown"
-#define GPGRT_VERSION     "1.46-unknown"
+#define GPG_ERROR_VERSION "1.47-unknown"
+#define GPGRT_VERSION     "1.47-unknown"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012e00
-#define GPGRT_VERSION_NUMBER     0x012e00
+#define GPG_ERROR_VERSION_NUMBER 0x012f00
+#define GPGRT_VERSION_NUMBER     0x012f00
 
 
 #ifdef __GNUC__
@@ -124,6 +124,7 @@ typedef enum
     GPG_ERR_SOURCE_ASSUAN = 15,
     GPG_ERR_SOURCE_TPM2D = 16,
     GPG_ERR_SOURCE_TLS = 17,
+    GPG_ERR_SOURCE_TKD = 18,
     GPG_ERR_SOURCE_ANY = 31,
     GPG_ERR_SOURCE_USER_1 = 32,
     GPG_ERR_SOURCE_USER_2 = 33,
@@ -439,6 +440,9 @@ typedef enum
     GPG_ERR_KEYBOXD = 317,
     GPG_ERR_NO_SERVICE = 318,
     GPG_ERR_SERVICE = 319,
+    GPG_ERR_BAD_PUK = 320,
+    GPG_ERR_NO_RESET_CODE = 321,
+    GPG_ERR_BAD_RESET_CODE = 322,
     GPG_ERR_SYSTEM_BUG = 666,
     GPG_ERR_DNS_UNKNOWN = 711,
     GPG_ERR_DNS_SECTION = 712,
@@ -1035,7 +1039,7 @@ const char *gpgrt_check_version (const char *req_version);
 const char *gpg_error_check_version (const char *req_version);
 
 /* System specific type definitions.  */
-#include <sys/types.h>
+typedef void *gpgrt_process_t;
 
 typedef long    gpgrt_ssize_t;
 
@@ -1799,12 +1803,17 @@ void _gpgrt_log_assert (const char *expr, const char *file, int line,
 /*
  * Spawn functions  (Not yet available)
  */
+/* Internal flag to inherit file descriptor/handle */
+#define GPGRT_SPAWN_INHERIT_FILE  1
+
 #define GPGRT_SPAWN_NONBLOCK   16 /* Set the streams to non-blocking.      */
 #define GPGRT_SPAWN_RUN_ASFW   64 /* Use AllowSetForegroundWindow on W32.  */
 #define GPGRT_SPAWN_DETACHED  128 /* Start the process in the background.  */
+#define GPGRT_SPAWN_KEEP_STDIN   256
+#define GPGRT_SPAWN_KEEP_STDOUT  512
+#define GPGRT_SPAWN_KEEP_STDERR 1024
 
 #if 0
-
 /* Function and convenience macros to create pipes.  */
 gpg_err_code_t gpgrt_make_pipe (int filedes[2], gpgrt_stream_t *r_fp,
                                 int direction, int nonblock);
@@ -1815,40 +1824,43 @@ gpg_err_code_t gpgrt_make_pipe (int filedes[2], gpgrt_stream_t *r_fp,
 
 /* Fork and exec PGMNAME.  */
 gpg_err_code_t gpgrt_spawn_process (const char *pgmname, const char *argv[],
-                                    int *execpt, void (*preexec)(void),
-                                    unsigned int flags,
+                                    int *execpt, unsigned int flags,
                                     gpgrt_stream_t *r_infp,
                                     gpgrt_stream_t *r_outfp,
                                     gpgrt_stream_t *r_errfp,
-                                    pid_t *pid);
+                                    gpgrt_process_t *r_process_id);
 
 /* Fork and exec PGNNAME and connect the process to the given FDs.  */
 gpg_err_code_t gpgrt_spawn_process_fd (const char *pgmname, const char *argv[],
                                        int infd, int outfd, int errfd,
-                                       pid_t *pid);
+                                       int (*spawn_cb) (void *),
+                                       void *spawn_cb_arg,
+                                       gpgrt_process_t *r_process_id);
 
 /* Fork and exec PGMNAME as a detached process.  */
 gpg_err_code_t gpgrt_spawn_process_detached (const char *pgmname,
                                              const char *argv[],
-                                             const char *envp[] );
+                                             const char *envp[]);
 
 /* Wait for a single process.  */
-gpg_err_code_t gpgrt_wait_process (const char *pgmname, pid_t pid, int hang,
-                                int *r_exitcode);
+gpg_err_code_t gpgrt_wait_process (const char *pgmname,
+                                   gpgrt_process_t process_id,
+                                   int hang, int *r_exitcode);
 
 /* Wait for a multiple processes.  */
-gpg_err_code_t gpgrt_wait_processes (const char **pgmnames, pid_t *pids,
+gpg_err_code_t gpgrt_wait_processes (const char **pgmnames,
+                                     gpgrt_process_t *process_ids,
                                      size_t count, int hang, int *r_exitcodes);
 
-/* Kill the process identified by PID.  */
-void gpgrt_kill_process (pid_t pid);
+/* Kill the process identified by PROCESS_ID.  */
+void gpgrt_kill_process (gpgrt_process_t process_id);
 
-/* Release process resources identified by PID.  */
-void gpgrt_release_process (pid_t pid);
+/* Release process resources identified by PROCESS_ID.  */
+void gpgrt_release_process (gpgrt_process_t process_id);
 
+/* Close all file resources (descriptors), except KEEP_FDS. */
+void gpgrt_close_all_fds (int from, int *keep_fds);
 #endif /*0*/
-
-
 
 /*
  * Option parsing.

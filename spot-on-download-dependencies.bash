@@ -6,8 +6,8 @@
 
 # CURL
 
-curl=curl-8.0.1_5-win32-mingw
-dlcurl=dl-8.0.1_5
+curl=curl-8.0.1_1-win32-mingw
+dlcurl=dl-8.0.1_1
 
 rm -f $curl.zip
 rm -fr $curl
@@ -51,7 +51,7 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-i686-libgpg-error-1.46-2-any.pkg.tar.zst
+gpgerror=mingw-w64-i686-libgpg-error-1.47-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
