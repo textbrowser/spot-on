@@ -5,6 +5,7 @@ Summary of Spot-On
 <li>Authenticated and encrypted SQLite and PostgreSQL URL databases.</li>
 <li>BSD license.</li>
 <li>Bluetooth, SCTP, TCP, UDP.</li>
+<li>Completed.</li>
 <li>Configurable thread priorities.</li>
 <li>Custom URL rules.</li>
 <li>Custom socket options.</li>
