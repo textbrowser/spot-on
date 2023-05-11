@@ -427,10 +427,17 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(encrypted(void)),
 	      this,
 	      SLOT(slotEncrypted(void)));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
       connect(m_tcpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
+#else
+      connect(m_tcpSocket,
+	      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
       connect(m_tcpSocket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
@@ -454,10 +461,17 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
       connect(m_udpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
+#else
+      connect(m_udpSocket,
+	      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
       connect(m_udpSocket,
 	      SIGNAL(readyRead(void)),
 	      this,
@@ -839,10 +853,17 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(encrypted(void)),
 	      this,
 	      SLOT(slotEncrypted(void)));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
       connect(m_tcpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
+#else
+      connect(m_tcpSocket,
+	      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
       connect(m_tcpSocket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
@@ -880,10 +901,17 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
       connect(m_udpSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
+#else
+      connect(m_udpSocket,
+	      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
       connect(m_udpSocket,
 	      SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &,
 						 QAuthenticator *)),

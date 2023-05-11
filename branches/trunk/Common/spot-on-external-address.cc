@@ -75,10 +75,17 @@ void spoton_external_address::discover(void)
   if(!reply)
     return;
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,
 	  SLOT(slotError(QNetworkReply::NetworkError)));
+#else
+  connect(reply,
+	  SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+	  this,
+	  SLOT(slotError(QNetworkReply::NetworkError)));
+#endif
   connect(reply,
 	  SIGNAL(finished(void)),
 	  this,

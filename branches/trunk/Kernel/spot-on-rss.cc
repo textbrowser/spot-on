@@ -1151,10 +1151,17 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    reply->ignoreSslErrors();
 	    reply->setProperty("original-url", originalUrl);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
 	    connect(reply,
 		    SIGNAL(error(QNetworkReply::NetworkError)),
 		    this,
 		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+	    connect(reply,
+		    SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+		    this,
+		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
 	    connect(reply,
 		    SIGNAL(finished(void)),
 		    this,
@@ -1351,10 +1358,17 @@ void spoton_rss::slotDownloadContent(void)
       reply->ignoreSslErrors();
       reply->setProperty("original-url", url);
       reply->setReadBufferSize(0);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
       connect(reply,
 	      SIGNAL(error(QNetworkReply::NetworkError)),
 	      this,
 	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+      connect(reply,
+	      SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+	      this,
+	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
       connect(reply,
 	      SIGNAL(finished(void)),
 	      this,
@@ -1389,10 +1403,17 @@ void spoton_rss::slotDownloadTimeout(void)
     }
 
   reply->ignoreSslErrors();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
   connect(reply,
 	  SIGNAL(error(QNetworkReply::NetworkError)),
 	  this,
 	  SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+  connect(reply,
+	  SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+	  this,
+	  SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
   connect(reply,
 	  SIGNAL(finished(void)),
 	  this,
@@ -1450,10 +1471,17 @@ void spoton_rss::slotFeedReplyFinished(void)
 	      }
 
 	    reply->ignoreSslErrors();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
 	    connect(reply,
 		    SIGNAL(error(QNetworkReply::NetworkError)),
 		    this,
 		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+	    connect(reply,
+		    SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+		    this,
+		    SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
 	    connect(reply,
 		    SIGNAL(finished(void)),
 		    this,

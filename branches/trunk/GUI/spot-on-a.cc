@@ -1097,10 +1097,17 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	  SIGNAL(disconnected(void)),
 	  this,
 	  SLOT(slotKernelSocketState(void)));
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
   connect(&m_kernelSocket,
 	  SIGNAL(error(QAbstractSocket::SocketError)),
 	  this,
 	  SLOT(slotKernelSocketError(QAbstractSocket::SocketError)));
+#else
+  connect(&m_kernelSocket,
+	  SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	  this,
+	  SLOT(slotKernelSocketError(QAbstractSocket::SocketError)));
+#endif
   connect(&m_kernelSocket,
 	  SIGNAL(modeChanged(QSslSocket::SslMode)),
 	  this,
