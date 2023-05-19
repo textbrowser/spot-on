@@ -4288,7 +4288,7 @@ void spoton::slotAbout(void)
   str = QString("<html>GoldBug, version %1, is an open-source "
 		"application published under "
 		"the Revised BSD License.<br>"
-		"Made with love by X.<br>"
+		"Made with love by textbrowser.<br>"
 		"Please visit <a href=\"https://goldbug.sourceforge.io\">"
 		"https://goldbug.sourceforge.io</a> for more information.").
     arg(SPOTON_VERSION_STR);
