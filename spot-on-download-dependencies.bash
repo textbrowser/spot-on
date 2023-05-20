@@ -74,16 +74,16 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3420000.zip
+sqlite=sqlite-dll-win64-x64-3420000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2023/$sqlite
 
 if [ -r $sqlite ]; then
     unzip -q -o $sqlite
-    mkdir -p libSpotOn/Libraries.win32
-    mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win32/.
-    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
+    mkdir -p libSpotOn/Libraries.win64
+    mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win64/.
+    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
     rm -f $sqlite
 else
     echo "Cannot read $sqlite."
@@ -106,8 +106,8 @@ fi
 sqlite=sqlite-amalgamation-3420000
 
 if [ -r $sqlite ]; then
-    mkdir -p libSpotOn/Include.win32
-    mv $sqlite/*.h libSpotOn/Include.win32/.
+    mkdir -p libSpotOn/Include.win64
+    mv $sqlite/*.h libSpotOn/Include.win64/.
     rm -fr $sqlite
 else
     echo "Cannot read $sqlite."
