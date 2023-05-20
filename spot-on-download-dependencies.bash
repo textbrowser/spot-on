@@ -6,8 +6,8 @@
 
 # CURL
 
-curl=curl-8.0.1_1-win32-mingw
-dlcurl=dl-8.0.1_1
+curl=curl-8.1.0_1-win32-mingw
+dlcurl=dl-8.1.0_1
 
 rm -f $curl.zip
 rm -fr $curl
@@ -119,25 +119,6 @@ else
     echo "Cannot read $openssl."
 fi
 
-# wget --output-document=$openssl \
-#      --progress=bar \
-#      https://repo.msys2.org/mingw/i686/$openssl
-
-# if [ -r "$openssl" ]; then
-#    tar -I zstd -vxf $openssl
-#    mkdir -p libOpenSSL/Include.win32
-#    mkdir -p libOpenSSL/Libraries.win32
-#    rm -rf libOpenSSL/Include.win32/openssl
-#    mv mingw32/bin/libcrypto-1_1.dll libOpenSSL/Libraries.win32/.
-#    mv mingw32/bin/libssl-1_1.dll libOpenSSL/Libraries.win32/.
-#    mv mingw32/include/openssl libOpenSSL/Include.win32/.
-#    chmod +w,-x libOpenSSL/Libraries.win32/*.dll
-#    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
-#    rm -f $openssl
-# else
-#    echo "Cannot read $openssl."
-# fi
-
 # PostgreSQL
 
 postgresql=postgresql.zip
@@ -169,7 +150,7 @@ fi
 
 # SQLite Binaries
 
-sqlite=sqlite-dll-win32-x86-3410200.zip
+sqlite=sqlite-dll-win32-x86-3420000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2023/$sqlite
@@ -186,7 +167,7 @@ fi
 
 # SQLite Source
 
-sqlite=sqlite-amalgamation-3410200.zip
+sqlite=sqlite-amalgamation-3420000.zip
 
 rm -f $sqlite
 wget --progress=bar https://sqlite.org/2023/$sqlite
@@ -198,7 +179,7 @@ else
     echo "Cannot read $sqlite."
 fi
 
-sqlite=sqlite-amalgamation-3410200
+sqlite=sqlite-amalgamation-3420000
 
 if [ -r $sqlite ]; then
     mkdir -p libSpotOn/Include.win32
