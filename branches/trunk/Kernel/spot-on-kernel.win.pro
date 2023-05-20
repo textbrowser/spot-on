@@ -14,10 +14,9 @@ QT              -= gui
 
 DEFINES         += LIBSPOTON_OS_WINDOWS \
                    SPOTON_DATELESS_COMPILATION \
-		   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_POPTASTIC_SUPPORTED \
+                   SPOTON_POSTGRESQL_DISABLED \
 		   SPOTON_WEBSOCKETS_ENABLED
 
 equals(mceliece_supported, "true") {
@@ -56,24 +55,15 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\..\\..\\. \
-                   ..\\..\\..\\PostgreSQL\Include.win32 \
-                   ..\\..\\..\\libGeoIP\\Include.win32 \
                    ..\\..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\..\\libSpotOn\\Include.win32 \
-                   ..\\..\\..\\libcURL\\Win32.d\include
-LIBS		+= -L..\\..\\..\\PostgreSQL\\Libraries.win32 \
-                   -L..\\..\\..\\libNTRU \
+LIBS		+= -L..\\..\\..\\libNTRU \
 		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
-                   -L..\\..\\..\\libGeoIP\\Libraries.win32 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
-                   -L..\\..\\..\\libcURL\\Win32.d\bin \
-                   -lGeoIP-1 \
                    -lcrypto-1_1 \
-                   -lcurl \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lntru \
-                   -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl-1_1 \

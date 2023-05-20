@@ -20,10 +20,9 @@ QT		+= concurrent \
 DEFINES         += LIBSPOTON_OS_WINDOWS \
                    SPOTON_DATELESS_COMPILATION \
 		   SPOTON_GPGME_ENABLED \
-                   SPOTON_LINKED_WITH_LIBGEOIP \
                    SPOTON_LINKED_WITH_LIBNTRU \
-		   SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_POPTASTIC_SUPPORTED \
+                   SPOTON_LINKED_WITH_LIBPTHREAD \
+                   SPOTON_POSTGRESQL_DISABLED \
 		   SPOTON_WEBSOCKETS_ENABLED
 
 equals(mceliece_supported, "true") {
@@ -59,33 +58,24 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ..\\..\\. \
-                   ..\\..\\PostgreSQL\\Include.win32 \
                    ..\\..\\libGPGME\\Win32.d \
-                   ..\\..\\libGeoIP\\Include.win32 \
                    ..\\..\\libOpenSSL\\Include.win32 \
                    ..\\..\\libSpotOn\\Include.win32 \
-                   ..\\..\\libcURL\\Win32.d\\include \
                    GUI
 
 equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 }
 
-LIBS		+= -L..\\..\\PostgreSQL\\Libraries.win32 \
-                   -L..\\..\\libGPGME\\Win32.d \
-		   -L..\\..\\libGeoIP\\Libraries.win32 \
+LIBS		+= -L..\\..\\libGPGME\\Win32.d \
 		   -L..\\..\\libNTRU \
 		   -L..\\..\\libOpenSSL\\Libraries.win32 \
                    -L..\\..\\libSpotOn\\Libraries.win32 \
-                   -L..\\..\\libcURL\\Win32.d\\bin \
-                   -lGeoIP-1 \
                    -lcrypto-1_1 \
-                   -lcurl \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lgpgme-11 \
                    -lntru \
-                   -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl-1_1 \
@@ -107,14 +97,6 @@ documentation.files = Documentation
 documentation.path = release\\.
 executables.files = ..\\..\\Windows\\*.exe
 executables.path = release\\.
-libcurl1.files = ..\\..\\libcURL\\*.crt
-libcurl1.path = release\\.
-libcurl2.files = ..\\..\\libcURL\\Win32.d\\bin\\*.dll
-libcurl2.path = release\\.
-libgeoip1.files = ..\\..\\GeoIP\\Data\\*.dat
-libgeoip1.path = release\\.
-libgeoip2.files = ..\\..\\libGeoIP\\Libraries.win32\\*.dll
-libgeoip2.path = release\\.
 libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
 libgpgme1.path = release\\.
 libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\*.exe
@@ -143,10 +125,6 @@ plugins4.files = $$[QT_INSTALL_PLUGINS]\\renderplugins\\scene2d.dll
 plugins4.path = release\\plugins\\renderplugins\\.
 pluginspurge.extra = del /q /s *d.dll
 pluginspurge.path = release\\plugins\\.
-postgresql1.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.dll
-postgresql1.path = release\\.
-postgresql2.files = ..\\..\\PostgreSQL\\Libraries.win32\\*.manifest
-postgresql2.path= release\\.
 qt.files = Qt\\qt.conf
 qt.path = release\\.
 qtlibraries.files = $$[QT_INSTALL_BINS]\\Qt5Core.dll \
@@ -177,10 +155,6 @@ INSTALLS = plugins1 \
            data \
            documentation \
            executables \
-           libcurl1 \
-           libcurl2 \
-           libgeoip1 \
-           libgeoip2 \
            libgpgme1 \
            libgpgme2 \
            libntl \
@@ -191,8 +165,6 @@ INSTALLS = plugins1 \
            plugins2 \
            plugins3 \
            plugins4 \
-           postgresql1 \
-           postgresql2 \
            qt \
            qtlibraries \
            sounds \
