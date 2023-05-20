@@ -28,7 +28,7 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-x86-64-libgpg-error-1.47-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86_64-libgpg-error-1.47-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
@@ -41,7 +41,7 @@ if [ -r "$gpgerror" ]; then
     mkdir -p libSpotOn/Libraries.win64
     mv mingw64/bin/*.dll libSpotOn/Libraries.win64/.
     mv mingw64/include/gpg-error.h libSpotOn/Include.win64/.
-    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
+    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gpgerror
 else
