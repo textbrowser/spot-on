@@ -56,9 +56,9 @@ INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\..\\..\\. \
                    ..\\..\\..\\libOpenSSL\\Include.win64 \
-                   ..\\..\\..\\libSpotOn\\Include.win32 \
+                   ..\\..\\..\\libSpotOn\\Include.win64 \
 LIBS		+= -L..\\..\\..\\libNTRU \
-		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
+		   -L..\\..\\..\\libSpotOn\\Libraries.win64 \
 		   -L..\\..\\..\\libOpenSSL\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
