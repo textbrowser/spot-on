@@ -59,7 +59,7 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 INCLUDEPATH	+= . \
                    ..\\..\\. \
                    ..\\..\\libGPGME\\Win32.d \
-                   ..\\..\\libOpenSSL\\Include.win32 \
+                   ..\\..\\libOpenSSL\\Include.win64 \
                    ..\\..\\libSpotOn\\Include.win32 \
                    GUI
 
@@ -69,17 +69,17 @@ INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 
 LIBS		+= -L..\\..\\libGPGME\\Win32.d \
 		   -L..\\..\\libNTRU \
-		   -L..\\..\\libOpenSSL\\Libraries.win32 \
+		   -L..\\..\\libOpenSSL\\Libraries.win64 \
                    -L..\\..\\libSpotOn\\Libraries.win32 \
-                   -lcrypto-1_1 \
+                   -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lgpgme-11 \
                    -lntru \
                    -lpthread \
                    -lsqlite3 \
-                   -lssl-1_1 \
-                   -lws2_32
+                   -lssl-3-x64 \
+                   -lws2_64
 
 equals(mceliece_supported, "true") {
 LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
@@ -109,7 +109,7 @@ libntl.path = release\\.
 
 libntrudll.files = ..\\..\\libNTRU\\*.dll
 libntrudll.path = release\\.
-libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win32\\*.dll
+libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
 libspoton1.files = ..\\..\\libSpotOn\\Libraries.win32\\*.dll
 libspoton1.path = release\\.

@@ -55,19 +55,19 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\..\\..\\. \
-                   ..\\..\\..\\libOpenSSL\\Include.win32 \
+                   ..\\..\\..\\libOpenSSL\\Include.win64 \
                    ..\\..\\..\\libSpotOn\\Include.win32 \
 LIBS		+= -L..\\..\\..\\libNTRU \
 		   -L..\\..\\..\\libSpotOn\\Libraries.win32 \
-		   -L..\\..\\..\\libOpenSSL\\Libraries.win32 \
-                   -lcrypto-1_1 \
+		   -L..\\..\\..\\libOpenSSL\\Libraries.win64 \
+                   -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lntru \
                    -lpthread \
                    -lsqlite3 \
-                   -lssl-1_1 \
-                   -lws2_32
+                   -lssl-3-x64 \
+                   -lws2_64
 
 equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\..\\libNTL\\windows.d\\include
