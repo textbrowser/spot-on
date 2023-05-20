@@ -207,6 +207,9 @@
 	<file>Flags/yu.png</file>
 	<file>Flags/zm.png</file>
 	<file>Logo/background.png</file>
+	<file>Logo/goldbug.png</file>
+	<file>Logo/goldbug-neuland.png</file>
+	<file>Logo/goldbug-splash.png</file>
 	<file>Logo/poptastic.png</file>
 	<file>Logo/spot-on-logo.png</file>
 	<file>Logo/spot-on-splash.png</file>
@@ -261,6 +264,7 @@
 	<file>everaldo/empty-trash.png</file>
 	<file>everaldo/full-trash.png</file>
 	<file>everaldo/gemini.png</file>
+	<file>everaldo/goldbug.png</file>
 	<file>everaldo/heart.png</file>
 	<file>everaldo/icons.png</file>
 	<file>everaldo/inbox.png</file>
@@ -334,6 +338,7 @@
 	<file>meego/empty-trash.png</file>
 	<file>meego/full-trash.png</file>
 	<file>meego/gemini.png</file>
+	<file>meego/goldbug.png</file>
 	<file>meego/heart.png</file>
 	<file>meego/icons.png</file>
 	<file>meego/inbox.png</file>
@@ -387,6 +392,7 @@
 	<file>nouve/empty-trash.png</file>
 	<file>nouve/full-trash.png</file>
 	<file>nouve/gemini.png</file>
+	<file>nouve/goldbug.png</file>
 	<file>nouve/heart.png</file>
 	<file>nouve/icons.png</file>
 	<file>nouve/inbox.png</file>
@@ -440,6 +446,7 @@
 	<file>nuvola/empty-trash.png</file>
 	<file>nuvola/full-trash.png</file>
 	<file>nuvola/gemini.png</file>
+	<file>nuvola/goldbug.png</file>
 	<file>nuvola/heart.png</file>
 	<file>nuvola/icons.png</file>
 	<file>nuvola/inbox.png</file>
