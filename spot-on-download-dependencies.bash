@@ -6,21 +6,21 @@
 
 # GCrypt
 
-gcrypt=mingw-w64-i686-libgcrypt-1.9.4-1-any.pkg.tar.zst
+gcrypt=mingw-w64-x86_64-libgcrypt-1.9.4-1-any.pkg.tar.zst
 
 rm -f $gcrypt
 wget --output-document=$gcrypt \
      --progress=bar \
-     https://repo.msys2.org/mingw/i686/$gcrypt
+     https://repo.msys2.org/mingw/mingw64/$gcrypt
 
 if [ -r "$gcrypt" ]; then
     tar -I zstd -vxf $gcrypt
-    mkdir -p libSpotOn/Include.win32
-    mkdir -p libSpotOn/Libraries.win32
-    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
-    mv mingw32/include/*.h libSpotOn/Include.win32/.
-    chmod +w,-x libSpotOn/Libraries.win32/*.dll*
-    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    mkdir -p libSpotOn/Include.win64
+    mkdir -p libSpotOn/Libraries.win64
+    mv mingw64/bin/*.dll libSpotOn/Libraries.win64/.
+    mv mingw64/include/*.h libSpotOn/Include.win64/.
+    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gcrypt
 else
     echo "Cannot read $gcrypt."
@@ -28,21 +28,21 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-i686-libgpg-error-1.47-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86-64-libgpg-error-1.47-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
      --progress=bar \
-     https://repo.msys2.org/mingw/i686/$gpgerror
+     https://repo.msys2.org/mingw/mingw64/$gpgerror
 
 if [ -r "$gpgerror" ]; then
     tar -I zstd -vxf $gpgerror
-    mkdir -p libSpotOn/Include.win32
-    mkdir -p libSpotOn/Libraries.win32
-    mv mingw32/bin/*.dll libSpotOn/Libraries.win32/.
-    mv mingw32/include/gpg-error.h libSpotOn/Include.win32/.
+    mkdir -p libSpotOn/Include.win64
+    mkdir -p libSpotOn/Libraries.win64
+    mv mingw64/bin/*.dll libSpotOn/Libraries.win64/.
+    mv mingw64/include/gpg-error.h libSpotOn/Include.win64/.
     chmod +w,-x libSpotOn/Libraries.win32/*.dll*
-    rm -fr .BUILDINFO .MTREE .PKGINFO mingw32
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gpgerror
 else
     echo "Cannot read $gpgerror."
