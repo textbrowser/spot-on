@@ -42,11 +42,11 @@ extern "C" {
  * instead.  The purpose of this macro is to let autoconf (using the
  * AM_PATH_GPGME macro) check that this header matches the installed
  * library.  */
-#define GPGME_VERSION "1.15.1"
+#define GPGME_VERSION "1.18.0"
 
 /* The version number of this header.  It may be used to handle minor
  * API incompatibilities.  */
-#define GPGME_VERSION_NUMBER 0x010f01
+#define GPGME_VERSION_NUMBER 0x011200
 
 
 /* System specific typedefs.  */
@@ -390,8 +390,10 @@ gpgme_protocol_t;
 #define GPGME_KEYLIST_MODE_WITH_KEYGRIP       	64
 #define GPGME_KEYLIST_MODE_EPHEMERAL            128
 #define GPGME_KEYLIST_MODE_VALIDATE		256
+#define GPGME_KEYLIST_MODE_FORCE_EXTERN		512
 
 #define GPGME_KEYLIST_MODE_LOCATE		(1|2)
+#define GPGME_KEYLIST_MODE_LOCATE_EXTERNAL	(1|2|512)
 
 typedef unsigned int gpgme_keylist_mode_t;
 
@@ -414,8 +416,8 @@ gpgme_pinentry_mode_t;
 #define GPGME_EXPORT_MODE_SECRET               16
 #define GPGME_EXPORT_MODE_RAW                  32
 #define GPGME_EXPORT_MODE_PKCS12               64
-#define GPGME_EXPORT_MODE_NOUID               128  /* Experimental(!)*/
 #define GPGME_EXPORT_MODE_SSH                 256
+#define GPGME_EXPORT_MODE_SECRET_SUBKEY       512
 
 typedef unsigned int gpgme_export_mode_t;
 
@@ -636,7 +638,13 @@ struct _gpgme_key_sig
   unsigned int exportable : 1;
 
   /* Internal to GPGME, do not use.  */
-  unsigned int _unused : 28;
+  unsigned int _unused : 12;
+
+  /* The depth of a trust signature, 0 if no trust signature.  */
+  unsigned int trust_depth : 8;
+
+  /* The trust value of a trust signature, 0 if no trust signature.  */
+  unsigned int trust_value : 8;
 
   /* The public key algorithm used to create the signature.  */
   gpgme_pubkey_algo_t pubkey_algo;
@@ -683,6 +691,9 @@ struct _gpgme_key_sig
 
   /* Internal to GPGME, do not use.  */
   gpgme_sig_notation_t _last_notation;
+
+  /* The scope of a trust signature.  Might be NULL.  */
+  char *trust_scope;
 };
 typedef struct _gpgme_key_sig *gpgme_key_sig_t;
 
@@ -1737,6 +1748,12 @@ gpgme_error_t gpgme_op_import (gpgme_ctx_t ctx, gpgme_data_t keydata);
 gpgme_error_t gpgme_op_import_keys_start (gpgme_ctx_t ctx, gpgme_key_t keys[]);
 gpgme_error_t gpgme_op_import_keys (gpgme_ctx_t ctx, gpgme_key_t keys[]);
 
+/* Import the keys given by the array KEYIDS from a keyserver into the
+ * keyring.  */
+gpgme_error_t gpgme_op_receive_keys_start (gpgme_ctx_t ctx,
+                                           const char *keyids[]);
+gpgme_error_t gpgme_op_receive_keys (gpgme_ctx_t ctx, const char *keyids[]);
+
 
 /* Export the keys found by PATTERN into KEYDATA.  */
 gpgme_error_t gpgme_op_export_start (gpgme_ctx_t ctx, const char *pattern,
@@ -1914,6 +1931,7 @@ gpgme_error_t gpgme_op_delete_ext (gpgme_ctx_t ctx, const gpgme_key_t key,
 #define GPGME_KEYSIGN_LOCAL     (1 << 7)  /* Create a local signature.  */
 #define GPGME_KEYSIGN_LFSEP     (1 << 8)  /* Indicate LF separated user ids. */
 #define GPGME_KEYSIGN_NOEXPIRE  (1 << 9)  /* Force no expiration.  */
+#define GPGME_KEYSIGN_FORCE     (1 << 10) /* Force creation.  */
 
 
 /* Sign the USERID of KEY using the current set of signers.  */
@@ -2470,6 +2488,11 @@ char *gpgme_addrspec_from_uid (const char *uid);
 /*
  * Deprecated types, constants and functions.
  */
+
+/* This is a former experimental only features.  The constant is
+ * provided to not break existing code in the compiler phase.  */
+#define GPGME_EXPORT_MODE_NOUID               128  /* Do not use! */
+
 
 /* The possible stati for gpgme_op_edit.  The use of that function and
  * these status codes are deprecated in favor of gpgme_op_interact. */

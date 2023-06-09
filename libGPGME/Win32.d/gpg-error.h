@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.41"
-#define GPGRT_VERSION     "1.41"
+#define GPG_ERROR_VERSION "1.46"
+#define GPGRT_VERSION     "1.46"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012900
-#define GPGRT_VERSION_NUMBER     0x012900
+#define GPG_ERROR_VERSION_NUMBER 0x012e00
+#define GPGRT_VERSION_NUMBER     0x012e00
 
 
 #ifdef __GNUC__
@@ -122,6 +122,7 @@ typedef enum
     GPG_ERR_SOURCE_KLEO = 13,
     GPG_ERR_SOURCE_G13 = 14,
     GPG_ERR_SOURCE_ASSUAN = 15,
+    GPG_ERR_SOURCE_TPM2D = 16,
     GPG_ERR_SOURCE_TLS = 17,
     GPG_ERR_SOURCE_ANY = 31,
     GPG_ERR_SOURCE_USER_1 = 32,
@@ -1102,6 +1103,22 @@ size_t  gpgrt_w32_iconv (gpgrt_w32_iconv_t cd,
 # define iconv(a,b,c,d,e) gpgrt_w32_iconv ((a),(b),(c),(d),(e))
 #endif /*GPGRT_ENABLE_W32_ICONV_MACROS*/
 
+/* Release a wchar_t * buffer.  */
+void gpgrt_free_wchar (wchar_t *wstring);
+
+/* Convert an UTF-8 encoded file name to wchar.
+ * Prepend a '\\?\' prefix if needed.  */
+wchar_t *gpgrt_fname_to_wchar (const char *fname);
+
+/* Convert an UTF8 string to a WCHAR string.  Caller should use
+ * gpgrt_free_wchar to release the result.
+ * Returns NULL on error and sets ERRNO. */
+wchar_t *gpgrt_utf8_to_wchar (const char *string);
+
+/* Convert a WCHAR string to UTF-8.  Caller should use gpgrt_free to
+ * release the result.   Returns NULL on error and sets ERRNO.  */
+char *gpgrt_wchar_to_utf8 (const wchar_t *wstring);
+
 /* Query a string in the registry.  */
 char *gpgrt_w32_reg_query_string (const char *root,
                                   const char *dir,
@@ -1318,7 +1335,7 @@ struct _gpgrt_syshd
   enum gpgrt_syshd_types type;
   union {
     int fd;
-    int sock;
+    uintptr_t sock;
     int rvid;
     void *handle;
   } u;
@@ -1888,7 +1905,8 @@ typedef struct
 #define ARGPARSE_FLAG_USER     2048  /* Use user config file.                */
 #define ARGPARSE_FLAG_VERBOSE  4096  /* Print additional argparser info.     */
 #define ARGPARSE_FLAG_USERVERS 8192  /* Try version-ed user config files.    */
-#define ARGPARSE_FLAG_WITHATTR 16384 /* Return attribute bits.               */
+#define ARGPARSE_FLAG_WITHATTR 16384 /* Return attribute bits.  (Make sure   */
+                                     /* to act upon ARGPARSE_OPT_IGNORE.)    */
 
 /* Constants for (gpgrt_argparse_t).err.  */
 #define ARGPARSE_PRINT_WARNING  1    /* Print a diagnostic.                  */
