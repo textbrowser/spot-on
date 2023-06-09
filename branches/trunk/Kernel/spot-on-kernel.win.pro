@@ -39,7 +39,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
-                          -Wstrict-overflow=5 \
+                          -Wstrict-overflow=1 \
                           -fwrapv \
                           -pedantic \
                           -pie \
@@ -66,8 +66,7 @@ LIBS		+= -L..\\..\\..\\libNTRU \
                    -lntru \
                    -lpthread \
                    -lsqlite3 \
-                   -lssl-3-x64 \
-                   -lws2_64
+                   -lssl-3-x64
 
 equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\..\\libNTL\\windows.d\\include

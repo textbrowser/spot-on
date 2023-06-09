@@ -19,7 +19,6 @@ QT		+= concurrent \
 
 DEFINES         += LIBSPOTON_OS_WINDOWS \
                    SPOTON_DATELESS_COMPILATION \
-		   SPOTON_GPGME_ENABLED \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
                    SPOTON_POSTGRESQL_DISABLED \
@@ -58,7 +57,6 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ..\\..\\. \
-                   ..\\..\\libGPGME\\Win32.d \
                    ..\\..\\libOpenSSL\\Include.win64 \
                    ..\\..\\libSpotOn\\Include.win64 \
                    GUI
@@ -67,19 +65,16 @@ equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 }
 
-LIBS		+= -L..\\..\\libGPGME\\Win32.d \
-		   -L..\\..\\libNTRU \
+LIBS		+= -L..\\..\\libNTRU \
 		   -L..\\..\\libOpenSSL\\Libraries.win64 \
                    -L..\\..\\libSpotOn\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
-                   -lgpgme-11 \
                    -lntru \
                    -lpthread \
                    -lsqlite3 \
-                   -lssl-3-x64 \
-                   -lws2_64
+                   -lssl-3-x64
 
 equals(mceliece_supported, "true") {
 LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
@@ -97,10 +92,6 @@ documentation.files = Documentation
 documentation.path = release\\.
 executables.files = ..\\..\\Windows\\*.exe
 executables.path = release\\.
-libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
-libgpgme1.path = release\\.
-libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\*.exe
-libgpgme2.path = release\\.
 
 equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
@@ -158,8 +149,6 @@ INSTALLS = plugins1 \
            data \
            documentation \
            executables \
-           libgpgme1 \
-           libgpgme2 \
            libntl \
            libntrudll \
            libopenssl \
