@@ -85,7 +85,11 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
   m_isListening = false;
   m_serverPort = 0;
 #if defined(Q_OS_WIN)
+#if defined(SPOTON_SCTP_ENABLED)
   m_socketDescriptor = INVALID_SOCKET;
+#else
+  m_socketDescriptor = -1;
+#endif
 #else
   m_socketDescriptor = -1;
 #endif

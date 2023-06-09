@@ -83,7 +83,11 @@ spoton_sctp_socket::spoton_sctp_socket(QObject *parent):QObject(parent)
   m_connectToPeerPort = 0;
   m_hostLookupId = -1;
 #if defined(Q_OS_WIN)
+#if defined(SPOTON_SCTP_ENABLED)
   m_socketDescriptor = INVALID_SOCKET;
+#else
+  m_socketDescriptor = -1;
+#endif
 #else
   m_socketDescriptor = -1;
 #endif
