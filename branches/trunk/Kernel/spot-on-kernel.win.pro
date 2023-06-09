@@ -66,7 +66,8 @@ LIBS		+= -L..\\..\\..\\libNTRU \
                    -lntru \
                    -lpthread \
                    -lsqlite3 \
-                   -lssl-3-x64
+                   -lssl-3-x64 \
+                   -lws2_32
 
 equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\..\\libNTL\\windows.d\\include
