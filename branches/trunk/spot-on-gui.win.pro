@@ -43,7 +43,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wextra \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
-                          -Wstrict-overflow=5 \
+                          -Wstrict-overflow=1 \
                           -fwrapv \
                           -pedantic \
                           -pie \
@@ -58,7 +58,7 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ..\\..\\. \
-                   ..\\..\\libGPGME\\Win64.d \
+                   ..\\..\\libGPGME\\Win32.d \
                    ..\\..\\libOpenSSL\\Include.win64 \
                    ..\\..\\libSpotOn\\Include.win64 \
                    GUI
@@ -67,7 +67,7 @@ equals(mceliece_supported, "true") {
 INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 }
 
-LIBS		+= -L..\\..\\libGPGME\\Win64.d \
+LIBS		+= -L..\\..\\libGPGME\\Win32.d \
 		   -L..\\..\\libNTRU \
 		   -L..\\..\\libOpenSSL\\Libraries.win64 \
                    -L..\\..\\libSpotOn\\Libraries.win64 \
@@ -97,13 +97,16 @@ documentation.files = Documentation
 documentation.path = release\\.
 executables.files = ..\\..\\Windows\\*.exe
 executables.path = release\\.
-libgpgme1.files = ..\\..\\libGPGME\\Win64.d\\*.dll
+libgpgme1.files = ..\\..\\libGPGME\\Win32.d\\*.dll
 libgpgme1.path = release\\.
-libgpgme2.files = ..\\..\\libGPGME\\Win64.d\\*.exe
+libgpgme2.files = ..\\..\\libGPGME\\Win32.d\\*.exe
 libgpgme2.path = release\\.
 
 equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
+libntl.path = release\\.
+} else {
+libntl.files =
 libntl.path = release\\.
 }
 

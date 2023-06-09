@@ -6053,17 +6053,12 @@ void spoton::slotResetAll(void)
 		  QDir::separator() +
 		  SPOTON_APPLICATION_NAME);
 
-  int rc = (int)
-    (::ShellExecuteA(0, "open", program.toUtf8().constData(),
-		     0, 0, SW_SHOWNORMAL));
-
-  if(rc == SE_ERR_ACCESSDENIED)
-    /*
-    ** Elevated?
-    */
-
-    ::ShellExecuteA(0, "runas", program.toUtf8().constData(),
-		    0, 0, SW_SHOWNORMAL);
+  (::ShellExecuteA(0,
+		   "open",
+		   program.toUtf8().constData(),
+		   0,
+		   0,
+		   SW_SHOWNORMAL));
 #else
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   QProcess::startDetached(QCoreApplication::applicationDirPath() +
