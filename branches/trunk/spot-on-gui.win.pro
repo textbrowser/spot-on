@@ -8,6 +8,7 @@ mceliece_supported = "false"
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
+QMAKE_STRIP	=
 QT		+= concurrent \
                    gui \
                    multimedia \

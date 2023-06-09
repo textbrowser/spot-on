@@ -9,6 +9,7 @@ libntru.target = libntru.so
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
+QMAKE_STRIP	= echo
 QT		+= bluetooth \
                    concurrent \
                    gui \
@@ -102,7 +103,3 @@ RCC_DIR         = temp/rcc
 TARGET		= Spot-On
 TEMPLATE	= app
 UI_DIR          = temp/ui
-
-# Prevent qmake from stripping everything.
-
-QMAKE_STRIP	= echo
