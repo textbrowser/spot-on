@@ -314,6 +314,7 @@ Completed Items
 215.   Qt 6.2 LTS and QSqlQuery bind-value warnings.
 216.   Hybrid group communications based on deterministic key pairs. Buzz
        credentials may be generated from common text.
+217.   Windows x86-64.
 
 Remaining Items
 
@@ -321,4 +322,3 @@ Remaining Items
 2.     NTL for Windows.
 3.     Optional human proxy session setting.
 4.     Create a diagram of the URL database schema.
-5.     Windws x86-64. Remove Microsoft distribution files (exe).
