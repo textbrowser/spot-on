@@ -98,9 +98,6 @@ executables.path = release\\.
 equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
-} else {
-libntl.files =
-libntl.path = release\\.
 }
 
 libntrudll.files = ..\\..\\libNTRU\\*.dll
@@ -140,10 +137,6 @@ sounds.files = Sounds
 sounds.path = release\\.
 spotonbat.files = Shell\\*.bat
 spotonbat.path = release\\.
-sql1.files = SQL\\README*
-sql1.path = release\\SQL\\.
-sql2.files = SQL\\*.sql
-sql2.path = release\\SQL\\.
 translations.files = Translations\\*.qm
 translations.path = release\\Translations\\.
 
@@ -152,7 +145,6 @@ INSTALLS = plugins1 \
            data \
            documentation \
            executables \
-           libntl \
            libntrudll \
            libopenssl \
            libspoton1 \
@@ -164,6 +156,8 @@ INSTALLS = plugins1 \
            qtlibraries \
            sounds \
            spotonbat \
-           sql1 \
-           sql2 \
            translations
+
+equals(mceliece_supported, "true") {
+INSTALLS += libntl
+}
