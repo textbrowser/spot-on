@@ -237,6 +237,8 @@ static void threefish_decrypt_implementation(char *D,
 
       if(Q_UNLIKELY(!s[i]))
 	error = true; // Do not break.
+      else
+	memset(s[i], 0, sizeof(*s[i]) * static_cast<size_t> (Nw));
     }
 
   if(Q_UNLIKELY(error))
@@ -405,6 +407,8 @@ static void threefish_encrypt_implementation(char *E,
 
       if(Q_UNLIKELY(!s[i]))
 	error = true; // Do not break.
+      else
+	memset(s[i], 0, sizeof(*s[i]) * static_cast<size_t> (Nw));
     }
 
   if(Q_UNLIKELY(error))
