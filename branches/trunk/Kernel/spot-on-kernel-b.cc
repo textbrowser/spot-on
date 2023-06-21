@@ -1318,12 +1318,12 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     sign = false;
   else if(keyType == "poptastic")
     {
-      if(widgetType == "chat" && !setting("gui/chatSignMessages", true).
-	 toBool())
-	sign = false;
-      else if(widgetType == "email" && !setting("gui/emailSignMessages",
-						true).toBool())
-	sign = false;
+      // if(!setting("gui/chatSignMessages", true).toBool() &&
+      //    widgetType == "chat")
+      //   sign = false;
+      // else if(!setting("gui/emailSignMessages", true).toBool() &&
+      // 	 widgetType == "email")
+      //   sign = false;
 
       sign = true; // Mandatory signatures!
     }

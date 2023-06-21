@@ -217,7 +217,6 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       goto done_label;
     }
 #endif
-  rc = 0;
 
   /*
   ** Set the read and write buffer sizes.
