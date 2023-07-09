@@ -56,7 +56,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -std=c++11
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntl libntru purge
-QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/usr/local/spot-on/Lib
+QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
