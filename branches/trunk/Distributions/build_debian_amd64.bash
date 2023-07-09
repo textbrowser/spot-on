@@ -11,42 +11,42 @@ if [ ! -x /usr/bin/fakeroot ]; then
     exit 1
 fi
 
-# Preparing ./usr/local/spot-on:
+# Preparing ./opt/spot-on:
 
 make distclean 2>/dev/null
-mkdir -p ./usr/local/spot-on/Documentation
-mkdir -p ./usr/local/spot-on/Lib
-mkdir -p ./usr/local/spot-on/SQL
-mkdir -p ./usr/local/spot-on/Sounds
-mkdir -p ./usr/local/spot-on/Translations
+mkdir -p ./opt/spot-on/Documentation
+mkdir -p ./opt/spot-on/Lib
+mkdir -p ./opt/spot-on/SQL
+mkdir -p ./opt/spot-on/Sounds
+mkdir -p ./opt/spot-on/Translations
 qmake -o Makefile spot-on.pro
 lupdate spot-on.pro
 lrelease spot-on.pro
 make -j $(nproc)
-cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./usr/local/spot-on/Lib/.
-cp -p ../../libNTRU/libntru.so ./usr/local/spot-on/Lib/.
-cp -p ./Data/spot-on-neighbors.txt ./usr/local/spot-on/.
-cp -p ./Icons/Logo/spot-on-logo.png ./usr/local/spot-on/.
-cp -p ./SQL/* ./usr/local/spot-on/SQL/.
-cp -p ./Shell/spot-on-kernel.sh ./usr/local/spot-on/.
-cp -p ./Shell/spot-on.sh ./usr/local/spot-on/.
-cp -p ./Sounds/* ./usr/local/spot-on/Sounds/.
-cp -p ./Spot-On ./usr/local/spot-on/.
-cp -p ./Spot-On-Kernel ./usr/local/spot-on/.
-cp -p ./Translations/*.qm ./usr/local/spot-on/Translations/.
-cp -pr ./Documentation/* ./usr/local/spot-on/Documentation/.
-chmod -x ./usr/local/spot-on/Lib/lib*
-find ./usr/local/spot-on -type f -exec chmod g+w {} \;
-rm ./usr/local/spot-on/Documentation/*.qrc
+cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./opt/spot-on/Lib/.
+cp -p ../../libNTRU/libntru.so ./opt/spot-on/Lib/.
+cp -p ./Data/spot-on-neighbors.txt ./opt/spot-on/.
+cp -p ./Icons/Logo/spot-on-logo.png ./opt/spot-on/.
+cp -p ./SQL/* ./opt/spot-on/SQL/.
+cp -p ./Shell/spot-on-kernel.sh ./opt/spot-on/.
+cp -p ./Shell/spot-on.sh ./opt/spot-on/.
+cp -p ./Sounds/* ./opt/spot-on/Sounds/.
+cp -p ./Spot-On ./opt/spot-on/.
+cp -p ./Spot-On-Kernel ./opt/spot-on/.
+cp -p ./Translations/*.qm ./opt/spot-on/Translations/.
+cp -pr ./Documentation/* ./opt/spot-on/Documentation/.
+chmod -x ./opt/spot-on/Lib/lib*
+find ./opt/spot-on -type f -exec chmod g+w {} \;
+rm ./opt/spot-on/Documentation/*.qrc
 
 # Preparing Spot-On-x_amd64.deb:
 
-mkdir -p spot-on-debian/usr/local
+mkdir -p spot-on-debian/opt
 mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./DEBIAN spot-on-debian/.
-cp -r ./usr/local/spot-on spot-on-debian/usr/local/.
+cp -r ./opt/spot-on spot-on-debian/opt/.
 fakeroot dpkg-deb --build spot-on-debian Spot-On-0000.00.00_amd64.deb
 make distclean
+rm -fr ./opt
 rm -fr ./spot-on-debian
-rm -fr ./usr

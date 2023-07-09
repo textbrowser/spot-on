@@ -1,17 +1,17 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
-if [ -r /usr/local/spot-on/Spot-On ] && [ -x /usr/local/spot-on/Spot-On ]
+if [ -r /opt/Spot-On ] && [ -x /opt/spot-on/Spot-On ]
 then
-    export LD_LIBRARY_PATH=/usr/local/spot-on/Lib
+    export LD_LIBRARY_PATH=/opt/spot-on/Lib
     export QT_AUTO_SCREEN_SCALE_FACTOR=1
 
     # Disable https://en.wikipedia.org/wiki/MIT-SHM.
 
     export QT_X11_NO_MITSHM=1
-    cd /usr/local/spot-on && exec ./Spot-On "$@"
+    cd /opt/spot-on && exec ./Spot-On "$@"
     exit $?
 else
-    echo "Could not locate /usr/local/spot-on/Spot-On."
+    echo "Could not locate /opt/spot-on/Spot-On."
     exit 1
 fi
