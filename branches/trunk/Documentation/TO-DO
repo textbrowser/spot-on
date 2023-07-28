@@ -315,11 +315,11 @@ Completed Items
 216.   Hybrid group communications based on deterministic key pairs. Buzz
        credentials may be generated from common text.
 217.   Windows x86-64.
+218.   SQLite silent mode; limit synchronization.
 
 Remaining Items
 
-1.     SQLite silent mode; limit synchronization. Partially completed.
-2.     NTL for Windows.
-3.     Optional human proxy session setting.
-4.     Create a diagram of the URL database schema.
-5.     Dark mode for Windows.
+1.     NTL for Windows.
+2.     Optional human proxy session setting.
+3.     Create a diagram of the URL database schema.
+4.     Dark mode for Windows.

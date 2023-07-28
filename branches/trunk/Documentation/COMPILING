@@ -1,5 +1,3 @@
-Qt 5.5.1 or newer is required.
-
 Please read spot-on-download-dependencies.bash for hints
 regarding other libraries.
 
@@ -30,11 +28,6 @@ OS/2
 The macro LIBSPOTON_OS_OS2 must be defined in the project files.
 qmake -o Makefile spot-on.win.pro
 make
-
-OpenBSD
-
-qmake -o Makefile spot-on.openbsd.pro
-gmake
 
 PowerPC
 
