@@ -2,5 +2,5 @@
 :: Windows only.
 
 @echo "Launching Spot-On."
-start "Spot-On" Spot-On.exe -platform windows:darkmode=2
+start "Spot-On" Spot-On.exe -style fusion
 exit
