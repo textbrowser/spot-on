@@ -23,7 +23,6 @@ DEFINES += LIBSPOTON_OS_MAC \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
-           SPOTON_POPTASTIC_SUPPORTED \
            SPOTON_POSTGRESQL_DISABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
@@ -67,7 +66,6 @@ INCLUDEPATH	  += . \
 		     /usr/local/opt/libgpg-error/include \
 		     /usr/local/opt/ntl/include \
                      /usr/local/opt \
-                     /usr/local/opt/curl/include \
                      /usr/local/opt/openssl/include \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
@@ -77,13 +75,11 @@ ICON		  = Icons/Logo/spot-on-logo.icns
 
 LIBS		  += -L../../libNTRU \
                      -L/usr/local/lib \
-                     -L/usr/local/opt/curl/lib \
                      -L/usr/local/opt/openssl/lib \
                      -framework AppKit \
                      -framework Cocoa \
                      -lGeoIP \
                      -lcrypto \
-                     -lcurl \
                      -lgcrypt \
                      -lgmp \
                      -lgpg-error \
