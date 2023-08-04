@@ -61,7 +61,7 @@
 	  <p>
 	    <ul>
 	      <li>Replaced the error() signal with errorOccurred() in numerous
-		instances for Qt 5.15 and newer. Networking-related classes.</li>
+		instances for Qt 5.15 LTS and newer. Networking-related classes.</li>
 	      <li>Source-only release.</li>
 	    </ul>
 	  </p>
@@ -290,8 +290,8 @@
 	      <li>Optional SQLite synchronization.</li>
 	      <li>PostgreSQL 9.6.20; W32.</li>
 	      <li>Presentable key bundles.</li>
-	      <li>Qt 5.12.10; W32.</li>
-	      <li>Qt 5.15.2; OS X.</li>
+	      <li>Qt 5.12.10 LTS; W32.</li>
+	      <li>Qt 5.15.2 LTS; OS X.</li>
 	      <li>Replaced key-bundling delimiter "\n" with "|".</li>
 	      <li>Resolved Qt 5.15 LTS warnings.</li>
 	      <li>SQLite 3.34; W32.</li>
@@ -317,8 +317,8 @@
 	      <li>Modal print preview dialogs.</li>
 	      <li>PostgreSQL 9.6.19; W32.</li>
 	      <li>Prepared the applications for Qt 5.15 LTS.</li>
-	      <li>Qt 5.12.9; W32.</li>
-	      <li>Qt 5.15.0; OS X.</li>
+	      <li>Qt 5.12.9 LTS; W32.</li>
+	      <li>Qt 5.15.0 LTS; OS X.</li>
 	      <li>SQLite 3.33.0; W32.</li>
 	      <li>Task-safe spoton_kernel::s_crypts.</li>
 	      <li>Type of Service socket option. Not available on Windows.</li>
@@ -342,7 +342,7 @@
 	      <li>PowerPC and Qt 5.</li>
 	      <li>Prevent surreptitious forwarding for e-mail. Previous versions of Spot-On are not compatible with this release.</li>
 	      <li>Purge expired Forward Secrecy keys.</li>
-	      <li>Qt 5.12.8 on W32.</li>
+	      <li>Qt 5.12.8 LTS on W32.</li>
 	      <li>Removed SCTP on OS X as it's not properly supported by the operating system.</li>
 	      <li>Replaced deprecated Qt methods.</li>
 	      <li>StarBeam optimizations: decreased allowable read-rate interval, removed Unix file synchronization. Please remove starbeam.db.</li>
@@ -499,7 +499,7 @@
 	      <li>Do not disable journal_mode and synchronous for important SQLite databases such as rss.db and urls.db.</li>
 	      <li>Fancy context menus.</li>
 	      <li>NTL 11.3.2 on Linux. The configure script must be executed manually.</li>
-	      <li>OpenSSL 1.0.2s on W32. Qt 5.9.8 expects OpenSSL 1.0.0.</li>
+	      <li>OpenSSL 1.0.2s on W32. Qt 5.9.8 LTS expects OpenSSL 1.0.0.</li>
 	      <li>Populate e-mail participants on separated e-mail windows on global name change.</li>
 	      <li>PostgreSQL 9.6.14.3 on W32.</li>
 	      <li>Remove shared.db on forced kernel registration.</li>
@@ -519,7 +519,7 @@
 	      <li>Cute tool tips in Statistics.</li>
 	      <li>OpenSSL 1.1.1c on W32.</li>
 	      <li>PostgreSQL 9.6.14.1 on W32.</li>
-	      <li>Qt 5.9.8 on W32.</li>
+	      <li>Qt 5.9.8 LTS on W32.</li>
 	      <li>Removed Dooble import widgets.</li>
 	      <li>SQLite 3.28.0 on W32.</li>
 	    </ul>
@@ -535,7 +535,7 @@
 	      <li>Copying of large keys into the clipboard buffer is not permitted.</li>
 	      <li>Corrected automatic computations of StarBeam digests. Percents do not factually represent download completions.</li>
 	      <li>Corrected log entries.</li>
-	      <li>DTLS. Qt 5.12 and newer required.</li>
+	      <li>DTLS. Qt 5.12 LTS and newer required.</li>
 	      <li>Detect consecutive severed PostgreSQL URLs database connection failures.</li>
 	      <li>Disable WAL database journal mode.</li>
 	      <li>Echo modes supersede private applications.</li>
@@ -549,7 +549,7 @@
 	      <li>Removed read_uncomitted from SQLite queries.</li>
 	      <li>Resize poptastic.png logically.</li>
 	      <li>SQLite 3.27.2 on W32.</li>
-	      <li>TLS 1.3. Qt 5.12 and newer required.</li>
+	      <li>TLS 1.3. Qt 5.12 LTS and newer required.</li>
 	      <li>Terminate on most memory-allocation failures.</li>
 	    </ul>
 	  </p>
@@ -584,7 +584,7 @@
 	      <li>OpenSSL 1.1.1 on Windows.</li>
 	      <li>PostgreSQL 9.6.10 on Windows.</li>
 	      <li>Prefer normal SQLite database synchronization where possible.</li>
-	      <li>Qt 5.9.7 on Windows.</li>
+	      <li>Qt 5.9.7 LTS on Windows.</li>
 	      <li>SQLite 3.25.3 on Windows.</li>
 	      <li>Store McEliece public key objects in temporary container for rapid discovery. Container will be purged upon application termination.</li>
 	      <li>The Debian package has been prepared on Ubuntu 18.10 using Qt 5.11.1.</li>
@@ -615,7 +615,7 @@
   	      <li>OS X now requires clang 6.0.0 for NTL. Please install via brew install llvm.</li>
   	      <li>PostgreSQL at version 9.6.8 on Win32.</li>
   	      <li>SQLite at version 3.23.0 on Win32.</li>
-  	      <li>The Debian package has been curtailed. Built using Qt 5.9.5.</li>
+	      <li>The Debian package has been curtailed. Built using Qt 5.9.5 LTS.</li>
 	    </ul>
 	  </p>
 	  <h4><u>Spot-On 2018.04.04</u></h4>
@@ -651,7 +651,7 @@
 	      <li>Multiple interfaces will reset some statistics on launch. The kernel must compensate.</li>
 	      <li>New rosemary-ipv4.tilaa.cloud and rosemary-ipv6.tilaa.cloud TCP services.</li>
 	      <li>OpenBSD support.</li>
-	      <li>Qt 5.9.4 on W32.</li>
+	      <li>Qt 5.9.4 LTS on W32.</li>
 	      <li>Qt 5.10.1 on Linux.</li>
 	      <li>Query shared.db on kernel state.</li>
 	      <li>Removed legacy SQLite ALTER statements.</li>
