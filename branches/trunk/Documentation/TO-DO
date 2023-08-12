@@ -324,3 +324,4 @@ Remaining Items
 2.     Optional human proxy session setting.
 3.     Create a diagram of the URL database schema.
 4.     Dark mode for Windows.
+5.     Improve install target on Windows: copy NTRU library, delete verbose documentation files.
