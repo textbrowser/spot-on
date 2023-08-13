@@ -90,7 +90,7 @@ TEMPLATE        = app
 
 data.files = Data\\*.txt
 data.path = release\\.
-documentation.files = Documentation
+documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
 executables.files = ..\\..\\Windows\\*.exe
 executables.path = release\\.
