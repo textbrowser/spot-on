@@ -66,8 +66,8 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.47-unknown"
-#define GPGRT_VERSION     "1.47-unknown"
+#define GPG_ERROR_VERSION "1.47"
+#define GPGRT_VERSION     "1.47"
 
 /* The version number of this header. */
 #define GPG_ERROR_VERSION_NUMBER 0x012f00
