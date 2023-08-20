@@ -55,3 +55,5 @@ Summary of Spot-On
 </ul>
 
 Please visit https://github.com/textbrowser/spot-on/tree/master/branches/trunk/Documentation for more information.
+
+![Spot-On](https://github.com/textbrowser/spot-on/blob/master/Wiki/spot-on-android.png)
