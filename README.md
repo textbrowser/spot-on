@@ -2,6 +2,7 @@ Summary of Spot-On
 
 <ul>
 <li>Alpha processors.</li>
+<li>Android.</li>
 <li>Authenticated and encrypted SQLite and PostgreSQL URL databases.</li>
 <li>BSD license.</li>
 <li>Bluetooth, SCTP, TCP, UDP.</li>
@@ -18,12 +19,12 @@ Summary of Spot-On
 <li>E-mail (IMAP, POP, Spot-On).</li>
 <li>Echo public-key distribution system.</li>
 <li>End-to-End, not Hop-to-Hop encryption.</li>
-<li>FreeBSD, Linux, Mac, OS/2, OpenBSD, Windows.</li>
+<li>Android, FreeBSD, Linux, MacOS, OS/2, OpenBSD, Windows.</li>
 <li>GPG-lite via Rosetta.</li>
 <li>Human Proxies project.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
-<li>Mac and Windows install targets: make install!</li>
+<li>MacOS and Windows install targets: make install!</li>
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Native virtual keyboard.</li>
