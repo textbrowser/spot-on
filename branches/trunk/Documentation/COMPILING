@@ -25,7 +25,6 @@ sudo make install
 
 OS/2
 
-The macro LIBSPOTON_OS_OS2 must be defined in the project files.
 qmake -o Makefile spot-on.win.pro
 make
 

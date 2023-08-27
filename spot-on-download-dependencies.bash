@@ -15,11 +15,11 @@ wget --output-document=$gcrypt \
 
 if [ -r "$gcrypt" ]; then
     tar -I zstd -vxf $gcrypt
-    mkdir -p libSpotOn/Include.win64
-    mkdir -p libSpotOn/Libraries.win64
-    mv mingw64/bin/*.dll libSpotOn/Libraries.win64/.
-    mv mingw64/include/*.h libSpotOn/Include.win64/.
-    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
+    mkdir -p libGCrypt/Include.win64
+    mkdir -p libGCrypt/Libraries.win64
+    mv mingw64/bin/*.dll libGCrypt/Libraries.win64/.
+    mv mingw64/include/*.h libGCrypt/Include.win64/.
+    chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gcrypt
 else
@@ -37,11 +37,11 @@ wget --output-document=$gpgerror \
 
 if [ -r "$gpgerror" ]; then
     tar -I zstd -vxf $gpgerror
-    mkdir -p libSpotOn/Include.win64
-    mkdir -p libSpotOn/Libraries.win64
-    mv mingw64/bin/*.dll libSpotOn/Libraries.win64/.
-    mv mingw64/include/gpg-error.h libSpotOn/Include.win64/.
-    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
+    mkdir -p libGCrypt/Include.win64
+    mkdir -p libGCrypt/Libraries.win64
+    mv mingw64/bin/*.dll libGCrypt/Libraries.win64/.
+    mv mingw64/include/gpg-error.h libGCrypt/Include.win64/.
+    chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gpgerror
 else
@@ -70,45 +70,4 @@ if [ -r "$openssl" ]; then
     rm -fr openssl-3*
 else
     echo "Cannot read $openssl."
-fi
-
-# SQLite Binaries
-
-sqlite=sqlite-dll-win64-x64-3420000.zip
-
-rm -f $sqlite
-wget --progress=bar https://sqlite.org/2023/$sqlite
-
-if [ -r $sqlite ]; then
-    unzip -q -o $sqlite
-    mkdir -p libSpotOn/Libraries.win64
-    mv sqlite3.def sqlite3.dll libSpotOn/Libraries.win64/.
-    chmod +w,-x libSpotOn/Libraries.win64/*.dll*
-    rm -f $sqlite
-else
-    echo "Cannot read $sqlite."
-fi
-
-# SQLite Source
-
-sqlite=sqlite-amalgamation-3420000.zip
-
-rm -f $sqlite
-wget --progress=bar https://sqlite.org/2023/$sqlite
-
-if [ -r $sqlite ]; then
-    unzip -q -o $sqlite
-    rm -f $sqlite
-else
-    echo "Cannot read $sqlite."
-fi
-
-sqlite=sqlite-amalgamation-3420000
-
-if [ -r $sqlite ]; then
-    mkdir -p libSpotOn/Include.win64
-    mv $sqlite/*.h libSpotOn/Include.win64/.
-    rm -fr $sqlite
-else
-    echo "Cannot read $sqlite."
 fi

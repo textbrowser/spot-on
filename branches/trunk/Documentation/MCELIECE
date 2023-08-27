@@ -45,5 +45,5 @@ QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
 Please ignore on FreeBSD, OS X, and Windows.
 
-QMAKE_EXTRA_TARGETS = libntl libntru libspoton purge
-PRE_TARGETDEPS = libntl.so libntru.so libspoton.so
+QMAKE_EXTRA_TARGETS = libntl libntru purge
+PRE_TARGETDEPS = libntl.so libntru.so
