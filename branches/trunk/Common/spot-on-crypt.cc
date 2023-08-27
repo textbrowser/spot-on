@@ -61,7 +61,6 @@ extern "C"
   GCRY_THREAD_OPTION_PTHREAD_IMPL;
 #endif
 #endif
-#include "libSpotOn/libspoton.h"
 #include <openssl/opensslv.h>
 }
 

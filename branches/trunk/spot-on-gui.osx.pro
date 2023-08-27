@@ -15,8 +15,7 @@ QT		+= bluetooth \
                    websockets \
                    widgets
 
-DEFINES += LIBSPOTON_OS_MAC \
-           SPOTON_BLUETOOTH_ENABLED \
+DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
            SPOTON_DTLS_DISABLED \
            SPOTON_LINKED_WITH_LIBGEOIP \

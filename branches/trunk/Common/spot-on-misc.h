@@ -189,6 +189,7 @@ class spoton_misc
   static bool prepareUrlDistillersDatabase(void);
   static bool prepareUrlKeysDatabase(void);
   static bool publicKeyExists(const qint64 oid);
+  static bool registerKernel(const pid_t pid);
   static bool saveFriendshipBundle(const QByteArray &keyType,
 				   const QByteArray &name,
 				   const QByteArray &publicKey,
@@ -208,6 +209,7 @@ class spoton_misc
   static bool storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 					 spoton_crypt *crypt);
   static int minimumNeighborLaneWidth(void);
+  static pid_t kernelPid(void);
   static qint64 oidFromPublicKeyHash(const QByteArray &publicKeyHash);
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
@@ -221,6 +223,7 @@ class spoton_misc
   static void cleanupDatabases(spoton_crypt *crypt);
   static void closeSocket(const qintptr socketDescriptor);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
+  static void deregisterKernel(const pid_t pid);
   static void enableLog(const bool state);
   static void logError(const QString &error);
   static void populateUrlsDatabase(const QList<QList<QVariant> > &list,

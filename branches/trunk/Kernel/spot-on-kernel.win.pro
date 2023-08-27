@@ -12,8 +12,7 @@ LANGUAGE	= C++
 QT		+= concurrent network sql websockets
 QT              -= gui
 
-DEFINES         += LIBSPOTON_OS_WINDOWS \
-                   SPOTON_DATELESS_COMPILATION \
+DEFINES         += SPOTON_DATELESS_COMPILATION \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
                    SPOTON_POSTGRESQL_DISABLED \

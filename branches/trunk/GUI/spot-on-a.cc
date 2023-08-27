@@ -228,7 +228,6 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
-  libspoton_enable_sqlite_cache();
 #if defined(Q_OS_WIN)
   QApplication::addLibraryPath("plugins");
 #endif
@@ -739,7 +738,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 #else
      arg("0.0").
 #endif
-     arg(LIBSPOTON_VERSION_STR).
+     arg("N/A").
      arg(spoton_misc::homePath()).
      arg(qversion).
 #ifdef SPOTON_GPGME_ENABLED
@@ -5901,30 +5900,7 @@ void spoton::slotDeactivateKernel(void)
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
-  libspoton_handle_t libspotonHandle;
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     m_settings.
-			     value("gui/gcryctl_init_secmem",
-				   spoton_common::
-				   MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt())) ==
-     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
-    libspoton_deregister_kernel
-      (libspoton_registered_kernel_pid(&libspotonHandle, 0),
-       &libspotonHandle);
-
-  libspoton_close(&libspotonHandle);
+  spoton_misc::deregisterKernel(spoton_misc::kernelPid());
   m_kernelSocket.close();
 #if SPOTON_GOLDBUG == 1
   m_ui.activateKernel->setStyleSheet("background-color: #ff717e;"

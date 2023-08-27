@@ -38,7 +38,6 @@
 
 extern "C"
 {
-#include "libSpotOn/libspoton.h"
 #include <fcntl.h>
 #ifndef SPOTON_POSTGRESQL_DISABLED
 #include <libpq-fe.h>
@@ -307,7 +306,6 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
-  libspoton_enable_sqlite_cache();
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
   struct sigaction act;
@@ -391,27 +389,7 @@ int main(int argc, char *argv[])
       }
     else if(argv && argv[i] && qstrcmp(argv[i], "--terminate") == 0)
       {
-	QString sharedPath
-	  (spoton_misc::homePath() + QDir::separator() + "shared.db");
-	libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-	libspoton_handle_t libspotonHandle;
-
-	if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-				   0,
-				   0,
-				   0,
-				   0,
-				   0,
-				   0,
-				   0,
-				   &libspotonHandle,
-				   1)) ==
-	   LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
-	  libspoton_deregister_kernel
-	    (libspoton_registered_kernel_pid(&libspotonHandle, 0),
-	     &libspotonHandle);
-
-	libspoton_close(&libspotonHandle);
+	spoton_misc::deregisterKernel(spoton_misc::kernelPid());
 	return EXIT_SUCCESS;
       }
 
@@ -474,30 +452,8 @@ int main(int argc, char *argv[])
 	}
     }
 
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-  libspoton_handle_t libspotonHandle;
-
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     integer)) ==
-     LIBSPOTON_ERROR_GCRY_CHECK_VERSION || err == LIBSPOTON_ERROR_NONE)
-    err = libspoton_register_kernel
-      (static_cast<pid_t> (QCoreApplication::applicationPid()),
-       settings.value("gui/forceKernelRegistration", true).toBool(),
-       &libspotonHandle);
-
-  libspoton_close(&libspotonHandle);
-
-  if(err == LIBSPOTON_ERROR_NONE)
+  if(spoton_misc::
+     registerKernel(static_cast<pid_t> (QCoreApplication::applicationPid())))
     {
       s_kernel = new (std::nothrow) spoton_kernel();
 
@@ -517,10 +473,7 @@ int main(int argc, char *argv[])
     }
   else
     {
-      std::cerr << "Critical kernel error ("
-		<< libspoton_strerror(err)
-		<< ") with libspoton_init_b(). Exiting kernel."
-		<< std::endl;
+      std::cerr << "Cannot register the kernel." << std::endl;
 #ifdef SPOTON_POPTASTIC_SUPPORTED
       curl_global_cleanup();
 #endif
@@ -1664,75 +1617,17 @@ void spoton_kernel::addBuzzKey(const QByteArray &key,
 
 void spoton_kernel::checkForTermination(void)
 {
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
-  bool registered = false;
-
-  if(QFileInfo::exists(sharedPath))
-    {
-      libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-      libspoton_handle_t libspotonHandle;
-
-      if((err =
-	  libspoton_init_b(sharedPath.toStdString().c_str(),
-			   0,
-			   0,
-			   0,
-			   0,
-			   0,
-			   0,
-			   0,
-			   &libspotonHandle,
-			   setting("kernel/gcryctl_init_secmem",
-				   spoton_common::
-				   MINIMUM_SECURE_MEMORY_POOL_SIZE).
-			   toInt())) == LIBSPOTON_ERROR_GCRY_CHECK_VERSION ||
-	 err == LIBSPOTON_ERROR_NONE)
-	registered = QCoreApplication::applicationPid() ==
-	  libspoton_registered_kernel_pid(&libspotonHandle, &err);
-
-      libspoton_close(&libspotonHandle);
-
-      if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED)
-	/*
-	** Let's try next time.
-	*/
-
-	registered = true;
-    }
-
-  emit terminate(registered);
+  emit terminate
+    (spoton_misc::kernelPid() ==
+     static_cast<pid_t> (QCoreApplication::applicationPid()));
 }
 
 void spoton_kernel::cleanup(void)
 {
-  QFile::remove(spoton_misc::homePath() + QDir::separator() +
-		"congestion_control.db");
-
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() +
-		     "shared.db");
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-  libspoton_handle_t libspotonHandle;
-
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     setting("kernel/gcryctl_init_secmem",
-				     spoton_common::
-				     MINIMUM_SECURE_MEMORY_POOL_SIZE).
-			     toInt())) == LIBSPOTON_ERROR_GCRY_CHECK_VERSION ||
-     err == LIBSPOTON_ERROR_NONE)
-    libspoton_deregister_kernel
-      (static_cast<pid_t> (QCoreApplication::applicationPid()),
-			   &libspotonHandle);
-
-  libspoton_close(&libspotonHandle);
+  QFile::remove
+    (spoton_misc::homePath() + QDir::separator() + "congestion_control.db");
+  spoton_misc::deregisterKernel
+    (static_cast<pid_t> (QCoreApplication::applicationPid()));
 }
 
 void spoton_kernel::cleanupListenersDatabase(const QSqlDatabase &db)

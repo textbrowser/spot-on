@@ -1275,33 +1275,9 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
 bool spoton::isKernelActive(void) const
 {
-  QString sharedPath(spoton_misc::homePath() + QDir::separator() + "shared.db");
-  libspoton_error_t err = LIBSPOTON_ERROR_NONE;
-  libspoton_handle_t libspotonHandle;
-  pid_t pid = 0;
+  pid_t pid = spoton_misc::kernelPid();
 
-  if((err = libspoton_init_b(sharedPath.toStdString().c_str(),
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     0,
-			     &libspotonHandle,
-			     0)) ==
-     LIBSPOTON_ERROR_NONE || err == LIBSPOTON_ERROR_GCRY_CHECK_VERSION)
-    pid = libspoton_registered_kernel_pid(&libspotonHandle, &err);
-
-  libspoton_close(&libspotonHandle);
-
-  if(err == LIBSPOTON_ERROR_SQLITE_DATABASE_LOCKED)
-    /*
-    ** Let's try next time.
-    */
-
-    return true;
-  else if(pid > 0)
+  if(pid > 0)
     {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       return kill(pid, 0) == 0;

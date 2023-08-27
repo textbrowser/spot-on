@@ -77,11 +77,6 @@
 
 #include <limits>
 
-extern "C"
-{
-#include "libSpotOn/libspoton.h"
-}
-
 #ifdef Q_OS_MACOS
 #include "Common/CocoaInitializer.h"
 #endif

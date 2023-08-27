@@ -3274,6 +3274,45 @@ bool spoton_misc::publicKeyExists(const qint64 oid)
   return exists;
 }
 
+bool spoton_misc::registerKernel(const pid_t pid)
+{
+  if(pid <= 0)
+    return false;
+
+  QString connectionName("");
+  bool ok = false;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec
+	  ("CREATE TABLE IF NOT EXISTS kernel_registration ("
+	   "pid INTEGER PRIMARY KEY NOT NULL)");
+	query.exec
+	  ("CREATE TRIGGER IF NOT EXISTS kernel_registration_trigger "
+	   "BEFORE INSERT ON kernel_registration "
+	   "BEGIN "
+	   "DELETE FROM kernel_registration; "
+	   "END");
+	query.prepare
+	  ("INSERT OR REPLACE INTO kernel_registration (pid) VALUES (?)");
+	query.addBindValue(pid);
+	ok = query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return ok;
+}
+
 bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
 				       const QByteArray &n, // Name
 				       const QByteArray &publicKey,
@@ -3722,6 +3761,34 @@ int spoton_misc::minimumNeighborLaneWidth(void)
 
   QSqlDatabase::removeDatabase(connectionName);
   return laneWidth;
+}
+
+pid_t spoton_misc::kernelPid(void)
+{
+  QString connectionName("");
+  pid_t pid = 0;
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+
+	if(query.exec("SELECT pid FROM kernel_registration LIMIT 1") &&
+	   query.next())
+	  pid = static_cast<pid_t> (query.value(0).toLongLong());
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return pid;
 }
 
 qint64 spoton_misc::oidFromPublicKeyHash(const QByteArray &publicKeyHash)
@@ -4554,6 +4621,30 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
       settings.insert(list.at(i), rational);
     }
+}
+
+void spoton_misc::deregisterKernel(const pid_t pid)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = database(connectionName);
+
+    db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare("DELETE FROM kernel_registration WHERE pid = ?");
+	query.addBindValue(pid);
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_misc::enableLog(const bool state)
