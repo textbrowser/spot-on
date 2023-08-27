@@ -54,17 +54,16 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\..\\..\\. \
+                   ..\\..\\..\\libGCrypt\\Include.win64
                    ..\\..\\..\\libOpenSSL\\Include.win64 \
-                   ..\\..\\..\\libSpotOn\\Include.win64
 LIBS		+= -L..\\..\\..\\libNTRU \
-		   -L..\\..\\..\\libOpenSSL\\Libraries.win64 \
-		   -L..\\..\\..\\libSpotOn\\Libraries.win64 \
+		   -L..\\..\\..\\libGCrypt\\Libraries.win64 \
+                   -L..\\..\\..\\libOpenSSL\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lntru \
                    -lpthread \
-                   -lsqlite3 \
                    -lssl-3-x64 \
                    -lws2_32
 

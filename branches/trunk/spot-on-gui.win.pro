@@ -57,8 +57,8 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ..\\..\\. \
+                   ..\\..\\libGCrypt\\Include.win64 \
                    ..\\..\\libOpenSSL\\Include.win64 \
-                   ..\\..\\libSpotOn\\Include.win64 \
                    GUI
 
 equals(mceliece_supported, "true") {
@@ -66,14 +66,13 @@ INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 }
 
 LIBS		+= -L..\\..\\libNTRU \
+                   -L..\\..\\libGCrypt\\Libraries.win64 \
 		   -L..\\..\\libOpenSSL\\Libraries.win64 \
-                   -L..\\..\\libSpotOn\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
                    -lntru \
                    -lpthread \
-                   -lsqlite3 \
                    -lssl-3-x64 \
                    -lws2_32
 
@@ -93,6 +92,10 @@ documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
 executables.files = ..\\..\\Windows\\*.exe
 executables.path = release\\.
+libgcrypt1.files = ..\\..\\libGCrypt\\Libraries.win64\\*.dll
+libgcrypt1.path = release\\.
+libgcrypt2.files = ..\\..\\libGCrypt\\Libraries.win64\\thread.d\\*.dll
+libgcrypt2.path = release\\.
 
 equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
@@ -103,10 +106,6 @@ libntrudll.files = ..\\..\\libNTRU\\*.dll
 libntrudll.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
-libspoton1.files = ..\\..\\libSpotOn\\Libraries.win64\\*.dll
-libspoton1.path = release\\.
-libspoton2.files = ..\\..\\libSpotOn\\Libraries.win64\\thread.d\\*.dll
-libspoton2.path = release\\.
 plugins1.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins1.path = release\\plugins\\.
 plugins2.files = $$[QT_INSTALL_PLUGINS]\\gamepads\\xinputgamepad.dll
@@ -144,10 +143,10 @@ INSTALLS = plugins1 \
            data \
            documentation \
            executables \
+           libgcrypt1 \
+           libgcrypt2 \
            libntrudll \
            libopenssl \
-           libspoton1 \
-           libspoton2 \
            plugins2 \
            plugins3 \
            plugins4 \
