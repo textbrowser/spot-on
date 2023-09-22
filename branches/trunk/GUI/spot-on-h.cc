@@ -486,6 +486,8 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText
+	("WEB_PAGES_SHARED_DIRECTORY := /dev/null");
+      m_optionsUi.other_options->appendPlainText
 	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
 	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
       m_optionsUi.other_options->appendPlainText

@@ -118,7 +118,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
   QString error("");
 
   imported = spoton_misc::importUrl
-    (list.value(0).toByteArray(),
+    (list.value(0).toByteArray(),       // Content
      list.value(1).toString().toUtf8(), // Description
      list.value(2).toString().toUtf8(), // Title
      spoton_misc::urlToEncoded(url),    // URL
@@ -134,6 +134,29 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
   m_imported.fetchAndAddOrdered(imported ? 1 : 0);
+
+  QString directory
+    (spoton_kernel::setting("WEB_PAGES_SHARED_DIRECTORY", "").toString());
+
+  if(QFileInfo(directory).isWritable())
+    {
+      QDir dir(directory);
+
+      if(dir.mkdir(url.host().mid(0, 2)))
+	{
+	  QFile file(directory +
+		     QDir::separator() +
+		     url.host().mid(0, 2) +
+		     QDir::separator() +
+		     url.toEncoded());
+
+	  if(file.open(QIODevice::ReadWrite))
+	    {
+	      file.write(list.value(0).toByteArray());
+	      file.flush();
+	    }
+	}
+    }
 
   if(!error.isEmpty())
     emit logError(error);
