@@ -142,7 +142,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
     {
       QDir dir(directory);
 
-      if(dir.mkdir(url.host().mid(0, 2)))
+      if(dir.mkpath(url.host().mid(0, 2)))
 	{
 	  QFile file(directory +
 		     QDir::separator() +
@@ -155,8 +155,13 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	      file.write(list.value(0).toByteArray());
 	      file.flush();
 	    }
+	  else
+	    emit logError
+	      (QString("Could not open the file %1.").arg(file.fileName()));
 	}
     }
+  else
+    emit logError(QString("The directory %1 is not writable.").arg(directory));
 
   if(!error.isEmpty())
     emit logError(error);
