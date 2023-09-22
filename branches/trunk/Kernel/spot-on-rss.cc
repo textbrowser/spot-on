@@ -148,7 +148,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 		     QDir::separator() +
 		     url.host().mid(0, 2) +
 		     QDir::separator() +
-		     url.toEncoded());
+		     url.toString(QUrl::FullyEncoded));
 
 	  if(file.open(QIODevice::ReadWrite))
 	    {
