@@ -150,14 +150,33 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 		     QDir::separator() +
 		     QUrl::toPercentEncoding(url.toString()));
 
-	  if(file.open(QIODevice::ReadWrite))
+	  if(file.open(QIODevice::Truncate | QIODevice::ReadWrite))
 	    {
-	      file.write(list.value(0).toByteArray());
+	      file.write(list.value(0).toByteArray()); // Content
 	      file.flush();
 	    }
 	  else
 	    emit logError
 	      (QString("Could not open the file %1.").arg(file.fileName()));
+
+	  file.close();
+	  file.setFileName(directory +
+			   QDir::separator() +
+			   url.host().mid(0, 2) +
+			   QDir::separator() +
+			   QUrl::toPercentEncoding(url.toString()) +
+			   "_title");
+
+	  if(file.open(QIODevice::Truncate | QIODevice::ReadWrite))
+	    {
+	      file.write(list.value(2).toString().toUtf8()); // Title
+	      file.flush();
+	    }
+	  else
+	    emit logError
+	      (QString("Could not open the file %1.").arg(file.fileName()));
+
+	  file.close();
 	}
     }
   else
