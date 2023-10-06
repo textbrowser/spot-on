@@ -975,6 +975,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
   m_initialized = true;
+  QTimer::singleShot(2500, this, SLOT(slotUpdateSettings(void)));
 }
 
 spoton_kernel::~spoton_kernel()
