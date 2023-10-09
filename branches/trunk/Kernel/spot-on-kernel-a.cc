@@ -513,7 +513,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   QDir().mkdir(spoton_misc::homePath());
 
   QSettings settings;
-  bool disable_mailer = false;
+  bool disable_mail = false;
+  bool disable_starbeam = false;
   bool disable_ui_server = false;
 
   settings.remove("kernel/bluetooth_msecs_waitforbyteswritten");
@@ -534,8 +535,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   QStringList arguments(QCoreApplication::arguments());
 
   for(int i = 1; i < arguments.size(); i++)
-    if(arguments.at(i) == "--disable-mailer")
-      disable_mailer = true;
+    if(arguments.at(i) == "--disable-mail")
+      disable_mail = true;
+    else if(arguments.at(i) == "--disable-starbeam")
+      disable_starbeam = true;
     else if(arguments.at(i) == "--disable-ui-server")
       disable_ui_server = true;
     else if(arguments.at(i) == "--passphrase" ||
@@ -743,15 +746,20 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   if(!disable_ui_server)
     m_guiServer = new spoton_gui_server(this);
 
-  if(!disable_mailer)
+  if(!disable_mail)
     m_mailer = new spoton_mailer(this);
 
   m_rss = new spoton_rss(this);
-  m_starbeamWriter = new spoton_starbeam_writer(this);
-  connect(m_starbeamWriter,
-	  SIGNAL(writeMessage0061(const QByteArray &)),
-	  this,
-	  SLOT(slotWriteMessage0061(const QByteArray &)));
+
+  if(!disable_starbeam)
+    {
+      m_starbeamWriter = new spoton_starbeam_writer(this);
+      connect(m_starbeamWriter,
+	      SIGNAL(writeMessage0061(const QByteArray &)),
+	      this,
+	      SLOT(slotWriteMessage0061(const QByteArray &)));
+    }
+
   m_urlDistribution = new spoton_urldistribution(this);
   m_webServer = new spoton_web_server(this);
 
@@ -864,10 +872,13 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      SIGNAL(poptasticPop(void)),
 	      this,
 	      SLOT(slotPoptasticPop(void)));
-      connect(m_guiServer,
-	      SIGNAL(populateStarBeamKeys(void)),
-	      m_starbeamWriter,
-	      SLOT(slotReadKeys(void)));
+
+      if(!disable_starbeam)
+	connect(m_guiServer,
+		SIGNAL(populateStarBeamKeys(void)),
+		m_starbeamWriter,
+		SLOT(slotReadKeys(void)));
+
       connect(m_guiServer,
 	      SIGNAL(publicizeAllListenersPlaintext(void)),
 	      this,
@@ -977,7 +988,9 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   else
     m_urlDistribution->quit();
 
-  m_starbeamWriter->start();
+  if(m_starbeamWriter)
+    m_starbeamWriter->start();
+
   s_congestion_control_secondary_storage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
   m_initialized = true;
@@ -998,7 +1011,10 @@ spoton_kernel::~spoton_kernel()
   m_rss->deactivate();
   m_scramblerTimer.stop();
   m_settingsTimer.stop();
-  m_starbeamWriter->stop();
+
+  if(m_starbeamWriter)
+    m_starbeamWriter->stop();
+
   m_statusTimer.stop();
   m_urlImportTimer.stop();
 
@@ -2823,6 +2839,9 @@ void spoton_kernel::prepareNeighbors(void)
 
 void spoton_kernel::prepareStarbeamReaders(void)
 {
+  if(!m_starbeamWriter)
+    return;
+
   QString connectionName("");
 
   {
