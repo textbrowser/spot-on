@@ -250,7 +250,9 @@ int main(int argc, char *argv[])
   for(int i = 1; i < argc; i++)
     if(argv[i])
       {
-	if(!(qstrcmp(argv[i], "--disable-ui-server") == 0 ||
+	if(!(qstrcmp(argv[i], "--disable-mail") == 0 ||
+	     qstrcmp(argv[i], "--disable-starbeam") == 0 ||
+	     qstrcmp(argv[i], "--disable-ui-server") == 0 ||
 	     qstrcmp(argv[i], "--help") == 0 ||
 	     qstrcmp(argv[i], "--passphrase") == 0 ||
 	     qstrcmp(argv[i], "--question-answer") == 0 ||
@@ -271,6 +273,8 @@ int main(int argc, char *argv[])
 	fprintf
 	  (stdout,
 	   "Spot-On-Kernel:\n"
+	   "--disable-mail          Disable mail services.\n"
+	   "--disable-starbeam      Disable StarBeam services.\n"
 	   "--disable-ui-server     Disable the user interface server.\n"
 	   "--passphrase            Prompt for credentials.\n"
 	   "--question-answer       Prompt for credentials.\n"
