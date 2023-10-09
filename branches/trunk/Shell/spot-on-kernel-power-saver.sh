@@ -8,6 +8,7 @@ then
 			    --disable-mail \
 			    --disable-starbeam \
 			    --disable-ui-server \
+			    --passphrase \
 			    "$@"
     exit $?
 else
