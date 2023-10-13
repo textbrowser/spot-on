@@ -18,3 +18,5 @@ done
 FILE="Common/spot-on-version.h"
 
 sed -i 's/\(SPOTON_VERSION_STR "\)[0-9]\+\(\.[0-9]\+\)*"/\1'"$VERSION"'"/' $FILE
+
+echo "Please modify ReleaseNotes.html."
