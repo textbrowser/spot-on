@@ -340,6 +340,9 @@ void spoton_kernel::importUrls(void)
 void spoton_kernel::popPoptastic(void)
 {
 #ifdef SPOTON_POPTASTIC_SUPPORTED
+  if(property("disable_poptastic").toBool())
+    return;
+
   spoton_crypt *s_crypt = crypt("poptastic");
 
   if(!s_crypt)
@@ -623,7 +626,7 @@ void spoton_kernel::postPoptastic(void)
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   spoton_crypt *s_crypt = crypt("poptastic");
 
-  if(!s_crypt)
+  if(!s_crypt || property("disable_poptastic").toBool())
     {
       QWriteLocker locker(&m_poptasticCacheMutex);
 

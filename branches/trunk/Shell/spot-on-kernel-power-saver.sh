@@ -6,6 +6,7 @@ then
     export LD_LIBRARY_PATH=/opt/spot-on/Lib
     cd /opt/spot-on && exec ./Spot-On-Kernel \
 			    --disable-mail \
+			    --disable-poptastic \
 			    --disable-starbeam \
 			    --disable-ui-server \
 			    --passphrase \

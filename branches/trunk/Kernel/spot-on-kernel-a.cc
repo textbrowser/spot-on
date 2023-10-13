@@ -251,6 +251,7 @@ int main(int argc, char *argv[])
     if(argv[i])
       {
 	if(!(qstrcmp(argv[i], "--disable-mail") == 0 ||
+	     qstrcmp(argv[i], "--disable-poptastic") == 0 ||
 	     qstrcmp(argv[i], "--disable-starbeam") == 0 ||
 	     qstrcmp(argv[i], "--disable-ui-server") == 0 ||
 	     qstrcmp(argv[i], "--help") == 0 ||
@@ -274,6 +275,7 @@ int main(int argc, char *argv[])
 	  (stdout,
 	   "Spot-On-Kernel:\n"
 	   "--disable-mail          Disable mail services.\n"
+	   "--disable-poptastic     Disable Poptastic services.\n"
 	   "--disable-starbeam      Disable StarBeam services.\n"
 	   "--disable-ui-server     Disable the user interface server.\n"
 	   "--passphrase            Prompt for credentials.\n"
@@ -518,6 +520,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   QSettings settings;
   bool disable_mail = false;
+  bool disable_poptastic = false;
   bool disable_starbeam = false;
   bool disable_ui_server = false;
 
@@ -541,6 +544,11 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   for(int i = 1; i < arguments.size(); i++)
     if(arguments.at(i) == "--disable-mail")
       disable_mail = true;
+    else if(arguments.at(i) == "--disable-poptastic")
+      {
+	disable_poptastic = true;
+	setProperty("disable_poptastic", true);
+      }
     else if(arguments.at(i) == "--disable-starbeam")
       disable_starbeam = true;
     else if(arguments.at(i) == "--disable-ui-server")
@@ -725,13 +733,16 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 		       toDouble()));
   m_poptasticPopTimer.setInterval(5000);
 
-  if(static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
-				      5.00).toDouble()) > 0)
-    m_poptasticPopTimer.start
-      (static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
-					5.00).toDouble()));
+  if(!disable_poptastic)
+    if(static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
+					5.00).toDouble()) > 0)
+      m_poptasticPopTimer.start
+	(static_cast<int> (1000 * setting("gui/poptasticRefreshInterval",
+					  5.00).toDouble()));
 
-  m_poptasticPostTimer.start(1500);
+  if(!disable_poptastic)
+    m_poptasticPostTimer.start(1500);
+
   m_prepareTimer.start(10000);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
   m_settingsTimer.setInterval(1500);
@@ -2217,6 +2228,92 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
     }
 }
 
+void spoton_kernel::postPoptasticMessage(const QByteArray &attachmentData,
+					 const QByteArray &message,
+					 const QByteArray &name,
+					 const QByteArray &subject,
+					 const QByteArray &mode,
+					 const QByteArray &fromAccount,
+					 const QByteArray &date,
+					 const qint64 mailOid)
+{
+  if(property("disable_poptastic").toBool())
+    return;
+
+  QHash<QString, QVariant> hash;
+
+  hash["attachment"] = attachmentData;
+  hash["date"] = date;
+  hash["from_account"] = fromAccount;
+  hash["mail_oid"] = mailOid;
+  hash["message"] = message;
+  hash["mode"] = mode;
+  hash["name"] = name;
+  hash["subject"] = subject;
+
+  QWriteLocker locker(&m_poptasticCacheMutex);
+
+  if(mailOid > -1)
+    /*
+    ** Poptastic accounts may be disabled. Let's not
+    ** accumulate a large cache.
+    */
+
+    if(m_poptasticCache.contains(hash))
+      return;
+
+  m_lastPoptasticStatus = QDateTime::currentDateTime();
+  m_poptasticCache.enqueue(hash);
+}
+
+void spoton_kernel::postPoptasticMessage(const QString &receiverName,
+					 const QByteArray &message)
+{
+  if(property("disable_poptastic").toBool())
+    return;
+
+  QByteArray bytes;
+  bool ok = true;
+  spoton_crypt *s_crypt = crypt("poptastic");
+
+  if(s_crypt)
+    bytes = s_crypt->decryptedAfterAuthenticated
+      (QByteArray::fromBase64(setting("gui/poptasticName", "").
+			      toByteArray()), &ok).trimmed();
+
+  postPoptasticMessage(receiverName, message, bytes, -1);
+}
+
+void spoton_kernel::postPoptasticMessage(const QString &receiverName,
+					 const QByteArray &message,
+					 const QByteArray &fromAccount,
+					 const qint64 mailOid)
+{
+  if(property("disable_poptastic").toBool() || receiverName.isEmpty())
+    return;
+
+  QHash<QString, QVariant> hash;
+
+  hash["from_account"] = fromAccount;
+  hash["mail_oid"] = mailOid;
+  hash["message"] = message;
+  hash["receiver_name"] = receiverName;
+
+  QWriteLocker locker(&m_poptasticCacheMutex);
+
+  if(mailOid > -1)
+    /*
+    ** Poptastic accounts may be disabled. Let's not
+    ** accumulate a large cache.
+    */
+
+    if(m_poptasticCache.contains(hash))
+      return;
+
+  m_lastPoptasticStatus = QDateTime::currentDateTime();
+  m_poptasticCache.enqueue(hash);
+}
+
 void spoton_kernel::prepareListeners(void)
 {
   spoton_crypt *s_crypt = crypt("chat");
@@ -3449,86 +3546,6 @@ void spoton_kernel::removeBuzzKey(const QByteArray &key)
   QWriteLocker locker(&s_buzzKeysMutex);
 
   s_buzzKeys.remove(key);
-}
-
-void spoton_kernel::postPoptasticMessage(const QByteArray &attachmentData,
-					 const QByteArray &message,
-					 const QByteArray &name,
-					 const QByteArray &subject,
-					 const QByteArray &mode,
-					 const QByteArray &fromAccount,
-					 const QByteArray &date,
-					 const qint64 mailOid)
-{
-  QHash<QString, QVariant> hash;
-
-  hash["attachment"] = attachmentData;
-  hash["date"] = date;
-  hash["from_account"] = fromAccount;
-  hash["mail_oid"] = mailOid;
-  hash["message"] = message;
-  hash["mode"] = mode;
-  hash["name"] = name;
-  hash["subject"] = subject;
-
-  QWriteLocker locker(&m_poptasticCacheMutex);
-
-  if(mailOid > -1)
-    /*
-    ** Poptastic accounts may be disabled. Let's not
-    ** accumulate a large cache.
-    */
-
-    if(m_poptasticCache.contains(hash))
-      return;
-
-  m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_poptasticCache.enqueue(hash);
-}
-
-void spoton_kernel::postPoptasticMessage(const QString &receiverName,
-					 const QByteArray &message)
-{
-  QByteArray bytes;
-  bool ok = true;
-  spoton_crypt *s_crypt = crypt("poptastic");
-
-  if(s_crypt)
-    bytes = s_crypt->decryptedAfterAuthenticated
-      (QByteArray::fromBase64(setting("gui/poptasticName", "").
-			      toByteArray()), &ok).trimmed();
-
-  postPoptasticMessage(receiverName, message, bytes, -1);
-}
-
-void spoton_kernel::postPoptasticMessage(const QString &receiverName,
-					 const QByteArray &message,
-					 const QByteArray &fromAccount,
-					 const qint64 mailOid)
-{
-  if(receiverName.isEmpty())
-    return;
-
-  QHash<QString, QVariant> hash;
-
-  hash["from_account"] = fromAccount;
-  hash["mail_oid"] = mailOid;
-  hash["message"] = message;
-  hash["receiver_name"] = receiverName;
-
-  QWriteLocker locker(&m_poptasticCacheMutex);
-
-  if(mailOid > -1)
-    /*
-    ** Poptastic accounts may be disabled. Let's not
-    ** accumulate a large cache.
-    */
-
-    if(m_poptasticCache.contains(hash))
-      return;
-
-  m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_poptasticCache.enqueue(hash);
 }
 
 void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
@@ -6136,7 +6153,12 @@ void spoton_kernel::slotUpdateSettings(void)
     m_poptasticPopTimer.stop();
   else if(integer != m_poptasticPopTimer.interval() ||
 	  !m_poptasticPopTimer.isActive())
-    m_poptasticPopTimer.start(integer);
+    {
+      if(!property("disable_poptastic").toBool())
+	m_poptasticPopTimer.start(integer);
+      else
+	m_poptasticPopTimer.stop();
+    }
 
   if(setting("gui/publishPeriodically", false).toBool())
     {
