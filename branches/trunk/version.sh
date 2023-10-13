@@ -7,13 +7,13 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 
-# Debian release packages.
+for file in Distributions/build*; do
+    sed -i "s/Spot-On-.*_/Spot-On-$VERSION\_/" $file
+done
 
 for file in */control; do
     sed -i "s/Version: .*/Version: $VERSION/" $file
 done
-
-# Version configuration.
 
 FILE="Common/spot-on-version.h"
 
