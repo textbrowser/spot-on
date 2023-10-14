@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 	   "--status                Display statistics.\n"
 	   "--terminate             Attempt to terminate Spot-On-Kernel.\n"
 	   "--vacuum                Vacuum SQLite databases.\n"
-	   "--version               Display version information\n");
+	   "--version               Display version information.\n");
 	exit(EXIT_SUCCESS);
       }
     else if(argv[i] && qstrcmp(argv[i], "--version") == 0)
