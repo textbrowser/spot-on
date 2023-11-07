@@ -20,7 +20,6 @@ QT              -= gui
 DEFINES += QT_DEPRECATED_WARNINGS \
            SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
-           SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_POPTASTIC_SUPPORTED \
@@ -29,6 +28,10 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 
 exists(../../../libNTL/unix.d/src/.libs/libntl.so) {
 DEFINES += SPOTON_MCELIECE_ENABLED
+}
+
+exists(/usr/include/GeoIP.h) {
+DEFINES += SPOTON_LINKED_WITH_LIBGEOIP
 }
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -77,7 +80,6 @@ QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 
 INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
 LIBS		+= -L../../../libNTRU \
-                   -lGeoIP \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
@@ -91,6 +93,10 @@ LIBS		+= -L../../../libNTRU \
 exists(../../../libNTL/unix.d/src/.libs/libntl.so) {
 INCLUDEPATH     += ../../../libNTL/unix.d/include
 LIBS            += -L../../../libNTL/unix.d/src/.libs -lntl
+}
+
+exists(/usr/include/GeoIP.h) {
+LIBS            += -lGeoIP
 }
 
 MOC_DIR         = temp/moc
