@@ -68,7 +68,6 @@ LIBS		+= -L../../libNTRU \
                    -lntru \
                    -lpq \
                    -lpthread \
-                   -lsqlite3 \
                    -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj

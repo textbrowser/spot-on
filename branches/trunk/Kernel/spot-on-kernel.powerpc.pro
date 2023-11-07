@@ -75,7 +75,6 @@ LIBS		+= -L../../../libNTL/unix.d/src/.libs \
                    -lntru \
                    -lpq \
                    -lpthread \
-                   -lsqlite3 \
                    -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj

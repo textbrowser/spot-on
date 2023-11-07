@@ -85,7 +85,6 @@ LIBS		  += -L../../libNTRU \
                      -lntl \
                      -lntru \
                      -lpthread \
-                     -lsqlite3 \
                      -lssl
 MOC_DIR           = temp/moc
 OBJECTIVE_HEADERS += Common/CocoaInitializer.h

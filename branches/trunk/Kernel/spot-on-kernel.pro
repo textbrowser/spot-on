@@ -91,7 +91,6 @@ LIBS		+= -L../../../libNTRU \
                    -lgpg-error \
                    -lntru \
                    -lpthread \
-                   -lsqlite3 \
                    -lssl
 
 exists(../../../libNTL/unix.d/src/.libs/libntl.so) {
