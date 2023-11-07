@@ -26,10 +26,16 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
            SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
-           SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
            SPOTON_SCTP_ENABLED \
            SPOTON_WEBSOCKETS_ENABLED
+
+exists(../../libNTL/unix.d/src/.libs/libntl.so) {
+DEFINES += SPOTON_MCELIECE_ENABLED
+message("McEliece enabled!")
+} else {
+warning("McEliece disabled!")
+}
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL and libNTRU.
@@ -77,27 +83,32 @@ QMAKE_CXXFLAGS_RELEASE -= -Wredundant-decls \
                           -Wstrict-overflow=5
 }
 
-INCLUDEPATH	+= . \
-                   ../../. \
-                   ../../libNTL/unix.d/include \
-                   /usr/include/postgresql \
-                   GUI
-LIBS		+= -L../../libNTL/unix.d/src/.libs \
-                   -L../../libNTRU \
+INCLUDEPATH	+= . ../../. /usr/include/postgresql GUI
+LIBS		+= -L../../libNTRU \
                    -lGeoIP \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
                    -lgpg-error \
-                   -lntl \
                    -lntru \
                    -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl
+
+exists(../../libNTL/unix.d/src/.libs/libntl.so) {
+INCLUDEPATH     += ../../libNTL/unix.d/include
+LIBS            += -L../../libNTL/unix.d/src/.libs -lntl
+}
+
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
-PRE_TARGETDEPS  = libntl.so libntru.so
+PRE_TARGETDEPS  = libntru.so
+
+exists(../../libNTL/unix.d/src/.libs/libntl.so) {
+PRE_TARGETDEPS  += libntl.so
+}
+
 PROJECTNAME	= Spot-On
 RCC_DIR         = temp/rcc
 TARGET		= Spot-On
