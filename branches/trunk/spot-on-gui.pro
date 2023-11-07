@@ -26,7 +26,6 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_POPTASTIC_SUPPORTED \
-           SPOTON_SCTP_ENABLED \
            SPOTON_WEBSOCKETS_ENABLED
 
 exists(../../libNTL/unix.d/src/.libs/libntl.so) {
@@ -38,6 +37,10 @@ warning("McEliece disabled!")
 
 exists(/usr/include/GeoIP.h) {
 DEFINES += SPOTON_LINKED_WITH_LIBGEOIP
+}
+
+exists(/usr/include/netinet/sctp.h) {
+DEFINES += SPOTON_SCTP_ENABLED
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
