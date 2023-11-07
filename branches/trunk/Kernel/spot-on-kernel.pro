@@ -34,6 +34,11 @@ exists(/usr/include/GeoIP.h) {
 DEFINES += SPOTON_LINKED_WITH_LIBGEOIP
 }
 
+exists(/usr/include/postgresql/libpq-fe.h) {
+} else {
+DEFINES += SPOTON_POSTGRESQL_DISABLED
+}
+
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL, and libNTRU.
 
@@ -78,14 +83,13 @@ QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
 QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 }
 
-INCLUDEPATH	+= . ../. ../../../. /usr/include/postgresql
+INCLUDEPATH	+= . ../. ../../../.
 LIBS		+= -L../../../libNTRU \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
                    -lgpg-error \
                    -lntru \
-                   -lpq \
                    -lpthread \
                    -lsqlite3 \
                    -lssl
@@ -97,6 +101,11 @@ LIBS            += -L../../../libNTL/unix.d/src/.libs -lntl
 
 exists(/usr/include/GeoIP.h) {
 LIBS            += -lGeoIP
+}
+
+exists(/usr/include/postgresql/libpq-fe.h) {
+INCLUDEPATH     += /usr/include/postgresql
+LIBS            += -lpq
 }
 
 MOC_DIR         = temp/moc
