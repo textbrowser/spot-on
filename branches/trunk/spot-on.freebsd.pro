@@ -2,6 +2,5 @@ cache()
 purge.commands = rm -f */*~ *~
 
 QMAKE_EXTRA_TARGETS = purge
-SUBDIRS		    = spot-on-gui.freebsd.pro \
-		      Kernel/spot-on-kernel.freebsd.pro
+SUBDIRS		    = Kernel/spot-on-kernel.freebsd.pro spot-on-gui.freebsd.pro
 TEMPLATE	    = subdirs

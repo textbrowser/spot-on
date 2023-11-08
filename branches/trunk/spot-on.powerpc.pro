@@ -2,6 +2,5 @@ cache()
 purge.commands = rm -f */*~ *~
 
 QMAKE_EXTRA_TARGETS = purge
-SUBDIRS		    = spot-on-gui.powerpc.pro \
-		      Kernel/spot-on-kernel.powerpc.pro
+SUBDIRS		    = Kernel/spot-on-kernel.powerpc.pro spot-on-gui.powerpc.pro
 TEMPLATE	    = subdirs
