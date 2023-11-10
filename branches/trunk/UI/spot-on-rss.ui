@@ -333,9 +333,6 @@
           </item>
           <item>
            <widget class="QDoubleSpinBox" name="download_interval">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kernel monitors this setting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
             <property name="suffix">
              <string> minute(s)</string>
             </property>
@@ -362,9 +359,6 @@
           </item>
           <item>
            <widget class="QSpinBox" name="maximum_keywords">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A large value may impede the import process. Kernel monitors this setting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
             <property name="minimum">
              <number>50</number>
             </property>

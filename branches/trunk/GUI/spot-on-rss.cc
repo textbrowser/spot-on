@@ -302,6 +302,11 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
      arg(m_ui.download_interval->minimum()).
      arg(m_ui.download_interval->maximum()));
   m_ui.download_interval->setValue(dvalue);
+  m_ui.maximum_keywords->setToolTip
+    (tr("<html>A large value may impede the import process. "
+	"Kernel monitors this setting. [%1, %2]</html>").
+     arg(m_ui.maximum_keywords->minimum()).
+     arg(m_ui.maximum_keywords->maximum()));
   m_ui.periodic_import->setChecked
     (settings.value("gui/rss_import_activate", false).toBool());
   m_ui.record_notices->setChecked
