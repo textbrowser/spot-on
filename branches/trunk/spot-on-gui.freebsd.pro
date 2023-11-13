@@ -12,7 +12,6 @@ QT		+= concurrent \
                    network \
                    printsupport \
                    sql \
-                   websockets \
                    widgets
 
 qtHaveModule(bluetooth) {
@@ -20,13 +19,17 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
 }
 
+qtHaveModule(websockets) {
+DEFINES += SPOTON_WEBSOCKETS_ENABLED
+QT += websockets
+}
+
 DEFINES	+= SPOTON_DATELESS_COMPILATION \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
-	   SPOTON_SCTP_ENABLED \
-	   SPOTON_WEBSOCKETS_ENABLED
+	   SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.

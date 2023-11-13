@@ -10,20 +10,23 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth \
-                   concurrent \
-                   network \
-                   sql \
-                   websockets
+QT		+= concurrent network sql
 QT              -= gui
 
+qtHaveModule(bluetooth) {
+DEFINES += SPOTON_BLUETOOTH_ENABLED
+QT += bluetooth
+}
+
+qtHaveModule(websockets) {
+DEFINES += SPOTON_WEBSOCKETS_ENABLED
+QT += websockets
+}
+
 DEFINES += QT_DEPRECATED_WARNINGS \
-           SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBNTRU \
-           SPOTON_LINKED_WITH_LIBPTHREAD \
-           SPOTON_POPTASTIC_SUPPORTED \
-           SPOTON_WEBSOCKETS_ENABLED
+           SPOTON_LINKED_WITH_LIBPTHREAD
 
 exists(../../../libNTL/unix.d/src/.libs/libntl.so) {
 DEFINES += SPOTON_MCELIECE_ENABLED
@@ -40,6 +43,10 @@ DEFINES += SPOTON_SCTP_ENABLED
 exists(/usr/include/postgresql/libpq-fe.h) {
 } else {
 DEFINES += SPOTON_POSTGRESQL_DISABLED
+}
+
+exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
+DEFINES += SPOTON_POPTASTIC_SUPPORTED
 }
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -89,7 +96,6 @@ QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 INCLUDEPATH	+= . ../. ../../../.
 LIBS		+= -L../../../libNTRU \
                    -lcrypto \
-                   -lcurl \
                    -lgcrypt \
                    -lgpg-error \
                    -lntru \
@@ -108,6 +114,10 @@ LIBS            += -lGeoIP
 exists(/usr/include/postgresql/libpq-fe.h) {
 INCLUDEPATH     += /usr/include/postgresql
 LIBS            += -lpq
+}
+
+exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
+LIBS            += -lcurl
 }
 
 MOC_DIR         = temp/moc
