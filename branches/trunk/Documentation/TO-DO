@@ -317,6 +317,8 @@ Completed Items
 217.   Windows x86-64.
 218.   SQLite silent mode; limit synchronization. Mechanical drives are
        being replaced with solid-state devices.
+219.   Purge expired RSS links in the kernel. Be careful of competing
+       tasks. New RSS tool tip.
 
 Remaining Items
 
@@ -326,5 +328,3 @@ Remaining Items
 4.     Dark mode for Windows.
 5.     Improve install target on Windows: copy NTRU library,
        delete verbose documentation files.
-6.     Purge expired RSS links in the kernel. Be careful of competing
-       tasks. New RSS tool tip.

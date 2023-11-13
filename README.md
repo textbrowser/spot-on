@@ -24,13 +24,15 @@ Summary of Spot-On
 <li>Human Proxies project.</li>
 <li>Infinite listeners and neighbors.</li>
 <li>Integrated file encryption of directories and files.</li>
+<li>Living documentation.</li>
 <li>MacOS and Windows install targets: make install!</li>
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Native virtual keyboard.</li>
 <li>Natively compiled on ARM, Alpha, PowerPC, Sparc64, X86, X86_64.</li>
 <li>Optional SSL/TLS client and server roles: ECC, RSA.</li>
-<li>P2P TCP server-less (without accept()) connections. SSL/TLS is supported!</li>
+<li>P2P TCP server-less (without accept()) connections.
+    SSL/TLS is supported!</li>
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
 <li>PowerPC.</li>
