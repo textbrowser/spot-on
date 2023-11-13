@@ -655,6 +655,9 @@
               </item>
               <item>
                <widget class="QSpinBox" name="purge_days">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Kernel monitors this setting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <property name="minimum">
                  <number>0</number>
                 </property>
