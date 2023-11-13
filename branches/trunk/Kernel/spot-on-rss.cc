@@ -221,6 +221,7 @@ void spoton_rss::deactivate(void)
   m_populateTimer.stop();
   m_purgeExpiredFuture.cancel();
   m_purgeExpiredFuture.waitForFinished();
+  m_purgeTimer.stop();
 }
 
 void spoton_rss::import(const int maximumKeywords)
