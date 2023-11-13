@@ -51,6 +51,7 @@ class spoton_rss: public QObject
   QAtomicInteger<quint64> m_imported;
   QByteArray m_feedDownloadContent;
   QFuture<void> m_parseXmlFuture;
+  QFuture<void> m_purgeExpiredFuture;
   QNetworkAccessManager m_contentNetworkAccessManager;
   QNetworkAccessManager m_feedNetworkAccessManager;
   QPair<QByteArray, qint64> m_lastUniqueId;
@@ -66,6 +67,7 @@ class spoton_rss: public QObject
   void parseXmlContent(const QByteArray &data, const QUrl &url);
   void populateFeeds(void);
   void prepareDatabases(void);
+  void purgeExpired(void);
   void saveFeedData(const QString &description,
 		    const QString &link,
 		    const QString &title);
@@ -84,7 +86,7 @@ class spoton_rss: public QObject
   void slotImport(void);
   void slotLogError(const QString &error);
   void slotPopulateFeeds(void);
-  void slotPurgeMalformed(void);
+  void slotPurge(void);
   void slotReplyError(QNetworkReply::NetworkError code);
 
  signals:

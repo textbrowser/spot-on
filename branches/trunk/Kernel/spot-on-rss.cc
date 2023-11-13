@@ -65,7 +65,7 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
   connect(&m_purgeTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotPurgeMalformed(void)));
+	  SLOT(slotPurge(void)));
   connect(this,
 	  SIGNAL(logError(const QString &)),
 	  this,
@@ -219,6 +219,8 @@ void spoton_rss::deactivate(void)
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
   m_populateTimer.stop();
+  m_purgeExpiredFuture.cancel();
+  m_purgeExpiredFuture.waitForFinished();
 }
 
 void spoton_rss::import(const int maximumKeywords)
@@ -1013,6 +1015,36 @@ void spoton_rss::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_rss::purgeExpired(void)
+{
+  QString connectionName("");
+
+  {
+    QSqlDatabase db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("PRAGMA secure_delete = ON");
+	query.prepare
+	  ("DELETE FROM rss_feeds_links WHERE "
+	   "ABS(strftime('%s', ?) - strftime('%s', insert_date)) > ?");
+	query.addBindValue
+	  (QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.addBindValue
+	  (86400 * spoton_kernel::setting("gui/rss_purge_days", 1).toInt());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rss::saveFeedData(const QString &d,
 			      const QString &link,
 			      const QString &t)
@@ -1609,30 +1641,38 @@ void spoton_rss::slotPopulateFeeds(void)
   populateFeeds();
 }
 
-void spoton_rss::slotPurgeMalformed(void)
+void spoton_rss::slotPurge(void)
 {
-  if(!spoton_kernel::setting("gui/rss_purge_malformed", false).toBool())
-    return;
+  if(m_purgeExpiredFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_purgeExpiredFuture = QtConcurrent::run(&spoton_rss::purgeExpired, this);
+#else
+    m_purgeExpiredFuture = QtConcurrent::run(this, &spoton_rss::purgeExpired);
+#endif
 
-  QString connectionName("");
+  if(spoton_kernel::setting("gui/rss_purge_malformed", false).toBool())
+    {
+      QString connectionName("");
 
-  {
-    QSqlDatabase db = spoton_misc::database(connectionName);
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-    if(db.open())
       {
-	QSqlQuery query(db);
+	QSqlDatabase db = spoton_misc::database(connectionName);
 
-	query.exec("PRAGMA secure_delete = ON");
-	query.exec("DELETE FROM rss_feeds_links WHERE visited = 2");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.exec("PRAGMA secure_delete = ON");
+	    query.exec("DELETE FROM rss_feeds_links WHERE visited = 2");
+	  }
+
+	db.close();
       }
 
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
+      QSqlDatabase::removeDatabase(connectionName);
+    }
 }
 
 void spoton_rss::slotReplyError(QNetworkReply::NetworkError code)

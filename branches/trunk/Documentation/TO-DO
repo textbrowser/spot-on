@@ -326,3 +326,5 @@ Remaining Items
 4.     Dark mode for Windows.
 5.     Improve install target on Windows: copy NTRU library,
        delete verbose documentation files.
+6.     Purge expired RSS links in the kernel. Be careful of competing
+       tasks. New RSS tool tip.
