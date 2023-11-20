@@ -478,6 +478,10 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
+	("FORTUNA_QUERY_INTERVAL_MS := 100");
+      m_optionsUi.other_options->appendPlainText
+	("FORTUNA_URL := http://192.168.178.85:5000");
+      m_optionsUi.other_options->appendPlainText
 	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
 	 QString::number(spoton_common::
 			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
