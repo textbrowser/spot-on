@@ -237,11 +237,14 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   optval = 1;
 #if defined(Q_OS_WIN)
   rc = setsockopt
-    (m_socketDescriptor, SOL_SOCKET,
-     SO_REUSEADDR, (const char *) &optval, (int) optlen);
+    (m_socketDescriptor,
+     SOL_SOCKET,
+     SO_REUSEADDR,
+     (const char *) &optval,
+     (int) optlen);
 #else
-  rc = setsockopt(m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR,
-		  &optval, optlen);
+  rc = setsockopt
+    (m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &optval, optlen);
 #endif
 
   if(rc != 0)
@@ -517,8 +520,7 @@ void spoton_sctp_server::slotTimeout(void)
       length = (socklen_t) sizeof(clientaddr);
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
-	(m_socketDescriptor, (struct sockaddr *) &clientaddr,
-	 &length);
+	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
 
 #if defined(Q_OS_WIN)
       if(socketDescriptor != INVALID_SOCKET)
@@ -633,8 +635,7 @@ void spoton_sctp_server::slotTimeout(void)
       length = (socklen_t) sizeof(clientaddr);
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
-	(m_socketDescriptor, (struct sockaddr *) &clientaddr,
-	 &length);
+	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
 
 #if defined(Q_OS_WIN)
       if(socketDescriptor != INVALID_SOCKET)
@@ -732,12 +733,10 @@ void spoton_sctp_server::slotTimeout(void)
 	{
 #if defined(Q_OS_WIN)
 	  m_errorString = QString
-	    ("run()::accept()::error=%1").
-	    arg(WSAGetLastError());
+	    ("run()::accept()::error=%1").arg(WSAGetLastError());
 #else
 	  m_errorString = QString
-	    ("run()::accept()::errno=%1").
-	    arg(errno);
+	    ("run()::accept()::errno=%1").arg(errno);
 #endif
 	  close();
 	}
