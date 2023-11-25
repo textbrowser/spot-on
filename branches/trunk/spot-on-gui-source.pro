@@ -44,6 +44,7 @@ FORMS           = UI/spot-on-adaptive-echo-prompt.ui \
 		  UI/spot-on-wizard.ui
 
 HEADERS		= Common/spot-on-external-address.h \
+                  Common/spot-on-fortuna.h \
 		  Common/spot-on-version.h \
 		  GUI/spot-on.h \
 		  GUI/spot-on-buzzpage.h \
