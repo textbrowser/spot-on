@@ -770,11 +770,7 @@ class fortunate_q: public QObject
     QElapsedTimer m_lastReseed;
     QVector<QByteArray> m_P;
     generator_state m_G;
-#ifndef __SIZEOF_INT128__
     quint64 m_reseedCnt;
-#else
-    unsigned __int128 m_reseedCnt;
-#endif
   };
 
   QFile m_file;
@@ -836,7 +832,7 @@ class fortunate_q: public QObject
 	R.m_reseedCnt += 1;
 
 	for(int i = 0; i < static_cast<int> (R.m_P.size()); i++)
-	  if(R.m_reseedCnt % static_cast<int> (qPow(2.0, i)) == 0)
+	  if(R.m_reseedCnt % static_cast<quint64> (qPow(2.0, i)) == 0)
 	    {
 	      s = s + QCryptographicHash::hash
 		(R.m_P[i], QCryptographicHash::Sha256);

@@ -154,6 +154,15 @@ class spoton_crypt
 							 */
   static size_t cipherKeyLength(const QByteArray &cipherType);
   static size_t ivLength(const QString &cipherType);
+
+  static void destroyFortuna(void)
+  {
+    QWriteLocker locker(&s_fortunaMutex);
+
+    delete s_fortuna;
+    s_fortuna = nullptr;
+  }
+
   static void generateECCKeys(QByteArray &certificate,
 			      QByteArray &privateKey,
 			      QByteArray &publicKey,
@@ -195,20 +204,15 @@ class spoton_crypt
 
   static void prepareFortuna
     (const QString &ipAddress,
-     const bool state,
      const bool tls,
      const int interval,
      const quint16 port)
   {
     QWriteLocker locker(&s_fortunaMutex);
 
-    if(s_fortuna)
-      {
-	s_fortuna->deleteLater();
-	s_fortuna = nullptr;
-      }
-
-    if(state)
+    if(interval > 0 &&
+       ipAddress.trimmed().isEmpty() == false &&
+       s_fortuna == nullptr)
       {
 	s_fortuna = new fortunate_q(nullptr);
 	s_fortuna->set_send_byte(0, interval);

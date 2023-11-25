@@ -1071,6 +1071,7 @@ spoton_kernel::~spoton_kernel()
     m_urlImportFutures[i].waitForFinished();
 
   cleanup();
+  spoton_crypt::destroyFortuna();
   spoton_misc::cleanupDatabases(crypt("chat"));
 
   {
@@ -6111,9 +6112,10 @@ void spoton_kernel::slotUpdateSettings(void)
 			settings.value(settings.allKeys().at(i)));
 
   QMapIterator<QString, QVariant> it
-    (spoton_misc::otherOptions(QByteArray::
-			       fromBase64(s_settings.value("gui/other_options").
-					  toByteArray())));
+    (spoton_misc::
+     otherOptions(QByteArray::
+		  fromBase64(s_settings.value("gui/other_options").
+			     toByteArray())));
 
   while(it.hasNext())
     {
@@ -6182,7 +6184,8 @@ void spoton_kernel::slotUpdateSettings(void)
 	** temporary database.
 	*/
 
-	QFile::remove(spoton_misc::homePath() + QDir::separator() +
+	QFile::remove(spoton_misc::homePath() +
+		      QDir::separator() +
 		      "congestion_control.db");
       else
 	{
@@ -6204,6 +6207,24 @@ void spoton_kernel::slotUpdateSettings(void)
 
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
+
+  QUrl url
+    (QUrl::fromUserInput(setting("FORTUNA_URL", "").toString().trimmed()));
+
+  if(url.isEmpty() == false && url.isValid())
+    {
+      QString address(url.host());
+      bool tls = (url.scheme() == "http");
+      quint16 port = static_cast<quint16> (url.port());
+      int interval = setting("FORTUNA_QUERY_INTERVAL_MS", 100).toInt();
+
+      if(interval <= 0)
+	spoton_crypt::destroyFortuna();
+      else
+	spoton_crypt::prepareFortuna(address, tls, interval, port);
+    }
+  else
+    spoton_crypt::destroyFortuna();
 }
 
 void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
