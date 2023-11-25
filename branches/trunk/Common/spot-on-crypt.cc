@@ -123,7 +123,9 @@ struct gcry_thread_cbs gcry_threads_qt =
 #endif
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
+QReadWriteLock spoton_crypt::s_fortunaMutex;
 bool spoton_crypt::s_cbc_cts_enabled = true;
+fortunate_q *spoton_crypt::s_fortuna = nullptr;
 static QCryptographicHash::Algorithm qt_preferred_hash_algorithm =
   QCryptographicHash::Sha3_512;
 static bool gcryctl_set_thread_cbs_set = false;
@@ -1930,13 +1932,25 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
   return hash;
 }
 
-QByteArray spoton_crypt::randomBytes(const size_t size,
-				     const enum gcry_random_level level)
+QByteArray spoton_crypt::randomBytes
+(const size_t size, const enum gcry_random_level level)
 {
   QByteArray random;
 
   if(size == 0)
     return random;
+
+  {
+    QWriteLocker locker(&s_fortunaMutex);
+
+    if(s_fortuna)
+      {
+	random = s_fortuna->random_data(static_cast<int> (size));
+
+	if(random.size() == static_cast<int> (size))
+	  return random;
+      }
+  }
 
   char *buffer = static_cast<char *> (malloc(size));
 

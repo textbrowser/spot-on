@@ -56,6 +56,8 @@ extern "C"
 #include <QSslConfiguration>
 #include <QStringList>
 
+#include "spot-on-fortuna.h"
+
 #ifdef SPOTON_MCELIECE_ENABLED
 class spoton_mceliece;
 #endif
@@ -190,6 +192,30 @@ class spoton_crypt
 
   static void memzero(QByteArray &bytes);
   static void memzero(QString &str);
+
+  static void prepareFortuna
+    (const QString &ipAddress,
+     const bool state,
+     const bool tls,
+     const int interval,
+     const quint16 port)
+  {
+    QWriteLocker locker(&s_fortunaMutex);
+
+    if(s_fortuna)
+      {
+	s_fortuna->deleteLater();
+	s_fortuna = nullptr;
+      }
+
+    if(state)
+      {
+	s_fortuna = new fortunate_q(nullptr);
+	s_fortuna->set_send_byte(0, interval);
+	s_fortuna->set_tcp_peer(ipAddress, tls, port);
+      }
+  }
+
   static void purgeDatabases(void);
   static void reencodePrivatePublicKeys
     (spoton_crypt *newCrypt,
@@ -279,7 +305,9 @@ class spoton_crypt
 #endif
   spoton_threefish *m_threefish;
   static QAtomicInt s_hasSecureMemory;
+  static QReadWriteLock s_fortunaMutex;
   static bool s_cbc_cts_enabled;
+  static fortunate_q *s_fortuna;
   unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);

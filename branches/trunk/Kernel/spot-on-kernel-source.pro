@@ -1,4 +1,5 @@
 HEADERS		= ../Common/spot-on-external-address.h \
+                  ../Common/spot-on-fortuna.h \
 		  ../Common/spot-on-version.h \
 		  spot-on-fireshare.h \
 		  spot-on-gui-server.h \
@@ -19,7 +20,7 @@ RESOURCES	= ../HTML/html.qrc
 SOURCES		= ../Common/spot-on-crypt.cc \
 		  ../Common/spot-on-crypt-mceliece.cc \
 		  ../Common/spot-on-crypt-ntru.cc \
-		  ../Common/spot-on-external-address.cc \
+                  ../Common/spot-on-external-address.cc \
 		  ../Common/spot-on-mceliece.cc \
 		  ../Common/spot-on-misc.cc \
                   ../Common/spot-on-receive.cc \
