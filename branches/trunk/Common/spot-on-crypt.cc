@@ -1570,6 +1570,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       goto done_label;
     }
 
+  Q_UNUSED(err);
   raw_t = gcry_sexp_find_token(key_t, "elg", 0);
 
   if(raw_t)
@@ -1652,6 +1653,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       goto done_label;
     }
 
+  Q_UNUSED(err);
   buffer = gcry_sexp_nth_data(decrypted_t, 1, &length);
 
   if(!buffer || length == 0)
