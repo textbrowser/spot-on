@@ -679,7 +679,9 @@ class fortunate_q: public QObject
 
   ~fortunate_q()
   {
+    m_file.close();
     m_periodic_write_timer.stop();
+    m_tcp_socket.abort();
     m_tcp_socket_connection_timer.stop();
   }
 
