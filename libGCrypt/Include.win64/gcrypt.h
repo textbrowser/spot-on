@@ -54,11 +54,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.10.2-unknown"
+#define GCRYPT_VERSION "1.10.3-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010a02
+#define GCRYPT_VERSION_NUMBER 0x010a03
 
 
 /* Internal: We can't use the convenience macros for the multi
