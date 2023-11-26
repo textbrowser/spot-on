@@ -6214,7 +6214,7 @@ void spoton_kernel::slotUpdateSettings(void)
   if(url.isEmpty() == false && url.isValid())
     {
       QString address(url.host());
-      bool tls = (url.scheme() == "http");
+      bool tls = (url.scheme() == "https");
       quint16 port = static_cast<quint16> (url.port());
       int interval = setting("FORTUNA_QUERY_INTERVAL_MS", 100).toInt();
 
