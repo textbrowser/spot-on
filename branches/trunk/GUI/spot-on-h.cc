@@ -478,7 +478,7 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
-	("FORTUNA_QUERY_INTERVAL_MS := 100");
+	("FORTUNA_QUERY_INTERVAL_MS := 0");
       m_optionsUi.other_options->appendPlainText
 	("FORTUNA_URL := http://127.0.0.1:5000");
       m_optionsUi.other_options->appendPlainText
