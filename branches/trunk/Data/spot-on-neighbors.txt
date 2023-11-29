@@ -1,9 +1,7 @@
 # The contents of this file are automatically processed after a
 # passphrase has been prepared. After the contents are processed,
 # Spot-On will modify the initialization file (INI) and set the parameter
-# spot_on_neighbors_txt_processed to true. For automatic processing,
-# this file must reside in the same directory as the Spot-On
-# executable.
+# spot_on_neighbors_txt_processed to true.
 
 # A local TCP neighbor.
 
