@@ -6,6 +6,8 @@
     <p>
       <ul>
 	<li>Calm integration of an Arduino entropy source.</li>
+	<li>Corrected conditional compilation in spot-on-socket-options.cc:
+	  #if SPOTON_SCTP_ENABLED must be #ifdef.</li>
 	<li>Deactivate the kernel's RSS timers on termination. Timers
 	  are usually deactivated automatically.</li>
 	<li>Final 2023 LTS release! See you.</li>

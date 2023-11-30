@@ -162,7 +162,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	if(!string.isEmpty())
 	  {
-#if SPOTON_SCTP_ENABLED
+#ifdef SPOTON_SCTP_ENABLED
 	    int level = IPPROTO_SCTP;
 	    int option = SCTP_NODELAY;
 #else
