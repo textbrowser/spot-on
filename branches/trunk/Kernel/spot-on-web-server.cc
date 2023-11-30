@@ -396,6 +396,7 @@ void spoton_web_server_thread::process
 
   for(int i = 1; i <= qCeil(30000 / qMax(10, s_waitForReadyRead)); i++)
     if(m_abort->fetchAndAddOrdered(0) ||
+       socket->bytesAvailable() > 0 ||
        (socket->state() == QAbstractSocket::ConnectedState &&
 	socket->waitForReadyRead(s_waitForReadyRead)))
       break;
