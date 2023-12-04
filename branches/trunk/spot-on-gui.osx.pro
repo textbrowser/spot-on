@@ -107,7 +107,7 @@ copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib ./Spot-O
 copyssl.path                = ./Spot-On.d
 install1.files              = ./Data/spot-on-neighbors.txt
 install1.path               = ./Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1v/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
+install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1w/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
 install_name_tool.path      = .
 libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = ./Spot-On.d/GeoIP
@@ -119,7 +119,7 @@ lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
 lupdate.path                = .
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 macdeployqt.path            = Spot-On.app
-other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.0.9/lib/libbrotlicommon.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
+other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.1.0/lib/libbrotlicommon.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
 other_libraries1.path       = .
 preinstall.extra            = rm -rf ./Spot-On.d/Spot-On.app/*
 preinstall.path             = ./Spot-On.d
