@@ -39,14 +39,22 @@ chmod -x ./opt/spot-on/Lib/lib*
 find ./opt/spot-on -type f -exec chmod g+w {} \;
 rm ./opt/spot-on/Documentation/*.qrc
 
-# Preparing Spot-On-2023.12.15_armhf.deb:
+architecture=$(dpkg --print-architecture)
+
+# Preparing Spot-On-2023.12.15_$architecture.deb:
 
 mkdir -p spot-on-debian/opt
 mkdir -p spot-on-debian/usr/share/applications
 cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
-cp -pr ./DEBIAN-ARM spot-on-debian/DEBIAN
+
+if [ "$architecture" = "armhf" ]; then
+    cp -pr ./DEBIAN-ARM spot-on-debian/DEBIAN
+else
+    cp -pr ./DEBIAN-ARM64 spot-on-debian/DEBIAN
+fi
+
 cp -r ./opt/spot-on spot-on-debian/opt/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2023.12.15_armhf.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2023.12.15_$(architecture).deb
 make distclean
 rm -fr ./opt
 rm -fr ./spot-on-debian

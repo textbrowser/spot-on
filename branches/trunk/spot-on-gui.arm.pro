@@ -9,8 +9,7 @@ libntru.target = libntru.so
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth \
-                   concurrent \
+QT		+= concurrent \
                    gui \
                    multimedia \
                    network \
@@ -19,8 +18,12 @@ QT		+= bluetooth \
                    websockets \
                    widgets
 
-DEFINES	+= SPOTON_BLUETOOTH_ENABLED \
-	   SPOTON_DATELESS_COMPILATION \
+qtHaveModule(bluetooth) {
+DEFINES += SPOTON_BLUETOOTH_ENABLED
+QT += bluetooth
+}
+
+DEFINES	+= SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBGEOIP \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \

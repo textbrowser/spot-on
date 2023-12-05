@@ -10,11 +10,15 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth concurrent network sql websockets
+QT		+= concurrent network sql websockets
 QT              -= gui
 
+qtHaveModule(bluetooth) {
+DEFINES += SPOTON_BLUETOOTH_ENABLED
+QT += bluetooth
+}
+
 DEFINES += QT_DEPRECATED_WARNINGS \
-           SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
