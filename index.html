@@ -37,6 +37,43 @@
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2023.12.15</u></h4>
+	  Welcome to the 2023.12.15 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>Calm integration of an Arduino entropy source.</li>
+	      <li>Corrected conditional compilation in spot-on-socket-options.cc:
+		#if SPOTON_SCTP_ENABLED must be #ifdef.</li>
+	      <li>Deactivate the kernel's RSS timers on termination. Timers
+		are usually deactivated automatically.</li>
+	      <li>Final 2023 LTS release! See you.</li>
+	      <li>First PiOS 64-bit release!</li>
+	      <li>Fortuna. New Miscellaneous options. If data are not available,
+		gcrypt is utilized.</li>
+	      <li>GCrypt 1.10.3; Windows.</li>
+	      <li>LTS release! Included are a bunch of bunched bundles.</li>
+	      <li>Meaningful tool tips. Example, [10, 20] for numeric ranges.</li>
+	      <li>OpenSSL 1.1.1w; MacOS.</li>
+	      <li>Optional Bluetooth and WebSockets on FreeBSD and Linux.</li>
+	      <li>Optional CURL (Poptastic) on Linux.</li>
+	      <li>Optional GeoIP on Linux. GeoIP is deprecated!</li>
+	      <li>Optional McEliece (NTL) on Linux. NTL appears abandoned.</li>
+	      <li>Optional PostgreSQL on Linux.</li>
+	      <li>Optional SCTP on Linux.</li>
+	      <li>Qt 6.5.3 LTS on MacOS.</li>
+	      <li>Qt 6.5.3 LTS on Windows.</li>
+	      <li>New kernel options for energy conservation.</li>
+	      <li>Process the INI file in the kernel shortly after launch.</li>
+	      <li>Removed libspoton requirement.</li>
+	      <li>Speedier Web server: if socket data are available,
+		avoid pausing and process the data!</li>
+	      <li>The NTL and NTRU libraries appear abandoned!</li>
+	      <li>Windows 11 x86-64.<li>
+	      <li>Write downloaded Web content to a specified directory. Please
+		see Miscellaneous in Options.</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2023.08.05</u></h4>
 	  Welcome to the 2023.08.05 release of Spot-On. Corrections and
 	  new features are detailed below.
@@ -753,7 +790,7 @@
 	  <h4><u>Spot-On 2010.06.07</u></h4>
 	  <p>
 	    <ul>
-	      <li>It all begins.</li>
+	      <li>Spot-On is born!</li>
 	    </ul>
 	  </p>
         </section>
