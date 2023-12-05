@@ -19,9 +19,15 @@ mkdir -p ./opt/spot-on/Lib
 mkdir -p ./opt/spot-on/SQL
 mkdir -p ./opt/spot-on/Sounds
 mkdir -p ./opt/spot-on/Translations
-qmake -o Makefile spot-on.arm.pro
-lupdate spot-on.arm.pro
-lrelease spot-on.arm.pro
+
+if [ ! -z "$(which qmake)" ]; then
+    qmake -o Makefile spot-on.arm.pro
+else
+    qmake6 -o Makefile spot-on.arm.pro
+fi
+
+lupdate spot-on.arm.pro 2>/dev/null
+lrelease spot-on.arm.pro 2>/dev/null
 make -j $(nproc)
 cp -p ../../libNTL/unix.d/src/.libs/libntl.so* ./opt/spot-on/Lib/.
 cp -p ../../libNTRU/libntru.so ./opt/spot-on/Lib/.
