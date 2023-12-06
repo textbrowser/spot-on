@@ -1,4 +1,5 @@
 cache()
+dmg.commands = hdiutil create Spot-On.d.dmg -srcfolder Spot-On.d
 include(spot-on-gui-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
@@ -51,7 +52,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
-QMAKE_EXTRA_TARGETS    = libntru purge
+QMAKE_EXTRA_TARGETS    = dmg libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
 # Removed.
