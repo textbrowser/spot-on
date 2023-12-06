@@ -627,8 +627,13 @@ class aes256
 #include <QtDebug>
 #include <QtMath>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 static qsizetype MIN_POOL_SIZE = 64;
 static qsizetype POOLS = 32;
+#else
+static int MIN_POOL_SIZE = 64;
+static int POOLS = 32;
+#endif
 
 class counter_q
 {
@@ -908,7 +913,11 @@ class fortunate_q: public QObject
   void slot_send_byte(void)
   {
     if(m_tcp_socket.state() == QAbstractSocket::ConnectedState)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
       m_tcp_socket.write(m_send_byte, static_cast<qsizetype> (1));
+#else
+      m_tcp_socket.write(m_send_byte, static_cast<int> (1));
+#endif
   }
 
   void slot_tcp_socket_connected(void)
