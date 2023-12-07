@@ -1,5 +1,7 @@
 Summary of Spot-On
 
+Qt 5.15 LTS or Qt 6.5 LTS is required for Linux. All other operating systems require Qt 6.5 LTS. Have fun!
+
 <ul>
 <li>Alpha processors.</li>
 <li>Android, FreeBSD, Linux, MacOS, OS/2, OpenBSD, Windows.</li>
