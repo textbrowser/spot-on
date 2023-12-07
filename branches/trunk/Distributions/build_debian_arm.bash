@@ -45,9 +45,9 @@ chmod -x ./opt/spot-on/Lib/lib*
 find ./opt/spot-on -type f -exec chmod g+w {} \;
 rm ./opt/spot-on/Documentation/*.qrc
 
-architecture="$(dpkg --print-architecture)"
-
 # Preparing Spot-On-2023.12.15_$architecture.deb:
+
+architecture="$(dpkg --print-architecture)"
 
 mkdir -p spot-on-debian/opt
 mkdir -p spot-on-debian/usr/share/applications
