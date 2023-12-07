@@ -38,6 +38,7 @@ extern "C"
 #include <ws2sctp.h>
 #endif
 }
+#endif
 
 class spoton_socket_options
 {
