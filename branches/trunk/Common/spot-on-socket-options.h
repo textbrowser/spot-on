@@ -30,6 +30,15 @@
 
 #include <QAbstractSocket>
 
+#if defined(Q_OS_WIN)
+extern "C"
+{
+#include <winsock2.h>
+#ifdef SPOTON_SCTP_ENABLED
+#include <ws2sctp.h>
+#endif
+}
+
 class spoton_socket_options
 {
  public:
