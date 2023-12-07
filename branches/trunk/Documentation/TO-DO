@@ -322,9 +322,7 @@ Completed Items
 
 Remaining Items
 
-1.     NTL for Windows.
-2.     Optional human proxy session setting.
-3.     Create a diagram of the URL database schema.
-4.     Dark mode for Windows.
-5.     Improve install target on Windows: copy NTRU library,
-       delete verbose documentation files.
+1.     Create a diagram of the URL database schema.
+2.     Dark mode for Windows.
+3.     Replace OpenSSL with executable. Create and remove local files
+       via the openssl executable. Library becoming stale.
