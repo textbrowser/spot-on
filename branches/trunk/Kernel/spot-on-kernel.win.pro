@@ -55,7 +55,7 @@ INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\..\\..\\. \
                    ..\\..\\..\\libGCrypt\\Include.win64
-                   ..\\..\\..\\libOpenSSL\\Include.win64 \
+                   ..\\..\\..\\libOpenSSL\\Include.win64
 LIBS		+= -L..\\..\\..\\libNTRU \
 		   -L..\\..\\..\\libGCrypt\\Libraries.win64 \
                    -L..\\..\\..\\libOpenSSL\\Libraries.win64 \
