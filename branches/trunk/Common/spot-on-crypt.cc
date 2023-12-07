@@ -39,6 +39,10 @@
 #include <iostream>
 #include <limits>
 
+#ifdef Q_OS_WINDOWS
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+
 #ifdef SPOTON_GPGME_ENABLED
 extern "C"
 {
@@ -62,7 +66,6 @@ extern "C"
 #endif
 #endif
 #include <openssl/opensslv.h>
-#include <openssl/x509.h>
 }
 
 #define SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING "sha512"
