@@ -29,9 +29,6 @@
 
 #include <limits>
 
-#include "spot-on-misc.h"
-#include "spot-on-socket-options.h"
-
 #ifdef Q_OS_FREEBSD
 extern "C"
 {
@@ -82,6 +79,9 @@ extern "C"
 #endif
 }
 #endif
+
+#include "spot-on-misc.h"
+#include "spot-on-socket-options.h"
 
 void spoton_socket_options::setSocketOptions(const QString &options,
 					     const QString &t,
