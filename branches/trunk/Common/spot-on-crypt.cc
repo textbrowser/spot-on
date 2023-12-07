@@ -62,6 +62,7 @@ extern "C"
 #endif
 #endif
 #include <openssl/opensslv.h>
+#include <openssl/x509.h>
 }
 
 #define SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING "sha512"
