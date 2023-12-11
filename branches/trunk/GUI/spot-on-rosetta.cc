@@ -319,8 +319,8 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
     }
 }
 
-QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
-				      const QByteArray &sender) const
+QByteArray spoton_rosetta::gpgEncrypt
+(const QByteArray &receiver, const QByteArray &sender) const
 {
 #ifdef SPOTON_GPGME_ENABLED
   Q_UNUSED(sender);
@@ -423,11 +423,10 @@ QByteArray spoton_rosetta::gpgEncrypt(const QByteArray &receiver,
 
   if(err != GPG_ERR_NO_ERROR)
     {
+      output = tr("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
+	arg(gpgme_strerror(err)).toUtf8();
       spoton_misc::logError
 	(QString("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
-	 arg(gpgme_strerror(err)));
-      ui.outputEncrypt->setText
-	(tr("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
 	 arg(gpgme_strerror(err)));
     }
 
@@ -1567,17 +1566,17 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
   if(!eCrypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
 
   DestinationTypes destinationType = DestinationTypes
-    (ui.contacts->itemData(ui.contacts->currentIndex(),
-			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
+    (ui.contacts->
+     itemData(ui.contacts->currentIndex(),Qt::ItemDataRole(Qt::UserRole + 1)).
+     toInt());
 
   if(destinationType == GPG)
     {
