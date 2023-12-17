@@ -144,8 +144,6 @@ static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 ** Ignore some OpenSSL 3 warnings.
 */
 
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 			   const QByteArray &publicKey)
 {
@@ -2064,7 +2062,7 @@ QByteArray spoton_crypt::sha1FileHash(const QString &fileName,
 	  if(atomic.fetchAndAddOrdered(0))
 	    break;
 
-	  hash.addData(buffer, static_cast<int> (rc));
+	  hash.addData(buffer.mid(0, static_cast<int> (rc)));
 	}
     }
 
@@ -2109,7 +2107,7 @@ QByteArray spoton_crypt::sha3_512FileHash(const QString &fileName,
 	  if(atomic.fetchAndAddOrdered(0))
 	    break;
 
-	  hash.addData(buffer, static_cast<int> (rc));
+	  hash.addData(buffer.mid(0, static_cast<int> (rc)));
 	}
     }
 
@@ -2414,9 +2412,17 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	      else
 #endif
 	      if(protocol == "TlsV1_0")
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 		cipher = QSslCipher(next, QSsl::TlsV1_0);
+#else
+	        cipher = QSslCipher(next, QSsl::TlsV1_2OrLater);
+#endif
 	      else if(protocol == "TlsV1_1")
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 		cipher = QSslCipher(next, QSsl::TlsV1_1);
+#else
+	        cipher = QSslCipher(next, QSsl::TlsV1_2OrLater);
+#endif
 	      else if(protocol == "TlsV1_2")
 		cipher = QSslCipher(next, QSsl::TlsV1_2);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
@@ -3745,6 +3751,8 @@ void spoton_crypt::freeSymmetricKey(void)
     m_symmetricKeyMutex.unlock();
 }
 
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
 void spoton_crypt::generateCertificate(const int keySize,
 				       void *key,
 				       QByteArray &certificate,
@@ -3770,8 +3778,7 @@ void spoton_crypt::generateCertificate(const int keySize,
   X509_NAME *subject = 0;
   X509_NAME_ENTRY *commonNameEntry = 0;
   char *buffer = 0;
-  const unsigned char *organization =
-    reinterpret_cast<const unsigned char *>
+  const unsigned char *organization = reinterpret_cast<const unsigned char *>
     ("Spot-On Origami Self-Signed Certificate");
   int length = 0;
   int rc = 0;
