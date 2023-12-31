@@ -20,11 +20,11 @@ Linux
 qmake -o Makefile spot-on.pro
 make
 
-OS X
+MacOS
 
-Homebrew is required for OS X.
+Homebrew is required for MacOS.
 
-qmake -o Makefile spot-on.osx.pro
+qmake -o Makefile spot-on.macos.pro
 make install
 make dmg
 
