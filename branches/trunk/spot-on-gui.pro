@@ -86,6 +86,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wredundant-decls \
                           -Wstack-protector \
                           -Wstrict-overflow=5 \
+                          -Wstringop-overflow=4 \
                           -fPIE \
                           -fstack-protector-all \
                           -fwrapv \
