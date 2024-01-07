@@ -114,9 +114,9 @@ libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
 libgeoip_data_install.path  = ./Spot-On.d/GeoIP
 libntru_install.extra       = cp ../../libNTRU/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 libntru_install.path        = .
-lrelease.extra              = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.osx.pro
+lrelease.extra              = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.macos.pro
 lrelease.path               = .
-lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.osx.pro
+lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.macos.pro
 lupdate.path                = .
 macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 macdeployqt.path            = Spot-On.app
