@@ -127,7 +127,7 @@ dist:
 	mkdir $(DIST_NAME)
 	mkdir $(DIST_NAME)/$(SRCDIR)
 	mkdir $(DIST_NAME)/$(TESTDIR)
-	cp Makefile Makefile.win Makefile.osx README.md LICENSE PATENTS $(DIST_NAME)
+	cp Makefile Makefile.win Makefile.macos README.md LICENSE PATENTS $(DIST_NAME)
 	cp $(SRCDIR)/*.c $(DIST_NAME)/$(SRCDIR)
 	cp $(SRCDIR)/*.h $(DIST_NAME)/$(SRCDIR)
 	cp $(TESTDIR)/*.c $(DIST_NAME)/$(TESTDIR)

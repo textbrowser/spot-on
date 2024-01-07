@@ -92,7 +92,7 @@ dist:
 	mkdir $(DIST_NAME)\$(TESTDIR)
 	copy Makefile $(DIST_NAME)
 	copy Makefile.win $(DIST_NAME)
-	copy Makefile.osx $(DIST_NAME)
+	copy Makefile.macos $(DIST_NAME)
 	copy README.md $(DIST_NAME)
 	copy LICENSE $(DIST_NAME)
 	copy PATENTS $(DIST_NAME)
