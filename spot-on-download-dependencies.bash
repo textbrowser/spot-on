@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Alexis Megas.
 
-# Download and install dependencies for Windows.
+# Download dependencies for Windows.
 # Must be executed in the top-level source directory.
 
 # GCrypt
