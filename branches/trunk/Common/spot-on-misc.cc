@@ -954,7 +954,7 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
   for(int i = 0; i < list.size(); i++)
     {
       QString str(list.at(i));
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList pair(str.split(":=", Qt::SkipEmptyParts));
 #else
       QStringList pair(str.split(":=", QString::SkipEmptyParts));
@@ -1358,7 +1358,7 @@ QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
       QStringList digits;
       QStringList list;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       list = iipp.split(".", Qt::KeepEmptyParts);
 #else
       list = iipp.split(".", QString::KeepEmptyParts);
@@ -2065,7 +2065,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
     {
       QHash<QString, char> discovered;
       QSqlQuery query(db);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).

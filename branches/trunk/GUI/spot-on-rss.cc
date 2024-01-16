@@ -1702,7 +1702,7 @@ void spoton_rss::slotAddFeed(void)
 {
   QString connectionName("");
   QString error("");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList list
     (m_ui.new_feed->text().trimmed().replace("\n", " ").
      split(" ", Qt::SkipEmptyParts));

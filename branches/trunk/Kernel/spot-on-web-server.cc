@@ -617,7 +617,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	      keywordsearch.clear();
 	      originalSearch.remove(s, e - s + 1);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	      QStringList list
 		(bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
@@ -658,7 +658,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  keywords.clear();
 	  keywordsearch.clear();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	  QStringList list
 	    (originalSearch.toLower().trimmed().
 	     split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));

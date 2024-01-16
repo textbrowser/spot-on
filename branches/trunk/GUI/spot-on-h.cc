@@ -1298,7 +1298,7 @@ void spoton::slotSetSocketOptions(void)
     return;
 
   QDialog dialog(this);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList list(socketOptions.split(";", Qt::SkipEmptyParts));
 #else
   QStringList list(socketOptions.split(";", QString::SkipEmptyParts));

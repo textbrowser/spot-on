@@ -131,7 +131,7 @@ void spoton::discoverUrls(void)
 	  keywordsearch.clear();
 	  search.remove(s, e - s + 1);
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	  QStringList list
 	    (bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
@@ -188,7 +188,7 @@ void spoton::discoverUrls(void)
       keywords.clear();
       keywordsearch.clear();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList list
 	(search.toLower().trimmed().
 	 split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));

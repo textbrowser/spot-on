@@ -4645,7 +4645,7 @@ void spoton::slotAddListener(void)
 	    QStringList digits;
 	    QStringList list;
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	    if(protocol == "IPv4")
 	      list = ip.split(".", Qt::KeepEmptyParts);
 	    else
