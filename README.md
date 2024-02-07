@@ -1,4 +1,4 @@
-Summary of Spot-On
+Spot-On is a software carnival.
 
 Qt 5.15 LTS or Qt 6.5 LTS is required for Linux. All other operating systems require Qt 6.5 LTS. Have fun!
 
