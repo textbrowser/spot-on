@@ -326,3 +326,4 @@ Remaining Items
 2.     Dark mode for Windows.
 3.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
+4.     Correct effervescent tool tips. StarBeam.
