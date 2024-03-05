@@ -3718,9 +3718,9 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.transmitted->horizontalScrollBar()->value();
 	vval = m_ui.transmitted->verticalScrollBar()->value();
-	m_ui.transmitted->setUpdatesEnabled(false);
-	m_ui.transmitted->setSortingEnabled(false);
 	m_ui.transmitted->setRowCount(0);
+	m_ui.transmitted->setSortingEnabled(false);
+	m_ui.transmitted->setUpdatesEnabled(false);
 	row = 0;
 	totalRows = 0;
 
