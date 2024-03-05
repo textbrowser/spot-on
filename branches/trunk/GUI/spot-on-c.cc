@@ -3217,12 +3217,12 @@ void spoton::slotPopulateEtpMagnets(void)
 	      checked.append(checkBox->text());
 	  }
 
-	m_ui.etpMagnets->setUpdatesEnabled(false);
-	m_ui.etpMagnets->setSortingEnabled(false);
-	m_ui.etpMagnets->setRowCount(0);
-	m_ui.addTransmittedMagnets->setUpdatesEnabled(false);
-	m_ui.addTransmittedMagnets->setSortingEnabled(false);
 	m_ui.addTransmittedMagnets->setRowCount(0);
+	m_ui.addTransmittedMagnets->setSortingEnabled(false);
+	m_ui.addTransmittedMagnets->setUpdatesEnabled(false);
+	m_ui.etpMagnets->setRowCount(0);
+	m_ui.etpMagnets->setSortingEnabled(false);
+	m_ui.etpMagnets->setUpdatesEnabled(false);
 	query.setForwardOnly(true);
 
 	if(query.exec("SELECT COUNT(*) FROM magnets"))
