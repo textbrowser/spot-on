@@ -2625,8 +2625,7 @@ void spoton::slotDeleteReceived(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM received WHERE "
-		      "OID = ?");
+	query.prepare("DELETE FROM received WHERE OID = ?");
 	query.bindValue(0, oid);
 	query.exec();
       }
