@@ -3288,11 +3288,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		checkBox = new QCheckBox();
 
 		if(ok)
-		  {
-		    checkBox->setText(bytes.replace("&", "&&"));
-		    checkBox->setToolTip
-		      ("<html>" + checkBox->text() + "</html>");
-		  }
+		  checkBox->setText(bytes.replace("&", "&&"));
 		else
 		  checkBox->setText(tr("error"));
 
