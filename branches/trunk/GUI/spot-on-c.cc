@@ -3666,7 +3666,7 @@ void spoton::slotPopulateStars(void)
 		}
 
 	      if(m_ui.received->item(row, 4) &&
-		 selectedFileName == m_ui.received->item(row, 4)->text())
+		 m_ui.received->item(row, 4)->text() == selectedFileName)
 		m_ui.received->selectRow(row);
 
 	      row += 1;
@@ -3922,7 +3922,7 @@ void spoton::slotPopulateStars(void)
 		  m_ui.transmitted->item(row, i)->setToolTip(fileName);
 
 	      if(m_ui.transmitted->item(row, 6) &&
-		 mosaic == m_ui.transmitted->item(row, 6)->text())
+		 m_ui.transmitted->item(row, 6)->text() == mosaic)
 		m_ui.transmitted->selectRow(row);
 
 	      row += 1;

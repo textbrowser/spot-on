@@ -7839,8 +7839,10 @@ void spoton::slotPopulateListeners(void)
 					  toByteArray()),
 		   &ok);
 
-		if(ip == bytes1 && port == bytes2 && scopeId == bytes3 &&
-		   transportS == bytes4)
+		if(bytes1 == ip &&
+		   bytes2 == port &&
+		   bytes3 == scopeId &&
+		   bytes4 == transportS)
 		  m_ui.listeners->selectRow(row);
 
 		row += 1;
@@ -8703,9 +8705,12 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	(QByteArray::fromBase64(query->value(columnTRANSPORT).
 				toByteArray()), &ok);
 
-      if(remoteIp == bytes1 && remotePort == bytes2 &&
-	 scopeId == bytes3 && proxyIp == bytes4 &&
-	 proxyPort == bytes5 && transport == bytes6)
+      if(bytes1 == remoteIp &&
+	 bytes2 == remotePort &&
+	 bytes3 == scopeId &&
+	 bytes4 == proxyIp &&
+	 bytes5 == proxyPort &&
+	 bytes6 == transport)
 	m_ui.neighbors->selectRow(row);
 
       if(bytes3.isEmpty())
