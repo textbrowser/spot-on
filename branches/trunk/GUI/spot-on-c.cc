@@ -3712,6 +3712,10 @@ void spoton::slotPopulateStars(void)
 	if(!list.isEmpty())
 	  mosaic = list.at(0).data().toString();
 
+	disconnect(m_ui.transmitted,
+		   SIGNAL(itemSelectionChanged(void)),
+		   this,
+		   SLOT(slotTransmittedSelected(void)));
 	hval = m_ui.transmitted->horizontalScrollBar()->value();
 	vval = m_ui.transmitted->verticalScrollBar()->value();
 	m_ui.transmitted->setRowCount(0);
@@ -3942,6 +3946,10 @@ void spoton::slotPopulateStars(void)
 	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
 	m_ui.transmitted->verticalScrollBar()->setValue(vval);
 	m_ui.transmitted->setUpdatesEnabled(true);
+	connect(m_ui.transmitted,
+		SIGNAL(itemSelectionChanged(void)),
+		this,
+		SLOT(slotTransmittedSelected(void)));
 
 	if(focusWidget)
 	  focusWidget->setFocus();
