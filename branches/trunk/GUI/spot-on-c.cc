@@ -3574,7 +3574,7 @@ void spoton::slotPopulateStars(void)
 
 		      i->setBackground(brush);
 		      i->setText
-			(QString(tr("%1% - %2 of %3 Bytes")).
+			(tr("%1% - %2 of %3 Bytes").
 			 arg(percent).
 			 arg(locale.toString(fileInfo.size())).
 			 arg(locale.toString(item1->text().toLongLong())));
@@ -3896,7 +3896,7 @@ void spoton::slotPopulateStars(void)
 
 		      i->setBackground(brush);
 		      i->setText
-			(QString(tr("%1% - %2 of %3 Bytes")).
+			(tr("%1% - %2 of %3 Bytes").
 			 arg(percent).
 			 arg(locale.toString(position)).
 			 arg(locale.toString(item->text().toLongLong())));
