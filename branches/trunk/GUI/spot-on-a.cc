@@ -2475,33 +2475,10 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     ("QTableWidget {selection-background-color: lightgreen}");
 #endif
   splash->showMessage
-    (tr("Removing obsolete INI entries."),
+    (tr("Preparing INI entries."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
-  settings.remove("gui/acceptUrlDL");
-  settings.remove("gui/acceptUrlUL");
-  settings.remove("gui/acceptedIPs");
-  settings.remove("gui/applyPolarizers");
-  settings.remove("gui/disablePop3");
-  settings.remove("gui/disableSmtp");
-  settings.remove("gui/disable_kernel_synchronous_sqlite_url_download");
-  settings.remove("gui/enableCongestionControl");
-  settings.remove("gui/encryptionKey");
-  settings.remove("gui/etpReceivers");
-  settings.remove("gui/geoipPath");
-  settings.remove("gui/keySize");
-  settings.remove("gui/my_poptasticStatus");
-  settings.remove("gui/poptasticVerifyPopHost");
-  settings.remove("gui/poptasticVerifyPopHostPeer");
-  settings.remove("gui/poptasticVerifyPopPeer");
-  settings.remove("gui/poptasticVerifySmtpHost");
-  settings.remove("gui/poptasticVerifySmtpHostPeer");
-  settings.remove("gui/poptasticVerifySmtpPeer");
-  settings.remove("gui/rsaKeySize");
-  settings.remove("gui/rss_scroll_automatically");
-  settings.remove("gui/show_neighbor_summary_panel");
-  settings.remove("gui/signatureKey");
 
   if(!settings.contains("gui/saveCopy"))
     settings.setValue("gui/saveCopy", true);
