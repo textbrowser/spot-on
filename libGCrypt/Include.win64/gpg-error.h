@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.47"
-#define GPGRT_VERSION     "1.47"
+#define GPG_ERROR_VERSION "1.48"
+#define GPGRT_VERSION     "1.48"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x012f00
-#define GPGRT_VERSION_NUMBER     0x012f00
+#define GPG_ERROR_VERSION_NUMBER 0x013000
+#define GPGRT_VERSION_NUMBER     0x013000
 
 
 #ifdef __GNUC__
@@ -1162,6 +1162,7 @@ void *gpgrt_calloc (size_t n, size_t m);
 char *gpgrt_strdup (const char *string);
 char *gpgrt_strconcat (const char *s1, ...) GPGRT_ATTR_SENTINEL(0);
 void gpgrt_free (void *a);
+void gpgrt_wipememory (void *ptr, size_t len);
 
 
 /*
@@ -1918,6 +1919,8 @@ typedef struct
 #define ARGPARSE_FLAG_USERVERS 8192  /* Try version-ed user config files.    */
 #define ARGPARSE_FLAG_WITHATTR 16384 /* Return attribute bits.  (Make sure   */
                                      /* to act upon ARGPARSE_OPT_IGNORE.)    */
+#define ARGPARSE_FLAG_COMMAND  32768 /* Allow commands w/o leading dashes.   */
+
 
 /* Constants for (gpgrt_argparse_t).err.  */
 #define ARGPARSE_PRINT_WARNING  1    /* Print a diagnostic.                  */
