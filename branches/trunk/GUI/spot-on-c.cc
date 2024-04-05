@@ -3363,11 +3363,6 @@ void spoton::slotPopulateStars(void)
 
     if(db.open())
       {
-	disconnect(m_ui.received,
-		   SIGNAL(itemChanged(QTableWidgetItem *)),
-		   this,
-		   SLOT(slotReceiversChanged(QTableWidgetItem *)));
-
 	QLocale locale;
 	QModelIndexList list;
 	QSqlQuery query(db);
@@ -3375,10 +3370,16 @@ void spoton::slotPopulateStars(void)
 	QString selectedFileName("");
 	QWidget *focusWidget = QApplication::focusWidget();
 	int hval = 0;
+	int rRow = -1;
 	int row = -1;
+	int tRow = -1;
 	int totalRows = 0;
 	int vval = 0;
 
+	disconnect(m_ui.received,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotReceiversChanged(QTableWidgetItem *)));
 	m_starbeamReceivedModel->removeRows
 	  (0, m_starbeamReceivedModel->rowCount());
 	query.setForwardOnly(true);
@@ -3666,8 +3667,9 @@ void spoton::slotPopulateStars(void)
 		}
 
 	      if(m_ui.received->item(row, 4) &&
-		 m_ui.received->item(row, 4)->text() == selectedFileName)
-		m_ui.received->selectRow(row);
+		 m_ui.received->item(row, 4)->text() == selectedFileName &&
+		 rRow == -1)
+		rRow = row;
 
 	      row += 1;
 	    }
@@ -3685,6 +3687,7 @@ void spoton::slotPopulateStars(void)
 
 	m_ui.received->horizontalHeader()->setStretchLastSection(true);
 	m_ui.received->horizontalScrollBar()->setValue(hval);
+	m_ui.received->selectRow(rRow);
 	m_ui.received->verticalScrollBar()->setValue(vval);
 	m_ui.received->setUpdatesEnabled(true);
 	connect(m_ui.received,
@@ -3921,13 +3924,14 @@ void spoton::slotPopulateStars(void)
 		      this,
 		      SLOT(slotTransmittedPaused(bool)));
 
+	      if(m_ui.transmitted->item(row, 6) &&
+		 m_ui.transmitted->item(row, 6)->text() == mosaic &&
+		 tRow == -1)
+		tRow = row;
+
 	      for(int i = 0; i < m_ui.transmitted->columnCount(); i++)
 		if(i != 1 && m_ui.transmitted->item(row, i))
 		  m_ui.transmitted->item(row, i)->setToolTip(fileName);
-
-	      if(m_ui.transmitted->item(row, 6) &&
-		 m_ui.transmitted->item(row, 6)->text() == mosaic)
-		m_ui.transmitted->selectRow(row);
 
 	      row += 1;
 	    }
@@ -3944,6 +3948,7 @@ void spoton::slotPopulateStars(void)
 
 	m_ui.transmitted->horizontalHeader()->setStretchLastSection(true);
 	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
+	m_ui.transmitted->selectRow(tRow);
 	m_ui.transmitted->verticalScrollBar()->setValue(vval);
 	m_ui.transmitted->setUpdatesEnabled(true);
 	connect(m_ui.transmitted,
