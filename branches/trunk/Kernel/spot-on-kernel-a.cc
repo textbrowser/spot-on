@@ -524,13 +524,6 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   bool disable_starbeam = false;
   bool disable_ui_server = false;
 
-  settings.remove("kernel/bluetooth_msecs_waitforbyteswritten");
-  settings.remove("kernel/neighbor_thread_priority");
-  settings.remove("kernel/sctp_nodelay");
-  settings.remove("kernel/tcp_msecs_waitforbyteswritten");
-  settings.remove("kernel/tcp_nodelay");
-  settings.remove("kernel/udp_msecs_waitforbyteswritten");
-
   for(int i = 0; i < settings.allKeys().size(); i++)
     s_settings.insert(settings.allKeys().at(i),
 		      settings.value(settings.allKeys().at(i)));

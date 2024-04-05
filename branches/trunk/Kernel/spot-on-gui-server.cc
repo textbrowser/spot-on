@@ -66,12 +66,13 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 
 	  if(socket && socket->setSocketDescriptor(socketDescriptor))
 	    {
+	      /*
+	      ** Disable Nagle?
+	      */
+
 	      socket->setSocketOption
 		(QAbstractSocket::LowDelayOption,
-		 spoton_kernel::setting("kernel/tcp_nodelay", 1).
-		 toInt()); /*
-			   ** Disable Nagle?
-			   */
+		 spoton_kernel::setting("gui/tcp_nodelay", 1).toInt());
 
 	      if(kernelKeySize > 0)
 		{
