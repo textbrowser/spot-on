@@ -268,7 +268,7 @@ int main(int argc, char *argv[])
     (QObject::tr("Preparing WebEngine."),
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
-  splash.replaint();
+  splash.repaint();
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
   QWebEngineProfile::defaultProfile()->setCachePath
     (spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
