@@ -60,7 +60,8 @@ Enable WebEngine. Please do not enable WebKit. Requires Qt support.
 
 SPOTON_WEBKIT_ENABLED
 
-Enable WebKit. Please do not enable WebEngine. Requires Qt support.
+Enable WebKit. Please do not enable WebEngine. Please include the
+webkitwidgets module in the respective project file.
 
 SPOTON_WEBSOCKETS_ENABLED
 
