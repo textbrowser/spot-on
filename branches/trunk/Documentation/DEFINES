@@ -56,7 +56,8 @@ Enable SCTP. Requires system support.
 
 SPOTON_WEBENGINE_ENABLED
 
-Enable WebEngine. Please do not enable WebKit. Requires Qt support.
+Enable WebEngine. Please do not enable WebKit. Please include the
+webenginewidgets module in the respective project file.
 
 SPOTON_WEBKIT_ENABLED
 
