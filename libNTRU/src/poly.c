@@ -502,7 +502,8 @@ void ntru_mult_int_64_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uin
     }
 
     /* transform c64 into NtruIntPoly representation */
-    memset(c, 0, 2*(2*len-1));
+    if(len != 0)
+      memset(c, 0, 2*(2*len-1));
     uint16_t k = 0;
     for (i=0; i<clen; i++) {
         c[k] += c64[i];
