@@ -62,12 +62,9 @@ spoton_pageviewer::spoton_pageviewer(QSqlDatabase *db,
 	  SLOT(slotLinkHovered(const QString &)));
 #elif defined(SPOTON_WEBKIT_ENABLED)
   m_webView = new QWebView(this);
-  m_webView->page()->networkAccessManager()->
-    setNetworkAccessible(QNetworkAccessManager::NotAccessible);
   m_webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
   m_webView->setContextMenuPolicy(Qt::CustomContextMenu);
   m_webView->setRenderHints(QPainter::Antialiasing |
-			    QPainter::HighQualityAntialiasing |
 			    QPainter::SmoothPixmapTransform |
 			    QPainter::TextAntialiasing);
 #else
