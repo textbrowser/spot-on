@@ -1,0 +1,12 @@
+# https://specifications.freedesktop.org/desktop-entry-spec/latest/apa.html
+
+[Desktop Entry]
+Categories=Net
+Comment=Spot-On
+Exec=/opt/spot-on/spot-on.sh
+GenericName=Spot-On
+Icon=/opt/spot-on/spot-on-logo.png
+Name=Spot-On
+StartupNotify=true
+Terminal=false
+Type=Application
