@@ -51,6 +51,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstrict-overflow=5 \
                           -fPIE \
                           -fstack-protector-all \
+                          -funroll-loops \
                           -fwrapv \
                           -pedantic \
                           -std=c++17

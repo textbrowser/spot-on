@@ -91,6 +91,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstringop-overflow=4 \
                           -fPIE \
                           -fstack-protector-all \
+                          -funroll-loops \
                           -fwrapv \
                           -pedantic \
                           -pie \

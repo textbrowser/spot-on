@@ -43,6 +43,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstrict-overflow=1 \
+                          -funroll-loops \
                           -fwrapv \
                           -pedantic \
                           -pie \

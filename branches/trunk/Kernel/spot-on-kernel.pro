@@ -80,6 +80,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wundef \
                           -fPIE \
                           -fstack-protector-all \
+                          -funroll-loops \
                           -fwrapv \
                           -pedantic \
                           -pie \
