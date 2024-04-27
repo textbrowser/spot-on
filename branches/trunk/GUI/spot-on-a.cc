@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
     (spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
   QWebEngineProfile::defaultProfile()->setHttpCacheMaximumSize(1);
   QWebEngineProfile::defaultProfile()->setHttpCacheType
-    (QWebEngineProfile::MemoryHttpCache);
+    (QWebEngineProfile::NoCache);
   QWebEngineProfile::defaultProfile()->setHttpUserAgent("");
   QWebEngineProfile::defaultProfile()->setPersistentCookiesPolicy
     (QWebEngineProfile::NoPersistentCookies);

@@ -16,7 +16,7 @@ QT		+= concurrent \
                    network \
                    printsupport \
                    sql \
-                   webkitwidgets \
+                   webenginewidgets \
                    widgets
 
 qtHaveModule(bluetooth) {
@@ -33,7 +33,7 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
 	   SPOTON_DATELESS_COMPILATION \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
-           SPOTON_WEBKIT_ENABLED
+           SPOTON_WEBENGINE_ENABLED
 
 exists(../../libNTL/unix.d/src/.libs/libntl.so) {
 DEFINES += SPOTON_MCELIECE_ENABLED
