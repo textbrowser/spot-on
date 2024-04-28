@@ -290,13 +290,13 @@ int main(int argc, char *argv[])
     (new spoton_webengine_url_request_interceptor(0));
 #endif
 #endif
-  QWebEngineSettings::globalSettings()->setAttribute
+  QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::AutoLoadImages, false);
-  QWebEngineSettings::globalSettings()->setAttribute
+  QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::JavascriptEnabled, false);
-  QWebEngineSettings::globalSettings()->setAttribute
+  QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::LocalContentCanAccessFileUrls, false);
-  QWebEngineSettings::globalSettings()->setAttribute
+  QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::LocalStorageEnabled, false);
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::globalSettings()->setAttribute
