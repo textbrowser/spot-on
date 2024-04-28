@@ -37,9 +37,7 @@
 spoton_logviewer::spoton_logviewer(void):QMainWindow()
 {
   ui.setupUi(this);
-  setWindowTitle
-    (tr("%1: Log Viewer").
-     arg(SPOTON_APPLICATION_NAME));
+  setWindowTitle(tr("%1: Log Viewer").arg(SPOTON_APPLICATION_NAME));
   connect(&m_timer,
 	  SIGNAL(timeout(void)),
 	  this,

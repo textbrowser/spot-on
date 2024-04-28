@@ -338,8 +338,8 @@ void spoton_buzzpage::slotRemove(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is a "
 			       "fatal flaw."));
       QApplication::processEvents();
@@ -403,14 +403,14 @@ void spoton_buzzpage::slotRemove(void)
   if(!ok)
     {
       if(error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
+	QMessageBox::critical(this,
+			      tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			      tr("An error occurred while attempting to "
 				 "remove the channel data. Please enable "
 				 "logging via the Log Viewer and try again."));
       else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
+	QMessageBox::critical(this,
+			      tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			      tr("An error (%1) occurred while attempting to "
 				 "remove the channel data.").arg(error));
 
@@ -426,8 +426,8 @@ void spoton_buzzpage::slotSave(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -497,14 +497,14 @@ void spoton_buzzpage::slotSave(void)
   if(!ok)
     {
       if(error.isEmpty())
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
+	QMessageBox::critical(this,
+			      tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			      tr("An error occurred while attempting to "
 				 "save the channel data. Please enable "
 				 "logging via the Log Viewer and try again."));
       else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
+	QMessageBox::critical(this,
+			      tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			      tr("An error (%1) occurred while attempting to "
 				 "save the channel data.").arg(error));
 
@@ -617,8 +617,8 @@ void spoton_buzzpage::slotSendMessage(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
 }

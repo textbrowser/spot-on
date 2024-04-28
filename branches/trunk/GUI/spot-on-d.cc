@@ -177,8 +177,7 @@ bool spoton::promptBeforeExit(void)
 		   arg(SPOTON_APPLICATION_NAME));
 	mb.setWindowIcon(windowIcon());
 	mb.setWindowModality(Qt::ApplicationModal);
-	mb.setWindowTitle(tr("%1: Question").
-			  arg(SPOTON_APPLICATION_NAME));
+	mb.setWindowTitle(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 	if(mb.exec() != QMessageBox::Yes)
 	  {
@@ -734,8 +733,8 @@ void spoton::slotAddAEToken(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
   else
@@ -753,8 +752,7 @@ void spoton::slotAddAttachment(void)
   QFileDialog dialog(this);
 
   dialog.setWindowTitle
-    (tr("%1: Select Attachment").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Attachment").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFiles);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
@@ -791,8 +789,8 @@ void spoton::slotAddInstitution(const QString &text)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -850,8 +848,8 @@ void spoton::slotAddInstitution(const QString &text)
 
   if(name.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Please provide an institution name."));
       QApplication::processEvents();
       return;
@@ -859,8 +857,8 @@ void spoton::slotAddInstitution(const QString &text)
 
   if(postalAddress.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Please provide an institution "
 			       "postal address."));
       QApplication::processEvents();
@@ -936,8 +934,8 @@ void spoton::slotAddInstitution(const QString &text)
     }
   else
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Unable to record the institution."));
       QApplication::processEvents();
     }
@@ -974,8 +972,8 @@ void spoton::slotAddMagnet(void)
 
       if(!crypt)
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
+	  QMessageBox::critical(this,
+				tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 				tr("Invalid spoton_crypt object. This is "
 				   "a fatal flaw."));
 	  QApplication::processEvents();
@@ -1089,16 +1087,16 @@ void spoton::slotAddMagnet(void)
       if(!ok)
 	{
 	  if(error.isEmpty())
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
+	    QMessageBox::critical(this,
+				  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 				  tr("An error occurred while attempting to "
 				     "save the channel data. Please enable "
 				     "logging via the Log Viewer and try "
 				     "again."));
 	  else
 	    QMessageBox::critical
-	      (this,  tr("%1: Error").
-	       arg(SPOTON_APPLICATION_NAME),
+	      (this,
+	       tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	       tr("An error (%1) occurred while attempting to "
 		  "save the channel data.").arg(error));
 
@@ -1460,8 +1458,8 @@ void spoton::slotDeleteAEToken(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -1472,8 +1470,8 @@ void spoton::slotDeleteAEToken(void)
 
   if(list.size() != 3 || !list.at(0) || !list.at(1) || !list.at(2))
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select a token to delete."));
       QApplication::processEvents();
       return;
@@ -1515,8 +1513,8 @@ void spoton::slotDeleteAEToken(void)
 
   if(!ok)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error occurred while attempting "
 			       "to delete the specified adaptive echo "
 			       "token."));
@@ -1979,8 +1977,8 @@ void spoton::slotSaveAttachment(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -2006,8 +2004,8 @@ void spoton::slotSaveAttachment(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::Directory);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setWindowTitle(tr("%1: Save Attachment(s)").
-                        arg(SPOTON_APPLICATION_NAME));
+  dialog.setWindowTitle
+    (tr("%1: Save Attachment(s)").arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() != QDialog::Accepted)
     {
@@ -2093,8 +2091,8 @@ void spoton::slotSaveAttachment(void)
 
   if(!ok)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error occurred while attempting "
 			       "to extract the attachment(s)."));
       QApplication::processEvents();
@@ -2144,8 +2142,7 @@ void spoton::slotSaveMOTD(void)
 	QString str(m_ui.motd->toPlainText().trimmed());
 
 	if(str.isEmpty())
-	  str = QString("Welcome to %1.").
-	    arg(SPOTON_APPLICATION_NAME);
+	  str = QString("Welcome to %1.").arg(SPOTON_APPLICATION_NAME);
 
 	query.prepare("UPDATE listeners SET motd = ? WHERE OID = ?");
 	query.bindValue(0, str.toUtf8());
@@ -2166,8 +2163,8 @@ void spoton::slotSaveMOTD(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
   else
@@ -2180,8 +2177,8 @@ void spoton::slotSetAETokenInformation(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -2196,8 +2193,8 @@ void spoton::slotSetAETokenInformation(void)
 
   if(list.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid neighbor OID. "
 			       "Please select a neighbor."));
       QApplication::processEvents();
@@ -2210,8 +2207,8 @@ void spoton::slotSetAETokenInformation(void)
 
   if(etypes.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("The method spoton_crypt::cipherTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
@@ -2223,8 +2220,8 @@ void spoton::slotSetAETokenInformation(void)
 
   if(htypes.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("The method spoton_crypt::hashTypes() has "
 			       "failed. "
 			       "This is a fatal flaw."));
@@ -2237,8 +2234,7 @@ void spoton::slotSetAETokenInformation(void)
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: Adaptive Echo Information").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Adaptive Echo Information").arg(SPOTON_APPLICATION_NAME));
   ui.token_e_type->addItems(etypes);
   ui.token_h_type->addItems(htypes);
 
@@ -2309,14 +2305,14 @@ void spoton::slotSetAETokenInformation(void)
 	  QSqlDatabase::removeDatabase(connectionName);
 
 	  if(!ok)
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
+	    QMessageBox::critical(this,
+				  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 				  tr("An error occurred while attempting "
 				     "to set an adaptive echo token."));
 	}
       else
-	QMessageBox::critical(this, tr("%1: Error").
-			      arg(SPOTON_APPLICATION_NAME),
+	QMessageBox::critical(this,
+			      tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			      tr("The token must contain "
 				 "at least ninety-six characters."));
     }
@@ -2379,9 +2375,12 @@ void spoton::slotSetListenerSSLControlString(void)
   bool ok = true;
 
   sslCS = QInputDialog::getText
-    (this, tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),
+    (this,
+     tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),
      tr("&SSL Control String"),
-     QLineEdit::Normal, sslCS, &ok);
+     QLineEdit::Normal,
+     sslCS,
+     &ok);
 
   if(!ok)
     return;
@@ -2472,9 +2471,12 @@ void spoton::slotSetNeighborSSLControlString(void)
   bool ok = true;
 
   sslCS = QInputDialog::getText
-    (this, tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),
+    (this,
+     tr("%1: SSL Control String").arg(SPOTON_APPLICATION_NAME),
      tr("&SSL Control String"),
-     QLineEdit::Normal, sslCS, &ok);
+     QLineEdit::Normal,
+     sslCS,
+     &ok);
 
   if(!ok)
     return;

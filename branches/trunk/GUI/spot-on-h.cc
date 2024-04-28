@@ -1137,7 +1137,8 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 		QSqlDatabase::removeDatabase("URLDatabaseWeb");
 
 	      QMessageBox::critical
-		(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+		(this,
+		 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("Could not open (%1) a database connection.").arg(str));
 	      QApplication::processEvents();
 	    }
@@ -1745,7 +1746,8 @@ void spoton::slotWebServerValueChangedTimeout(void)
       if(!crypt)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid spoton_crypt object. This is a fatal flaw."));
 	  QApplication::processEvents();
 	  return;

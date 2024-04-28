@@ -537,8 +537,8 @@ void spoton_emailwindow::slotSendMail(void)
   if(fileInfo.size() >= maximumSize)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The file email.db has exceeded the specified limit. Please "
 	    "remove some entries and/or increase the limit "
 	    "via the Permissions section in Options."));
@@ -568,8 +568,8 @@ void spoton_emailwindow::slotSendMail(void)
 	    {
 	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
-		(this, tr("%1: Error").
-		 arg(SPOTON_APPLICATION_NAME),
+		(this,
+		 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 cannot be accessed.").
 		 arg(fileName));
 	      QApplication::processEvents();
@@ -580,8 +580,8 @@ void spoton_emailwindow::slotSendMail(void)
 	    {
 	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
-		(this, tr("%1: Error").
-		 arg(SPOTON_APPLICATION_NAME),
+		(this,
+		 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 is too large. The maximum size "
 		    "of an attachment is %2 byte(s).").arg(fileName).
 		 arg(locale.toString(spoton_common::
@@ -607,8 +607,8 @@ void spoton_emailwindow::slotSendMail(void)
 	    {
 	      QApplication::restoreOverrideCursor();
 	      QMessageBox::critical
-		(this, tr("%1: Error").
-		 arg(SPOTON_APPLICATION_NAME),
+		(this,
+		 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("An error occurred while reading the attachment %1.").
 		 arg(fileName));
 	      QApplication::processEvents();
@@ -627,8 +627,8 @@ void spoton_emailwindow::slotSendMail(void)
   if(!crypt)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
@@ -641,8 +641,8 @@ void spoton_emailwindow::slotSendMail(void)
   if(!m_ui.emailParticipants->selectionModel()->hasSelection())
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please select at least one participant."));
       QApplication::processEvents();
       m_ui.emailParticipants->setFocus();
@@ -651,8 +651,8 @@ void spoton_emailwindow::slotSendMail(void)
   else if(m_ui.outgoingMessage->toPlainText().isEmpty())
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please compose an actual letter."));
       QApplication::processEvents();
       m_ui.outgoingMessage->setFocus();
@@ -663,8 +663,8 @@ void spoton_emailwindow::slotSendMail(void)
       if(m_ui.goldbug->text().size() < 96)
 	{
 	  QMessageBox::critical
-	    (this, tr("%1: Error").
-	     arg(SPOTON_APPLICATION_NAME),
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Please provide a Gold Bug that contains at least ninety-six "
 		"characters."));
 	  QApplication::processEvents();
@@ -709,8 +709,8 @@ void spoton_emailwindow::slotSendMail(void)
   if(temporary)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("At least one of the selected e-mail recipients is temporary. "
 	    "Please correct."));
       QApplication::processEvents();
@@ -723,8 +723,8 @@ void spoton_emailwindow::slotSendMail(void)
 	 isNull())
 	{
 	  QMessageBox::information
-	    (this, tr("%1: Information").
-	     arg(SPOTON_APPLICATION_NAME),
+	    (this,
+	     tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	     tr("The Poptastic & RetroPhone Settings window will be "
 		"displayed. Please prepare at least one Poptastic account."));
 	  QApplication::processEvents();

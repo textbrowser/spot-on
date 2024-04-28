@@ -244,8 +244,12 @@ void spoton_echo_key_share::addCategory(void)
   bool ok = true;
 
   category = QInputDialog::getText
-    (this, tr("%1: New Category").arg(SPOTON_APPLICATION_NAME),
-     tr("&Category"), QLineEdit::Normal, "", &ok).trimmed();
+    (this,
+     tr("%1: New Category").arg(SPOTON_APPLICATION_NAME),
+     tr("&Category"),
+     QLineEdit::Normal,
+     "",
+     &ok).trimmed();
 
   if(!ok)
     return;
@@ -875,8 +879,8 @@ void spoton_echo_key_share::showError(const QString &error)
   if(error.trimmed().isEmpty())
     return;
 
-  QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QMessageBox::critical
+    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error.trimmed());
   QApplication::processEvents();
 }
 

@@ -823,8 +823,8 @@ void spoton::showError(const QString &error)
   if(error.trimmed().isEmpty())
     return;
 
-  QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QMessageBox::critical
+    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error.trimmed());
   QApplication::processEvents();
 }
 
@@ -852,8 +852,8 @@ void spoton::slotConfigurePoptastic(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -990,8 +990,7 @@ void spoton::slotConfigurePoptastic(void)
 	  SLOT(slotTestPoptasticSmtpSettings(void)),
 	  Qt::UniqueConnection);
   m_poptasticRetroPhoneDialog->setWindowTitle
-    (tr("%1: Poptastic & RetroPhone Settings").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Poptastic & RetroPhone Settings").arg(SPOTON_APPLICATION_NAME));
   m_poptasticRetroPhoneSettingsUi.capath->setText
     (m_settings.value("gui/poptasticCAPath", "").toString());
   m_poptasticRetroPhoneSettingsUi.capath->setCursorPosition(0);
@@ -1052,8 +1051,8 @@ void spoton::slotConfigurePoptastic(void)
       if(!error.isEmpty())
 	{
 	  m_poptasticRetroPhoneDialog->show();
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME),
+	  QMessageBox::critical(this,
+				tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 				tr("An error (%1) occurred while "
 				   "attempting to save the Poptastic "
 				   "information.").arg(error));
@@ -1129,8 +1128,8 @@ void spoton::slotDeletePoptasticAccount(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(m_poptasticRetroPhoneDialog,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -1710,8 +1709,8 @@ void spoton::slotSavePoptasticAccount(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(m_poptasticRetroPhoneDialog,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error (%1) occurred while "
 			       "attempting to save the Poptastic "
 			       "information.").arg(error));
@@ -1851,8 +1850,7 @@ void spoton::slotSelectCAPath(void)
       QFileDialog dialog(m_poptasticRetroPhoneDialog);
 
       dialog.setWindowTitle
-	(tr("%1: Select CA File").
-	 arg(SPOTON_APPLICATION_NAME));
+	(tr("%1: Select CA File").arg(SPOTON_APPLICATION_NAME));
       dialog.setFileMode(QFileDialog::ExistingFile);
       dialog.setDirectory(QDir::homePath());
       dialog.setLabelText(QFileDialog::Accept, tr("Select"));
@@ -1945,8 +1943,8 @@ void spoton::slotSetSBPulseSize(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -1996,8 +1994,8 @@ void spoton::slotSetSBPulseSize(void)
     setSBField(oid, bytes, "pulse_size");
   else
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error occurred while attempting to "
 			       "secure the pulse size."));
       QApplication::processEvents();
@@ -2030,8 +2028,14 @@ void spoton::slotSetSBReadInterval(void)
   bool ok = true;
 
   rational = QInputDialog::getDouble
-    (this, tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
-     tr("&Read Interval"), rational, 0.025, 60.000, 3, &ok);
+    (this,
+     tr("%1: StarBeam Read Interval").arg(SPOTON_APPLICATION_NAME),
+     tr("&Read Interval"),
+     rational,
+     0.025,
+     60.000,
+     3,
+     &ok);
 
   if(!ok)
     return;
@@ -2112,8 +2116,8 @@ void spoton::slotShareStarBeam(void)
 
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
-			arg(SPOTON_APPLICATION_NAME));
+  dialog.setWindowTitle
+    (tr("%1: Select StarBeam Transmit File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));

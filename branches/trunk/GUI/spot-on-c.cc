@@ -1701,8 +1701,8 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
     {
       if(displayError)
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME), error);
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 	  QApplication::processEvents();
 	}
     }
@@ -1716,8 +1716,8 @@ void spoton::slotAddReceiveNova(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -1729,8 +1729,8 @@ void spoton::slotAddReceiveNova(void)
   if(nova.length() < 48)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please provide a nova that contains at least "
 	    "forty-eight characters. Reach for the "
 	    "stars!"));
@@ -1782,8 +1782,8 @@ void spoton::slotAddReceiveNova(void)
     }
   else
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Unable to store the nova."));
       QApplication::processEvents();
     }
@@ -2050,7 +2050,8 @@ void spoton::slotCopyEmailKeys(void)
 	{
 	  QApplication::restoreOverrideCursor();
 	  QMessageBox::critical
-	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	    (this,
+	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("The e-mail keys are too long (%1 bytes).").
 	     arg(QLocale().toString(text.length())));
 	  QApplication::processEvents();
@@ -2389,7 +2390,8 @@ void spoton::slotCopyUrlFriendshipBundle(void)
     {
       QApplication::restoreOverrideCursor();
       QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The URL bundle is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
       QApplication::processEvents();
@@ -2530,8 +2532,8 @@ void spoton::slotDeleteNova(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -2542,8 +2544,8 @@ void spoton::slotDeleteNova(void)
 
   if(list.isEmpty() || !list.at(0))
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Please select a nova to delete."));
       QApplication::processEvents();
       return;
@@ -2582,8 +2584,8 @@ void spoton::slotDeleteNova(void)
 
   if(!ok)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error occurred while attempting "
 			       "to delete the speficied nova."));
       QApplication::processEvents();
@@ -2700,8 +2702,8 @@ void spoton::slotExportListeners(void)
   if(m_ui.listeners->rowCount() == 0)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Unable to export an empty listeners table."));
       QApplication::processEvents();
       return;
@@ -2711,8 +2713,7 @@ void spoton::slotExportListeners(void)
 
   dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
-    (tr("%1: Select Listeners Export File").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Listeners Export File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::AnyFile);
   dialog.setDirectory(QStandardPaths::
 		      standardLocations(QStandardPaths::DesktopLocation).
@@ -2784,8 +2785,7 @@ void spoton::slotExportPublicKeys(void)
 
   dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
-    (tr("%1: Select Public Keys Export File").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Public Keys Export File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::AnyFile);
   dialog.setDirectory(QStandardPaths::
 		      standardLocations(QStandardPaths::DesktopLocation).
@@ -2995,8 +2995,8 @@ void spoton::slotImportNeighbors(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -3006,8 +3006,7 @@ void spoton::slotImportNeighbors(void)
   QFileDialog dialog(this);
 
   dialog.setWindowTitle
-    (tr("%1: Select Neighbors Import File").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Neighbors Import File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
@@ -3037,8 +3036,8 @@ void spoton::slotImportNeighbors(void)
 	     arg(fileInfo.size()));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::ApplicationModal);
-	  mb.setWindowTitle(tr("%1: Confirmation").
-			    arg(SPOTON_APPLICATION_NAME));
+	  mb.setWindowTitle
+	    (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 	  if(mb.exec() != QMessageBox::Yes)
 	    {
@@ -3060,8 +3059,7 @@ void spoton::slotImportPublicKeys(void)
   QFileDialog dialog(this);
 
   dialog.setWindowTitle
-    (tr("%1: Select Public Keys Import File").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Public Keys Import File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
@@ -3131,7 +3129,8 @@ void spoton::slotImportPublicKeys(void)
 	}
 
       QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("A total of %1 key pair(s) were imported and %2 key pair(s) "
 	    "were not imported.").arg(imported).arg(notimported));
       QApplication::processEvents();
@@ -4000,8 +3999,8 @@ void spoton::slotRegenerateKey(void)
 
   if(!crypt1 || !crypt2)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object(s). This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -4132,8 +4131,8 @@ void spoton::slotRegenerateKey(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error (%1) occurred with "
 			       "spoton_crypt::"
 			       "generatePrivatePublicKeys().").
@@ -4533,8 +4532,7 @@ void spoton::slotSelectTransmitFile(void)
   QFileDialog dialog(this);
 
   dialog.setWindowTitle
-    (tr("%1: Select StarBeam Transmit File").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select StarBeam Transmit File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
@@ -4896,8 +4894,8 @@ void spoton::slotTransmit(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
   else

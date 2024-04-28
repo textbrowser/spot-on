@@ -674,12 +674,10 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	     "%1 Version %2</span></a></p></body></html>").
      arg(SPOTON_APPLICATION_NAME).
      arg(SPOTON_VERSION_STR));
-  setWindowTitle
-    (tr("%1").arg(SPOTON_APPLICATION_NAME));
+  setWindowTitle(tr("%1").arg(SPOTON_APPLICATION_NAME));
   m_ui.menu_Tools->setWindowTitle
     (tr("%1: Tools").arg(SPOTON_APPLICATION_NAME));
-  m_ui.menu_View->setWindowTitle
-    (tr("%1: View").arg(SPOTON_APPLICATION_NAME));
+  m_ui.menu_View->setWindowTitle(tr("%1: View").arg(SPOTON_APPLICATION_NAME));
   m_ui.listenerOrientation->model()->setData
     (m_ui.listenerOrientation->model()->index(1, 0), 0, Qt::UserRole - 1);
   m_ui.neighborOrientation->model()->setData
@@ -3639,8 +3637,7 @@ void spoton::authenticate
 
   ui.setupUi(&dialog);
   dialog.setWindowTitle
-    (tr("%1: Authenticate Neighbor Account").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Authenticate Neighbor Account").arg(SPOTON_APPLICATION_NAME));
 
   if(!message.isEmpty())
     ui.message->setText(message);
@@ -3695,16 +3692,16 @@ void spoton::authenticate
 	  QSqlDatabase::removeDatabase(connectionName);
 
 	  if(!ok)
-	    QMessageBox::critical(this, tr("%1: Error").
-				  arg(SPOTON_APPLICATION_NAME),
+	    QMessageBox::critical(this,
+				  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 				  tr("An error occurred while attempting "
 				     "to record authentication "
 				     "information."));
 	}
       else
 	QMessageBox::critical
-	  (this, tr("%1: Error").
-	   arg(SPOTON_APPLICATION_NAME),
+	  (this,
+	   tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	   tr("The account name and the account password "
 	      "must contain at least thirty-two characters "
 	      "each."));
@@ -3986,8 +3983,8 @@ void spoton::magnetize(void)
 
   if(!error.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME), error);
+      QMessageBox::critical
+	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
 }
@@ -4210,7 +4207,7 @@ void spoton::sendKeysToKernel(void)
 	      mb.setWindowIcon(windowIcon());
 	      mb.setWindowModality(Qt::ApplicationModal);
 	      mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+		(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 	      if(mb.exec() != QMessageBox::Yes)
 		{
@@ -4425,7 +4422,8 @@ void spoton::slotAddListener(void)
   if(!crypt)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
@@ -4469,7 +4467,8 @@ void spoton::slotAddListener(void)
 						      trimmed())))
 	{
 	  QMessageBox::information
-	    (this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	    (this,
+	     tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	     tr("You're attempting to create a UDP multicast listener. "
 		"Please create a UDP multicast neighbor instead."));
 	  QApplication::processEvents();
@@ -4857,14 +4856,14 @@ void spoton::slotAddListener(void)
   if(ok)
     m_ui.listenerIP->selectAll();
   else if(error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
+    QMessageBox::critical(this,
+			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			  tr("Unable to add the specified listener. "
 			     "Please enable logging via the Log Viewer "
 			     "and try again."));
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
+    QMessageBox::critical(this,
+			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to add the specified listener.").arg(error));
 
@@ -4877,8 +4876,8 @@ void spoton::slotAddNeighbor(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt object. "
 			       "This is a fatal flaw."));
       QApplication::processEvents();
@@ -4892,7 +4891,8 @@ void spoton::slotAddNeighbor(void)
      isMulticastAddress(QHostAddress(m_ui.neighborIP->text().trimmed())))
     {
       QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("DTLS is not functional over multicast!"));
       QApplication::processEvents();
       return;
@@ -5298,14 +5298,14 @@ void spoton::slotAddNeighbor(void)
   if(ok)
     m_ui.neighborIP->selectAll();
   else if(error.isEmpty())
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
+    QMessageBox::critical(this,
+			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			  tr("Unable to add the specified neighbor. "
 			     "Please enable logging via the Log Viewer "
 			     "and try again."));
   else
-    QMessageBox::critical(this, tr("%1: Error").
-			  arg(SPOTON_APPLICATION_NAME),
+    QMessageBox::critical(this,
+			  tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			  tr("An error (%1) occurred while attempting "
 			     "to add the specified neighbor.").arg(error));
 
@@ -5318,10 +5318,10 @@ void spoton::slotAuthenticate(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. "
-			       "This is a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
@@ -5333,10 +5333,10 @@ void spoton::slotAuthenticate(void)
 
   if(list.isEmpty())
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid neighbor OID. "
-			       "Please select a neighbor."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid neighbor OID. Please select a neighbor."));
       QApplication::processEvents();
       return;
     }
@@ -5629,7 +5629,8 @@ void spoton::slotCopyAllMyPublicKeys(void)
   if(text.length() >= spoton_common::MAXIMUM_COPY_KEY_SIZES)
     {
       QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The public keys are too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
       QApplication::processEvents();
@@ -5851,7 +5852,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
     {
       QApplication::restoreOverrideCursor();
       QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("The e-mail bundle is too long (%1 bytes).").
 	 arg(QLocale().toString(text.length())));
       QApplication::processEvents();
@@ -9560,8 +9562,7 @@ void spoton::slotSelectGeoIPPath(void)
   QFileDialog dialog(m_optionsWindow);
 
   dialog.setWindowTitle
-    (tr("%1: Select GeoIP Data Path").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select GeoIP Data Path").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
@@ -9585,8 +9586,7 @@ void spoton::slotSelectKernelPath(void)
   QFileDialog dialog(this);
 
   dialog.setWindowTitle
-    (tr("%1: Select Kernel Path").
-     arg(SPOTON_APPLICATION_NAME));
+    (tr("%1: Select Kernel Path").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
@@ -9776,7 +9776,7 @@ void spoton::slotSetPassphrase(void)
 	      mb.setWindowIcon(windowIcon());
 	      mb.setWindowModality(Qt::ApplicationModal);
 	      mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+		(tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 	      if(mb.exec() == QMessageBox::Yes)
 		proceed = true;
@@ -9794,20 +9794,20 @@ void spoton::slotSetPassphrase(void)
 		mb.setIcon(QMessageBox::Question);
 		mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 		mb.setText
-		 (tr("McEliece key pairs require a significant amount of "
-		     "storage memory. As %1 prefers secure memory, "
-		     "the gcrypt library may fail if it's unable to "
-		     "reserve the required amount of memory. Some "
-		     "operating systems require configuration in order "
-		     "to support large amounts of locked memory. "
-		     "You may disable secure memory by setting the "
-		     "secure memory pools of the interface and the kernel "
-		     "to zero. Continue with the key-generation process?").
-		  arg(SPOTON_APPLICATION_NAME));
+		  (tr("McEliece key pairs require a significant amount of "
+		      "storage memory. As %1 prefers secure memory, "
+		      "the gcrypt library may fail if it's unable to "
+		      "reserve the required amount of memory. Some "
+		      "operating systems require configuration in order "
+		      "to support large amounts of locked memory. "
+		      "You may disable secure memory by setting the "
+		      "secure memory pools of the interface and the kernel "
+		      "to zero. Continue with the key-generation process?").
+		   arg(SPOTON_APPLICATION_NAME));
 		mb.setWindowIcon(windowIcon());
 		mb.setWindowModality(Qt::ApplicationModal);
 		mb.setWindowTitle
-		 (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+		  (tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
 		if(mb.exec() != QMessageBox::Yes)
 		  proceed = false;
@@ -9850,13 +9850,13 @@ void spoton::slotSetPassphrase(void)
 
 	      QProgressDialog progress(this);
 
-	      progress.setLabelText(tr("Generating key pairs. "
-				       "Please be patient."));
+	      progress.setLabelText
+		(tr("Generating key pairs. Please be patient."));
 	      progress.setMaximum(list.size());
 	      progress.setMinimum(0);
 	      progress.setModal(true);
-	      progress.setWindowTitle(tr("%1: Generating Key Pairs").
-				      arg(SPOTON_APPLICATION_NAME));
+	      progress.setWindowTitle
+		(tr("%1: Generating Key Pairs").arg(SPOTON_APPLICATION_NAME));
 	      progress.show();
 	      progress.repaint();
 	      QApplication::processEvents();
@@ -9923,17 +9923,18 @@ void spoton::slotSetPassphrase(void)
       spoton_crypt::purgeDatabases();
       updatePublicKeysLabel();
       QMessageBox::critical
-	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("An error (%1) occurred with spoton_crypt::"
-	    "derivedKeys().").arg(error1.trimmed()));
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("An error (%1) occurred with spoton_crypt::derivedKeys().").
+	 arg(error1.trimmed()));
       QApplication::processEvents();
     }
   else if(!error2.trimmed().isEmpty())
     {
       spoton_crypt::purgeDatabases();
       updatePublicKeysLabel();
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error (%1) occurred with "
 			       "spoton_crypt::"
 			       "generatePrivatePublicKeys() or "
@@ -9946,8 +9947,8 @@ void spoton::slotSetPassphrase(void)
     {
       spoton_crypt::purgeDatabases();
       updatePublicKeysLabel();
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("An error (%1) occurred with "
 			       "spoton_crypt::"
 			       "keyedHash() or "
@@ -10028,8 +10029,8 @@ void spoton::slotSetPassphrase(void)
 		  mb.setText(tr("Would you like to exercise your new "
 				"credentials as URL Common Credentials?"));
 		  mb.setWindowIcon(windowIcon());
-		  mb.setWindowTitle(tr("%1: Question").
-				    arg(SPOTON_APPLICATION_NAME));
+		  mb.setWindowTitle
+		    (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 		  if(mb.exec() == QMessageBox::Yes)
 		    proceed = true;
@@ -10229,8 +10230,8 @@ void spoton::slotSetPassphrase(void)
 
       slotApplyOtherOptions(); // Initialize miscellaneous options.
       QMessageBox::information
-	(this, tr("%1: Information").
-	 arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("Your confidential information has been saved. Enjoy!"));
       QApplication::processEvents();
 
@@ -10249,7 +10250,7 @@ void spoton::slotSetPassphrase(void)
 		mb.setWindowIcon(windowIcon());
 		mb.setWindowModality(Qt::ApplicationModal);
 		mb.setWindowTitle
-		 (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
+		  (tr("%1: Question").arg(SPOTON_APPLICATION_NAME));
 
 		if(mb.exec() == QMessageBox::Yes)
 		  proceed = true;

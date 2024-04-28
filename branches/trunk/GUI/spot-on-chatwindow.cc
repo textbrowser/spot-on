@@ -382,8 +382,8 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	*ok = false;
       else
 	{
-	  QMessageBox::critical(this, tr("%1: Error").
-				arg(SPOTON_APPLICATION_NAME), error);
+	  QMessageBox::critical
+	    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
 	  QApplication::processEvents();
 	}
     }
@@ -436,8 +436,8 @@ void spoton_chatwindow::showError(const QString &error)
   if(error.trimmed().isEmpty())
     return;
 
-  QMessageBox::critical(this, tr("%1: Error").
-			arg(SPOTON_APPLICATION_NAME), error.trimmed());
+  QMessageBox::critical
+    (this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error.trimmed());
   QApplication::processEvents();
 }
 
@@ -598,8 +598,8 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle(tr("%1: Select StarBeam Transmit File").
-			arg(SPOTON_APPLICATION_NAME));
+  dialog.setWindowTitle
+    (tr("%1: Select StarBeam Transmit File").arg(SPOTON_APPLICATION_NAME));
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));

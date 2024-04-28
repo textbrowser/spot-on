@@ -773,8 +773,8 @@ void spoton::slotDeleteKey(void)
 
   if(!(crypt1 && crypt2))
     {
-      QMessageBox::critical(this, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
+      QMessageBox::critical(this,
+			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 			    tr("Invalid spoton_crypt objects. This is "
 			       "a fatal flaw."));
       QApplication::processEvents();
@@ -1016,7 +1016,8 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(count > 0)
     {
       QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("Some of the selected participants are temporary. "
 	    "Forward Secrecy credentials will not be established."));
       QApplication::processEvents();
@@ -1025,7 +1026,8 @@ void spoton::slotEstablishForwardSecrecy(void)
   if(traditional > 0)
     {
       QMessageBox::information
-	(this, tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
+	(this,
+	 tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please note that traditional e-mail accounts do not "
 	    "support Forward Secrecy."));
       QApplication::processEvents();
@@ -1332,8 +1334,7 @@ void spoton::slotLock(void)
 		    "united with the main window."));
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::ApplicationModal);
-      mb.setWindowTitle(tr("%1: Confirmation").
-			arg(SPOTON_APPLICATION_NAME));
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
       if(mb.exec() != QMessageBox::Yes)
 	{
@@ -1356,8 +1357,7 @@ void spoton::slotLock(void)
       Ui_spoton_unlock ui;
 
       ui.setupUi(&dialog);
-      dialog.setWindowTitle
-	(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
+      dialog.setWindowTitle(tr("%1: Unlock").arg(SPOTON_APPLICATION_NAME));
       connect(ui.radio_1,
 	      SIGNAL(toggled(bool)),
 	      ui.passphrase,
