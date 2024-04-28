@@ -49,8 +49,8 @@ bool spoton::deleteAllUrls(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Deleting URL Data").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Deleting URL Data").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -594,13 +594,13 @@ void spoton::slotCorrectUrlDatabases(void)
 
   QProgressDialog progress(this);
 
-  progress.setLabelText(tr("Deleting orphaned URL keywords. "
-			   "Please be patient."));
+  progress.setLabelText
+    (tr("Deleting orphaned URL keywords. Please be patient."));
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Deleting Orphaned URL Keywords").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Deleting Orphaned URL Keywords").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -702,8 +702,8 @@ void spoton::slotCorrectUrlDatabases(void)
   QLocale locale;
 
   QMessageBox::information
-    (this, tr("%1: Information").
-     arg(SPOTON_APPLICATION_NAME),
+    (this,
+     tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
      tr("Approximate orphaned keyword entries deleted: %1.").
      arg(locale.toString(deleted)));
   QApplication::processEvents();
@@ -884,8 +884,8 @@ void spoton::slotDropUrlTables(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Dropping URL Tables").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Dropping URL Tables").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -974,8 +974,8 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Gathering URL Statistics").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Gathering URL Statistics").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -1178,8 +1178,8 @@ void spoton::slotImportUrls(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Importing URLs").
-			  arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Importing URLs").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.raise();
   progress.activateWindow();
@@ -1595,8 +1595,8 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Creating URL Databases").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Creating URL Databases").arg(SPOTON_APPLICATION_NAME));
   spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
@@ -2429,8 +2429,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
-  progress.setWindowTitle(tr("%1: Deleting URL Keywords").
-    arg(SPOTON_APPLICATION_NAME));
+  progress.setWindowTitle
+    (tr("%1: Deleting URL Keywords").arg(SPOTON_APPLICATION_NAME));
   progress.show();
   progress.repaint();
   QApplication::processEvents();

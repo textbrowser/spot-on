@@ -2293,6 +2293,7 @@ void spoton::slotTimeSliderValueChanged(int value)
 void spoton::slotVacuumDatabases(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  m_sb.status->setText(tr("Vacuuming all SQLite databases."));
   menuBar()->repaint();
   repaint();
   QApplication::processEvents();

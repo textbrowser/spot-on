@@ -6543,6 +6543,7 @@ void spoton_misc::vacuumAllDatabases(void)
        << "secrets.db"
        << "shared.db"
        << "starbeam.db"
+       << "urls.db"
        << "urls_distillers_information.db"
        << "urls_key_information.db";
 
