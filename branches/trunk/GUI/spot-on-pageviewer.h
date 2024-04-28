@@ -68,7 +68,7 @@ class spoton_webengine_page: public QWebEnginePage
     Q_UNUSED(isMainFrame);
     Q_UNUSED(type);
     Q_UNUSED(url);
-    return false;
+    return true;
   }
 };
 #endif

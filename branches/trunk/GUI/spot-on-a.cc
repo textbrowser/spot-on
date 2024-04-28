@@ -282,15 +282,6 @@ int main(int argc, char *argv[])
   QWebEngineProfile::defaultProfile()->setPersistentStoragePath
     (spoton_misc::homePath() +
      QDir::separator() + "WebEnginePersistentStorage");
-#if QT_VERSION >= 0x050600
-#if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
-  QWebEngineProfile::defaultProfile()->setRequestInterceptor
-    (new spoton_webengine_url_request_interceptor(0));
-#else
-  QWebEngineProfile::defaultProfile()->setUrlRequestInterceptor
-    (new spoton_webengine_url_request_interceptor(0));
-#endif
-#endif
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
   QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::AutoLoadImages, false);

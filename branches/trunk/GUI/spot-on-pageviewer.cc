@@ -193,8 +193,8 @@ void spoton_pageviewer::setPage(const QByteArray &data,
       m_webView->setHtml(m_content);
     }
 
-  m_webView->setFocus();
   m_ui.url->setText(url.toString());
+  m_webView->setFocus();
 }
 
 void spoton_pageviewer::slotCopyLinkLocation(void)
