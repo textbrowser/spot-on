@@ -1359,9 +1359,9 @@ QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
       QStringList list;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      list = iipp.split(".", Qt::KeepEmptyParts);
+      list = iipp.split('.', Qt::KeepEmptyParts);
 #else
-      list = iipp.split(".", QString::KeepEmptyParts);
+      list = iipp.split('.', QString::KeepEmptyParts);
 #endif
 
       for(int i = 0; i < list.size(); i++)
@@ -3931,12 +3931,12 @@ spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
 spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
 (const QByteArray &magnet)
 {
-  QList<QByteArray> list
-    (QByteArray(magnet.trimmed()).
-     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
   QByteArray ek;
   QByteArray hk;
   QByteArray xt;
+  QList<QByteArray> list
+    (QByteArray(magnet.trimmed()).
+     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
   QString ct("");
   QString ht("");
   spoton_crypt *crypt = 0;
