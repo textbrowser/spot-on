@@ -103,7 +103,13 @@ QString spoton::mapIconToEmoticon(const QString &content)
 
 QStringList spoton::parseAEMagnet(const QString &magnet) const
 {
-  QStringList list1(QString(magnet).remove("magnet:?").split("&"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList list1
+    (QString(magnet).remove("magnet:?").split('&', Qt::SkipEmptyParts));
+#else
+  QStringList list1
+    (QString(magnet).remove("magnet:?").split('&', QString::SkipEmptyParts));
+#endif
   QStringList list2;
 
   for(int i = 0; i < list1.size(); i++)
@@ -807,10 +813,20 @@ void spoton::slotAddInstitution(const QString &text)
       QStringList list;
 
       if(text.isEmpty())
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
 	list = m_ui.addInstitutionLineEdit->text().
-	  remove("magnet:?").split("&");
+	  remove("magnet:?").split('&', Qt::SkipEmptyParts);
+#else
+        list = m_ui.addInstitutionLineEdit->text().
+	  remove("magnet:?").split('&', QString::SkipEmptyParts);
+#endif
       else
-	list = text.mid(0).remove("magnet:?").split("&");
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+	list = text.mid(0).remove("magnet:?").split('&', Qt::SkipEmptyParts);
+#else
+        list = text.mid(0).remove("magnet:?").split
+	  ('&', QString::SkipEmptyParts);
+#endif
 
       for(int i = 0; i < list.size(); i++)
 	{
@@ -986,8 +1002,14 @@ void spoton::slotAddMagnet(void)
       QByteArray hashKey;
       QByteArray hashType;
       QByteArray iterationCount;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       QStringList list
-	(url.toString().remove("magnet:?").split("&"));
+	(url.toString().remove("magnet:?").split('&', Qt::SkipEmptyParts));
+#else
+      QStringList list
+	(url.toString().remove("magnet:?").split
+	 ('&', QString::SkipEmptyParts));
+#endif
 
       for(int i = 0; i < list.size(); i++)
 	{
@@ -1403,14 +1425,22 @@ void spoton::slotCopyAEMagnet(void)
 	(row, 33); // Adaptive Echo Token Type
 
       if(item1 && item2)
-	magnet = QString("magnet:?"
-			 "ct=%1&"
-			 "ht=%2&"
-			 "to=%3&"
-			 "xt=urn:adaptive-echo").
-	  arg(item2->text().split("\n").value(0).trimmed()).
-	  arg(item2->text().split("\n").value(1)).
-	  arg(item1->text());
+	{
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+	  QStringList list(item2->text().split('\n', Qt::SkipEmptyParts));
+#else
+	  QStringList list(item2->text().split('\n', QString::SkipEmptyParts));
+#endif
+
+	  magnet = QString("magnet:?"
+			   "ct=%1&"
+			   "ht=%2&"
+			   "to=%3&"
+			   "xt=urn:adaptive-echo").
+	    arg(list.value(0).trimmed()).
+	    arg(list.value(1)).
+	    arg(item1->text());
+	}
     }
 
   clipboard->setText(magnet);

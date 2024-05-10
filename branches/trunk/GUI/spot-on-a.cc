@@ -3891,7 +3891,15 @@ void spoton::closeEvent(QCloseEvent *event)
 
 void spoton::demagnetize(void)
 {
-  QStringList list(m_ui.demagnetize->text().remove("magnet:?").split("&"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList list
+    (m_ui.demagnetize->text().remove("magnet:?").
+     split('&', Qt::SkipEmptyParts));
+#else
+  QStringList list
+    (m_ui.demagnetize->text().remove("magnet:?").
+     split('&', QString::SkipEmptyParts));
+#endif
 
   for(int i = 0; i < list.size(); i++)
     {

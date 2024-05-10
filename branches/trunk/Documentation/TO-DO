@@ -320,6 +320,7 @@ Completed Items
 219.   Purge expired RSS links in the kernel. Be careful of competing
        tasks. New RSS tool tip.
 220.   Correct effervescent tool tips. StarBeam.
+221.   QString::split() and empty parts.
 
 Remaining Items
 
@@ -327,7 +328,3 @@ Remaining Items
 2.     Dark mode for Windows.
 3.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
-4.     QString::split() and empty parts:
-       Common (Completed)
-       GUI
-       Kernel (Completed)

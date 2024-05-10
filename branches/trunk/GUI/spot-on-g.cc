@@ -197,7 +197,13 @@ void spoton::joinBuzzChannel(const QUrl &url)
   QString channelType("");
   QString hashKey("");
   QString hashType("");
-  QStringList list(url.toString().remove("magnet:?").split("&"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList list
+    (url.toString().remove("magnet:?").split('&', Qt::SkipEmptyParts));
+#else
+  QStringList list
+    (url.toString().remove("magnet:?").split('&', QString::SkipEmptyParts));
+#endif
   unsigned long int iterationCount = 0;
 
   for(int i = 0; i < list.size(); i++)
@@ -1437,7 +1443,13 @@ void spoton::slotRemoveAttachment(const QUrl &url)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QStringList list(m_ui.attachment->toPlainText().split('\n'));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  QStringList list
+    (m_ui.attachment->toPlainText().split('\n', Qt::SkipEmptyParts));
+#else
+  QStringList list
+    (m_ui.attachment->toPlainText().split('\n', QString::SkipEmptyParts));
+#endif
 
   m_ui.attachment->clear();
 

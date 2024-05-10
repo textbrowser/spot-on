@@ -6191,7 +6191,13 @@ void spoton::slotSendMail(void)
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
       QLocale locale;
-      QStringList files(m_ui.attachment->toPlainText().split("\n"));
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+      QStringList files
+	(m_ui.attachment->toPlainText().split('\n', Qt::SkipEmptyParts));
+#else
+      QStringList files
+	(m_ui.attachment->toPlainText().split('\n', QString::SkipEmptyParts));
+#endif
 
       for(int i = 0; i < files.size(); i++)
 	{

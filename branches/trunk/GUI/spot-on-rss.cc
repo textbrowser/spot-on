@@ -1705,11 +1705,11 @@ void spoton_rss::slotAddFeed(void)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
   QStringList list
     (m_ui.new_feed->text().trimmed().replace("\n", " ").
-     split(" ", Qt::SkipEmptyParts));
+     split(' ', Qt::SkipEmptyParts));
 #else
   QStringList list
     (m_ui.new_feed->text().trimmed().replace("\n", " ").
-     split(" ", QString::SkipEmptyParts));
+     split(' ', QString::SkipEmptyParts));
 #endif
   spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
