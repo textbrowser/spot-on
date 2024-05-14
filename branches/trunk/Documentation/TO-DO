@@ -160,7 +160,7 @@ Completed Items
 98.    GoldBug keys should have separate hash keys.
 99.    The kernel is susceptible to flooding as the newline character
        is mandatory.
-100.   macdeployqt and Qt 5 do not produce correct bundles on OS X.
+100.   macdeployqt and Qt 5 do not produce correct bundles on MacOS.
 101.   Allow programs such as netcat to feed data to Spot-On. Specific
        private listeners would be capable of transforming the data
        into StarBeam pulses.

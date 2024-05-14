@@ -1,5 +1,5 @@
 The McEliece cryptographic system is only enabled for the FreeBSD, Linux,
-and OS X project files.
+and MacOS project files.
 
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!
@@ -11,11 +11,11 @@ To enable McEliece for other systems, please follow the following
 suggestions. Good luck!
 
 1. Verify that libtool is installed. On Debian-based systems, issue
-sudo apt-get install libtool-bin. Please ignore on FreeBSD, OS X, and Windows.
+sudo apt-get install libtool-bin. Please ignore on FreeBSD, MacOS, and Windows.
 
 2. Create a special libntl target. Please note that a kernel's
 project file will reference different libNTL paths (../../../libNTL).
-Please ignore on FreeBSD, OS X, and Windows.
+Please ignore on FreeBSD, MacOS, and Windows.
 
 libntl.target = libntl.so
 libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
@@ -34,16 +34,16 @@ On FreeBSD, NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
-On OS X, Homebrew should be used. NTL requires GMP.
+On MacOS, Homebrew should be used. NTL requires GMP.
 
 LIBS		+= -lgmp -lntl
 
-5. Modify QMAKE_CLEAN. FreeBSD, OS X, and Windows, please ignore.
+5. Modify QMAKE_CLEAN. FreeBSD, MacOS, and Windows, please ignore.
 
 QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 
 6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
-Please ignore on FreeBSD, OS X, and Windows.
+Please ignore on FreeBSD, MacOS, and Windows.
 
 QMAKE_EXTRA_TARGETS = libntl libntru purge
 PRE_TARGETDEPS = libntl.so libntru.so

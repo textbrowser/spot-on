@@ -270,7 +270,7 @@ void spoton_neighbor::deleteLater(void)
   if(m_transport == "bluetooth")
     {
       /*
-      ** Deferred deletion does not function correctly on OS X.
+      ** Deferred deletion does not function correctly on MacOS.
       */
 
       m_abort.fetchAndStoreOrdered(1);

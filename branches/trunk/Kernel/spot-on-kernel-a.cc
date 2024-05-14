@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
 
 #ifdef Q_OS_MACOS
   /*
-  ** Eliminate pool errors on OS X.
+  ** Eliminate pool errors on MacOS.
   */
 
   CocoaInitializer ci;
