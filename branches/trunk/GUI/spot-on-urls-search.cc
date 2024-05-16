@@ -471,11 +471,13 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(spoton_misc::urlToEncoded(shareUrl));
 	      html.append("\">");
 	      html.append("Share URL</a>");
+#if defined(SPOTON_WEBENGINE_ENABLED) || defined(SPOTON_WEBKIT_ENABLED)
 	      html.append(" | ");
 	      html.append("<a href=\"");
 	      html.append(spoton_misc::urlToEncoded(viewUrl));
 	      html.append("\">");
 	      html.append("View Locally</a>");
+#endif
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
 			  arg(spoton_misc::urlToEncoded(url).constData()));
