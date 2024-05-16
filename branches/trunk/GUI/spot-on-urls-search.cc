@@ -477,6 +477,9 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	      html.append(spoton_misc::urlToEncoded(viewUrl));
 	      html.append("\">");
 	      html.append("View Locally</a>");
+#else
+	      html.append(" | ");
+	      html.append("View Locally (Missing Rendering Engine)");
 #endif
 	      html.append("<br>");
 	      html.append(QString("<font color=\"green\" size=3>%1</font>").
