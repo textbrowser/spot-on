@@ -28,7 +28,7 @@ fi
 
 # GPG-Error
 
-gpgerror=mingw-w64-x86_64-libgpg-error-1.48-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86_64-libgpg-error-1.49-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \
@@ -50,7 +50,7 @@ fi
 
 # OpenSSL
 
-openssl=openssl-3.1-zip
+openssl=openssl-3-3-zip
 
 rm -f $openssl
 wget --output-document=$openssl \

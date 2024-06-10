@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.48"
-#define GPGRT_VERSION     "1.48"
+#define GPG_ERROR_VERSION "1.49"
+#define GPGRT_VERSION     "1.49"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013000
-#define GPGRT_VERSION_NUMBER     0x013000
+#define GPG_ERROR_VERSION_NUMBER 0x013100
+#define GPGRT_VERSION_NUMBER     0x013100
 
 
 #ifdef __GNUC__
@@ -1713,11 +1713,12 @@ enum gpgrt_log_levels
   };
 
 
-/* The next 4 functions are not thread-safe - call them early.  */
+/* The next 5 functions are not thread-safe - call them early.  */
 void gpgrt_log_set_sink (const char *name, gpgrt_stream_t stream, int fd);
 void gpgrt_log_set_socket_dir_cb (const char *(*fnc)(void));
 void gpgrt_log_set_pid_suffix_cb (int (*cb)(unsigned long *r_value));
 void gpgrt_log_set_prefix (const char *text, unsigned int flags);
+void gpgrt_add_post_log_func (void (*f)(int));
 
 int  gpgrt_get_errorcount (int clear);
 void gpgrt_inc_errorcount (void);
@@ -1727,9 +1728,13 @@ int  gpgrt_log_get_fd (void);
 gpgrt_stream_t gpgrt_log_get_stream (void);
 
 void gpgrt_log (int level, const char *fmt, ...) GPGRT_ATTR_PRINTF(2,3);
-void gpgrt_logv (int level, const char *fmt, va_list arg_ptr);
-void gpgrt_logv_prefix (int level, const char *prefix,
-                              const char *fmt, va_list arg_ptr);
+void gpgrt_logv (int level, const char *fmt,
+                 va_list arg_ptr) GPGRT_ATTR_PRINTF(2,0);
+void gpgrt_logv_prefix (int level, const char *prefix, const char *fmt,
+                        va_list arg_ptr) GPGRT_ATTR_PRINTF(3,0);
+void gpgrt_logv_domain (const char *domain, int level, const char *prefix,
+                        const void *buffer, size_t length, const char *fmt,
+                        va_list arg_ptr) GPGRT_ATTR_PRINTF(6,0);
 void gpgrt_log_string (int level, const char *string);
 void gpgrt_log_bug (const char *fmt, ...)    GPGRT_ATTR_NR_PRINTF(1,2);
 void gpgrt_log_fatal (const char *fmt, ...)  GPGRT_ATTR_NR_PRINTF(1,2);
