@@ -1740,7 +1740,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   QUrl url(QUrl::fromUserInput(u.trimmed()));
 
-  if(url.isEmpty() || !url.isValid())
+  if(url.isEmpty() || url.isValid() == false)
     {
       error = "spoton_misc::importUrl(): empty or invalid URL.";
       logError(error);
@@ -1752,8 +1752,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
       if(!scheme.isEmpty())
-	error = QString("spoton_misc::importUrl(): the URL scheme %1 "
-			"is not acceptable.").arg(scheme);
+	error = QString
+	  ("spoton_misc::importUrl(): the URL scheme %1 is not acceptable.").
+	  arg(scheme);
       else
 	error = "spoton_misc::importUrl(): invalid URL scheme.";
 
@@ -1797,9 +1798,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
     query.exec("PRAGMA journal_mode = WAL");
 
   query.setForwardOnly(true);
-  query.prepare(QString("SELECT content FROM spot_on_urls_%1 WHERE "
-			"url_hash = ?").
-		arg(urlHash.mid(0, 2).constData()));
+  query.prepare
+    (QString("SELECT content FROM spot_on_urls_%1 WHERE url_hash = ?").
+     arg(urlHash.mid(0, 2).constData()));
   query.bindValue(0, urlHash.constData());
 
   if(query.exec())
@@ -1878,14 +1879,9 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			   "url_hash) "
 			   "VALUES (?, ?, "
 			   "(SELECT TO_CHAR(NOW(), 'yyyy-mm-ddThh24:mi:ss')), "
-			   "?)").
-		   arg(urlHash.mid(0, 2).constData()));
+			   "?)").arg(urlHash.mid(0, 2).constData()));
 		query.bindValue(0, previous);
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->keyedHash(original, &ok).toBase64());
-
+		query.bindValue(1, crypt->keyedHash(original, &ok).toBase64());
 		query.bindValue(2, urlHash.constData());
 	      }
 	    else
@@ -1899,11 +1895,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 			   "VALUES (?, ?, ?, ?)").
 		   arg(urlHash.mid(0, 2).constData()));
 		query.bindValue(0, previous);
-
-		if(ok)
-		  query.bindValue
-		    (1, crypt->keyedHash(original, &ok).toBase64());
-
+		query.bindValue
+		  (1, crypt->keyedHash(original, &ok).toBase64());
 		query.bindValue
 		  (2, QDateTime::currentDateTime().toString(Qt::ISODate));
 		query.bindValue(3, urlHash.constData());
