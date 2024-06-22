@@ -1,5 +1,5 @@
 /* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
- * Copyright (C) 2001-2023 g10 Code GmbH
+ * Copyright (C) 2001-2024 g10 Code GmbH
  *
  * This file is part of libgpg-error (aka libgpgrt).
  *
@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.49"
-#define GPGRT_VERSION     "1.49"
+#define GPG_ERROR_VERSION "1.50"
+#define GPGRT_VERSION     "1.50"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013100
-#define GPGRT_VERSION_NUMBER     0x013100
+#define GPG_ERROR_VERSION_NUMBER 0x013200
+#define GPGRT_VERSION_NUMBER     0x013200
 
 
 #ifdef __GNUC__
@@ -1039,8 +1039,6 @@ const char *gpgrt_check_version (const char *req_version);
 const char *gpg_error_check_version (const char *req_version);
 
 /* System specific type definitions.  */
-typedef void *gpgrt_process_t;
-
 # include <stdint.h>
 typedef int64_t gpgrt_ssize_t;
 
@@ -1681,10 +1679,10 @@ gpg_err_code_t   gpgrt_b64enc_write (gpgrt_b64state_t state,
 gpg_err_code_t   gpgrt_b64enc_finish (gpgrt_b64state_t state);
 
 gpgrt_b64state_t gpgrt_b64dec_start (const char *title);
-gpg_error_t      gpgrt_b64dec_proc (gpgrt_b64state_t state,
+gpg_err_code_t   gpgrt_b64dec_proc (gpgrt_b64state_t state,
                                     void *buffer, size_t length,
                                     size_t *r_nbytes);
-gpg_error_t      gpgrt_b64dec_finish (gpgrt_b64state_t state);
+gpg_err_code_t   gpgrt_b64dec_finish (gpgrt_b64state_t state);
 
 
 
@@ -1806,17 +1804,59 @@ void _gpgrt_log_assert (const char *expr, const char *file, int line,
 
 
 /*
- * Spawn functions  (Not yet available)
+ * Spawn functions
  */
-/* Internal flag to inherit file descriptor/handle */
-#define GPGRT_SPAWN_INHERIT_FILE  1
+/* Child process is detached to parent process.  */
+#define GPGRT_PROCESS_DETACHED            (1 << 1)
 
-#define GPGRT_SPAWN_NONBLOCK   16 /* Set the streams to non-blocking.      */
-#define GPGRT_SPAWN_RUN_ASFW   64 /* Use AllowSetForegroundWindow on W32.  */
-#define GPGRT_SPAWN_DETACHED  128 /* Start the process in the background.  */
-#define GPGRT_SPAWN_KEEP_STDIN   256
-#define GPGRT_SPAWN_KEEP_STDOUT  512
-#define GPGRT_SPAWN_KEEP_STDERR 1024
+/* Child process has no console (Windows only).  */
+#define GPGRT_PROCESS_NO_CONSOLE          (1 << 2)
+
+/* Allow a detached process with uid != euid (Posix only).  */
+#define GPGRT_PROCESS_NO_EUID_CHECK       (1 << 3)
+
+/* Specify how to keep/connect standard fds.  */
+#define GPGRT_PROCESS_STDIN_PIPE          (1 << 8)
+#define GPGRT_PROCESS_STDOUT_PIPE         (1 << 9)
+#define GPGRT_PROCESS_STDERR_PIPE         (1 << 10)
+#define GPGRT_PROCESS_STDINOUT_SOCKETPAIR (1 << 11)
+#define GPGRT_PROCESS_STDIN_KEEP          (1 << 12)
+#define GPGRT_PROCESS_STDOUT_KEEP         (1 << 13)
+#define GPGRT_PROCESS_STDERR_KEEP         (1 << 14)
+#define GPGRT_PROCESS_STDFDS_SETTING  ( GPGRT_PROCESS_STDIN_PIPE  \
+  | GPGRT_PROCESS_STDOUT_PIPE         | GPGRT_PROCESS_STDERR_PIPE \
+  | GPGRT_PROCESS_STDINOUT_SOCKETPAIR | GPGRT_PROCESS_STDIN_KEEP  \
+  | GPGRT_PROCESS_STDOUT_KEEP         | GPGRT_PROCESS_STDERR_KEEP)
+
+#define GPGRT_PROCESS_STREAM_NONBLOCK     (1 << 16)
+
+typedef struct gpgrt_process *gpgrt_process_t;
+typedef struct gpgrt_spawn_actions *gpgrt_spawn_actions_t;
+gpg_err_code_t gpgrt_spawn_actions_new (gpgrt_spawn_actions_t *r_act);
+void gpgrt_spawn_actions_release (gpgrt_spawn_actions_t act);
+void gpgrt_spawn_actions_set_envvars (gpgrt_spawn_actions_t, char *);
+void gpgrt_spawn_actions_set_redirect (gpgrt_spawn_actions_t, void *, void *, void *);
+void gpgrt_spawn_actions_set_inherit_handles (gpgrt_spawn_actions_t, void **);
+
+
+enum gpgrt_process_requests
+  {
+    /* Portable requests */
+    GPGRT_PROCESS_NOP           = 0,
+    GPGRT_PROCESS_GET_PROC_ID   = 1,
+    GPGRT_PROCESS_GET_EXIT_ID   = 2,
+
+    /* POSIX only */
+    GPGRT_PROCESS_GET_PID       = 16,
+    GPGRT_PROCESS_GET_WSTATUS   = 17,
+    GPGRT_PROCESS_KILL          = 18,
+
+    /* Windows only */
+    GPGRT_PROCESS_GET_P_HANDLE  = 32,
+    GPGRT_PROCESS_GET_HANDLES   = 33,
+    GPGRT_PROCESS_GET_EXIT_CODE = 34,
+    GPGRT_PROCESS_KILL_WITH_EC  = 35
+  };
 
 #if 0
 /* Function and convenience macros to create pipes.  */
@@ -1826,46 +1866,34 @@ gpg_err_code_t gpgrt_make_pipe (int filedes[2], gpgrt_stream_t *r_fp,
 #define gpgrt_create_inbound_pipe(a,b,c)  gpgrt_make_pipe ((a), (b), -1,(c));
 #define gpgrt_create_outbound_pipe(a,b,c) gpgrt_make_pipe ((a), (b),  1,(c));
 
-
-/* Fork and exec PGMNAME.  */
-gpg_err_code_t gpgrt_spawn_process (const char *pgmname, const char *argv[],
-                                    int *execpt, unsigned int flags,
-                                    gpgrt_stream_t *r_infp,
-                                    gpgrt_stream_t *r_outfp,
-                                    gpgrt_stream_t *r_errfp,
-                                    gpgrt_process_t *r_process_id);
-
-/* Fork and exec PGNNAME and connect the process to the given FDs.  */
-gpg_err_code_t gpgrt_spawn_process_fd (const char *pgmname, const char *argv[],
-                                       int infd, int outfd, int errfd,
-                                       int (*spawn_cb) (void *),
-                                       void *spawn_cb_arg,
-                                       gpgrt_process_t *r_process_id);
-
-/* Fork and exec PGMNAME as a detached process.  */
-gpg_err_code_t gpgrt_spawn_process_detached (const char *pgmname,
-                                             const char *argv[],
-                                             const char *envp[]);
-
-/* Wait for a single process.  */
-gpg_err_code_t gpgrt_wait_process (const char *pgmname,
-                                   gpgrt_process_t process_id,
-                                   int hang, int *r_exitcode);
-
-/* Wait for a multiple processes.  */
-gpg_err_code_t gpgrt_wait_processes (const char **pgmnames,
-                                     gpgrt_process_t *process_ids,
-                                     size_t count, int hang, int *r_exitcodes);
-
-/* Kill the process identified by PROCESS_ID.  */
-void gpgrt_kill_process (gpgrt_process_t process_id);
-
-/* Release process resources identified by PROCESS_ID.  */
-void gpgrt_release_process (gpgrt_process_t process_id);
-
 /* Close all file resources (descriptors), except KEEP_FDS. */
 void gpgrt_close_all_fds (int from, int *keep_fds);
 #endif /*0*/
+
+gpg_err_code_t gpgrt_process_spawn (const char *pgmname, const char *argv1[],
+                                    unsigned int flags,
+                                    gpgrt_spawn_actions_t act,
+                                    gpgrt_process_t *r_process);
+
+gpg_err_code_t gpgrt_process_terminate (gpgrt_process_t process);
+
+gpg_err_code_t gpgrt_process_get_fds (gpgrt_process_t process,
+                                      unsigned int flags,
+                                      int *r_fd_in, int *r_fd_out,
+                                      int *r_fd_err);
+
+gpg_err_code_t gpgrt_process_get_streams (gpgrt_process_t process,
+                                          unsigned int flags,
+                                          gpgrt_stream_t *r_fp_in,
+                                          gpgrt_stream_t *r_fp_out,
+                                          gpgrt_stream_t *r_fp_err);
+
+gpg_err_code_t gpgrt_process_ctl (gpgrt_process_t process,
+                                  unsigned int request, ...);
+
+gpg_err_code_t gpgrt_process_wait (gpgrt_process_t process, int hang);
+
+void gpgrt_process_release (gpgrt_process_t process);
 
 /*
  * Option parsing.
