@@ -4254,42 +4254,52 @@ void spoton::sendKeysToKernel(void)
 
 void spoton::slotAbout(void)
 {
-  QMessageBox mb(this);
-  QString str("");
+  QMessageBox *mb = findChild<QMessageBox *> ("About");
+
+  if(!mb)
+    {
+      mb = new QMessageBox(this);
+
+      QString str("");
 
 #if SPOTON_GOLDBUG == 0
-  QPixmap pixmap(":/Logo/spot-on-logo.png");
+      QPixmap pixmap(":/Logo/spot-on-logo.png");
 
-  pixmap = pixmap.scaled
-    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = QString
-    ("<html>Spot-On Version %1 (Final)<br>"
-     "Made with love by textbrowser.<br>"
-     "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
-     "https://textbrowser.github.io/spot-on</a> for more information.").
-    arg(SPOTON_VERSION_STR);
-  mb.setIconPixmap(pixmap);
+      pixmap = pixmap.scaled
+	(QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+      str = QString
+	("<html>Spot-On Version %1 (Final)<br>"
+	 "Made with love by textbrowser.<br>"
+	 "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
+	 "https://textbrowser.github.io/spot-on</a> for more information.").
+	arg(SPOTON_VERSION_STR);
+      mb->setIconPixmap(pixmap);
 #else
-  QPixmap pixmap(":/Logo/goldbug-neuland.png");
+      QPixmap pixmap(":/Logo/goldbug-neuland.png");
 
-  pixmap = pixmap.scaled
-    (QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-  str = QString("<html>GoldBug, version %1, is an open-source "
-		"application published under "
-		"the Revised BSD License.<br>"
-		"Made with love by textbrowser.<br>"
-		"Please visit <a href=\"https://goldbug.sourceforge.io\">"
-		"https://goldbug.sourceforge.io</a> for more information.").
-    arg(SPOTON_VERSION_STR);
-  mb.setIconPixmap(pixmap);
+      pixmap = pixmap.scaled
+	(QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+      str = QString("<html>GoldBug, version %1, is an open-source "
+		    "application published under "
+		    "the Revised BSD License.<br>"
+		    "Made with love by textbrowser.<br>"
+		    "Please visit <a href=\"https://goldbug.sourceforge.io\">"
+		    "https://goldbug.sourceforge.io</a> for more information.").
+	arg(SPOTON_VERSION_STR);
+      mb->setIconPixmap(pixmap);
 #endif
-  str.append("</html>");
-  mb.setStandardButtons(QMessageBox::Ok);
-  mb.setText(str);
-  mb.setTextFormat(Qt::RichText);
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowTitle(SPOTON_APPLICATION_NAME);
-  mb.exec();
+      str.append("</html>");
+      mb->setStandardButtons(QMessageBox::Ok);
+      mb->setText(str);
+      mb->setTextFormat(Qt::RichText);
+      mb->setWindowIcon(windowIcon());
+      mb->setWindowModality(Qt::NonModal);
+      mb->setWindowTitle(SPOTON_APPLICATION_NAME);
+    }
+
+  mb->showNormal();
+  mb->activateWindow();
+  mb->raise();
   QApplication::processEvents();
 }
 
