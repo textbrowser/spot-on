@@ -134,7 +134,11 @@ class spoton_virtual_keyboard: public QDialog
 	    this,
 	    SLOT(slotShow(bool)));
 
+#if (QT_VERSION < QT_VERSION_CHECK(6, 6, 0))
     QLocale::Country country = QLocale::system().country();
+#else
+    QLocale::Territory territory = QLocale::system().territory();
+#endif
     QStringList row;
 
     if(country == QLocale::Germany)
