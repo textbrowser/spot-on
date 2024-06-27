@@ -137,7 +137,7 @@ class spoton_virtual_keyboard: public QDialog
 #if (QT_VERSION < QT_VERSION_CHECK(6, 6, 0))
     QLocale::Country country = QLocale::system().country();
 #else
-    QLocale::Territory territory = QLocale::system().territory();
+    QLocale::Territory country = QLocale::system().territory();
 #endif
     QStringList row;
 
