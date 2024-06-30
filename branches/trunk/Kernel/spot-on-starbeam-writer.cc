@@ -67,22 +67,22 @@ QByteArray spoton_starbeam_writer::eta(const QString &fileName)
   qint64 seconds = qAbs
     (QDateTime::currentMSecsSinceEpoch() / 1000 - statistics.m_time0);
 
-  if(statistics.m_rate > 0)
+  if(statistics.m_rate > 0.0)
     eta = tr("%1 minutes(s)").
       arg((static_cast<double> (statistics.m_totalSize -
 				statistics.m_position) /
-	   static_cast<double> (statistics.m_rate)) / 60.0, 0, 'f', 2);
+	   statistics.m_rate) / 60.0, 0, 'f', 2);
 
   if(seconds >= 1)
     {
-      qint64 rate = statistics.m_rate;
+      double rate = statistics.m_rate;
 
-      statistics.m_rate = static_cast<qint64>
-	(static_cast<double> (qAbs(statistics.m_position -
-				   statistics.m_previousPosition)) /
-	 static_cast<double> (seconds));
+      statistics.m_rate =
+	static_cast<double> (qAbs(statistics.m_position -
+				  statistics.m_previousPosition)) /
+	static_cast<double> (seconds);
 
-      if(statistics.m_rate > 0)
+      if(statistics.m_rate > 0.0)
 	statistics.m_stalled = 0;
       else if(statistics.m_stalled++ <= 3)
 	statistics.m_rate = rate;
@@ -571,7 +571,7 @@ void spoton_starbeam_writer::processData(void)
 	  statistics.m_stalled = 0;
 	  statistics.m_position = position;
 	  statistics.m_previousPosition = 0;
-	  statistics.m_rate = 0;
+	  statistics.m_rate = 0.0;
 	  statistics.m_time0 = QDateTime::currentMSecsSinceEpoch();
 	  statistics.m_totalSize = totalSize;
 	  m_statistics[fileName] = statistics;

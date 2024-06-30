@@ -1243,19 +1243,16 @@ QString spoton_misc::databaseName(void)
 #endif
 }
 
-QString spoton_misc::formattedSize(const qint64 size)
+QString spoton_misc::formattedSize(const double size)
 {
-  if(size < 1024)
+  if(size < 1024.0)
     return QString("%1 B").arg(size);
-  else if(size < 1048576)
-    return QString("%1 KiB").
-      arg(static_cast<double> (size) / 1024.0, 0, 'f', 2);
-  else if(size < 1073741824)
-    return QString("%1 MiB").
-      arg(static_cast<double> (size) / 1048576.0, 0, 'f', 2);
+  else if(size < 1048576.0)
+    return QString("%1 KiB").arg(size / 1024.0, 0, 'f', 2);
+  else if(size < 1073741824.0)
+    return QString("%1 MiB").arg(size / 1048576.0, 0, 'f', 2);
   else
-    return QString("%1 GiB").
-      arg(static_cast<double> (size) / 1073741824.0, 0, 'f', 2);
+    return QString("%1 GiB").arg(size / 1073741824.0, 0, 'f', 2);
 }
 
 QString spoton_misc::homePath(void)

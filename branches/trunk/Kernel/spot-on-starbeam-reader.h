@@ -57,13 +57,13 @@ class spoton_starbeam_reader: public QObject
   QTimer m_timer;
   bool m_fragmented;
   bool m_ultra;
+  double m_rate;
   double m_readInterval;
   int m_neighborIndex;
   int m_stalled;
   qint64 m_id;
   qint64 m_position;
   qint64 m_previousPosition;
-  qint64 m_rate;
   qint64 m_rc;
   qint64 m_time0;
   QByteArray eta(void);

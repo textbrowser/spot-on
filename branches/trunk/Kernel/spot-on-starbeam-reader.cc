@@ -59,7 +59,7 @@ spoton_starbeam_reader::spoton_starbeam_reader
   m_position = 0;
   m_previousPosition = 0;
   m_rc = 0;
-  m_rate = 0;
+  m_rate = 0.0;
   m_readInterval = qBound(0.025, readInterval, 60.000);
   m_stalled = 0;
   m_time0 = QDateTime::currentMSecsSinceEpoch();
@@ -115,22 +115,21 @@ QByteArray spoton_starbeam_reader::eta(void)
   QString rate("");
   qint64 seconds = qAbs(QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
 
-  if(m_rate > 0)
+  if(m_rate > 0.0)
     eta = tr("%1 minutes(s)").
       arg((static_cast<double> (QFileInfo(m_fileName).size() - m_position) /
-	   static_cast<double> (m_rate)) / 60.0, 0, 'f', 2);
+	   m_rate) / 60.0, 0, 'f', 2);
   else
     eta = tr("stalled");
 
   if(seconds >= 1)
     {
-      qint64 rate = m_rate;
+      double rate = m_rate;
 
-      m_rate = static_cast<qint64>
-	(static_cast<double> (m_position - m_previousPosition) /
-	 static_cast<double> (seconds));
+      m_rate = (static_cast<double> (m_position - m_previousPosition) /
+		static_cast<double> (seconds));
 
-      if(m_rate > 0)
+      if(m_rate > 0.0)
 	m_stalled = 0;
       else if(m_stalled++ <= 5)
 	m_rate = rate;

@@ -78,10 +78,10 @@ class spoton_starbeam_writer_statistics
 {
  public:
   QString m_fileName;
+  double m_rate;
   int m_stalled;
   qint64 m_position;
   qint64 m_previousPosition;
-  qint64 m_rate;
   qint64 m_time0;
   qint64 m_totalSize;
 };

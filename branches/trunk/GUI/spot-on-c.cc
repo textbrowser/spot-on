@@ -3394,9 +3394,9 @@ void spoton::slotPopulateStars(void)
 
 	hval = m_ui.received->horizontalScrollBar()->value();
 	vval = m_ui.received->verticalScrollBar()->value();
-	m_ui.received->setUpdatesEnabled(false);
-	m_ui.received->setSortingEnabled(false);
 	m_ui.received->setRowCount(0);
+	m_ui.received->setSortingEnabled(false);
+	m_ui.received->setUpdatesEnabled(false);
 	row = 0;
 
 	if(query.exec("SELECT COUNT(*) FROM received"))
@@ -3674,8 +3674,17 @@ void spoton::slotPopulateStars(void)
 	    }
 
 	m_starbeamReceivedModel->setRowCount(totalRows);
+	m_ui.received->horizontalHeader()->setStretchLastSection(true);
+	m_ui.received->horizontalScrollBar()->setValue(hval);
+	m_ui.received->selectRow(rRow);
 	m_ui.received->setRowCount(totalRows);
 	m_ui.received->setSortingEnabled(true);
+	m_ui.received->setUpdatesEnabled(true);
+	m_ui.received->verticalScrollBar()->setValue(vval);
+	connect(m_ui.received,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotReceiversChanged(QTableWidgetItem *)));
 
 	for(int i = 0; i < m_ui.received->columnCount() - 1; i++)
 	  /*
@@ -3683,16 +3692,6 @@ void spoton::slotPopulateStars(void)
 	  */
 
 	  m_ui.received->resizeColumnToContents(i);
-
-	m_ui.received->horizontalHeader()->setStretchLastSection(true);
-	m_ui.received->horizontalScrollBar()->setValue(hval);
-	m_ui.received->selectRow(rRow);
-	m_ui.received->verticalScrollBar()->setValue(vval);
-	m_ui.received->setUpdatesEnabled(true);
-	connect(m_ui.received,
-		SIGNAL(itemChanged(QTableWidgetItem *)),
-		this,
-		SLOT(slotReceiversChanged(QTableWidgetItem *)));
 
 	if(currentTabName() != "starbeam")
 	  {
@@ -3935,8 +3934,17 @@ void spoton::slotPopulateStars(void)
 	      row += 1;
 	    }
 
+	m_ui.transmitted->horizontalHeader()->setStretchLastSection(true);
+	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
+	m_ui.transmitted->selectRow(tRow);
 	m_ui.transmitted->setRowCount(totalRows);
 	m_ui.transmitted->setSortingEnabled(true);
+	m_ui.transmitted->setUpdatesEnabled(true);
+	m_ui.transmitted->verticalScrollBar()->setValue(vval);
+	connect(m_ui.transmitted,
+		SIGNAL(itemSelectionChanged(void)),
+		this,
+		SLOT(slotTransmittedSelected(void)));
 
 	for(int i = 0; i < m_ui.transmitted->columnCount() - 1; i++)
 	  /*
@@ -3944,16 +3952,6 @@ void spoton::slotPopulateStars(void)
 	  */
 
 	  m_ui.transmitted->resizeColumnToContents(i);
-
-	m_ui.transmitted->horizontalHeader()->setStretchLastSection(true);
-	m_ui.transmitted->horizontalScrollBar()->setValue(hval);
-	m_ui.transmitted->selectRow(tRow);
-	m_ui.transmitted->verticalScrollBar()->setValue(vval);
-	m_ui.transmitted->setUpdatesEnabled(true);
-	connect(m_ui.transmitted,
-		SIGNAL(itemSelectionChanged(void)),
-		this,
-		SLOT(slotTransmittedSelected(void)));
 
 	if(focusWidget)
 	  focusWidget->setFocus();
