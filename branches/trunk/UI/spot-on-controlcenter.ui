@@ -8127,7 +8127,7 @@
                 <item>
                  <widget class="QLabel" name="label_31">
                   <property name="text">
-                   <string>Modifying the pulse size of an active or partially-transmitted StarBeam will result in loss of data.</string>
+                   <string>Modifying the pulse size of an active or partially-transmitted StarBeam may result in loss of data.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
