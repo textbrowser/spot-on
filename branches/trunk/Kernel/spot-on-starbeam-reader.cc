@@ -402,10 +402,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	  (data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
 
 	if(ok)
-	  {
-	    m_expiredResponse.start();
-	    m_timer.stop();
-	  }
+	  m_expiredResponse.start();
       }
 }
 

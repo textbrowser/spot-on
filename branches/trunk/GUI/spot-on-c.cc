@@ -3560,10 +3560,9 @@ void spoton::slotPopulateStars(void)
 			 m_ui.received->columnWidth(1),
 			 m_ui.received->rowHeight(row));
 		      QTableWidgetItem *i = new QTableWidgetItem();
-		      int percent = static_cast<int>
-			(100 *
-			 qAbs(static_cast<double> (fileInfo.size()) /
-			      static_cast<double> (qMax(1LL, fileSize))));
+		      double percent = 100.0 *
+			qAbs(static_cast<double> (fileInfo.size()) /
+			     static_cast<double> (qMax(1LL, fileSize)));
 
 		      linearGradient.setColorAt(percent / 100.0,
 						QColor("lightgreen"));
@@ -3575,30 +3574,32 @@ void spoton::slotPopulateStars(void)
 		      i->setBackground(brush);
 		      i->setText
 			(tr("%1% - %2 of %3 Bytes").
-			 arg(percent).
+			 arg(percent, 0, 'f', 2).
 			 arg(locale.toString(fileInfo.size())).
 			 arg(locale.toString(item1->text().toLongLong())));
 		      i->setToolTip
 			(tr("%1% - %2 (%3 Bytes)").
-			 arg(percent).
+			 arg(percent, 0, 'f', 2).
 			 arg(fileInfo.fileName()).
 			 arg(locale.toString(fileInfo.size())));
 		      m_ui.received->setItem(row, 1, i);
 
 		      QStandardItem *sItem = new QStandardItem
-			(QString("%1%").arg(percent));
+			(QString("%1%").arg(percent, 0, 'f', 2));
 
 		      sItem->setEditable(false);
 		      m_starbeamReceivedModel->setItem(row, 0, sItem);
 		    }
 		  else
 		    {
-		      QStandardItem *sItem = new QStandardItem("100%");
+		      QStandardItem *sItem = new QStandardItem
+			(tr("100.0%"));
 
 		      sItem->setEditable(false);
 		      m_starbeamReceivedModel->setItem(row, 0, sItem);
 
-		      QTableWidgetItem *item = new QTableWidgetItem("100%");
+		      QTableWidgetItem *item = new QTableWidgetItem
+			(tr("100.0%"));
 
 		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.received->setItem(row, 1, item);
@@ -3871,15 +3872,14 @@ void spoton::slotPopulateStars(void)
 
 	      if(item)
 		{
-		  int percent = static_cast<int>
-		    (100 *
-		     qAbs(static_cast<double> (position) /
-			  static_cast<double> (qMax(static_cast<long long int>
-						    (1),
-						    item->text().
-						    toLongLong()))));
+		  double percent = 100.0 *
+		    qAbs(static_cast<double> (position) /
+			 static_cast<double> (qMax(static_cast<long long int>
+						   (1),
+						   item->text().
+						   toLongLong())));
 
-		  if(percent < 100)
+		  if(percent < 100.0)
 		    {
 		      QLinearGradient linearGradient
 			(0,
@@ -3898,19 +3898,20 @@ void spoton::slotPopulateStars(void)
 		      i->setBackground(brush);
 		      i->setText
 			(tr("%1% - %2 of %3 Bytes").
-			 arg(percent).
+			 arg(percent, 0, 'f', 2).
 			 arg(locale.toString(position)).
 			 arg(locale.toString(item->text().toLongLong())));
 		      i->setToolTip
 			(tr("%1% - %2 (%3 Bytes)").
-			 arg(percent).
+			 arg(percent, 0, 'f', 2).
 			 arg(QFileInfo(fileName).fileName()).
 			 arg(locale.toString(position)));
 		      m_ui.transmitted->setItem(row, 1, i);
 		    }
 		  else
 		    {
-		      QTableWidgetItem *item = new QTableWidgetItem("100%");
+		      QTableWidgetItem *item = new QTableWidgetItem
+			(tr("100.0%"));
 
 		      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 		      m_ui.transmitted->setItem(row, 1, item);
