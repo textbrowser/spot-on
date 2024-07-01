@@ -308,6 +308,9 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
       return;
     }
 
+  if(rc <= 0)
+    return;
+
   QHash<QString, QByteArray> elements(elementsFromMagnet(magnet, s_crypt));
 
   if(elements.isEmpty())
