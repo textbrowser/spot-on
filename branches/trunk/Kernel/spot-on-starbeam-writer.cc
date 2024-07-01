@@ -522,14 +522,6 @@ void spoton_starbeam_writer::processData(void)
 
   if(file.open(QIODevice::ReadWrite | QIODevice::Unbuffered))
     {
-      if(position > file.size())
-	if(!file.resize(position))
-	  {
-	    ok = false;
-	    spoton_misc::logError
-	      ("spoton_starbeam_writer::processData(): resize() failure.");
-	  }
-
       if(file.seek(position))
 	{
 	  QByteArray data(qUncompress(list.value(5)));
@@ -568,10 +560,10 @@ void spoton_starbeam_writer::processData(void)
 	  spoton_starbeam_writer_statistics statistics;
 
 	  statistics.m_fileName = fileName;
-	  statistics.m_stalled = 0;
 	  statistics.m_position = position;
 	  statistics.m_previousPosition = 0;
 	  statistics.m_rate = 0.0;
+	  statistics.m_stalled = 0;
 	  statistics.m_time0 = QDateTime::currentMSecsSinceEpoch();
 	  statistics.m_totalSize = totalSize;
 	  m_statistics[fileName] = statistics;
