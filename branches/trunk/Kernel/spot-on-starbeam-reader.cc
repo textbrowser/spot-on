@@ -28,7 +28,6 @@
 #include <QDataStream>
 #include <QDir>
 #include <QSqlQuery>
-#include <QtConcurrent>
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
@@ -70,8 +69,6 @@ spoton_starbeam_reader::spoton_starbeam_reader
 spoton_starbeam_reader::~spoton_starbeam_reader()
 {
   m_expiredResponse.stop();
-  m_readFuture.cancel();
-  m_readFuture.waitForFinished();
   m_timer.stop();
 
   QString connectionName("");
@@ -315,8 +312,8 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 
   if(elements.isEmpty())
     {
-      spoton_misc::logError("spoton_starbeam_reader::pulsate(): "
-			    "elements is empty.");
+      spoton_misc::logError
+	("spoton_starbeam_reader::pulsate(): elements is empty.");
       return;
     }
 
@@ -343,7 +340,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << QByteArray::number(size)
 	 << fileSize.toLatin1()
 	 << data
-	 << pulseSize.toLatin1()
+	 << QByteArray::number(rc)
 	 << hash
 	 << QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
             toLatin1()
@@ -679,54 +676,33 @@ void spoton_starbeam_reader::slotTimeout(void)
 			  ** process the read data.
 			  */
 
-			  if(m_readFuture.isFinished() &&
-			     m_readFuture.resultCount() > 0)
-			    {
-			      const QPair<QByteArray, qint64> &pair
-				(m_readFuture.result());
-			      int random = 0;
+			  QPair<QByteArray, int> pair;
+			  int random = 0;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-			      if(QRandomGenerator::global())
-				random = static_cast<int>
-				  (QRandomGenerator::global()->generate());
+			  if(QRandomGenerator::global())
+			    random = static_cast<int>
+			      (QRandomGenerator::global()->generate());
 #else
-			      random = qrand();
+			  random = qrand();
 #endif
 
-			      if(!pair.first.isEmpty())
-				pulsate
-				  (pair.first,
-				   fileName,
-				   pulseSize,
-				   fileSize,
-				   m_magnets.value(random % m_magnets.count()),
-				   nova,
-				   hash,
-				   sha3_512_hash,
-				   pair.second,
-				   s_crypt);
+			  pair = read(fileName, pulseSize, m_position);
 
-			      m_rc = pair.second;
-			      m_readFuture = QFuture
-				<QPair<QByteArray, qint64> > ();
-			    }
-			  else if(m_readFuture.isFinished())
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-			    m_readFuture = QtConcurrent::run
-			      (&spoton_starbeam_reader::read,
-			       this,
+			  if(!pair.first.isEmpty())
+			    pulsate
+			      (pair.first,
 			       fileName,
 			       pulseSize,
-			       m_position);
-#else
-			    m_readFuture = QtConcurrent::run
-			      (this,
-			       &spoton_starbeam_reader::read,
-			       fileName,
-			       pulseSize,
-			       m_position);
-#endif
+			       fileSize,
+			       m_magnets.value(random % m_magnets.count()),
+			       nova,
+			       hash,
+			       sha3_512_hash,
+			       pair.second,
+			       s_crypt);
+
+			  m_rc = pair.second;
 			}
 		    }
 		}

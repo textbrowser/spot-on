@@ -28,7 +28,6 @@
 #ifndef _spoton_starbeam_reader_h_
 #define _spoton_starbeam_reader_h_
 
-#include <QFuture>
 #include <QHash>
 #include <QObject>
 #include <QSqlDatabase>
@@ -49,7 +48,6 @@ class spoton_starbeam_reader: public QObject
   void setReadInterval(const double readInterval);
 
  private:
-  QFuture<QPair<QByteArray, qint64> > m_readFuture;
   QList<QByteArray> m_magnets;
   QString m_fileName;
   QTimer m_etaTimer;
