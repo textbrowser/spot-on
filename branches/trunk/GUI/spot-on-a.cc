@@ -4289,12 +4289,13 @@ void spoton::slotAbout(void)
       mb->setIconPixmap(pixmap);
 #endif
       str.append("</html>");
-      mb->setStandardButtons(QMessageBox::Ok);
+      mb->setStandardButtons(QMessageBox::Close);
       mb->setText(str);
       mb->setTextFormat(Qt::RichText);
       mb->setWindowIcon(windowIcon());
       mb->setWindowModality(Qt::NonModal);
       mb->setWindowTitle(SPOTON_APPLICATION_NAME);
+      mb->button(QMessageBox::Close)->setShortcut(tr("Ctrl+W"));
     }
 
   mb->showNormal();
