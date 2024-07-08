@@ -5378,11 +5378,10 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(dateTime.isValid())
 			{
 			  QDateTime d(dateTime);
-			  QDateTime n(now.toUTC());
+			  QDateTime n(QDateTime::currentDateTimeUtc());
 			  QString str("green");
 
 			  d.setTimeSpec(Qt::UTC);
-			  n.setTimeSpec(Qt::UTC);
 
 			  if(qAbs(d.secsTo(n)) >
 			     static_cast<qint64> (spoton_common::

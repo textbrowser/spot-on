@@ -1507,7 +1507,6 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
 
   QDateTime now(QDateTime::currentDateTimeUtc());
 
-  now.setTimeSpec(Qt::UTC);
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
 
@@ -5831,7 +5830,6 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
   QDateTime now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
-  now.setTimeSpec(Qt::UTC);
 
   qint64 secsTo = qAbs(now.secsTo(dateTime));
 

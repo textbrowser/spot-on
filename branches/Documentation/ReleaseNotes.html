@@ -39,6 +39,8 @@
 	<li>Replaced QWebEngineSettings::globalSettings() with
 	  QWebEngineSettings::defaultSettings().</li>
 	<li>Simplified StarBeam reading. Reading tasks are cumbersome.</li>
+	<li>Some QDateTime::setTimeSpec(Qt::UTC) instances are redundant.
+	  Removed!</li>
 	<li>The method spoton_webengine_page::acceptNavigationRequest()
 	  must return true else a local page will not be loaded.</li>
 	<li>This happy release is dedicated to the spotty Mr. D.</li>

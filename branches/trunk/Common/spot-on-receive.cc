@@ -1626,7 +1626,6 @@ QList<QByteArray> spoton_receive::process0091
       QDateTime now(QDateTime::currentDateTimeUtc());
 
       dateTime.setTimeSpec(Qt::UTC);
-      now.setTimeSpec(Qt::UTC);
 
       int timeDelta = 0;
       qint64 secsTo = qAbs(now.secsTo(dateTime));
@@ -1826,7 +1825,6 @@ QList<QByteArray> spoton_receive::process0092
       QDateTime now(QDateTime::currentDateTimeUtc());
 
       dateTime.setTimeSpec(Qt::UTC);
-      now.setTimeSpec(Qt::UTC);
 
       int timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;
       qint64 secsTo = qAbs(now.secsTo(dateTime));

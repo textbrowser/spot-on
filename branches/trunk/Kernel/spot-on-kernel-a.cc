@@ -2076,7 +2076,6 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	  QDateTime now(QDateTime::currentDateTimeUtc());
 
 	  dateTime.setTimeSpec(Qt::UTC);
-	  now.setTimeSpec(Qt::UTC);
 
 	  qint64 secsTo = qAbs(now.secsTo(dateTime));
 
