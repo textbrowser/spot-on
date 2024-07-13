@@ -64,13 +64,9 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
 INCLUDEPATH	  += . \
                      ../../. \
-		     /usr/local/opt/geoip/include \
-		     /usr/local/opt/gpgme/include \
-		     /usr/local/opt/libgcrypt/include \
-		     /usr/local/opt/libgpg-error/include \
-		     /usr/local/opt/ntl/include \
-                     /usr/local/opt \
-                     /usr/local/opt/openssl/include \
+		     /opt/homebrew/include \
+		     /opt/homebrew/ntl \
+                     /opt/homebrew/openssl \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 
