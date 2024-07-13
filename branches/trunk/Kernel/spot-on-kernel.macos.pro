@@ -49,27 +49,18 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
-
 ICON		  =
-
-# Removed.
-# /usr/local/opt/postgresql/include/postgresql@14
-
 INCLUDEPATH	  += . \
                      ../. ../../../. \
-                     /usr/local/opt \
-                     /usr/local/opt/geoip/include \
-                     /usr/local/opt/libgcrypt/include \
-                     /usr/local/opt/libgpg-error/include \
-                     /usr/local/opt/ntl/include \
-                     /usr/local/opt/openssl/include
+                     /opt/homebrew/include \
+                     /opt/homebrew/ntl/include \
+                     /opt/homebrew/openssl/include
 
 # Removed.
 # -lpq
 
 LIBS		  += -L../../../libNTRU \
-                     -L/usr/local/lib \
-                     -L/usr/local/opt/openssl/lib \
+                     -L/opt/homebrew/lib \
                      -framework Cocoa \
                      -lGeoIP \
                      -lcrypto \
@@ -94,31 +85,3 @@ UI_DIR            = temp/ui
 # Prevent qmake from stripping everything.
 
 QMAKE_STRIP	= echo
-
-copyspoton.extra            = cp -r ../Spot-On-Kernel.app ../Spot-On.d/.
-copyspoton.path             = ../Spot-On.d
-copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
-copyssl.path                = ../Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1w/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libssl.1.1.dylib
-install_name_tool.path      = .
-libgeoip_data_install.files = ../../../GeoIP/Data/GeoIP.dat
-libgeoip_data_install.path  = ../Spot-On.d/GeoIP
-libntru_install.extra       = cp ../../../libNTRU/libntru.dylib ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib ../Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-libntru_install.path        = .
-macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt ../Spot-On.d/Spot-On-Kernel.app -executable=../Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel
-macdeployqt.path            = Spot-On-Kernel.app
-other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.1.0/lib/libbrotlicommon.1.dylib ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/.
-other_libraries1.path       = .
-preinstall.extra            = rm -rf ../Spot-On.d/Spot-On-Kernel.app/*
-preinstall.path             = ../Spot-On.d
-
-# Order is important.
-
-INSTALLS	= preinstall \
-                  copyspoton \
-                  macdeployqt \
-                  copyssl \
-                  install_name_tool \
-                  libgeoip_data_install \
-                  libntru_install \
-                  other_libraries1

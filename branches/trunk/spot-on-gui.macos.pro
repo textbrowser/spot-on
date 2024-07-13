@@ -1,5 +1,4 @@
 cache()
-dmg.commands = hdiutil create Spot-On.d.dmg -srcfolder Spot-On.d
 include(spot-on-gui-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
@@ -56,12 +55,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
-QMAKE_EXTRA_TARGETS    = dmg libntru purge
+QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
-
-# Removed.
-# /usr/local/opt/postgresql/include/postgresql@14
-
 INCLUDEPATH	  += . \
                      ../../. \
 		     /opt/homebrew/include \
@@ -69,10 +64,6 @@ INCLUDEPATH	  += . \
                      /opt/homebrew/openssl \
                      GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
-
-# Removed.
-# -lpq
-
 LIBS		  += -L../../libNTRU \
                      -L/opt/homebrew/lib \
                      -framework AppKit \
@@ -100,44 +91,3 @@ UI_DIR            = temp/ui
 # Prevent qmake from stripping everything.
 
 QMAKE_STRIP	= echo
-
-copyspoton.extra            = cp -r ./Spot-On.app ./Spot-On.d/.
-copyspoton.path             = ./Spot-On.d
-copyssl.extra               = cp /usr/local/opt/openssl@1.1/lib/*.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
-copyssl.path                = ./Spot-On.d
-install1.files              = ./Data/spot-on-neighbors.txt
-install1.path               = ./Spot-On.d
-install_name_tool.extra     = install_name_tool -change /usr/local/Cellar/openssl@1.1/1.1.1w/lib/libcrypto.1.1.dylib @executable_path/../Frameworks/libcrypto.1.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libssl.1.1.dylib
-install_name_tool.path      = .
-libgeoip_data_install.files = ../../GeoIP/Data/GeoIP.dat
-libgeoip_data_install.path  = ./Spot-On.d/GeoIP
-libntru_install.extra       = cp ../../libNTRU/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib && install_name_tool -change libntru.dylib @executable_path/../Frameworks/libntru.dylib ./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
-libntru_install.path        = .
-lrelease.extra              = $$[QT_INSTALL_BINS]/lrelease spot-on-gui.macos.pro
-lrelease.path               = .
-lupdate.extra               = $$[QT_INSTALL_BINS]/lupdate spot-on-gui.macos.pro
-lupdate.path                = .
-macdeployqt.extra           = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
-macdeployqt.path            = Spot-On.app
-other_libraries1.extra      = cp /usr/local/Cellar/brotli/1.1.0/lib/libbrotlicommon.1.dylib ./Spot-On.d/Spot-On.app/Contents/Frameworks/.
-other_libraries1.path       = .
-preinstall.extra            = rm -rf ./Spot-On.d/Spot-On.app/*
-preinstall.path             = ./Spot-On.d
-sounds.files                = Sounds/*.wav
-sounds.path                 = ./Spot-On.d/Spot-On.app/Contents/MacOS/Sounds
-translations.files	    = Translations/*.qm
-translations.path	    = ./Spot-On.d/Translations
-
-# Order is important.
-
-INSTALLS	= preinstall \
-                  copyspoton \
-                  install1 \
-                  libgeoip_data_install \
-                  sounds \
-                  translations \
-                  macdeployqt \
-                  copyssl \
-                  install_name_tool \
-                  libntru_install \
-                  other_libraries1
