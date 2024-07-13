@@ -55,7 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -funroll-loops \
                           -fwrapv \
                           -pedantic \
-                          -std=c++17
+                          -std=c++20
 QMAKE_EXTRA_TARGETS    = dmg libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
