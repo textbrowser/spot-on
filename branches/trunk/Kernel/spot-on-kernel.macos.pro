@@ -55,10 +55,6 @@ INCLUDEPATH	  += . \
                      /opt/homebrew/include \
                      /opt/homebrew/ntl/include \
                      /opt/homebrew/openssl/include
-
-# Removed.
-# -lpq
-
 LIBS		  += -L../../../libNTRU \
                      -L/opt/homebrew/lib \
                      -framework Cocoa \
