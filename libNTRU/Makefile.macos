@@ -13,7 +13,7 @@ else ifneq ($(SIMD), none)
     SIMD=auto
     CFLAGS+=-DNTRU_DETECT_SIMD
 else
-    CFLAGS+=-mno-ssse3 -mno-avx2
+#   CFLAGS+=-mno-ssse3 -mno-avx2
 endif
 
 # use -march=native if SIMD=auto
