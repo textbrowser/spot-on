@@ -55,7 +55,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -funroll-loops \
                           -fwrapv \
                           -pedantic \
-                          -std=c++20
+                          -std=c++17
 QMAKE_EXTRA_TARGETS    = dmg libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 11.0
 
@@ -74,8 +74,7 @@ ICON		  = Icons/Logo/spot-on-logo.icns
 # -lpq
 
 LIBS		  += -L../../libNTRU \
-                     -L/usr/local/lib \
-                     -L/usr/local/opt/openssl/lib \
+                     -L/opt/homebrew/lib \
                      -framework AppKit \
                      -framework Cocoa \
                      -lGeoIP \
