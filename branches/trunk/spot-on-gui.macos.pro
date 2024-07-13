@@ -9,7 +9,7 @@ CONFIG		+= app_bundle qt release warn_on
 LANGUAGE	= C++
 QT		+= bluetooth \
                    concurrent \
-                   gui
+                   gui \
                    multimedia \
                    network \
                    printsupport \
