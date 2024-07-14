@@ -1,6 +1,21 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
+os=$(uname -o >/dev/null)
+
+if [ "$os" == "Darwin" ]
+then
+    if [ -x ./Spot-On.app/Contents/MacOS/Spot-On ]
+    then
+	export DYLD_LIBRARY_PATH=../../libNTRU
+	exec ./Spot-On.app/Contents/MacOS/Spot-On "$@"
+	exit $?
+    else
+	echo "Could not locate ./Spot-On.app/Contents/MacOS/Spot-On."
+	exit 1
+    fi
+fi
+
 if [ -r /opt/spot-on/Spot-On ] && [ -x /opt/spot-on/Spot-On ]
 then
     export LD_LIBRARY_PATH=/opt/spot-on/Lib
