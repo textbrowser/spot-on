@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
-os=$(uname -o >/dev/null)
+os=$(uname -o 2>/dev/null)
 
 if [ "$os" == "Darwin" ]
 then
