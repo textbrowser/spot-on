@@ -5,6 +5,7 @@ Qt 5.15 LTS or Qt 6.5 LTS is required for Linux. All other operating systems req
 <ul>
 <li>Alpha processors.</li>
 <li>Android, FreeBSD, Linux, MacOS, OS/2, OpenBSD, Windows.</li>
+<li>Apple Silicon.</li>
 <li>Authenticated and encrypted SQLite and PostgreSQL URL databases.</li>
 <li>BSD license.</li>
 <li>Bluetooth, SCTP, TCP, UDP.</li>
