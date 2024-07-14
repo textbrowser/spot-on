@@ -42,6 +42,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
                           -Wextra \
+                          -Wno-c++20-attribute-extensions \
                           -Wno-cast-align \
                           -Wno-deprecated \
                           -Wno-unused-parameter \
