@@ -1,9 +1,9 @@
 Please read spot-on-download-dependencies.bash for hints
 regarding other libraries.
 
-Qt 5.15 LTS / Qt 6 LTS Linux
-Qt 6 LTS MacOS
-Qt 6 LTS Windows
+Qt 5.15 LTS / Qt LTS Linux
+Qt LTS MacOS
+Qt LTS Windows
 
 ARM
 
