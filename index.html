@@ -37,6 +37,63 @@
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2024.07.15</u></h4>
+	  Welcome to the 2024.07.15 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>A StarBeam's estimated time of arrival is now displayed as a
+		rational. <b>GitHub ticket #34.</b></li>
+	      <li>A StarBeam's percent completed is now displayed as a
+		rational. <b>GitHub ticket #34.</b></li>
+	      <li>About the 88th release of Spot-On.</li>
+	      <li>Adjusted QString::split() for modern Qt versions.</li>
+	      <li>Corrected INI setting kernel/tcp_nodelay in
+		spoton_gui_server_tcp_server::incomingConnection(); the proper
+		setting name is gui/tcp_nodelay.</li>
+	      <li>Disable WebEngine's cache if SPOTON_WEBENGINE_ENABLED is
+		true.</li>
+	      <li>Do not set an empty URL interceptor for WebEngine as the engine
+		is particular.</li>
+	      <li>Elegant source.</li>
+	      <li>Fourteen years of silent awesomeness.</li>
+	      <li>GPGError 1.50; Windows.</li>
+	      <li>Include urls.db in database vacuuming. New confirmation
+		prompt included.</li>
+	      <li>NTRU memset() size parameter correction; size must be non-zero.
+		Please read line 506 of src/poly.c. Notice that the len parameter
+		is an unsigned 16-bit integer.</li>
+	      <li>Non-modal About dialog.</li>
+	      <li>OpenSSL 3.3.1; Windows.</li>
+	      <li>Prepared for Apple Silicon MacOS. Intel MacOS is deprecated.</li>
+	      <li>QLocale::country() was replaced with QLocale::territory() in
+		Qt 6.6.</li>
+	      <li>Qt 6 LTS and WebEngine preparations.</li>
+	      <li>Qt 6 LTS and deprecated SSL corrections.</li>
+	      <li>Removed ancient QSettings::remove() instances.</li>
+	      <li>Removed deprecated QAction objects.</li>
+	      <li>Removed tool tips from StarBeam -> Transmitted -> Add Mosaic.</li>
+	      <li>Replaced QWebEngineSettings::globalSettings() with
+		QWebEngineSettings::defaultSettings().</li>
+	      <li>Simplified StarBeam reading. Reading tasks are cumbersome.</li>
+	      <li>Some QDateTime::setTimeSpec(Qt::UTC) instances are redundant.
+		Removed!</li>
+	      <li>Source-only releases! Computers do not exist.</li>
+	      <li>The method spoton_webengine_page::acceptNavigationRequest()
+		must return true else a local page will not be loaded.</li>
+	      <li>This happy release is dedicated to the spotty Mr. D.</li>
+	      <li>Ultra StarBeams were introduced in 2019 or so. Perhaps earlier,
+		perhaps later. Ultra StarBeams are reliable and therefore
+		resize() is not necessary.</li>
+	      <li>Unroll loops, if possible, via funroll-loops.</li>
+	      <li>Various tool tips in StarBeam -> Transmitted would disappear if
+		an active StarBeam was present: QTableWidget::selectRow().</li>
+	      <li>View Locally is now hidden in Search unless WebEngine or
+		WebKit is available.</li>
+	      <li>WebEngine is now included in some Linux distributions.
+		The engine will render local Web pages.</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2023.12.15</u></h4>
 	  Welcome to the 2023.12.15 release of Spot-On. Corrections and
 	  new features are detailed below.
