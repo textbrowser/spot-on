@@ -324,7 +324,6 @@ Completed Items
 
 Remaining Items
 
-1.     Create a diagram of the URL database schema.
-2.     Dark mode for Windows.
-3.     Replace OpenSSL with executable. Create and remove local files
+1.     Dark mode for Windows.
+2.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
