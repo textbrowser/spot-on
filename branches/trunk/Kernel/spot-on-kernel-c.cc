@@ -37,7 +37,7 @@
 QSqlDatabase spoton_kernel::urlDatabase(void)
 {
   QSqlDatabase db;
-  QString connectionName(spoton_misc::databaseName());
+  const QString &connectionName(spoton_misc::databaseName());
 
   if(setting("gui/sqliteSearch", true).toBool())
     {
@@ -50,17 +50,17 @@ QSqlDatabase spoton_kernel::urlDatabase(void)
     {
       QByteArray name;
       QByteArray password;
-      QString database
-	(setting("gui/postgresql_database", "").toString().trimmed());
-      QString host
-	(setting("gui/postgresql_host", "localhost").toString().trimmed());
       QString options
 	(setting("gui/postgresql_web_connection_options",
 		 spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
 	 toString().trimmed());
       bool ok = true;
-      bool ssltls = setting("gui/postgresql_ssltls", true).toBool();
-      int port = setting("gui/postgresql_port", 5432).toInt();
+      const QString &database
+	(setting("gui/postgresql_database", "").toString().trimmed());
+      const QString &host
+	(setting("gui/postgresql_host", "localhost").toString().trimmed());
+      const bool ssltls = setting("gui/postgresql_ssltls", true).toBool();
+      const int port = setting("gui/postgresql_port", 5432).toInt();
       spoton_crypt *s_crypt = crypt("chat");
 
       if(!options.contains("connect_timeout="))

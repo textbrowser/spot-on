@@ -1611,16 +1611,18 @@ int spoton_kernel::buzzKeyCount(void)
 
 int spoton_kernel::interfaces(void)
 {
-  if(Q_LIKELY(instance()))
+  spoton_kernel *instance = spoton_kernel::instance();
+
+  if(Q_LIKELY(instance))
     {
-      if(!instance()->m_guiServer)
+      if(!instance->m_guiServer)
 	return 0;
 
+      const int kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
       int count = 0;
-      int kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
 
       foreach(QSslSocket *socket,
-	      instance()->m_guiServer->findChildren<QSslSocket *> ())
+	      instance->m_guiServer->findChildren<QSslSocket *> ())
 	count += (kernelKeySize == 0) || socket->isEncrypted();
 
       return count;
