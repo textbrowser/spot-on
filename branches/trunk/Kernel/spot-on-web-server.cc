@@ -126,8 +126,7 @@ spoton_web_server::~spoton_web_server()
   m_http->close();
   m_https->close();
 
-  foreach(spoton_web_server_thread *thread,
-	  findChildren<spoton_web_server_thread *> ())
+  foreach(auto thread, findChildren<spoton_web_server_thread *> ())
     thread->wait();
 
   delete m_abort;
@@ -155,7 +154,7 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  spoton_web_server_thread *thread = new spoton_web_server_thread
+  auto thread = new spoton_web_server_thread
     (m_abort, this, QPair<QByteArray, QByteArray> (), socketDescriptor);
 
   connect
@@ -182,10 +181,12 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  QPair<QByteArray, QByteArray> credentials
-    (m_https->certificate(), m_https->privateKey());
-  spoton_web_server_thread *thread = new spoton_web_server_thread
-    (m_abort, this, credentials, socketDescriptor);
+  auto thread = new spoton_web_server_thread
+    (m_abort,
+     this,
+     QPair<QByteArray, QByteArray> (m_https->certificate(),
+				    m_https->privateKey()),
+     socketDescriptor);
 
   connect
     (thread, SIGNAL(finished(void)), this, SLOT(slotHttpsThreadFinished(void)));
@@ -201,7 +202,7 @@ void spoton_web_server::slotHttpsThreadFinished(void)
 
 void spoton_web_server::slotTimeout(void)
 {
-  quint16 port = static_cast<quint16>
+  auto const port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
   if(port == 0)
@@ -212,7 +213,7 @@ void spoton_web_server::slotTimeout(void)
       return;
     }
 
-  int maximumClients = spoton_kernel::setting
+  auto const maximumClients = spoton_kernel::setting
     ("gui/soss_maximum_clients", 10).toInt();
 
   if((m_http->isListening() && m_http->serverPort() != port) ||
@@ -229,14 +230,14 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
     {
-      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+      auto s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
 	    db.setDatabaseName(spoton_misc::homePath() +
 			       QDir::separator() +
@@ -255,7 +256,7 @@ void spoton_web_server::slotTimeout(void)
 		    {
 		      QByteArray certificate;
 		      QByteArray privateKey;
-		      bool ok = true;
+		      auto ok = true;
 
 		      certificate = s_crypt->decryptedAfterAuthenticated
 			(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -284,7 +285,7 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_http->isListening())
     {
-      int so_linger = spoton_kernel::setting
+      auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTP_SO_LINGER", -1).toInt();
 
       spoton_socket_options::setSocketOptions
@@ -304,7 +305,7 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_https->isListening())
     {
-      int so_linger = spoton_kernel::setting
+      auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTPS_SO_LINGER", -1).toInt();
 
       spoton_socket_options::setSocketOptions
@@ -331,7 +332,7 @@ void spoton_web_server_thread::process
   ** Prepare the socket!
   */
 
-  auto readBufferSize =
+  auto const readBufferSize =
     qMax(0,
 	 spoton_kernel::
 	 setting("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE",
@@ -345,7 +346,7 @@ void spoton_web_server_thread::process
   if(!credentials.first.isEmpty())
     {
       QSslConfiguration configuration;
-      QString sslCS
+      auto const &sslCS
 	(spoton_kernel::setting("gui/sslControlString",
 				spoton_common::SSL_CONTROL_STRING).toString());
 
@@ -470,8 +471,9 @@ void spoton_web_server_thread::process
       data = data.simplified().trimmed().mid(5); // get /c <- c
       data = data.mid(0, data.indexOf(' '));
 
-      QPair<QString, QString> address(socket->localAddress().toString(),
-				      QString::number(socket->localPort()));
+      const QPair<QString, QString> address
+	(socket->localAddress().toString(),
+	 QString::number(socket->localPort()));
 
       process(socket.data(), data, address);
     }
@@ -498,8 +500,9 @@ void spoton_web_server_thread::process
       data = data.mid(data.lastIndexOf("current="));
       data = data.mid(0, data.indexOf(' '));
 
-      QPair<QString, QString> address(socket->localAddress().toString(),
-				      QString::number(socket->localPort()));
+      const QPair<QString, QString> address
+	(socket->localAddress().toString(),
+	 QString::number(socket->localPort()));
 
       process(socket.data(), data, address);
     }
@@ -514,7 +517,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
   if(!socket)
     return;
 
-  QStringList list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
+  auto list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
   if(list.size() != 4)
     {
@@ -557,16 +560,16 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   elapsed.start();
 
-  QSqlDatabase db(spoton_kernel::urlDatabase());
-  QString connectionName(db.connectionName());
   QString html("");
+  auto db(spoton_kernel::urlDatabase());
+  auto const &connectionName(db.connectionName()); // Order.
 
   if(db.isOpen())
     {
-      QString link(list.value(1).toLower());
       QString particles(data.mid(data.indexOf("current=")));
       QString querystr("");
       QString search("");
+      auto const &link(list.value(1).toLower());
       quint64 count = 0;
 
       search = list.value(3);
@@ -586,7 +589,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  QString keywordsearch("");
 	  QString originalSearch(search);
 	  QStringList keywordsearches;
-	  bool ok = true;
+	  auto ok = true;
 
 	  originalSearch.replace("&#34;", "\"");
 	  originalSearch.replace("&#38;", "&");
@@ -597,8 +600,8 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
 	  do
 	    {
+	      auto const s = originalSearch.indexOf('"');
 	      int e = -1;
-	      int s = originalSearch.indexOf('"');
 
 	      if(s < 0)
 		break;
@@ -608,7 +611,8 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	      if(e < 0 || e - s - 1 <= 0)
 		break;
 
-	      QString bundle(originalSearch.mid(s + 1, e - s - 1).trimmed());
+	      auto const &bundle
+		(originalSearch.mid(s + 1, e - s - 1).trimmed());
 
 	      if(bundle.isEmpty())
 		break;
@@ -618,10 +622,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	      originalSearch.remove(s, e - s + 1);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-	      QStringList list
+	      auto const &list
 		(bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
-	      QStringList list
+	      auto const &list
 		(bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
 #endif
 
@@ -632,13 +636,13 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
 	      while(it.hasNext())
 		{
-		  QByteArray keywordHash
+		  auto const &keywordHash
 		    (crypt->keyedHash(it.next().toUtf8(), &ok));
 
 		  if(!ok)
 		    continue;
 
-		  QByteArray keywordHashHex(keywordHash.toHex());
+		  auto const &keywordHashHex(keywordHash.toHex());
 
 		  keywordsearch.append
 		     (QString("SELECT url_hash FROM "
@@ -659,11 +663,11 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  keywordsearch.clear();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-	  QStringList list
+	  auto const &list
 	    (originalSearch.toLower().trimmed().
 	     split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
-	  QStringList list
+	  auto const &list
 	    (originalSearch.toLower().trimmed().
 	     split(QRegExp("\\W+"), QString::SkipEmptyParts));
 #endif
@@ -675,12 +679,13 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
 	  while(it.hasNext())
 	    {
-	      QByteArray keywordHash(crypt->keyedHash(it.next().toUtf8(), &ok));
+	      auto const &keywordHash
+		(crypt->keyedHash(it.next().toUtf8(), &ok));
 
 	      if(!ok)
 		continue;
 
-	      QByteArray keywordHashHex(keywordHash.toHex());
+	      auto const &keywordHashHex(keywordHash.toHex());
 
 	      keywordsearch.append
 		(QString("SELECT url_hash FROM "
@@ -709,14 +714,14 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	      if(query.exec(keywordsearches.at(i)))
 		while(query.next())
 		  {
-		    QString hash(query.value(0).toString());
-		    QString prefix(hash.mid(0, 2));
+		    auto const &hash(query.value(0).toString());
+		    auto const &prefix(hash.mid(0, 2));
 
 		    if(!prefixes.contains(prefix))
 		      prefixes.insert(prefix, QString("'%1'").arg(hash));
 		    else
 		      {
-			QString str(prefixes.value(prefix));
+			auto str(prefixes.value(prefix));
 
 			str.append(QString(", '%1'").arg(hash));
 			prefixes.insert(prefix, str);
@@ -778,12 +783,12 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	  while(query.next())
 	    {
 	      QByteArray bytes;
-	      QString date(query.value(4).toString().trimmed());
 	      QString description("");
 	      QString title("");
-	      QString urlHash(query.value(3).toByteArray());
 	      QUrl url;
-	      bool ok = true;
+	      auto const &date(query.value(4).toString().trimmed());
+	      auto const &urlHash(query.value(3).toByteArray());
+	      auto ok = true;
 
 	      bytes = crypt-> decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
@@ -829,7 +834,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 			description.append("...");
 		    }
 
-		  QString scheme(url.scheme().toLower().trimmed());
+		  auto const &scheme(url.scheme().toLower().trimmed());
 
 		  url.setScheme(scheme);
 
@@ -1013,8 +1018,8 @@ void spoton_web_server_thread::processLocal
     }
 
   QByteArray html;
-  QSqlDatabase db(spoton_kernel::urlDatabase());
-  QString connectionName(db.connectionName());
+  auto db(spoton_kernel::urlDatabase());
+  auto const &connectionName(db.connectionName());
 
   if(db.isOpen())
     {
@@ -1031,7 +1036,7 @@ void spoton_web_server_thread::processLocal
       if(query.exec() && query.next())
 	{
 	  QByteArray content;
-	  bool ok = true;
+	  auto ok = true;
 
 	  content = crypt->decryptedAfterAuthenticated
 	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -1079,7 +1084,7 @@ void spoton_web_server_thread::write
 	 socket->state() != QAbstractSocket::ConnectedState)
 	break;
 
-      qint64 rc = socket->write(data.mid(i, s_bytesPerWrite));
+      auto const rc = socket->write(data.mid(i, s_bytesPerWrite));
 
       socket->flush();
 
