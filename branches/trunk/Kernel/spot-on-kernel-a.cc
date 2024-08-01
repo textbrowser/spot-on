@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
 	QString connectionName("");
 
 	{
-	  QSqlDatabase db = spoton_misc::database(connectionName);
+	  auto db(spoton_misc::database(connectionName));
 
 	  db.setDatabaseName
 	    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
@@ -416,10 +416,10 @@ int main(int argc, char *argv[])
     settings.setValue("kernel/server_account_verification_window_msecs",
 		      15000);
 
-  bool ok = true;
-  int integer = settings.value("kernel/gcryctl_init_secmem",
-			       spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
-    toInt(&ok);
+  auto ok = true;
+  auto integer = settings.value
+    ("kernel/gcryctl_init_secmem",
+     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt(&ok);
 
   if(!ok)
     integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 
   for(int i = 0; i < paths.size(); i++)
     {
-      size_t size = static_cast<size_t> (paths.at(i).length()) + 1;
+      auto const size = static_cast<size_t> (paths.at(i).length()) + 1;
 
       if(i == 0)
 	{
@@ -519,10 +519,10 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   QDir().mkdir(spoton_misc::homePath());
 
   QSettings settings;
-  bool disable_mail = false;
-  bool disable_poptastic = false;
-  bool disable_starbeam = false;
-  bool disable_ui_server = false;
+  auto disable_mail = false;
+  auto disable_poptastic = false;
+  auto disable_starbeam = false;
+  auto disable_ui_server = false;
 
   for(int i = 0; i < settings.allKeys().size(); i++)
     s_settings.insert(settings.allKeys().at(i),
@@ -532,7 +532,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
   spoton_misc::setTimeVariables(s_settings);
   spoton_misc::enableLog(setting("gui/kernelLogEvents", false).toBool());
 
-  QStringList arguments(QCoreApplication::arguments());
+  auto const &arguments(QCoreApplication::arguments());
 
   for(int i = 1; i < arguments.size(); i++)
     if(arguments.at(i) == "--disable-mail")
@@ -553,7 +553,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	** Attempt to disable input echo.
 	*/
 
-	bool error = false;
+	auto error = false;
 
 #if defined(Q_OS_WIN)
 	DWORD mode = 0;
@@ -1103,7 +1103,7 @@ QList<QByteArray> spoton_kernel::findBuzzKey(const QByteArray &data,
       it.next();
 
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
 	(data, it.value().value(2), it.value().value(3), &ok);
@@ -1126,7 +1126,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   if(hash.isEmpty())
     return QList<QByteArray> ();
 
-  spoton_crypt *s_crypt = crypt("chat");
+  auto s_crypt = crypt("chat");
 
   if(!s_crypt)
     return QList<QByteArray> ();
@@ -1156,7 +1156,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 	      QByteArray hashType;
 	      QByteArray name;
 	      QByteArray postalAddress;
-	      bool ok = true;
+	      auto ok = true;
 
 	      cipherType = s_crypt->decryptedAfterAuthenticated
 		(s_institutionKeys.at(i).value(0), &ok);
@@ -1211,7 +1211,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(fileInfo.absoluteFilePath());
 
@@ -1237,7 +1237,7 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 	      QByteArray hashType;
 	      QByteArray name;
 	      QByteArray postalAddress;
-	      bool ok = true;
+	      auto ok = true;
 
 	      cipherType = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -1330,8 +1330,8 @@ bool spoton_kernel::acceptRemoteBluetoothConnection
   else
     {
       QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      auto const value = setting("gui/limitConnections", 10).toInt();
       int count = 0;
-      int value = setting("gui/limitConnections", 10).toInt();
 
       while(it.hasNext())
 	{
@@ -1370,8 +1370,8 @@ bool spoton_kernel::acceptRemoteConnection
   else
     {
       QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      auto const value = setting("gui/limitConnections", 10).toInt();
       int count = 0;
-      int value = setting("gui/limitConnections", 10).toInt();
 
       while(it.hasNext())
 	{
@@ -1400,7 +1400,7 @@ bool spoton_kernel::acceptRemoteConnection
 bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
 {
   QByteArray hash;
-  bool ok = true;
+  auto ok = true;
 
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
@@ -1418,7 +1418,7 @@ bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
 bool spoton_kernel::duplicateGeminis(const QByteArray &data)
 {
   QByteArray hash;
-  bool ok = true;
+  auto ok = true;
 
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
@@ -1437,11 +1437,11 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 						 const QString &answer)
 {
   QByteArray computedHash;
-  QByteArray salt(setting("gui/salt", "").toByteArray());
-  QByteArray saltedPassphraseHash
-    (setting("gui/saltedPassphraseHash", "").toByteArray());
   QString error("");
-  bool ok = false;
+  const auto &salt(setting("gui/salt", "").toByteArray());
+  const auto &saltedPassphraseHash
+    (setting("gui/saltedPassphraseHash", "").toByteArray());
+  auto ok = false;
 
   if(answer.isEmpty())
     computedHash = spoton_crypt::saltedPassphraseHash
@@ -1462,7 +1462,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
      spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
     if(error.isEmpty())
       {
-	QPair<QByteArray, QByteArray> keys
+	auto const &keys
 	  (spoton_crypt::
 	   derivedKeys(setting("gui/cipherType", "aes256").toString(),
 		       setting("gui/hashType", "sha512").toString(),
@@ -1478,9 +1478,9 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	  {
 	    ok = true;
 
-	    QStringList list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
-			     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
-	    bool altered = false;
+	    auto altered = false;
+	    auto list(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
+		      spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
 	    std::sort(list.begin(), list.end());
 
@@ -1540,7 +1540,7 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
 
   if(!do_not_hash)
     {
-      bool ok = true;
+      auto ok = true;
 
       hash = spoton_crypt::keyedHash
 	(data, s_messagingCacheKey,
@@ -1559,7 +1559,7 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
       bool contains = false;
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 			   "congestion_control.db");
@@ -1611,17 +1611,17 @@ int spoton_kernel::buzzKeyCount(void)
 
 int spoton_kernel::interfaces(void)
 {
-  spoton_kernel *instance = spoton_kernel::instance();
+  auto instance = spoton_kernel::instance();
 
   if(Q_LIKELY(instance))
     {
       if(!instance->m_guiServer)
 	return 0;
 
-      const int kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
+      auto const kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
       int count = 0;
 
-      foreach(QSslSocket *socket,
+      foreach(auto socket,
 	      instance->m_guiServer->findChildren<QSslSocket *> ())
 	count += (kernelKeySize == 0) || socket->isEncrypted();
 
@@ -1972,30 +1972,29 @@ void spoton_kernel::discoverAdaptiveEchoPair
 {
   QReadLocker locker(&s_adaptiveEchoPairsMutex);
 
-  QList<QPair<QByteArray, QByteArray> > adaptiveEchoPairs
-    (s_adaptiveEchoPairs);
+  auto const &adaptiveEchoPairs(s_adaptiveEchoPairs);
 
   locker.unlock();
 
   if(adaptiveEchoPairs.isEmpty())
     return;
 
-  spoton_crypt *s_crypt = crypt("chat");
+  auto s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
 
-  QByteArray d(data.mid(0, data.lastIndexOf('\n')));
+  auto const &d(data.mid(0, data.lastIndexOf('\n')));
 
   if(d.isEmpty())
     return;
 
-  QList<QByteArray> list(data.split('\n'));
+  auto const &list(data.split('\n'));
 
   if(list.isEmpty())
     return;
 
-  QByteArray last(QByteArray::fromBase64(list.last()));
+  auto const &last(QByteArray::fromBase64(list.last()));
 
   if(last.isEmpty())
     return;
@@ -2004,7 +2003,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
   ** H(E(x) + E(timestamp)) + E(timestamp).
   */
 
-  QByteArray messageCode
+  auto const &messageCode
     (last.mid(0, spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
 
   if(messageCode.size() < spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES)
@@ -2012,9 +2011,9 @@ void spoton_kernel::discoverAdaptiveEchoPair
 
   for(int i = 0; i < adaptiveEchoPairs.size(); i++)
     {
-      QByteArray token(adaptiveEchoPairs.at(i).first);
       QByteArray tokenType(adaptiveEchoPairs.at(i).second);
-      bool ok = true;
+      auto token(adaptiveEchoPairs.at(i).first);
+      auto ok = true;
 
       token = s_crypt->decryptedAfterAuthenticated(token, &ok);
 
@@ -2025,7 +2024,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	continue;
 
       QByteArray computedHash;
-      int length = static_cast<int>
+      auto const length = static_cast<int>
 	(spoton_crypt::
 	 cipherKeyLength(spoton_crypt::preferredCipherAlgorithm()));
       spoton_crypt crypt(tokenType.split('\n').value(0),
@@ -2059,7 +2058,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	  ** 64 = SHA-512, etc., output size.
 	  */
 
-	  QByteArray timestamp
+	  auto const &timestamp
 	    (crypt.
 	     decrypted(last.
 		       mid(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES),
@@ -2068,18 +2067,18 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	  if(!ok)
 	    continue;
 
-	  QDateTime dateTime
+	  auto dateTime
 	    (QDateTime::fromString(timestamp.constData(),
 				   "MMddyyyyhhmmss"));
 
 	  if(!dateTime.isValid())
 	    continue;
 
-	  QDateTime now(QDateTime::currentDateTimeUtc());
+	  auto const &now(QDateTime::currentDateTimeUtc());
 
 	  dateTime.setTimeSpec(Qt::UTC);
 
-	  qint64 secsTo = qAbs(now.secsTo(dateTime));
+	  auto const secsTo = qAbs(now.secsTo(dateTime));
 
 	  if(secsTo <= 5)
 	    {
@@ -2093,7 +2092,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 {
   QByteArray hash;
-  bool ok = true;
+  auto ok = true;
 
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
@@ -2117,7 +2116,7 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
 void spoton_kernel::geminisCacheAdd(const QByteArray &data)
 {
   QByteArray hash;
-  bool ok = true;
+  auto ok = true;
 
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
@@ -2146,7 +2145,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 
   if(!do_not_hash)
     {
-      bool ok = true;
+      auto ok = true;
 
       hash = spoton_crypt::keyedHash
 	(data, s_messagingCacheKey,
@@ -2164,7 +2163,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 			   "congestion_control.db");
@@ -2199,7 +2198,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
     }
   else
     {
-      int cost = setting("gui/congestionCost", 10000).toInt();
+      auto const cost = setting("gui/congestionCost", 10000).toInt();
       QWriteLocker locker(&s_messagingCacheMutex);
 
       if(!s_messagingCache.contains(hash))
@@ -2268,8 +2267,8 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
     return;
 
   QByteArray bytes;
-  bool ok = true;
-  spoton_crypt *s_crypt = crypt("poptastic");
+  auto ok = true;
+  auto s_crypt = crypt("poptastic");
 
   if(s_crypt)
     bytes = s_crypt->decryptedAfterAuthenticated
@@ -2311,7 +2310,7 @@ void spoton_kernel::postPoptasticMessage(const QString &receiverName,
 
 void spoton_kernel::prepareListeners(void)
 {
-  spoton_crypt *s_crypt = crypt("chat");
+  auto s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2319,7 +2318,7 @@ void spoton_kernel::prepareListeners(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "listeners.db");
@@ -2381,8 +2380,8 @@ void spoton_kernel::prepareListeners(void)
 	  while(query.next())
 	    {
 	      QPointer<spoton_listener> listener;
-	      QString status(query.value(4).toString().toLower());
-	      qint64 id = query.value(query.record().count() - 1).
+	      auto const &status(query.value(4).toString().toLower());
+	      auto const id = query.value(query.record().count() - 1).
 		toLongLong();
 
 	      /*
@@ -2401,7 +2400,7 @@ void spoton_kernel::prepareListeners(void)
 		      QByteArray publicKey;
 		      QByteArray transport;
 		      QList<QByteArray> list;
-		      bool ok = true;
+		      auto ok = true;
 
 		      for(int i = 0; i < 4; i++)
 			{
@@ -2465,7 +2464,7 @@ void spoton_kernel::prepareListeners(void)
 
 		      if(ok)
 			{
-			  int maximumClients =
+			  auto maximumClients =
 			    static_cast<int> (query.value(5).toLongLong());
 
 			  if(maximumClients > 0)
@@ -2610,7 +2609,7 @@ void spoton_kernel::prepareListeners(void)
 
 void spoton_kernel::prepareNeighbors(void)
 {
-  spoton_crypt *s_crypt = crypt("chat");
+  auto s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2618,10 +2617,10 @@ void spoton_kernel::prepareNeighbors(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -2666,7 +2665,7 @@ void spoton_kernel::prepareNeighbors(void)
 	  while(query.next())
 	    {
 	      QPointer<spoton_neighbor> neighbor;
-	      qint64 id = query.value(query.record().count() - 1).
+	      auto const id = query.value(query.record().count() - 1).
 		toLongLong();
 
 	      if(query.value(3).toString().toLower() == "connected")
@@ -2674,7 +2673,7 @@ void spoton_kernel::prepareNeighbors(void)
 		  if(!m_neighbors.contains(id))
 		    {
 		      QList<QVariant> list;
-		      bool userDefined = query.value
+		      auto const userDefined = query.value
 			(query.record().indexOf("user_defined")).toBool();
 
 		      for(int i = 0; i < query.record().count() - 1; i++)
@@ -2721,7 +2720,7 @@ void spoton_kernel::prepareNeighbors(void)
 			else
 			  {
 			    QByteArray bytes;
-			    bool ok = true;
+			    auto ok = true;
 
 			    if(!query.isNull(i))
 			      bytes = s_crypt->
@@ -2752,8 +2751,8 @@ void spoton_kernel::prepareNeighbors(void)
 			  ** list[8] - Proxy Username
 			  */
 
-			  QString type(list.value(7).toString().
-				       toLower().trimmed());
+			  auto const &type(list.value(7).toString().
+					   toLower().trimmed());
 
 			  if(type == "http" || type == "socks5")
 			    {
@@ -2782,8 +2781,8 @@ void spoton_kernel::prepareNeighbors(void)
 			  else if(type == "system")
 			    {
 			      QNetworkProxyQuery proxyQuery;
-			      QString transport(list.value(20).toString().
-						toLower().trimmed());
+			      auto const &transport(list.value(20).toString().
+						    toLower().trimmed());
 
 			      if(transport == "tcp" ||
 				 transport == "websocket")
@@ -2799,7 +2798,7 @@ void spoton_kernel::prepareNeighbors(void)
 				 transport == "udp" ||
 				 transport == "websocket")
 				{
-				  QList<QNetworkProxy> proxies
+				  auto const &proxies
 				    (QNetworkProxyFactory::
 				     systemProxyForQuery(proxyQuery));
 
@@ -2941,7 +2940,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "starbeam.db");
@@ -2959,10 +2958,10 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		      "FROM transmitted"))
 	  while(query.next())
 	    {
-	      QString status(query.value(1).toString().toLower());
-	      double readInterval = query.value(0).toDouble();
-	      qint64 id = query.value(query.record().count() - 1).
+	      auto const &status(query.value(1).toString().toLower());
+	      auto const id = query.value(query.record().count() - 1).
 		toLongLong();
+	      auto const readInterval = query.value(0).toDouble();
 
 	      if(status == "transmitting")
 		{
@@ -3050,19 +3049,19 @@ void spoton_kernel::prepareStatus(const QString &keyType)
   if(s_sendInitialStatus == 0)
     return;
 
-  spoton_crypt *s_crypt1 = crypt(keyType);
+  auto s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt(QString("%1-signature").arg(keyType));
+  auto s_crypt2 = crypt(QString("%1-signature").arg(keyType));
 
   if(!s_crypt2)
     return;
 
   QByteArray publicKey;
   QByteArray myPublicKeyHash;
-  bool ok = true;
+  auto ok = true;
 
   publicKey = s_crypt1->publicKey(&ok);
 
@@ -3071,8 +3070,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
   myPublicKeyHash = spoton_crypt::preferredHash(publicKey);
 
-  QByteArray status(setting("gui/my_status", "Online").
-		    toByteArray().toLower());
+  auto status(setting("gui/my_status", "Online").toByteArray().toLower());
 
   if(status == "custom")
     status = setting("gui/customStatus", "").toByteArray().trimmed();
@@ -3098,15 +3096,15 @@ void spoton_kernel::prepareStatus(const QString &keyType)
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 
@@ -3153,7 +3151,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	      QByteArray publicKey;
 	      QByteArray receiverName;
 	      QPair<QByteArray, QByteArray> gemini;
-	      bool ok = true;
+	      auto ok = true;
 
 	      if(!query.isNull(0))
 		gemini.first = s_crypt1->decryptedAfterAuthenticated
@@ -3187,14 +3185,14 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	      if(!ok)
 		continue;
 
-	      QByteArray cipherType
-		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray name;
+	      auto const &cipherType
+		(setting("gui/kernelCipherType", "aes256").
+		 toString().toLatin1());
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
 
 	      if(keyType == "chat")
 		name = setting("gui/nodeName", "unknown").
@@ -3211,7 +3209,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		}
 
 	      QByteArray symmetricKey;
-	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+	      auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(cipherType);
 
 	      if(symmetricKeyLength > 0)
@@ -3262,7 +3260,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 		    */
 
 		    QByteArray signature;
-		    QDateTime dateTime(QDateTime::currentDateTime());
+		    auto const &dateTime(QDateTime::currentDateTime());
 		    spoton_crypt crypt(cipherType,
 				       hashType,
 				       QByteArray(),
@@ -3274,7 +3272,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
-			QByteArray recipientDigest
+			auto const &recipientDigest
 			  (spoton_crypt::preferredHash(publicKey));
 
 			signature = s_crypt2->digitalSignature
@@ -3312,7 +3310,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 		    if(ok)
 		      {
-			QByteArray messageCode
+			auto const &messageCode
 			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
@@ -3380,7 +3378,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
       else
 	while(!list.isEmpty() && !receiverNames.isEmpty())
 	  {
-	    QByteArray message(spoton_send::message0013(list.takeFirst()));
+	    auto const &message(spoton_send::message0013(list.takeFirst()));
 
 	    postPoptasticMessage(receiverNames.takeFirst(), message);
 	  }
@@ -3403,9 +3401,9 @@ void spoton_kernel::purgeMessagingCache(void)
       it1.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+      auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
 #else
-      qint64 now = static_cast<qint64>
+      auto const now = static_cast<qint64>
 	(QDateTime::currentDateTime().toTime_t());
 #endif
 
@@ -3432,9 +3430,9 @@ void spoton_kernel::purgeMessagingCache(void)
       it2.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+      auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
 #else
-      qint64 now = static_cast<qint64>
+      auto const now = static_cast<qint64>
 	(QDateTime::currentDateTime().toTime_t());
 #endif
 
@@ -3458,7 +3456,7 @@ void spoton_kernel::purgeMessagingCache(void)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 			   "congestion_control.db");
@@ -3493,8 +3491,9 @@ void spoton_kernel::purgeMessagingCache(void)
 #else
       QMutableMapIterator<qint64, QByteArray> it3(s_messagingCacheLookup);
 #endif
+      auto const maximum = qMax
+	(250, qCeil(0.15 * s_messagingCacheLookup.size()));
       int i = 0;
-      int maximum = qMax(250, qCeil(0.15 * s_messagingCacheLookup.size()));
 
       while(it3.hasNext())
 	{
@@ -3506,9 +3505,9 @@ void spoton_kernel::purgeMessagingCache(void)
 	  it3.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	  auto now = QDateTime::currentDateTime().toSecsSinceEpoch();
+	  auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
 #else
-	  qint64 now = static_cast<qint64>
+	  auto const now = static_cast<qint64>
 	    (QDateTime::currentDateTime().toTime_t());
 #endif
 
@@ -3516,7 +3515,7 @@ void spoton_kernel::purgeMessagingCache(void)
 	    if(now - it3.key() > static_cast<qint64> (spoton_common::
 						      CACHE_TIME_DELTA_MAXIMUM))
 	      {
-		QList<QByteArray> values
+		auto const &values
 		  (s_messagingCacheLookup.values(it3.key()));
 
 		for(int i = 0; i < values.size(); i++)
@@ -3566,7 +3565,7 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
       return;
     }
 
-  QByteArray data(spoton_send::message0065(magnet));
+  auto const &data(spoton_send::message0065(magnet));
 
   if(neighbor->write(data.constData(), data.length()) != data.length())
     spoton_misc::logError
@@ -3589,7 +3588,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 {
   QByteArray data;
   QByteArray messageCode;
-  bool ok = true;
+  auto ok = true;
   spoton_crypt crypt(channelType,
 		     hashType,
 		     QByteArray(),
@@ -3625,9 +3624,9 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
   if(ok)
     messageCode = crypt.keyedHash(data, &ok);
 
-  QByteArray a1(data);
-  QByteArray a2(messageCode);
   QByteArray destination;
+  auto const &a1(data);
+  auto const &a2(messageCode);
 
   if(ok)
     {
@@ -3678,12 +3677,12 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 					const QByteArray &gemini,
 					const QByteArray &geminiHashKey)
 {
-  spoton_crypt *s_crypt1 = crypt("chat");
+  auto s_crypt1 = crypt("chat");
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt("chat-signature");
+  auto s_crypt2 = crypt("chat-signature");
 
   if(!s_crypt2)
     return;
@@ -3703,10 +3702,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -3733,11 +3732,11 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		 &ok);
 
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
-	      QByteArray symmetricKeyAlgorithm
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
+	      auto const &symmetricKeyAlgorithm
 		(setting("gui/kernelCipherType", "aes256").toString().
 		 toLatin1());
 	      size_t symmetricKeyLength = 0;
@@ -3797,7 +3796,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 		    */
 
 		    QByteArray signature;
-		    QDateTime dateTime(QDateTime::currentDateTime());
+		    auto const &dateTime(QDateTime::currentDateTime());
 		    spoton_crypt crypt(symmetricKeyAlgorithm,
 				       hashType,
 				       QByteArray(),
@@ -3809,7 +3808,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
-			QByteArray recipientDigest
+			auto const &recipientDigest
 			  (spoton_crypt::preferredHash(publicKey));
 
 			signature = s_crypt2->digitalSignature
@@ -3847,7 +3846,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
 		    if(ok)
 		      {
-			QByteArray messageCode
+			auto const &messageCode
 			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
@@ -3872,20 +3871,19 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 					const qint64 oid)
 {
-  spoton_crypt *s_crypt1 = crypt(keyType);
+  auto s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt
-    (QString("%1-signature").arg(keyType.constData()));
+  auto s_crypt2 = crypt(QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
     return;
 
   QByteArray publicKey;
   QByteArray myPublicKeyHash;
-  bool ok = false;
+  auto ok = false;
 
   publicKey = s_crypt1->publicKey(&ok);
 
@@ -3899,10 +3897,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
   QString receiverName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -3959,11 +3957,11 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		   &ok);
 
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
-	      QByteArray symmetricKeyAlgorithm
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
+	      auto const &symmetricKeyAlgorithm
 		(setting("gui/kernelCipherType", "aes256").toString().
 		 toLatin1());
 	      size_t symmetricKeyLength = 0;
@@ -4023,7 +4021,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 		    */
 
 		    QByteArray signature;
-		    QDateTime dateTime(QDateTime::currentDateTime());
+		    auto const &dateTime(QDateTime::currentDateTime());
 		    spoton_crypt crypt(symmetricKeyAlgorithm,
 				       hashType,
 				       QByteArray(),
@@ -4035,7 +4033,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
-			QByteArray recipientDigest
+			auto const &recipientDigest
 			  (spoton_crypt::preferredHash(publicKey));
 
 			signature = s_crypt2->digitalSignature
@@ -4073,7 +4071,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 
 		    if(ok)
 		      {
-			QByteArray messageCode
+			auto const &messageCode
 			  (crypt.keyedHash(keyInformation + data, &ok));
 
 			if(ok)
@@ -4095,7 +4093,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
     {
       if(keyType == "poptastic")
 	{
-	  QByteArray message(spoton_send::message0000a(data));
+	  auto const &message(spoton_send::message0000a(data));
 
 	  postPoptasticMessage(receiverName, message);
 	}
@@ -4107,12 +4105,12 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 						   const qint64 oid)
 {
-  spoton_crypt *s_crypt1 = crypt(keyType);
+  auto s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt
+  auto s_crypt2 = crypt
     (QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
@@ -4120,7 +4118,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
   QByteArray publicKey;
   QByteArray myPublicKeyHash;
-  bool ok = false;
+  auto ok = false;
 
   publicKey = s_crypt1->publicKey(&ok);
 
@@ -4136,10 +4134,10 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
   QString receiverName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -4195,7 +4193,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 					  toByteArray()),
 		   &ok);
 
-	      QByteArray symmetricKeyAlgorithm
+	      auto const &symmetricKeyAlgorithm
 		(spoton_crypt::preferredCipherAlgorithm());
 	      size_t symmetricKeyLength = 0;
 
@@ -4206,7 +4204,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
 		  if(symmetricKeyLength > 0)
 		    {
-		      bool found = false;
+		      auto found = false;
 
 		      for(int i = 1;
 			  i <= spoton_common::IDENTICAL_CREDENTIALS_ITERATIONS;
@@ -4272,7 +4270,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 		    */
 
 		    QByteArray signature;
-		    QDateTime dateTime(QDateTime::currentDateTime());
+		    auto const &dateTime(QDateTime::currentDateTime());
 		    spoton_crypt crypt(symmetricKeyAlgorithm,
 				       spoton_crypt::preferredHashAlgorithm(),
 				       QByteArray(),
@@ -4284,7 +4282,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
 		    if(setting("gui/chatSignMessages", true).toBool())
 		      {
-			QByteArray recipientDigest
+			auto const &recipientDigest
 			  (spoton_crypt::preferredHash(publicKey));
 
 			signature = s_crypt2->digitalSignature
@@ -4319,8 +4317,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 
 		    if(ok)
 		      {
-			QByteArray messageCode
-			  (crypt.keyedHash(data, &ok));
+			auto const &messageCode(crypt.keyedHash(data, &ok));
 
 			if(ok)
 			  data = data.toBase64() + "\n" +
@@ -4347,7 +4344,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 	{
 	  if(keyType == "poptastic")
 	    {
-	      QByteArray message(spoton_send::message0000b(data));
+	      auto const &message(spoton_send::message0000b(data));
 
 	      postPoptasticMessage(receiverName, message);
 	    }
@@ -4369,8 +4366,7 @@ void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
 
   if(listener)
     {
-      foreach(spoton_neighbor *socket,
-	      listener->findChildren<spoton_neighbor *> ())
+      foreach(auto socket, listener->findChildren<spoton_neighbor *> ())
 	socket->setParent(this);
 
       listener->updateConnectionCount();
@@ -4386,8 +4382,7 @@ void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
 
   if(listener)
     {
-      foreach(spoton_neighbor *socket,
-	      listener->findChildren<spoton_neighbor *> ())
+      foreach(auto socket, listener->findChildren<spoton_neighbor *> ())
 	socket->deleteLater();
     }
 }
@@ -4416,30 +4411,26 @@ void spoton_kernel::slotMessageReceivedFromUI
  const qint64 hpOid,
  const QString &keyType)
 {
-  spoton_crypt *s_crypt1 = crypt(keyType);
+  auto s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt(QString("%1-signature").arg(keyType));
+  auto s_crypt2 = crypt(QString("%1-signature").arg(keyType));
 
   if(!s_crypt2)
     return;
 
   QByteArray publicKey;
-  bool ok = true;
+  auto ok = true;
 
   publicKey = s_crypt1->publicKey(&ok);
 
   if(!ok)
     return;
 
-  QByteArray cipherType
-    (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
   QByteArray data;
   QByteArray hashKey;
-  QByteArray hashType
-    (setting("gui/kernelHashType", "sha512").toString().toLatin1());
   QByteArray keyInformation;
   QByteArray myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
   QByteArray startsWith;
@@ -4448,6 +4439,10 @@ void spoton_kernel::slotMessageReceivedFromUI
   QPair<QByteArray, QByteArray> gemini;
   QString neighborOid("");
   QString receiverName("");
+  auto const &cipherType
+    (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
+  auto const &hashType
+    (setting("gui/kernelHashType", "sha512").toString().toLatin1());
 
   spoton_misc::retrieveSymmetricData(gemini,
 				     publicKey,
@@ -4496,7 +4491,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	if(setting("gui/chatSignMessages", true).toBool())
 	  {
-	    QByteArray recipientDigest
+	    auto const &recipientDigest
 	      (spoton_crypt::preferredHash(qUncompress(publicKey)));
 
 	    signature = s_crypt2->digitalSignature
@@ -4534,7 +4529,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 
 	if(ok)
 	  {
-	    QByteArray messageCode
+	    auto const &messageCode
 	      (crypt.keyedHash(keyInformation + data, &ok));
 
 	    if(ok)
@@ -4584,7 +4579,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 	{
 	  if(keyType == "poptastic")
 	    {
-	      QByteArray message(spoton_send::message0000(data));
+	      auto const &message(spoton_send::message0000(data));
 
 	      postPoptasticMessage(receiverName, message);
 	    }
@@ -4672,7 +4667,7 @@ void spoton_kernel::slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor)
 {
   if(neighbor)
     {
-      qint64 id = neighbor->id();
+      auto const id = neighbor->id();
 
       if(m_neighbors.contains(id) && !m_neighbors.value(id, 0))
 	m_neighbors.remove(id);
@@ -4750,7 +4745,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 
   if(messageType == "0011")
     {
-      QByteArray data
+      auto const &data
 	(spoton_send::message0011(keyType, name,
 				  publicKey, signature,
 				  sPublicKey, sSignature));
@@ -4763,7 +4758,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	   arg(neighbor->peerPort()));
       else
 	{
-	  spoton_crypt *s_crypt = crypt("chat");
+	  auto s_crypt = crypt("chat");
 
 	  if(!s_crypt)
 	    return;
@@ -4776,15 +4771,17 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "friends_public_keys.db");
+	    db.setDatabaseName
+	      (spoton_misc::homePath() +
+	       QDir::separator() +
+	       "friends_public_keys.db");
 
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("UPDATE friends_public_keys SET "
 			      "neighbor_oid = -1 "
@@ -4929,13 +4926,13 @@ void spoton_kernel::slotRetrieveMail(void)
       (this, &spoton_kernel::popPoptastic);
 #endif
 
-  spoton_crypt *s_crypt = crypt("email-signature");
+  auto s_crypt = crypt("email-signature");
 
   if(!s_crypt)
     return;
 
   QByteArray publicKey;
-  bool ok = true;
+  auto ok = true;
 
   publicKey = s_crypt->publicKey(&ok); /*
 				       ** Signature public key.
@@ -4944,9 +4941,9 @@ void spoton_kernel::slotRetrieveMail(void)
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
   QList<QByteArray> list;
   QString connectionName("");
+  auto const &myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
 
   {
     QSqlDatabase db = spoton_misc::database(connectionName);
@@ -4975,12 +4972,12 @@ void spoton_kernel::slotRetrieveMail(void)
 	      QByteArray hashType;
 	      QByteArray institutionName;
 	      QByteArray institutionPostalAddress;
-	      QByteArray message1(spoton_crypt::strongRandomBytes(64));
-	      QByteArray message2(spoton_crypt::strongRandomBytes(64));
 	      QByteArray requesterHashInformation;
 	      QByteArray signature;
 	      QString cipherType("");
-	      bool ok = true;
+	      auto const &message1(spoton_crypt::strongRandomBytes(64));
+	      auto const &message2(spoton_crypt::strongRandomBytes(64));
+	      auto ok = true;
 
 	      cipherType = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -5007,7 +5004,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		  (message1 + publicKey,
 		   institutionPostalAddress, hashType, &ok);
 
-	      QDateTime dateTime(QDateTime::currentDateTime());
+	      auto const &dateTime(QDateTime::currentDateTime());
 
 	      if(ok)
 		signature = s_crypt->digitalSignature
@@ -5039,7 +5036,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 	      if(ok)
 		{
-		  QByteArray messageCode(crypt.keyedHash(data, &ok));
+		  auto const &messageCode(crypt.keyedHash(data, &ok));
 
 		  if(ok)
 		    data = data.toBase64() + "\n" +
@@ -5062,15 +5059,15 @@ void spoton_kernel::slotRetrieveMail(void)
   list.clear();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key "
@@ -5082,21 +5079,21 @@ void spoton_kernel::slotRetrieveMail(void)
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      QByteArray cipherType
-		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
 	      QByteArray data;
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray keyInformation;
 	      QByteArray message(spoton_crypt::strongRandomBytes(64));
 	      QByteArray publicKey;
 	      QByteArray signature;
 	      QByteArray symmetricKey;
-	      bool ok = true;
-	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+	      auto const &cipherType
+		(setting("gui/kernelCipherType", "aes256").
+		 toString().toLatin1());
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
+	      auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(cipherType);
+	      auto ok = true;
 
 	      publicKey = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -5142,7 +5139,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		  data.append("\n");
 		}
 
-	      QDateTime dateTime(QDateTime::currentDateTime());
+	      auto const &dateTime(QDateTime::currentDateTime());
 
 	      if(ok)
 		signature = s_crypt->digitalSignature
@@ -5176,7 +5173,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 		  if(ok)
 		    {
-		      QByteArray messageCode
+		      auto const &messageCode
 			(crypt.keyedHash(keyInformation + data, &ok));
 
 		      if(ok)
@@ -5202,11 +5199,7 @@ void spoton_kernel::slotRetrieveMail(void)
 
 void spoton_kernel::slotScramble(void)
 {
-  QByteArray cipherType(setting("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
   QByteArray data;
-  QByteArray hashType(setting("gui/kernelHashType", "sha512").
-		      toString().toLatin1());
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   QByteArray message
     ((QRandomGenerator::global() ?
@@ -5217,8 +5210,12 @@ void spoton_kernel::slotScramble(void)
 #endif
   QByteArray messageCode;
   QByteArray symmetricKey;
-  bool ok = true;
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+  auto const &cipherType(setting("gui/kernelCipherType", "aes256").
+			 toString().toLatin1());
+  auto const &hashType(setting("gui/kernelHashType", "sha512").
+		       toString().toLatin1());
+  auto const symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+  auto ok = true;
 
   if(symmetricKeyLength > 0)
     {
@@ -5317,13 +5314,12 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	}
     }
 
-  spoton_crypt *s_crypt1 = crypt(keyType);
+  auto s_crypt1 = crypt(keyType);
 
   if(!s_crypt1)
     return;
 
-  spoton_crypt *s_crypt2 = crypt
-    (QString("%1-signature").arg(keyType.constData()));
+  auto s_crypt2 = crypt(QString("%1-signature").arg(keyType.constData()));
 
   if(!s_crypt2)
     return;
@@ -5335,15 +5331,15 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   */
 
   QByteArray myPublicKey;
-  bool ok = true;
+  auto ok = true;
 
   myPublicKey = s_crypt1->publicKey(&ok);
 
   if(!ok)
     return;
 
-  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   QByteArray recipientHash;
+  auto const &myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
 
   recipientHash = spoton_crypt::preferredHash(publicKey);
 
@@ -5351,10 +5347,10 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open() || keyType == "poptastic")
       {
@@ -5374,26 +5370,26 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		      "FROM institutions"))
 	  while(keyType == "poptastic" || query.next())
 	    {
-	      QByteArray cipherType
-		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
 	      QByteArray data;
 	      QByteArray hashKey;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray institutionHashType;
 	      QByteArray institutionName;
 	      QByteArray institutionPostalAddress;
 	      QByteArray keyInformation;
 	      QByteArray messageCode1;
 	      QByteArray messageCode2;
-	      QByteArray randomBytes(spoton_crypt::strongRandomBytes(64));
 	      QByteArray recipientHashInformation;
 	      QByteArray symmetricKey;
 	      QByteArray symmetricKeyAlgorithm;
 	      QString institutionCipherType;
-	      bool goldbugUsed = false;
-	      bool ok = true;
+	      auto const &cipherType
+		(setting("gui/kernelCipherType", "aes256").
+		 toString().toLatin1());
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
+	      auto const &randomBytes(spoton_crypt::strongRandomBytes(64));
+	      auto goldbugUsed = false;
+	      auto ok = true;
 
 	      if(keyType == "email")
 		{
@@ -5447,7 +5443,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 	      symmetricKeyAlgorithm = cipherType;
 
-	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+	      auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(symmetricKeyAlgorithm);
 
 	      if(symmetricKeyLength > 0)
@@ -5504,7 +5500,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  if(!goldbug.isEmpty())
 		    {
-		      spoton_crypt *crypt = spoton_misc::
+		      auto crypt = spoton_misc::
 			cryptFromForwardSecrecyMagnet(goldbug);
 
 		      if(crypt)
@@ -5527,7 +5523,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 			  if(sign)
 			    {
-			      QByteArray recipientDigest
+			      auto const &recipientDigest
 				(spoton_crypt::preferredHash(publicKey));
 
 			      signature = s_crypt2->digitalSignature
@@ -5558,9 +5554,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    {
 		      if(sign)
 			{
-			  QByteArray recipientDigest
-			    (spoton_crypt::preferredHash(publicKey));
 			  QByteArray signature;
+			  auto const &recipientDigest
+			    (spoton_crypt::preferredHash(publicKey));
 
 			  signature = s_crypt2->digitalSignature
 			    ("0001b" +
@@ -5653,7 +5649,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	emit sendMail(list, "0001b");
       else
 	{
-	  QByteArray message(spoton_send::message0001b(list.first().first));
+	  auto const &message(spoton_send::message0001b(list.first().first));
 
 	  postPoptasticMessage(receiverName, message, fromAccount, mailOid);
 	  return;
@@ -5663,15 +5659,15 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
   list.clear();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	/*
 	** Use all of our participants, including the recipients,
@@ -5689,25 +5685,25 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	if(ok && query.exec())
 	  while(query.next())
 	    {
-	      QByteArray cipherType
-		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
 	      QByteArray data;
 	      QByteArray data1;
 	      QByteArray data2;
 	      QByteArray hashKey1;
 	      QByteArray hashKey2;
-	      QByteArray hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
 	      QByteArray keyInformation1;
 	      QByteArray keyInformation2;
 	      QByteArray messageCode1;
 	      QByteArray messageCode2;
 	      QByteArray participantPublicKey;
 	      QByteArray symmetricKey;
-	      bool goldbugUsed = false;
-	      bool ok = true;
-	      size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+	      auto const &cipherType
+		(setting("gui/kernelCipherType", "aes256").
+		 toString().toLatin1());
+	      auto const &hashType(setting("gui/kernelHashType", "sha512").
+				   toString().toLatin1());
+	      auto goldbugUsed = false;
+	      auto ok = true;
+	      auto symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(cipherType);
 
 	      participantPublicKey = s_crypt1->decryptedAfterAuthenticated
@@ -5834,7 +5830,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  if(!goldbug.isEmpty())
 		    {
-		      spoton_crypt *crypt = spoton_misc::
+		      auto crypt = spoton_misc::
 			cryptFromForwardSecrecyMagnet(goldbug);
 
 		      if(crypt)
@@ -5857,7 +5853,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 
 			  if(sign)
 			    {
-			      QByteArray recipientDigest
+			      auto const &recipientDigest
 				(spoton_crypt::preferredHash(publicKey));
 
 			      signature = s_crypt2->digitalSignature
@@ -5888,9 +5884,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		    {
 		      if(sign)
 			{
-			  QByteArray recipientDigest
-			    (spoton_crypt::preferredHash(publicKey));
 			  QByteArray signature;
+			  auto const &recipientDigest
+			    (spoton_crypt::preferredHash(publicKey));
 
 			  signature = s_crypt2->digitalSignature
 			    ("0001b" +
@@ -5983,7 +5979,7 @@ void spoton_kernel::slotSettingsChanged(const QString &path)
 
 void spoton_kernel::slotStatusTimerExpired(void)
 {
-  spoton_crypt *s_crypt = crypt("chat");
+  auto s_crypt = crypt("chat");
 
   if(!s_crypt)
     return;
@@ -5991,10 +5987,10 @@ void spoton_kernel::slotStatusTimerExpired(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -6002,7 +5998,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
 
 	for(int i = 1; i <= 2; i++)
 	  {
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare("UPDATE friends_public_keys SET "
 			  "status = 'offline' WHERE "
@@ -6043,7 +6039,7 @@ void spoton_kernel::slotStatusTimerExpired(void)
   if(interfaces() <= 0)
     return;
 
-  QByteArray status
+  auto const &status
     (setting("gui/my_status", "Online").toByteArray().toLower());
 
   if(status == "offline")
@@ -6207,10 +6203,10 @@ void spoton_kernel::slotUpdateSettings(void)
 
   if(url.isEmpty() == false && url.isValid())
     {
-      QString address(url.host());
-      bool tls = (url.scheme() == "https");
-      quint16 port = static_cast<quint16> (url.port());
-      int interval = setting("FORTUNA_QUERY_INTERVAL_MS", 0).toInt();
+      auto const &address(url.host());
+      auto const interval = setting("FORTUNA_QUERY_INTERVAL_MS", 0).toInt();
+      auto const port = static_cast<quint16> (url.port());
+      auto const tls = (url.scheme() == "https");
 
       if(interval <= 0)
 	spoton_crypt::destroyFortuna();
@@ -6227,10 +6223,10 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "kernel.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
     if(db.open())
       {
@@ -6309,10 +6305,12 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	  qint64 count = 0;
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "congestion_control.db");
+	    db.setDatabaseName
+	      (spoton_misc::homePath() +
+	       QDir::separator() +
+	       "congestion_control.db");
 
 	    if(db.open())
 	      {

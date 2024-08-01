@@ -43,7 +43,8 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
   QByteArray privateKey;
   QByteArray publicKey;
   QString error("");
-  int kernelKeySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
+  auto const kernelKeySize = spoton_kernel::setting
+    ("gui/kernelKeySize", 2048).toInt();
 
   if(kernelKeySize > 0)
     spoton_crypt::generateSslKeys
@@ -86,7 +87,7 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 			  SIGNAL(modeChanged(QSslSocket::SslMode)));
 
 		  QSslConfiguration configuration;
-		  QString sslCS
+		  auto const &sslCS
 		    (spoton_kernel::
 		     setting("gui/sslControlString",
 			     spoton_common::SSL_CONTROL_STRING).toString());
@@ -182,8 +183,8 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 	  SLOT(slotClientConnected(void)));
   m_generalTimer.start(2500);
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "kernel.db");
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
   if(fileInfo.isReadable())
     m_fileSystemWatcher.addPath(fileInfo.absoluteFilePath());
@@ -202,7 +203,7 @@ spoton_gui_server::~spoton_gui_server()
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "kernel.db");
@@ -263,7 +264,7 @@ void spoton_gui_server::slotBytesSent(const qint64 size)
 
 void spoton_gui_server::slotClientConnected(void)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (nextPendingConnection());
+  auto socket = qobject_cast<QSslSocket *> (nextPendingConnection());
 
   if(socket)
     {
@@ -284,7 +285,7 @@ void spoton_gui_server::slotClientConnected(void)
 
 void spoton_gui_server::slotClientDisconnected(void)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+  auto socket = qobject_cast<QSslSocket *> (sender());
 
   if(socket)
     {
@@ -304,16 +305,16 @@ void spoton_gui_server::slotClientDisconnected(void)
 
 void spoton_gui_server::slotEncrypted(void)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+  auto socket = qobject_cast<QSslSocket *> (sender());
 
   if(!socket)
     {
-      spoton_misc::logError("spoton_gui_server::"
-			    "slotEncrypted(): empty socket object.");
+      spoton_misc::logError
+	("spoton_gui_server::slotEncrypted(): empty socket object.");
       return;
     }
 
-  QSslCipher cipher(socket->sessionCipher());
+  auto cipher(socket->sessionCipher());
 
   spoton_misc::logError
     (QString("spoton_gui_server::slotEncrypted(): "
@@ -369,9 +370,10 @@ void spoton_gui_server::slotForwardSecrecyResponse
 
 void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
 {
-  int keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).toInt();
+  auto const keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).
+    toInt();
 
-  foreach(QSslSocket *socket, findChildren<QSslSocket *> ())
+  foreach(auto socket, findChildren<QSslSocket *> ())
     if(m_guiIsAuthenticated.
        value(socket->socketDescriptor(), false) && (keySize == 0 ||
 						    socket->isEncrypted()))
@@ -407,7 +409,7 @@ void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
 
 void spoton_gui_server::slotModeChanged(QSslSocket::SslMode mode)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+  auto socket = qobject_cast<QSslSocket *> (sender());
 
   if(!socket)
     {
@@ -460,7 +462,7 @@ void spoton_gui_server::slotNotification(const QString &text)
 
 void spoton_gui_server::slotReadyRead(void)
 {
-  QSslSocket *socket = qobject_cast<QSslSocket *> (sender());
+  auto socket = qobject_cast<QSslSocket *> (sender());
 
   if(!socket)
     {
@@ -489,7 +491,7 @@ void spoton_gui_server::slotReadyRead(void)
 
   while(socket->bytesAvailable() > 0)
     {
-      QByteArray data(socket->readAll());
+      auto const &data(socket->readAll());
 
       if(data.length() > 0)
 	{
@@ -505,7 +507,7 @@ void spoton_gui_server::slotReadyRead(void)
   if(m_guiSocketData.value(socket->socketDescriptor()).contains('\n'))
     {
       QByteArray data(m_guiSocketData.value(socket->socketDescriptor()));
-      QList<QByteArray> messages
+      auto const &messages
 	(data.mid(0, data.lastIndexOf('\n')).split('\n'));
 
       data.remove(0, data.lastIndexOf('\n'));
@@ -517,7 +519,7 @@ void spoton_gui_server::slotReadyRead(void)
 
       for(int i = 0; i < messages.size(); i++)
 	{
-	  QByteArray message(messages.at(i));
+	  auto message(messages.at(i));
 
 	  if(message.startsWith("addbuzz_") &&
 	     m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
@@ -525,7 +527,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("addbuzz_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 4)
                 spoton_kernel::addBuzzKey
@@ -540,7 +542,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("befriendparticipant_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
@@ -559,7 +561,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("buzz_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit buzzReceivedFromUI
@@ -595,7 +597,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_using_"
 					   "forward_secrecy_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipantUsingForwardSecrecy
@@ -609,7 +611,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_"
 					   "using_gemini_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipantUsingGemini(list.value(0),
@@ -623,7 +625,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_"
 					   "using_public_key_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipant(list.value(0),
@@ -654,7 +656,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("echokeypair_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit echoKeyShare(list);
@@ -665,7 +667,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("forward_secrecy_request_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto list(message.split('_'));
 
 	      for(int i = 0; i < list.size(); i++)
 		list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -679,7 +681,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("forward_secrecy_response_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto list(message.split('_'));
 
 	      for(int i = 0; i < list.size(); i++)
 		list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -692,7 +694,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("initiatessltls_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit initiateSSLTLSSession
@@ -703,11 +705,11 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("keys_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		{
-		  QStringList names
+		  auto names
 		    (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES +
 		     spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 		  int count = 0;
@@ -716,7 +718,7 @@ void spoton_gui_server::slotReadyRead(void)
 
 		  for(int i = 0; i < names.size(); i++)
 		    {
-		      spoton_crypt *s_crypt = spoton_kernel::crypt(names.at(i));
+		      auto s_crypt = spoton_kernel::crypt(names.at(i));
 
 		      if(s_crypt)
 			{
@@ -801,7 +803,7 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("message_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 6)
 		emit messageReceivedFromUI
@@ -819,7 +821,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("poptasticmessage_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 6)
 		emit messageReceivedFromUI
@@ -846,7 +848,7 @@ void spoton_gui_server::slotReadyRead(void)
 		(0, static_cast<int> (qstrlen("publicize"
 					      "listenerplaintext_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 1)
 		emit publicizeListenerPlaintext
@@ -880,7 +882,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharebuzzmagnet_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit buzzMagnetReceivedFromUI
@@ -902,7 +904,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharepublickey_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
@@ -920,7 +922,7 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("smp_")));
 
-	      QList<QByteArray> list(message.split('_'));
+	      auto const &list(message.split('_'));
 
 	      if(list.size() == 5)
 		emit smpMessageReceivedFromUI(list);
@@ -1035,10 +1037,10 @@ void spoton_gui_server::slotTimeout(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "kernel.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
     if(db.open())
       {

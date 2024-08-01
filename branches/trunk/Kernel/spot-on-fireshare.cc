@@ -82,7 +82,7 @@ void spoton_fireshare::slotTimeout(void)
       return;
   }
 
-  spoton_crypt *s_crypt1 = spoton_kernel::crypt("url");
+  auto s_crypt1 = spoton_kernel::crypt("url");
 
   if(!s_crypt1)
     {
@@ -91,7 +91,7 @@ void spoton_fireshare::slotTimeout(void)
       return;
     }
 
-  spoton_crypt *s_crypt2 = spoton_kernel::crypt("url-signature");
+  auto s_crypt2 = spoton_kernel::crypt("url-signature");
 
   if(!s_crypt2)
     {
@@ -109,7 +109,7 @@ void spoton_fireshare::slotTimeout(void)
   QList<QPair<QUrl, QString> > polarizers;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
 		       "urls_distillers_information.db");
@@ -117,7 +117,7 @@ void spoton_fireshare::slotTimeout(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT domain, " // 0
@@ -132,7 +132,7 @@ void spoton_fireshare::slotTimeout(void)
 	    {
 	      QByteArray domain;
 	      QByteArray permission;
-	      bool ok = true;
+	      auto ok = true;
 
 	      domain = s_crypt1->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -176,7 +176,7 @@ void spoton_fireshare::slotTimeout(void)
   QList<QByteArray> publicKeys;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -184,7 +184,7 @@ void spoton_fireshare::slotTimeout(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key "
@@ -197,7 +197,7 @@ void spoton_fireshare::slotTimeout(void)
 	  while(query.next())
 	    {
 	      QByteArray publicKey;
-	      bool ok = true;
+	      auto ok = true;
 
 	      publicKey = s_crypt1->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -225,8 +225,8 @@ void spoton_fireshare::slotTimeout(void)
       return;
     }
 
-  spoton_crypt *urlCommonCredentials = spoton_misc::
-    retrieveUrlCommonCredentials(s_crypt1);
+  auto urlCommonCredentials = spoton_misc::retrieveUrlCommonCredentials
+    (s_crypt1);
 
   if(!urlCommonCredentials)
     {
@@ -257,20 +257,21 @@ void spoton_fireshare::slotTimeout(void)
       {
 	QByteArray name;
 	QByteArray password;
-	QString database
-	  (spoton_kernel::setting("gui/postgresql_database", "").
-	   toString().trimmed());
-	QString host
-	  (spoton_kernel::setting("gui/postgresql_host", "localhost").
-	   toString().trimmed());
 	QString options
 	  (spoton_kernel::setting("gui/postgresql_connection_options",
 				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
 	   toString().trimmed());
-	bool ok = true;
-	bool ssltls = spoton_kernel::setting
+	auto const &database
+	  (spoton_kernel::setting("gui/postgresql_database", "").
+	   toString().trimmed());
+	auto const &host
+	  (spoton_kernel::setting("gui/postgresql_host", "localhost").
+	   toString().trimmed());
+	auto ok = true;
+	auto const ssltls = spoton_kernel::setting
 	  ("gui/postgresql_ssltls", true).toBool();
-	int port = spoton_kernel::setting("gui/postgresql_port", 5432).toInt();
+	auto const port = spoton_kernel::setting
+	  ("gui/postgresql_port", 5432).toInt();
 
 	if(!options.contains("connect_timeout="))
 	  options.append(";connect_timeout=10");
@@ -356,8 +357,8 @@ void spoton_fireshare::slotTimeout(void)
 
 		  if(data.isEmpty())
 		    {
-		      QByteArray myPublicKey(s_crypt1->publicKey(&ok));
 		      QByteArray myPublicKeyHash;
+		      auto const &myPublicKey(s_crypt1->publicKey(&ok));
 
 		      if(ok)
 			myPublicKeyHash = spoton_crypt::preferredHash
@@ -398,9 +399,9 @@ void spoton_fireshare::slotTimeout(void)
 			  if(m_quit.fetchAndAddOrdered(0))
 			    break;
 
-			  QString type(polarizers.at(i).second);
-			  QUrl u1(polarizers.at(i).first);
-			  QUrl u2(QUrl::fromUserInput(bytes.value(0)));
+			  auto const &type(polarizers.at(i).second);
+			  auto const &u1(polarizers.at(i).first);
+			  auto const &u2(QUrl::fromUserInput(bytes.value(0)));
 
 			  if(type == "accept")
 			    {
@@ -484,13 +485,13 @@ void spoton_fireshare::slotTimeout(void)
   if(m_quit.fetchAndAddOrdered(0))
     return;
 
-  QByteArray cipherType
+  auto const &cipherType
     (spoton_kernel::setting("gui/kernelCipherType", "aes256").
      toString().toLatin1());
-  QByteArray hashType
+  auto const &hashType
     (spoton_kernel::setting("gui/kernelHashType", "sha512").
      toString().toLatin1());
-  size_t symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
+  auto const symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength == 0)
     {
@@ -518,8 +519,8 @@ void spoton_fireshare::slotTimeout(void)
       QByteArray messageCode;
       QByteArray signature;
       QDataStream stream(&keyInformation, QIODevice::WriteOnly);
-      QDateTime now(QDateTime::currentDateTime());
-      bool ok = true;
+      auto const &now(QDateTime::currentDateTime());
+      auto ok = true;
 
       stream << QByteArray("0080")
 	     << symmetricKey
@@ -540,7 +541,7 @@ void spoton_fireshare::slotTimeout(void)
       if(ok)
 	if(spoton_kernel::setting("gui/urlSignMessages", true).toBool())
 	  {
-	    QByteArray recipientDigest
+	    auto const &recipientDigest
 	      (spoton_crypt::preferredHash(publicKeys.at(i)));
 
 	    signature = s_crypt2->digitalSignature
