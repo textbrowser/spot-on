@@ -16,7 +16,10 @@ QT              -= gui
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
+} else {
+warning("The Bluetooth module is missing!")
 }
+
 
 qtHaveModule(websockets) {
 DEFINES += SPOTON_WEBSOCKETS_ENABLED

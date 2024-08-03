@@ -130,7 +130,7 @@ void spoton_listener_udp_server::slotReadyRead(void)
       QByteArray datagram;
       QHostAddress peerAddress;
       quint16 peerPort = 0;
-      qint64 size = qMax(static_cast<qint64> (0), pendingDatagramSize());
+      auto size = qMax(static_cast<qint64> (0), pendingDatagramSize());
 
       datagram.resize(static_cast<int> (size));
       size = readDatagram(datagram.data(), size, &peerAddress, &peerPort);
@@ -412,7 +412,7 @@ spoton_listener::~spoton_listener()
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "listeners.db");
@@ -563,7 +563,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
       m_port = port;
 
       QBluetoothAddress localAdapter(m_address);
-      bool ok = m_bluetoothServer->listen(localAdapter);
+      auto ok = m_bluetoothServer->listen(localAdapter);
 
       if(ok)
 	{
@@ -813,7 +813,7 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
     }
 
   QSqlQuery query(db);
-  bool ok = true;
+  auto ok = true;
 
   if(isListening())
     {
@@ -827,7 +827,7 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
 	}
       else
 	{
-	  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	  auto s_crypt = spoton_kernel::crypt("chat");
 
 	  if(s_crypt)
 	    {
@@ -958,10 +958,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
   if(m_udpServer)
     {
-      QString address(QString("%1:%2:%3").
-		      arg(neighbor->peerAddress()).
-		      arg(neighbor->scopeId()).
-		      arg(neighbor->peerPort()));
+      auto const &address(QString("%1:%2:%3").
+			  arg(neighbor->peerAddress()).
+			  arg(neighbor->scopeId()).
+			  arg(neighbor->peerPort()));
 
       neighbor->setProperty("address", address);
       m_udpServer->addClientAddress(address);
@@ -984,7 +984,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	  this,
 	  SLOT(slotNeighborDisconnected(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -997,12 +997,12 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
     }
 
   QString connectionName("");
-  QString country
+  auto country
     (spoton_misc::countryNameFromIPAddress(neighbor->peerAddress()));
   qint64 id = -1;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -1012,7 +1012,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	if(db.transaction() && neighbor)
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare
 	      ("INSERT INTO neighbors "
@@ -1151,8 +1151,8 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    QString proxyHostName("");
 	    QString proxyPassword("");
 	    QString proxyPort("1");
-	    QString proxyType(QString::number(QNetworkProxy::NoProxy));
 	    QString proxyUsername("");
+	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -1255,7 +1255,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      if(query.exec())
 		{
-		  QVariant variant(query.lastInsertId());
+		  auto const &variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();
@@ -1304,11 +1304,11 @@ void spoton_listener::prepareNetworkInterface(void)
       m_networkInterface = 0;
     }
 
-  QList<QNetworkInterface> list(QNetworkInterface::allInterfaces());
+  auto const &list(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < list.size(); i++)
     {
-      QList<QNetworkAddressEntry> addresses(list.at(i).addressEntries());
+      auto const &addresses(list.at(i).addressEntries());
 
       for(int j = 0; j < addresses.size(); j++)
 	if(m_sctpServer)
@@ -1394,7 +1394,7 @@ void spoton_listener::slotExternalAddressDiscovered
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "listeners.db");
@@ -1410,8 +1410,7 @@ void spoton_listener::slotExternalAddressDiscovered
 
 void spoton_listener::slotNeighborDisconnected(void)
 {
-  QPointer<spoton_neighbor> neighbor =
-    qobject_cast<spoton_neighbor *> (sender());
+  auto neighbor = qobject_cast<spoton_neighbor *> (sender());
 
   spoton_kernel::s_connectionCounts.remove(m_id, neighbor);
   updateConnectionCount();
@@ -1423,7 +1422,7 @@ void spoton_listener::slotNewConnection(void)
   if(!m_bluetoothServer)
     return;
 
-  QBluetoothSocket *socket = m_bluetoothServer->nextPendingConnection();
+  auto socket = m_bluetoothServer->nextPendingConnection();
 
   if(!socket)
     return;
@@ -1535,7 +1534,7 @@ void spoton_listener::slotNewConnection(void)
 	  neighbor,
 	  SLOT(deleteLater(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1552,7 +1551,7 @@ void spoton_listener::slotNewConnection(void)
   qint64 id = -1;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -1562,7 +1561,7 @@ void spoton_listener::slotNewConnection(void)
 	if(db.transaction() && neighbor)
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare
 	      ("INSERT INTO neighbors "
@@ -1690,8 +1689,8 @@ void spoton_listener::slotNewConnection(void)
 	    QString proxyHostName("");
 	    QString proxyPassword("");
 	    QString proxyPort("1");
-	    QString proxyType(QString::number(QNetworkProxy::NoProxy));
 	    QString proxyUsername("");
+	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -1771,7 +1770,7 @@ void spoton_listener::slotNewConnection(void)
 	    if(ok)
 	      if(query.exec())
 		{
-		  QVariant variant(query.lastInsertId());
+		  auto const &variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();
@@ -1825,10 +1824,10 @@ void spoton_listener::slotTimeout(void)
   */
 
   QString connectionName("");
-  bool shouldDelete = false;
+  auto shouldDelete = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "listeners.db");
@@ -1878,9 +1877,9 @@ void spoton_listener::slotTimeout(void)
 	    if(query.next())
 	      {
 		QString echoMode("");
-		QString status(query.value(0).toString().toLower());
-		bool ok = true;
-		spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+		auto const &status(query.value(0).toString().toLower());
+		auto ok = true;
+		auto s_crypt = spoton_kernel::crypt("chat");
 
 		m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 				     query.value(8).toInt(),
@@ -1992,7 +1991,7 @@ void spoton_listener::slotTimeout(void)
 			     arg(m_port));
 			else if(m_externalAddress)
 			  {
-			    int v = spoton_kernel::setting
+			    auto const v = spoton_kernel::setting
 			      ("gui/kernelExternalIpInterval", -1).toInt();
 
 			    if(v != -1)
@@ -2008,7 +2007,7 @@ void spoton_listener::slotTimeout(void)
 		    if(maxPendingConnections() !=
 		       static_cast<int> (query.value(1).toLongLong()))
 		      {
-			int maximumPendingConnections =
+			auto maximumPendingConnections =
 			  qAbs(static_cast<int> (query.value(1).toLongLong()));
 
 			if(maximumPendingConnections > 0)
@@ -2056,7 +2055,7 @@ void spoton_listener::slotTimeout(void)
 
 		if(isListening() && m_externalAddress)
 		  {
-		    int v = 1000 * spoton_kernel::setting
+		    auto const v = 1000 * spoton_kernel::setting
 		      ("gui/kernelExternalIpInterval", -1).toInt();
 
 		    if(v == 30000 || v == 60000)
@@ -2100,8 +2099,7 @@ void spoton_listener::slotTimeout(void)
 	      }
 	    else
 	      {
-		foreach(spoton_neighbor *socket,
-			findChildren<spoton_neighbor *> ())
+		foreach(auto socket, findChildren<spoton_neighbor *> ())
 		  socket->deleteLater();
 
 		shouldDelete = true;
@@ -2114,8 +2112,7 @@ void spoton_listener::slotTimeout(void)
 
 	    if(!fileInfo.exists())
 	      {
-		foreach(spoton_neighbor *socket,
-			findChildren<spoton_neighbor *> ())
+		foreach(auto socket, findChildren<spoton_neighbor *> ())
 		  socket->deleteLater();
 
 		shouldDelete = true;
@@ -2174,7 +2171,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
   if(!m_webSocketServer)
     return;
 
-  QWebSocket *socket = m_webSocketServer->nextPendingConnection();
+  auto socket = m_webSocketServer->nextPendingConnection();
 
   if(!socket)
     return;
@@ -2286,7 +2283,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	  neighbor,
 	  SLOT(deleteLater(void)));
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -2303,7 +2300,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
   qint64 id = -1;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -2313,7 +2310,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	if(db.transaction() && neighbor)
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare
 	      ("INSERT INTO neighbors "
@@ -2453,8 +2450,8 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	    QString proxyHostName("");
 	    QString proxyPassword("");
 	    QString proxyPort("1");
-	    QString proxyType(QString::number(QNetworkProxy::NoProxy));
 	    QString proxyUsername("");
+	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -2541,7 +2538,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	    if(ok)
 	      if(query.exec())
 		{
-		  QVariant variant(query.lastInsertId());
+		  auto const &variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();
@@ -2588,7 +2585,7 @@ void spoton_listener::updateConnectionCount(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "listeners.db");

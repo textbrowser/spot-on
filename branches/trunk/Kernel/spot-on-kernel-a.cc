@@ -1438,17 +1438,17 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 {
   QByteArray computedHash;
   QString error("");
+  auto ok = false;
   const auto &salt(setting("gui/salt", "").toByteArray());
   const auto &saltedPassphraseHash
     (setting("gui/saltedPassphraseHash", "").toByteArray());
-  auto ok = false;
 
   if(answer.isEmpty())
     computedHash = spoton_crypt::saltedPassphraseHash
       (setting("gui/hashType", "sha512").toString(), passphrase, salt, error);
   else
     {
-      bool ok = true;
+      auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
 	(passphrase.toUtf8(), answer.toUtf8(),
@@ -1556,13 +1556,15 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
   if(s_congestion_control_secondary_storage)
     {
       QString connectionName("");
-      bool contains = false;
+      auto contains = false;
 
       {
 	auto db(spoton_misc::database(connectionName));
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "congestion_control.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "congestion_control.db");
 
 	if(db.open())
 	  {
@@ -1636,8 +1638,10 @@ void spoton_kernel::addBuzzKey(const QByteArray &key,
 			       const QByteArray &hashKey,
 			       const QByteArray &hashType)
 {
-  if(key.isEmpty() || channelType.isEmpty() ||
-     hashKey.isEmpty() || hashType.isEmpty())
+  if(channelType.isEmpty() ||
+     hashKey.isEmpty() ||
+     hashType.isEmpty() ||
+     key.isEmpty())
     return;
 
   QList<QByteArray> list;
@@ -2012,8 +2016,8 @@ void spoton_kernel::discoverAdaptiveEchoPair
   for(int i = 0; i < adaptiveEchoPairs.size(); i++)
     {
       QByteArray tokenType(adaptiveEchoPairs.at(i).second);
-      auto token(adaptiveEchoPairs.at(i).first);
       auto ok = true;
+      auto token(adaptiveEchoPairs.at(i).first);
 
       token = s_crypt->decryptedAfterAuthenticated(token, &ok);
 
@@ -2165,8 +2169,10 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
       {
 	auto db(spoton_misc::database(connectionName));
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "congestion_control.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "congestion_control.db");
 
 	if(db.open())
 	  {
@@ -2320,8 +2326,8 @@ void spoton_kernel::prepareListeners(void)
   {
     auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -2942,8 +2948,8 @@ void spoton_kernel::prepareStarbeamReaders(void)
   {
     auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -3000,7 +3006,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		}
 	      else if(status != "paused")
 		{
-		  QPointer<spoton_starbeam_reader> starbeam
+		  auto starbeam
 		    (m_starbeamReaders.value(id, 0));
 
 		  if(starbeam)
@@ -3458,8 +3464,10 @@ void spoton_kernel::purgeMessagingCache(void)
       {
 	auto db(spoton_misc::database(connectionName));
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "congestion_control.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "congestion_control.db");
 
 	if(db.open())
 	  {
@@ -3689,7 +3697,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 
   QByteArray publicKey;
   QByteArray myPublicKeyHash;
-  bool ok = false;
+  auto ok = false;
 
   publicKey = s_crypt1->publicKey(&ok);
 
@@ -4397,7 +4405,7 @@ void spoton_kernel::slotImpersonateTimeout(void)
   if(QRandomGenerator::global())
     random = static_cast<int> (QRandomGenerator::global()->generate());
 #else
-  random = qrand();
+    random = qrand();
 #endif
   m_impersonateTimer.setInterval(random % 30000 + 10);
 }
@@ -4432,7 +4440,6 @@ void spoton_kernel::slotMessageReceivedFromUI
   QByteArray data;
   QByteArray hashKey;
   QByteArray keyInformation;
-  QByteArray myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
   QByteArray startsWith;
   QByteArray symmetricKey;
   QDataStream stream(&keyInformation, QIODevice::WriteOnly);
@@ -4443,6 +4450,7 @@ void spoton_kernel::slotMessageReceivedFromUI
     (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
   auto const &hashType
     (setting("gui/kernelHashType", "sha512").toString().toLatin1());
+  auto const &myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
 
   spoton_misc::retrieveSymmetricData(gemini,
 				     publicKey,
@@ -4829,7 +4837,7 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
     {
       it.next();
 
-      QPointer<spoton_listener> listener = it.value();
+      auto listener(it.value());
 
       if(!listener)
 	continue;
@@ -4861,7 +4869,7 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
 void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 {
-  QPointer<spoton_listener> listener = m_listeners.value(oid, 0);
+  auto listener(m_listeners.value(oid, 0));
 
   if(!listener)
     return;
@@ -4946,7 +4954,7 @@ void spoton_kernel::slotRetrieveMail(void)
   auto const &myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "email.db");
@@ -5082,7 +5090,6 @@ void spoton_kernel::slotRetrieveMail(void)
 	      QByteArray data;
 	      QByteArray hashKey;
 	      QByteArray keyInformation;
-	      QByteArray message(spoton_crypt::strongRandomBytes(64));
 	      QByteArray publicKey;
 	      QByteArray signature;
 	      QByteArray symmetricKey;
@@ -5091,6 +5098,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		 toString().toLatin1());
 	      auto const &hashType(setting("gui/kernelHashType", "sha512").
 				   toString().toLatin1());
+	      auto const &message(spoton_crypt::strongRandomBytes(64));
 	      auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(cipherType);
 	      auto ok = true;
@@ -6058,8 +6066,7 @@ void spoton_kernel::slotTerminate(const bool registered)
     {
       for(int i = 0; i < m_listeners.keys().size(); i++)
 	{
-	  QPointer<spoton_listener> listener = m_listeners.take
-	    (m_listeners.keys().at(i));
+	  auto listener = m_listeners.take(m_listeners.keys().at(i));
 
 	  if(listener)
 	    {
@@ -6070,8 +6077,7 @@ void spoton_kernel::slotTerminate(const bool registered)
 
       for(int i = 0; i < m_neighbors.keys().size(); i++)
 	{
-	  QPointer<spoton_neighbor> neighbor = m_neighbors.take
-	    (m_neighbors.keys().at(i));
+	  auto neighbor = m_neighbors.take(m_neighbors.keys().at(i));
 
 	  if(neighbor)
 	    neighbor->deleteLater();
@@ -6079,8 +6085,8 @@ void spoton_kernel::slotTerminate(const bool registered)
 
       for(int i = 0; i < m_starbeamReaders.keys().size(); i++)
 	{
-	  QPointer<spoton_starbeam_reader> starbeam =
-	    m_starbeamReaders.take(m_starbeamReaders.keys().at(i));
+	  auto starbeam = m_starbeamReaders.take
+	    (m_starbeamReaders.keys().at(i));
 
 	  if(starbeam)
 	    starbeam->deleteLater();
@@ -6138,7 +6144,7 @@ void spoton_kernel::slotUpdateSettings(void)
   else
     m_impersonateTimer.stop();
 
-  int integer = static_cast<int>
+  auto integer = static_cast<int>
     (1000 * setting("gui/poptasticRefreshInterval", 5.00).toDouble());
 
   if(integer <= 0)
@@ -6198,7 +6204,7 @@ void spoton_kernel::slotUpdateSettings(void)
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
 
-  QUrl url
+  auto const &url
     (QUrl::fromUserInput(setting("FORTUNA_URL", "").toString().trimmed()));
 
   if(url.isEmpty() == false && url.isValid())
