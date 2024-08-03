@@ -111,8 +111,10 @@ void spoton_fireshare::slotTimeout(void)
   {
     auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
@@ -225,7 +227,7 @@ void spoton_fireshare::slotTimeout(void)
       return;
     }
 
-  auto urlCommonCredentials = spoton_misc::retrieveUrlCommonCredentials
+  auto urlCommonCredentials =spoton_misc::retrieveUrlCommonCredentials
     (s_crypt1);
 
   if(!urlCommonCredentials)
@@ -353,7 +355,7 @@ void spoton_fireshare::slotTimeout(void)
 	    if(query.exec())
 	      if(query.next())
 		{
-		  bool ok = true;
+		  auto ok = true;
 
 		  if(data.isEmpty())
 		    {

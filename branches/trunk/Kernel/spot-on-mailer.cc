@@ -69,7 +69,7 @@ spoton_mailer::~spoton_mailer()
 void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
 					     spoton_crypt *crypt)
 {
-  bool keep = spoton_kernel::setting("gui/saveCopy", true).toBool();
+  auto const keep = spoton_kernel::setting("gui/saveCopy", true).toBool();
 
   if(keep)
     if(!crypt)
@@ -82,18 +82,17 @@ void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
 
 	if(keep)
-	  query.prepare("UPDATE folders SET status = ? WHERE "
-			"OID = ?");
+	  query.prepare("UPDATE folders SET status = ? WHERE OID = ?");
 	else
 	  {
 	    query.exec("PRAGMA secure_delete = ON");
@@ -102,7 +101,7 @@ void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
 
 	for(int i = 0; i < oids.size(); i++)
 	  {
-	    bool ok = true;
+	    auto ok = true;
 
 	    if(keep)
 	      {
@@ -142,19 +141,18 @@ void spoton_mailer::moveSentMailToSentFolder(const QList<qint64> &oids,
 
 void spoton_mailer::slotReap(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+  auto s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     {
-      spoton_misc::logError("spoton_mailer::slotReap(): "
-			    "s_crypt is zero.");
+      spoton_misc::logError("spoton_mailer::slotReap(): s_crypt is zero.");
       return;
     }
 
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "email.db");
@@ -162,7 +160,7 @@ void spoton_mailer::slotReap(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	int days = spoton_kernel::setting
+	auto const days = spoton_kernel::setting
 	  ("gui/postofficeDays", 1).toInt();
 
 	query.setForwardOnly(true);
@@ -173,8 +171,8 @@ void spoton_mailer::slotReap(void)
 	  while(query.next())
 	    {
 	      QDateTime dateTime;
-	      QDateTime now(QDateTime::currentDateTime());
-	      bool ok = true;
+	      auto const &now(QDateTime::currentDateTime());
+	      auto ok = true;
 
 	      dateTime = QDateTime::fromString
 		(s_crypt->
@@ -220,7 +218,7 @@ void spoton_mailer::slotRetrieveMail
   ** public key.
   */
 
-  QByteArray publicKey
+  auto publicKey
     (spoton_misc::publicKeyFromHash(publicKeyHash,
 				    false,
 				    spoton_kernel::crypt("email")));
@@ -255,7 +253,7 @@ void spoton_mailer::slotRetrieveMail
 
   hash = spoton_crypt::preferredHash(publicKey);
 
-  QDateTime dateTime
+  auto dateTime
     (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
 
   if(!dateTime.isValid())
@@ -266,11 +264,11 @@ void spoton_mailer::slotRetrieveMail
       return;
     }
 
-  QDateTime now(QDateTime::currentDateTimeUtc());
+  auto const &now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
+  auto const secsTo = qAbs(now.secsTo(dateTime));
 
   if(!(secsTo <= static_cast<qint64> (spoton_common::
 				      MAIL_TIME_DELTA_MAXIMUM)))
@@ -317,15 +315,15 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
-	QByteArray publicKeyHash(m_publicKeyHashesAdaptiveEchoPairs.
-				 first().value(0));
+	auto const &publicKeyHash
+	  (m_publicKeyHashesAdaptiveEchoPairs.first().value(0));
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
@@ -339,7 +337,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 	  {
 	    if(query.next())
 	      {
-		spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+		auto s_crypt = spoton_kernel::crypt("email");
 
 		if(s_crypt)
 		  {
@@ -348,7 +346,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 		    */
 
 		    QByteArray message;
-		    bool ok = true;
+		    auto ok = true;
 
 		    message = s_crypt->
 		      decryptedAfterAuthenticated
@@ -397,7 +395,7 @@ void spoton_mailer::slotTimeout(void)
   ** Send mail.
   */
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+  auto s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     {
@@ -412,21 +410,19 @@ void spoton_mailer::slotTimeout(void)
   QString connectionName2("");
 
   {
-    QSqlDatabase db1 = spoton_misc::database(connectionName1);
-    QSqlDatabase db2 = spoton_misc::database(connectionName2);
+    auto db1 = spoton_misc::database(connectionName1);
+    auto db2 = spoton_misc::database(connectionName2);
 
     db1.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "email.db");
     db2.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db1.open() && db2.open())
       {
-	QByteArray name
-	  (spoton_kernel::setting("gui/emailName", "unknown").
-	   toByteArray());
 	QSqlQuery query(db1);
+	auto const &name
+	  (spoton_kernel::setting("gui/emailName", "unknown").toByteArray());
 
 	/*
 	** Send one message from the sent folder.
@@ -450,7 +446,7 @@ void spoton_mailer::slotTimeout(void)
 	      attachmentData.clear();
 	      list.clear();
 
-	      qint64 oid = query.value(query.record().count() - 1).
+	      auto const oid = query.value(query.record().count() - 1).
 		toLongLong();
 
 	      if(s_oids.contains(oid))
@@ -460,7 +456,7 @@ void spoton_mailer::slotTimeout(void)
 		}
 
 	      QString status("");
-	      bool ok = true;
+	      auto ok = true;
 
 	      status = s_crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(6).toByteArray()), &ok);
@@ -477,7 +473,7 @@ void spoton_mailer::slotTimeout(void)
 	      QByteArray publicKey;
 	      QByteArray receiverName;
 	      QByteArray subject;
-	      bool sign = query.value(5).toBool();
+	      auto const sign = query.value(5).toBool();
 	      qint64 participantOid = -1;
 
 	      if(ok)
@@ -638,7 +634,7 @@ void spoton_mailer::slotTimeout(void)
 
   for(int i = 0; i < list.size(); i++)
     {
-      const QVector<QVariant> &vector(list.at(i));
+      auto const &vector(list.at(i));
 
       /*
       ** So many parameters.
