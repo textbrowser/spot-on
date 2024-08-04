@@ -157,11 +157,10 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
     return m_isListening;
 #endif
 
-  QAbstractSocket::NetworkLayerProtocol protocol =
-    QAbstractSocket::IPv4Protocol;
+  auto protocol = QAbstractSocket::IPv4Protocol;
   int optval = 0;
+  auto const optlen = static_cast<socklen_t> (sizeof(optval));
   int rc = 0;
-  socklen_t optlen = sizeof(optval);
 #if defined(Q_OS_WIN)
   unsigned long int enabled = 1;
 #endif
@@ -498,8 +497,7 @@ void spoton_sctp_server::slotTimeout(void)
   Q_UNUSED(socketDescriptor);
 #endif
 #ifdef SPOTON_SCTP_ENABLED
-  QAbstractSocket::NetworkLayerProtocol protocol =
-    QAbstractSocket::IPv4Protocol;
+  auto protocol = QAbstractSocket::IPv4Protocol;
 
   if(QHostAddress(m_serverAddress).protocol() ==
      QAbstractSocket::IPv6Protocol)
@@ -655,7 +653,8 @@ void spoton_sctp_server::slotTimeout(void)
 
 	  Q_IPV6ADDR temp;
 
-	  memcpy(&temp.c, &clientaddr.sin6_addr.s6_addr,
+	  memcpy(&temp.c,
+		 &clientaddr.sin6_addr.s6_addr,
 		 qMin(sizeof(clientaddr.sin6_addr.s6_addr), sizeof(temp.c)));
 	  address.setAddress(temp);
 	  address.setScopeId(QString::number(clientaddr.sin6_scope_id));
