@@ -62,10 +62,10 @@ QByteArray spoton_starbeam_writer::eta(const QString &fileName)
   else
     return tr("stalled (0 B / s)").toUtf8();
 
-  QString eta(tr("stalled"));
   QString rate("");
-  qint64 seconds = qAbs
+  auto const seconds = qAbs
     (QDateTime::currentMSecsSinceEpoch() / 1000 - statistics.m_time0);
+  auto eta(tr("stalled"));
 
   if(statistics.m_rate > 0.0)
     eta = tr("%1 minutes(s)").
@@ -75,7 +75,7 @@ QByteArray spoton_starbeam_writer::eta(const QString &fileName)
 
   if(seconds >= 1)
     {
-      double rate = statistics.m_rate;
+      auto const rate = statistics.m_rate;
 
       statistics.m_rate =
 	static_cast<double> (qAbs(statistics.m_position -
@@ -109,7 +109,7 @@ bool spoton_starbeam_writer::append
       return false;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -127,7 +127,7 @@ bool spoton_starbeam_writer::append
     return false;
 
   QHash<QString, QByteArray> magnet;
-  QList<QByteArray> list(data.trimmed().split('\n'));
+  auto list(data.trimmed().split('\n'));
 
   for(int i = 0; i < list.size(); i++)
     list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -135,7 +135,7 @@ bool spoton_starbeam_writer::append
   for(int i = 0; i < m_magnets.size(); i++)
     {
       QByteArray messageCode;
-      bool ok = true;
+      auto ok = true;
 
       messageCode = spoton_crypt::keyedHash
 	(list.value(0),
@@ -195,7 +195,7 @@ void spoton_starbeam_writer::processData(void)
 
     if(!m_queue.isEmpty())
       {
-	QPair<QByteArray, QHash<QString, QByteArray> > pair(m_queue.dequeue());
+	auto const &pair(m_queue.dequeue());
 
 	data = pair.first.trimmed();
 	magnet = pair.second;
@@ -216,7 +216,7 @@ void spoton_starbeam_writer::processData(void)
       goto start_label;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -225,7 +225,7 @@ void spoton_starbeam_writer::processData(void)
       return;
     }
 
-  QList<QByteArray> list(data.split('\n'));
+  auto list(data.split('\n'));
 
   if(list.size() != 3)
     goto start_label;
@@ -233,7 +233,7 @@ void spoton_starbeam_writer::processData(void)
   for(int i = 0; i < list.size(); i++)
     list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-  bool ok = true;
+  auto ok = true;
   const int expectedEntries0060 = 12;
   const int expectedEntries0061 = 4;
   spoton_crypt crypt(magnet.value("ct").constData(),
@@ -251,16 +251,16 @@ void spoton_starbeam_writer::processData(void)
     goto start_label;
 
   QReadLocker locker(&m_keyMutex);
-  const QList<QByteArray> &novas(m_novas);
+  auto const &novas(m_novas);
 
   locker.unlock();
 
   QByteArray messageCode;
   QByteArray nova;
-  bool found = false;
-  const QByteArray &d
+  auto const &d
     (data.
      mid(0, data.length() - spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
+  auto found = false;
 
   messageCode = data.mid(d.length());
 
@@ -268,7 +268,7 @@ void spoton_starbeam_writer::processData(void)
     {
       QByteArray bytes;
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
       spoton_crypt crypt
 	(spoton_crypt::preferredCipherAlgorithm(),
 	 spoton_crypt::preferredHashAlgorithm(),
@@ -410,20 +410,20 @@ void spoton_starbeam_writer::processData(void)
       goto start_label;
     }
 
-  qint64 fileId = list.value(9).toLongLong();
+  auto const fileId = list.value(9).toLongLong();
 
   if(spoton_kernel::instance() &&
      spoton_kernel::instance()->hasStarBeamReaderId(fileId))
     goto start_label;
 
-  const QByteArray &hash(list.value(7));
-  const QByteArray &sha3_512_hash(list.value(11));
-  qint64 dataSize = qAbs(list.value(3).toLongLong());
-  qint64 maximumSize = 1048576 * spoton_kernel::setting
+  auto const &hash(list.value(7));
+  auto const &sha3_512_hash(list.value(11));
+  auto const dataSize = qAbs(list.value(3).toLongLong());
+  auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
-  qint64 position = qAbs(list.value(2).toLongLong());
-  qint64 pulseSize = qAbs(list.value(6).toLongLong());
-  qint64 totalSize = qAbs(list.value(4).toLongLong());
+  auto const position = qAbs(list.value(2).toLongLong());
+  auto const pulseSize = qAbs(list.value(6).toLongLong());
+  auto const totalSize = qAbs(list.value(4).toLongLong());
 
   if(dataSize != static_cast<qint64> (list.value(5).length())) // Data
     {
@@ -463,7 +463,7 @@ void spoton_starbeam_writer::processData(void)
       goto start_label;
     }
 
-  QString fileName
+  auto const &fileName
     (spoton_kernel::setting("gui/etpDestinationPath",
 			    QDir::homePath()).toString() +
      QDir::separator() +
@@ -480,7 +480,7 @@ void spoton_starbeam_writer::processData(void)
   int locked = 0;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -488,7 +488,7 @@ void spoton_starbeam_writer::processData(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT locked FROM received WHERE file_hash = ?");
@@ -524,7 +524,7 @@ void spoton_starbeam_writer::processData(void)
     {
       if(file.seek(position))
 	{
-	  QByteArray data(qUncompress(list.value(5)));
+	  auto const &data(qUncompress(list.value(5)));
 
 	  if(static_cast<int> (file.write(data)) != data.length())
 	    {
@@ -570,8 +570,7 @@ void spoton_starbeam_writer::processData(void)
 	}
       else
 	{
-	  spoton_starbeam_writer_statistics statistics
-	    (m_statistics.value(fileName));
+	  auto statistics(m_statistics.value(fileName));
 
 	  statistics.m_position = position;
 	  m_statistics[fileName] = statistics;
@@ -579,10 +578,10 @@ void spoton_starbeam_writer::processData(void)
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -755,14 +754,14 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	auto s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -782,8 +781,8 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 	    it.next();
 
 	    QSqlQuery query(db);
-	    bool ok = true;
-	    bool remove = false;
+	    auto ok = true;
+	    auto remove = false;
 
 	    query.exec("PRAGMA synchronous = NORMAL");
 	    query.prepare("UPDATE received SET "
@@ -827,7 +826,7 @@ void spoton_starbeam_writer::slotETATimerTimeout(void)
 
 void spoton_starbeam_writer::slotReadKeys(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -839,7 +838,7 @@ void spoton_starbeam_writer::slotReadKeys(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -860,9 +859,8 @@ void spoton_starbeam_writer::slotReadKeys(void)
 	if(query.exec())
 	  while(query.next())
 	    {
-	      QByteArray data
-		(QByteArray::fromBase64(query.value(0).toByteArray()));
-	      bool ok = true;
+	      auto data(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      auto ok = true;
 
 	      data = s_crypt->decryptedAfterAuthenticated(data, &ok);
 
@@ -870,7 +868,7 @@ void spoton_starbeam_writer::slotReadKeys(void)
 		continue;
 
 	      QHash<QString, QByteArray> elements;
-	      QList<QByteArray> list
+	      auto const &list
 		(data.remove(0, static_cast<int> (qstrlen("magnet:?"))).
 		 split('&'));
 
@@ -920,9 +918,9 @@ void spoton_starbeam_writer::slotReadKeys(void)
 	if(query.exec())
 	  while(query.next())
 	    {
-	      QByteArray data
+	      auto data
 		(QByteArray::fromBase64(query.value(0).toByteArray()));
-	      bool ok = true;
+	      auto ok = true;
 
 	      data = s_crypt->decryptedAfterAuthenticated(data, &ok);
 

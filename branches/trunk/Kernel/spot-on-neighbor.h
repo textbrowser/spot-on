@@ -96,14 +96,14 @@ class spoton_neighbor_udp_socket: public QUdpSocket
   {
     if(address.protocol() == QAbstractSocket::IPv4Protocol)
       {
-	quint32 a = address.toIPv4Address();
+	auto const a = address.toIPv4Address();
 
 	if(!((a & 0xf0000000) == 0xe0000000))
 	  return;
       }
     else if(address.protocol() == QAbstractSocket::IPv6Protocol)
       {
-	Q_IPV6ADDR a6 = address.toIPv6Address();
+	auto const a6 = address.toIPv6Address();
 
 	if(a6.c[0] != 0xff)
 	  return;

@@ -74,7 +74,7 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -108,9 +108,10 @@ spoton_starbeam_reader::~spoton_starbeam_reader()
 
 QByteArray spoton_starbeam_reader::eta(void)
 {
-  QString eta(tr("stalled"));
   QString rate("");
-  qint64 seconds = qAbs(QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
+  auto const seconds = qAbs
+    (QDateTime::currentMSecsSinceEpoch() / 1000 - m_time0);
+  auto eta(tr("stalled"));
 
   if(m_rate > 0.0)
     eta = tr("%1 minutes(s)").
@@ -121,7 +122,7 @@ QByteArray spoton_starbeam_reader::eta(void)
 
   if(seconds >= 1)
     {
-      double rate = m_rate;
+      auto const rate = m_rate;
 
       m_rate = (static_cast<double> (m_position - m_previousPosition) /
 		static_cast<double> (seconds));
@@ -149,7 +150,7 @@ QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
   QByteArray data;
   QHash<QString, QByteArray> elements;
   QList<QByteArray> list;
-  bool ok = true;
+  auto ok = true;
 
   if(!s_crypt)
     goto done_label;
@@ -164,7 +165,7 @@ QHash<QString, QByteArray> spoton_starbeam_reader::elementsFromMagnet
 
   for(int i = 0; i < list.size(); i++)
     {
-      QByteArray bytes(list.at(i).trimmed());
+      auto bytes(list.at(i).trimmed());
 
       if(bytes.startsWith("ct=")) // Cipher Type
 	{
@@ -236,7 +237,7 @@ QPair<QByteArray, qint64> spoton_starbeam_reader::read
 			pulseSize.toInt(),
 			static_cast<int> (spoton_common::
 					  MAXIMUM_STARBEAM_PULSE_SIZE)), 0);
-	      qint64 rc = file.read(buffer.data(), buffer.length());
+	      auto const rc = file.read(buffer.data(), buffer.length());
 
 	      if(rc < 0)
 		spoton_misc::logError
@@ -308,7 +309,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
   if(rc <= 0)
     return;
 
-  QHash<QString, QByteArray> elements(elementsFromMagnet(magnet, s_crypt));
+  auto const &elements(elementsFromMagnet(magnet, s_crypt));
 
   if(elements.isEmpty())
     {
@@ -318,10 +319,10 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
     }
 
   QByteArray bytes;
-  QByteArray data(buffer.mid(0, static_cast<int> (rc)));
   QByteArray messageCode;
   QDataStream stream(&bytes, QIODevice::WriteOnly);
-  bool ok = true;
+  auto data(buffer.mid(0, static_cast<int> (rc)));
+  auto ok = true;
   int size = 0;
   spoton_crypt crypt(elements.value("ct").constData(),
 		     elements.value("ht").constData(),
@@ -411,14 +412,14 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	auto s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -429,7 +430,7 @@ void spoton_starbeam_reader::savePositionAndStatus(const QString &status)
 	  }
 
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.exec("PRAGMA synchronous = NORMAL");
 	query.prepare("UPDATE transmitted SET "
@@ -496,14 +497,14 @@ void spoton_starbeam_reader::slotETATimerTimeout(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
-	spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	auto s_crypt = spoton_kernel::crypt("chat");
 
 	if(!s_crypt)
 	  {
@@ -514,7 +515,7 @@ void spoton_starbeam_reader::slotETATimerTimeout(void)
 	  }
 
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.exec("PRAGMA synchronous = NORMAL");
 	query.prepare("UPDATE transmitted SET "
@@ -542,7 +543,7 @@ void spoton_starbeam_reader::slotExpiredResponseTimeout(void)
 
 void spoton_starbeam_reader::slotTimeout(void)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -556,10 +557,10 @@ void spoton_starbeam_reader::slotTimeout(void)
 
   QString connectionName("");
   QString status("");
-  bool shouldDelete = false;
+  auto shouldDelete = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -591,7 +592,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 	      if(query.next())
 		{
 		  QByteArray bytes;
-		  bool ok = true;
+		  auto ok = true;
 
 		  bytes = s_crypt->
 		    decryptedAfterAuthenticated(QByteArray::
@@ -624,7 +625,7 @@ void spoton_starbeam_reader::slotTimeout(void)
 		      QString fileName("");
 		      QString fileSize("");
 		      QString pulseSize("");
-		      bool ok = true;
+		      auto ok = true;
 
 		      bytes = s_crypt->
 			decryptedAfterAuthenticated(QByteArray::

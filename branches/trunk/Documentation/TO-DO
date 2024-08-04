@@ -327,4 +327,7 @@ Remaining Items
 1.     Dark mode for Windows.
 2.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
-3.     Automatics and constants.
+3.     Automatics and constants:
+       Common
+       GUI
+       Kernel (Completed)
