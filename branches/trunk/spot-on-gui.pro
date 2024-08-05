@@ -75,6 +75,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wcast-qual \
                           -Wdangling-reference \
                           -Wdouble-promotion \
+                          -Werror \
                           -Wextra \
                           -Wfloat-equal \
                           -Wformat=2 \

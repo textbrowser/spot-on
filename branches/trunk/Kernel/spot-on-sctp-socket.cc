@@ -309,7 +309,7 @@ int spoton_sctp_socket::inspectConnectResult
       if(errorcode == EINPROGRESS)
 	return 0;
 
-      const auto &errorstr
+      auto const &errorstr
 	(QString("inspectConnectResult::errno=%1,socket=%2").
 	 arg(errorcode).arg(static_cast<int> (m_socketDescriptor)));
 

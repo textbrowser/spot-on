@@ -1438,10 +1438,10 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 {
   QByteArray computedHash;
   QString error("");
-  auto ok = false;
-  const auto &salt(setting("gui/salt", "").toByteArray());
-  const auto &saltedPassphraseHash
+  auto const &salt(setting("gui/salt", "").toByteArray());
+  auto const &saltedPassphraseHash
     (setting("gui/saltedPassphraseHash", "").toByteArray());
+  auto ok = false;
 
   if(answer.isEmpty())
     computedHash = spoton_crypt::saltedPassphraseHash
