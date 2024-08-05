@@ -286,7 +286,7 @@ class aes256
 
   uint8_t xtime_special(uint8_t x, uint8_t y)
   {
-    auto xtime_y = xtime(y);
+    auto const xtime_y = xtime(y);
 
     return static_cast<uint8_t>
       (((x & 1) * y) ^
@@ -298,7 +298,7 @@ class aes256
 
   void add_round_key(size_t c)
   {
-    auto product = c * m_Nb;
+    auto const product = c * m_Nb;
 
     m_state[0][0] ^= m_round_key[product + 0][0];
     m_state[0][1] ^= m_round_key[product + 1][0];
@@ -430,7 +430,7 @@ class aes256
 
     while(i < m_Nk)
       {
-	auto product = 4 * i;
+	auto const product = 4 * i;
 
 	if(m_key.size() > product)
 	  m_round_key[i][0] = m_key[product + 0];
@@ -447,7 +447,7 @@ class aes256
 	i += 1;
       }
 
-    auto iterations = m_Nb * (m_Nr + 1);
+    auto const iterations = m_Nb * (m_Nr + 1);
     uint8_t temp[4];
 
     while(i < iterations)
@@ -461,8 +461,8 @@ class aes256
 
 	if(m_Nk > 0 && i % m_Nk == 0)
 	  {
-	    auto quotient = i / m_Nk;
-	    uint8_t t = temp[0];
+	    auto const quotient = i / m_Nk;
+	    auto t = temp[0];
 
 	    temp[0] = temp[1];
 	    temp[1] = temp[2];
@@ -795,7 +795,7 @@ class fortunate_q: public QObject
   static QByteArray E(const QByteArray &C, const QByteArray &K)
   {
     aes256 aes(K.constData());
-    auto string(std::string(C.toHex().constData()));
+    auto const &string(std::string(C.toHex().constData()));
 
     return QByteArray::fromHex
       (aes256::to_hex(aes.encrypt_block(aes256::from_hex(string))).data());
@@ -887,7 +887,7 @@ class fortunate_q: public QObject
     if(device && device->isOpen())
       do
 	{
-	  auto e(device->read(32));
+	  auto const &e(device->read(32));
 
 	  if(!e.isEmpty() && i < m_R.m_P.size())
 	    {
@@ -904,7 +904,7 @@ class fortunate_q: public QObject
  private slots:
   void slot_file_ready_read(void)
   {
-    auto s = static_cast<int> (Devices::FILE);
+    auto const s = static_cast<int> (Devices::FILE);
 
     m_source_indices[s] = (m_source_indices[s] + 1) % POOLS;
     process_device(&m_file, m_source_indices[s], s);
@@ -941,7 +941,7 @@ class fortunate_q: public QObject
 
   void slot_tcp_socket_ready_read(void)
   {
-    auto s = static_cast<int> (Devices::TCP);
+    auto const s = static_cast<int> (Devices::TCP);
 
     m_source_indices[s] = (m_source_indices[s] + 1) % POOLS;
     process_device(&m_tcp_socket, m_source_indices[s], s);

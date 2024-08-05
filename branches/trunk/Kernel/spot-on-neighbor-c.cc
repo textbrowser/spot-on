@@ -1387,14 +1387,14 @@ void spoton_neighbor::process0002a
       if(ok)
 	{
 	  QByteArray computedHash;
-	  QByteArray data(list.value(1));
+	  auto data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
 	    (originalKeyInformation + data, hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    {
-	      QByteArray messageCode(list.value(2));
+	      auto const &messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -1411,7 +1411,7 @@ void spoton_neighbor::process0002a
 
 		  if(ok)
 		    {
-		      QList<QByteArray> list(data.split('\n'));
+		      auto list(data.split('\n'));
 
 		      for(int i = 0; i < list.size(); i++)
 			list.replace
@@ -1476,18 +1476,18 @@ void spoton_neighbor::process0002b
  const QList<QByteArray> &symmetricKeys,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+  auto s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 3)
 	{
@@ -1498,7 +1498,7 @@ void spoton_neighbor::process0002b
 	  return;
 	}
 
-      bool ok = true;
+      auto ok = true;
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -1518,14 +1518,14 @@ void spoton_neighbor::process0002b
       */
 
       QByteArray computedHash;
-      QByteArray data(list.value(0));
+      auto data(list.value(0));
 
       computedHash = spoton_crypt::keyedHash
 	(data, symmetricKeys.value(2), symmetricKeys.value(3), &ok);
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(1));
+	  auto const &messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
@@ -1542,7 +1542,7 @@ void spoton_neighbor::process0002b
 
 	      if(ok)
 		{
-		  QList<QByteArray> list(data.split('\n'));
+		  auto list(data.split('\n'));
 
 		  for(int i = 0; i < list.size(); i++)
 		    list.replace
@@ -1554,7 +1554,7 @@ void spoton_neighbor::process0002b
 		    {
 		      if(list.value(0) == "0002b")
 			{
-			  QByteArray publicKeyHash
+			  auto const &publicKeyHash
 			    (spoton_misc::findPublicKeyHashGivenHash
 			     (list.value(1), list.value(2),
 			      symmetricKeys.value(2),
@@ -1616,7 +1616,7 @@ void spoton_neighbor::process0002b
 
 void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 {
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -1627,7 +1627,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
   ** We may have received a name and a public key.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0011&content=");
 
@@ -1640,7 +1640,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 6)
 	{
@@ -1679,7 +1679,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 
 void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
 {
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -1690,7 +1690,7 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
   ** We may have received a name and a public key.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0012&content=");
 
@@ -1704,7 +1704,7 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 6)
 	{
@@ -1737,7 +1737,7 @@ void spoton_neighbor::process0013(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QList<QByteArray> list
+  auto const &list
     (spoton_receive::process0013(length,
 				 dataIn,
 				 symmetricKeys,
@@ -1762,7 +1762,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -1773,7 +1773,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
   ** We may have received a uuid.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0014&content=");
 
@@ -1788,7 +1788,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
-      QList<QByteArray> list(data.split('\n'));
+      auto const &list(data.split('\n'));
       QUuid uuid(list.value(0));
       QWriteLocker locker(&m_receivedUuidMutex);
 
@@ -1799,18 +1799,17 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
       locker.unlock();
 
-      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+      auto s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
 	    db.setDatabaseName
-	      (spoton_misc::homePath() + QDir::separator() +
-	       "neighbors.db");
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	    if(db.open())
 	      {
@@ -1819,9 +1818,9 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
 		if(!m_isUserDefined)
 		  {
-		    QList<int> laneWidths(spoton_common::LANE_WIDTHS);
-		    QString echoMode(list.value(2));
-		    int laneWidth = list.value(1).toInt();
+		    auto echoMode(list.value(2));
+		    auto laneWidth = list.value(1).toInt();
+		    auto laneWidths(spoton_common::LANE_WIDTHS);
 
 		    if(!(echoMode == "full" || echoMode == "half"))
 		      echoMode = "full";
@@ -1844,8 +1843,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 				  "WHERE OID = ?");
 		    query.bindValue
 		      (0, s_crypt->
-		       encryptedThenHashed(echoMode.toLatin1(),
-					   &ok).toBase64());
+		       encryptedThenHashed(echoMode, &ok).toBase64());
 		    query.bindValue(1, laneWidth);
 
 		    if(ok)
@@ -1889,12 +1887,12 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
 void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -1905,7 +1903,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
   ** We may have received a listener's information.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0030&content=");
 
@@ -1919,8 +1917,8 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      QByteArray originalData(data);
-      QList<QByteArray> list(data.split('\n'));
+      auto const &originalData(data);
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -1936,7 +1934,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	}
       else
 	{
-	  QString statusControl
+	  auto const &statusControl
 	    (spoton_kernel::setting("gui/acceptPublicizedListeners",
 				    "localConnected").toString().
 	     toLower());
@@ -1953,11 +1951,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 		{
 		  QString orientation(list.value(4).constData());
 		  QString transport(list.value(3).constData());
-		  quint16 port = list.value(1).toUShort(); /*
-							   ** toUShort()
-							   ** returns zero
-							   ** on failure.
-							   */
+		  auto const port = list.value(1).toUShort(); /*
+							      ** toUShort()
+							      ** returns zero
+							      ** on failure.
+							      */
 
 		  spoton_misc::savePublishedNeighbor
 		    (address, port, transport, statusControl, orientation,
@@ -1970,11 +1968,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	      if(!QBluetoothAddress(list.value(0).constData()).isNull())
 		{
 		  QString orientation(list.value(4).constData());
-		  quint16 port = list.value(1).toUShort(); /*
-							   ** toUShort()
-							   ** returns zero
-							   ** on failure.
-							   */
+		  auto const port = list.value(1).toUShort(); /*
+							      ** toUShort()
+							      ** returns zero
+							      ** on failure.
+							      */
 
 		  spoton_misc::savePublishedNeighbor
 		    (QBluetoothAddress(list.value(0).constData()),
@@ -1994,11 +1992,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 		{
 		  QString orientation(list.value(4).constData());
 		  QString transport(list.value(3).constData());
-		  quint16 port = list.value(1).toUShort(); /*
-							   ** toUShort()
-							   ** returns zero
-							   ** on failure.
-							   */
+		  auto const port = list.value(1).toUShort(); /*
+							      ** toUShort()
+							      ** returns zero
+							      ** on failure.
+							      */
 
 		  spoton_misc::savePublishedNeighbor
 		    (address,
@@ -2032,13 +2030,13 @@ void spoton_neighbor::process0040a(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -2061,20 +2059,20 @@ void spoton_neighbor::process0040a(int length,
       */
 
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
 	(list.value(0), symmetricKeys.value(2), symmetricKeys.value(3), &ok);
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(1));
+	  auto const &messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
-	      QByteArray data(list.value(0));
-	      bool ok = true;
+	      auto data(list.value(0));
+	      auto ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
 				 "sha512", // Buzz
 				 QByteArray(),
@@ -2112,18 +2110,18 @@ void spoton_neighbor::process0040b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -2146,20 +2144,20 @@ void spoton_neighbor::process0040b(int length,
       */
 
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
 	(list.value(0), symmetricKeys.value(2), symmetricKeys.value(3), &ok);
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(1));
+	  auto const &messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      QByteArray data(list.value(0));
-	      bool ok = true;
+	      auto ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
 				 "sha512", // Buzz
 				 QByteArray(),
@@ -2198,7 +2196,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -2209,7 +2207,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
   ** We may have received a name and a password from the client.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0050&content=");
 
@@ -2223,7 +2221,7 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 2)
 	{
@@ -2268,23 +2266,22 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
       if(m_accountAuthenticated.fetchAndAddOrdered(0))
 	emit resetKeepAlive();
 
-      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+      auto s_crypt = spoton_kernel::crypt("chat");
 
       if(s_crypt)
 	{
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
 	    db.setDatabaseName
-	      (spoton_misc::homePath() + QDir::separator() +
-	       "neighbors.db");
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("UPDATE neighbors SET "
 			      "account_authenticated = ?, "
@@ -2330,7 +2327,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -2341,7 +2338,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
   ** We may have received a name and a password from the server.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0051&content=");
 
@@ -2355,7 +2352,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 2)
 	{
@@ -2375,7 +2372,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
       accountClientSentSalt = m_accountClientSentSalt;
       locker.unlock();
 
-      spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+      auto s_crypt = spoton_kernel::crypt("chat");
 
       if(accountClientSentSalt.length() >=
 	 spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE &&
@@ -2388,9 +2385,9 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	      QByteArray name;
 	      QByteArray newHash;
 	      QByteArray password;
-	      QByteArray salt(list.at(1).trimmed());
-	      bool ok = true;
-	      const QByteArray &hash(list.at(0));
+	      auto const &salt(list.at(1).trimmed());
+	      auto const &hash(list.at(0));
+	      auto ok = true;
 
 	      QReadLocker locker1(&m_accountNameMutex);
 
@@ -2480,16 +2477,15 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db(spoton_misc::database(connectionName));
 
 	    db.setDatabaseName
-	      (spoton_misc::homePath() + QDir::separator() +
-	       "neighbors.db");
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("UPDATE neighbors SET "
 			      "account_authenticated = ? "
@@ -2526,7 +2522,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
 void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -2535,14 +2531,14 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
   ** Shared Buzz Magnet?
   */
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
 
   length -= static_cast<int> (qstrlen("type=0065&content="));
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0065&content=");
 
@@ -2563,16 +2559,17 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
 	    QString connectionName("");
 
 	    {
-	      QSqlDatabase db = spoton_misc::database(connectionName);
+	      auto db(spoton_misc::database(connectionName));
 
 	      db.setDatabaseName
-		(spoton_misc::homePath() + QDir::separator() +
+		(spoton_misc::homePath() +
+		 QDir::separator() +
 		 "buzz_channels.db");
 
 	      if(db.open())
 		{
 		  QSqlQuery query(db);
-		  bool ok = true;
+		  auto ok = true;
 
 		  query.prepare("INSERT OR REPLACE INTO buzz_channels "
 				"(data, data_hash) "
@@ -2609,7 +2606,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
@@ -2620,7 +2617,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
   ** We may have received a message of the day.
   */
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0070&content=");
 
@@ -2635,8 +2632,7 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
       emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
-      QString motd(QString::fromUtf8(data.constData(),
-				     data.length()).trimmed());
+      auto motd(QString::fromUtf8(data.constData(), data.length()).trimmed());
 
       if(motd.isEmpty())
 	motd = "Welcome to Spot-On.";
@@ -2644,11 +2640,10 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
-	   "neighbors.db");
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	if(db.open())
 	  {
@@ -2679,13 +2674,13 @@ void spoton_neighbor::process0080(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -2708,8 +2703,8 @@ void spoton_neighbor::process0080(int length,
       */
 
       QByteArray computedHash;
-      QByteArray keyInformation(list.value(0));
-      bool ok = true;
+      auto const &keyInformation(list.value(0));
+      auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
 	(list.value(0) + list.value(1),
@@ -2717,13 +2712,13 @@ void spoton_neighbor::process0080(int length,
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(2));
+	  auto const &messageCode(list.value(2));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
-	      QByteArray data(list.value(1));
-	      bool ok = true;
+	      auto data(list.value(1));
+	      auto ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
 				 symmetricKeys.value(3),
 				 QByteArray(),
@@ -2754,7 +2749,7 @@ void spoton_neighbor::process0080(int length,
 		      }
 		  }
 
-		  QDateTime dateTime
+		  auto dateTime
 		    (QDateTime::fromString(list.value(1).constData(),
 					   "MMddyyyyhhmmss"));
 
@@ -2765,13 +2760,13 @@ void spoton_neighbor::process0080(int length,
 					   spoton_common::URL_TIME_DELTA))
 		    return;
 
-		  QByteArray dataForSignature
+		  auto const &dataForSignature
 		    (keyInformation + list.value(0) + list.value(1));
-		  QByteArray signature(list.value(2));
+		  auto const &signature(list.value(2));
 
 		  {
 		    QByteArray a;
-		    QByteArray data(qUncompress(list.value(0)));
+		    auto data(qUncompress(list.value(0)));
 		    QDataStream stream(&data, QIODevice::ReadOnly);
 
 		    list.clear();
@@ -2788,7 +2783,7 @@ void spoton_neighbor::process0080(int length,
 
 			    if(list.size() == 1)
 			      {
-				QByteArray publicKeyHash(list.value(0));
+				auto const &publicKeyHash(list.value(0));
 
 				if(!spoton_misc::
 				   isAcceptedParticipant(publicKeyHash,
@@ -2802,9 +2797,8 @@ void spoton_neighbor::process0080(int length,
 					   true).toBool())
 				  {
 				    QByteArray recipientDigest;
-				    bool ok = true;
-				    spoton_crypt *s_crypt = spoton_kernel::
-				      crypt("url");
+				    auto ok = true;
+				    auto s_crypt = spoton_kernel::crypt("url");
 
 				    if(s_crypt)
 				      recipientDigest = s_crypt->publicKey(&ok);
@@ -2864,13 +2858,13 @@ void spoton_neighbor::process0090(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -2893,7 +2887,7 @@ void spoton_neighbor::process0090(int length,
       ** symmetricKeys[4]: Signatures Required
       */
 
-      bool ok = true;
+      auto ok = true;
       spoton_crypt crypt(symmetricKeys.value(1).constData(),
 			 symmetricKeys.value(3).constData(),
 			 QByteArray(),
@@ -2936,7 +2930,7 @@ void spoton_neighbor::process0090(int length,
 	      return;
 	    }
 
-	  QDateTime dateTime
+	  auto dateTime
 	    (QDateTime::fromString(list.value(list.size() - 1).
 				   constData(), "MMddyyyyhhmmss"));
 
@@ -2976,7 +2970,7 @@ void spoton_neighbor::process0091a(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  QList<QByteArray> list
+  auto const &list
     (spoton_receive::
      process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091a"));
 
@@ -2988,7 +2982,7 @@ void spoton_neighbor::process0091b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  QList<QByteArray> list
+  auto const &list
     (spoton_receive::
      process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091b"));
 
@@ -3000,7 +2994,7 @@ void spoton_neighbor::process0092(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QList<QByteArray> list
+  auto const &list
     (spoton_receive::
      process0092(length, dataIn, symmetricKeys, m_address, m_port));
 
@@ -3013,14 +3007,14 @@ void spoton_neighbor::process0095a(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
 
   length -= static_cast<int> (qstrlen("type=0095a&content="));
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0095a&content=");
 
@@ -3050,14 +3044,14 @@ void spoton_neighbor::process0095b(int length, const QByteArray &dataIn)
   if(m_id == -1)
     return;
 
-  int indexOf = dataIn.lastIndexOf("\r\n");
+  auto indexOf = dataIn.lastIndexOf("\r\n");
 
   if(indexOf < 0)
     return;
 
   length -= static_cast<int> (qstrlen("type=0095b&content="));
 
-  QByteArray data(dataIn.mid(0, indexOf + 2));
+  auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf("type=0095b&content=");
 
@@ -3086,14 +3080,14 @@ void spoton_neighbor::process0100(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
-      bool ok = true;
+      auto list(data.split('\n'));
+      auto ok = true;
 
       if(list.size() == 3)
 	{
@@ -3108,7 +3102,7 @@ void spoton_neighbor::process0100(int length,
 	  if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 	    {
 	      QByteArray computedHash;
-	      QByteArray message(list.value(0));
+	      auto message(list.value(0));
 	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
@@ -3186,7 +3180,7 @@ void spoton_neighbor::processData(void)
   }
 
   QList<QByteArray> list;
-  bool reset_keep_alive = false;
+  auto reset_keep_alive = false;
   int index = -1;
   int totalBytes = 0;
 
@@ -3195,7 +3189,7 @@ void spoton_neighbor::processData(void)
       if(m_abort.fetchAndAddOrdered(0))
 	return;
 
-      QByteArray bytes(data.mid(0, index + spoton_send::EOM.length()));
+      auto const &bytes(data.mid(0, index + spoton_send::EOM.length()));
 
       data.remove(0, bytes.length());
       totalBytes += bytes.length();
@@ -3241,7 +3235,7 @@ void spoton_neighbor::processData(void)
 
   QByteArray accountClientSentSalt;
   QString echoMode("");
-  bool useAccounts = false;
+  auto useAccounts = false;
   qint64 maximumContentLength = 0;
 
   {
@@ -3269,14 +3263,14 @@ void spoton_neighbor::processData(void)
       if(m_abort.fetchAndAddOrdered(0))
 	return;
 
-      QByteArray data(list.at(i));
-      QByteArray originalData(data);
+      auto data(list.at(i));
+      auto const &originalData(data);
       int index = -1;
       int length = 0;
 
       if((index = data.indexOf("Content-Length: ")) >= 0)
 	{
-	  QByteArray contentLength
+	  auto const &contentLength
 	    (data.mid(index + static_cast<int> (qstrlen("Content-Length: "))));
 
 	  if((index = contentLength.indexOf("\r\n")) >= 0)
@@ -3469,7 +3463,7 @@ void spoton_neighbor::processData(void)
 	  ** Remove some header data.
 	  */
 
-	  int indexOf = data.lastIndexOf("\r\n");
+	  auto indexOf = data.lastIndexOf("\r\n");
 
 	  if(indexOf > -1)
 	    data = data.mid(0, indexOf + 2);
@@ -3537,7 +3531,7 @@ void spoton_neighbor::processData(void)
 	  ** data.
 	  */
 
-	  QString messageType
+	  auto messageType
 	    (findMessageType(data, symmetricKeys, discoveredAdaptiveEchoPair));
 
 	  if(messageType == "0000")
@@ -3643,7 +3637,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
     return;
 
   QSslCertificate certificate;
-  bool save = false;
+  auto save = false;
 
   if(m_isUserDefined)
     {
@@ -3827,7 +3821,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
   if(!save)
     return;
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     return;
@@ -3835,7 +3829,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -3843,7 +3837,7 @@ void spoton_neighbor::recordCertificateOrAbort(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare
 	  ("UPDATE neighbors SET certificate = ? WHERE OID = ?");
@@ -3881,9 +3875,9 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
   else if(m_id == -1)
     return;
 
-  QAbstractSocket::SocketState state = this->state();
   QSqlQuery query(db);
-  bool ok = true;
+  auto const state = this->state();
+  auto ok = true;
 
   if(state == QAbstractSocket::BoundState ||
      state == QAbstractSocket::ConnectedState)
@@ -3898,7 +3892,7 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
 	}
       else
 	{
-	  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	  auto s_crypt = spoton_kernel::crypt("chat");
 
 	  if(s_crypt)
 	    {
@@ -3942,7 +3936,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
   if(!spoton_kernel::setting("gui/acceptGeminis", true).toBool())
     return;
 
-  QDateTime dateTime
+  auto dateTime
     (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
 
   if(!dateTime.isValid())
@@ -3952,11 +3946,11 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
       return;
     }
 
-  QDateTime now(QDateTime::currentDateTimeUtc());
+  auto const &now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
+  auto const secsTo = qAbs(now.secsTo(dateTime));
 
   if(!(secsTo <= static_cast<qint64> (spoton_common::
 				      GEMINI_TIME_DELTA_MAXIMUM)))
@@ -3983,11 +3977,10 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -3995,8 +3988,8 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	QByteArray bytes2;
 	QPair<QByteArray, QByteArray> geminis;
 	QSqlQuery query(db);
-	bool ok = true;
-	bool respond = false;
+	auto ok = true;
+	auto respond = false;
 
 	geminis.first = gemini;
 	geminis.second = geminiHashKey;
@@ -4033,7 +4026,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 		** We may be processing a two-way call.
 		*/
 
-		spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+		auto s_crypt = spoton_kernel::crypt("chat");
 
 		if(s_crypt)
 		  {
@@ -4093,7 +4086,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 	  }
 	else
 	  {
-	    spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+	    auto s_crypt = spoton_kernel::crypt("chat");
 
 	    if(s_crypt)
 	      {
@@ -4237,11 +4230,10 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &publicKeyHash)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -4274,7 +4266,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 				    const bool signatures_required,
 				    const QString &messageType)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
+  auto s_crypt = spoton_kernel::crypt(keyType);
 
   if(spoton_crypt::exists(publicKey, s_crypt) ||
      spoton_crypt::exists(sPublicKey, s_crypt))
@@ -4321,7 +4313,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
       return;
     }
 
-  qint64 noid = neighbor_oid;
+  auto noid = neighbor_oid;
 
   /*
   ** Save a friendly key.
@@ -4344,10 +4336,11 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "friends_public_keys.db");
 
     if(db.open())
@@ -4360,7 +4353,7 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 	    */
 
 	    QSqlQuery query(db);
-	    bool exists = false;
+	    auto exists = false;
 
 	    query.setForwardOnly(true);
 	    query.prepare("SELECT neighbor_oid "
@@ -4435,7 +4428,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 #endif
     }
 
-  qint64 seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
+  auto const seconds = qAbs(m_startTime.secsTo(QDateTime::currentDateTime()));
 
   query.prepare("UPDATE neighbors SET "
 		"buffered_content = ?, "
@@ -4470,7 +4463,7 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 
   query.addBindValue(isEncrypted() ? 1 : 0);
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(cipher.isNull() || !s_crypt)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
@@ -4586,7 +4579,7 @@ void spoton_neighbor::saveStatus(const QString &status)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -4630,7 +4623,7 @@ void spoton_neighbor::slotBinaryMessageReceived(const QByteArray &message)
   if(m_abort.fetchAndAddOrdered(0))
     return;
 
-  QByteArray data(message);
+  auto data(message);
 
   m_bytesRead += static_cast<quint64> (data.length());
 
@@ -4668,9 +4661,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 				  const QByteArray &signature,
 				  const bool goldbugUsed)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
-  qint64 maximumSize = 1048576 * spoton_kernel::setting
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maximumEmailFileSize", 1024).toLongLong();
 
   if(fileInfo.size() >= maximumSize)
@@ -4680,7 +4672,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
       return;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+  auto s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -4694,7 +4686,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			    true).toBool())
     {
       QByteArray recipientDigest;
-      bool ok = true;
+      auto ok = true;
 
       if(s_crypt)
 	recipientDigest = s_crypt->publicKey(&ok);
@@ -4733,8 +4725,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   ** for the symmetric key.
   */
 
-  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email",
-					 s_crypt))
+  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email", s_crypt))
     return;
 
   if(goldbugUsed)
@@ -4742,26 +4733,28 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   else
     saveParticipantStatus(name, senderPublicKeyHash);
 
-  QByteArray attachmentData_l(attachmentData);
-  QByteArray date_l(date);
-  QByteArray message_l(message);
-  QByteArray name_l(name);
-  QByteArray subject_l(subject);
   QString connectionName("");
-  bool goldbugUsed_l = goldbugUsed;
+  auto attachmentData_l(attachmentData);
+  auto date_l(date);
+  auto goldbugUsed_l = goldbugUsed;
+  auto message_l(message);
+  auto name_l(name);
+  auto subject_l(subject);
 
   if(goldbugUsed_l)
     {
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "friends_public_keys.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "friends_public_keys.db");
 
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.setForwardOnly(true);
 	    query.prepare
@@ -4813,8 +4806,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      magnet = spoton_misc::forwardSecrecyMagnetFromList
 			(QList<QByteArray> () << aa << ak << ea << ek);
 
-		      spoton_crypt *crypt =
-			spoton_misc::cryptFromForwardSecrecyMagnet
+		      auto crypt = spoton_misc::cryptFromForwardSecrecyMagnet
 			(magnet);
 
 		      if(crypt)
@@ -4866,15 +4858,15 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
-	bool ok = true;
 	QSqlQuery query(db);
+	auto ok = true;
 
 	query.prepare("INSERT INTO folders "
 		      "(date, folder_index, from_account, goldbug, hash, "
@@ -4948,8 +4940,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	    {
 	      if(!attachmentData_l.isEmpty())
 		{
-		  QVariant variant(query.lastInsertId());
-		  qint64 id = query.lastInsertId().toLongLong();
+		  auto const &variant(query.lastInsertId());
+		  auto const id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
 		    {
@@ -4979,9 +4971,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 			  for(int i = 0; i < attachments.size(); i++)
 			    {
-			      QPair<QByteArray, QByteArray> pair
-				(attachments.at(i));
 			      QSqlQuery query(db);
+			      auto const &pair(attachments.at(i));
 
 			      query.prepare("INSERT INTO folders_attachment "
 					    "(data, folders_oid, name) "
@@ -5018,9 +5009,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
 				  const QByteArray &recipientHash)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
-  qint64 maximumSize = 1048576 * spoton_kernel::setting
+  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maximumEmailFileSize", 1024).toLongLong();
 
   if(fileInfo.size() >= maximumSize)
@@ -5030,7 +5020,7 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
       return;
     }
 
-  spoton_crypt *s_crypt = spoton_kernel::crypt("email");
+  auto s_crypt = spoton_kernel::crypt("email");
 
   if(!s_crypt)
     return;
@@ -5038,10 +5028,10 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
