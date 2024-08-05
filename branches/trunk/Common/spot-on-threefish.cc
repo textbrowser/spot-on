@@ -135,7 +135,7 @@ static void mix(const uint64_t x0,
   ** Section 3.3.1.
   */
 
-  uint64_t r = R_4[d % 8][i];
+  auto const r = static_cast<uint64_t> (R_4[d % 8][i]);
 
   *y0 = x0 + x1;
 
@@ -163,7 +163,7 @@ static void mix_inverse(const uint64_t y0,
   ** Section 3.3.1.
   */
 
-  uint64_t r = R_4[d % 8][i];
+  auto const r = static_cast<uint64_t> (R_4[d % 8][i]);
 
   /*
   ** Please see https://en.wikipedia.org/wiki/Circular_shift.
@@ -212,14 +212,14 @@ static void threefish_decrypt_implementation(char *D,
   ** The inverse of section 3.3.
   */
 
-  bool error = false;
+  auto error = false;
+  auto f = new (std::nothrow) uint64_t[Nw];
+  auto k = new (std::nothrow) uint64_t[Nw + 1];
+  auto s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
+  auto v = new (std::nothrow) uint64_t[Nw];
   const uint64_t C240 = 0x1bd11bdaa9fc1a22;
-  uint64_t *f = new (std::nothrow) uint64_t[Nw];
-  uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
-  uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
-  uint64_t *v = new (std::nothrow) uint64_t[Nw];
   uint64_t x0 = 0;
   uint64_t x1 = 0;
 
@@ -382,14 +382,14 @@ static void threefish_encrypt_implementation(char *E,
   ** Section 3.3.
   */
 
-  bool error = false;
+  auto error = false;
+  auto f = new (std::nothrow) uint64_t[Nw];
+  auto k = new (std::nothrow) uint64_t[Nw + 1];
+  auto s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
+  auto v = new (std::nothrow) uint64_t[Nw];
   const uint64_t C240 = 0x1bd11bdaa9fc1a22;
-  uint64_t *f = new (std::nothrow) uint64_t[Nw];
-  uint64_t *k = new (std::nothrow) uint64_t[Nw + 1];
   uint64_t kNw = C240; // Section 3.3.2.
-  uint64_t **s = new (std::nothrow) uint64_t*[Nr / 4 + 1];
   uint64_t t[3];
-  uint64_t *v = new (std::nothrow) uint64_t[Nw];
   uint64_t y0 = 0;
   uint64_t y1 = 0;
 
@@ -573,14 +573,14 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
 
   QByteArray block(static_cast<int> (m_blockSize), 0);
   QByteArray c;
-  QByteArray ciphertext(bytes.mid(iv.length()));
   QByteArray decrypted;
-  int iterations = ciphertext.length() / static_cast<int> (m_blockSize);
+  auto const &ciphertext(bytes.mid(iv.length()));
+  auto const iterations = ciphertext.length() / static_cast<int> (m_blockSize);
 
   for(int i = 0; i < iterations; i++)
     {
-      bool ok = true;
-      int position = i * static_cast<int> (m_blockSize);
+      auto const position = i * static_cast<int> (m_blockSize);
+      auto ok = true;
 
       threefish_decrypt
 	(block.data(),
@@ -698,7 +698,7 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 
   QByteArray block(iv.length(), 0);
   QByteArray encrypted;
-  QByteArray plaintext(bytes);
+  auto plaintext(bytes);
 
   if(plaintext.isEmpty())
     plaintext = plaintext.leftJustified(static_cast<int> (m_blockSize), 0);
@@ -725,13 +725,13 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
     (plaintext.length() - static_cast<int> (sizeof(int)),
      static_cast<int> (sizeof(int)), originalLength);
 
-  int iterations = plaintext.length() / static_cast<int> (m_blockSize);
+  auto const iterations = plaintext.length() / static_cast<int> (m_blockSize);
 
   for(int i = 0; i < iterations; i++)
     {
       QByteArray p;
-      bool ok = true;
-      int position = i * static_cast<int> (m_blockSize);
+      auto const position = i * static_cast<int> (m_blockSize);
+      auto ok = true;
 
       p = plaintext.mid(position, static_cast<int> (m_blockSize));
 
@@ -772,7 +772,7 @@ void spoton_threefish::setInitializationVector
 (QByteArray &bytes, bool *ok) const
 {
   QReadLocker locker(&m_locker);
-  size_t ivLength = m_keyLength;
+  auto const ivLength = m_keyLength;
 
   locker.unlock();
 
@@ -782,7 +782,7 @@ void spoton_threefish::setInitializationVector
   if(Q_UNLIKELY(ivLength == 0))
     return;
 
-  char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
+  auto iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
 
   if(Q_LIKELY(iv))
     {
@@ -875,14 +875,14 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
 
 void spoton_threefish::test1(void)
 {
-  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+  auto s = new (std::nothrow) spoton_threefish();
 
   if(!s)
     return;
 
   QByteArray c;
   QByteArray p;
-  bool ok = true;
+  auto ok = true;
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -903,14 +903,14 @@ void spoton_threefish::test1(void)
 
 void spoton_threefish::test2(void)
 {
-  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+  auto s = new (std::nothrow) spoton_threefish();
 
   if(!s)
     return;
 
   QByteArray c;
   QByteArray p;
-  bool ok = true;
+  auto ok = true;
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 
@@ -936,14 +936,14 @@ void spoton_threefish::test2(void)
 
 void spoton_threefish::test3(void)
 {
-  spoton_threefish *s = new (std::nothrow) spoton_threefish();
+  auto s = new (std::nothrow) spoton_threefish();
 
   if(!s)
     return;
 
   QByteArray c;
   QByteArray p;
-  bool ok = true;
+  auto ok = true;
 
   s->setKey(spoton_crypt::strongRandomBytes(32), &ok);
 

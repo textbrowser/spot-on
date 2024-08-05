@@ -68,9 +68,7 @@ void spoton_external_address::clear(void)
 
 void spoton_external_address::discover(void)
 {
-  QNetworkReply *reply = 0;
-
-  reply = get(QNetworkRequest(m_url));
+  auto reply = get(QNetworkRequest(m_url));
 
   if(!reply)
     return;
@@ -108,7 +106,7 @@ void spoton_external_address::slotError(QNetworkReply::NetworkError error)
 {
   Q_UNUSED(error);
 
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     reply->deleteLater();
@@ -116,12 +114,12 @@ void spoton_external_address::slotError(QNetworkReply::NetworkError error)
 
 void spoton_external_address::slotFinished(void)
 {
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     {
-      QByteArray bytes(reply->readAll());
-      int indexOf = bytes.indexOf("Current IP Address:");
+      auto bytes(reply->readAll());
+      auto indexOf = bytes.indexOf("Current IP Address:");
 
       if(indexOf > -1)
 	bytes.remove
@@ -144,7 +142,7 @@ void spoton_external_address::slotSslErrors(const QList<QSslError> &errors)
 {
   Q_UNUSED(errors);
 
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     reply->ignoreSslErrors();

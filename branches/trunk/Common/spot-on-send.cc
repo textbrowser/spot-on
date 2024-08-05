@@ -38,14 +38,14 @@ QByteArray spoton_send::adaptiveEchoAuthentication
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray authenticated;
-  bool ok = true;
+  auto ok = true;
 
   if(!adaptiveEchoPair.first.isEmpty() && !adaptiveEchoPair.second.isEmpty())
     {
-      QByteArray timestamp
+      auto timestamp
 	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
 	 toLatin1());
-      int length = static_cast<int>
+      auto const length = static_cast<int>
 	(spoton_crypt::cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm()));
       spoton_crypt crypt(adaptiveEchoPair.second.split('\n').value(0),
@@ -96,9 +96,9 @@ QByteArray spoton_send::message0000
  const spoton_send_method sendMethod,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
     results.append("HTTP/1.1 200 OK\r\n");
@@ -122,9 +122,9 @@ QByteArray spoton_send::message0000
 
 QByteArray spoton_send::message0000a(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -135,9 +135,9 @@ QByteArray spoton_send::message0000a
  const spoton_send_method sendMethod,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
     results.append("HTTP/1.1 200 OK\r\n");
@@ -161,9 +161,9 @@ QByteArray spoton_send::message0000a
 
 QByteArray spoton_send::message0000b(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -174,9 +174,9 @@ QByteArray spoton_send::message0000b
  const spoton_send_method sendMethod,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
     results.append("HTTP/1.1 200 OK\r\n");
@@ -200,9 +200,9 @@ QByteArray spoton_send::message0000b
 
 QByteArray spoton_send::message0000d(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -213,9 +213,9 @@ QByteArray spoton_send::message0000d
  const spoton_send_method sendMethod,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
     results.append("HTTP/1.1 200 OK\r\n");
@@ -241,9 +241,9 @@ QByteArray spoton_send::message0001a
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -264,9 +264,9 @@ QByteArray spoton_send::message0001a
 
 QByteArray spoton_send::message0001b(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -276,9 +276,9 @@ QByteArray spoton_send::message0001b
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -299,9 +299,9 @@ QByteArray spoton_send::message0001b
 
 QByteArray spoton_send::message0001c(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -311,9 +311,9 @@ QByteArray spoton_send::message0001c
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -336,9 +336,9 @@ QByteArray spoton_send::message0002a
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -361,9 +361,9 @@ QByteArray spoton_send::message0002b
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -442,9 +442,9 @@ QByteArray spoton_send::message0012(const QByteArray &message)
 
 QByteArray spoton_send::message0013(const QByteArray &message)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
   QByteArray results("content=");
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
   return results;
@@ -454,9 +454,9 @@ QByteArray spoton_send::message0013
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -705,9 +705,9 @@ QByteArray spoton_send::message0060
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -730,9 +730,9 @@ QByteArray spoton_send::message0061
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -796,9 +796,9 @@ QByteArray spoton_send::message0080
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -821,9 +821,9 @@ QByteArray spoton_send::message0090
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -846,9 +846,9 @@ QByteArray spoton_send::message0091a
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -871,9 +871,9 @@ QByteArray spoton_send::message0091b
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"
@@ -896,9 +896,9 @@ QByteArray spoton_send::messageXYZ
 (const QByteArray &message,
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
-  QByteArray authenticated
-    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
   QByteArray results;
+  auto const &authenticated
+    (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
     ("POST HTTP/1.1\r\n"

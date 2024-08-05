@@ -49,14 +49,14 @@ QList<QByteArray> spoton_receive::process0000
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
-      bool ok = true;
+      auto list(data.split('\n'));
+      auto ok = true;
 
       if(list.size() == 3)
 	{
@@ -83,7 +83,7 @@ QList<QByteArray> spoton_receive::process0000
 	  if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 	    {
 	      QByteArray computedHash;
-	      QByteArray message(list.value(0));
+	      auto message(list.value(0));
 	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
@@ -97,7 +97,7 @@ QList<QByteArray> spoton_receive::process0000
 
 	      if(ok)
 		{
-		  QByteArray messageCode(list.value(1));
+		  auto const &messageCode(list.value(1));
 
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
@@ -163,10 +163,10 @@ QList<QByteArray> spoton_receive::process0000
 
       QByteArray hashKey;
       QByteArray hashKeyAlgorithm;
-      QByteArray keyInformation(list.value(0));
-      QByteArray originalKeyInformation(keyInformation);
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
+      auto keyInformation(list.value(0));
+      auto const &originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -215,7 +215,7 @@ QList<QByteArray> spoton_receive::process0000
       if(ok)
 	{
 	  QByteArray computedHash;
-	  QByteArray data(list.value(1));
+	  auto data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
 	    (originalKeyInformation + data,
@@ -225,7 +225,7 @@ QList<QByteArray> spoton_receive::process0000
 
 	  if(ok)
 	    {
-	      QByteArray messageCode(list.value(2));
+	      auto const &messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -272,7 +272,7 @@ QList<QByteArray> spoton_receive::process0000
 			      if(acceptSignedMessagesOnly)
 				{
 				  QByteArray recipientDigest;
-				  bool ok = true;
+				  auto ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
 				  recipientDigest = spoton_crypt::
@@ -360,13 +360,13 @@ QList<QByteArray> spoton_receive::process0000a
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 4)
 	{
@@ -378,17 +378,17 @@ QList<QByteArray> spoton_receive::process0000a
 	  return QList<QByteArray> ();
 	}
 
-      bool ok = true;
+      auto ok = true;
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
       QByteArray hashKey;
       QByteArray hashKeyAlgorithm;
-      QByteArray keyInformation(list.value(0));
-      QByteArray originalKeyInformation(keyInformation);
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
+      auto keyInformation(list.value(0));
+      auto const &originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -437,14 +437,14 @@ QList<QByteArray> spoton_receive::process0000a
       if(ok)
 	{
 	  QByteArray computedHash;
-	  QByteArray data(list.value(1));
+	  auto data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
 	    (originalKeyInformation + data, hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    {
-	      QByteArray messageCode(list.value(2));
+	      auto const &messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -493,7 +493,7 @@ QList<QByteArray> spoton_receive::process0000a
 			      if(acceptSignedMessagesOnly)
 				{
 				  QByteArray recipientDigest;
-				  bool ok = true;
+				  auto ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
 				  recipientDigest = spoton_crypt::
@@ -579,13 +579,13 @@ QList<QByteArray> spoton_receive::process0000b
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 3)
 	{
@@ -597,7 +597,7 @@ QList<QByteArray> spoton_receive::process0000b
 	  return QList<QByteArray> ();
 	}
 
-      bool ok = true;
+      auto ok = true;
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -651,7 +651,7 @@ QList<QByteArray> spoton_receive::process0000b
 		  if(acceptSignedMessagesOnly)
 		    {
 		      QByteArray recipientDigest;
-		      bool ok = true;
+		      auto ok = true;
 
 		      recipientDigest = s_crypt->publicKey(&ok);
 		      recipientDigest = spoton_crypt::
@@ -726,13 +726,13 @@ QList<QByteArray> spoton_receive::process0000d
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 3)
 	{
@@ -762,7 +762,7 @@ QList<QByteArray> spoton_receive::process0000d
       ** symmetricKeys[4]: Dispatcher's Digest
       */
 
-      bool ok = true;
+      auto ok = true;
       spoton_crypt crypt(symmetricKeys.value(1).constData(),
 			 symmetricKeys.value(3).constData(),
 			 QByteArray(),
@@ -844,13 +844,13 @@ QList<QByteArray> spoton_receive::process0001b
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       if(list.size() != 7)
 	{
@@ -867,17 +867,17 @@ QList<QByteArray> spoton_receive::process0001b
 
       QByteArray hashKey;
       QByteArray hashKeyAlgorithm;
-      QByteArray keyInformation(list.value(0));
-      QByteArray originalKeyInformation(keyInformation);
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
-      bool ok = true;
+      auto keyInformation(list.value(0));
+      auto const &originalKeyInformation(keyInformation);
+      auto ok = true;
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
       if(ok)
 	{
-	  QList<QByteArray> list(keyInformation.split('\n'));
+	  auto list(keyInformation.split('\n'));
 
 	  if(!list.isEmpty())
 	    list.removeAt(0); // Message Type
@@ -905,14 +905,14 @@ QList<QByteArray> spoton_receive::process0001b
       if(ok)
 	{
 	  QByteArray computedHash;
-	  QByteArray data(list.value(1));
+	  auto data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
 	    (originalKeyInformation + data, hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    {
-	      QByteArray messageCode(list.value(2));
+	      auto const &messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -929,7 +929,7 @@ QList<QByteArray> spoton_receive::process0001b
 
 		  if(ok)
 		    {
-		      QList<QByteArray> list(data.split('\n'));
+		      auto list(data.split('\n'));
 
 		      if(list.size() == 8)
 			{
@@ -991,7 +991,7 @@ QList<QByteArray> spoton_receive::process0001c
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length != data.length())
     {
@@ -1007,7 +1007,7 @@ QList<QByteArray> spoton_receive::process0001c
 
   data = data.trimmed();
 
-  QList<QByteArray> list(data.split('\n'));
+  auto list(data.split('\n'));
 
   if(list.size() != 3)
     {
@@ -1034,7 +1034,7 @@ QList<QByteArray> spoton_receive::process0001c
   ** symmetricKeys[4]: Owner's Digest
   */
 
-  bool ok = true;
+  auto ok = true;
   spoton_crypt crypt(symmetricKeys.value(1).constData(),
 		     symmetricKeys.value(3).constData(),
 		     QByteArray(),
@@ -1073,9 +1073,9 @@ QList<QByteArray> spoton_receive::process0001c
 					     keyType, s_crypt))
 	return QList<QByteArray> ();
 
-      QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-			 "email.db");
-      qint64 maximumSize = 1048576 * spoton_kernel::setting
+      QFileInfo fileInfo
+	(spoton_misc::homePath() + QDir::separator() + "email.db");
+      auto const maximumSize = 1048576 * spoton_kernel::setting
 	("gui/maximumEmailFileSize", 1024).toLongLong();
 
       if(fileInfo.size() >= maximumSize)
@@ -1113,14 +1113,14 @@ QList<QByteArray> spoton_receive::process0013
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
-      bool ok = true;
+      auto list(data.split('\n'));
+      auto ok = true;
 
       if(list.size() == 3)
 	{
@@ -1146,7 +1146,7 @@ QList<QByteArray> spoton_receive::process0013
 	  if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 	    {
 	      QByteArray computedHash;
-	      QByteArray message(list.value(0));
+	      auto message(list.value(0));
 	      spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 				 spoton_crypt::preferredHashAlgorithm(),
 				 QByteArray(),
@@ -1160,7 +1160,7 @@ QList<QByteArray> spoton_receive::process0013
 
 	      if(ok)
 		{
-		  QByteArray messageCode(list.value(1));
+		  auto const &messageCode(list.value(1));
 
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
@@ -1226,10 +1226,10 @@ QList<QByteArray> spoton_receive::process0013
 
       QByteArray hashKey;
       QByteArray hashKeyAlgorithm;
-      QByteArray keyInformation(list.value(0));
-      QByteArray originalKeyInformation(keyInformation);
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
+      auto keyInformation(list.value(0));
+      auto const &originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -1278,14 +1278,14 @@ QList<QByteArray> spoton_receive::process0013
       if(ok)
 	{
 	  QByteArray computedHash;
-	  QByteArray data(list.value(1));
+	  auto data(list.value(1));
 
 	  computedHash = spoton_crypt::keyedHash
 	    (originalKeyInformation + data, hashKey, hashKeyAlgorithm, &ok);
 
 	  if(ok)
 	    {
-	      QByteArray messageCode(list.value(2));
+	      auto const &messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -1334,7 +1334,7 @@ QList<QByteArray> spoton_receive::process0013
 			      if(acceptSignedMessagesOnly)
 				{
 				  QByteArray recipientDigest;
-				  bool ok = true;
+				  auto ok = true;
 
 				  recipientDigest = s_crypt->publicKey(&ok);
 				  recipientDigest = spoton_crypt::
@@ -1403,7 +1403,7 @@ QList<QByteArray> spoton_receive::process0091
  const quint16 port,
  const QString &messageType)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1412,13 +1412,13 @@ QList<QByteArray> spoton_receive::process0091
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto  data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -1441,7 +1441,7 @@ QList<QByteArray> spoton_receive::process0091
       */
 
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
       spoton_crypt crypt(symmetricKeys.value(1).constData(),
 			 symmetricKeys.value(3).constData(),
 			 QByteArray(),
@@ -1457,7 +1457,7 @@ QList<QByteArray> spoton_receive::process0091
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(2));
+	  auto const &messageCode(list.value(2));
 
 	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
 	     !spoton_crypt::memcmp(computedHash, messageCode))
@@ -1507,11 +1507,13 @@ QList<QByteArray> spoton_receive::process0091
 	  return QList<QByteArray> ();
 	}
 
-      QString keyType
+      auto const &keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
-      if(!(keyType == "chat" || keyType == "email" ||
-	   keyType == "open-library" || keyType == "poptastic" ||
+      if(!(keyType == "chat" ||
+	   keyType == "email" ||
+	   keyType == "open-library" ||
+	   keyType == "poptastic" ||
 	   keyType == "url"))
 	{
 	  spoton_misc::logError("spoton_receive::process0091(): "
@@ -1547,7 +1549,7 @@ QList<QByteArray> spoton_receive::process0091
 					     s_crypt))
 	return QList<QByteArray> ();
 
-      bool signatureRequired = true;
+      auto signatureRequired = true;
 
       /*
       ** Poptastic messages? Signatures are required!
@@ -1567,8 +1569,8 @@ QList<QByteArray> spoton_receive::process0091
       if(signatureRequired)
 	{
 	  QByteArray recipientDigest;
-	  bool ok = true;
-	  spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
+	  auto ok = true;
+	  auto s_crypt = spoton_kernel::crypt(keyType);
 
 	  if(s_crypt)
 	    recipientDigest = s_crypt->publicKey(&ok);
@@ -1621,14 +1623,14 @@ QList<QByteArray> spoton_receive::process0091
 	    }
 	}
 
-      QDateTime dateTime
+      auto const &now(QDateTime::currentDateTimeUtc());
+      auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
-      QDateTime now(QDateTime::currentDateTimeUtc());
 
       dateTime.setTimeSpec(Qt::UTC);
 
+      auto const secsTo = qAbs(now.secsTo(dateTime));
       int timeDelta = 0;
-      qint64 secsTo = qAbs(now.secsTo(dateTime));
 
       if(keyType == "chat" || keyType == "email" || keyType == "url")
 	timeDelta = spoton_common::FORWARD_SECRECY_TIME_DELTA_MAXIMUM;
@@ -1672,7 +1674,7 @@ QList<QByteArray> spoton_receive::process0092
  const QString &address,
  const quint16 port)
 {
-  spoton_crypt *s_crypt = spoton_kernel::crypt("chat");
+  auto s_crypt = spoton_kernel::crypt("chat");
 
   if(!s_crypt)
     {
@@ -1681,13 +1683,13 @@ QList<QByteArray> spoton_receive::process0092
       return QList<QByteArray> ();
     }
 
-  QByteArray data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
       data = data.trimmed();
 
-      QList<QByteArray> list(data.split('\n'));
+      auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
@@ -1710,7 +1712,7 @@ QList<QByteArray> spoton_receive::process0092
       */
 
       QByteArray computedHash;
-      bool ok = true;
+      auto ok = true;
       spoton_crypt crypt(symmetricKeys.value(1).constData(),
 			 symmetricKeys.value(3).constData(),
 			 QByteArray(),
@@ -1726,7 +1728,7 @@ QList<QByteArray> spoton_receive::process0092
 
       if(ok)
 	{
-	  QByteArray messageCode(list.value(2));
+	  auto const &messageCode(list.value(2));
 
 	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
 	     !spoton_crypt::memcmp(computedHash, messageCode))
@@ -1776,12 +1778,15 @@ QList<QByteArray> spoton_receive::process0092
 	  return QList<QByteArray> ();
 	}
 
-      QString keyType
+      auto const &keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
-      if(!(keyType == "chat" || keyType == "email" ||
-	   keyType == "open-library" || keyType == "poptastic" ||
-	   keyType == "rosetta" || keyType == "url"))
+      if(!(keyType == "chat" ||
+	   keyType == "email" ||
+	   keyType == "open-library" ||
+	   keyType == "poptastic" ||
+	   keyType == "rosetta" ||
+	   keyType == "url"))
 	{
 	  spoton_misc::logError
 	    ("spoton_receive::process0092(): unexpected key type.");
@@ -1792,7 +1797,7 @@ QList<QByteArray> spoton_receive::process0092
 	return QList<QByteArray> ();
 
       QByteArray recipientDigest;
-      spoton_crypt *s_crypt = spoton_kernel::crypt(keyType);
+      auto s_crypt = spoton_kernel::crypt(keyType);
 
       if(s_crypt)
 	recipientDigest = s_crypt->publicKey(&ok);
@@ -1820,14 +1825,14 @@ QList<QByteArray> spoton_receive::process0092
 	  return QList<QByteArray> ();
 	}
 
-      QDateTime dateTime
+      auto const &now(QDateTime::currentDateTimeUtc());
+      auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
-      QDateTime now(QDateTime::currentDateTimeUtc());
 
       dateTime.setTimeSpec(Qt::UTC);
 
       int timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;
-      qint64 secsTo = qAbs(now.secsTo(dateTime));
+      auto const secsTo = qAbs(now.secsTo(dateTime));
 
       if(!(secsTo <= static_cast<qint64> (timeDelta)))
 	{
@@ -1869,8 +1874,8 @@ QString spoton_receive::findMessageType
       return "";
     }
 
-  QList<QByteArray> list(data.trimmed().split('\n'));
   QString type("");
+  auto const &list(data.trimmed().split('\n'));
 
   /*
   ** list[0]: Data
@@ -1885,7 +1890,7 @@ QString spoton_receive::findMessageType
   if(list.size() == 4)
     {
       QByteArray data;
-      bool ok = true;
+      auto ok = true;
 
       data = s_crypt->publicKeyDecrypt
 	(QByteArray::fromBase64(list.value(0)), &ok);
@@ -1945,7 +1950,7 @@ QString spoton_receive::findMessageType
       if(!gemini.first.isEmpty())
 	{
 	  QByteArray data;
-	  bool ok = true;
+	  auto ok = true;
 	  spoton_crypt crypt(spoton_crypt::preferredCipherAlgorithm(),
 			     spoton_crypt::preferredHashAlgorithm(),
 			     QByteArray(),
@@ -1988,7 +1993,7 @@ QString spoton_receive::findMessageType
       if(spoton_misc::participantCount("poptastic", s_crypt) > 0)
 	{
 	  QByteArray data;
-	  bool ok = true;
+	  auto ok = true;
 
 	  data = s_crypt->publicKeyDecrypt
 	    (QByteArray::fromBase64(list.value(0)), &ok);
@@ -2014,7 +2019,7 @@ QString spoton_receive::findMessageType
     if(spoton_misc::participantCount(keyType, s_crypt) > 0)
       {
 	QByteArray data;
-	bool ok = true;
+	auto ok = true;
 
 	data = s_crypt->publicKeyDecrypt
 	  (QByteArray::fromBase64(list.value(0)), &ok);
@@ -2026,7 +2031,7 @@ QString spoton_receive::findMessageType
 	  {
 	    if(type == "0001b")
 	      {
-		QList<QByteArray> list(data.split('\n'));
+		auto list(data.split('\n'));
 
 		for(int i = 0; i < list.size(); i++)
 		  list.replace(i, QByteArray::fromBase64(list.at(i)));

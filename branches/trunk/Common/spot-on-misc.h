@@ -226,8 +226,6 @@ class spoton_misc
   static void deregisterKernel(const pid_t pid);
   static void enableLog(const bool state);
   static void logError(const QString &error);
-  static void populateUrlsDatabase(const QList<QList<QVariant> > &list,
-				   spoton_crypt *crypt);
   static void prepareAuthenticationHint(spoton_crypt *crypt);
   static void prepareDatabases(void);
   static void prepareSignalHandler(void (*signal_handler) (int));

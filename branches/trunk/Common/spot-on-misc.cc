@@ -139,7 +139,7 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -157,7 +157,7 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
 	  while(query.next())
 	    {
 	      QByteArray publicKey;
-	      bool ok = true;
+	      auto ok = true;
 
 	      publicKey = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -165,10 +165,12 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
 
 	      if(ok)
 		{
-		  QByteArray computedHash;
-
-		  computedHash = spoton_crypt::keyedHash
-		    (randomBytes + publicKey, hashKey, hashType, &ok);
+		  auto const &computedHash
+		    (spoton_crypt::
+		     keyedHash(randomBytes + publicKey,
+			       hashKey,
+			       hashType,
+			       &ok));
 
 		  if(ok)
 		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
@@ -220,7 +222,7 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -228,7 +230,7 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 
@@ -266,7 +268,7 @@ QByteArray spoton_misc::publicKeyFromOID(const qint64 oid, spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -274,7 +276,7 @@ QByteArray spoton_misc::publicKeyFromOID(const qint64 oid, spoton_crypt *crypt)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key "
@@ -314,15 +316,15 @@ QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key "
@@ -366,15 +368,15 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key "
@@ -408,7 +410,7 @@ QByteArray spoton_misc::urlToEncoded(const QUrl &url)
 QByteArray spoton_misc::wrap(const QByteArray &data, const int c)
 {
   QByteArray bytes;
-  int characters = qMax(1, c);
+  auto const characters = qMax(1, c);
 
   for(int i = 0; i < data.size(); i += characters)
     {
@@ -425,7 +427,7 @@ QByteArray spoton_misc::wrap(const QByteArray &data, const int c)
 
 QByteArray spoton_misc::xor_arrays(const QByteArray &a, const QByteArray &b)
 {
-  int length = qMin(a.length(), b.length());
+  auto const length = qMin(a.length(), b.length());
 
   if(length == 0)
     return QByteArray();
@@ -452,7 +454,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
@@ -460,7 +462,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT "
@@ -480,7 +482,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 	    for(int i = 0; i < query.record().count(); i++)
 	      {
 		QByteArray bytes;
-		bool ok = true;
+		auto ok = true;
 
 		bytes = crypt->
 		  decryptedAfterAuthenticated(QByteArray::
@@ -507,7 +509,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 
 QHostAddress spoton_misc::localAddressIPv4(void)
 {
-  QList<QNetworkInterface> interfaces(QNetworkInterface::allInterfaces());
+  auto const &interfaces(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < interfaces.size(); i++)
     {
@@ -515,11 +517,11 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 	 !(interfaces.at(i).flags() & QNetworkInterface::IsUp))
 	continue;
 
-      QList<QNetworkAddressEntry> addresses(interfaces.at(i).addressEntries());
+      auto const &addresses(interfaces.at(i).addressEntries());
 
       for(int i = 0; i < addresses.size(); i++)
 	{
-	  const QNetworkAddressEntry &entry(addresses.at(i));
+	  auto const &entry(addresses.at(i));
 
 	  if(entry.ip() != QHostAddress::LocalHost &&
 	     entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
@@ -542,7 +544,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
   socklen_t length = 0;
   struct sockaddr_storage peeraddr;
 
-  length = sizeof(peeraddr);
+  length = static_cast<socklen_t> (sizeof(peeraddr));
 
   if(port)
     *port = 0;
@@ -551,8 +553,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
     {
       if(peeraddr.ss_family == AF_INET)
 	{
-	  spoton_type_punning_sockaddr_t *sockaddr =
-	    (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
 
 	  if(sockaddr)
 	    {
@@ -565,8 +566,7 @@ QHostAddress spoton_misc::peerAddressAndPort(
 	}
       else
 	{
-	  spoton_type_punning_sockaddr_t *sockaddr =
-	    (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
 
 	  if(sockaddr)
 	    {
@@ -609,7 +609,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
@@ -632,7 +632,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
@@ -672,7 +672,7 @@ QList<QByteArray> spoton_misc::findEchoKeys(const QByteArray &bytes1,
 		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
 		     spoton_crypt::memcmp(bytes2, computedHash))
 		    {
-		      QByteArray data(crypt.decrypted(bytes1, &ok));
+		      auto data(crypt.decrypted(bytes1, &ok));
 
 		      if(!ok)
 			break;
@@ -728,7 +728,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -736,7 +736,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT "
@@ -757,7 +757,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
@@ -856,7 +856,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "poptastic.db");
 
@@ -882,7 +882,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 	    while(query.next())
 	      {
 		QHash<QString, QVariant> hash;
-		QSqlRecord record(query.record());
+		auto const &record(query.record());
 
 		for(int i = 0; i < record.count(); i++)
 		  {
@@ -901,10 +901,10 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 		       record.fieldName(i).endsWith("_verify_host") ||
 		       record.fieldName(i).endsWith("_verify_peer"))
 		      {
-			QByteArray bytes
+			auto bytes
 			  (QByteArray::fromBase64(record.value(i).
 						  toByteArray()));
-			bool ok = true;
+			auto ok = true;
 
 			bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
 
@@ -953,11 +953,11 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i));
+      const QString str(list.at(i));
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      QStringList pair(str.split(":=", Qt::SkipEmptyParts));
+      auto const &pair(str.split(":=", Qt::SkipEmptyParts));
 #else
-      QStringList pair(str.split(":=", QString::SkipEmptyParts));
+      auto const &pair(str.split(":=", QString::SkipEmptyParts));
 #endif
 
       if(!pair.value(0).trimmed().isEmpty() &&
@@ -978,9 +978,9 @@ QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
       return QPair<QByteArray, QByteArray> ();
     }
 
-  QByteArray t1(pair.first);
-  QByteArray t2(pair.second);
-  bool ok = true;
+  auto ok = true;
+  auto t1(pair.first);
+  auto t2(pair.second);
 
   t1 = crypt->decryptedAfterAuthenticated(t1, &ok);
 
@@ -1003,7 +1003,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
       QString connectionName("");
 
       {
-	QSqlDatabase db = database(connectionName);
+	auto db(database(connectionName));
 
 	db.setDatabaseName
 	  (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -1011,7 +1011,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.setForwardOnly(true);
 	    query.prepare("SELECT gemini, "  // 0
@@ -1032,7 +1032,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 	    if(ok && query.exec())
 	      while(query.next())
 		{
-		  bool ok = true;
+		  auto ok = true;
 
 		  gemini.first = crypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(0).
@@ -1048,7 +1048,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 		  if(ok)
 		    if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 		      {
-			QByteArray computedHash
+			auto const &computedHash
 			  (spoton_crypt::
 			   keyedHash(data,
 				     gemini.second,
@@ -1077,7 +1077,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 
 QString spoton_misc::adjustPQConnectOptions(const QString &s)
 {
-  QString str(s.trimmed());
+  auto str(s.trimmed());
 
   while(str.indexOf(";;") > 0)
     str.replace(";;", ";");
@@ -1200,9 +1200,8 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
 QSqlDatabase spoton_misc::database(QString &connectionName)
 {
   QSqlDatabase db;
-  quint64 dbId = 0;
-
   QWriteLocker locker(&s_dbMutex);
+  quint64 dbId = 0;
 
   dbId = s_dbId += 1;
   locker.unlock();
@@ -1225,9 +1224,8 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
 
 QString spoton_misc::databaseName(void)
 {
-  quint64 dbId = 0;
-
   QWriteLocker locker(&s_dbMutex);
+  quint64 dbId = 0;
 
   dbId = s_dbId += 1;
   locker.unlock();
@@ -1315,10 +1313,10 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
   QString keyType("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -1348,7 +1346,7 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
 
 QString spoton_misc::massageIpForUi(const QString &ip, const QString &protocol)
 {
-  QString iipp(ip);
+  auto iipp(ip);
 
   if(protocol == "IPv4")
     {
@@ -1389,15 +1387,15 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
   QString name("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT name FROM friends_public_keys "
@@ -1437,7 +1435,7 @@ QString spoton_misc::percentEncoding(const QString &string)
   for(int i = 0; i < string.length(); i++)
     if(string.at(i) == '%')
       {
-	QByteArray hex(string.mid(i + 1, 2).toLatin1());
+	auto const &hex(string.mid(i + 1, 2).toLatin1());
 	int d = 0;
 	std::stringstream stream;
 
@@ -1485,7 +1483,7 @@ QString spoton_misc::removeSpecialHtmlTags(const QString &text)
 QString spoton_misc::wrap(const QString &t, const int c)
 {
   QString text("");
-  int characters = qMax(1, c);
+  auto const characters = qMax(1, c);
 
   for(int i = 0; i < t.size(); i += characters)
     {
@@ -1505,7 +1503,7 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   if(!then.isValid())
     return false;
 
-  QDateTime now(QDateTime::currentDateTimeUtc());
+  auto const &now(QDateTime::currentDateTimeUtc());
 
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
@@ -1516,7 +1514,7 @@ bool spoton_misc::allParticipantsHaveGeminis(void)
   qint64 count = -1;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -1561,17 +1559,17 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
     }
 
   QString connectionName("");
-  bool found = false;
+  auto found = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool exists = true;
+	auto exists = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT EXISTS(SELECT 1 FROM "
@@ -1599,7 +1597,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 	    if(query.exec())
 	      while(query.next())
 		{
-		  bool ok = true;
+		  auto ok = true;
 
 		  name = crypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -1652,7 +1650,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		*/
 
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		query.exec("PRAGMA secure_delete = ON");
 		query.prepare("DELETE FROM listeners_accounts "
@@ -1734,7 +1732,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       return false;
     }
 
-  QUrl url(QUrl::fromUserInput(u.trimmed()));
+  auto url(QUrl::fromUserInput(u.trimmed()));
 
   if(url.isEmpty() || url.isValid() == false)
     {
@@ -1743,7 +1741,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       return false;
     }
 
-  QString scheme(url.scheme().toLower().trimmed());
+  auto const &scheme(url.scheme().toLower().trimmed());
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
@@ -1761,10 +1759,10 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   url.setScheme(scheme);
 
   QByteArray all_keywords;
-  QByteArray content(qCompress(c.trimmed(), 9));
-  QByteArray description(d.trimmed());
-  QByteArray title(t.trimmed());
-  bool separate = true;
+  auto const &content(qCompress(c.trimmed(), 9));
+  auto const &description(d.trimmed());
+  auto title(t.trimmed());
+  auto separate = true;
 
   if(!description.isEmpty())
     all_keywords = description;
@@ -1777,7 +1775,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   all_keywords.append(" ").append(url.toString().toUtf8());
 
   QByteArray urlHash;
-  bool ok = true;
+  auto ok = true;
 
   urlHash = crypt->keyedHash(urlToEncoded(url), &ok).toHex();
 
@@ -1809,7 +1807,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       if(query.next())
 	if(!query.value(0).toByteArray().isEmpty())
 	  {
-	    QByteArray previous(query.value(0).toByteArray());
+	    auto const &previous(query.value(0).toByteArray());
 
 	    /*
 	    ** Update the current content.
@@ -1841,7 +1839,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	    ** content has not changed.
 	    */
 
-	    QByteArray original(QByteArray::fromBase64(previous));
+	    auto original(QByteArray::fromBase64(previous));
 
 	    original = crypt->decryptedAfterAuthenticated(original, &ok);
 	    original = qUncompress(original);
@@ -1967,7 +1965,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       if(query.exec("INSERT INTO sequence VALUES (NULL)"))
 	{
-	  QVariant variant(query.lastInsertId());
+	  auto const &variant(query.lastInsertId());
 
 	  if(variant.isValid())
 	    {
@@ -2055,12 +2053,12 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       QHash<QString, char> discovered;
       QSqlQuery query(db);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      QStringList keywords
+      auto keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).
 	 split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
-      QStringList keywords
+      auto keywords
 	(QString::fromUtf8(all_keywords.toLower().constData(),
 			   all_keywords.length()).
 	 split(QRegularExpression("\\W+"), QString::SkipEmptyParts));
@@ -2088,7 +2086,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 	    continue;
 
 	  QByteArray keywordHash;
-	  bool ok = true;
+	  auto ok = true;
 
 	  keywordHash = crypt->keyedHash(keywords.at(i).toUtf8(), &ok).toHex();
 
@@ -2152,17 +2150,17 @@ bool spoton_misc::isAcceptedIP(const QString &address,
     }
 
   QString connectionName("");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT EXISTS(SELECT 1 FROM listeners_allowed_ips "
@@ -2201,18 +2199,18 @@ bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
     }
 
   QString connectionName("");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT EXISTS(SELECT 1 "
@@ -2243,7 +2241,7 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
 
   QByteArray bytes;
   QSettings settings;
-  bool ok = true;
+  auto ok = true;
 
   bytes = crypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.
@@ -2278,17 +2276,17 @@ bool spoton_misc::isIpBlocked(const QString &address, spoton_crypt *crypt)
     }
 
   QString connectionName("");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT EXISTS(SELECT 1 FROM neighbors WHERE "
@@ -2314,7 +2312,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
 {
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     {
-      quint32 a = address.toIPv4Address();
+      auto const a = address.toIPv4Address();
 
       if(!((a & 0xf0000000U) == 0xe0000000U))
 	return false;
@@ -2323,7 +2321,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     {
-      Q_IPV6ADDR a6 = address.toIPv6Address();
+      auto a6 = address.toIPv6Address();
 
       if(a6.c[0] != 0xffU)
 	return false;
@@ -2336,7 +2334,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
 
 bool spoton_misc::isPrivateNetwork(const QHostAddress &address)
 {
-  bool isPrivate = false;
+  auto isPrivate = false;
 
   if(address.isNull())
     return isPrivate;
@@ -2377,7 +2375,7 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 {
   QList<QByteArray> list;
   QStringList starts;
-  bool valid = false;
+  auto valid = false;
   int tokens = 0;
 
   /*
@@ -2399,7 +2397,7 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i).trimmed());
+      auto str(list.at(i).trimmed());
 
       if(starts.contains("ct=") && str.startsWith("ct="))
 	{
@@ -2465,8 +2463,8 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 	{
 	  str.remove(0, 3);
 
-	  bool ok = true;
-	  int integer = str.toInt(&ok);
+	  auto ok = true;
+	  auto const integer = str.toInt(&ok);
 
 	  if(integer < 10000 || integer > 999999999 || !ok)
 	    {
@@ -2520,12 +2518,12 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 
 bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 {
-  QList<QByteArray> list(data.split('\n'));
-  bool valid = false;
+  auto const &list(data.split('\n'));
+  auto valid = false;
 
   for(int i = 0; i < 7; i++)
     {
-      QByteArray str(QByteArray::fromBase64(list.value(i)));
+      auto str(QByteArray::fromBase64(list.value(i)));
 
       if(i == 0) // Channel
 	{
@@ -2537,8 +2535,8 @@ bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 	}
       else if(i == 1) // Iteration Count
 	{
-	  bool ok = true;
-	  int integer = str.toInt(&ok);
+	  auto ok = true;
+	  auto const integer = str.toInt(&ok);
 
 	  if(integer < 10000 || integer > 999999999 || !ok)
 	    {
@@ -2627,7 +2625,7 @@ bool spoton_misc::isValidForwardSecrecyMagnet(const QByteArray &magnet,
 
   for(int i = 0; i < list.size(); i++)
     {
-      QByteArray str(list.at(i).trimmed());
+      auto str(list.at(i).trimmed());
 
       if(starts.contains("aa=") && str.startsWith("aa="))
 	{
@@ -2705,7 +2703,7 @@ bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
 {
   QList<QByteArray> list;
   QStringList starts;
-  bool valid = false;
+  auto valid = false;
   int tokens = 0;
 
   /*
@@ -2725,7 +2723,7 @@ bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i).trimmed());
+      auto str(list.at(i).trimmed());
 
       if(starts.contains("in=") && str.startsWith("in="))
 	{
@@ -2816,7 +2814,7 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 {
   QList<QByteArray> list;
   QStringList starts;
-  bool valid = false;
+  auto valid = false;
   int tokens = 0;
 
   /*
@@ -2832,7 +2830,7 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i).trimmed());
+      auto str(list.at(i).trimmed());
 
       if(str.startsWith("value="))
 	{
@@ -2845,7 +2843,7 @@ bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
 	    }
 	  else
 	    {
-	      values.append(QByteArray::fromBase64(str.toLatin1()));
+	      values.append(QByteArray::fromBase64(str));
 	      tokens += 1;
 	    }
 	}
@@ -2888,7 +2886,7 @@ bool spoton_misc::isValidSignature(const QByteArray &data,
   ** non-signature public key.
   */
 
-  QByteArray publicKey
+  auto const &publicKey
     (signaturePublicKeyFromPublicKeyHash(publicKeyHash, crypt));
 
   if(publicKey.isEmpty())
@@ -2906,7 +2904,7 @@ bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
 {
   QList<QByteArray> list;
   QStringList starts;
-  bool valid = false;
+  auto valid = false;
   int tokens = 0;
 
   /*
@@ -2926,7 +2924,7 @@ bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i).trimmed());
+      auto str(list.at(i).trimmed());
 
       if(starts.contains("ct=") && str.startsWith("ct="))
 	{
@@ -3021,12 +3019,12 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 				     const quint16 port)
 {
-  bool ok = true;
+  auto ok = true;
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
     {
       ip_mreq mreq4;
-      socklen_t length = sizeof(mreq4);
+      auto const length = static_cast<socklen_t> (sizeof(mreq4));
 
       memset(&mreq4, 0, sizeof(mreq4));
       mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
@@ -3049,19 +3047,23 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
+	  auto option = static_cast<u_char> (loop.toChar().toLatin1());
 	  socklen_t length = 0;
-	  u_char option = static_cast<u_char> (loop.toChar().toLatin1());
 
 	  length = sizeof(option);
 
 #if defined(Q_OS_WIN)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP,
-			IP_MULTICAST_LOOP, (const char *) &option, (int) length)
+			IP_MULTICAST_LOOP,
+			(const char *) &option,
+			(int) length)
 	     == -1)
 #else
 	  if(setsockopt(socketDescriptor,
-			IPPROTO_IP, IP_MULTICAST_LOOP, &option,
+			IPPROTO_IP,
+			IP_MULTICAST_LOOP,
+			&option,
 			length) == -1)
 #endif
 	    {
@@ -3075,9 +3077,9 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
     }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     {
-      Q_IPV6ADDR ip6 = address.toIPv6Address();
+      auto const ip6 = address.toIPv6Address();
       ipv6_mreq mreq6;
-      socklen_t length = sizeof(mreq6);
+      auto const length = static_cast<socklen_t> (sizeof(mreq6));
 
       memset(&mreq6, 0, sizeof(mreq6));
       memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
@@ -3100,19 +3102,22 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
+	  auto option = static_cast<u_int> (loop.toUInt());
 	  socklen_t length = 0;
-	  u_int option = loop.toUInt();
 
 	  length = sizeof(option);
 
 #if defined(Q_OS_WIN)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IPV6,
-			IPV6_MULTICAST_LOOP, (const char *) &option,
+			IPV6_MULTICAST_LOOP,
+			(const char *) &option,
 			(int) length) == -1)
 #else
 	  if(setsockopt(socketDescriptor,
-			IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &option,
+			IPPROTO_IPV6,
+			IPV6_MULTICAST_LOOP,
+			&option,
 			length) == -1)
 #endif
 	    {
@@ -3131,10 +3136,10 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 bool spoton_misc::prepareUrlDistillersDatabase(void)
 {
   QString connectionName("");
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "urls_distillers_information.db");
@@ -3171,10 +3176,10 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 bool spoton_misc::prepareUrlKeysDatabase(void)
 {
   QString connectionName("");
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "urls_key_information.db");
@@ -3232,14 +3237,13 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 bool spoton_misc::publicKeyExists(const qint64 oid)
 {
   QString connectionName("");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
-       "friends_public_keys.db");
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -3269,10 +3273,10 @@ bool spoton_misc::registerKernel(const pid_t pid)
     return false;
 
   QString connectionName("");
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
 
@@ -3324,9 +3328,9 @@ bool spoton_misc::saveFriendshipBundle(const QByteArray &keyType,
       return false;
     }
 
-  QByteArray name(n);
   QSqlQuery query(db);
-  bool ok = true;
+  auto name(n);
+  auto ok = true;
 
   query.setForwardOnly(true);
   query.prepare("SELECT name FROM friends_public_keys WHERE "
@@ -3436,10 +3440,10 @@ bool spoton_misc::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 			     spoton_crypt *crypt)
 {
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -3521,7 +3525,7 @@ bool spoton_misc::saveReceivedStarBeamHashes(const QSqlDatabase &db,
     }
 
   QSqlQuery query(db);
-  bool ok = true;
+  auto ok = true;
 
   query.prepare
     ("UPDATE received SET hash = ?, sha3_512_hash = ? WHERE OID = ?");
@@ -3565,22 +3569,22 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
     }
 
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
-	QByteArray attachmentData(list.value(5));
-	QByteArray message(list.value(4));
-	QByteArray name(list.value(2));
-	QByteArray senderPublicKeyHash(list.value(1));
-	QByteArray subject(list.value(3));
-	QDateTime now(QDateTime::currentDateTime());
 	QSqlQuery query(db);
+	auto const &attachmentData(list.value(5));
+	auto const &message(list.value(4));
+	auto const &name(list.value(2));
+	auto const &senderPublicKeyHash(list.value(1));
+	auto const &subject(list.value(3));
+	auto const &now(QDateTime::currentDateTime());
 
 	query.prepare("INSERT INTO folders "
 		      "(date, "
@@ -3667,12 +3671,12 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	    {
 	      if(!attachmentData.isEmpty())
 		{
-		  QVariant variant(query.lastInsertId());
-		  qint64 id = query.lastInsertId().toLongLong();
+		  auto const &variant(query.lastInsertId());
+		  auto const id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
 		    {
-		      QByteArray data(qUncompress(attachmentData));
+		      auto data(qUncompress(attachmentData));
 
 		      if(!data.isEmpty())
 			{
@@ -3686,8 +3690,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 			  for(int i = 0; i < attachments.size(); i++)
 			    {
-			      QPair<QByteArray, QByteArray> pair
-				(attachments.at(i));
+			      auto const &pair(attachments.at(i));
 			      QSqlQuery query(db);
 
 			      query.prepare("INSERT INTO folders_attachment "
@@ -3726,10 +3729,10 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 int spoton_misc::minimumNeighborLaneWidth(void)
 {
   QString connectionName("");
-  int laneWidth = spoton_common::LANE_WIDTH_MINIMUM;
+  auto laneWidth = spoton_common::LANE_WIDTH_MINIMUM;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
@@ -3758,7 +3761,7 @@ pid_t spoton_misc::kernelPid(void)
   pid_t pid = 0;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
 
@@ -3786,7 +3789,7 @@ qint64 spoton_misc::oidFromPublicKeyHash(const QByteArray &publicKeyHash)
   qint64 oid = -1;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -3827,7 +3830,7 @@ qint64 spoton_misc::participantCount(const QString &keyType,
   qint64 count = 0;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() +
 		       "friends_public_keys.db");
@@ -3835,7 +3838,7 @@ qint64 spoton_misc::participantCount(const QString &keyType,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT COUNT(*) FROM friends_public_keys "
@@ -3873,7 +3876,7 @@ qint64 spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
 	   &count) == -1)
     count = tcpSocket->bytesToWrite();
 #elif defined(Q_OS_MACOS)
-  socklen_t length = (socklen_t) sizeof(count);
+  auto length = (socklen_t) sizeof(count);
 
   if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
 		SOL_SOCKET,
@@ -3923,11 +3926,11 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
   QByteArray ek;
   QByteArray hk;
   QByteArray xt;
-  QList<QByteArray> list
-    (QByteArray(magnet.trimmed()).
-     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
   QString ct("");
   QString ht("");
+  auto const &list
+    (QByteArray(magnet.trimmed()).
+     remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
   spoton_crypt *crypt = 0;
   unsigned long int ic = 0;
 
@@ -3992,7 +3995,7 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
   spoton_crypt *c = 0;
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "urls_key_information.db");
@@ -4013,7 +4016,7 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
 	    QByteArray hashKey;
 	    QString cipherType("");
 	    QString hashType("");
-	    bool ok = true;
+	    auto ok = true;
 
 	    cipherType = crypt->decryptedAfterAuthenticated
 	      (QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -4061,7 +4064,7 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
@@ -4108,7 +4111,7 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 		while(query.next())
 		  {
 		    QSqlQuery insertQuery(db);
-		    bool ok = true;
+		    auto ok = true;
 
 		    insertQuery.prepare
 		      ("INSERT INTO echo_key_sharing_secrets_temporary "
@@ -4144,10 +4147,10 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -4172,7 +4175,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "kernel.db");
 
@@ -4191,7 +4194,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
 
@@ -4221,7 +4224,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
@@ -4260,7 +4263,7 @@ void spoton_misc::cleanupDatabases(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
 
@@ -4307,7 +4310,7 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 
   QString str("");
   QStringList list;
-  bool ok = true;
+  auto ok = true;
   double rational = 0.00;
   int integer = 0;
 
@@ -4617,7 +4620,7 @@ void spoton_misc::deregisterKernel(const pid_t pid)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "shared.db");
 
@@ -4659,12 +4662,12 @@ void spoton_misc::logError(const QString &error)
 
   if(file.open(QIODevice::Append | QIODevice::WriteOnly))
     {
-      QDateTime now(QDateTime::currentDateTime());
 #if defined(Q_OS_WIN)
       QString eol("\r\n");
 #else
       QString eol("\n");
 #endif
+      auto const &now(QDateTime::currentDateTime());
 
       file.write(now.toString(Qt::ISODate).toLatin1());
       file.write(eol.toLatin1());
@@ -4677,85 +4680,6 @@ void spoton_misc::logError(const QString &error)
   file.close();
 }
 
-void spoton_misc::populateUrlsDatabase(const QList<QList<QVariant> > &list,
-				       spoton_crypt *crypt)
-{
-  if(!crypt)
-    {
-      logError
-	("spoton_misc::populateUrlsDatabase(): crypt is zero.");
-      return;
-    }
-  else if(list.isEmpty())
-    {
-      logError
-	("spoton_misc::populateUrlsDatabase(): list is empty.");
-      return;
-    }
-
-  QString connectionName("");
-
-  {
-    QSqlDatabase db = database(connectionName);
-
-    /*
-    ** Determine the correct URL database file.
-    */
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.prepare("INSERT INTO urls (date_time_inserted, "
-		      "description, hash, title, url) "
-		      "VALUES (?, ?, ?, ?, ?)");
-
-	for(int i = 0; i < list.size(); i++)
-	  {
-	    /*
-	    ** 0: description
-	    ** 1: title
-	    ** 2: url
-	    */
-
-	    const QList<QVariant> &variants(list.at(i));
-	    bool ok = true;
-
-	    query.bindValue
-	      (0, QDateTime::currentDateTime().toString(Qt::ISODate));
-	    query.bindValue
-	      (1, crypt->encryptedThenHashed
-	       (variants.value(0).toByteArray(), &ok).
-	       toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(2, crypt->keyedHash(variants.value(2).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(3, crypt->encryptedThenHashed
-		 (variants.value(1).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.bindValue
-		(4, crypt->encryptedThenHashed
-		 (variants.value(2).toByteArray(), &ok).
-		 toBase64());
-
-	    if(ok)
-	      query.exec();
-	  }
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-}
-
 void spoton_misc::prepareAuthenticationHint(spoton_crypt *crypt)
 {
   if(!crypt)
@@ -4766,8 +4690,8 @@ void spoton_misc::prepareAuthenticationHint(spoton_crypt *crypt)
   if(settings.contains("gui/authenticationHint"))
     return;
 
-  QByteArray bytes(spoton_crypt::weakRandomBytes(256));
-  bool ok = true;
+  auto bytes(spoton_crypt::weakRandomBytes(256));
+  auto ok = true;
 
   bytes = crypt->encryptedThenHashed(bytes, &ok);
 
@@ -4782,7 +4706,7 @@ void spoton_misc::prepareDatabases(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "buzz_channels.db");
 
@@ -4806,10 +4730,10 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "congestion_control.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "congestion_control.db");
 
     if(db.open())
       {
@@ -4826,7 +4750,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "echo_key_sharing_secrets.db");
@@ -4874,7 +4798,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "email.db");
 
@@ -4957,10 +4881,10 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -5021,7 +4945,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "idiotes.db");
 
@@ -5047,7 +4971,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "kernel.db");
 
@@ -5079,7 +5003,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "kernel_web_server.db");
 
@@ -5108,7 +5032,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "listeners.db");
 
@@ -5225,7 +5149,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
@@ -5348,7 +5272,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "poptastic.db");
 
@@ -5401,7 +5325,7 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "secrets.db");
 
@@ -5427,10 +5351,9 @@ void spoton_misc::prepareDatabases(void)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
-    db.setDatabaseName(homePath() + QDir::separator() +
-		       "starbeam.db");
+    db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
 
     if(db.open())
       {
@@ -5572,12 +5495,12 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
       return;
     }
 
-  QStringList list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+  auto const &list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
   for(int i = 0; i < list.size(); i++)
     {
       QSqlQuery query(db);
-      bool ok = true;
+      auto ok = true;
 
       /*
       ** Delete relationships that do not have corresponding entries
@@ -5620,7 +5543,7 @@ void spoton_misc::removeOneTimeStarBeamMagnets(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "starbeam.db");
 
@@ -5663,7 +5586,7 @@ void spoton_misc::retrieveSymmetricData
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -5689,7 +5612,7 @@ void spoton_misc::retrieveSymmetricData
 
 	    if(query.next())
 	      {
-		size_t symmetricKeyLength = spoton_crypt::cipherKeyLength
+		auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		  (cipherType);
 
 		if(symmetricKeyLength > 0)
@@ -5739,7 +5662,7 @@ void spoton_misc::retrieveSymmetricData
 			(QByteArray::fromBase64(query.value(4).toByteArray()),
 			 ok);
 
-		    bool found = false;
+		    auto found = false;
 
 		    for(int i = 1;
 			i <= spoton_common::IDENTICAL_CREDENTIALS_ITERATIONS;
@@ -5816,7 +5739,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 					const int seconds,
 					spoton_crypt *crypt)
 {
-  QDateTime dateTime
+  auto dateTime
     (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
 
   if(!dateTime.isValid())
@@ -5827,11 +5750,11 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
       return;
     }
 
-  QDateTime now(QDateTime::currentDateTimeUtc());
+  auto const &now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
-  qint64 secsTo = qAbs(now.secsTo(dateTime));
+  auto const secsTo = qAbs(now.secsTo(dateTime));
 
   if(!(secsTo <= static_cast<qint64> (seconds)))
     {
@@ -5844,7 +5767,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "friends_public_keys.db");
@@ -5869,7 +5792,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 	      }
 	    else if(crypt)
 	      {
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("UPDATE friends_public_keys SET "
 			      "last_status_update = ?, "
@@ -5925,8 +5848,8 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 	      }
 	    else if(crypt)
 	      {
-		QDateTime now(QDateTime::currentDateTime());
-		bool ok = true;
+		auto const &now(QDateTime::currentDateTime());
+		auto ok = true;
 
 		query.prepare("UPDATE friends_public_keys SET "
 			      "name = ?, "
@@ -6014,7 +5937,7 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
   QString transport("bluetooth");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName
       (homePath() + QDir::separator() + "neighbors.db");
@@ -6022,9 +5945,8 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString country
-	  (countryNameFromIPAddress(address.toString()));
-	bool ok = true;
+	auto country(countryNameFromIPAddress(address.toString()));
+	auto ok = true;
 
 	query.prepare
 	  ("INSERT INTO neighbors "
@@ -6122,8 +6044,8 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 	QString proxyHostName("");
 	QString proxyPassword("");
 	QString proxyPort("1");
-	QString proxyType(QString::number(QNetworkProxy::NoProxy));
 	QString proxyUsername("");
+	auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	if(ok)
 	  query.bindValue
@@ -6221,7 +6143,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
       return;
     }
 
-  QString transport(p_transport.toLower().trimmed());
+  auto const &transport(p_transport.toLower().trimmed());
 
   if(!(transport == "sctp" ||
        transport == "tcp" ||
@@ -6236,15 +6158,15 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
   QString connectionName("");
 
   {
-    QSqlDatabase db = database(connectionName);
+    auto db(database(connectionName));
 
     db.setDatabaseName(homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString country(countryNameFromIPAddress(address.toString()));
-	bool ok = true;
+	auto country(countryNameFromIPAddress(address.toString()));
+	auto ok = true;
 
 	query.prepare
 	  ("INSERT INTO neighbors "
@@ -6351,8 +6273,8 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	QString proxyHostName("");
 	QString proxyPassword("");
 	QString proxyPort("1");
-	QString proxyType(QString::number(QNetworkProxy::NoProxy));
 	QString proxyUsername("");
+	auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	if(ok)
 	  query.bindValue
@@ -6396,7 +6318,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	       transport == "websocket")
 	      {
 		QSettings settings;
-		bool ok = true;
+		auto ok = true;
 		int keySize = 2048;
 
 		keySize = settings.value
@@ -6540,7 +6462,7 @@ void spoton_misc::vacuumAllDatabases(void)
       QString connectionName("");
 
       {
-	QSqlDatabase db = database(connectionName);
+	auto db(database(connectionName));
 
 	db.setDatabaseName(homePath() + QDir::separator() + list.at(i));
 

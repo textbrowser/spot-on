@@ -90,10 +90,10 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
       memset(privateKey_array, 0, length1);
       memset(publicKey_array, 0, length2);
 
+      const struct NtruEncParams parameters[] = {EES1087EP2,
+						 EES1171EP1,
+						 EES1499EP1};
       int index = 0;
-      struct NtruEncParams parameters[] = {EES1087EP2,
-					   EES1171EP1,
-					   EES1499EP1};
       uint8_t err = 0;
       uint8_t length = 0;
       uint16_t decrypted_len = 0;
@@ -124,8 +124,11 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
 
       d = new uint8_t[length];
 
-      if((err = ntru_decrypt(encrypted, &kp, &parameters[index],
-			     d, &decrypted_len)) == NTRU_SUCCESS)
+      if((err = ntru_decrypt(encrypted,
+			     &kp,
+			     &parameters[index],
+			     d,
+			     &decrypted_len)) == NTRU_SUCCESS)
 	{
 	  if(ok)
 	    *ok = true;
@@ -209,8 +212,10 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 			  mid(static_cast<int> (qstrlen("ntru-public-key-"))).
 			  length()));
 
+  const struct NtruEncParams parameters[] = {EES1087EP2,
+					     EES1171EP1,
+					     EES1499EP1};
   int index = 0;
-  struct NtruEncParams parameters[] = {EES1087EP2, EES1171EP1, EES1499EP1};
   uint16_t length = 0;
 
   if(pk.h.N == parameters[0].N)
@@ -235,7 +240,8 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
 
   if(ntru_encrypt(data_array,
 		  static_cast<uint16_t> (data.length()),
-		  &pk, &parameters[index],
+		  &pk,
+		  &parameters[index],
 		  &rand_ctx_def,
 		  e) == NTRU_SUCCESS)
     {
@@ -267,14 +273,14 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
   QString keySize("");
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  int length = data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
+  auto const length = data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).
     length();
 
   if(length <= 0)
     return keySize;
 
   NtruEncPubKey pk;
-  uint8_t *publicKey_array = new uint8_t[length];
+  auto publicKey_array = new uint8_t[length];
 
   memcpy
     (publicKey_array,
@@ -286,7 +292,9 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
 					 ** Returns a value.
 					 */
 
-  struct NtruEncParams parameters[] = {EES1087EP2, EES1171EP1, EES1499EP1};
+  const struct NtruEncParams parameters[] = {EES1087EP2,
+					     EES1171EP1,
+					     EES1499EP1};
 
   if(pk.h.N == parameters[0].N)
     keySize = "EES1087EP2";
@@ -305,7 +313,7 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
 QString spoton_crypt::publicKeySizeNTRU(void)
 {
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  bool ok = true;
+  auto ok = true;
 
   publicKey(&ok);
 
@@ -331,10 +339,10 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
     *ok = false;
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
+  const struct NtruEncParams parameters[] = {EES1087EP2,
+					     EES1171EP1,
+					     EES1499EP1};
   int index = 0;
-  struct NtruEncParams parameters[] = {EES1087EP2,
-				       EES1171EP1,
-				       EES1499EP1};
 
   if(keySize == "EES1087EP2")
     index = 0;
@@ -361,13 +369,14 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
     spoton_misc::logError
       ("spoton_crypt::generateNTRUKeys(): ntru_rand_init() failure.");
 
-  if(ntru_gen_key_pair(&parameters[index], &kp,
+  if(ntru_gen_key_pair(&parameters[index],
+		       &kp,
 		       &rand_ctx_def) == NTRU_SUCCESS)
     {
+      auto const length1 = ntru_priv_len(&parameters[index]);
+      auto const length2 = ntru_pub_len(&parameters[index]);
       uint8_t *privateKey_array = 0;
       uint8_t *publicKey_array = 0;
-      uint16_t length1 = ntru_priv_len(&parameters[index]);
-      uint16_t length2 = ntru_pub_len(&parameters[index]);
 
       if(length1 > 0 && length2 > 0)
 	{

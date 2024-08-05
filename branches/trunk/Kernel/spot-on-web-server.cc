@@ -587,9 +587,9 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 	{
 	  QSet<QString> keywords;
 	  QString keywordsearch("");
-	  QString originalSearch(search);
 	  QStringList keywordsearches;
 	  auto ok = true;
+	  auto originalSearch(search);
 
 	  originalSearch.replace("&#34;", "\"");
 	  originalSearch.replace("&#38;", "&");

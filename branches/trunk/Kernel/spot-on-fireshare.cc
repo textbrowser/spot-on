@@ -145,7 +145,7 @@ void spoton_fireshare::slotTimeout(void)
 
 	      if(ok)
 		{
-		  QUrl url(QUrl::fromUserInput(domain));
+		  auto const &url(QUrl::fromUserInput(domain));
 
 		  if(!url.isEmpty())
 		    if(url.isValid())

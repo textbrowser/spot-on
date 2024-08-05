@@ -279,12 +279,12 @@ class aes256
   uint8_t m_round_key[60][4] {};
   uint8_t m_state[4][4] {}; // 4 rows, Nb columns.
 
-  uint8_t xtime(uint8_t x)
+  static uint8_t xtime(uint8_t x)
   {
     return static_cast<uint8_t> ((x << 1) ^ (((x >> 7) & 1) * 0x1b));
   }
 
-  uint8_t xtime_special(uint8_t x, uint8_t y)
+  static uint8_t xtime_special(uint8_t x, uint8_t y)
   {
     auto const xtime_y = xtime(y);
 

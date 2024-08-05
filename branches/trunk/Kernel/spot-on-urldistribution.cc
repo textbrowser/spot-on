@@ -371,7 +371,7 @@ void spoton_urldistribution::run(void)
 		  break;
 		}
 
-	      bool ok = true;
+	      auto ok = true;
 
 	      if(data.isEmpty())
 		{

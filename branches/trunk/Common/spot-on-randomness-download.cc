@@ -63,7 +63,7 @@ void spoton_randomness_download::slotError(QNetworkReply::NetworkError error)
 {
   Q_UNUSED(error);
 
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     reply->deleteLater();
@@ -71,7 +71,7 @@ void spoton_randomness_download::slotError(QNetworkReply::NetworkError error)
 
 void spoton_randomness_download::slotFinished(void)
 {
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     reply->deleteLater();
@@ -81,7 +81,7 @@ void spoton_randomness_download::slotSslErrors(const QList<QSslError> &errors)
 {
   Q_UNUSED(errors);
 
-  QNetworkReply *reply = qobject_cast<QNetworkReply *> (sender());
+  auto reply = qobject_cast<QNetworkReply *> (sender());
 
   if(reply)
     reply->ignoreSslErrors();
@@ -92,7 +92,7 @@ void spoton_randomness_download::slotTimeout(void)
   if(m_address.isNull())
     return;
 
-  QNetworkReply *reply = findChildren<QNetworkReply *> ();
+  auto reply = findChildren<QNetworkReply *> ();
 
   if(reply)
     return;

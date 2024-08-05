@@ -62,7 +62,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 
   try
     {
-      const size_t offset = static_cast<size_t>
+      auto const offset = static_cast<size_t>
 	(qstrlen("mceliece-private-key-000-m00t00"));
 
       if(privateKeyLength > offset)
@@ -172,7 +172,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
   prepareS();
   prepareSwappingColumns();
 
-  const long int n = static_cast<long int> (m_n);
+  auto const n = static_cast<long int> (m_n);
   std::vector<long int> dividers;
 
   for(long int i = 2; i < (n - 1) / 2 + 1; i++)
@@ -189,7 +189,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
 	{
 	  NTL::GF2E gf2e;
 	  NTL::GF2X gf2x;
-	  bool found = true;
+	  auto found = true;
 
 	  gf2x.SetLength(static_cast<long int> (m));
 	  gf2x = NTL::GF2X::zero();
@@ -264,8 +264,8 @@ bool spoton_mceliece_private_key::prepareG(const NTL::mat_GF2 &R)
       if(m_n != m_swappingColumns.size())
 	throw std::runtime_error("m_swappingColumns().size() mismatch");
 
-      const long int k = static_cast<long int> (m_k);
-      const long int n = static_cast<long int> (m_n);
+      auto const k = static_cast<long int> (m_k);
+      auto const n = static_cast<long int> (m_n);
 
       m_G.SetDims(k, n);
 
@@ -311,7 +311,7 @@ bool spoton_mceliece_private_key::prepareP(void)
 {
   try
     {
-      const long int n = static_cast<long int> (m_n);
+      auto const n = static_cast<long int> (m_n);
       std::map<long int, char> indexes;
 
       /*
@@ -328,7 +328,7 @@ bool spoton_mceliece_private_key::prepareP(void)
       for(long int i = 0; i < m_P.NumRows(); i++)
 	do
 	  {
-	    const long int j = NTL::RandomBnd(m_P.NumCols());
+	    auto const j = NTL::RandomBnd(m_P.NumCols());
 
 	    if(indexes.find(j) == indexes.end())
 	      {
@@ -414,7 +414,7 @@ bool spoton_mceliece_private_key::prepareS(void)
 {
   try
     {
-      const int long k = static_cast<long int> (m_k);
+      auto const k = static_cast<long int> (m_k);
 
       m_S.SetDims(k, k);
 
@@ -465,7 +465,7 @@ void spoton_mceliece_private_key::prepareSwappingColumns(void)
 {
   m_swappingColumns.clear();
 
-  const long int n = static_cast<long int> (m_n);
+  auto const n = static_cast<long int> (m_n);
 
   for(long int i = 0; i < n; i++)
     m_swappingColumns.push_back(i);
@@ -500,7 +500,7 @@ void spoton_mceliece_private_key::swapSwappingColumns(const size_t i,
       return;
     }
 
-  const long int t = m_swappingColumns[i];
+  auto const t = m_swappingColumns[i];
 
   m_swappingColumns[i] = m_swappingColumns[j];
   m_swappingColumns[j] = t;
@@ -516,7 +516,7 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
   ** Some calculations.
   */
 
-  const long int n = 1 << static_cast<long int> (m);
+  auto const n = 1 << static_cast<long int> (m);
   long int k = 0;
 
   k = n - static_cast<long int> (m) * static_cast<long int> (m_t);
@@ -580,8 +580,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   m_publicKey = 0;
   m_t = 0;
 
-  const QByteArray &publicKey(qUncompress(pk)); // Key is compressed.
-  const size_t offset = static_cast<size_t>
+  auto const &publicKey(qUncompress(pk)); // Key is compressed.
+  auto const offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
 
   if(publicKey.length() > static_cast<int> (offset))
@@ -641,7 +641,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
 				 const size_t m,
 				 const size_t t)
 {
-  const QByteArray &c(conversion.mid(0, 3).toLower());
+  auto const &c(conversion.mid(0, 3).toLower());
 
   if(c == "foa")
     m_conversion = spoton_mceliece_private_key::FOA;
@@ -686,7 +686,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
       m_privateKey = 0;
     }
 
-  const size_t offset = static_cast<size_t>
+  auto const offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
 
   if(publicKey.length() > static_cast<int> (offset))
@@ -740,7 +740,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   if(!m_privateKey || !m_privateKey->ok() || !m_publicKey || !m_publicKey->ok())
     return false;
 
-  const size_t plaintext_size = static_cast<size_t>
+  auto const plaintext_size = static_cast<size_t>
     (std::ceil(m_k / CHAR_BIT)); /*
 				 ** m_k is not necessarily
 				 ** a multiple of CHAR_BIT.
@@ -750,7 +750,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
   if(Q_UNLIKELY(plaintext_size == 0))
     return false;
 
-  char *p = new (std::nothrow) char[plaintext_size];
+  auto p = new (std::nothrow) char[plaintext_size];
 
   if(!p)
     {
@@ -836,8 +836,8 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       */
 
       NTL::GF2EX syndrome = NTL::GF2EX::zero();
-      const long int n = static_cast<long int> (m_n);
-      const std::vector<NTL::GF2EX> &v(m_privateKey->preSynTab());
+      auto const &v(m_privateKey->preSynTab());
+      auto const n = static_cast<long int> (m_n);
 
       for(long int i = 0; i < n; i++)
 	if(ccar[i] != 0)
@@ -869,9 +869,9 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	      NTL::GF2EX r1 = tau;
 	      NTL::GF2EX u0 = NTL::GF2EX::zero();
 	      NTL::GF2EX u1;
-	      const long int t = static_cast<long int> (m_t / 2);
-	      long int dr = NTL::deg(r1);
-	      long int dt = NTL::deg(r0) - dr;
+	      auto const t = static_cast<long int> (m_t / 2);
+	      auto dr = NTL::deg(r1);
+	      auto dt = NTL::deg(r0) - dr;
 	      long int du = 0;
 
 	      u1.SetLength(1);
@@ -934,7 +934,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	}
 
       NTL::vec_GF2 e;
-      const NTL::vec_GF2E &L(m_privateKey->L());
+      auto const &L(m_privateKey->L());
 
       e.SetLength(n);
 
@@ -947,15 +947,14 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       NTL::vec_GF2 m;
       NTL::vec_GF2 mcar;
       NTL::vec_GF2 vec_GF2;
-      const std::vector<long int> &swappingColumns
-	(m_privateKey->swappingColumns());
+      auto const &swappingColumns(m_privateKey->swappingColumns());
 
       vec_GF2.SetLength(n);
 
       for(long int i = 0; i < n; i++)
 	vec_GF2[i] = ccar[swappingColumns[static_cast<size_t> (i)]];
 
-      const long int k = static_cast<long int> (m_k);
+      auto const k = static_cast<long int> (m_k);
 
       mcar.SetLength(k);
 
@@ -976,7 +975,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    QByteArray bytes
 	      (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
-	    bool ok = true;
+	    auto ok = true;
 
 	    bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
@@ -1097,7 +1096,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    QByteArray keyStream2
 	      (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
-	    bool ok = true;
+	    auto ok = true;
 
 	    keyStream2 = spoton_crypt::shake256
 	      (keyStream2,
@@ -1267,7 +1266,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
       */
 
       NTL::vec_GF2 e;
-      const long int t = static_cast<long int> (m_t);
+      auto const t = static_cast<long int> (m_t);
       long int ts = 0;
 
       e.SetLength(static_cast<long int> (m_n));
@@ -1294,7 +1293,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
 	    QByteArray bytes
 	      (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
-	    bool ok = true;
+	    auto ok = true;
 
 	    bytes = spoton_crypt::sha256Hash(bytes, &ok);
 
@@ -1308,7 +1307,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    QByteArray keyStream1
 	      (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				       CHAR_BIT)), 0);
-	    const QByteArray &salt1(spoton_crypt::weakRandomBytes(32));
+	    auto const &salt1(spoton_crypt::weakRandomBytes(32));
 
 	    if(gcry_kdf_derive(bytes.constData(),
 			       static_cast<size_t> (bytes.length()),
@@ -1356,7 +1355,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    QByteArray keyStream2
 	      (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				       CHAR_BIT)), 0);
-	    const QByteArray &salt2(spoton_crypt::weakRandomBytes(32));
+	    auto const &salt2(spoton_crypt::weakRandomBytes(32));
 
 	    if(gcry_kdf_derive(bytes.constData(),
 			       static_cast<size_t> (bytes.length()),
@@ -1402,7 +1401,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
 	    QByteArray keyStream1
 	      (stream1.str().c_str(), static_cast<int> (stream1.str().size()));
-	    bool ok = true;
+	    auto ok = true;
 
 	    keyStream1 = spoton_crypt::shake256
 	      (keyStream1,
@@ -1521,11 +1520,11 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       */
 
       NTL::mat_GF2 H;
-      const NTL::GF2EX &gZ(m_privateKey->gZ());
-      const NTL::vec_GF2E &L(m_privateKey->L());
-      const long int m = static_cast<long int> (m_m);
-      const long int n = static_cast<long int> (m_n);
-      const long int t = static_cast<long int> (m_t);
+      auto const &gZ(m_privateKey->gZ());
+      auto const &L(m_privateKey->L());
+      auto const m = static_cast<long int> (m_m);
+      auto const n = static_cast<long int> (m_n);
+      auto const t = static_cast<long int> (m_t);
 
       H.SetDims(m * t, n);
 
@@ -1553,7 +1552,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 	  if(H.NumCols() <= lead)
 	    break;
 
-	  long int i = r;
+	  auto i = r;
 
 	  while(H[i][lead] == 0)
 	    {
@@ -1592,7 +1591,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       for(long int i = 0; i < H.NumRows(); i++)
 	if(H[i][i] == 0)
 	  {
-	    bool pivot = true;
+	    auto pivot = true;
 
 	    for(long int j = i + 1; j < H.NumCols(); j++)
 	      {
@@ -1628,8 +1627,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 	  }
 
       NTL::mat_GF2 mat_GF2;
-      const std::vector<long int> &swappingColumns
-	(m_privateKey->swappingColumns());
+      auto const &swappingColumns(m_privateKey->swappingColumns());
 
       mat_GF2.SetDims(H.NumRows(), H.NumCols());
 
@@ -1696,8 +1694,7 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey) const
 	<< m_privateKey->gZ();
 
       NTL::vec_long v;
-      const std::vector<long int> &swappingColumns
-	(m_privateKey->swappingColumns());
+      auto const &swappingColumns(m_privateKey->swappingColumns());
 
       v.SetLength(static_cast<long int> (swappingColumns.size()));
 
