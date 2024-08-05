@@ -1761,8 +1761,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   QByteArray all_keywords;
   auto const &content(qCompress(c.trimmed(), 9));
   auto const &description(d.trimmed());
-  auto title(t.trimmed());
   auto separate = true;
+  auto title(t.trimmed());
 
   if(!description.isEmpty())
     all_keywords = description;
@@ -2321,7 +2321,7 @@ bool spoton_misc::isMulticastAddress(const QHostAddress &address)
     }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     {
-      auto a6 = address.toIPv6Address();
+      auto const a6 = address.toIPv6Address();
 
       if(a6.c[0] != 0xffU)
 	return false;
@@ -3582,9 +3582,9 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	auto const &attachmentData(list.value(5));
 	auto const &message(list.value(4));
 	auto const &name(list.value(2));
+	auto const &now(QDateTime::currentDateTime());
 	auto const &senderPublicKeyHash(list.value(1));
 	auto const &subject(list.value(3));
-	auto const &now(QDateTime::currentDateTime());
 
 	query.prepare("INSERT INTO folders "
 		      "(date, "

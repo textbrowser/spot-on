@@ -205,8 +205,8 @@ spoton_gui_server::~spoton_gui_server()
   {
     auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "kernel.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
     if(db.open())
       {
@@ -314,7 +314,7 @@ void spoton_gui_server::slotEncrypted(void)
       return;
     }
 
-  auto cipher(socket->sessionCipher());
+  auto const &cipher(socket->sessionCipher());
 
   spoton_misc::logError
     (QString("spoton_gui_server::slotEncrypted(): "
@@ -506,7 +506,7 @@ void spoton_gui_server::slotReadyRead(void)
 
   if(m_guiSocketData.value(socket->socketDescriptor()).contains('\n'))
     {
-      QByteArray data(m_guiSocketData.value(socket->socketDescriptor()));
+      auto data(m_guiSocketData.value(socket->socketDescriptor()));
       auto const &messages
 	(data.mid(0, data.lastIndexOf('\n')).split('\n'));
 

@@ -1412,7 +1412,7 @@ QList<QByteArray> spoton_receive::process0091
       return QList<QByteArray> ();
     }
 
-  auto  data(dataIn);
+  auto data(dataIn);
 
   if(length == data.length())
     {
@@ -1831,8 +1831,8 @@ QList<QByteArray> spoton_receive::process0092
 
       dateTime.setTimeSpec(Qt::UTC);
 
-      int timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;
       auto const secsTo = qAbs(now.secsTo(dateTime));
+      auto const timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;
 
       if(!(secsTo <= static_cast<qint64> (timeDelta)))
 	{

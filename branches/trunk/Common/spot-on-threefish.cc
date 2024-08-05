@@ -561,7 +561,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
       return QByteArray();
     }
 
-  QByteArray iv(bytes.mid(0, static_cast<int> (m_keyLength)));
+  auto const &iv(bytes.mid(0, static_cast<int> (m_keyLength)));
 
   if(Q_UNLIKELY(iv.length() != static_cast<int> (m_keyLength)))
     {

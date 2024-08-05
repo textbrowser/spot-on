@@ -148,7 +148,7 @@ class aes256
 
     for(size_t i = 0, length = string.length(); i < length; i += 2)
       {
-	auto byte = static_cast<uint8_t>
+	auto const byte = static_cast<uint8_t>
 	  (strtol(string.substr(i, 2).c_str(), nullptr, 16));
 
         vector.push_back(byte);
