@@ -57,7 +57,7 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
   if(client)
     {
-      QSslConfiguration configuration(sslConfiguration());
+      auto configuration(sslConfiguration());
 
       configuration.setPeerVerifyMode(QSslSocket::QueryPeer);
       configuration.setSslOption(QSsl::SslOptionDisableCompression, true);

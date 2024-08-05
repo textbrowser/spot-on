@@ -195,14 +195,14 @@ void spoton_neighbor::bundlePrivateApplicationData
   ** an entry into the congestion-control mechanism here.
   */
 
-  spoton_crypt *crypt = spoton_misc::parsePrivateApplicationMagnet
+  auto crypt = spoton_misc::parsePrivateApplicationMagnet
     (privateApplicationCredentials);
 
   if(!crypt)
     return;
 
   QByteArray bytes;
-  bool ok = true;
+  auto ok = true;
 
   bytes = crypt->encryptedThenHashed // Twelve bytes could be conserved.
     (QByteArray::number(sequence).rightJustified(20, '0') + data, &ok);
@@ -362,12 +362,12 @@ void spoton_neighbor::parsePrivateApplicationData
   if(privateApplicationCredentials.isEmpty())
     return;
 
-  int a = data.indexOf("Content-Length: ");
+  auto a = data.indexOf("Content-Length: ");
 
   if(a >= 0)
     {
       QByteArray contentLength;
-      int b = data.indexOf("\r\n", a);
+      auto const b = data.indexOf("\r\n", a);
       int length = 0;
 
       if(b > 0)
@@ -387,7 +387,7 @@ void spoton_neighbor::parsePrivateApplicationData
       if(length > 0 && length <= maximumContentLength)
 	if((a = data.indexOf("content=", a)) > 0)
 	  {
-	    QByteArray bytes(data.mid(a));
+	    auto bytes(data.mid(a));
 
 	    if(bytes.length() == length)
 	      {
@@ -396,13 +396,12 @@ void spoton_neighbor::parsePrivateApplicationData
 
 		if((a = bytes.lastIndexOf('\n')) > 0)
 		  {
-		    spoton_crypt *crypt = spoton_misc::
-		      parsePrivateApplicationMagnet
+		    auto crypt = spoton_misc::parsePrivateApplicationMagnet
 		      (privateApplicationCredentials);
 
 		    if(crypt)
 		      {
-			bool ok = true;
+			auto ok = true;
 
 			bytes = crypt->decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(bytes.mid(0, a)), &ok);
@@ -425,8 +424,8 @@ void spoton_neighbor::parsePrivateApplicationData
 			    ** 4
 			    */
 
-			    QByteArray sequencer(bytes.mid(0, 20));
-			    quint64 sequence = sequencer.toULongLong();
+			    auto const &sequencer(bytes.mid(0, 20));
+			    auto const sequence = sequencer.toULongLong();
 
 			    if(m_isUserDefined)
 			      {
@@ -570,7 +569,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
     return;
 
   QByteArray message;
-  QPair<QByteArray, QByteArray> ae
+  auto const &ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -615,7 +614,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
        m_udpSocket->peerPort() == port))
     return;
 
-  QByteArray datagram(d);
+  auto datagram(d);
 
   m_bytesRead += static_cast<quint64> (datagram.length());
 
@@ -711,7 +710,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	  if(m_isUserDefined)
 	    {
 	      QMutexLocker locker(&m_privateApplicationMutex);
-	      quint64 sequence = m_privateApplicationSequences.first;
+	      auto const sequence = m_privateApplicationSequences.first;
 
 	      m_privateApplicationSequences.first += 1;
 	      locker.unlock();
@@ -736,7 +735,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	  else
 	    {
 	      QMutexLocker locker(&m_privateApplicationMutex);
-	      quint64 sequence = m_privateApplicationSequences.second;
+	      auto const sequence = m_privateApplicationSequences.second;
 
 	      m_privateApplicationSequences.second += 1;
 	      locker.unlock();
@@ -762,7 +761,7 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
 	  return;
 	}
 
-      bool ok = true;
+      auto ok = true;
 
       if(m_useAccounts.fetchAndAddOrdered(0))
 	if(!m_accountAuthenticated.fetchAndAddOrdered(0))
@@ -783,12 +782,12 @@ void spoton_neighbor::slotNewDatagram(const QByteArray &d,
     }
 
   QReadLocker locker1(&m_maximumBufferSizeMutex);
-  qint64 maximumBufferSize = m_maximumBufferSize;
+  auto const maximumBufferSize = m_maximumBufferSize;
 
   locker1.unlock();
 
   QWriteLocker locker2(&m_dataMutex);
-  int length = static_cast<int> (maximumBufferSize) - m_data.length();
+  auto const length = static_cast<int> (maximumBufferSize) - m_data.length();
 
   if(length > 0)
     m_data.append(datagram.mid(0, length));
@@ -808,7 +807,7 @@ void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
     return;
 
   QByteArray message;
-  QPair<QByteArray, QByteArray> ae
+  auto const &ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -841,7 +840,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
     return;
 
   QByteArray message;
-  QPair<QByteArray, QByteArray> ae
+  auto const &ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -866,7 +865,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
     return;
 
   QByteArray message;
-  QPair<QByteArray, QByteArray> ae
+  auto const &ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
