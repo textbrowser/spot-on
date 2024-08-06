@@ -88,7 +88,7 @@ extern "C"
 
   int gcry_qmutex_lock(void **mutex)
   {
-    QMutex *m = static_cast<QMutex *> (*mutex);
+    auto m = static_cast<QMutex *> (*mutex);
 
     if(m)
       {
@@ -101,7 +101,7 @@ extern "C"
 
   int gcry_qmutex_unlock(void **mutex)
   {
-    QMutex *m = static_cast<QMutex *> (*mutex);
+    auto m = static_cast<QMutex *> (*mutex);
 
     if(m)
       {
@@ -298,7 +298,7 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
       return QByteArray();
     }
 
-  QByteArray decrypted(data);
+  auto decrypted(data);
   QMutexLocker locker(&m_cipherMutex);
 
   if(!setInitializationVector(decrypted, m_cipherAlgorithm, m_cipherHandle))
@@ -388,7 +388,7 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       return QByteArray();
     }
 
-  unsigned int length = gcry_md_get_algo_dlen(m_hashAlgorithm);
+  auto const length = gcry_md_get_algo_dlen(m_hashAlgorithm);
 
   if(length == 0)
     {
@@ -409,8 +409,8 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
       return QByteArray();
     }
 
-  QByteArray computedHash(keyedHash(data.mid(static_cast<int> (length)), ok));
-  QByteArray hash(data.mid(0, static_cast<int> (length)));
+  auto const computedHash(keyedHash(data.mid(static_cast<int> (length)), ok));
+  auto const hash(data.mid(0, static_cast<int> (length)));
 
   if(!computedHash.isEmpty() && !hash.isEmpty() && memcmp(computedHash, hash))
     return decrypted(data.mid(static_cast<int> (length)), ok);
@@ -435,7 +435,7 @@ QByteArray spoton_crypt::derivedSha1Key
     gcry_fast_random_poll();
 
   QByteArray key(qAbs(hashKeySize), 0);
-  int hashAlgorithm = gcry_md_map_name("sha1");
+  auto const hashAlgorithm = gcry_md_map_name("sha1");
 
   if(gcry_kdf_derive(passphrase.toUtf8().constData(),
 		     static_cast<size_t> (passphrase.toUtf8().length()),
@@ -454,7 +454,7 @@ QByteArray spoton_crypt::derivedSha1Key
 QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 {
   {
-    bool ok = true;
+    auto ok = true;
 
     initializePrivateKeyContainer(&ok);
 
@@ -698,12 +698,12 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if((err = gcry_pk_sign(&signature_t, data_t,
 			     key_t)) == 0 && signature_t)
 	{
-	  size_t length = gcry_sexp_sprint
+	  auto const length = gcry_sexp_sprint
 	    (signature_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
 
 	  if(length > 0)
 	    {
-	      char *buffer = static_cast<char *> (malloc(length));
+	      auto buffer = static_cast<char *> (malloc(length));
 
 	      if(buffer)
 		{
@@ -836,9 +836,9 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
       return QByteArray();
     }
 
-  QByteArray encrypted(data);
   QByteArray iv;
   QMutexLocker locker(&m_cipherMutex);
+  auto encrypted(data);
 
   if(!setInitializationVector(iv, m_cipherAlgorithm, m_cipherHandle))
     {
@@ -851,7 +851,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
     }
   else
     {
-      size_t blockLength = gcry_cipher_get_algo_blklen(m_cipherAlgorithm);
+      auto const blockLength = gcry_cipher_get_algo_blklen(m_cipherAlgorithm);
 
       if(blockLength == 0)
 	{
@@ -936,8 +936,8 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 
 QByteArray spoton_crypt::encryptedThenHashed(const QByteArray &data, bool *ok)
 {
-  QByteArray bytes1(encrypted(data, ok));
   QByteArray bytes2;
+  auto const bytes1(encrypted(data, ok));
 
   if(!bytes1.isEmpty())
     bytes2 = keyedHash(bytes1, ok);
@@ -967,7 +967,7 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
       gpgme_data_t keydata = 0;
-      gpgme_error_t err = gpgme_data_new_from_mem
+      auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata,
 	 publicKey.constData(),
@@ -1009,7 +1009,7 @@ QByteArray spoton_crypt::hash(const QByteArray &algorithm,
 			      bool *ok)
 {
   QByteArray hash;
-  unsigned int length = gcry_md_get_algo_dlen
+  auto const length = gcry_md_get_algo_dlen
     (gcry_md_map_name(algorithm.constData()));
 
   if(length > 0)
@@ -1055,7 +1055,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
   QByteArray hash;
   gcry_error_t err = 0;
   gcry_md_hd_t hd = 0;
-  int hashAlgorithm = gcry_md_map_name(hashType.constData());
+  auto const hashAlgorithm = gcry_md_map_name(hashType.constData());
 
   if(hashAlgorithm == 0)
     {
@@ -1121,11 +1121,11 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 	     data.constData(),
 	     static_cast<size_t> (data.length()));
 
-	  unsigned char *buffer = gcry_md_read(hd, hashAlgorithm);
+	  auto buffer = gcry_md_read(hd, hashAlgorithm);
 
 	  if(buffer)
 	    {
-	      unsigned int length = gcry_md_get_algo_dlen(hashAlgorithm);
+	      auto const length = gcry_md_get_algo_dlen(hashAlgorithm);
 
 	      if(length > 0)
 		{
@@ -1243,11 +1243,11 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 	     data.constData(),
 	     static_cast<size_t> (data.length()));
 
-	  unsigned char *buffer = gcry_md_read(hd, m_hashAlgorithm);
+	  auto buffer = gcry_md_read(hd, m_hashAlgorithm);
 
 	  if(buffer)
 	    {
-	      unsigned int length = gcry_md_get_algo_dlen(m_hashAlgorithm);
+	      auto const length = gcry_md_get_algo_dlen(m_hashAlgorithm);
 
 	      if(length > 0)
 		{
@@ -1312,7 +1312,7 @@ QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -1359,15 +1359,15 @@ QByteArray spoton_crypt::publicKey(bool *ok)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
@@ -1384,7 +1384,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
   QSqlDatabase::removeDatabase(connectionName);
 
   {
-    bool ok = true;
+    auto ok = true;
 
     data = decryptedAfterAuthenticated(data, &ok);
 
@@ -1432,7 +1432,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
 QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 {
   {
-    bool ok = true;
+    auto ok = true;
 
     initializePrivateKeyContainer(&ok);
 
@@ -1612,7 +1612,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 			  raw_t);
   else
     {
-      unsigned int nbits = gcry_pk_get_nbits(key_t);
+      auto const nbits = gcry_pk_get_nbits(key_t);
 
       if(nbits == 2048) // We do not support 2048-bit keys.
 	{
@@ -1700,7 +1700,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
     }
 
   QByteArray encrypted;
-  QByteArray publicKey(qUncompress(pk));
+  auto const publicKey(qUncompress(pk));
   gcry_error_t err = 0;
   gcry_sexp_t key_t = 0;
 
@@ -1736,7 +1736,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
       else
 	{
 	  QByteArray random;
-	  unsigned int nbits = gcry_pk_get_nbits(key_t);
+	  auto const nbits = gcry_pk_get_nbits(key_t);
 
 	  if(nbits == 2048) // We do not support 2048-bit keys.
 	    {
@@ -1774,12 +1774,12 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	  if((err = gcry_pk_encrypt(&encodedData_t, data_t,
 				    key_t)) == 0 && encodedData_t)
 	    {
-	      size_t length = gcry_sexp_sprint
+	      auto const length = gcry_sexp_sprint
 		(encodedData_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
 
 	      if(length > 0)
 		{
-		  char *buffer = static_cast<char *> (malloc(length));
+		  auto buffer = static_cast<char *> (malloc(length));
 
 		  if(buffer)
 		    {
@@ -1910,7 +1910,7 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
   QByteArray hash;
 
   {
-    bool ok = true;
+    auto ok = true;
 
     publicKey(&ok);
   }
@@ -1919,7 +1919,7 @@ QByteArray spoton_crypt::publicKeyHash(bool *ok)
 
   if(!m_publicKey.isEmpty())
     {
-      bool ok = true;
+      auto ok = true;
 
       hash = shaXHash(m_hashAlgorithm, m_publicKey, &ok);
 
@@ -1956,7 +1956,7 @@ QByteArray spoton_crypt::randomBytes
       }
   }
 
-  char *buffer = static_cast<char *> (malloc(size));
+  auto buffer = static_cast<char *> (malloc(size));
 
   if(!buffer)
     return random;
@@ -2130,7 +2130,7 @@ QByteArray spoton_crypt::shaXHash(const int algorithm,
 				  bool *ok)
 {
   QByteArray hash;
-  unsigned int length = gcry_md_get_algo_dlen(algorithm);
+  auto const length = gcry_md_get_algo_dlen(algorithm);
 
   if(length > 0)
     {
@@ -2259,7 +2259,7 @@ QByteArray spoton_crypt::weakRandomBytes(const size_t size)
 QByteArray spoton_crypt::whirlpoolHash(const QByteArray &data, bool *ok)
 {
   QByteArray hash;
-  unsigned int length = gcry_md_get_algo_dlen(GCRY_MD_WHIRLPOOL);
+  auto const length = gcry_md_get_algo_dlen(GCRY_MD_WHIRLPOOL);
 
   if(length > 0)
     {
@@ -2290,10 +2290,10 @@ QByteArray spoton_crypt::whirlpoolHash(const QByteArray &data, bool *ok)
 QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 {
   QList<QSslCipher> list;
-  QString controlString(scs.trimmed());
   QStringList protocols;
   SSL *ssl = 0;
   SSL_CTX *ctx = 0;
+  auto controlString(scs.trimmed());
   const char *next = 0;
   int index = 0;
 
@@ -2322,7 +2322,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 
   for(int i = 0; i < protocols.size(); i++)
     {
-      const QString &protocol(protocols.at(i));
+      auto const protocol(protocols.at(i));
 
       index = 0;
       next = 0;
@@ -2500,10 +2500,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   QByteArray key;
   QByteArray temporaryKey;
   QPair<QByteArray, QByteArray> keys;
-  gcry_error_t err = 0;
-  int cipherAlgorithm = (cipherType == "threefish") ? -1 :
+  auto const cipherAlgorithm = (cipherType == "threefish") ? -1 :
     gcry_cipher_map_name(cipherType.toLatin1().constData());
-  int hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+  auto const hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+  gcry_error_t err = 0;
   size_t keyLength = 0;
 
   if(cipherAlgorithm > 0 && gcry_cipher_test_algo(cipherAlgorithm) != 0)
@@ -2645,12 +2645,12 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   QPair<QByteArray, QByteArray> keys;
   QString connectionName("");
   QString genkey("");
+  auto ks = keySize.toInt();
   char *buffer = 0;
   gcry_error_t err = 0;
-  gcry_sexp_t key_t = 0;
   gcry_sexp_t keyPair_t = 0;
+  gcry_sexp_t key_t = 0;
   gcry_sexp_t parameters_t = 0;
-  int ks = keySize.toInt();
   size_t length = 0;
 
   m_isMcEliece.fetchAndStoreOrdered(0);
@@ -2699,7 +2699,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
       arg(ks);
   else if(keyType.toLower() == "mceliece")
     {
-      bool ok = true;
+      auto ok = true;
 
       generateMcElieceKeys(keySize, privateKey, publicKey, &ok);
 
@@ -2716,7 +2716,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
     }
   else if(keyType.toLower() == "ntru")
     {
-      bool ok = true;
+      auto ok = true;
 
       generateNTRUKeys(keySize, privateKey, publicKey, &ok);
 
@@ -2870,15 +2870,15 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO idiotes (id, id_hash, "
@@ -2985,7 +2985,7 @@ QString spoton_crypt::publicKeyAlgorithm(const QByteArray &data)
 
 QString spoton_crypt::publicKeyAlgorithm(void)
 {
-  bool ok = true;
+  auto ok = true;
 
   publicKey(&ok);
 
@@ -3001,7 +3001,7 @@ QString spoton_crypt::publicKeyAlgorithm(void)
 
 QString spoton_crypt::publicKeySize(const QByteArray &data)
 {
-  QString algorithm(publicKeyAlgorithm(data).toLower().trimmed());
+  auto const algorithm(publicKeyAlgorithm(data).toLower().trimmed());
 
   if(algorithm.isEmpty())
     {
@@ -3034,7 +3034,7 @@ QString spoton_crypt::publicKeySize(const QByteArray &data)
 
 QString spoton_crypt::publicKeySize(void)
 {
-  bool ok = true;
+  auto ok = true;
 
   publicKey(&ok);
 
@@ -3082,7 +3082,8 @@ QStringList spoton_crypt::cipherTypes(void)
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
-      int algorithm = gcry_cipher_map_name(types.at(i).toLatin1().constData());
+      auto const algorithm = gcry_cipher_map_name
+	(types.at(i).toLatin1().constData());
 
       if(!(algorithm != 0 && gcry_cipher_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3119,7 +3120,8 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
-      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+      auto const algorithm = gcry_md_map_name
+	(types.at(i).toLatin1().constData());
 
       if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3140,7 +3142,8 @@ QStringList spoton_crypt::hashTypes(void)
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
-      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+      auto const algorithm = gcry_md_map_name
+	(types.at(i).toLatin1().constData());
 
       if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3155,13 +3158,13 @@ bool spoton_crypt::exists(const QByteArray &publicKey, spoton_crypt *crypt)
     return false;
 
   QString connectionName("");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
@@ -3173,7 +3176,7 @@ bool spoton_crypt::exists(const QByteArray &publicKey, spoton_crypt *crypt)
 	  while(query.next())
 	    {
 	      QByteArray data;
-	      bool ok = true;
+	      auto ok = true;
 
 	      data = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -3206,18 +3209,18 @@ bool spoton_crypt::hasShake(void)
 bool spoton_crypt::isAuthenticated(void)
 {
   QString connectionName("");
-  bool authenticated = false;
+  auto authenticated = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
@@ -3227,7 +3230,7 @@ bool spoton_crypt::isAuthenticated(void)
 	  while(query.next())
 	    {
 	      QByteArray data;
-	      bool ok = true;
+	      auto ok = true;
 
 	      data = decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -3271,7 +3274,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
   QByteArray random(20, 0);
   QString keyType("");
   QStringList list;
-  bool ok = true;
+  auto ok = true;
   gcry_error_t err = 0;
   gcry_mpi_t hash_t = 0;
   gcry_sexp_t data_t = 0;
@@ -3493,7 +3496,7 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
 {
   QByteArray a;
   QByteArray b;
-  int length = qMax(bytes1.length(), bytes2.length());
+  auto const length = qMax(bytes1.length(), bytes2.length());
   int rc = 0;
 
   a = bytes1.leftJustified(length, 0);
@@ -3548,7 +3551,7 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
       return false;
     }
 
-  bool ok = true;
+  auto ok = true;
   size_t ivLength = 0;
 
   if((ivLength = gcry_cipher_get_algo_blklen(algorithm)) == 0)
@@ -3561,7 +3564,7 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
     }
   else
     {
-      char *iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
+      auto iv = static_cast<char *> (gcry_calloc(ivLength, sizeof(char)));
 
       if(Q_LIKELY(iv))
 	{
@@ -3629,15 +3632,15 @@ qint64 spoton_crypt::publicKeyCount(void)
   qint64 count = 0;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT COUNT(*) "
@@ -3658,7 +3661,7 @@ qint64 spoton_crypt::publicKeyCount(void)
 
 size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 {
-  int cipherAlgorithm = (cipherType == "threefish") ? -1 :
+  auto const cipherAlgorithm = (cipherType == "threefish") ? -1 :
     gcry_cipher_map_name(cipherType.constData());
   size_t keyLength = 0;
 
@@ -3687,7 +3690,7 @@ size_t spoton_crypt::ivLength(const QString &cipherType)
 
 void spoton_crypt::freeHashKey(void)
 {
-  bool locked = m_hashKeyMutex.tryLockForWrite();
+  auto const locked = m_hashKeyMutex.tryLockForWrite();
 
   if(!m_hashKey)
     {
@@ -3709,7 +3712,7 @@ void spoton_crypt::freeHashKey(void)
 
 void spoton_crypt::freePrivateKey(void)
 {
-  bool locked = m_privateKeyMutex.tryLockForWrite();
+  auto const locked = m_privateKeyMutex.tryLockForWrite();
 
   if(!m_privateKey)
     {
@@ -3731,7 +3734,7 @@ void spoton_crypt::freePrivateKey(void)
 
 void spoton_crypt::freeSymmetricKey(void)
 {
-  bool locked = m_symmetricKeyMutex.tryLockForWrite();
+  auto const locked = m_symmetricKeyMutex.tryLockForWrite();
 
   if(!m_symmetricKey)
     {
@@ -3771,14 +3774,14 @@ void spoton_crypt::generateCertificate(const int keySize,
   BUF_MEM *bptr;
   EC_KEY *ecc = 0;
   EVP_PKEY *pk = 0;
-  QString addressString(address.toString().trimmed());
   RSA *rsa = 0;
   X509 *x509 = 0;
   X509_NAME *name = 0;
   X509_NAME *subject = 0;
   X509_NAME_ENTRY *commonNameEntry = 0;
+  auto addressString(address.toString().trimmed());
   char *buffer = 0;
-  const unsigned char *organization = reinterpret_cast<const unsigned char *>
+  const auto organization = reinterpret_cast<const unsigned char *>
     ("Spot-On Origami Self-Signed Certificate");
   int length = 0;
   int rc = 0;
@@ -4485,7 +4488,7 @@ void spoton_crypt::init(const QString &cipherType,
 	}
       else if(m_cipherType == "threefish")
 	{
-	  bool ok = true;
+	  auto ok = true;
 
 	  m_threefish = new spoton_threefish();
 	  m_threefish->setKey(m_symmetricKey, m_symmetricKeyLength, &ok);
@@ -4665,15 +4668,15 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT private_key FROM idiotes WHERE id_hash = ?");
@@ -4702,7 +4705,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
     }
 
   {
-    bool ok = true;
+    auto ok = true;
 
     keyData = this->decryptedAfterAuthenticated(keyData, &ok);
 
@@ -4828,10 +4831,10 @@ void spoton_crypt::purgeDatabases(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
@@ -4870,15 +4873,15 @@ void spoton_crypt::purgePrivatePublicKeys(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM idiotes WHERE id_hash = ?");
@@ -4916,7 +4919,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -4924,7 +4927,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 
@@ -4933,7 +4936,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	    {
 	      QByteArray publicKey
 		(QByteArray::fromBase64(query.value(0).toByteArray()));
-	      bool ok = true;
+	      auto ok = true;
 
 	      publicKey = oldCrypt->decryptedAfterAuthenticated
 		(publicKey, &ok);
@@ -4973,15 +4976,15 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	if(ok && query.exec())
 	  if(query.next())
 	    {
-	      QByteArray id
-		(QByteArray::fromBase64(query.value(0).toByteArray()));
 	      QByteArray idHash;
-	      QByteArray privateKey
-		(QByteArray::fromBase64(query.value(1).toByteArray()));
-	      QByteArray publicKey
-		(QByteArray::fromBase64(query.value(2).toByteArray()));
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto id
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      auto privateKey
+		(QByteArray::fromBase64(query.value(1).toByteArray()));
+	      auto publicKey
+		(QByteArray::fromBase64(query.value(2).toByteArray()));
+	      auto ok = true;
 
 	      updateQuery.exec("PRAGMA secure_delete = ON");
 	      id = oldCrypt->decryptedAfterAuthenticated(id, &ok);
@@ -5100,10 +5103,10 @@ void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "idiotes.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
 
     if(db.open())
       {
@@ -5115,7 +5118,7 @@ void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
 	  while(query.next())
 	    {
 	      QByteArray data;
-	      bool ok = true;
+	      auto ok = true;
 
 	      data = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -5162,7 +5165,7 @@ void spoton_crypt::setSslCiphers(const QList<QSslCipher> &ciphers,
 				 const QString &sslControlString,
 				 QSslConfiguration &configuration)
 {
-  QList<QSslCipher> preferred(defaultSslCiphers(sslControlString));
+  auto preferred(defaultSslCiphers(sslControlString));
 
   for(int i = preferred.size() - 1; i >= 0; i--)
     if(!ciphers.contains(preferred.at(i)))
