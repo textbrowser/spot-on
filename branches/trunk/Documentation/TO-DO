@@ -328,7 +328,7 @@ Remaining Items
 2.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
 3.     Automatics and constants:
-       Common
+       Common (Completed)
        GUI
        Kernel (Completed)
 4.     Archive architectures.

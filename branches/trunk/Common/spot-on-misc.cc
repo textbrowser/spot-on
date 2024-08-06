@@ -795,7 +795,7 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
 		  if(!computedHash.isEmpty() && !bytes2.isEmpty() &&
 		     spoton_crypt::memcmp(bytes2, computedHash))
 		    {
-		      QByteArray data(crypt.decrypted(bytes1, &ok));
+		      auto data(crypt.decrypted(bytes1, &ok));
 
 		      if(!ok)
 			break;
@@ -953,7 +953,7 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 
   for(int i = 0; i < list.size(); i++)
     {
-      const QString str(list.at(i));
+      QString const str(list.at(i));
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       auto const pair(str.split(":=", Qt::SkipEmptyParts));
 #else
@@ -1321,7 +1321,7 @@ QString spoton_misc::keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT key_type FROM friends_public_keys "
@@ -1405,7 +1405,7 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 	if(query.exec())
 	  if(query.next())
 	    {
-	      QByteArray bytes
+	      auto const bytes
 		(crypt->
 		 decryptedAfterAuthenticated(QByteArray::
 					     fromBase64(query.
@@ -3690,8 +3690,8 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 			  for(int i = 0; i < attachments.size(); i++)
 			    {
-			      auto const pair(attachments.at(i));
 			      QSqlQuery query(db);
+			      auto const pair(attachments.at(i));
 
 			      query.prepare("INSERT INTO folders_attachment "
 					    "(data, folders_oid, name) "
@@ -3936,7 +3936,7 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
 
   for(int i = 0; i < list.size(); i++)
     {
-      QByteArray bytes(list.at(i).trimmed());
+      auto bytes(list.at(i).trimmed());
 
       if(bytes.startsWith("ct="))
 	{
