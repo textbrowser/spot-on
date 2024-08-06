@@ -195,7 +195,7 @@ void spoton_starbeam_writer::processData(void)
 
     if(!m_queue.isEmpty())
       {
-	auto const &pair(m_queue.dequeue());
+	auto const pair(m_queue.dequeue());
 
 	data = pair.first.trimmed();
 	magnet = pair.second;
@@ -251,13 +251,13 @@ void spoton_starbeam_writer::processData(void)
     goto start_label;
 
   QReadLocker locker(&m_keyMutex);
-  auto const &novas(m_novas);
+  auto const novas(m_novas);
 
   locker.unlock();
 
   QByteArray messageCode;
   QByteArray nova;
-  auto const &d
+  auto const d
     (data.
      mid(0, data.length() - spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES));
   auto found = false;
@@ -416,8 +416,8 @@ void spoton_starbeam_writer::processData(void)
      spoton_kernel::instance()->hasStarBeamReaderId(fileId))
     goto start_label;
 
-  auto const &hash(list.value(7));
-  auto const &sha3_512_hash(list.value(11));
+  auto const hash(list.value(7));
+  auto const sha3_512_hash(list.value(11));
   auto const dataSize = qAbs(list.value(3).toLongLong());
   auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maxMosaicSize", 512).toLongLong();
@@ -463,7 +463,7 @@ void spoton_starbeam_writer::processData(void)
       goto start_label;
     }
 
-  auto const &fileName
+  auto const fileName
     (spoton_kernel::setting("gui/etpDestinationPath",
 			    QDir::homePath()).toString() +
      QDir::separator() +
@@ -524,7 +524,7 @@ void spoton_starbeam_writer::processData(void)
     {
       if(file.seek(position))
 	{
-	  auto const &data(qUncompress(list.value(5)));
+	  auto const data(qUncompress(list.value(5)));
 
 	  if(static_cast<int> (file.write(data)) != data.length())
 	    {
@@ -868,7 +868,7 @@ void spoton_starbeam_writer::slotReadKeys(void)
 		continue;
 
 	      QHash<QString, QByteArray> elements;
-	      auto const &list
+	      auto const list
 		(data.remove(0, static_cast<int> (qstrlen("magnet:?"))).
 		 split('&'));
 

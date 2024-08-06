@@ -309,7 +309,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
   if(rc <= 0)
     return;
 
-  auto const &elements(elementsFromMagnet(magnet, s_crypt));
+  auto const elements(elementsFromMagnet(magnet, s_crypt));
 
   if(elements.isEmpty())
     {

@@ -726,7 +726,7 @@ spoton_neighbor::spoton_neighbor
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #ifndef Q_OS_MACOS
-      auto const &list(QBluetoothLocalDevice::allDevices());
+      auto const list(QBluetoothLocalDevice::allDevices());
 
       if(list.isEmpty())
 	m_bluetoothServiceDiscoveryAgent =
@@ -1287,7 +1287,7 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 
   QByteArray hash;
   QByteArray message;
-  auto const &salt(spoton_crypt::
+  auto const salt(spoton_crypt::
 		   strongRandomBytes(spoton_common::
 				     ACCOUNTS_RANDOM_BUFFER_SIZE));
   auto ok = true;
@@ -1326,7 +1326,7 @@ void spoton_neighbor::slotCallParticipant(const QByteArray &data,
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -1945,7 +1945,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
   if(!address.isNull())
     if(readyToWrite())
       {
-	auto const &message
+	auto const message
 	  (spoton_send::message0030(address, port, orientation));
 
 	if(write(message.constData(), message.length()) != message.length())
@@ -1976,14 +1976,14 @@ void spoton_neighbor::slotPublicizeListenerPlaintext(const QByteArray &data,
   */
 
   QReadLocker locker(&m_echoModeMutex);
-  auto const &echoMode(m_echoMode);
+  auto const echoMode(m_echoMode);
 
   locker.unlock();
 
   if(echoMode == "full")
     if(readyToWrite())
       {
-	auto const &message(spoton_send::message0030(data));
+	auto const message(spoton_send::message0030(data));
 
 	if(write(message.constData(), message.length()) != message.length())
 	  spoton_misc::logError
@@ -2010,7 +2010,7 @@ void spoton_neighbor::slotPublicizeListenerPlaintext
   if(!address.isNull())
     if(readyToWrite())
       {
-	auto const &message
+	auto const message
 	  (spoton_send::message0030(address, port, transport, orientation));
 
 	if(write(message.constData(), message.length()) != message.length())
@@ -2178,7 +2178,7 @@ void spoton_neighbor::slotRetrieveMail(const QByteArrayList &list,
     for(int i = 0; i < list.size(); i++)
       {
 	QByteArray message;
-	auto const &ae
+	auto const ae
 	  (spoton_misc::
 	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 				     spoton_kernel::crypt("chat")));
@@ -2236,7 +2236,7 @@ void spoton_neighbor::slotSendAccountInformation(void)
       {
 	QByteArray hash;
 	QByteArray message;
-	auto const &salt
+	auto const salt
 	  (spoton_crypt::
 	   strongRandomBytes(spoton_common::ACCOUNTS_RANDOM_BUFFER_SIZE));
 
@@ -2278,7 +2278,7 @@ void spoton_neighbor::slotSendAuthenticationRequest(void)
        state() == QAbstractSocket::ConnectedState))
     return;
 
-  auto const &message(spoton_send::message0052());
+  auto const message(spoton_send::message0052());
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
@@ -2318,7 +2318,7 @@ void spoton_neighbor::slotSendCapabilities(void)
 
   QByteArray message;
   QReadLocker locker(&m_echoModeMutex);
-  auto const &echoMode(m_echoMode);
+  auto const echoMode(m_echoMode);
 
   locker.unlock();
 
@@ -2348,7 +2348,7 @@ void spoton_neighbor::slotSendMOTD(void)
   else if(!readyToWrite())
     return;
 
-  auto const &message(spoton_send::message0070(m_motd.toUtf8()));
+  auto const message(spoton_send::message0070(m_motd.toUtf8()));
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
@@ -2369,11 +2369,11 @@ void spoton_neighbor::slotSendMail(const QPairByteArrayInt64List &list,
     for(int i = 0; i < list.size(); i++)
       {
 	QByteArray message;
-	auto const &ae
+	auto const ae
 	  (spoton_misc::
 	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 				     spoton_kernel::crypt("chat")));
-	auto const &pair(list.at(i));
+	auto const pair(list.at(i));
 
 	if(messageType == "0001a")
 	  message = spoton_send::message0001a(pair.first, ae);
@@ -2438,7 +2438,7 @@ void spoton_neighbor::slotSendMailFromPostOffice
   if(adaptiveEcho && readyToWrite())
     {
       QByteArray message;
-      auto const &ae
+      auto const ae
 	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 						spoton_kernel::crypt("chat")));
 
@@ -2464,7 +2464,7 @@ void spoton_neighbor::slotSendMessage
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -2489,7 +2489,7 @@ void spoton_neighbor::slotSendStatus(const QByteArrayList &list)
     for(int i = 0; i < list.size(); i++)
       {
 	QByteArray message;
-	auto const &ae
+	auto const ae
 	  (spoton_misc::
 	   decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 				     spoton_kernel::crypt("chat")));
@@ -3129,7 +3129,7 @@ void spoton_neighbor::slotTimeout(void)
   locker2.unlock();
 
   QSet<QPair<QByteArray, QByteArray> > b;
-  auto const &list(spoton_kernel::adaptiveEchoTokens());
+  auto const list(spoton_kernel::adaptiveEchoTokens());
 
   for(int i = 0; i < list.size(); i++)
     b.insert(list.at(i));
@@ -3228,7 +3228,7 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 

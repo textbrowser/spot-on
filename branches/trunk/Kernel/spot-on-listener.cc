@@ -958,10 +958,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
   if(m_udpServer)
     {
-      auto const &address(QString("%1:%2:%3").
-			  arg(neighbor->peerAddress()).
-			  arg(neighbor->scopeId()).
-			  arg(neighbor->peerPort()));
+      auto const address(QString("%1:%2:%3").
+			 arg(neighbor->peerAddress()).
+			 arg(neighbor->scopeId()).
+			 arg(neighbor->peerPort()));
 
       neighbor->setProperty("address", address);
       m_udpServer->addClientAddress(address);
@@ -1152,7 +1152,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    QString proxyPassword("");
 	    QString proxyPort("1");
 	    QString proxyUsername("");
-	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
+	    auto const proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -1255,7 +1255,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      if(query.exec())
 		{
-		  auto const &variant(query.lastInsertId());
+		  auto const variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();
@@ -1304,11 +1304,11 @@ void spoton_listener::prepareNetworkInterface(void)
       m_networkInterface = 0;
     }
 
-  auto const &list(QNetworkInterface::allInterfaces());
+  auto const list(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < list.size(); i++)
     {
-      auto const &addresses(list.at(i).addressEntries());
+      auto const addresses(list.at(i).addressEntries());
 
       for(int j = 0; j < addresses.size(); j++)
 	if(m_sctpServer)
@@ -1690,7 +1690,7 @@ void spoton_listener::slotNewConnection(void)
 	    QString proxyPassword("");
 	    QString proxyPort("1");
 	    QString proxyUsername("");
-	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
+	    auto const proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -1770,7 +1770,7 @@ void spoton_listener::slotNewConnection(void)
 	    if(ok)
 	      if(query.exec())
 		{
-		  auto const &variant(query.lastInsertId());
+		  auto const variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();
@@ -1877,7 +1877,7 @@ void spoton_listener::slotTimeout(void)
 	    if(query.next())
 	      {
 		QString echoMode("");
-		auto const &status(query.value(0).toString().toLower());
+		auto const status(query.value(0).toString().toLower());
 		auto ok = true;
 		auto s_crypt = spoton_kernel::crypt("chat");
 
@@ -2451,7 +2451,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	    QString proxyPassword("");
 	    QString proxyPort("1");
 	    QString proxyUsername("");
-	    auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
+	    auto const proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	    if(ok)
 	      query.bindValue
@@ -2538,7 +2538,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	    if(ok)
 	      if(query.exec())
 		{
-		  auto const &variant(query.lastInsertId());
+		  auto const variant(query.lastInsertId());
 
 		  if(variant.isValid())
 		    id = query.lastInsertId().toLongLong();

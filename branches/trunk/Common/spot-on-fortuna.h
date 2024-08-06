@@ -795,7 +795,7 @@ class fortunate_q: public QObject
   static QByteArray E(const QByteArray &C, const QByteArray &K)
   {
     aes256 aes(K.constData());
-    auto const &string(std::string(C.toHex().constData()));
+    auto const string(std::string(C.toHex().constData()));
 
     return QByteArray::fromHex
       (aes256::to_hex(aes.encrypt_block(aes256::from_hex(string))).data());
@@ -887,7 +887,7 @@ class fortunate_q: public QObject
     if(device && device->isOpen())
       do
 	{
-	  auto const &e(device->read(32));
+	  auto const e(device->read(32));
 
 	  if(!e.isEmpty() && i < m_R.m_P.size())
 	    {

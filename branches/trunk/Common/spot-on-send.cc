@@ -84,7 +84,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
 QByteArray spoton_send::message0000(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -97,7 +97,7 @@ QByteArray spoton_send::message0000
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
@@ -123,7 +123,7 @@ QByteArray spoton_send::message0000
 QByteArray spoton_send::message0000a(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -136,7 +136,7 @@ QByteArray spoton_send::message0000a
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
@@ -162,7 +162,7 @@ QByteArray spoton_send::message0000a
 QByteArray spoton_send::message0000b(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -175,7 +175,7 @@ QByteArray spoton_send::message0000b
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
@@ -201,7 +201,7 @@ QByteArray spoton_send::message0000b
 QByteArray spoton_send::message0000d(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -214,7 +214,7 @@ QByteArray spoton_send::message0000d
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   if(sendMethod == ARTIFICIAL_GET)
@@ -242,7 +242,7 @@ QByteArray spoton_send::message0001a
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -265,7 +265,7 @@ QByteArray spoton_send::message0001a
 QByteArray spoton_send::message0001b(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -277,7 +277,7 @@ QByteArray spoton_send::message0001b
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -300,7 +300,7 @@ QByteArray spoton_send::message0001b
 QByteArray spoton_send::message0001c(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -312,7 +312,7 @@ QByteArray spoton_send::message0001c
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -337,7 +337,7 @@ QByteArray spoton_send::message0002a
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -362,7 +362,7 @@ QByteArray spoton_send::message0002b
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -443,7 +443,7 @@ QByteArray spoton_send::message0012(const QByteArray &message)
 QByteArray spoton_send::message0013(const QByteArray &message)
 {
   QByteArray results("content=");
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, QPair<QByteArray, QByteArray> ()));
 
   results.append(authenticated);
@@ -455,7 +455,7 @@ QByteArray spoton_send::message0013
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -706,7 +706,7 @@ QByteArray spoton_send::message0060
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -731,7 +731,7 @@ QByteArray spoton_send::message0061
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -797,7 +797,7 @@ QByteArray spoton_send::message0080
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -822,7 +822,7 @@ QByteArray spoton_send::message0090
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -847,7 +847,7 @@ QByteArray spoton_send::message0091a
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -872,7 +872,7 @@ QByteArray spoton_send::message0091b
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append
@@ -897,7 +897,7 @@ QByteArray spoton_send::messageXYZ
  const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
 {
   QByteArray results;
-  auto const &authenticated
+  auto const authenticated
     (adaptiveEchoAuthentication(message, adaptiveEchoPair));
 
   results.append

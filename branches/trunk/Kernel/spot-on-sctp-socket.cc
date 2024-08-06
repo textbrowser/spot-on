@@ -112,7 +112,7 @@ spoton_sctp_socket::~spoton_sctp_socket()
 QByteArray spoton_sctp_socket::readAll(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
-  auto const &data(m_readBuffer);
+  auto const data(m_readBuffer);
 
   m_readBuffer.clear();
   return data;
@@ -300,7 +300,7 @@ int spoton_sctp_socket::inspectConnectResult
       if(errorcode == WSAEWOULDBLOCK)
 	return 0;
 
-      auto const &errorstr
+      auto const errorstr
 	(QString("inspectConnectResult::error=%1,socket=%2").
 	 arg(errorcode).arg(static_cast<int> (m_socketDescriptor)));
 
@@ -309,7 +309,7 @@ int spoton_sctp_socket::inspectConnectResult
       if(errorcode == EINPROGRESS)
 	return 0;
 
-      auto const &errorstr
+      auto const errorstr
 	(QString("inspectConnectResult::errno=%1,socket=%2").
 	 arg(errorcode).arg(static_cast<int> (m_socketDescriptor)));
 
@@ -368,8 +368,8 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
 
   if(rc == -1)
     {
-      auto const &errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
-				   "errno=%1").arg(errno));
+      auto const errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
+				  "errno=%1").arg(errno));
 
       emit error(errorstr, UnknownSocketError);
       return -1;
@@ -379,8 +379,8 @@ int spoton_sctp_socket::setSocketBlockingOrNon(void)
 
   if(rc == -1)
     {
-      auto const &errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
-				   "errno=%1").arg(errno));
+      auto const errorstr(QString("setSocketBlockingOrNon()::fcntl()::"
+				  "errno=%1").arg(errno));
 
       emit error(errorstr, UnknownSocketError);
       return -1;
@@ -447,7 +447,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
   if(rc == -1)
     {
 #if defined(Q_OS_WIN)
-      auto const &errorstr
+      auto const errorstr
 	(QString("read()::recv()::error=%1").arg(WSAGetLastError()));
 
       if(WSAGetLastError() == WSAEWOULDBLOCK)
@@ -459,7 +459,7 @@ qint64 spoton_sctp_socket::read(char *data, const qint64 size)
       else
 	emit error(errorstr, UnknownSocketError);
 #else
-      auto const &errorstr(QString("read()::recv()::errno=%1").arg(errno));
+      auto const errorstr(QString("read()::recv()::errno=%1").arg(errno));
 
       if(errno == EAGAIN || errno == EINPROGRESS || errno == EWOULDBLOCK)
 	/*
@@ -536,12 +536,12 @@ qint64 spoton_sctp_socket::write(const char *data, const qint64 size)
   if(sent == -1)
     {
 #if defined(Q_OS_WIN)
-      auto const &errorstr
+      auto const errorstr
 	(QString("write()::send()::error=%1").arg(WSAGetLastError()));
 
       emit error(errorstr, UnknownSocketError);
 #else
-      auto const &errorstr(QString("write()::send()::errno=%1").arg(errno));
+      auto const errorstr(QString("write()::send()::errno=%1").arg(errno));
 
       if(errno == EACCES)
 	emit error(errorstr, SocketAccessError);
@@ -689,13 +689,13 @@ void spoton_sctp_socket::connectToHostImplementation(void)
   if(rc == -1)
     {
 #if defined(Q_OS_WIN)
-      auto const &errorstr
+      auto const errorstr
 	(QString("connectToHostImplementation()::socket()::error=%1").
 	 arg(WSAGetLastError()));
 
       emit error(errorstr, UnknownSocketError);
 #else
-      auto const &errorstr
+      auto const errorstr
 	(QString("connectToHostImplementation()::socket()::errno=%1").
 	 arg(errno));
 

@@ -561,7 +561,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
       return QByteArray();
     }
 
-  auto const &iv(bytes.mid(0, static_cast<int> (m_keyLength)));
+  auto const iv(bytes.mid(0, static_cast<int> (m_keyLength)));
 
   if(Q_UNLIKELY(iv.length() != static_cast<int> (m_keyLength)))
     {
@@ -574,7 +574,7 @@ QByteArray spoton_threefish::decrypted(const QByteArray &bytes, bool *ok) const
   QByteArray block(static_cast<int> (m_blockSize), 0);
   QByteArray c;
   QByteArray decrypted;
-  auto const &ciphertext(bytes.mid(iv.length()));
+  auto const ciphertext(bytes.mid(iv.length()));
   auto const iterations = ciphertext.length() / static_cast<int> (m_blockSize);
 
   for(int i = 0; i < iterations; i++)

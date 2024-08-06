@@ -98,7 +98,7 @@ QString spoton_neighbor::findMessageType
      s_crypt &&
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
-      auto const &gemini
+      auto const gemini
 	(spoton_misc::findGeminiInCosmos(list.value(0),
 					 list.value(1),
 					 s_crypt));
@@ -309,7 +309,7 @@ QString spoton_neighbor::findMessageType
   if(interfaces > 0 && list.size() == 4)
     for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
       {
-	auto const &keyType
+	auto const keyType
 	  (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
 	s_crypt = spoton_kernel::crypt(keyType);
@@ -432,7 +432,7 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   if((ok = readyToWrite()))
     {
       QByteArray message;
-      auto const &ae
+      auto const ae
 	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 						spoton_kernel::crypt("chat")));
 
@@ -509,7 +509,7 @@ int spoton_neighbor::write(const char *data,
 
 	  locker.unlock();
 
-	  qint64 minimum = qMin
+	  auto const minimum = qMin
 	    (spoton_common::MAXIMUM_TCP_PACKET_SIZE,
 	     maximumBufferSize - spoton_misc::sendQueueSize(m_tcpSocket));
 
@@ -681,7 +681,7 @@ void spoton_neighbor::process0000(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::process0000(length,
 				 dataIn,
 				 symmetricKeys,
@@ -718,7 +718,7 @@ void spoton_neighbor::process0000a(int length,
   ** This method also processes 0000c.
   */
 
-  auto const &list
+  auto const list
     (spoton_receive::process0000a(length,
 				  dataIn,
 				  spoton_kernel::setting("gui/chatAccept"
@@ -740,7 +740,7 @@ void spoton_neighbor::process0000b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::process0000b(length,
 				  dataIn,
 				  symmetricKeys,
@@ -762,7 +762,7 @@ void spoton_neighbor::process0000d(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::process0000d(length,
 				  dataIn,
 				  symmetricKeys,
@@ -814,14 +814,14 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
       QByteArray signature;
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
-      auto const &data1(list.value(1));
-      auto const &data2(list.value(3));
+      auto const data1(list.value(1));
+      auto const data2(list.value(3));
       auto keyInformation1(list.value(0));
       auto keyInformation2(list.value(2));
-      auto const &originalKeyInformation1(keyInformation1);
-      auto const &originalKeyInformation2(keyInformation2);
-      auto const &messageCode1(list.value(5));
-      auto const &messageCode2(list.value(4));
+      auto const originalKeyInformation1(keyInformation1);
+      auto const originalKeyInformation2(keyInformation2);
+      auto const messageCode1(list.value(5));
+      auto const messageCode2(list.value(4));
 
       keyInformation1 = s_crypt->publicKeyDecrypt(keyInformation1, &ok);
 
@@ -880,7 +880,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 
 	  if(ok)
 	    {
-	      auto const &list(data.split('\n'));
+	      auto const list(data.split('\n'));
 
 	      if(list.size() == 3)
 		{
@@ -930,7 +930,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 
 	  if(ok)
 	    {
-	      auto const &publicKey(s_crypt->publicKey(&ok));
+	      auto const publicKey(s_crypt->publicKey(&ok));
 	      QByteArray publicKeyHash;
 
 	      publicKeyHash = spoton_crypt::preferredHash(publicKey);
@@ -1006,7 +1006,7 @@ void spoton_neighbor::process0001a(int length, const QByteArray &dataIn)
 
 		      if(ok)
 			{
-			  auto const &list(data.split('\n'));
+			  auto const list(data.split('\n'));
 
 			  if(list.size() == 8)
 			    {
@@ -1148,7 +1148,7 @@ void spoton_neighbor::process0001b(int length,
 	  QByteArray symmetricKey;
 	  QByteArray symmetricKeyAlgorithm;
 	  auto keyInformation(list.value(0));
-	  auto const &originalKeyInformation(keyInformation);
+	  auto const originalKeyInformation(keyInformation);
 	  auto ok = true;
 
 	  keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
@@ -1191,7 +1191,7 @@ void spoton_neighbor::process0001b(int length,
 
 	      if(ok)
 		{
-		  auto const &messageCode(list.value(2));
+		  auto const messageCode(list.value(2));
 
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
@@ -1269,7 +1269,7 @@ void spoton_neighbor::process0001b(int length,
 
 	if(spoton_kernel::setting("gui/postoffice_enabled", false).toBool())
 	  {
-	    auto const &publicKeyHash
+	    auto const publicKeyHash
 	      (spoton_misc::findPublicKeyHashGivenHash(list.value(3),
 						       list.value(4),
 						       symmetricKeys.value(2),
@@ -1296,7 +1296,7 @@ void spoton_neighbor::process0001c(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::process0001c(length,
 				  dataIn,
 				  symmetricKeys,
@@ -1353,7 +1353,7 @@ void spoton_neighbor::process0002a
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
       auto keyInformation(list.value(0));
-      auto const &originalKeyInformation(keyInformation);
+      auto const originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -1394,7 +1394,7 @@ void spoton_neighbor::process0002a
 
 	  if(ok)
 	    {
-	      auto const &messageCode(list.value(2));
+	      auto const messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -1525,7 +1525,7 @@ void spoton_neighbor::process0002b
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(1));
+	  auto const messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
@@ -1554,7 +1554,7 @@ void spoton_neighbor::process0002b
 		    {
 		      if(list.value(0) == "0002b")
 			{
-			  auto const &publicKeyHash
+			  auto const publicKeyHash
 			    (spoton_misc::findPublicKeyHashGivenHash
 			     (list.value(1), list.value(2),
 			      symmetricKeys.value(2),
@@ -1737,7 +1737,7 @@ void spoton_neighbor::process0013(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::process0013(length,
 				 dataIn,
 				 symmetricKeys,
@@ -1788,7 +1788,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
       emit resetKeepAlive();
       data = QByteArray::fromBase64(data);
 
-      auto const &list(data.split('\n'));
+      auto const list(data.split('\n'));
       QUuid uuid(list.value(0));
       QWriteLocker locker(&m_receivedUuidMutex);
 
@@ -1917,7 +1917,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
     {
       data = data.trimmed();
 
-      auto const &originalData(data);
+      auto const originalData(data);
       auto list(data.split('\n'));
 
       for(int i = 0; i < list.size(); i++)
@@ -1934,7 +1934,7 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 	}
       else
 	{
-	  auto const &statusControl
+	  auto const statusControl
 	    (spoton_kernel::setting("gui/acceptPublicizedListeners",
 				    "localConnected").toString().
 	     toLower());
@@ -1958,7 +1958,11 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 							      */
 
 		  spoton_misc::savePublishedNeighbor
-		    (address, port, transport, statusControl, orientation,
+		    (address,
+		     port,
+		     transport,
+		     statusControl,
+		     orientation,
 		     s_crypt);
 		}
 	    }
@@ -2066,7 +2070,7 @@ void spoton_neighbor::process0040a(int length,
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(1));
+	  auto const messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
@@ -2151,12 +2155,12 @@ void spoton_neighbor::process0040b(int length,
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(1));
+	  auto const messageCode(list.value(1));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
-	      QByteArray data(list.value(0));
+	      auto data(list.value(0));
 	      auto ok = true;
 	      spoton_crypt crypt(symmetricKeys.value(1),
 				 "sha512", // Buzz
@@ -2385,8 +2389,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 	      QByteArray name;
 	      QByteArray newHash;
 	      QByteArray password;
-	      auto const &salt(list.at(1).trimmed());
-	      auto const &hash(list.at(0));
+	      auto const salt(list.at(1).trimmed());
+	      auto const hash(list.at(0));
 	      auto ok = true;
 
 	      QReadLocker locker1(&m_accountNameMutex);
@@ -2703,7 +2707,7 @@ void spoton_neighbor::process0080(int length,
       */
 
       QByteArray computedHash;
-      auto const &keyInformation(list.value(0));
+      auto const keyInformation(list.value(0));
       auto ok = true;
 
       computedHash = spoton_crypt::keyedHash
@@ -2712,7 +2716,7 @@ void spoton_neighbor::process0080(int length,
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(2));
+	  auto const messageCode(list.value(2));
 
 	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
@@ -2760,9 +2764,9 @@ void spoton_neighbor::process0080(int length,
 					   spoton_common::URL_TIME_DELTA))
 		    return;
 
-		  auto const &dataForSignature
+		  auto const dataForSignature
 		    (keyInformation + list.value(0) + list.value(1));
-		  auto const &signature(list.value(2));
+		  auto const signature(list.value(2));
 
 		  {
 		    QByteArray a;
@@ -2783,7 +2787,7 @@ void spoton_neighbor::process0080(int length,
 
 			    if(list.size() == 1)
 			      {
-				auto const &publicKeyHash(list.value(0));
+				auto const publicKeyHash(list.value(0));
 
 				if(!spoton_misc::
 				   isAcceptedParticipant(publicKeyHash,
@@ -2970,7 +2974,7 @@ void spoton_neighbor::process0091a(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::
      process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091a"));
 
@@ -2982,7 +2986,7 @@ void spoton_neighbor::process0091b(int length,
 				   const QByteArray &dataIn,
 				   const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::
      process0091(length, dataIn, symmetricKeys, m_address, m_port, "0091b"));
 
@@ -2994,7 +2998,7 @@ void spoton_neighbor::process0092(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
-  auto const &list
+  auto const list
     (spoton_receive::
      process0092(length, dataIn, symmetricKeys, m_address, m_port));
 
@@ -3189,7 +3193,7 @@ void spoton_neighbor::processData(void)
       if(m_abort.fetchAndAddOrdered(0))
 	return;
 
-      auto const &bytes(data.mid(0, index + spoton_send::EOM.length()));
+      auto const bytes(data.mid(0, index + spoton_send::EOM.length()));
 
       data.remove(0, bytes.length());
       totalBytes += bytes.length();
@@ -3264,13 +3268,13 @@ void spoton_neighbor::processData(void)
 	return;
 
       auto data(list.at(i));
-      auto const &originalData(data);
+      auto const originalData(data);
       int index = -1;
       int length = 0;
 
       if((index = data.indexOf("Content-Length: ")) >= 0)
 	{
-	  auto const &contentLength
+	  auto const contentLength
 	    (data.mid(index + static_cast<int> (qstrlen("Content-Length: "))));
 
 	  if((index = contentLength.indexOf("\r\n")) >= 0)
@@ -3946,7 +3950,7 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
       return;
     }
 
-  auto const &now(QDateTime::currentDateTimeUtc());
+  auto const now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
@@ -4940,7 +4944,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	    {
 	      if(!attachmentData_l.isEmpty())
 		{
-		  auto const &variant(query.lastInsertId());
+		  auto const variant(query.lastInsertId());
 		  auto const id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
@@ -4972,7 +4976,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 			  for(int i = 0; i < attachments.size(); i++)
 			    {
 			      QSqlQuery query(db);
-			      auto const &pair(attachments.at(i));
+			      auto const pair(attachments.at(i));
 
 			      query.prepare("INSERT INTO folders_attachment "
 					    "(data, folders_oid, name) "

@@ -97,7 +97,7 @@ QList<QByteArray> spoton_receive::process0000
 
 	      if(ok)
 		{
-		  auto const &messageCode(list.value(1));
+		  auto const messageCode(list.value(1));
 
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
@@ -166,7 +166,7 @@ QList<QByteArray> spoton_receive::process0000
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
       auto keyInformation(list.value(0));
-      auto const &originalKeyInformation(keyInformation);
+      auto const originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -225,7 +225,7 @@ QList<QByteArray> spoton_receive::process0000
 
 	  if(ok)
 	    {
-	      auto const &messageCode(list.value(2));
+	      auto const messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -388,7 +388,7 @@ QList<QByteArray> spoton_receive::process0000a
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
       auto keyInformation(list.value(0));
-      auto const &originalKeyInformation(keyInformation);
+      auto const originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -444,7 +444,7 @@ QList<QByteArray> spoton_receive::process0000a
 
 	  if(ok)
 	    {
-	      auto const &messageCode(list.value(2));
+	      auto const messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -870,7 +870,7 @@ QList<QByteArray> spoton_receive::process0001b
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
       auto keyInformation(list.value(0));
-      auto const &originalKeyInformation(keyInformation);
+      auto const originalKeyInformation(keyInformation);
       auto ok = true;
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
@@ -912,7 +912,7 @@ QList<QByteArray> spoton_receive::process0001b
 
 	  if(ok)
 	    {
-	      auto const &messageCode(list.value(2));
+	      auto const messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -1160,7 +1160,7 @@ QList<QByteArray> spoton_receive::process0013
 
 	      if(ok)
 		{
-		  auto const &messageCode(list.value(1));
+		  auto const messageCode(list.value(1));
 
 		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
@@ -1229,7 +1229,7 @@ QList<QByteArray> spoton_receive::process0013
       QByteArray symmetricKey;
       QByteArray symmetricKeyAlgorithm;
       auto keyInformation(list.value(0));
-      auto const &originalKeyInformation(keyInformation);
+      auto const originalKeyInformation(keyInformation);
 
       keyInformation = s_crypt->publicKeyDecrypt(keyInformation, &ok);
 
@@ -1285,7 +1285,7 @@ QList<QByteArray> spoton_receive::process0013
 
 	  if(ok)
 	    {
-	      auto const &messageCode(list.value(2));
+	      auto const messageCode(list.value(2));
 
 	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
@@ -1457,7 +1457,7 @@ QList<QByteArray> spoton_receive::process0091
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(2));
+	  auto const messageCode(list.value(2));
 
 	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
 	     !spoton_crypt::memcmp(computedHash, messageCode))
@@ -1507,7 +1507,7 @@ QList<QByteArray> spoton_receive::process0091
 	  return QList<QByteArray> ();
 	}
 
-      auto const &keyType
+      auto const keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
       if(!(keyType == "chat" ||
@@ -1623,7 +1623,7 @@ QList<QByteArray> spoton_receive::process0091
 	    }
 	}
 
-      auto const &now(QDateTime::currentDateTimeUtc());
+      auto const now(QDateTime::currentDateTimeUtc());
       auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
 
@@ -1728,7 +1728,7 @@ QList<QByteArray> spoton_receive::process0092
 
       if(ok)
 	{
-	  auto const &messageCode(list.value(2));
+	  auto const messageCode(list.value(2));
 
 	  if(computedHash.isEmpty() || messageCode.isEmpty() ||
 	     !spoton_crypt::memcmp(computedHash, messageCode))
@@ -1778,7 +1778,7 @@ QList<QByteArray> spoton_receive::process0092
 	  return QList<QByteArray> ();
 	}
 
-      auto const &keyType
+      auto const keyType
 	(spoton_misc::keyTypeFromPublicKeyHash(list.value(0), s_crypt));
 
       if(!(keyType == "chat" ||
@@ -1825,7 +1825,7 @@ QList<QByteArray> spoton_receive::process0092
 	  return QList<QByteArray> ();
 	}
 
-      auto const &now(QDateTime::currentDateTimeUtc());
+      auto const now(QDateTime::currentDateTimeUtc());
       auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
 
@@ -1875,7 +1875,7 @@ QString spoton_receive::findMessageType
     }
 
   QString type("");
-  auto const &list(data.trimmed().split('\n'));
+  auto const list(data.trimmed().split('\n'));
 
   /*
   ** list[0]: Data

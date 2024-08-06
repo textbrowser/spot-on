@@ -37,7 +37,7 @@
 QSqlDatabase spoton_kernel::urlDatabase(void)
 {
   QSqlDatabase db;
-  auto const &connectionName(spoton_misc::databaseName());
+  auto const connectionName(spoton_misc::databaseName());
 
   if(setting("gui/sqliteSearch", true).toBool())
     {
@@ -50,17 +50,17 @@ QSqlDatabase spoton_kernel::urlDatabase(void)
     {
       QByteArray name;
       QByteArray password;
-      QString options
-	(setting("gui/postgresql_web_connection_options",
-		 spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
-	 toString().trimmed());
-      auto const &database
+      auto const database
 	(setting("gui/postgresql_database", "").toString().trimmed());
-      auto const &host
+      auto const host
 	(setting("gui/postgresql_host", "localhost").toString().trimmed());
       auto const port = setting("gui/postgresql_port", 5432).toInt();
       auto const ssltls = setting("gui/postgresql_ssltls", true).toBool();
       auto ok = true;
+      auto options
+	(setting("gui/postgresql_web_connection_options",
+		 spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	 toString().trimmed());
       auto s_crypt = crypt("chat");
 
       if(!options.contains("connect_timeout="))
@@ -181,7 +181,7 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 
   if(keyType == "poptastic")
     {
-      auto const &message(spoton_send::message0001c(data));
+      auto const message(spoton_send::message0001c(data));
 
       postPoptasticMessage(receiverName, message, fromAccount, mailOid);
     }
@@ -208,7 +208,7 @@ void spoton_kernel::cryptSave(const QString &k, spoton_crypt *crypt)
     return;
 
   QWriteLocker locker(&s_cryptsMutex);
-  auto const &key(k.trimmed());
+  auto const key(k.trimmed());
 
   if(s_crypts.contains(key))
     {
@@ -270,7 +270,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  auto const &bytes
+		  auto const bytes
 		    (s_crypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.
@@ -289,7 +289,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 
 	      QByteArray messageCode;
 	      QDataStream stream(&data, QIODevice::WriteOnly);
-	      auto const &dateTime(QDateTime::currentDateTime());
+	      auto const dateTime(QDateTime::currentDateTime());
 	      spoton_crypt crypt(list.value(2).constData(),
 				 list.value(0).constData(),
 				 QByteArray(),
@@ -331,7 +331,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
     {
       if(keyType == "poptastic")
 	{
-	  auto const &message(spoton_send::message0000d(data));
+	  auto const message(spoton_send::message0000d(data));
 
 	  postPoptasticMessage(receiverName, message);
 	}
@@ -350,7 +350,7 @@ void spoton_kernel::slotDropped(const QByteArray &data)
   if(!neighbor)
     return;
 
-  auto const &hash(spoton_crypt::preferredHash(data));
+  auto const hash(spoton_crypt::preferredHash(data));
   QPair<QByteArray, qint64> pair(hash, neighbor->id());
 
   {
@@ -397,7 +397,7 @@ void spoton_kernel::slotDroppedTimeout(void)
     }
   else if(neighbor->readyToWrite())
     {
-      auto const &data(m_droppedPackets.value(key));
+      auto const data(m_droppedPackets.value(key));
 
       if(neighbor->write(data.constData(),
 			 data.length(),
@@ -451,9 +451,9 @@ void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
     {
       it.next();
 
-      auto const &dateTime(it.value().value(2).toDateTime());
-      auto const &keyType(it.value().value(3).toString());
-      auto const &now(QDateTime::currentDateTime());
+      auto const dateTime(it.value().value(2).toDateTime());
+      auto const keyType(it.value().value(3).toString());
+      auto const now(QDateTime::currentDateTime());
       auto const secsTo = qAbs(now.secsTo(dateTime));
 
       if(keyType != "poptastic")

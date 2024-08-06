@@ -580,7 +580,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   m_publicKey = 0;
   m_t = 0;
 
-  auto const &publicKey(qUncompress(pk)); // Key is compressed.
+  auto const publicKey(qUncompress(pk)); // Key is compressed.
   auto const offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
 
@@ -641,7 +641,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
 				 const size_t m,
 				 const size_t t)
 {
-  auto const &c(conversion.mid(0, 3).toLower());
+  auto const c(conversion.mid(0, 3).toLower());
 
   if(c == "foa")
     m_conversion = spoton_mceliece_private_key::FOA;
@@ -836,7 +836,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       */
 
       NTL::GF2EX syndrome = NTL::GF2EX::zero();
-      auto const &v(m_privateKey->preSynTab());
+      auto const v(m_privateKey->preSynTab());
       auto const n = static_cast<long int> (m_n);
 
       for(long int i = 0; i < n; i++)
@@ -934,7 +934,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	}
 
       NTL::vec_GF2 e;
-      auto const &L(m_privateKey->L());
+      auto const L(m_privateKey->L());
 
       e.SetLength(n);
 
@@ -947,7 +947,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
       NTL::vec_GF2 m;
       NTL::vec_GF2 mcar;
       NTL::vec_GF2 vec_GF2;
-      auto const &swappingColumns(m_privateKey->swappingColumns());
+      auto const swappingColumns(m_privateKey->swappingColumns());
 
       vec_GF2.SetLength(n);
 
@@ -1307,7 +1307,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    QByteArray keyStream1
 	      (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				       CHAR_BIT)), 0);
-	    auto const &salt1(spoton_crypt::weakRandomBytes(32));
+	    auto const salt1(spoton_crypt::weakRandomBytes(32));
 
 	    if(gcry_kdf_derive(bytes.constData(),
 			       static_cast<size_t> (bytes.length()),
@@ -1355,7 +1355,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    QByteArray keyStream2
 	      (static_cast<int> (qCeil(static_cast<double> (m.length()) /
 				       CHAR_BIT)), 0);
-	    auto const &salt2(spoton_crypt::weakRandomBytes(32));
+	    auto const salt2(spoton_crypt::weakRandomBytes(32));
 
 	    if(gcry_kdf_derive(bytes.constData(),
 			       static_cast<size_t> (bytes.length()),
@@ -1520,8 +1520,8 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       */
 
       NTL::mat_GF2 H;
-      auto const &gZ(m_privateKey->gZ());
-      auto const &L(m_privateKey->L());
+      auto const L(m_privateKey->L());
+      auto const gZ(m_privateKey->gZ());
       auto const m = static_cast<long int> (m_m);
       auto const n = static_cast<long int> (m_n);
       auto const t = static_cast<long int> (m_t);
@@ -1627,7 +1627,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 	  }
 
       NTL::mat_GF2 mat_GF2;
-      auto const &swappingColumns(m_privateKey->swappingColumns());
+      auto const swappingColumns(m_privateKey->swappingColumns());
 
       mat_GF2.SetDims(H.NumRows(), H.NumCols());
 
@@ -1694,7 +1694,7 @@ void spoton_mceliece::privateKeyParameters(QByteArray &privateKey) const
 	<< m_privateKey->gZ();
 
       NTL::vec_long v;
-      auto const &swappingColumns(m_privateKey->swappingColumns());
+      auto const swappingColumns(m_privateKey->swappingColumns());
 
       v.SetLength(static_cast<long int> (swappingColumns.size()));
 

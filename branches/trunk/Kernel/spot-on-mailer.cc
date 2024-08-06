@@ -171,7 +171,7 @@ void spoton_mailer::slotReap(void)
 	  while(query.next())
 	    {
 	      QDateTime dateTime;
-	      auto const &now(QDateTime::currentDateTime());
+	      auto const now(QDateTime::currentDateTime());
 	      auto ok = true;
 
 	      dateTime = QDateTime::fromString
@@ -264,7 +264,7 @@ void spoton_mailer::slotRetrieveMail
       return;
     }
 
-  auto const &now(QDateTime::currentDateTimeUtc());
+  auto const now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
@@ -322,7 +322,7 @@ void spoton_mailer::slotRetrieveMailTimeout(void)
 
     if(db.open())
       {
-	auto const &publicKeyHash
+	auto const publicKeyHash
 	  (m_publicKeyHashesAdaptiveEchoPairs.first().value(0));
 	QSqlQuery query(db);
 
@@ -421,7 +421,7 @@ void spoton_mailer::slotTimeout(void)
     if(db1.open() && db2.open())
       {
 	QSqlQuery query(db1);
-	auto const &name
+	auto const name
 	  (spoton_kernel::setting("gui/emailName", "unknown").toByteArray());
 
 	/*
@@ -634,7 +634,7 @@ void spoton_mailer::slotTimeout(void)
 
   for(int i = 0; i < list.size(); i++)
     {
-      auto const &vector(list.at(i));
+      auto const vector(list.at(i));
 
       /*
       ** So many parameters.

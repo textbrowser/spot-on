@@ -165,7 +165,7 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
 
 	      if(ok)
 		{
-		  auto const &computedHash
+		  auto const computedHash
 		    (spoton_crypt::
 		     keyedHash(randomBytes + publicKey,
 			       hashKey,
@@ -509,7 +509,7 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
 
 QHostAddress spoton_misc::localAddressIPv4(void)
 {
-  auto const &interfaces(QNetworkInterface::allInterfaces());
+  auto const interfaces(QNetworkInterface::allInterfaces());
 
   for(int i = 0; i < interfaces.size(); i++)
     {
@@ -517,11 +517,11 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 	 !(interfaces.at(i).flags() & QNetworkInterface::IsUp))
 	continue;
 
-      auto const &addresses(interfaces.at(i).addressEntries());
+      auto const addresses(interfaces.at(i).addressEntries());
 
       for(int i = 0; i < addresses.size(); i++)
 	{
-	  auto const &entry(addresses.at(i));
+	  auto const entry(addresses.at(i));
 
 	  if(entry.ip() != QHostAddress::LocalHost &&
 	     entry.ip().protocol() == QAbstractSocket::IPv4Protocol)
@@ -882,7 +882,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 	    while(query.next())
 	      {
 		QHash<QString, QVariant> hash;
-		auto const &record(query.record());
+		auto const record(query.record());
 
 		for(int i = 0; i < record.count(); i++)
 		  {
@@ -955,9 +955,9 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
     {
       const QString str(list.at(i));
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      auto const &pair(str.split(":=", Qt::SkipEmptyParts));
+      auto const pair(str.split(":=", Qt::SkipEmptyParts));
 #else
-      auto const &pair(str.split(":=", QString::SkipEmptyParts));
+      auto const pair(str.split(":=", QString::SkipEmptyParts));
 #endif
 
       if(!pair.value(0).trimmed().isEmpty() &&
@@ -1048,7 +1048,7 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
 		  if(ok)
 		    if(!gemini.first.isEmpty() && !gemini.second.isEmpty())
 		      {
-			auto const &computedHash
+			auto const computedHash
 			  (spoton_crypt::
 			   keyedHash(data,
 				     gemini.second,
@@ -1435,7 +1435,7 @@ QString spoton_misc::percentEncoding(const QString &string)
   for(int i = 0; i < string.length(); i++)
     if(string.at(i) == '%')
       {
-	auto const &hex(string.mid(i + 1, 2).toLatin1());
+	auto const hex(string.mid(i + 1, 2).toLatin1());
 	int d = 0;
 	std::stringstream stream;
 
@@ -1503,7 +1503,7 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   if(!then.isValid())
     return false;
 
-  auto const &now(QDateTime::currentDateTimeUtc());
+  auto const now(QDateTime::currentDateTimeUtc());
 
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);
 }
@@ -1741,7 +1741,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       return false;
     }
 
-  auto const &scheme(url.scheme().toLower().trimmed());
+  auto const scheme(url.scheme().toLower().trimmed());
 
   if(!spoton_common::ACCEPTABLE_URL_SCHEMES.contains(scheme))
     {
@@ -1759,8 +1759,8 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
   url.setScheme(scheme);
 
   QByteArray all_keywords;
-  auto const &content(qCompress(c.trimmed(), 9));
-  auto const &description(d.trimmed());
+  auto const content(qCompress(c.trimmed(), 9));
+  auto const description(d.trimmed());
   auto separate = true;
   auto title(t.trimmed());
 
@@ -1807,7 +1807,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
       if(query.next())
 	if(!query.value(0).toByteArray().isEmpty())
 	  {
-	    auto const &previous(query.value(0).toByteArray());
+	    auto const previous(query.value(0).toByteArray());
 
 	    /*
 	    ** Update the current content.
@@ -1965,7 +1965,7 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
       if(query.exec("INSERT INTO sequence VALUES (NULL)"))
 	{
-	  auto const &variant(query.lastInsertId());
+	  auto const variant(query.lastInsertId());
 
 	  if(variant.isValid())
 	    {
@@ -2518,7 +2518,7 @@ bool spoton_misc::isValidBuzzMagnet(const QByteArray &magnet)
 
 bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 {
-  auto const &list(data.split('\n'));
+  auto const list(data.split('\n'));
   auto valid = false;
 
   for(int i = 0; i < 7; i++)
@@ -2886,7 +2886,7 @@ bool spoton_misc::isValidSignature(const QByteArray &data,
   ** non-signature public key.
   */
 
-  auto const &publicKey
+  auto const publicKey
     (signaturePublicKeyFromPublicKeyHash(publicKeyHash, crypt));
 
   if(publicKey.isEmpty())
@@ -3579,12 +3579,12 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
     if(db.open())
       {
 	QSqlQuery query(db);
-	auto const &attachmentData(list.value(5));
-	auto const &message(list.value(4));
-	auto const &name(list.value(2));
-	auto const &now(QDateTime::currentDateTime());
-	auto const &senderPublicKeyHash(list.value(1));
-	auto const &subject(list.value(3));
+	auto const attachmentData(list.value(5));
+	auto const message(list.value(4));
+	auto const name(list.value(2));
+	auto const now(QDateTime::currentDateTime());
+	auto const senderPublicKeyHash(list.value(1));
+	auto const subject(list.value(3));
 
 	query.prepare("INSERT INTO folders "
 		      "(date, "
@@ -3671,7 +3671,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	    {
 	      if(!attachmentData.isEmpty())
 		{
-		  auto const &variant(query.lastInsertId());
+		  auto const variant(query.lastInsertId());
 		  auto const id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
@@ -3690,7 +3690,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 			  for(int i = 0; i < attachments.size(); i++)
 			    {
-			      auto const &pair(attachments.at(i));
+			      auto const pair(attachments.at(i));
 			      QSqlQuery query(db);
 
 			      query.prepare("INSERT INTO folders_attachment "
@@ -3928,7 +3928,7 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
   QByteArray xt;
   QString ct("");
   QString ht("");
-  auto const &list
+  auto const list
     (QByteArray(magnet.trimmed()).
      remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
   spoton_crypt *crypt = 0;
@@ -4667,7 +4667,7 @@ void spoton_misc::logError(const QString &error)
 #else
       QString eol("\n");
 #endif
-      auto const &now(QDateTime::currentDateTime());
+      auto const now(QDateTime::currentDateTime());
 
       file.write(now.toString(Qt::ISODate).toLatin1());
       file.write(eol.toLatin1());
@@ -5495,7 +5495,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
       return;
     }
 
-  auto const &list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
+  auto const list(spoton_common::SPOTON_SIGNATURE_KEY_NAMES);
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -5750,7 +5750,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
       return;
     }
 
-  auto const &now(QDateTime::currentDateTimeUtc());
+  auto const now(QDateTime::currentDateTimeUtc());
 
   dateTime.setTimeSpec(Qt::UTC);
 
@@ -5848,7 +5848,7 @@ void spoton_misc::saveParticipantStatus(const QByteArray &name,
 	      }
 	    else if(crypt)
 	      {
-		auto const &now(QDateTime::currentDateTime());
+		auto const now(QDateTime::currentDateTime());
 		auto ok = true;
 
 		query.prepare("UPDATE friends_public_keys SET "
@@ -6045,7 +6045,7 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 	QString proxyPassword("");
 	QString proxyPort("1");
 	QString proxyUsername("");
-	auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
+	auto const proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	if(ok)
 	  query.bindValue
@@ -6143,7 +6143,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
       return;
     }
 
-  auto const &transport(p_transport.toLower().trimmed());
+  auto const transport(p_transport.toLower().trimmed());
 
   if(!(transport == "sctp" ||
        transport == "tcp" ||
@@ -6274,7 +6274,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	QString proxyPassword("");
 	QString proxyPort("1");
 	QString proxyUsername("");
-	auto const &proxyType(QString::number(QNetworkProxy::NoProxy));
+	auto const proxyType(QString::number(QNetworkProxy::NoProxy));
 
 	if(ok)
 	  query.bindValue

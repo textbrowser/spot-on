@@ -114,7 +114,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
     url = list.value(3).toUrl();
 
   auto db(spoton_kernel::urlDatabase());
-  auto const &connectionName(db.connectionName());
+  auto const connectionName(db.connectionName());
   QString error("");
 
   imported = spoton_misc::importUrl
@@ -135,7 +135,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
   QSqlDatabase::removeDatabase(connectionName);
   m_imported.fetchAndAddOrdered(imported ? 1 : 0);
 
-  auto const &directory
+  auto const directory
     (spoton_kernel::setting("WEB_PAGES_SHARED_DIRECTORY", "").toString());
 
   if(QFileInfo(directory).isWritable())
@@ -290,7 +290,7 @@ void spoton_rss::import(const int maximumKeywords)
 
 	      if(ok)
 		{
-		  auto const &url(QUrl::fromUserInput(domain));
+		  auto const url(QUrl::fromUserInput(domain));
 
 		  if(!url.isEmpty())
 		    if(url.isValid())
@@ -344,7 +344,7 @@ void spoton_rss::import(const int maximumKeywords)
 
               QByteArray bytes;
 	      QList<QVariant> list;
-	      auto const &urlHash(query.value(4).toByteArray());
+	      auto const urlHash(query.value(4).toByteArray());
 	      auto ok = true;
 
 	      bytes = qUncompress
@@ -401,9 +401,9 @@ void spoton_rss::import(const int maximumKeywords)
 		      if(m_cancelImport.fetchAndAddOrdered(0))
 			break;
 
-		      auto const &type(polarizers.at(i).second);
-		      auto const &u1(polarizers.at(i).first);
-		      auto const &u2(QUrl::fromEncoded(bytes));
+		      auto const type(polarizers.at(i).second);
+		      auto const u1(polarizers.at(i).first);
+		      auto const u2(QUrl::fromEncoded(bytes));
 
 		      if(type == "accept")
 			{
@@ -431,7 +431,7 @@ void spoton_rss::import(const int maximumKeywords)
 
 	      if(ok)
 		{
-		  auto const &url(QUrl::fromEncoded(bytes));
+		  auto const url(QUrl::fromEncoded(bytes));
 
 		  if(!url.isEmpty() && url.isValid())
 		    list << url;
@@ -512,7 +512,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString title("");
   QString type("");
   QXmlStreamReader reader(data);
-  auto const &link(url.toString());
+  auto const link(url.toString());
 
   while(!reader.atEnd() && !reader.hasError())
     {
@@ -773,7 +773,7 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
   QString error("");
   auto db(spoton_kernel::urlDatabase());
-  auto const &connectionName(db.connectionName());
+  auto const connectionName(db.connectionName());
 
   spoton_misc::importUrl
     (data,
@@ -922,7 +922,7 @@ void spoton_rss::populateFeeds(void)
 
 		      proxyQuery.setQueryType(QNetworkProxyQuery::UrlRequest);
 
-		      auto const &proxies
+		      auto const proxies
 			(QNetworkProxyFactory::systemProxyForQuery(proxyQuery));
 
 		      if(!proxies.isEmpty())
@@ -1205,11 +1205,11 @@ void spoton_rss::slotContentReplyFinished(void)
       if(!redirectUrl.isEmpty())
 	if(redirectUrl.isValid())
 	  {
-	    auto const &error
+	    auto const error
 	      (QString("The URL %1 is being redirected to %2.").
 	       arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
-	    auto const &originalUrl(reply->property("original-url").toUrl());
+	    auto const originalUrl(reply->property("original-url").toUrl());
 
 	    emit logError(error);
 	    reply->deleteLater();
@@ -1259,14 +1259,14 @@ void spoton_rss::slotContentReplyFinished(void)
 	  return;
 	}
 
-      auto const &error
+      auto const error
 	(QString("The content of URL %1 has been downloaded.").
 	 arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 
       emit logError(error);
 
       QString connectionName("");
-      auto const &data(reply->readAll());
+      auto const data(reply->readAll());
 
       {
 	auto db(spoton_misc::database(connectionName));
@@ -1299,7 +1299,7 @@ void spoton_rss::slotContentReplyFinished(void)
 
 		if(data.isEmpty())
 		  {
-		    auto const &error
+		    auto const error
 		      (QString("The URL %1 does not have data.").
 		       arg(spoton_misc::urlToEncoded(reply->url()).
 			   constData()));
@@ -1308,7 +1308,7 @@ void spoton_rss::slotContentReplyFinished(void)
 		  }
 		else
 		  {
-		    auto const &error
+		    auto const error
 		      (QString("The URL %1 cannot be indexed (%2).").
 		       arg(spoton_misc::urlToEncoded(reply->url()).
 			   constData()).
@@ -1333,7 +1333,7 @@ void spoton_rss::slotContentReplyFinished(void)
 
 	    if(!ok)
 	      {
-		auto const &error
+		auto const error
 		  (QString("The content of URL %1 was "
 			   "not saved because of an error.").
 		   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
@@ -1413,7 +1413,7 @@ void spoton_rss::slotDownloadContent(void)
 
   if(!url.isEmpty() && url.isValid())
     {
-      auto const &error
+      auto const error
 	(QString("Fetching the URL %1.").
 	 arg(spoton_misc::urlToEncoded(url).constData()));
 
@@ -1528,7 +1528,7 @@ void spoton_rss::slotFeedReplyFinished(void)
       if(!redirectUrl.isEmpty())
 	if(redirectUrl.isValid())
 	  {
-	    auto const &error
+	    auto const error
 	      (QString("The feed URL %1 is being redirected to %2.").
 	       arg(spoton_misc::urlToEncoded(url).constData()).
 	       arg(spoton_misc::urlToEncoded(redirectUrl).constData()));
@@ -1574,7 +1574,7 @@ void spoton_rss::slotFeedReplyFinished(void)
     }
   else if(reply)
     {
-      auto const &error
+      auto const error
 	(QString("The URL %1 could not be accessed correctly (%2).").
 	 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	 arg(reply->errorString()));

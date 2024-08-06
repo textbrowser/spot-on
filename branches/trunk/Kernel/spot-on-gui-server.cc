@@ -87,7 +87,7 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 			  SIGNAL(modeChanged(QSslSocket::SslMode)));
 
 		  QSslConfiguration configuration;
-		  auto const &sslCS
+		  auto const sslCS
 		    (spoton_kernel::
 		     setting("gui/sslControlString",
 			     spoton_common::SSL_CONTROL_STRING).toString());
@@ -314,7 +314,7 @@ void spoton_gui_server::slotEncrypted(void)
       return;
     }
 
-  auto const &cipher(socket->sessionCipher());
+  auto const cipher(socket->sessionCipher());
 
   spoton_misc::logError
     (QString("spoton_gui_server::slotEncrypted(): "
@@ -491,7 +491,7 @@ void spoton_gui_server::slotReadyRead(void)
 
   while(socket->bytesAvailable() > 0)
     {
-      auto const &data(socket->readAll());
+      auto const data(socket->readAll());
 
       if(data.length() > 0)
 	{
@@ -507,7 +507,7 @@ void spoton_gui_server::slotReadyRead(void)
   if(m_guiSocketData.value(socket->socketDescriptor()).contains('\n'))
     {
       auto data(m_guiSocketData.value(socket->socketDescriptor()));
-      auto const &messages
+      auto const messages
 	(data.mid(0, data.lastIndexOf('\n')).split('\n'));
 
       data.remove(0, data.lastIndexOf('\n'));
@@ -527,7 +527,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("addbuzz_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 4)
                 spoton_kernel::addBuzzKey
@@ -542,7 +542,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("befriendparticipant_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
@@ -561,7 +561,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("buzz_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit buzzReceivedFromUI
@@ -597,7 +597,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_using_"
 					   "forward_secrecy_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipantUsingForwardSecrecy
@@ -611,7 +611,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_"
 					   "using_gemini_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipantUsingGemini(list.value(0),
@@ -625,7 +625,7 @@ void spoton_gui_server::slotReadyRead(void)
 		 static_cast<int> (qstrlen("call_participant_"
 					   "using_public_key_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit callParticipant(list.value(0),
@@ -656,7 +656,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("echokeypair_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit echoKeyShare(list);
@@ -694,7 +694,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("initiatessltls_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit initiateSSLTLSSession
@@ -705,7 +705,7 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("keys_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		{
@@ -803,7 +803,7 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("message_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 6)
 		emit messageReceivedFromUI
@@ -821,7 +821,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("poptasticmessage_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 6)
 		emit messageReceivedFromUI
@@ -848,7 +848,7 @@ void spoton_gui_server::slotReadyRead(void)
 		(0, static_cast<int> (qstrlen("publicize"
 					      "listenerplaintext_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 1)
 		emit publicizeListenerPlaintext
@@ -882,7 +882,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharebuzzmagnet_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit buzzMagnetReceivedFromUI
@@ -904,7 +904,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("sharepublickey_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
@@ -922,7 +922,7 @@ void spoton_gui_server::slotReadyRead(void)
 	    {
 	      message.remove(0, static_cast<int> (qstrlen("smp_")));
 
-	      auto const &list(message.split('_'));
+	      auto const list(message.split('_'));
 
 	      if(list.size() == 5)
 		emit smpMessageReceivedFromUI(list);

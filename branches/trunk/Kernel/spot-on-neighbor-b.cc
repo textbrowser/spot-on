@@ -424,7 +424,7 @@ void spoton_neighbor::parsePrivateApplicationData
 			    ** 4
 			    */
 
-			    auto const &sequencer(bytes.mid(0, 20));
+			    auto const sequencer(bytes.mid(0, 20));
 			    auto const sequence = sequencer.toULongLong();
 
 			    if(m_isUserDefined)
@@ -569,7 +569,7 @@ void spoton_neighbor::slotEchoKeyShare(const QByteArrayList &list)
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -807,7 +807,7 @@ void spoton_neighbor::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -840,7 +840,7 @@ void spoton_neighbor::slotSendForwardSecrecyPublicKey(const QByteArray &data)
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
@@ -865,7 +865,7 @@ void spoton_neighbor::slotSendForwardSecrecySessionKeys
     return;
 
   QByteArray message;
-  auto const &ae
+  auto const ae
     (spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
 					    spoton_kernel::crypt("chat")));
 
