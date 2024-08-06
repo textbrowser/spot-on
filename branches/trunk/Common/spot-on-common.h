@@ -28,13 +28,10 @@
 #ifndef _spoton_common_h_
 #define _spoton_common_h_
 
-extern "C"
-{
-#include <limits.h>
-}
-
 #include <QHash>
 #include <QStringList>
+
+#include <limits>
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
 typedef QList<QByteArray> QByteArrayList;
@@ -83,7 +80,7 @@ class spoton_common
   static const int MAXIMUM_DESCRIPTION_LENGTH_SEARCH_RESULTS = 500;
   static const int MAXIMUM_KERNEL_GUI_SERVER_SINGLE_SOCKET_BUFFER_SIZE =
 #ifdef SPOTON_MCELIECE_ENABLED
-    INT_MAX;
+    std::numeric_limits<int>::max();
 #else
     CHAR_BIT * 1024 * 1024;
 #endif
@@ -130,7 +127,7 @@ class spoton_common
 								  */
   static const int WEB_SERVER_KEY_SIZE = 3072;
   static const long int WEB_SERVER_CERTIFICATE_LIFETIME =
-    365L * 60L * 60L * 24L;
+    24L * 60L * 60L * 365L;
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
     static_cast<qint64> (LANE_WIDTH_MAXIMUM); /*
@@ -138,7 +135,7 @@ class spoton_common
 					      ** than the content length.
 					      */
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
-    MAXIMUM_NEIGHBOR_BUFFER_SIZE / 10;
+    MAXIMUM_NEIGHBOR_BUFFER_SIZE / 2;
   static const qint64 MAXIMUM_SCTP_PACKET_SIZE = 500;
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 2500000;
   static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096;
