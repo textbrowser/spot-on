@@ -4429,12 +4429,11 @@ void spoton_crypt::init(const QString &cipherType,
 
   setHashKey(hashKey);
 
-  if(m_symmetricKeyLength > 0)
+  if(cipherType.isEmpty())
+    spoton_misc::logError("spoton_crypt::init(): cipherType is empty!");
+  else if(m_symmetricKeyLength > 0)
     m_symmetricKey = static_cast<char *>
       (gcry_calloc_secure(m_symmetricKeyLength, sizeof(char)));
-  else
-    spoton_misc::logError("spoton_crypt::init(): "
-			  "gcry_cipher_get_algo_keylen() failed.");
 
   if(m_symmetricKey && m_symmetricKeyLength > 0)
     {
