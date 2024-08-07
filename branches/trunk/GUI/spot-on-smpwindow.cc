@@ -185,8 +185,8 @@ QMap<QString, QByteArray> spoton_smpwindow::streams
 
 void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 {
-  QDateTime dateTime(QDateTime::currentDateTime());
   QString message("");
+  auto const dateTime(QDateTime::currentDateTime());
 
   if(!smp)
     {
@@ -197,8 +197,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       return;
     }
 
-  spoton_crypt *s_crypt = m_parent ? m_parent->
-    crypts().value(smp->m_keyType, 0) : 0;
+  auto s_crypt = m_parent ? m_parent->crypts().value(smp->m_keyType, 0) : 0;
 
   if(!s_crypt)
     {
@@ -210,7 +209,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
     }
 
   QByteArray myPublicKey;
-  bool ok = true;
+  auto ok = true;
 
   myPublicKey = s_crypt->publicKey(&ok);
 
@@ -224,9 +223,9 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       return;
     }
 
-  QByteArray salt(spoton_misc::xor_arrays(myPublicKey, smp->m_publicKey));
   QByteArray stream(m_ui.generator_stream_size->value(), 0);
-  QString guess(smp->m_smp->guessString());
+  auto const salt(spoton_misc::xor_arrays(myPublicKey, smp->m_publicKey));
+  auto guess(smp->m_smp->guessString());
 
   guess.append(smp->m_keyType);
 
@@ -254,7 +253,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "secrets.db");
@@ -263,7 +262,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       {
 	QByteArray hint;
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	hint.append(smp->m_name.toUtf8());
 	hint.append(" - ");
@@ -306,7 +305,7 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_smpwindow::populateSecrets(void)
 {
-  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     return;
@@ -316,7 +315,7 @@ void spoton_smpwindow::populateSecrets(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "secrets.db");
@@ -351,7 +350,7 @@ void spoton_smpwindow::populateSecrets(void)
 		{
 		  QByteArray bytes;
 		  QTableWidgetItem *item = 0;
-		  bool ok = true;
+		  auto ok = true;
 
 		  if(i != 1)
 		    bytes = s_crypt->decryptedAfterAuthenticated
@@ -375,7 +374,7 @@ void spoton_smpwindow::populateSecrets(void)
 		  m_ui.secrets->setItem(row, i, item);
 		}
 
-	      QTableWidgetItem *item = new QTableWidgetItem
+	      auto item = new QTableWidgetItem
 		(QString::
 		 number(query.value(query.record().count() - 1).toLongLong()));
 
@@ -433,11 +432,11 @@ void spoton_smpwindow::slotExecute(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QModelIndexList list
+  auto list
     (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
-  QString keyType(list.value(0).data().toString());
-  spoton_crypt *s_crypt1 = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
-  spoton_crypt *s_crypt2 = m_parent ? m_parent->
+  auto const keyType(list.value(0).data().toString());
+  auto s_crypt1 = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  auto s_crypt2 = m_parent ? m_parent->
     crypts().value(keyType + "-signature", 0) : 0;
 
   if(!s_crypt1 || !s_crypt2)
@@ -447,8 +446,8 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QSslSocket *kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
   QString error("");
+  auto kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
 
   if(!kernelSocket)
     {
@@ -470,7 +469,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QString secret(m_ui.secret->text().trimmed());
+  auto const secret(m_ui.secret->text().trimmed());
 
   if(secret.isEmpty())
     {
@@ -493,7 +492,7 @@ void spoton_smpwindow::slotExecute(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -501,7 +500,7 @@ void spoton_smpwindow::slotExecute(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
@@ -526,11 +525,11 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QByteArray bytes(spoton_crypt::preferredHash(publicKey));
-  QString name
+  auto bytes(spoton_crypt::preferredHash(publicKey));
+  auto const name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
-  spoton_smpwindow_smp *smp = m_smps.value(bytes, 0);
+  auto smp = m_smps.value(bytes, 0);
 
   if(!smp)
     {
@@ -550,7 +549,7 @@ void spoton_smpwindow::slotExecute(void)
   smp->m_smp->initialize();
 
   QList<QByteArray> values;
-  bool ok = true;
+  auto ok = true;
 
   values = smp->m_smp->step1(&ok);
 
@@ -630,8 +629,8 @@ void spoton_smpwindow::slotExecute(void)
     }
 
   QByteArray signature;
-  QDateTime dateTime(QDateTime::currentDateTime());
-  QByteArray recipientDigest(spoton_crypt::preferredHash(publicKey));
+  auto const dateTime(QDateTime::currentDateTime());
+  auto const recipientDigest(spoton_crypt::preferredHash(publicKey));
 
   signature = s_crypt2->digitalSignature
     ("0092" +
@@ -688,7 +687,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  QByteArray messageCode(crypt.keyedHash(keyInformation + bytes, &ok));
+  auto const messageCode(crypt.keyedHash(keyInformation + bytes, &ok));
 
   if(!ok)
     {
@@ -722,7 +721,7 @@ void spoton_smpwindow::slotGenerateData(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  spoton_crypt *s_crypt = m_parent ? m_parent-> crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ? m_parent-> crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -733,13 +732,13 @@ void spoton_smpwindow::slotGenerateData(void)
   QByteArray publicKey;
   QString connectionName("");
   QString error("");
-  QString oid
+  auto const oid
     (m_ui.participants->selectionModel()->
      selectedRows(m_ui.participants->columnCount() - 1).value(0).data().
      toString());
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -747,7 +746,7 @@ void spoton_smpwindow::slotGenerateData(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
@@ -764,10 +763,10 @@ void spoton_smpwindow::slotGenerateData(void)
 
   QSqlDatabase::removeDatabase(connectionName);
 
-  QString keyType
+  auto const keyType
     (m_ui.participants->selectionModel()->selectedRows(1).value(0).data().
      toString());
-  QString name
+  auto const name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
 
@@ -807,8 +806,7 @@ void spoton_smpwindow::slotParticipantDeleted(const QString &oid,
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QList<QTableWidgetItem *> list
-    (spoton::findItems(m_ui.participants, oid, 3));
+  auto const list(spoton::findItems(m_ui.participants, oid, 3));
 
   if(!list.isEmpty() && list.at(0))
     {
@@ -840,13 +838,13 @@ void spoton_smpwindow::slotParticipantNameChanged
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QList<QTableWidgetItem *> list;
-  qint64 oid = spoton_misc::oidFromPublicKeyHash(publicKeyHash);
+  auto const oid = spoton_misc::oidFromPublicKeyHash(publicKeyHash);
 
   list = spoton::findItems(m_ui.participants, QString::number(oid), 3);
 
   if(!list.isEmpty() && list.at(0))
     {
-      QTableWidgetItem *item = m_ui.participants->item(list.at(0)->row(), 0);
+      auto item = m_ui.participants->item(list.at(0)->row(), 0);
 
       if(item)
 	{
@@ -877,7 +875,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -885,11 +883,11 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
       return;
     }
 
-  QModelIndexList list
-    (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
   QString error("");
-  QString keyType(list.value(0).data().toString());
-  QString secret(m_ui.secret->text().trimmed());
+  auto list
+    (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
+  auto const keyType(list.value(0).data().toString());
+  auto const secret(m_ui.secret->text().trimmed());
 
   if(secret.isEmpty())
     {
@@ -912,7 +910,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -920,7 +918,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
@@ -945,11 +943,8 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
       return;
     }
 
-  QByteArray bytes;
-
-  bytes = spoton_crypt::preferredHash(publicKey);
-
-  spoton_smpwindow_smp *smp = m_smps.value(bytes, 0);
+  auto const bytes(spoton_crypt::preferredHash(publicKey));
+  auto smp = m_smps.value(bytes, 0);
 
   if(!smp)
     {
@@ -987,7 +982,7 @@ void spoton_smpwindow::slotPurgeSMPStateMachines(void)
 
 void spoton_smpwindow::slotRefresh(void)
 {
-  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!s_crypt)
     {
@@ -1001,17 +996,17 @@ void spoton_smpwindow::slotRefresh(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
 	m_ui.participants->setSortingEnabled(false);
 
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 	int row = 0;
 
 	query.setForwardOnly(true);
@@ -1053,7 +1048,7 @@ void spoton_smpwindow::slotRefresh(void)
 	      for(int i = 0; i < 3; i++)
 		{
 		  QByteArray bytes;
-		  bool ok = true;
+		  auto ok = true;
 
 		  bytes = s_crypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(i).toByteArray()), &ok);
@@ -1118,7 +1113,7 @@ void spoton_smpwindow::slotRefresh(void)
 
 void spoton_smpwindow::slotRemove(void)
 {
-  QModelIndexList list
+  auto const list
     (m_ui.secrets->selectionModel()->
      selectedRows(m_ui.secrets->columnCount() - 1)); // OID
 
@@ -1153,7 +1148,7 @@ void spoton_smpwindow::slotRemove(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "secrets.db");
@@ -1179,9 +1174,9 @@ void spoton_smpwindow::slotRemove(void)
 void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 (const QByteArrayList &list)
 {
-  QDateTime dateTime(QDateTime::currentDateTime());
   QString message("");
-  spoton_smpwindow_smp *smp = m_smps.value(list.value(0), 0);
+  auto const dateTime(QDateTime::currentDateTime());
+  auto smp = m_smps.value(list.value(0), 0);
 
   if(!smp)
     {
@@ -1192,10 +1187,9 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       return;
     }
 
-  spoton_crypt *s_crypt1 = m_parent ? m_parent->
-    crypts().value(smp->m_keyType, 0) : 0;
-  spoton_crypt *s_crypt2 = m_parent ? m_parent->
-    crypts().value(smp->m_keyType + "-signature", 0) : 0;
+  auto s_crypt1 = m_parent ? m_parent->crypts().value(smp->m_keyType, 0) : 0;
+  auto s_crypt2 = m_parent ? m_parent->crypts().value
+    (smp->m_keyType + "-signature", 0) : 0;
 
   if(!s_crypt1 || !s_crypt2)
     {
@@ -1210,7 +1204,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QList<QByteArray> values;
 
   {
-    QByteArray bytes(list.value(1));
+    auto bytes(list.value(1));
 
     if(smp->m_cache.contains(s_crypt1->keyedHash(bytes, 0)))
       {
@@ -1225,7 +1219,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     stream >> values;
   }
 
-  QString name(smp->m_name);
+  auto const name(smp->m_name);
 
   message = tr("%1: Received a response from %2. Currently at step %3.").
     arg(dateTime.toString("MM/dd/yyyy hh:mm:ss")).
@@ -1244,10 +1238,10 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QByteArray recipientDigest;
   QByteArray signature;
   QScopedPointer<spoton_crypt> crypt;
-  QSslSocket *kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
   QString error("");
-  bool ok = true;
-  bool passed = false;
+  auto kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
+  auto ok = true;
+  auto passed = false;
 
   if(!kernelSocket)
     {
@@ -1407,7 +1401,6 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 			       0,
 			       0,
 			       ""));
-
   bytes = crypt->encrypted(bytes, &ok);
 
   if(!ok)
@@ -1506,11 +1499,14 @@ void spoton_smpwindow::slotSaveSpinBoxOption(int value)
 void spoton_smpwindow::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
+  auto iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
        iconSet == "nouve" ||
        iconSet == "nuvola"))
     iconSet = "nouve";
+
+  m_ui.refresh->setIcon(QIcon(QString(":/%1/refresh.png").arg(iconSet)));
+  m_ui.remove->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
 }

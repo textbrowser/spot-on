@@ -356,10 +356,10 @@ QList<QByteArray> spoton_smp::logProof(const gcry_mpi_t g,
 
   QByteArray bytes;
   QList<QByteArray> list;
+  auto d = gcry_mpi_new(BITS);
+  auto r = generateRandomExponent(ok);
+  auto s = gcry_mpi_new(BITS);
   gcry_mpi_t c = 0;
-  gcry_mpi_t d = gcry_mpi_new(BITS);
-  gcry_mpi_t r = generateRandomExponent(ok);
-  gcry_mpi_t s = gcry_mpi_new(BITS);
   size_t size = 0;
   unsigned char *buffer = 0;
 
@@ -472,7 +472,7 @@ QList<QByteArray> spoton_smp::step1(bool *ok)
   QList<QByteArray> list;
   QList<QByteArray> proofsa;
   QList<QByteArray> proofsb;
-  bool terminalState = true;
+  auto terminalState = true;
   gcry_mpi_t g2a = 0;
   gcry_mpi_t g3a = 0;
   size_t size = 0;
@@ -587,7 +587,7 @@ QList<QByteArray> spoton_smp::step2(const QList<QByteArray> &other, bool *ok)
   QList<QByteArray> proofsa;
   QList<QByteArray> proofsb;
   QList<QByteArray> proofsc;
-  bool terminalState = true;
+  auto terminalState = true;
   gcry_mpi_t g2a = 0;
   gcry_mpi_t g2b = 0;
   gcry_mpi_t g3a = 0;
@@ -847,7 +847,7 @@ QList<QByteArray> spoton_smp::step3(const QList<QByteArray> &other, bool *ok)
   QList<QByteArray> list;
   QList<QByteArray> proofsa;
   QList<QByteArray> proofsb;
-  bool terminalState = true;
+  auto terminalState = true;
   gcry_mpi_t g2 = 0;
   gcry_mpi_t g2b = 0;
   gcry_mpi_t g3 = 0;
@@ -1112,7 +1112,7 @@ QList<QByteArray> spoton_smp::step4(const QList<QByteArray> &other,
   QByteArray bytes;
   QList<QByteArray> list;
   QList<QByteArray> proofsa;
-  bool terminalState = true;
+  auto terminalState = true;
   gcry_mpi_t pa = 0;
   gcry_mpi_t papb = 0;
   gcry_mpi_t pbinv = 0;
@@ -1316,8 +1316,8 @@ bool spoton_smp::verifyCoordinatesProof(const QList<QByteArray> &list,
     return false;
 
   QByteArray bytes;
-  bool ok = true;
-  bool verified = false;
+  auto ok = true;
+  auto verified = false;
   gcry_mpi_t c = 0;
   gcry_mpi_t cp = 0;
   gcry_mpi_t d1 = 0;
@@ -1427,8 +1427,8 @@ bool spoton_smp::verifyEqualLogs(const QList<QByteArray> &list,
     return false;
 
   QByteArray bytes;
-  bool ok = true;
-  bool verified = false;
+  auto ok = true;
+  auto verified = false;
   gcry_mpi_t c = 0;
   gcry_mpi_t cp = 0;
   gcry_mpi_t d = 0;
@@ -1523,8 +1523,8 @@ bool spoton_smp::verifyLogProof(const QList<QByteArray> &list,
     return false;
 
   QByteArray bytes;
-  bool ok = true;
-  bool verified = false;
+  auto ok = true;
+  auto verified = false;
   gcry_mpi_t c = 0;
   gcry_mpi_t d = 0;
   gcry_mpi_t gd = 0;
@@ -1603,7 +1603,7 @@ gcry_mpi_t spoton_smp::generateRandomExponent(bool *ok) const
   gcry_fast_random_poll();
 
   gcry_mpi_t exponent = 0;
-  unsigned char *buffer = static_cast<unsigned char *>
+  auto buffer = static_cast<unsigned char *>
     (gcry_random_bytes_secure(BITS / 8, GCRY_STRONG_RANDOM));
 
   if(!buffer)
@@ -1661,7 +1661,7 @@ int spoton_smp::step(void) const
 void spoton_smp::initialize(void)
 {
   QByteArray bytes;
-  QString guessString(m_guessString);
+  auto const guessString(m_guessString);
   gcry_mpi_t g = 0;
 
   if(m_guess)
@@ -1752,7 +1752,7 @@ void spoton_smp::setGuess(const QString &guess)
   m_guessWhirlLength = 0;
 
   QByteArray hash;
-  bool ok = true;
+  auto ok = true;
 
   if(m_spoton)
     hash = spoton_crypt::hash
@@ -1797,7 +1797,7 @@ void spoton_smp::step5(const QList<QByteArray> &other,
 		       bool *passed)
 {
   QByteArray bytes;
-  bool terminalState = true;
+  auto terminalState = true;
   gcry_mpi_t papb = 0;
   gcry_mpi_t pbinv = 0;
   gcry_mpi_t rab = 0;
@@ -1954,8 +1954,8 @@ void spoton_smp::step5(const QList<QByteArray> &other,
 void spoton_smp::test1(void)
 {
   QList<QByteArray> list;
-  bool ok = true;
-  bool passed = false;
+  auto ok = true;
+  auto passed = false;
   spoton_smp a(nullptr);
   spoton_smp b(nullptr);
 
@@ -2015,8 +2015,8 @@ void spoton_smp::test1(void)
 void spoton_smp::test2(void)
 {
   QList<QByteArray> list;
-  bool ok = true;
-  bool passed = false;
+  auto ok = true;
+  auto passed = false;
   spoton_smp a(nullptr);
   spoton_smp b(nullptr);
 
@@ -2076,8 +2076,8 @@ void spoton_smp::test2(void)
 void spoton_smp::test3(void)
 {
   QList<QByteArray> list;
-  bool ok = true;
-  bool passed = false;
+  auto ok = true;
+  auto passed = false;
   spoton_smp a(nullptr);
   spoton_smp b(nullptr);
 
@@ -2121,9 +2121,9 @@ void spoton_smp::test3(void)
 void spoton_smp::test4(void)
 {
   QList<QByteArray> list;
-  bool ok = true;
-  bool passed = false;
-  gcry_mpi_t prime = generateWeakRandomPrime(&ok);
+  auto ok = true;
+  auto passed = false;
+  auto prime = generateWeakRandomPrime(&ok);
   spoton_smp a(nullptr);
   spoton_smp b(nullptr);
 
