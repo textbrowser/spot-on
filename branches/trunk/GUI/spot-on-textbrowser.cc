@@ -46,7 +46,7 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
   ** Let's remove <img> tags.
   */
 
-  QString html(text);
+  auto html(text);
 
   {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))

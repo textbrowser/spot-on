@@ -43,7 +43,7 @@
 bool spoton::deleteAllUrls(void)
 {
   QProgressDialog progress(this);
-  bool deleted = true;
+  auto deleted = true;
 
   progress.setLabelText(tr("Deleting URL data... Please be patient."));
   progress.setMaximum(0);
@@ -100,10 +100,11 @@ bool spoton::deleteAllUrls(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "urls_key_information.db");
 
     if(db.open())

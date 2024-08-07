@@ -42,7 +42,7 @@ void spoton::discoverUrls(void)
   m_ui.url_pages->setText("| 1 |");
 
   QString querystr("");
-  QString search(m_ui.search->text().toLower().trimmed());
+  auto search(m_ui.search->text().toLower().trimmed());
 
   m_urlCurrentPage = 1;
   m_urlLimit = static_cast<quint64>
@@ -99,10 +99,10 @@ void spoton::discoverUrls(void)
     {
       QSet<QString> keywords;
       QString keywordsearch("");
-      QString searchfor(tr("<html>Searched for... "));
       QStringList keywordsearches;
-      bool intersect = false;
-      bool ok = true;
+      auto intersect = false;
+      auto ok = true;
+      auto searchfor(tr("<html>Searched for... "));
 
       do
 	{
@@ -119,7 +119,7 @@ void spoton::discoverUrls(void)
 	  if(e < 0 || e - s - 1 <= 0)
 	    break;
 
-	  QString bundle(search.mid(s + 1, e - s - 1).trimmed());
+	  auto const bundle(search.mid(s + 1, e - s - 1).trimmed());
 
 	  if(bundle.isEmpty())
 	    break;
@@ -132,10 +132,10 @@ void spoton::discoverUrls(void)
 	  search.remove(s, e - s + 1);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-	  QStringList list
+	  auto const list
 	    (bundle.split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
-	  QStringList list
+	  auto const list
 	    (bundle.split(QRegExp("\\W+"), QString::SkipEmptyParts));
 #endif
 
@@ -149,20 +149,20 @@ void spoton::discoverUrls(void)
 
 	  while(it.hasNext())
 	    {
-	      QString value(it.next());
+	      auto const value(it.next());
 
 	      searchfor.append(value);
 
 	      if(it.hasNext())
 		searchfor.append(" <b>AND</b> ");
 
-	      QByteArray keywordHash
+	      auto const keywordHash
 		(m_urlCommonCrypt->keyedHash(value.toUtf8(), &ok));
 
 	      if(!ok)
 		continue;
 
-	      QByteArray keywordHashHex(keywordHash.toHex());
+	      auto const keywordHashHex(keywordHash.toHex());
 
 	      keywordsearch.append
 		 (QString("SELECT url_hash FROM "
@@ -189,11 +189,11 @@ void spoton::discoverUrls(void)
       keywordsearch.clear();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      QStringList list
+      auto const list
 	(search.toLower().trimmed().
 	 split(QRegularExpression("\\W+"), Qt::SkipEmptyParts));
 #else
-      QStringList list
+      auto const list
 	(search.toLower().trimmed().
 	 split(QRegExp("\\W+"), QString::SkipEmptyParts));
 #endif
@@ -209,20 +209,20 @@ void spoton::discoverUrls(void)
 
       while(it.hasNext())
 	{
-	  QString value(it.next());
+	  auto const value(it.next());
 
 	  searchfor.append(value);
 
 	  if(it.hasNext())
 	    searchfor.append(" <b>OR</b> ");
 
-	  QByteArray keywordHash
+	  auto const keywordHash
 	    (m_urlCommonCrypt->keyedHash(value.toUtf8(), &ok));
 
 	  if(!ok)
 	    continue;
 
-	  QByteArray keywordHashHex(keywordHash.toHex());
+	  auto const keywordHashHex(keywordHash.toHex());
 
 	  keywordsearch.append
 	    (QString("SELECT url_hash FROM "
@@ -260,14 +260,14 @@ void spoton::discoverUrls(void)
 	  if(query.exec(keywordsearches.at(i)))
 	    while(query.next())
 	      {
-		QString hash(query.value(0).toString());
-		QString prefix(hash.mid(0, 2));
+		auto const hash(query.value(0).toString());
+		auto const prefix(hash.mid(0, 2));
 
 		if(!prefixes.contains(prefix))
 		  prefixes.insert(prefix, QString("'%1'").arg(hash));
 		else
 		  {
-		    QString str(prefixes.value(prefix));
+		    auto str(prefixes.value(prefix));
 
 		    str.append(QString(", '%1'").arg(hash));
 		    prefixes.insert(prefix, str);
@@ -348,11 +348,11 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 	    m_ui.urls->clear();
 
 	  QByteArray bytes;
-	  QByteArray hash(query.value(5).toByteArray());
 	  QString description("");
 	  QString title("");
 	  QUrl url;
-	  bool ok = true;
+	  auto const hash(query.value(5).toByteArray());
+	  auto ok = true;
 
 	  bytes =
 	    m_urlCommonCrypt->
@@ -411,7 +411,7 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 		}
 
 	      QLocale locale;
-	      QString scheme(url.scheme().toLower().trimmed());
+	      auto const scheme(url.scheme().toLower().trimmed());
 	      QUrl deleteUrl(hash);
 	      QUrl exportUrl(hash);
 	      QUrl shareUrl(hash);
