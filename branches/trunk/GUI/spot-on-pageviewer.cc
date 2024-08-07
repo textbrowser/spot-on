@@ -200,7 +200,7 @@ void spoton_pageviewer::setPage(const QByteArray &data,
 void spoton_pageviewer::slotCopyLinkLocation(void)
 {
 #ifdef SPOTON_WEBENGINE_ENABLED
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     {
@@ -227,8 +227,7 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 		 SLOT(slotCopyLinkLocation(void)));
   menu.exec(m_webView->mapToGlobal(point));
 #elif defined(SPOTON_WEBKIT_ENABLED)
-  QWebHitTestResult result = m_webView->page()->currentFrame()->
-    hitTestContent(point);
+  auto result = m_webView->page()->currentFrame()->hitTestContent(point);
 
   if(!result.linkUrl().isEmpty())
     {
@@ -246,7 +245,7 @@ void spoton_pageviewer::slotCustomContextMenuRequested(const QPoint &point)
 
 void spoton_pageviewer::slotFind(void)
 {
-  QString text(m_ui.find->text());
+  auto const text(m_ui.find->text());
 
 #ifdef SPOTON_WEBENGINE_ENABLED
   m_webView->findText(text);
@@ -256,7 +255,7 @@ void spoton_pageviewer::slotFind(void)
       if(!text.isEmpty())
 	{
 	  QColor color(240, 128, 128); // Light Coral
-	  QPalette palette(m_ui.find->palette());
+	  auto palette(m_ui.find->palette());
 
 	  palette.setColor(m_ui.find->backgroundRole(), color);
 	  m_ui.find->setPalette(palette);
@@ -344,7 +343,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
 
 void spoton_pageviewer::slotRevisionChanged(int index)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->urlCommonCrypt() : 0;
+  auto crypt = m_parent ? m_parent->urlCommonCrypt() : 0;
 
   if(!crypt || !m_database || !m_database->isOpen())
     {
@@ -361,7 +360,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QSqlQuery query(*m_database);
-  QString dateTime(m_ui.revision->itemText(index));
+  auto const dateTime(m_ui.revision->itemText(index));
 
   query.setForwardOnly(true);
 
@@ -386,7 +385,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
     if(query.next())
       {
 	QByteArray content;
-	bool ok = true;
+	auto ok = true;
 
 	content = crypt->decryptedAfterAuthenticated
 	  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);

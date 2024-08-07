@@ -37,7 +37,7 @@ class spoton_pacify
  public:
   spoton_pacify(const std::string &passphrase)
   {
-    size_t n = passphrase.length();
+    auto const n = static_cast<size_t> (passphrase.length());
 
     // Convert from UTF-8 to UTF-32.
     //   Note this is not an attack-safe implementation,
@@ -70,7 +70,7 @@ class spoton_pacify
 
     for(size_t i = 0, j = 0; i < n; j++)
       {
-	int c = static_cast<int> (passphrase.at(i++));
+	auto c = static_cast<int> (passphrase.at(i++));
 
 	if((c & 0x80) == 0)
 	  {
@@ -185,8 +185,9 @@ class spoton_pacify
 
     for(size_t i = 0; i < m_passphrase_length; i++)
       {
+	auto const c = static_cast<long int>
+	  (m_passphrase ? m_passphrase[i] : 0);
 	double r = 0.0;
-	long int c = m_passphrase ? m_passphrase[i] : 0;
 
 	r = char_class(c);
 
@@ -235,7 +236,8 @@ class spoton_pacify
     int i = 0;
 
     for(std::map<double, int>::iterator it = classes.begin();
-	it != classes.end(); i++, it++)
+	it != classes.end();
+	i++, it++)
       if(i == 0)
 	a = it->second;
       else if(i == 1)
@@ -251,7 +253,7 @@ class spoton_pacify
       rc += 30.0;
     else
       {
-	double r = std::pow(a, 2) + std::pow(b, 2) + std::pow(c, 3) +
+	auto const r = std::pow(a, 2) + std::pow(b, 2) + std::pow(c, 3) +
 	  std::pow(d, 2);
 
 	rc += 30.0 * static_cast<double> (m_passphrase_length) /
@@ -308,12 +310,12 @@ class spoton_pacify
     if(_a_ == _b_)
       return 0.0;
 
+    auto const _a_b_(_a_ + _b_);
     std::map<char, std::pair<double, double> > keys;
     std::string L1("1234567890");
     std::string L2("qwertyuiop");
     std::string L3("asdfghjkl");
     std::string L4("zxcvbnm");
-    std::string _a_b_(_a_ + _b_);
 
     for(size_t i = 0; i < L1.length(); i++)
       keys[L1[i]] = std::pair<double, double> (static_cast<double> (i), 0.0);

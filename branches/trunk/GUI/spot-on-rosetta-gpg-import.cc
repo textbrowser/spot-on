@@ -81,13 +81,13 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 
   gpgme_check_version(0);
 
-  QString dump(tr("Empty GPG Data"));
+  auto dump(tr("Empty GPG Data"));
   gpgme_ctx_t ctx = 0;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
       gpgme_data_t keydata = 0;
-      gpgme_error_t err = gpgme_data_new_from_mem
+      auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
 
@@ -157,7 +157,7 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
       gpgme_data_t keydata = 0;
-      gpgme_error_t err = gpgme_data_new_from_mem
+      auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
 
@@ -198,7 +198,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 
-  spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
+  auto crypt = m_spoton->crypts().value("rosetta", 0);
 
   if(!crypt)
     {
@@ -212,7 +212,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -226,10 +226,10 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 	if(query.exec("SELECT public_keys FROM gpg"))
 	  while(query.next())
 	    {
-	      QByteArray publicKey
-		(QByteArray::fromBase64(query.value(0).toByteArray()));
 	      QString email("");
-	      bool ok = true;
+	      auto ok = true;
+	      auto publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
 
 	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
 
@@ -289,7 +289,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
   QString error("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -302,17 +302,17 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys TEXT NOT NULL, "
 		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
-	spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
+	auto crypt = m_spoton->crypts().value("rosetta", 0);
 
 	if(crypt)
 	  {
-	    QByteArray publicKey
+	    auto publicKey
 	      (m_ui.public_keys->toPlainText().trimmed().toUtf8());
-	    bool ok = true;
+	    auto ok = true;
 
 	    if(!publicKey.isEmpty())
 	      {
-		QByteArray fingerprint(spoton_crypt::fingerprint(publicKey));
+		auto const fingerprint(spoton_crypt::fingerprint(publicKey));
 
 		if(fingerprint.isEmpty())
 		  {
@@ -375,12 +375,12 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
 void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
 {
-  QByteArray publicKey(m_ui.email_addresses->currentData().toByteArray());
+  auto const publicKey(m_ui.email_addresses->currentData().toByteArray());
 
   if(publicKey.isEmpty())
     return;
 
-  spoton_crypt *crypt = m_spoton->crypts().value("rosetta", 0);
+  auto crypt = m_spoton->crypts().value("rosetta", 0);
 
   if(!crypt)
     {
@@ -393,7 +393,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
     }
 
   QMessageBox mb(this);
-  QString email(this->email(publicKey));
+  auto const email(this->email(publicKey));
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
@@ -422,10 +422,10 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
   QApplication::processEvents();
 
   QString connectionName("");
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -486,10 +486,10 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
   QApplication::processEvents();
 
   QString connectionName("");
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");

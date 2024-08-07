@@ -56,10 +56,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "buzz_channels.db");
 
     if(db.open())
       {
@@ -74,7 +74,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray data;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE buzz_channels "
 				  "SET data = ?, "
@@ -118,10 +118,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -138,7 +139,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray bytes;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      bytes = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -190,7 +191,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 2; i++)
 		{
@@ -271,10 +272,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
@@ -298,7 +299,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
@@ -393,7 +394,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
@@ -464,7 +465,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray name;
 	      QByteArray postalAddress;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE institutions "
 				  "SET "
@@ -552,7 +553,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray messageBundle;
 	      QByteArray participantHash;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE post_office "
 				  "SET date_received = ?, "
@@ -625,10 +626,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -657,7 +658,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray name;
 	      QByteArray publicKey;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare
 		("UPDATE friends_public_keys "
@@ -866,7 +867,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray fingerprint;
 	      QByteArray publicKeys;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      email = oldCrypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
@@ -924,7 +925,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName(spoton_misc::homePath() +
 		       QDir::separator() +
@@ -944,7 +945,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray data;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE kernel_web_server "
 				  "SET certificate = ?, "
@@ -991,10 +992,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -1028,7 +1029,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QString protocol("");
 	      QString scopeId("");
 	      QString transport("");
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE listeners "
 				  "SET ip_address = ?, "
@@ -1235,7 +1236,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray name;
 	      QByteArray password;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE listeners_accounts "
 				  "SET account_name = ?, "
@@ -1300,7 +1301,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray token;
 	      QByteArray tokenType;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE listeners_adaptive_echo_tokens "
 				  "SET token = ?, "
@@ -1363,7 +1364,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray ip;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE listeners_allowed_ips "
 				  "SET ip_address = ?, "
@@ -1417,10 +1418,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -1461,7 +1462,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QString proxyUsername("");
 	      QString scopeId("");
 	      QString transport("");
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE neighbors "
 				  "SET remote_ip_address = ?, "
@@ -1856,10 +1857,10 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "poptastic.db");
 
     if(db.open())
       {
@@ -1883,7 +1884,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray bytes;
 	      QList<QByteArray> list;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE poptastic "
 				  "SET in_method = ?, "
@@ -1977,10 +1978,9 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "rss.db");
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
 
     if(db.open())
       {
@@ -1993,11 +1993,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (oldCrypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.value(i).
@@ -2070,11 +2070,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (oldCrypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.value(i).
@@ -2154,11 +2154,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (oldCrypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.value(i).
@@ -2215,7 +2215,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "secrets.db");
@@ -2232,11 +2232,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	  while(query.next())
 	    {
 	      QList<QByteArray> list;
-	      bool ok = true;
+	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count() - 1; i++)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (oldCrypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.value(i).
@@ -2308,7 +2308,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -2325,7 +2325,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray magnet;
 	      QByteArray origin;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE magnets "
 				  "SET magnet = ?, "
@@ -2386,7 +2386,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray file;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE received SET "
 				  "estimated_time_arrival = ?, "
@@ -2457,7 +2457,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray bytes;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE received_novas "
 				  "SET nova = ?, "
@@ -2512,7 +2512,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray file;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE transmitted SET "
 				  "estimated_time_arrival = ?, "
@@ -2592,7 +2592,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray magnet;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE transmitted_magnets "
 				  "SET magnet = ?, "
@@ -2651,10 +2651,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
@@ -2670,7 +2672,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray domain;
 	      QByteArray permission;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE distillers "
 				  "SET direction = ?, "
@@ -2745,10 +2747,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   sb.status->repaint();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_key_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_key_information.db");
 
     if(db.open())
       {
@@ -2762,7 +2766,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QByteArray bytes;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE import_key_information "
 				  "SET cipher_type = ?, "
@@ -2813,7 +2817,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	    {
 	      QList<QByteArray> list;
 	      QSqlQuery updateQuery(db);
-	      bool ok = true;
+	      auto ok = true;
 
 	      updateQuery.prepare("UPDATE remote_key_information "
 				  "SET cipher_type = ?, "
@@ -2824,7 +2828,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      for(int i = 0; i < 4; i++)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (oldCrypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.
@@ -2879,7 +2883,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
   QByteArray bytes;
   QSettings settings;
-  bool ok = true;
+  auto ok = true;
 
   bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/authenticationHint", "").

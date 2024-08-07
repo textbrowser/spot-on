@@ -71,8 +71,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     this,
 			     SLOT(slotCopyMyGPGKeys(void)));
 #else
-  QAction *action = ui.copy->menu()->addAction
-    (tr("Copy My &GPG Public Keys"));
+  auto action = ui.copy->menu()->addAction(tr("Copy My &GPG Public Keys"));
 
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
@@ -212,7 +211,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.cipher->addItems(spoton_crypt::cipherTypes());
   ui.hash->addItems(spoton_crypt::hashTypes());
 
-  QFont font(ui.newContact->font());
+  auto font(ui.newContact->font());
 
   font.setStyleHint(QFont::Monospace);
   ui.newContact->setFont(font);
@@ -246,7 +245,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
   slotDecryptClear();
 #if defined(OS_MACOS)
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+  foreach(auto toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 10px;}"
@@ -264,8 +263,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 {
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
+  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto sCrypt = m_parent ? m_parent->crypts().
     value("rosetta-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
@@ -279,7 +278,7 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   QByteArray sPublicKey;
   QByteArray sSignature;
   QSettings settings;
-  bool ok = true;
+  auto ok = true;
 
   name = settings.value("gui/rosettaName", "unknown").toByteArray();
   mPublicKey = eCrypt->publicKey(&ok);
@@ -295,18 +294,18 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 
   if(ok)
     {
-      QByteArray data("K" +
-		      QByteArray("rosetta").toBase64() +
-		      "@" +
-		      name.toBase64() +
-		      "@" +
-		      qCompress(mPublicKey).toBase64() +
-		      "@" +
-		      mSignature.toBase64() +
-		      "@" +
-		      sPublicKey.toBase64() +
-		      "@" +
-		      sSignature.toBase64());
+      auto data("K" +
+		QByteArray("rosetta").toBase64() +
+		"@" +
+		name.toBase64() +
+		"@" +
+		qCompress(mPublicKey).toBase64() +
+		"@" +
+		mSignature.toBase64() +
+		"@" +
+		sPublicKey.toBase64() +
+		"@" +
+		sSignature.toBase64());
 
       data = spoton_misc::wrap(data);
       QApplication::restoreOverrideCursor();
@@ -328,7 +327,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 
   QByteArray output;
   gpgme_ctx_t ctx = 0;
-  gpgme_error_t err = gpgme_new(&ctx);
+  auto err = gpgme_new(&ctx);
 
   if(err == GPG_ERR_NO_ERROR)
     {
@@ -340,7 +339,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
+	  auto const data(ui.inputEncrypt->toPlainText().toUtf8());
 
 	  err = gpgme_data_new_from_mem
 	    (&plaintext,
@@ -441,7 +440,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
 {
   QMap<QString, QByteArray> map;
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!crypt)
     return map;
@@ -449,7 +448,7 @@ QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -463,10 +462,10 @@ QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
 	if(query.exec("SELECT public_keys FROM gpg"))
 	  while(query.next())
 	    {
-	      QByteArray publicKey
-		(QByteArray::fromBase64(query.value(0).toByteArray()));
 	      QString email("");
-	      bool ok = true;
+	      auto publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      auto ok = true;
 
 	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
 
@@ -498,7 +497,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   Q_UNUSED(uid_hint);
 
   QString passphrase("");
-  bool ok = true;
+  auto ok = true;
 
   QApplication::restoreOverrideCursor();
   passphrase = QInputDialog::getText
@@ -537,7 +536,7 @@ void spoton_rosetta::populateContacts(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -546,9 +545,8 @@ void spoton_rosetta::populateContacts(void)
       {
 	QMultiMap<QString, QPair<DestinationTypes, QByteArray> > names;
 	QSqlQuery query(db);
-	bool ok = true;
-	spoton_crypt *eCrypt = m_parent ?
-	  m_parent->crypts().value("rosetta", 0) : 0;
+	auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+	auto ok = true;
 
 	ui.contacts->clear();
 	query.setForwardOnly(true);
@@ -563,7 +561,7 @@ void spoton_rosetta::populateContacts(void)
 	  while(query.next())
 	    {
 	      QByteArray name;
-	      bool ok = true;
+	      auto ok = true;
 
 	      if(eCrypt)
 		name = eCrypt->decryptedAfterAuthenticated
@@ -586,7 +584,7 @@ void spoton_rosetta::populateContacts(void)
 	  while(query.next())
 	    {
 	      QByteArray name;
-	      bool ok = true;
+	      auto ok = true;
 
 	      if(eCrypt)
 		name = eCrypt->decryptedAfterAuthenticated
@@ -614,7 +612,7 @@ void spoton_rosetta::populateContacts(void)
 	  {
 	    it.next();
 
-	    QString str(it.key().trimmed());
+	    auto const str(it.key().trimmed());
 
 	    if(str.isEmpty())
 	      ui.contacts->addItem("unknown", it.value().second);
@@ -697,7 +695,7 @@ void spoton_rosetta::show(spoton *parent)
 
   if(m_parent)
     {
-      QPoint p(m_parent->pos());
+      auto const p(m_parent->pos());
       int X = 0;
       int Y = 0;
 
@@ -742,13 +740,13 @@ void spoton_rosetta::slotAddContact(void)
 
 #ifdef SPOTON_GPGME_ENABLED
   {
-    QByteArray key(ui.newContact->toPlainText().trimmed().toUtf8());
+    auto const key(ui.newContact->toPlainText().trimmed().toUtf8());
 
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
       {
-	QByteArray fingerprint1(spoton_crypt::fingerprint(key));
-	QByteArray fingerprint2
+	auto const fingerprint1(spoton_crypt::fingerprint(key));
+	auto const fingerprint2
 	  (spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)));
 
 	if(fingerprint1 == fingerprint2 &&
@@ -766,7 +764,7 @@ void spoton_rosetta::slotAddContact(void)
 	gpgme_check_version(0);
 
 	gpgme_ctx_t ctx = 0;
-	gpgme_error_t err = gpgme_new(&ctx);
+	auto err = gpgme_new(&ctx);
 
 	if(err == GPG_ERR_NO_ERROR)
 	  {
@@ -801,17 +799,18 @@ void spoton_rosetta::slotAddContact(void)
 	QString error("");
 
 	{
-	  QSqlDatabase db = spoton_misc::database(connectionName);
+	  auto db(spoton_misc::database(connectionName));
 
-	  db.setDatabaseName(spoton_misc::homePath() +
-			     QDir::separator() +
-			     "friends_public_keys.db");
+	  db.setDatabaseName
+	    (spoton_misc::homePath() +
+	     QDir::separator() +
+	     "friends_public_keys.db");
 
 	  if(db.open())
 	    {
-	      QByteArray fingerprint(spoton_crypt::fingerprint(key));
 	      QSqlQuery query(db);
-	      bool ok = true;
+	      auto const fingerprint(spoton_crypt::fingerprint(key));
+	      auto ok = true;
 
 	      /*
 	      ** GPG public keys are not encrypted in the keyring.
@@ -879,8 +878,8 @@ void spoton_rosetta::slotAddContact(void)
   }
 #endif
 
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
+  auto sCrypt = m_parent ?
+    m_parent->crypts().value("rosetta-signature", 0) : 0;
 
   if(!sCrypt)
     {
@@ -892,7 +891,7 @@ void spoton_rosetta::slotAddContact(void)
       return;
     }
 
-  QByteArray key
+  auto const key
     (ui.newContact->toPlainText().remove("\n").remove("\r\n").toLatin1());
 
   if(key.isEmpty())
@@ -915,7 +914,7 @@ void spoton_rosetta::slotAddContact(void)
       return;
     }
 
-  QList<QByteArray> list(key.mid(1).split('@'));
+  auto const list(key.mid(1).split('@'));
 
   if(list.size() != 6)
     {
@@ -928,7 +927,7 @@ void spoton_rosetta::slotAddContact(void)
       return;
     }
 
-  QByteArray keyType(list.value(0));
+  auto keyType(list.value(0));
 
   keyType = QByteArray::fromBase64(keyType);
 
@@ -942,11 +941,11 @@ void spoton_rosetta::slotAddContact(void)
       return;
     }
 
-  QByteArray mPublicKey(list.value(2));
-  QByteArray mSignature(list.value(3));
   QByteArray myPublicKey;
   QByteArray mySPublicKey;
-  bool ok = true;
+  auto mPublicKey(list.value(2));
+  auto mSignature(list.value(3));
+  auto ok = true;
 
   mPublicKey = qUncompress(QByteArray::fromBase64(mPublicKey));
   myPublicKey = eCrypt->publicKey(&ok);
@@ -997,8 +996,8 @@ void spoton_rosetta::slotAddContact(void)
       QApplication::processEvents();
     }
 
-  QByteArray sPublicKey(list.value(4));
-  QByteArray sSignature(list.value(5));
+  auto sPublicKey(list.value(4));
+  auto sSignature(list.value(5));
 
   sPublicKey = QByteArray::fromBase64(sPublicKey);
   sSignature = QByteArray::fromBase64(sSignature);
@@ -1017,7 +1016,7 @@ void spoton_rosetta::slotAddContact(void)
 
   mSignature = QByteArray::fromBase64(mSignature);
 
-  QString algorithm(spoton_crypt::publicKeyAlgorithm(mPublicKey).toLower());
+  auto const algorithm(spoton_crypt::publicKeyAlgorithm(mPublicKey).toLower());
 
   if(!(algorithm.startsWith("mceliece") || algorithm.startsWith("ntru")))
     if(!spoton_crypt::isValidSignature(mPublicKey, mPublicKey, mSignature))
@@ -1043,14 +1042,14 @@ void spoton_rosetta::slotAddContact(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
-	QByteArray name(QByteArray::fromBase64(list.value(1)));
+	auto const name(QByteArray::fromBase64(list.value(1)));
 
 	if((ok = spoton_misc::saveFriendshipBundle(keyType,
 						   name,
@@ -1132,7 +1131,7 @@ void spoton_rosetta::slotClear(void)
 
 void spoton_rosetta::slotClearClipboardBuffer(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     {
@@ -1168,7 +1167,7 @@ void spoton_rosetta::slotContactsChanged(int index)
       return;
     }
 
-  DestinationTypes destinationType = DestinationTypes
+  auto const destinationType = DestinationTypes
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
   ui.cipher->setCurrentIndex(0);
@@ -1179,8 +1178,7 @@ void spoton_rosetta::slotContactsChanged(int index)
   if(destinationType == GPG)
     {
       QByteArray publicKey;
-      spoton_crypt *eCrypt = m_parent ?
-	m_parent->crypts().value("rosetta", 0) : 0;
+      auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
       publicKey = spoton_misc::publicKeyFromHash
 	(QByteArray::fromBase64(ui.contacts->
@@ -1219,11 +1217,11 @@ void spoton_rosetta::slotConvertDecrypt(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   {
-    QByteArray data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
-    const char begin[] = "-----BEGIN PGP MESSAGE-----";
-    const char end[] = "-----END PGP MESSAGE-----";
-    int index1 = data.indexOf(begin);
-    int index2 = data.indexOf(end);
+    QByteArray const begin("-----BEGIN PGP MESSAGE-----");
+    QByteArray const end("-----END PGP MESSAGE-----");
+    auto data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
+    auto const index1 = data.indexOf(begin);
+    auto const index2 = data.indexOf(end);
 
     if(index1 >= 0 && index1 < index2)
       {
@@ -1232,9 +1230,9 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	gpgme_check_version(0);
 
 	QColor signatureColor(240, 128, 128); // Light coral!
-	QString signedMessage(tr("Invalid signature."));
+	auto signedMessage(tr("Invalid signature."));
 	gpgme_ctx_t ctx = 0;
-	gpgme_error_t err = gpgme_new(&ctx);
+	auto err = gpgme_new(&ctx);
 
 	if(err == GPG_ERR_NO_ERROR)
 	  {
@@ -1280,16 +1278,16 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
 		ui.outputDecrypt->selectAll();
 
-		QTextCursor textCursor = ui.outputDecrypt->textCursor();
+		auto textCursor = ui.outputDecrypt->textCursor();
 
 		textCursor.setPosition(0);
 		ui.outputDecrypt->setTextCursor(textCursor);
 
-		gpgme_verify_result_t result = gpgme_op_verify_result(ctx);
+		auto result = gpgme_op_verify_result(ctx);
 
 		if(result)
 		  {
-		    gpgme_signature_t signature = result->signatures;
+		    auto signature = result->signatures;
 
 		    if(signature && signature->fpr)
 		      {
@@ -1343,8 +1341,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
   }
 #endif
 
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
+  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta-signature", 0) : 0;
 
   if(!eCrypt)
     {
@@ -1358,8 +1355,6 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray data
-    (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
   QByteArray cipherType;
   QByteArray computedHash;
   QByteArray encryptionKey;
@@ -1376,7 +1371,9 @@ void spoton_rosetta::slotConvertDecrypt(void)
   QScopedPointer<spoton_crypt> crypt;
   QString error("");
   QString signedMessage("");
-  bool ok = true;
+  auto data
+    (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
+  auto ok = true;
 
   if(data.isEmpty())
     goto done_label;
@@ -1535,7 +1532,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
       ui.outputDecrypt->setText
 	(QString::fromUtf8(data.constData(), data.length()));
 
-      QTextCursor textCursor = ui.outputDecrypt->textCursor();
+      auto textCursor = ui.outputDecrypt->textCursor();
 
       textCursor.setPosition(0);
       ui.outputDecrypt->setTextCursor(textCursor);
@@ -1561,7 +1558,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
 void spoton_rosetta::slotConvertEncrypt(void)
 {
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!eCrypt)
     {
@@ -1573,7 +1570,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
       return;
     }
 
-  DestinationTypes destinationType = DestinationTypes
+  auto destinationType = DestinationTypes
     (ui.contacts->
      itemData(ui.contacts->currentIndex(),Qt::ItemDataRole(Qt::UserRole + 1)).
      toInt());
@@ -1582,13 +1579,13 @@ void spoton_rosetta::slotConvertEncrypt(void)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QByteArray publicKeyHash
+      auto const publicKeyHash
 	(QByteArray::fromBase64(ui.contacts->
 				itemData(ui.contacts->currentIndex()).
 				toByteArray()));
-      QByteArray receiver
+      auto const receiver
 	(spoton_misc::publicKeyFromHash(publicKeyHash, true, eCrypt));
-      QByteArray sender(ui.gpg_email_addresses->currentData().toByteArray());
+      auto const sender(ui.gpg_email_addresses->currentData().toByteArray());
 
       ui.outputEncrypt->setText(gpgEncrypt(receiver, sender));
       ui.outputEncrypt->selectAll();
@@ -1597,8 +1594,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
       return;
     }
 
-  spoton_crypt *sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
+  auto sCrypt = m_parent ? m_parent->crypts().value("rosetta-signature", 0) : 0;
 
   if(!sCrypt)
     {
@@ -1612,7 +1608,6 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QByteArray data(ui.inputEncrypt->toPlainText().toUtf8());
   QByteArray encryptionKey;
   QByteArray hashKey;
   QByteArray keyInformation;
@@ -1626,7 +1621,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
   QScopedPointer<spoton_crypt> crypt;
   QSettings settings;
   QString error("");
-  bool ok = true;
+  auto data(ui.inputEncrypt->toPlainText().toUtf8());
+  auto ok = true;
   size_t encryptionKeyLength = 0;
 
   if(data.isEmpty())
@@ -1765,7 +1761,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
 void spoton_rosetta::slotCopyDecrypted(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     clipboard->setText(ui.outputDecrypt->toPlainText());
@@ -1773,7 +1769,7 @@ void spoton_rosetta::slotCopyDecrypted(void)
 
 void spoton_rosetta::slotCopyEncrypted(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     clipboard->setText(ui.outputEncrypt->toPlainText());
@@ -1781,7 +1777,7 @@ void spoton_rosetta::slotCopyEncrypted(void)
 
 void spoton_rosetta::slotCopyMyGPGKeys(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(!clipboard)
     return;
@@ -1789,7 +1785,7 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
   repaint();
   QApplication::processEvents();
 
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!eCrypt)
     return;
@@ -1800,7 +1796,7 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -1815,7 +1811,7 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 	if(query.exec())
 	  while(query.next())
 	    {
-	      QByteArray publicKey = eCrypt->decryptedAfterAuthenticated
+	      auto const publicKey = eCrypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
 
 	      if(!publicKey.isEmpty())
@@ -1838,7 +1834,7 @@ void spoton_rosetta::slotCopyMyRosettaPublicKeys(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QString text(copyMyRosettaPublicKey());
+  auto const text(copyMyRosettaPublicKey());
 
   QApplication::restoreOverrideCursor();
 
@@ -1853,7 +1849,7 @@ void spoton_rosetta::slotCopyMyRosettaPublicKeys(void)
       return;
     }
 
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     {
@@ -1867,12 +1863,12 @@ void spoton_rosetta::slotCopyMyRosettaPublicKeys(void)
 
 void spoton_rosetta::slotCopyOrPaste(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
 
-  QWidget *widget = QApplication::focusWidget();
+  auto widget = QApplication::focusWidget();
 
   if(!widget)
     return;
@@ -1939,10 +1935,10 @@ void spoton_rosetta::slotDelete(void)
       return;
     }
 
-  DestinationTypes destinationType = DestinationTypes
+  QMessageBox mb(this);
+  auto const destinationType = DestinationTypes
     (ui.contacts->itemData(ui.contacts->currentIndex(),
 			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
-  QMessageBox mb(this);
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
@@ -1967,12 +1963,12 @@ void spoton_rosetta::slotDelete(void)
 
   QApplication::processEvents();
 
-  QByteArray publicKeyHash
-    (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
   QString connectionName("");
-  QString oid
+  auto const publicKeyHash
+    (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
+  auto const oid
     (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
-  bool ok = true;
+  auto ok = true;
 
 #ifdef SPOTON_GPGME_ENABLED
   if(destinationType == GPG)
@@ -1980,15 +1976,14 @@ void spoton_rosetta::slotDelete(void)
       gpgme_check_version(0);
 
       gpgme_ctx_t ctx = 0;
-      gpgme_error_t err = gpgme_new(&ctx);
+      auto err = gpgme_new(&ctx);
 
       if(err == GPG_ERR_NO_ERROR)
 	{
 	  QByteArray publicKey;
 	  gpgme_data_t keydata = 0;
 	  gpgme_key_t key = 0;
-	  spoton_crypt *eCrypt = m_parent ?
-	    m_parent->crypts().value("rosetta", 0) : 0;
+	  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
 	  publicKey = spoton_misc::publicKeyFromHash
 	    (QByteArray::fromBase64(publicKeyHash), true, eCrypt);
@@ -2017,7 +2012,7 @@ void spoton_rosetta::slotDelete(void)
 #endif
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -2136,7 +2131,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
@@ -2160,7 +2155,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
 void spoton_rosetta::slotRename(void)
 {
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
 
   if(!eCrypt)
     {
@@ -2182,7 +2177,7 @@ void spoton_rosetta::slotRename(void)
     }
 
   QString name("");
-  bool ok = true;
+  auto ok = true;
 
   name = QInputDialog::getText
     (this,
@@ -2196,15 +2191,15 @@ void spoton_rosetta::slotRename(void)
   if(name.isEmpty() || !ok)
     return;
 
-  DestinationTypes destinationType = DestinationTypes
+  QString connectionName("");
+  auto const destinationType = DestinationTypes
     (ui.contacts->itemData(ui.contacts->currentIndex(),
 			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
-  QByteArray publicKeyHash
+  auto const publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
-  QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
@@ -2257,7 +2252,7 @@ void spoton_rosetta::slotRename(void)
 
 void spoton_rosetta::slotSaveName(void)
 {
-  QString str(ui.name->text());
+  auto str(ui.name->text());
 
   if(str.trimmed().isEmpty())
     {
@@ -2278,8 +2273,7 @@ void spoton_rosetta::slotSaveName(void)
 void spoton_rosetta::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
-		  toLower());
+  auto iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -2302,7 +2296,7 @@ void spoton_rosetta::slotSplitterMoved(int pos, int index)
   Q_UNUSED(index);
   Q_UNUSED(pos);
 
-  QSplitter *splitter = qobject_cast<QSplitter *> (sender());
+  auto splitter = qobject_cast<QSplitter *> (sender());
 
   if(!splitter)
     return;
@@ -2349,7 +2343,7 @@ void spoton_rosetta::sortContacts(void)
     {
       it.next();
 
-      QString str(it.key().trimmed());
+      auto const str(it.key().trimmed());
 
       if(str.isEmpty())
 	ui.contacts->addItem("unknown", it.value().second);
@@ -2375,7 +2369,7 @@ void spoton_rosetta::toDesktop(void) const
     return;
 
   QFile file;
-  QString fileName
+  auto const fileName
     (QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) +
      QDir::separator() +
      "spot_on_" +
