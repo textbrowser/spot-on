@@ -230,7 +230,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
   QByteArray data;
   QString connectionName("");
   QString receiverName("");
-  bool ok = false;
+  auto ok = false;
 
   {
     auto db(spoton_misc::database(connectionName));

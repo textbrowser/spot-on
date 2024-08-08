@@ -3050,7 +3050,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
-	  auto option = static_cast<u_char> (loop.toChar().toLatin1());
+	  auto const option = static_cast<u_char> (loop.toChar().toLatin1());
 	  socklen_t length = 0;
 
 	  length = sizeof(option);
@@ -3109,7 +3109,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
-	  auto option = static_cast<u_int> (loop.toUInt());
+	  auto const option = static_cast<u_int> (loop.toUInt());
 	  socklen_t length = 0;
 
 	  length = sizeof(option);

@@ -250,10 +250,6 @@ void spoton_urldistribution::run(void)
       {
 	QByteArray name;
 	QByteArray password;
-	QString options
-	  (spoton_kernel::setting("gui/postgresql_connection_options",
-				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
-	   toString().trimmed());
 	auto const database
 	  (spoton_kernel::setting("gui/postgresql_database", "").
 	   toString().trimmed());
@@ -265,6 +261,10 @@ void spoton_urldistribution::run(void)
 	auto const ssltls = spoton_kernel::setting
 	  ("gui/postgresql_ssltls", false).toBool();
 	auto ok = true;
+	auto options
+	  (spoton_kernel::setting("gui/postgresql_connection_options",
+				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	   toString().trimmed());
 
 	if(!options.contains("connect_timeout="))
 	  options.append(";connect_timeout=10");

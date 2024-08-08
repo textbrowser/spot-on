@@ -874,7 +874,7 @@ void spoton_starbeam_writer::slotReadKeys(void)
 
 	      for(int i = 0; i < list.size(); i++)
 		{
-		  QByteArray bytes(list.at(i).trimmed());
+		  auto bytes(list.at(i).trimmed());
 
 		  if(bytes.startsWith("ct=")) // Cipher Type
 		    {

@@ -150,7 +150,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
 
 void spoton::populateUrlDistillers(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -160,10 +160,12 @@ void spoton::populateUrlDistillers(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
@@ -186,7 +188,7 @@ void spoton::populateUrlDistillers(void)
 	      QByteArray direction;
 	      QByteArray domain;
 	      QByteArray permission;
-	      bool ok = true;
+	      auto ok = true;
 
 	      direction = crypt->
 		decryptedAfterAuthenticated(QByteArray::
@@ -212,9 +214,9 @@ void spoton::populateUrlDistillers(void)
 	      if(ok)
 		{
 		  QComboBox *box = 0;
-		  QTableWidgetItem *item = new QTableWidgetItem
+		  auto item = new QTableWidgetItem
 		    (QString::fromUtf8(domain.constData(), domain.length()));
-		  QWidget *widget = combinationBoxForTable();
+		  auto widget = combinationBoxForTable();
 
 		  box = widget->findChild<QComboBox *> ();
 		  box->addItem("accept");
@@ -278,24 +280,25 @@ void spoton::populateUrlDistillers(void)
 void spoton::prepareUrlLabels(void)
 {
   QString connectionName("");
+  auto crypt = m_crypts.value("chat", 0);
   int importCount = 0;
   int remoteCount = 0;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
 
   if(crypt)
     {
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
 	   "urls_key_information.db");
 
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
 	    QStringList queries;
-	    bool ok = true;
+	    auto ok = true;
 	    int counts[2] = {0, 0};
 
 	    query.setForwardOnly(true);
@@ -1466,7 +1469,7 @@ void spoton::slotPostgreSQLConnect(void)
 
 	  m_urlDatabase = QSqlDatabase::addDatabase("QPSQL", "URLDatabase");
 
-	  QString options(ui.connection_options->text().trimmed());
+	  auto options(ui.connection_options->text().trimmed());
 
 	  if(!options.contains("connect_timeout="))
 	    options.append(";connect_timeout=10");
@@ -1488,7 +1491,7 @@ void spoton::slotPostgreSQLConnect(void)
 	    {
 	      m_ui.url_database_connection_information->clear();
 
-	      QString str(m_urlDatabase.lastError().text().trimmed());
+	      auto const str(m_urlDatabase.lastError().text().trimmed());
 
 	      m_urlDatabase = QSqlDatabase();
 
