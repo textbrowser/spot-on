@@ -92,7 +92,7 @@ spoton_emailwindow::spoton_emailwindow
 	  this,
 	  SLOT(slotSendMail(void)));
 
-  foreach(QAbstractButton *button,
+  foreach(auto button,
 	  m_ui.emailParticipants->findChildren<QAbstractButton *> ())
     button->setToolTip(tr("Select All"));
 
@@ -129,7 +129,7 @@ void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
     {
       it.next();
 
-      QAction *action = m_ui.emailSecrets->menu()->addAction
+      auto action = m_ui.emailSecrets->menu()->addAction
 	(it.key(),
 	 this,
 	 SLOT(slotEmailSecretsActionSelected(void)));
@@ -143,7 +143,7 @@ void spoton_emailwindow::slotAboutToShowEmailSecretsMenu(void)
       ** Please do not translate Empty.
       */
 
-      QAction *action = m_ui.emailSecrets->menu()->addAction("Empty");
+      auto action = m_ui.emailSecrets->menu()->addAction("Empty");
 
       action->setEnabled(false);
     }
@@ -167,7 +167,7 @@ void spoton_emailwindow::slotAddAttachment(void)
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QStringList list(dialog.selectedFiles());
+      auto list(dialog.selectedFiles());
 
       std::sort(list.begin(), list.end());
 
@@ -204,7 +204,7 @@ void spoton_emailwindow::slotEmailFsGb(int index)
 
 void spoton_emailwindow::slotEmailSecretsActionSelected(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
@@ -231,8 +231,7 @@ void spoton_emailwindow::slotParticipantDeleted(const QString &oid,
   if(type != "email")
     return;
 
-  QList<QTableWidgetItem *> list
-    (spoton::findItems(m_ui.emailParticipants, oid, 1));
+  auto const list(spoton::findItems(m_ui.emailParticipants, oid, 1));
 
   if(!list.isEmpty() && list.at(0))
     m_ui.emailParticipants->removeRow(list.at(0)->row());
@@ -243,14 +242,11 @@ void spoton_emailwindow::slotParticipantNameChanged
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QList<QTableWidgetItem *> list;
-
-  list = spoton::findItems(m_ui.emailParticipants, publicKeyHash, 3);
+  auto const list(spoton::findItems(m_ui.emailParticipants, publicKeyHash, 3));
 
   if(!list.isEmpty() && list.at(0))
     {
-      QTableWidgetItem *item = m_ui.emailParticipants->item
-	(list.at(0)->row(), 0);
+      auto item = m_ui.emailParticipants->item(list.at(0)->row(), 0);
 
       if(item)
 	item->setText(name);

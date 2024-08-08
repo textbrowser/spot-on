@@ -70,7 +70,7 @@ bool spoton_encryptfile::occupied(void) const
 {
   for(int i = 0; i < ui.tabWidget->count(); i++)
     {
-      spoton_encryptfile_page *p = qobject_cast<spoton_encryptfile_page *>
+      auto p = qobject_cast<spoton_encryptfile_page *>
 	(ui.tabWidget->widget(i));
 
       if(p && p->occupied())
@@ -86,7 +86,7 @@ void spoton_encryptfile::abort(void)
 
   for(int i = 0; i < ui.tabWidget->count(); i++)
     {
-      spoton_encryptfile_page *p = qobject_cast<spoton_encryptfile_page *>
+      auto p = qobject_cast<spoton_encryptfile_page *>
 	(ui.tabWidget->widget(i));
 
       if(p)
@@ -116,7 +116,7 @@ void spoton_encryptfile::slotClose(void)
 
 void spoton_encryptfile::slotCloseTab(int index)
 {
-  spoton_encryptfile_page *p = qobject_cast<spoton_encryptfile_page *>
+  auto p = qobject_cast<spoton_encryptfile_page *>
     (ui.tabWidget->widget(index));
 
   if(!p)
@@ -151,7 +151,7 @@ void spoton_encryptfile::slotCloseTab(int index)
 
 void spoton_encryptfile::slotNewPage(void)
 {
-  spoton_encryptfile_page *p = new spoton_encryptfile_page(this);
+  auto p = new spoton_encryptfile_page(this);
 
   ui.tabWidget->addTab(p, tr("Page"));
 }
@@ -159,7 +159,7 @@ void spoton_encryptfile::slotNewPage(void)
 void spoton_encryptfile::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
+  auto iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||

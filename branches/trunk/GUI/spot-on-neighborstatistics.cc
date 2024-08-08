@@ -63,17 +63,17 @@ spoton_neighborstatistics::~spoton_neighborstatistics()
 QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 {
   QList<QPair<QString, QString> > list;
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(crypt)
     {
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "neighbors.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	if(db.open())
 	  {
@@ -87,11 +87,11 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 	    if(query.exec() && query.next())
 	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  QByteArray bytes
-		    (QByteArray::fromBase64(query.value(i).toByteArray()));
 		  QPair<QString, QString> pair;
-		  QSqlRecord record(query.record());
 		  QString text("");
+		  auto bytes
+		    (QByteArray::fromBase64(query.value(i).toByteArray()));
+		  auto const record(query.record());
 
 		  pair.first = record.fieldName(i);
 
@@ -107,7 +107,7 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 		    text = query.value(i).toString();
 		  else
 		    {
-		      bool ok = true;
+		      auto ok = true;
 
 		      bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
 
@@ -245,10 +245,10 @@ void spoton_neighborstatistics::slotFinished(void)
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_ui.table->setSortingEnabled(false);
 
-      QList<QPair<QString, QString> > list(m_future.results().value(0));
       QString fieldName("");
-      int hval = m_ui.table->horizontalScrollBar()->value();
-      int vval = m_ui.table->verticalScrollBar()->value();
+      auto const hval = m_ui.table->horizontalScrollBar()->value();
+      auto const list(m_future.results().value(0));
+      auto const vval = m_ui.table->verticalScrollBar()->value();
 
       if(!m_ui.table->selectionModel()->selectedRows(0).isEmpty())
 	fieldName = m_ui.table->selectionModel()->selectedRows(0).at(0).

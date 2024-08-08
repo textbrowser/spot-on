@@ -92,7 +92,7 @@ void spoton_logviewer::show(QWidget *parent)
 
   if(parent)
     {
-      QPoint p(parent->pos());
+      auto const p(parent->pos());
       int X = 0;
       int Y = 0;
 
@@ -138,8 +138,7 @@ void spoton_logviewer::slotEnableLog(bool state)
 void spoton_logviewer::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nuove").toString().
-		  toLower());
+  auto iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -152,8 +151,8 @@ void spoton_logviewer::slotSetIcons(void)
 
 void spoton_logviewer::slotTimeout(void)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "error_log.dat");
+  QFileInfo fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "error_log.dat");
 
   if(fileInfo.exists())
     {
@@ -174,10 +173,9 @@ void spoton_logviewer::slotTimeout(void)
 
   if(file.open(QIODevice::ReadOnly))
     {
-      int vValue = ui.log->verticalScrollBar()->value();
+      auto const vValue = ui.log->verticalScrollBar()->value();
 
-      if(file.seek(qMax(static_cast<qint64> (0),
-			file.size() - 256 * 1024)))
+      if(file.seek(qMax(static_cast<qint64> (0), file.size() - 256 * 1024)))
 	{
 	  ui.log->setPlainText(file.read(256 * 1024).trimmed());
 	  ui.log->verticalScrollBar()->setValue(vValue);

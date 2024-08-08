@@ -118,7 +118,7 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
   QFile file1(fileName);
   QFile file2(destination);
   QString error("");
-  bool sign = true;
+  auto sign = true;
 
   if(file1.open(QIODevice::ReadOnly) && file2.open(QIODevice::Truncate |
 						   QIODevice::Unbuffered |
@@ -176,7 +176,7 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 		  break;
 		}
 
-	      QByteArray data(bytes.mid(0, static_cast<int> (rc)));
+	      auto const data(bytes.mid(0, static_cast<int> (rc)));
 	      spoton_crypt crypt(credentials.value(0).toString(),
 				 credentials.value(1).toString(),
 				 QByteArray(),
@@ -189,7 +189,7 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 
 	      {
 		QByteArray hash;
-		bool ok = true;
+		auto ok = true;
 
 		hash = crypt.keyedHash(data, &ok);
 
@@ -215,7 +215,7 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 
 	  if(error.isEmpty())
 	    {
-	      bool ok = true;
+	      auto ok = true;
 	      spoton_crypt crypt(credentials.value(0).toString(),
 				 credentials.value(1).toString(),
 				 QByteArray(),
@@ -255,7 +255,7 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 
       emit status(tr("Decrypting the file %1.").arg(fileName));
 
-      QByteArray eKey(credentials.value(2).toByteArray());
+      auto eKey(credentials.value(2).toByteArray());
 
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
@@ -265,8 +265,8 @@ void spoton_encryptfile_page::decrypt(const QString &fileName,
 	      break;
 	    }
 
-	  QByteArray data(bytes.mid(0, static_cast<int> (rc)));
-	  bool ok = true;
+	  auto data(bytes.mid(0, static_cast<int> (rc)));
+	  auto ok = true;
 	  spoton_crypt crypt(credentials.value(0).toString(),
 			     credentials.value(1).toString(),
 			     QByteArray(),
@@ -376,7 +376,7 @@ void spoton_encryptfile_page::encrypt(const bool sign,
       bytes.resize(qMax(1024, 1024 * credentials.value(4).toInt()));
       emit status(tr("Encrypting the file %1.").arg(fileName));
 
-      QByteArray eKey(credentials.value(2).toByteArray());
+      auto eKey(credentials.value(2).toByteArray());
 
       while((rc = file1.read(bytes.data(), bytes.length())) > 0)
 	{
@@ -386,8 +386,8 @@ void spoton_encryptfile_page::encrypt(const bool sign,
 	      break;
 	    }
 
-	  QByteArray data(bytes.mid(0, static_cast<int> (rc)));
-	  bool ok = true;
+	  auto data(bytes.mid(0, static_cast<int> (rc)));
+	  auto ok = true;
 	  spoton_crypt crypt(credentials.value(0).toString(),
 			     credentials.value(1).toString(),
 			     QByteArray(),
@@ -434,7 +434,7 @@ void spoton_encryptfile_page::encrypt(const bool sign,
 	    {
 	      if(sign)
 		{
-		  QByteArray hash(crypt.keyedHash(data, &ok));
+		  auto const hash(crypt.keyedHash(data, &ok));
 
 		  if(!ok)
 		    {
@@ -509,7 +509,7 @@ void spoton_encryptfile_page::slotCancel(void)
 
 void spoton_encryptfile_page::slotCipherTypeChanged(int index)
 {
-  auto text(ui.cipher->itemText(index));
+  auto const text(ui.cipher->itemText(index));
 
 #if !defined(GCRYPT_VERSION_NUMBER) || GCRYPT_VERSION_NUMBER < 0x010600
   Q_UNUSED(text);
@@ -566,8 +566,8 @@ void spoton_encryptfile_page::slotConvert(void)
   QScopedPointer<QMessageBox> mb;
   QString error("");
   QString modeOfOperation("");
-  QString password(ui.password->text());
-  QString pin(ui.pin->text());
+  auto const password(ui.password->text());
+  auto const pin(ui.pin->text());
 
   if(destination.absoluteFilePath().isEmpty())
     {
@@ -669,7 +669,7 @@ void spoton_encryptfile_page::slotConvert(void)
 
       QDir baseDir(destination.absoluteFilePath());
       QDir dir(fileInfo.absoluteFilePath());
-      QFileInfoList files(dir.entryInfoList(filters, QDir::Files));
+      auto files(dir.entryInfoList(filters, QDir::Files));
 
       while(true)
 	{
@@ -681,11 +681,11 @@ void spoton_encryptfile_page::slotConvert(void)
 	  else if(m_future.isRunning())
 	    continue;
 
-	  QFileInfo fileInfo(files.takeFirst());
+	  auto const fileInfo(files.takeFirst());
 
 	  if(ui.decrypt->isChecked())
 	    {
-	      QString destination(baseDir.absolutePath());
+	      auto destination(baseDir.absolutePath());
 
 	      destination.append(QDir::separator());
 	      destination.append(fileInfo.fileName());
@@ -713,7 +713,7 @@ void spoton_encryptfile_page::slotConvert(void)
 	    }
 	  else
 	    {
-	      QString destination(baseDir.absolutePath());
+	      auto destination(baseDir.absolutePath());
 
 	      destination.append(QDir::separator());
 	      destination.append(fileInfo.fileName());
