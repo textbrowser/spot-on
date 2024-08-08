@@ -365,8 +365,8 @@ void spoton::saveUrlIniPath(const QString &path)
 
     for(int i = 0; i < settings.allKeys().size(); i++)
       {
-	QString key(settings.allKeys().at(i));
-	QVariant value(settings.value(key));
+	auto const key(settings.allKeys().at(i));
+	auto const value(settings.value(key));
 
 	if(key.contains("ciphertype", Qt::CaseInsensitive))
 	  {
@@ -402,7 +402,7 @@ void spoton::slotAddDistiller(void)
 {
   spoton_misc::prepareUrlDistillersDatabase();
 
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -417,8 +417,8 @@ void spoton::slotAddDistiller(void)
   QString connectionName("");
   QString error("");
   QString scheme("");
-  QUrl url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
-  bool ok = true;
+  auto ok = true;
+  auto url(QUrl::fromUserInput(m_ui.domain->text().trimmed()));
 
   if(!(m_ui.downDist->isChecked() ||
        m_ui.sharedDist->isChecked() ||
@@ -446,18 +446,20 @@ void spoton::slotAddDistiller(void)
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
-	QByteArray domain
-	  (url.scheme().toLatin1() + "://" +
-	   url.host().toUtf8() + url.path().toUtf8());
 	QSqlQuery query(db);
 	QStringList list;
+	auto const domain
+	  (url.scheme().toLatin1() + "://" +
+	   url.host().toUtf8() + url.path().toUtf8());
 
 	if(m_ui.downDist->isChecked())
 	  list << "download";
@@ -471,8 +473,8 @@ void spoton::slotAddDistiller(void)
 	for(int i = 0; i < list.size(); i++)
 	  {
 	    QByteArray permission("accept");
-	    bool ok = true;
-	    const QString &direction(list.at(i));
+	    auto const direction(list.at(i));
+	    auto ok = true;
 
 	    query.prepare("INSERT INTO distillers "
 			  "(direction, "
@@ -754,7 +756,7 @@ void spoton::slotDeleteAllUrls(void)
       slotDeactivateKernel();
     }
 
-  bool deleted = deleteAllUrls();
+  auto const deleted = deleteAllUrls();
 
   delete m_urlCommonCrypt;
   m_urlCommonCrypt = 0;
@@ -774,7 +776,7 @@ void spoton::slotDeleteAllUrls(void)
 
 void spoton::slotDeleteUrlDistillers(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -806,17 +808,19 @@ void spoton::slotDeleteUrlDistillers(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       for(int i = 0; i < list.size(); i++)
 	{
 	  QSqlQuery query(db);
-	  QString str(list.at(i).data().toString());
-	  bool ok = true;
+	  auto const str(list.at(i).data().toString());
+	  auto ok = true;
 
 	  query.exec("PRAGMA secure_delete = ON");
 	  query.prepare("DELETE FROM distillers WHERE "
@@ -883,7 +887,7 @@ void spoton::slotDropUrlTables(void)
   QApplication::processEvents();
 
   QProgressDialog progress(this);
-  bool dropped = true;
+  auto dropped = true;
 
   progress.setLabelText(tr("Dropping URL tables. Please be patient."));
   progress.setMaximum(0);
@@ -1068,7 +1072,7 @@ void spoton::slotGatherUrlStatistics(void)
 
 void spoton::slotImportUrls(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1133,16 +1137,17 @@ void spoton::slotImportUrls(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "urls_key_information.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.setForwardOnly(true);
 
@@ -1176,8 +1181,8 @@ void spoton::slotImportUrls(void)
   repaint();
   QApplication::processEvents();
 
-  QDateTime now(QDateTime::currentDateTime());
   QProgressDialog progress(this);
+  auto const now(QDateTime::currentDateTime());
 
   progress.setLabelText(tr("Importing URLs. Please be patient."));
   progress.setMaximum(0);
@@ -1197,7 +1202,7 @@ void spoton::slotImportUrls(void)
   quint64 not_imported = 0;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "shared.db");
@@ -1232,8 +1237,8 @@ void spoton::slotImportUrls(void)
 	      QByteArray description;
 	      QByteArray title;
 	      QByteArray url;
-	      bool encrypted = query.value(2).toBool();
-	      bool ok = true;
+	      auto const encrypted = query.value(2).toBool();
+	      auto ok = true;
 
 	      if(encrypted)
 		{
@@ -1281,21 +1286,20 @@ void spoton::slotImportUrls(void)
 
 		  for(int i = 0; i < m_ui.sharedDistillers->rowCount(); i++)
 		    {
-		      QTableWidgetItem *item = m_ui.sharedDistillers->
-			item(i, 0);
-		      QWidget *widget = m_ui.sharedDistillers->cellWidget(i, 1);
+		      auto item = m_ui.sharedDistillers->item(i, 0);
+		      auto widget = m_ui.sharedDistillers->cellWidget(i, 1);
 
 		      if(!item || !widget)
 			continue;
 
-		      QComboBox *box = widget->findChild<QComboBox *> ();
+		      auto box = widget->findChild<QComboBox *> ();
 
 		      if(!box)
 			continue;
 
 		      QString type("");
-		      QUrl u1(QUrl::fromUserInput(item->text()));
-		      QUrl u2(QUrl::fromUserInput(url));
+		      auto const u1(QUrl::fromUserInput(item->text()));
+		      auto const u2(QUrl::fromUserInput(url));
 
 		      if(box->currentIndex() == 0)
 			type = "accept";
@@ -1393,7 +1397,7 @@ void spoton::slotPostgreSQLConnect(void)
       return;
     }
 
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1410,7 +1414,7 @@ void spoton::slotPostgreSQLConnect(void)
   QDialog dialog(this);
   QSettings settings;
   Ui_spoton_postgresqlconnect ui;
-  bool ok = true;
+  auto ok = true;
 
   name = crypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_name", "").
@@ -1518,7 +1522,7 @@ void spoton::slotPostgreSQLConnect(void)
 	      settings.setValue("gui/postgresql_database", ui.database->text());
 	      settings.setValue("gui/postgresql_host", ui.host->text());
 
-	      bool ok = true;
+	      auto ok = true;
 
 	      settings.setValue
 		("gui/postgresql_name",
@@ -1595,7 +1599,7 @@ void spoton::slotPrepareUrlDatabases(void)
   QApplication::processEvents();
 
   QProgressDialog progress(this);
-  bool created = true;
+  auto created = true;
 
   progress.setLabelText(tr("Creating URL databases. Please be patient."));
   progress.setMaximum(0);
@@ -1799,7 +1803,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
   QPair<QByteArray, QByteArray> keys;
   QScopedPointer<QMessageBox> mb;
   QString error("");
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1874,11 +1878,10 @@ void spoton::slotSaveCommonUrlCredentials(void)
 
 void spoton::slotSaveUrlCredentials(void)
 {
-  QByteArray salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto const salt(QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1903,16 +1906,17 @@ void spoton::slotSaveUrlCredentials(void)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db(spoton_misc::database(connectionName));
 
 	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() +
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
 	   "urls_key_information.db");
 
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare
 	      ("INSERT OR REPLACE INTO import_key_information "
@@ -2010,8 +2014,8 @@ void spoton::slotShowUrlSettings(bool state)
 
 void spoton::slotUrlLinkClicked(const QUrl &u)
 {
-  QString scheme(u.scheme().toLower().trimmed());
-  const QUrl &url(u);
+  auto const scheme(u.scheme().toLower().trimmed());
+  auto const url(u);
 
   if(scheme.startsWith("delete-"))
     {
@@ -2110,7 +2114,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	{
 	  QApplication::processEvents();
 
-	  QString hash(url.toString());
+	  auto hash(url.toString());
 
 	  if(hash.startsWith("export-ftp:"))
 	    hash.remove
@@ -2147,7 +2151,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 		  {
 		    QByteArray content;
 		    QUrl url;
-		    bool ok = true;
+		    auto ok = true;
 
 		    content = m_urlCommonCrypt->decryptedAfterAuthenticated
 		      (QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -2210,8 +2214,8 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	}
 
       QByteArray message("sharelink_");
-      QString str(url.toString().mid(url.toString().indexOf("%") + 1));
       QUrl original;
+      auto str(url.toString().mid(url.toString().indexOf("%") + 1));
 
       if(str.startsWith("253")) // Encoded "%3".
 	str.remove(0, 3);
@@ -2279,7 +2283,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	  return;
 	}
 
-      QString hash(url.toString());
+      auto hash(url.toString());
 
       if(hash.startsWith("view-ftp:"))
 	hash.remove
@@ -2296,8 +2300,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       hash = hash.mid(0, hash.indexOf("%"));
 
-      spoton_pageviewer *pageViewer = new spoton_pageviewer
-	(&m_urlDatabase, hash, this);
+      auto pageViewer = new spoton_pageviewer(&m_urlDatabase, hash, this);
 
       pageViewer->setPage(QByteArray(), QUrl("http://127.0.0.1"), 0);
 
@@ -2320,7 +2323,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 	      {
 		QByteArray content;
 		QUrl url;
-		bool ok = true;
+		auto ok = true;
 
 		content = m_urlCommonCrypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -2385,7 +2388,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       return;
     }
 
-  QString hash(url.toString());
+  auto hash(url.toString());
 
   hash = hash.mid(8, hash.indexOf("/") - 8);
 
@@ -2471,12 +2474,12 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 void spoton::slotUrlPolarizerTypeChange(int index)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
 
-  QComboBox *box = qobject_cast<QComboBox *> (sender());
+  auto box = qobject_cast<QComboBox *> (sender());
 
   if(!box)
     return;
@@ -2484,15 +2487,17 @@ void spoton::slotUrlPolarizerTypeChange(int index)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare("UPDATE distillers SET "
 		      "permission = ? WHERE OID = ?");
@@ -2521,12 +2526,12 @@ void spoton::slotUrlPolarizerTypeChange(int index)
 void spoton::slotVerify(void)
 {
   QByteArray computedHash;
-  QByteArray salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
-  QByteArray saltedPassphraseHash
-    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
   QString error("");
-  bool ok = false;
+  auto const salt
+    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  auto const saltedPassphraseHash
+    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
+  auto ok = false;
 
   computedHash = spoton_crypt::saltedPassphraseHash
     (m_ui.urlHash->currentText(), m_ui.urlPassphrase->text(), salt, error);
