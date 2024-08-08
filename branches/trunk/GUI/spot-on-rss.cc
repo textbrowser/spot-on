@@ -422,14 +422,14 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 	auto const host
 	  (settings.value("gui/postgresql_host", "localhost").
 	   toString().trimmed());
-	auto options
-	  (settings.value("gui/postgresql_connection_options",
-			  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
-	   toString().trimmed());
 	auto const port = settings.value("gui/postgresql_port", 5432).toInt();
 	auto const ssltls = settings.value("gui/postgresql_ssltls", true).
 	  toBool();
 	auto ok = true;
+	auto options
+	  (settings.value("gui/postgresql_connection_options",
+			  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	   toString().trimmed());
 
 	if(!options.contains("connect_timeout="))
 	  options.append(";connect_timeout=10");

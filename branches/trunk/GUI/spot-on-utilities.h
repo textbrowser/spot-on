@@ -92,16 +92,16 @@ class spoton_utilities
       desk = screen->geometry();
 #endif
 
-    QWidgetList list = QApplication::topLevelWidgets();
+    auto const list = QApplication::topLevelWidgets();
 
     for(int i = 0; (extrah == 0 || extraw == 0) && i < list.size(); ++i)
       {
-	QWidget *current = list.at(i);
+	auto current = list.at(i);
 
 	if(current && current->isVisible())
 	  {
-	    int frameh = current->geometry().y() - current->y();
-	    int framew = current->geometry().x() - current->x();
+	    auto const frameh = current->geometry().y() - current->y();
+	    auto const framew = current->geometry().x() - current->x();
 
 	    extrah = qMax(extrah, frameh);
 	    extraw = qMax(extraw, framew);
@@ -116,7 +116,7 @@ class spoton_utilities
 
     if(parent)
       {
-	QPoint pp = parent->mapToGlobal(QPoint(0,0));
+	auto const pp = parent->mapToGlobal(QPoint(0,0));
 
 	p = QPoint(pp.x() + parent->width() / 2,
 		   pp.y() + parent->height() / 2);
