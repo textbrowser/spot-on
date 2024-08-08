@@ -1201,9 +1201,8 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
 {
   QSqlDatabase db;
   QWriteLocker locker(&s_dbMutex);
-  quint64 dbId = 0;
+  auto const dbId = s_dbId += 1;
 
-  dbId = s_dbId += 1;
   locker.unlock();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   if(QRandomGenerator::global())
@@ -1225,9 +1224,8 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
 QString spoton_misc::databaseName(void)
 {
   QWriteLocker locker(&s_dbMutex);
-  quint64 dbId = 0;
+  auto const dbId = s_dbId += 1;
 
-  dbId = s_dbId += 1;
   locker.unlock();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   if(QRandomGenerator::global())
@@ -2523,7 +2521,7 @@ bool spoton_misc::isValidBuzzMagnetData(const QByteArray &data)
 
   for(int i = 0; i < 7; i++)
     {
-      auto str(QByteArray::fromBase64(list.value(i)));
+      auto const str(QByteArray::fromBase64(list.value(i)));
 
       if(i == 0) // Channel
 	{
@@ -3031,12 +3029,17 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
 #if defined(Q_OS_WIN)
-      if(setsockopt(socketDescriptor, IPPROTO_IP,
-		    IP_ADD_MEMBERSHIP, (const char *) &mreq4, (int) length)
-	 == -1)
+      if(setsockopt(socketDescriptor,
+		    IPPROTO_IP,
+		    IP_ADD_MEMBERSHIP,
+		    (const char *) &mreq4,
+		    (int) length) == -1)
 #else
-      if(setsockopt(socketDescriptor, IPPROTO_IP, IP_ADD_MEMBERSHIP,
-		    &mreq4, length) == -1)
+      if(setsockopt(socketDescriptor,
+		    IPPROTO_IP,
+		    IP_ADD_MEMBERSHIP,
+		    &mreq4,
+		    length) == -1)
 #endif
 	{
 	  ok = false;
@@ -3057,8 +3060,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 			IPPROTO_IP,
 			IP_MULTICAST_LOOP,
 			(const char *) &option,
-			(int) length)
-	     == -1)
+			(int) length) == -1)
 #else
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP,
@@ -3086,11 +3088,16 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq6.ipv6mr_interface = 0;
 
 #if defined(Q_OS_WIN)
-      if(setsockopt(socketDescriptor, IPPROTO_IPV6,
-		    IPV6_JOIN_GROUP, (const char *) &mreq6,
+      if(setsockopt(socketDescriptor,
+		    IPPROTO_IPV6,
+		    IPV6_JOIN_GROUP,
+		    (const char *) &mreq6,
 		    (int) length) == -1)
 #else
-      if(setsockopt(socketDescriptor, IPPROTO_IPV6, IPV6_JOIN_GROUP, &mreq6,
+      if(setsockopt(socketDescriptor,
+		    IPPROTO_IPV6,
+		    IPV6_JOIN_GROUP,
+		    &mreq6,
 		    length) == -1)
 #endif
 	{

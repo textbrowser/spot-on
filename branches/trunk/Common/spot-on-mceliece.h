@@ -273,7 +273,7 @@ class spoton_mceliece
 
   static double expansion(const size_t m, const size_t t)
   {
-    const size_t n = static_cast<size_t> (1) << m; // 2^m
+    auto const n = static_cast<size_t> (1) << m; // 2^m
     size_t k = 0;
 
     if(m * t < n)

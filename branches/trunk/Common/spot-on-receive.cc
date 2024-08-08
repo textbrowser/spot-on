@@ -1073,7 +1073,7 @@ QList<QByteArray> spoton_receive::process0001c
 					     keyType, s_crypt))
 	return QList<QByteArray> ();
 
-      QFileInfo fileInfo
+      QFileInfo const fileInfo
 	(spoton_misc::homePath() + QDir::separator() + "email.db");
       auto const maximumSize = 1048576 * spoton_kernel::setting
 	("gui/maximumEmailFileSize", 1024).toLongLong();
@@ -1940,12 +1940,10 @@ QString spoton_receive::findMessageType
   if(list.size() == 3 &&
      spoton_misc::participantCount("poptastic", s_crypt) > 0)
     {
-      QPair<QByteArray, QByteArray> gemini;
-
-      gemini = spoton_misc::findGeminiInCosmos
-	(QByteArray::fromBase64(list.value(0)),
-	 QByteArray::fromBase64(list.value(1)),
-	 s_crypt);
+      auto const gemini
+	(spoton_misc::findGeminiInCosmos(QByteArray::fromBase64(list.value(0)),
+					 QByteArray::fromBase64(list.value(1)),
+					 s_crypt));
 
       if(!gemini.first.isEmpty())
 	{

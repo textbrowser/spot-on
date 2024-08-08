@@ -516,7 +516,7 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
   ** Some calculations.
   */
 
-  auto const n = 1 << static_cast<long int> (m);
+  auto const n = static_cast<long int> (1) << static_cast<long int> (m);
   long int k = 0;
 
   k = n - static_cast<long int> (m) * static_cast<long int> (m_t);
@@ -580,9 +580,9 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   m_publicKey = 0;
   m_t = 0;
 
-  auto const publicKey(qUncompress(pk)); // Key is compressed.
   auto const offset = static_cast<size_t>
     (qstrlen("mceliece-public-key-000-m00t00"));
+  auto const publicKey(qUncompress(pk)); // Key is compressed.
 
   if(publicKey.length() > static_cast<int> (offset))
     {
@@ -1273,7 +1273,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
       do
 	{
-	  long int i = NTL::RandomBnd(e.length());
+	  auto const i = NTL::RandomBnd(e.length());
 
 	  if(e[i] == 0)
 	    {
