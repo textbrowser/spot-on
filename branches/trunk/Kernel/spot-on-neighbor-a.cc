@@ -2885,7 +2885,7 @@ void spoton_neighbor::slotTimeout(void)
 	  }
 	else if(m_id != -1 && query.lastError().isValid())
 	  {
-	    QFileInfo fileInfo
+	    QFileInfo const fileInfo
 	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	    if(!fileInfo.exists())

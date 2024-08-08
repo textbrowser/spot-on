@@ -4665,7 +4665,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 				  const QByteArray &signature,
 				  const bool goldbugUsed)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  QFileInfo const fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "email.db");
   auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maximumEmailFileSize", 1024).toLongLong();
 
@@ -5013,7 +5014,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
 				  const QByteArray &recipientHash)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  QFileInfo const fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "email.db");
   auto const maximumSize = 1048576 * spoton_kernel::setting
     ("gui/maximumEmailFileSize", 1024).toLongLong();
 

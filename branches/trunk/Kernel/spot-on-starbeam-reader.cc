@@ -485,7 +485,7 @@ void spoton_starbeam_reader::slotAcknowledgePosition(const qint64 id,
 
       QString status("completed");
 
-      if(m_position < QFileInfo(m_fileName).size())
+      if(QFileInfo(m_fileName).size() > m_position)
 	status = "transmitting";
 
       savePositionAndStatus(status);

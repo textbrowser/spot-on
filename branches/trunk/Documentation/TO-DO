@@ -321,6 +321,7 @@ Completed Items
        tasks. New RSS tool tip.
 220.   Correct effervescent tool tips. StarBeam.
 221.   QString::split() and empty parts.
+222.   Archive architectures.
 
 Remaining Items
 
@@ -331,4 +332,4 @@ Remaining Items
        Common (Completed)
        GUI
        Kernel (Completed)
-4.     Archive architectures.
+4.     Shift operators and types.

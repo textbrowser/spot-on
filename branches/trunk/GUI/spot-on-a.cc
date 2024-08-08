@@ -48,6 +48,7 @@ extern "C"
 #include <QShortcut>
 #include <QSplashScreen>
 #include <QStandardItemModel>
+#include <QSysInfo>
 #ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineProfile>
 #include <QWebEngineSettings>
@@ -77,7 +78,6 @@ extern "C"
 }
 #endif
 
-#include "Common/spot-on-architecture.h"
 #include "Common/spot-on-threefish.h"
 #include "Common/spot-on-version.h"
 #include "spot-on-defines.h"
@@ -730,7 +730,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	 SSLeay_version(SSLEAY_VERSION) :
 #endif
 	 "OpenSSL is not supported, according to Qt").
-     arg(SPOTON_ARCHITECTURE_STR).
+     arg(QSysInfo::buildCpuArchitecture()).
      arg(QT_VERSION_STR).
      arg(CHAR_BIT * sizeof(void *)).
 #ifdef SPOTON_POPTASTIC_SUPPORTED

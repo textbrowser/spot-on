@@ -183,7 +183,7 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 	  SLOT(slotClientConnected(void)));
   m_generalTimer.start(2500);
 
-  QFileInfo fileInfo
+  QFileInfo const fileInfo
     (spoton_misc::homePath() + QDir::separator() + "kernel.db");
 
   if(fileInfo.isReadable())

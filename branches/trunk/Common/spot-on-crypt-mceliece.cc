@@ -165,7 +165,7 @@ QString spoton_crypt::publicKeySizeMcEliece(const QByteArray &data)
 QString spoton_crypt::publicKeySizeMcEliece(void)
 {
 #ifdef SPOTON_MCELIECE_ENABLED
-  bool ok = true;
+  auto ok = true;
 
   publicKey(&ok);
 

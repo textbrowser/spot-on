@@ -1131,7 +1131,8 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   if(!s_crypt)
     return QList<QByteArray> ();
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  QFileInfo const fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "email.db");
 
   if(fileInfo.exists())
     {
@@ -1175,10 +1176,9 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 
 	      if(ok)
 		{
-		  QByteArray computedHash;
-
-		  computedHash = spoton_crypt::keyedHash
-		    (data, postalAddress, hashType, &ok);
+		  auto const computedHash
+		    (spoton_crypt::
+		     keyedHash(data, postalAddress, hashType, &ok));
 
 		  if(ok)
 		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
@@ -1275,10 +1275,8 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 
 	      locker.unlock();
 
-	      QByteArray computedHash;
-
-	      computedHash = spoton_crypt::keyedHash
-		(data, postalAddress, hashType, &ok);
+	      auto const computedHash
+		(spoton_crypt::keyedHash(data, postalAddress, hashType, &ok));
 
 	      if(ok)
 		if(list.isEmpty())
@@ -3006,8 +3004,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		}
 	      else if(status != "paused")
 		{
-		  auto starbeam
-		    (m_starbeamReaders.value(id, 0));
+		  auto starbeam(m_starbeamReaders.value(id, 0));
 
 		  if(starbeam)
 		    starbeam->deleteLater();
@@ -3732,8 +3729,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 	  if(query.next())
 	    {
 	      QByteArray publicKey;
-	      QPair<QByteArray, QByteArray> geminis(gemini,
-						    geminiHashKey);
+	      QPair<QByteArray, QByteArray> geminis(gemini, geminiHashKey);
 
 	      publicKey = s_crypt1->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),

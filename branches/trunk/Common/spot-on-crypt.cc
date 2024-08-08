@@ -139,6 +139,7 @@ static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #else
 static int digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #endif
+static int error_buffer_size = 64;
 
 /*
 ** Ignore some OpenSSL 3 warnings.
@@ -530,9 +531,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::digitalSignature(): gcry_sexp_new() "
@@ -552,9 +554,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = false;
 
-      QByteArray buffer(64, 0);
+      QByteArray buffer(error_buffer_size, 0);
 
-      gpg_strerror_r(err, buffer.data(),
+      gpg_strerror_r(err,
+		     buffer.data(),
 		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt::digitalSignature(): gcry_pk_testkey() "
@@ -640,9 +643,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
 	  if(err != 0)
 	    {
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::digitalSignature(): "
@@ -761,9 +765,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
 	  if(err != 0)
 	    {
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::digitalSignature(): "
@@ -785,9 +790,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::digitalSignature(): "
@@ -918,9 +924,10 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 
 		  encrypted.clear();
 
-		  QByteArray buffer(64, 0);
+		  QByteArray buffer(error_buffer_size, 0);
 
-		  gpg_strerror_r(err, buffer.data(),
+		  gpg_strerror_r(err,
+				 buffer.data(),
 				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::encrypted(): "
@@ -1084,9 +1091,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_open() "
@@ -1106,9 +1114,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 	  if(ok)
 	    *ok = false;
 
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_setkey() "
@@ -1202,9 +1211,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): "
@@ -1227,9 +1237,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 	  if(ok)
 	    *ok = false;
 
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_setkey() "
@@ -1467,7 +1478,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       */
 
       {
-	bool ok = true;
+	auto ok = true;
 
 	publicKey(&ok);
       }
@@ -1513,9 +1524,10 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::publicKeyDecrypt(): gcry_sexp_new() "
@@ -1535,9 +1547,10 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = false;
 
-      QByteArray buffer(64, 0);
+      QByteArray buffer(error_buffer_size, 0);
 
-      gpg_strerror_r(err, buffer.data(),
+      gpg_strerror_r(err,
+		     buffer.data(),
 		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt::publicKeyDecrypt(): gcry_pk_testkey() "
@@ -1837,9 +1850,10 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
 	      if(err != 0)
 		{
-		  QByteArray buffer(64, 0);
+		  QByteArray buffer(error_buffer_size, 0);
 
-		  gpg_strerror_r(err, buffer.data(),
+		  gpg_strerror_r(err,
+				 buffer.data(),
 				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::publicKeyEncrypt(): "
@@ -1859,9 +1873,10 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
 	  if(err != 0)
 	    {
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::publicKeyEncrypt(): "
@@ -1888,9 +1903,10 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::publicKeyEncrypt(): gcry_sexp_new() "
@@ -2181,9 +2197,10 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::shake256(): gcry_md_open() "
@@ -2207,9 +2224,10 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::shake256(): gcry_md_extract() "
@@ -2611,9 +2629,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	{
 	  error = QObject::tr("gcry_kdf_derive() returned non-zero");
 
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::derivedKeys(): gcry_kdf_derive() "
@@ -2752,9 +2771,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::generatePrivatePublicKeys(): "
@@ -2777,9 +2797,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::generatePrivatePublicKeys(): "
@@ -3300,9 +3321,10 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::isValidSignature(): gcry_sexp_new() "
@@ -3324,9 +3346,10 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::isValidSignature(): "
@@ -3398,9 +3421,10 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
 	  if(err != 0)
 	    {
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::isValidSignature(): "
@@ -3452,9 +3476,10 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 
       if(err != 0)
 	{
-	  QByteArray buffer(64, 0);
+	  QByteArray buffer(error_buffer_size, 0);
 
-	  gpg_strerror_r(err, buffer.data(),
+	  gpg_strerror_r(err,
+			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::isValidSignature(): "
@@ -3473,9 +3498,10 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
     {
       ok = false;
 
-      QByteArray buffer(64, 0);
+      QByteArray buffer(error_buffer_size, 0);
 
-      gpg_strerror_r(err, buffer.data(),
+      gpg_strerror_r(err,
+		     buffer.data(),
 		     static_cast<size_t> (buffer.length()));
       spoton_misc::logError
 	(QString("spoton_crypt::isValidSignature(): "
@@ -3593,9 +3619,10 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
 	    {
 	      ok = false;
 
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::setInitializationVector(): "
@@ -4471,9 +4498,10 @@ void spoton_crypt::init(const QString &cipherType,
 	    {
 	      if(err != 0)
 		{
-		  QByteArray buffer(64, 0);
+		  QByteArray buffer(error_buffer_size, 0);
 
-		  gpg_strerror_r(err, buffer.data(),
+		  gpg_strerror_r(err,
+				 buffer.data(),
 				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::init(): "
@@ -4514,9 +4542,10 @@ void spoton_crypt::init(const QString &cipherType,
 					   m_symmetricKey,
 					   m_symmetricKeyLength)) != 0)
 		{
-		  QByteArray buffer(64, 0);
+		  QByteArray buffer(error_buffer_size, 0);
 
-		  gpg_strerror_r(err, buffer.data(),
+		  gpg_strerror_r(err,
+				 buffer.data(),
 				 static_cast<size_t> (buffer.length()));
 		  spoton_misc::logError
 		    (QString("spoton_crypt::init(): "
@@ -4606,9 +4635,10 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
 				 0)) != 0)
 	    {
-	      QByteArray buffer(64, 0);
+	      QByteArray buffer(error_buffer_size, 0);
 
-	      gpg_strerror_r(err, buffer.data(),
+	      gpg_strerror_r(err,
+			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::init(): initializing "
@@ -4933,9 +4963,9 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	if(query.exec("SELECT public_keys FROM gpg"))
 	  if(query.next())
 	    {
-	      QByteArray publicKey
-		(QByteArray::fromBase64(query.value(0).toByteArray()));
 	      auto ok = true;
+	      auto publicKey
+		(QByteArray::fromBase64(query.value(0).toByteArray()));
 
 	      publicKey = oldCrypt->decryptedAfterAuthenticated
 		(publicKey, &ok);
@@ -4954,7 +4984,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 
 		  if(ok)
 		    {
-		      QByteArray fingerprint
+		      auto const fingerprint
 			(spoton_crypt::fingerprint(publicKey));
 
 		      updateQuery.addBindValue
@@ -4979,11 +5009,11 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 	      QSqlQuery updateQuery(db);
 	      auto id
 		(QByteArray::fromBase64(query.value(0).toByteArray()));
+	      auto ok = true;
 	      auto privateKey
 		(QByteArray::fromBase64(query.value(1).toByteArray()));
 	      auto publicKey
 		(QByteArray::fromBase64(query.value(2).toByteArray()));
-	      auto ok = true;
 
 	      updateQuery.exec("PRAGMA secure_delete = ON");
 	      id = oldCrypt->decryptedAfterAuthenticated(id, &ok);

@@ -55,7 +55,7 @@ static size_t curl_payload_source(void *ptr,
   if(!upload_ctx || upload_ctx->lines_read >= curl_payload_text.size())
     return 0;
 
-  auto const data = curl_payload_text[upload_ctx->lines_read].constData();
+  auto data = curl_payload_text[upload_ctx->lines_read].constData();
 
   if(data)
     {
@@ -480,7 +480,7 @@ void spoton_kernel::popPoptastic(void)
 
 	  if(ssltls == "TLS")
 	    {
-	      QFileInfo fileInfo
+	      QFileInfo const fileInfo
 		(setting("gui/poptasticCAPath", "").toString());
 
 	      if(fileInfo.isReadable())
@@ -801,7 +801,7 @@ void spoton_kernel::postPoptastic(void)
 
 	      if(ssltls == "TLS")
 		{
-		  QFileInfo fileInfo
+		  QFileInfo const fileInfo
 		    (setting("gui/poptasticCAPath", "").toString());
 
 		  if(fileInfo.isReadable())
@@ -883,8 +883,7 @@ void spoton_kernel::postPoptastic(void)
 		  curl_payload_text.append("\r\n");
 		}
 
-	      auto attachmentData(values.value("attachment").
-				  toByteArray());
+	      auto attachmentData(values.value("attachment").toByteArray());
 
 	      if(attachmentData.isEmpty() || values.size() == 4)
 		{
@@ -1775,9 +1774,9 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 
       if(!list.isEmpty())
 	{
-	  QFileInfo fileInfo(spoton_misc::homePath() +
-			     QDir::separator() +
-			     "email.db");
+	  QFileInfo const fileInfo(spoton_misc::homePath() +
+				   QDir::separator() +
+				   "email.db");
 	  auto const maximumSize = 1048576 * setting
 	    ("gui/maximumEmailFileSize", 1024).toLongLong();
 
@@ -2229,7 +2228,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     }
   else
     {
-      QFileInfo fileInfo
+      QFileInfo const fileInfo
 	(spoton_misc::homePath() + QDir::separator() + "email.db");
       auto const maximumSize = 1048576 * setting
 	("gui/maximumEmailFileSize", 1024).toLongLong();

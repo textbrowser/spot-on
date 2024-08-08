@@ -2107,7 +2107,7 @@ void spoton_listener::slotTimeout(void)
 	  }
 	else
 	  {
-	    QFileInfo fileInfo
+	    QFileInfo const fileInfo
 	      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
 	    if(!fileInfo.exists())

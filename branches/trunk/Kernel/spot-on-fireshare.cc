@@ -259,21 +259,21 @@ void spoton_fireshare::slotTimeout(void)
       {
 	QByteArray name;
 	QByteArray password;
-	QString options
-	  (spoton_kernel::setting("gui/postgresql_connection_options",
-				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
-	   toString().trimmed());
 	auto const database
 	  (spoton_kernel::setting("gui/postgresql_database", "").
 	   toString().trimmed());
 	auto const host
 	  (spoton_kernel::setting("gui/postgresql_host", "localhost").
 	   toString().trimmed());
-	auto ok = true;
 	auto const ssltls = spoton_kernel::setting
 	  ("gui/postgresql_ssltls", true).toBool();
 	auto const port = spoton_kernel::setting
 	  ("gui/postgresql_port", 5432).toInt();
+	auto ok = true;
+	auto options
+	  (spoton_kernel::setting("gui/postgresql_connection_options",
+				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	   toString().trimmed());
 
 	if(!options.contains("connect_timeout="))
 	  options.append(";connect_timeout=10");
