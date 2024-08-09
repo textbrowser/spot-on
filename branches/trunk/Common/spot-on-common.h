@@ -85,7 +85,8 @@ class spoton_common
     CHAR_BIT * 1024 * 1024;
 #endif
   static const int MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE = 4096;
-  static const int MAXIMUM_PENDING_CONNECTIONS = USHRT_MAX;
+  static const int MAXIMUM_PENDING_CONNECTIONS =
+    std::numeric_limits<unsigned short>::max();
   static const int MAXIMUM_UDP_DATAGRAM_SIZE = 508;
 
   /*
