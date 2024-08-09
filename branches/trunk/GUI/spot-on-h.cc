@@ -53,7 +53,7 @@ QString spoton::listenerTransport(void) const
 
   if((row = m_ui.listeners->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.listeners->item(row, 15);
+      auto item = m_ui.listeners->item(row, 15);
 
       if(item)
 	return item->text();
@@ -68,7 +68,7 @@ QString spoton::neighborTransport(void) const
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, 27);
+      auto item = m_ui.neighbors->item(row, 27);
 
       if(item)
 	return item->text();
@@ -86,7 +86,7 @@ QString spoton::participantKeyType(QTableWidget *table) const
 
   if((row = table->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = table->item(row, 1); // OID
+      auto item = table->item(row, 1); // OID
 
       if(item)
 	return item->data
@@ -102,7 +102,7 @@ QThread::Priority spoton::neighborThreadPriority(void) const
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, 35);
+      auto item = m_ui.neighbors->item(row, 35);
 
       if(item)
 	return QThread::Priority(item->data(Qt::UserRole).toInt());
@@ -113,11 +113,11 @@ QThread::Priority spoton::neighborThreadPriority(void) const
 
 QWidget *spoton::combinationBoxForTable(void) const
 {
-  QComboBox *comboBox = new QComboBox();
-  QHBoxLayout *layout = new QHBoxLayout();
-  QSpacerItem *spacer = new QSpacerItem
+  auto comboBox = new QComboBox();
+  auto layout = new QHBoxLayout();
+  auto spacer = new QSpacerItem
     (40, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
-  QWidget *widget = new QWidget();
+  auto widget = new QWidget();
 
   comboBox->setSizeAdjustPolicy(QComboBox::AdjustToContents);
   comboBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -134,13 +134,13 @@ bool spoton::listenerSupportsSslTls(void) const
 
   if((row = m_ui.listeners->currentRow()) >= 0)
     {
-      QTableWidgetItem *item1 = m_ui.listeners->item(row, 2);
-      QTableWidgetItem *item2 = m_ui.listeners->item(row, 15);
+      auto item1 = m_ui.listeners->item(row, 2);
+      auto item2 = m_ui.listeners->item(row, 15);
 
       if(item1 && item2)
 	{
-	  QString string(item2->text().toLower().trimmed());
-	  int integer = item1->text().toInt();
+	  auto const integer = item1->text().toInt();
+	  auto const string(item2->text().toLower().trimmed());
 
 	  if(integer > 0 && string == "tcp")
 	    return true;
@@ -167,14 +167,13 @@ bool spoton::neighborSpecialClient(void) const
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
       QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3); // SSL Key Size
-      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27); // Transport
-      QTableWidgetItem *item3 = m_ui.neighbors->item
-	(row, 43); // Bind IP Address
+      auto item2 = m_ui.neighbors->item(row, 27); // Transport
+      auto item3 = m_ui.neighbors->item(row, 43); // Bind IP Address
 
       if(item1 && item2 && item3)
 	{
-	  QString string1(item2->text().toLower().trimmed());
-	  QString string2(item3->text().toLower().trimmed());
+	  auto const string1(item2->text().toLower().trimmed());
+	  auto const string2(item3->text().toLower().trimmed());
 
 	  return item1->text().toInt() > 0 &&
 	    string1 == "tcp" &&
@@ -191,13 +190,13 @@ bool spoton::neighborSupportsSslTls(void) const
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3);
-      QTableWidgetItem *item2 = m_ui.neighbors->item(row, 27);
+      auto item1 = m_ui.neighbors->item(row, 3);
+      auto item2 = m_ui.neighbors->item(row, 27);
 
       if(item1 && item2)
 	{
-	  QString string(item2->text().toLower().trimmed());
-	  int integer = item1->text().toInt();
+	  auto const integer = item1->text().toInt();
+	  auto const string(item2->text().toLower().trimmed());
 
 	  if(integer > 0 && string == "tcp")
 	    return true;
@@ -221,12 +220,12 @@ bool spoton::nodeExists(const QSqlDatabase &db,
 			const QString &identifier,
 			const QString &table) const
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return true;
 
-  QByteArray hash(crypt->keyedHash(identifier.toLatin1(), 0));
+  auto const hash(crypt->keyedHash(identifier.toLatin1(), 0));
 
   if(hash.isEmpty())
     return true;
@@ -266,11 +265,12 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() +
-			   QDir::separator() +
-			   "friends_public_keys.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "friends_public_keys.db");
 
 	if(db.open())
 	  {
@@ -291,7 +291,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
       QSqlDatabase::removeDatabase(connectionName);
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "listeners.db");
@@ -333,7 +333,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
       QSqlDatabase::removeDatabase(connectionName);
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -381,7 +381,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
@@ -413,8 +413,8 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
 {
   QSettings settings;
   QSqlDatabase db;
-  QString connectionName(spoton_misc::databaseName());
-  QString options
+  auto const connectionName(spoton_misc::databaseName());
+  auto options
     (settings.value("gui/postgresql_connection_options",
 		    spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
      toString().trimmed());
@@ -435,7 +435,7 @@ void spoton::inspectPQUrlDatabase(const QByteArray &name,
 
   if(!db.open(name, password))
     {
-      QString error(db.lastError().text().toLower());
+      auto const error(db.lastError().text().toLower());
 
       if(!error.contains("password authentication") &&
 	 !error.contains("query results lost"))
@@ -512,8 +512,8 @@ void spoton::prepareStyleSheet(void)
   QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  bool ok = true;
-  int index = m_settings.value("gui/theme", -1).toInt();
+  auto const index = m_settings.value("gui/theme", -1).toInt();
+  auto ok = true;
 
   if(index == 0 || index == 1 || index == 2)
     {
@@ -561,7 +561,7 @@ void spoton::prepareTearOffMenus(void)
 
 void spoton::retrieveNeighbors(void)
 {
-  QFileInfo fileInfo
+  QFileInfo const fileInfo
     (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
   if(fileInfo.exists())
@@ -583,13 +583,13 @@ void spoton::retrieveNeighbors(void)
   QString connectionName("");
 
   {
-    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
+    auto db = new QSqlDatabase(spoton_misc::database(connectionName));
 
     db->setDatabaseName(fileInfo.absoluteFilePath());
 
     if(db->open())
       {
-	QSqlQuery *query = new QSqlQuery(*db);
+	auto query = new QSqlQuery(*db);
 	int size = 0;
 
 	if(query->exec("SELECT COUNT(*) FROM neighbors "
@@ -668,7 +668,7 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   if(!crypt)
     return;
 
-  QFileInfo fileInfo
+  QFileInfo const fileInfo
     (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
   if(fileInfo.exists())
@@ -690,14 +690,14 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   QString connectionName("");
 
   {
-    QSqlDatabase *db = new QSqlDatabase(spoton_misc::database(connectionName));
+    auto db = new QSqlDatabase(spoton_misc::database(connectionName));
 
     db->setDatabaseName(fileInfo.absoluteFilePath());
 
     if(db->open())
       {
-	QSqlQuery *query = new QSqlQuery(*db);
-	bool ok = true;
+	auto ok = true;
+	auto query = new QSqlQuery(*db);
 
 	query->prepare("SELECT "
 		       "name, "               // 0
@@ -779,7 +779,7 @@ void spoton::slotEmailPageChanged(int value)
 void spoton::slotFindInSearch(void)
 {
 #if SPOTON_GOLDBUG == 0
-  QString text(m_ui.find->text());
+  auto const text(m_ui.find->text());
 
   if(!m_ui.urls->find(text))
     m_ui.urls->moveCursor(QTextCursor::Start);
@@ -809,7 +809,7 @@ void spoton::slotGenerateInstitutionKeyPair(void)
 
 void spoton::slotInitiateSSLTLSSession(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
@@ -829,7 +829,7 @@ void spoton::slotInitiateSSLTLSSession(void)
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item
+      auto item = m_ui.neighbors->item
 	(row, m_ui.neighbors->columnCount() - 1); // OID
 
       if(item)
@@ -843,7 +843,7 @@ void spoton::slotInitiateSSLTLSSession(void)
     }
 
   QByteArray message;
-  int mode = action->property("mode").toString() == "client" ? 1 : 0;
+  auto const mode = action->property("mode").toString() == "client" ? 1 : 0;
 
   message.append("initiatessltls_");
   message.append(QByteArray::number(mode));
@@ -859,13 +859,12 @@ void spoton::slotInitiateSSLTLSSession(void)
        arg(m_kernelSocket.peerPort()));
 
   QApplication::restoreOverrideCursor();
-
 }
 
 void spoton::slotKeysIndexChanged(int index)
 {
 #ifndef SPOTON_OPEN_LIBRARY_SUPPORTED
-  auto text(m_ui.keys->itemText(index));
+  auto const text(m_ui.keys->itemText(index));
 
   if(text == "Open Library")
     m_ui.regenerate->setEnabled(false);
@@ -888,9 +887,8 @@ void spoton::slotLimitSqliteSynchronization(bool state)
 void spoton::slotMailContextMenu(const QPoint &point)
 {
 #if SPOTON_GOLDBUG == 0
-  QModelIndexList list
-    (m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
-  bool enabled = false;
+  auto enabled = false;
+  auto list(m_ui.mail->selectionModel()->selectedRows(5)); // Gold Bug
 
   if(!list.isEmpty())
     {
@@ -937,7 +935,7 @@ void spoton::slotMonitorEvents(bool state)
 void spoton::slotNewEmailWindow(void)
 {
 #if SPOTON_GOLDBUG == 0
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
   spoton_emailwindow *window = 0;
 
   if(action)
@@ -1032,7 +1030,7 @@ void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
 
 void spoton::slotPostgreSQLWebServerCredentials(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1049,7 +1047,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
   QDialog dialog(this);
   QSettings settings;
   Ui_spoton_postgresqlconnect ui;
-  bool ok = true;
+  auto ok = true;
 
   name = crypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/postgresql_web_name", "").
@@ -1107,9 +1105,8 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 	  if(QSqlDatabase::contains("URLDatabaseWeb"))
 	    QSqlDatabase::removeDatabase("URLDatabaseWeb");
 
-	  QSqlDatabase db = QSqlDatabase::addDatabase
-	    ("QPSQL", "URLDatabaseWeb");
-	  QString options(ui.connection_options->text().trimmed());
+	  auto db = QSqlDatabase::addDatabase("QPSQL", "URLDatabaseWeb");
+	  auto options(ui.connection_options->text().trimmed());
 
 	  if(!options.contains("connect_timeout="))
 	    options.append(";connect_timeout=10");
@@ -1129,7 +1126,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 
 	  if(!db.isOpen())
 	    {
-	      QString str(db.lastError().text().trimmed());
+	      auto const str(db.lastError().text().trimmed());
 
 	      db = QSqlDatabase();
 
@@ -1150,7 +1147,7 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 	      if(QSqlDatabase::contains("URLDatabaseWeb"))
 		QSqlDatabase::removeDatabase("URLDatabaseWeb");
 
-	      bool ok = true;
+	      auto ok = true;
 
 	      settings.setValue
 		("gui/postgresql_web_connection_options",
@@ -1237,12 +1234,12 @@ void spoton::slotSetCongestionMaxPageCount(int value)
 
 void spoton::slotSetSocketOptions(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
 
-  QString type(action->property("type").toString());
+  auto const type(action->property("type").toString());
 
   if(!(type == "listeners" || type == "neighbors"))
     return;
@@ -1256,7 +1253,7 @@ void spoton::slotSetSocketOptions(void)
     {
       if((row = m_ui.listeners->currentRow()) >= 0)
 	{
-	  QTableWidgetItem *item = m_ui.listeners->item
+	  auto item = m_ui.listeners->item
 	    (row, m_ui.listeners->columnCount() - 1); // OID
 
 	  if(item)
@@ -1277,7 +1274,7 @@ void spoton::slotSetSocketOptions(void)
     {
       if((row = m_ui.neighbors->currentRow()) >= 0)
 	{
-	  QTableWidgetItem *item = m_ui.neighbors->item
+	  auto item = m_ui.neighbors->item
 	    (row, m_ui.neighbors->columnCount() - 1); // OID
 
 	  if(item)
@@ -1299,12 +1296,12 @@ void spoton::slotSetSocketOptions(void)
     return;
 
   QDialog dialog(this);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  QStringList list(socketOptions.split(";", Qt::SkipEmptyParts));
-#else
-  QStringList list(socketOptions.split(";", QString::SkipEmptyParts));
-#endif
   Ui_spoton_socket_options ui;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  auto const list(socketOptions.split(";", Qt::SkipEmptyParts));
+#else
+  auto const list(socketOptions.split(";", QString::SkipEmptyParts));
+#endif
 
   ui.setupUi(&dialog);
   ui.nodelay->setEnabled(transport != "BLUETOOTH" && transport != "UDP");
@@ -1479,12 +1476,12 @@ void spoton::slotSetSocketOptions(void)
   ui.type_of_service->setToolTip(tr("Not available on Windows."));
 #endif
 
-  foreach(const QString &string, list)
+  foreach(auto const &string, list)
     if(string.startsWith("ip_tos="))
       {
 	if(ui.type_of_service->isEnabled())
 	  {
-	    QString str(string.mid(static_cast<int> (qstrlen("ip_tos="))));
+	    auto const str(string.mid(static_cast<int> (qstrlen("ip_tos="))));
 
 	    ui.type_of_service->setCurrentIndex(str.toInt() / 32);
 	  }
@@ -1589,11 +1586,12 @@ void spoton::slotSetSocketOptions(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() +
-		       QDir::separator() +
-		       QString("%1.db").arg(type));
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       QString("%1.db").arg(type));
 
     if(db.open())
       {
@@ -1614,12 +1612,12 @@ void spoton::slotSetSocketOptions(void)
 
 void spoton::slotShowErrorMessage(void)
 {
-  QTimer *timer = qobject_cast<QTimer *> (sender());
+  auto timer = qobject_cast<QTimer *> (sender());
 
   if(!timer)
     return;
 
-  QString str(timer->property("text").toString().trimmed());
+  auto const str(timer->property("text").toString().trimmed());
 
   timer->deleteLater();
   QMessageBox::critical
@@ -1707,7 +1705,7 @@ void spoton::slotWebServerPortChanged(int value)
 
 void spoton::slotWebServerValueChangedTimeout(void)
 {
-  int value = m_ui.web_server_port->value();
+  auto const value = m_ui.web_server_port->value();
 
   m_settings["gui/web_server_port"] = value;
 
@@ -1720,11 +1718,12 @@ void spoton::slotWebServerValueChangedTimeout(void)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto  db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() +
-			   QDir::separator() +
-			   "kernel_web_server.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "kernel_web_server.db");
 
 	if(db.open())
 	  {
@@ -1741,7 +1740,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
     }
   else
     {
-      spoton_crypt *crypt = m_crypts.value("chat", 0);
+      auto crypt = m_crypts.value("chat", 0);
 
       if(!crypt)
 	{
@@ -1785,7 +1784,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
 	  QString connectionName("");
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db = spoton_misc::database(connectionName);
 
 	    db.setDatabaseName(spoton_misc::homePath() +
 			       QDir::separator() +
@@ -1794,7 +1793,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("INSERT INTO kernel_web_server "
 			      "(certificate, private_key) "

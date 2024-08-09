@@ -102,7 +102,7 @@ class spoton_table_item_delegate: public QStyledItemDelegate
   {
     Q_UNUSED(option);
 
-    QLineEdit *lineEdit = new QLineEdit(parent);
+    auto lineEdit = new QLineEdit(parent);
 
     lineEdit->setReadOnly(true);
     lineEdit->setText(index.data().toString());
@@ -135,9 +135,9 @@ class spoton_virtual_keyboard: public QDialog
 	    SLOT(slotShow(bool)));
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 6, 0))
-    QLocale::Country country = QLocale::system().country();
+    auto const country = QLocale::system().country();
 #else
-    QLocale::Territory country = QLocale::system().territory();
+    auto const country = QLocale::system().territory();
 #endif
     QStringList row;
 
@@ -172,7 +172,7 @@ class spoton_virtual_keyboard: public QDialog
 
     for(int i = 0; i < row.size(); i++)
       {
-	QToolButton *button = new QToolButton(this);
+	auto button = new QToolButton(this);
 
 	button->setMinimumSize(45, 45);
 	button->setText(row.at(i));
@@ -212,7 +212,7 @@ class spoton_virtual_keyboard: public QDialog
 
     for(int i = 0; i < row.size(); i++)
       {
-	QToolButton *button = new QToolButton(this);
+	auto button = new QToolButton(this);
 
 	button->setMinimumSize(45, 45);
 	button->setText(row.at(i));
@@ -248,7 +248,7 @@ class spoton_virtual_keyboard: public QDialog
 
     for(int i = 0; i < row.size(); i++)
       {
-	QToolButton *button = new QToolButton(this);
+	auto button = new QToolButton(this);
 
 	button->setMinimumSize(45, 45);
 	button->setText(row.at(i));
@@ -282,14 +282,14 @@ class spoton_virtual_keyboard: public QDialog
 
     for(int i = 0; i < row.size(); i++)
       {
-	QToolButton *button = new QToolButton(this);
+	auto button = new QToolButton(this);
 
 	button->setMinimumSize(45, 45);
 	button->setText(row.at(i));
 	m_ui.row3->addWidget(button);
       }
 
-    foreach(QToolButton *button, findChildren<QToolButton *> ())
+    foreach(auto button, findChildren<QToolButton *> ())
       if(button != m_ui.back && button != m_ui.shift)
 	connect(button,
 		SIGNAL(clicked(void)),
@@ -313,12 +313,12 @@ class spoton_virtual_keyboard: public QDialog
 
   void slotKeyPressed(void)
   {
-    QToolButton *button = qobject_cast<QToolButton *> (sender());
+    auto button = qobject_cast<QToolButton *> (sender());
 
     if(!button)
       return;
 
-    QString text(m_ui.passphrase->text());
+    auto text(m_ui.passphrase->text());
 
     if(button == m_ui.space)
       text.append(" ");
@@ -343,7 +343,7 @@ class spoton_virtual_keyboard: public QDialog
  public slots:
   void slotShift(void)
   {
-    foreach(QToolButton *button, findChildren<QToolButton *> ())
+    foreach(auto button, findChildren<QToolButton *> ())
       if(button != m_ui.back && button != m_ui.shift)
 	{
 	  if(m_ui.shift->isChecked())
