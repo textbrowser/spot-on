@@ -62,7 +62,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 
   m_ui.tree->setContextMenuPolicy(Qt::CustomContextMenu);
 
-  QMenu *menu = new QMenu(this);
+  auto menu = new QMenu(this);
 
   menu->addAction(tr("&New Category..."),
 		  this,
@@ -115,7 +115,7 @@ spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
 #if defined(Q_OS_MACOS)
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+  foreach(auto toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 10px;}"
@@ -139,7 +139,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 				 const QString &name,
 				 const QVariant &category_oid)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return false;
@@ -147,13 +147,14 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
   spoton::prepareDatabasesFromUI();
 
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -235,13 +236,13 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 void spoton_echo_key_share::addCategory(void)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
 
   QString category;
-  bool ok = true;
+  auto ok = true;
 
   category = QInputDialog::getText
     (this,
@@ -261,10 +262,11 @@ void spoton_echo_key_share::addCategory(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -295,7 +297,7 @@ void spoton_echo_key_share::addCategory(void)
 
 void spoton_echo_key_share::createDefaultUrlCommunity(void)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -305,13 +307,14 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
   QString category("Public Communities");
   QString connectionName("");
   QVariant id;
-  bool ok = false;
+  auto ok = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -358,13 +361,14 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
     return;
 
   QString name("The Spot-On URL Community");
-  bool exists = false;
+  auto exists = false;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -395,8 +399,8 @@ void spoton_echo_key_share::createDefaultUrlCommunity(void)
 
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  const char *cipherAlgorithm = spoton_crypt::preferredCipherAlgorithm();
-  const char *hmacAlgorithm = spoton_crypt::preferredHashAlgorithm();
+  auto cipherAlgorithm = spoton_crypt::preferredCipherAlgorithm();
+  auto hmacAlgorithm = spoton_crypt::preferredHashAlgorithm();
 
   keys = spoton_crypt::derivedKeys
     (cipherAlgorithm,
@@ -440,7 +444,7 @@ void spoton_echo_key_share::deleteSelected(void)
 
   QApplication::processEvents();
 
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -450,10 +454,11 @@ void spoton_echo_key_share::deleteSelected(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -471,11 +476,11 @@ void spoton_echo_key_share::deleteSelected(void)
 	  }
 	else
 	  {
-	    QTreeWidgetItem *parent = item->parent();
+	    auto parent = item->parent();
 
 	    if(parent)
 	      {
-		bool ok = true;
+		auto ok = true;
 
 		query.prepare("DELETE FROM echo_key_sharing_secrets "
 			      "WHERE category_oid = ? AND name_hash = ?");
@@ -504,7 +509,7 @@ void spoton_echo_key_share::keyPressEvent(QKeyEvent *event)
 
 void spoton_echo_key_share::populate(void)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -518,10 +523,11 @@ void spoton_echo_key_share::populate(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
@@ -539,7 +545,7 @@ void spoton_echo_key_share::populate(void)
 	      QByteArray bytes;
 	      QStringList strings;
 	      QTreeWidgetItem *parent = 0;
-	      bool ok = true;
+	      auto ok = true;
 
 	      bytes = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -582,7 +588,7 @@ void spoton_echo_key_share::populate(void)
 		    for(int i = 0; i < q.record().count() - 1; i++)
 		      {
 			QByteArray bytes;
-			bool ok = true;
+			auto ok = true;
 
 			bytes = crypt->decryptedAfterAuthenticated
 			  (QByteArray::fromBase64(q.value(i).toByteArray()),
@@ -617,8 +623,7 @@ void spoton_echo_key_share::populate(void)
 			  }
 		      }
 
-		    QTreeWidgetItem *item = new QTreeWidgetItem
-		      (parent, strings);
+		    auto item = new QTreeWidgetItem(parent, strings);
 
 		    item->setData
 		      (0, Qt::UserRole, q.value(q.record().count() - 1));
@@ -683,8 +688,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
   m_ui.menu->menu()->repaint();
   repaint();
 
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
-  spoton_crypt *sCrypt = m_parent ?
+  auto eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  auto sCrypt = m_parent ?
     m_parent->crypts().value(keyType + "-signature", 0) : 0;
 
   if(!eCrypt || !sCrypt)
@@ -715,14 +720,14 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   for(int i = 0; i < m_ui.tree->topLevelItemCount(); i++)
     {
-      QTreeWidgetItem *item = m_ui.tree->topLevelItem(i);
+      auto item = m_ui.tree->topLevelItem(i);
 
       if(!item)
 	continue;
 
       for(int j = 0; j < item->childCount(); j++)
 	{
-	  QTreeWidgetItem *child = item->child(j);
+	  auto child = item->child(j);
 
 	  if(!child)
 	    continue;
@@ -737,7 +742,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   QByteArray publicKey;
   QByteArray signature;
-  bool ok = true;
+  auto ok = true;
 
   publicKey = eCrypt->publicKey(&ok);
 
@@ -790,7 +795,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
       ** Now retrieve the given community's information.
       */
 
-      QHash<QString, QByteArray> hash
+      auto const hash
 	(spoton_misc::retrieveEchoShareInformation(list.at(i), eCrypt));
 
       if(!hash.isEmpty())
@@ -798,7 +803,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 	  QByteArray message;
 	  QByteArray messageCode;
 	  QDataStream stream(&message, QIODevice::WriteOnly);
-	  bool ok = true;
+	  auto ok = true;
 	  spoton_crypt crypt(hash.value("cipher_type").constData(),
 			     hash.value("hash_type").constData(),
 			     QByteArray(),
@@ -856,7 +861,7 @@ void spoton_echo_key_share::show(QWidget *parent)
 
   if(parent)
     {
-      QPoint p(parent->pos());
+      auto const p(parent->pos());
       int X = 0;
       int Y = 0;
 
@@ -892,7 +897,7 @@ void spoton_echo_key_share::slotClose(void)
 void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
 					    int column)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     return;
@@ -905,16 +910,17 @@ void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() +
+      (spoton_misc::homePath() +
+       QDir::separator() +
        "echo_key_sharing_secrets.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	if(column == 1)
 	  query.prepare("UPDATE echo_key_sharing_secrets "
@@ -952,18 +958,18 @@ void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
 
 void spoton_echo_key_share::slotMenuAction(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
 
-  int index = m_ui.menu->menu()->actions().indexOf(action);
+  auto const index = m_ui.menu->menu()->actions().indexOf(action);
 
   if(index == 0) // New Category
     addCategory();
   else if(index == 2) // Generate
     {
-      QTreeWidgetItem *item = m_ui.tree->selectedItems().value(0);
+      auto item = m_ui.tree->selectedItems().value(0);
 
       if(!item || item->parent())
 	{
@@ -971,7 +977,7 @@ void spoton_echo_key_share::slotMenuAction(void)
 	  return;
 	}
 
-      QString name(m_ui.name->text().trimmed());
+      auto const name(m_ui.name->text().trimmed());
 
       if(name.length() < 16)
 	{

@@ -173,7 +173,7 @@ void spoton_emailwindow::slotAddAttachment(void)
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  QFileInfo fileInfo(list.at(i));
+	  QFileInfo const fileInfo(list.at(i));
 
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
@@ -263,7 +263,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   if(!m_parent)
     return;
 
-  spoton_crypt *crypt = m_parent->crypts().value("chat", 0);
+  auto crypt = m_parent->crypts().value("chat", 0);
 
   if(!crypt)
     return;
@@ -280,8 +280,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
   m_ui.emailNameEditable->setCursorPosition(0);
 
-  QList<QHash<QString, QVariant> > list
-    (spoton_misc::poptasticSettings("", crypt, 0));
+  auto const list(spoton_misc::poptasticSettings("", crypt, 0));
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -294,10 +293,10 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "friends_public_keys.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
 
     if(db.open())
       {
@@ -305,7 +304,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	m_ui.emailParticipants->setRowCount(0);
 
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 	int row = 0;
 	int selectedRow = -1;
 
@@ -331,10 +330,11 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 	    {
 	      QString keyType("");
 	      QString name("");
-	      QString oid(query.value(1).toString());
-	      bool ok = true;
-	      bool publicKeyContainsPoptastic = false;
-	      bool temporary = query.value(2).toLongLong() == -1 ? false : true;
+	      auto const oid(query.value(1).toString());
+	      auto const temporary =
+		query.value(2).toLongLong() == -1 ? false : true;
+	      auto ok = true;
+	      auto publicKeyContainsPoptastic = false;
 
 	      keyType = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(4).toByteArray()),
@@ -342,7 +342,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
 	      if(ok)
 		{
-		  QByteArray bytes
+		  auto const bytes
 		    (crypt->
 		     decryptedAfterAuthenticated(QByteArray::
 						 fromBase64(query.
@@ -433,7 +433,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 		      else
 			{
 			  QList<QByteArray> list;
-			  bool ok = true;
+			  auto ok = true;
 
 			  list = m_parent->
 			    retrieveForwardSecrecyInformation(oid, &ok);
@@ -505,10 +505,10 @@ void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  QStringList list
+  auto const list
     (m_ui.attachment->toPlainText().split('\n', Qt::SkipEmptyParts));
 #else
-  QStringList list
+  auto const list
     (m_ui.attachment->toPlainText().split('\n', QString::SkipEmptyParts));
 #endif
 
@@ -516,7 +516,7 @@ void spoton_emailwindow::slotRemoveAttachment(const QUrl &url)
 
   for(int i = 0; i < list.size(); i++)
     {
-      QString str(list.at(i).trimmed());
+      auto const str(list.at(i).trimmed());
 
       if(str != url.toString() && str.length() > 0)
 	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));
@@ -530,9 +530,9 @@ void spoton_emailwindow::slotSendMail(void)
   if(!m_parent)
     return;
 
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() +
-		     "email.db");
-  qint64 maximumSize = 1048576 *
+  QFileInfo const fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "email.db");
+  auto const maximumSize = 1048576 *
     m_parent->
     m_settings.value("gui/maximumEmailFileSize", 1024).toLongLong();
 
@@ -556,21 +556,21 @@ void spoton_emailwindow::slotSendMail(void)
 
       QLocale locale;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      QStringList files
+      auto const files
 	(m_ui.attachment->toPlainText().split('\n', Qt::SkipEmptyParts));
 #else
-      QStringList files
+      auto const files
 	(m_ui.attachment->toPlainText().split('\n', QString::SkipEmptyParts));
 #endif
 
       for(int i = 0; i < files.size(); i++)
 	{
-	  QString fileName(files.at(i));
+	  auto fileName(files.at(i));
 
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
 	  fileName = fileName.mid(0, fileName.lastIndexOf(' '));
 
-	  QFileInfo fileInfo(fileName);
+	  QFileInfo const fileInfo(fileName);
 
 	  if(!fileInfo.exists() || !fileInfo.isReadable())
 	    {
@@ -630,7 +630,7 @@ void spoton_emailwindow::slotSendMail(void)
       QApplication::restoreOverrideCursor();
     }
 
-  spoton_crypt *crypt = m_parent->crypts().value("email", 0);
+  auto crypt = m_parent->crypts().value("email", 0);
 
   if(!crypt)
     {
@@ -682,10 +682,10 @@ void spoton_emailwindow::slotSendMail(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QModelIndexList list
+  auto const list
     (m_ui.emailParticipants->selectionModel()->selectedRows(0)); // Participant
-  bool mixed = false;
-  bool temporary = false;
+  auto mixed = false;
+  auto temporary = false;
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -693,7 +693,7 @@ void spoton_emailwindow::slotSendMail(void)
 	temporary = true;
       else
 	{
-	  QString keyType
+	  auto const keyType
 	    (list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
 
 	  if(m_ui.emailName->currentIndex() == 0)
@@ -754,10 +754,10 @@ void spoton_emailwindow::slotSendMail(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
@@ -780,7 +780,7 @@ void spoton_emailwindow::slotSendMail(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
-	    QModelIndex index(list.at(i));
+	    auto const index(list.at(i));
 
 	    isTraditionalEmailAccounts.append
 	      (index.data(Qt::ItemDataRole(Qt::UserRole + 2)).
@@ -810,18 +810,17 @@ void spoton_emailwindow::slotSendMail(void)
 	      !oids.isEmpty())
 	  {
 	    QByteArray goldbug;
-	    QByteArray name(names.takeFirst().toUtf8());
 	    QByteArray mode;
-	    QByteArray publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
-	    QByteArray subject
-	      (m_ui.outgoingSubject->text().toUtf8());
-	    QDateTime now(QDateTime::currentDateTime());
 	    QSqlQuery query(db);
-	    QString keyType(keyTypes.takeFirst());
-	    QString oid(oids.takeFirst());
-	    bool isTraditionalEmailAccount =
+	    auto const isTraditionalEmailAccount =
 	      isTraditionalEmailAccounts.takeFirst();
-	    bool ok = true;
+	    auto const keyType(keyTypes.takeFirst());
+	    auto const name(names.takeFirst().toUtf8());
+	    auto const now(QDateTime::currentDateTime());
+	    auto const oid(oids.takeFirst());
+	    auto const publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
+	    auto const subject(m_ui.outgoingSubject->text().toUtf8());
+	    auto ok = true;
 
 	    if(m_ui.email_fs_gb->currentIndex() == 0 ||
 	       m_ui.email_fs_gb->currentIndex() == 3)
@@ -837,8 +836,8 @@ void spoton_emailwindow::slotSendMail(void)
 	      {
 		mode = "forward-secrecy";
 
-		QByteArray bytes(m_ui.goldbug->text().toUtf8());
-		int size = static_cast<int>
+		auto const bytes(m_ui.goldbug->text().toUtf8());
+		auto const size = static_cast<int>
 		  (spoton_crypt::
 		   cipherKeyLength(spoton_crypt::
 				   preferredCipherAlgorithm()));
@@ -975,13 +974,13 @@ void spoton_emailwindow::slotSendMail(void)
 	    if(ok)
 	      if(query.exec())
 		{
-		  QVariant variant(query.lastInsertId());
-		  qint64 id = query.lastInsertId().toLongLong();
+		  auto const id = query.lastInsertId().toLongLong();
+		  auto const variant(query.lastInsertId());
 
 		  for(int i = 0; i < attachments.size(); i++)
 		    {
-		      QByteArray attachment(attachments.at(i).first);
-		      QByteArray fileName(attachments.at(i).second);
+		      auto const attachment(attachments.at(i).first);
+		      auto const fileName(attachments.at(i).second);
 
 		      if(variant.isValid())
 			{
