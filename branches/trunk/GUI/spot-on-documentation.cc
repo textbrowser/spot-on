@@ -69,7 +69,7 @@ spoton_documentation::~spoton_documentation()
 
 void spoton_documentation::slotAnchorClicked(const QUrl &url)
 {
-  QString scheme(url.scheme().toLower().trimmed());
+  auto const scheme(url.scheme().toLower().trimmed());
 
   if(scheme != "qrc")
     {
@@ -100,7 +100,7 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
 
 void spoton_documentation::slotFind(void)
 {
-  QString text(m_ui.find->text());
+  auto const text(m_ui.find->text());
 
   if(!m_ui.textBrowser->find(text))
     m_ui.textBrowser->moveCursor(QTextCursor::Start);

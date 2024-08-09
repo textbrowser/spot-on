@@ -235,7 +235,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
   if(list.size() != 4)
     return;
 
-  QByteArray id
+  auto id
     (list.value(1).mid(0, spoton_common::BUZZ_MAXIMUM_ID_LENGTH).trimmed());
 
   if(id.isEmpty())
@@ -249,12 +249,12 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
 
     return;
 
-  QByteArray name
-    (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
-  QByteArray message(list.value(2));
-  QDateTime now(QDateTime::currentDateTime());
-  QDateTime dateTime
+  auto const dateTime
     (QDateTime::fromString(list.value(3).constData(), "MMddyyyyhhmmss"));
+  auto const now(QDateTime::currentDateTime());
+  auto name
+    (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
+  auto message(list.value(2));
   QString msg("");
 
   if(name.isEmpty() || name == "unknown")
@@ -286,7 +286,7 @@ void spoton_buzzpage::appendMessage(const QList<QByteArray> &list)
   msg.append(QString::fromUtf8(message.constData(), message.length()));
 
   QSettings settings;
-  int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
+  auto const lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
 
   if(lines >= 0)
     if(lines <= m_ui.messages->document()->blockCount())
@@ -315,7 +315,7 @@ void spoton_buzzpage::slotBuzzNameChanged(const QByteArray &name)
 
 void spoton_buzzpage::slotCopy(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(!clipboard)
     return;
@@ -334,7 +334,7 @@ void spoton_buzzpage::slotMinimal(const bool state)
 
 void spoton_buzzpage::slotRemove(void)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -348,13 +348,13 @@ void spoton_buzzpage::slotRemove(void)
 
   QString connectionName("");
   QString error("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "buzz_channels.db");
 
     if(db.open())
       {
@@ -422,7 +422,7 @@ void spoton_buzzpage::slotRemove(void)
 
 void spoton_buzzpage::slotSave(void)
 {
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -438,13 +438,13 @@ void spoton_buzzpage::slotSave(void)
 
   QString connectionName("");
   QString error("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "buzz_channels.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "buzz_channels.db");
 
     if(db.open())
       {
@@ -518,10 +518,10 @@ void spoton_buzzpage::slotSendMessage(void)
 {
   QByteArray name;
   QByteArray sendMethod;
-  QDateTime now(QDateTime::currentDateTime());
   QSettings settings;
   QString error("");
   QString message("");
+  auto const now(QDateTime::currentDateTime());
 
   if(!m_kernelSocket)
     {
@@ -672,7 +672,7 @@ void spoton_buzzpage::slotSendStatus(void)
 void spoton_buzzpage::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nouve").toString().toLower());
+  auto iconSet(settings.value("gui/iconSet", "nouve").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -686,11 +686,11 @@ void spoton_buzzpage::slotSetIcons(void)
 
 void spoton_buzzpage::slotStatusTimeout(void)
 {
-  QDateTime now(QDateTime::currentDateTime());
+  auto const now(QDateTime::currentDateTime());
 
   for(int i = m_ui.clients->rowCount() - 1; i >= 0; i--)
     {
-      QTableWidgetItem *item = m_ui.clients->item(i, 1);
+      auto item = m_ui.clients->item(i, 1);
 
       if(item && item->text() == m_id)
 	continue;
@@ -699,16 +699,16 @@ void spoton_buzzpage::slotStatusTimeout(void)
 
       if(item)
 	{
-	  QDateTime dateTime
+	  auto const dateTime
 	    (QDateTime::fromString(item->text(), Qt::ISODate));
 
 	  if(qAbs(dateTime.secsTo(now)) >= 60)
 	    {
-	      QTableWidgetItem *item = m_ui.clients->item(i, 0);
+	      auto item = m_ui.clients->item(i, 0);
 
 	      if(item)
 		{
-		  QDateTime now(QDateTime::currentDateTime());
+		  auto const now(QDateTime::currentDateTime());
 		  QString msg("");
 
 		  msg.append
@@ -725,7 +725,7 @@ void spoton_buzzpage::slotStatusTimeout(void)
 						   m_channel.length())));
 
 		  QSettings settings;
-		  int lines = settings.value
+		  auto const lines = settings.value
 		    ("gui/buzz_maximum_lines", -1).toInt();
 
 		  if(lines >= 0)
@@ -754,17 +754,16 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
   if(list.size() != 3)
     return;
 
-  QByteArray id
+  auto id
     (list.value(1).mid(0, spoton_common::BUZZ_MAXIMUM_ID_LENGTH).trimmed());
 
   if(id.isEmpty())
     id = spoton_crypt::
       strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
 
-  QByteArray name
+  auto const items(spoton::findItems(m_ui.clients, id, 1));
+  auto name
     (list.value(0).mid(0, spoton_common::NAME_MAXIMUM_LENGTH).trimmed());
-  QList<QTableWidgetItem *> items
-    (spoton::findItems(m_ui.clients, id, 1));
 
   if(name.isEmpty() || name == "unknown")
     name = id.mid(0, 16) + "-unknown";
@@ -794,8 +793,8 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
       m_ui.clients->setItem(m_ui.clients->rowCount() - 1, 2, item);
 
-      QDateTime now(QDateTime::currentDateTime());
       QString msg("");
+      auto const now(QDateTime::currentDateTime());
 
       msg.append
 	(QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
@@ -811,7 +810,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 				       m_channel.length())));
 
       QSettings settings;
-      int lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
+      auto const lines = settings.value("gui/buzz_maximum_lines", -1).toInt();
 
       if(lines >= 0)
 	if(lines <= m_ui.messages->document()->blockCount())
@@ -829,7 +828,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 	  if(!items.at(i))
 	    continue;
 
-	  QTableWidgetItem *item = m_ui.clients->item(items.at(i)->row(), 0);
+	  auto item = m_ui.clients->item(items.at(i)->row(), 0);
 
 	  if(item)
 	    {
@@ -838,9 +837,9 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 		  /*
 		  ** Someone's name changed.
 		  */
-
-		  QDateTime now(QDateTime::currentDateTime());
+ 
 		  QString msg("");
+		  auto const now(QDateTime::currentDateTime());
 
 		  msg.append
 		    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
@@ -856,7 +855,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 						   name.length())));
 
 		  QSettings settings;
-		  int lines = settings.value
+		  auto const lines = settings.value
 		    ("gui/buzz_maximum_lines", -1).toInt();
 
 		  if(lines >= 0)

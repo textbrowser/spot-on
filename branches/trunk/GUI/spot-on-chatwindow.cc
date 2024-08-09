@@ -138,7 +138,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   ui.table->setModel(m_parent ? m_parent->starbeamReceivedModel() : 0);
   ui.table->setVisible(false);
 
-  QMenu *menu = new QMenu(this);
+  auto menu = new QMenu(this);
 
   menu->addAction(tr("&Reset SMP Machine's Internal State (S0)"),
 		  this,
@@ -161,7 +161,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   slotSetIcons();
 
 #if defined(Q_OS_MACOS)
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+  foreach(auto toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 10px;}"
@@ -188,7 +188,7 @@ QString spoton_chatwindow::id(void) const
 void spoton_chatwindow::append(const QString &text)
 {
   QSettings settings;
-  int lines = settings.value("gui/chat_maximum_lines", -1).toInt();
+  auto const lines = settings.value("gui/chat_maximum_lines", -1).toInt();
 
   if(lines >= 0)
     if(lines <= ui.messages->document()->blockCount())
@@ -218,11 +218,11 @@ void spoton_chatwindow::sendMessage(bool *ok)
 {
   QByteArray message;
   QByteArray name;
-  QDateTime now(QDateTime::currentDateTime());
   QSettings settings;
   QString error("");
   QString msg("");
-  QString to(ui.name->text());
+  auto const to(ui.name->text());
+  auto const now(QDateTime::currentDateTime());
 
   if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     {
@@ -341,7 +341,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
   if(error.isEmpty())
     {
-      QMediaPlayer *player = findChild<QMediaPlayer *> ();
+      auto player = findChild<QMediaPlayer *> ();
 
       if(player)
 	player->deleteLater();
@@ -350,7 +350,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	 value("gui/play_sounds", false).toBool() : false)
 	{
 	  QFileInfo fileInfo;
-	  QString str
+	  auto const str
 	    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
 			     QDir::separator() + "Sounds" + QDir::separator() +
 			     "send.wav"));
@@ -413,7 +413,7 @@ void spoton_chatwindow::setName(const QString &name)
 
 void spoton_chatwindow::setSMPVerified(const bool state)
 {
-  QDateTime now(QDateTime::currentDateTime());
+  auto const now(QDateTime::currentDateTime());
 
   if(!state)
     {
@@ -466,7 +466,7 @@ void spoton_chatwindow::slotInitializeSMP(void)
 
 void spoton_chatwindow::slotLinkClicked(const QUrl &url)
 {
-  QString scheme(url.scheme().toLower().trimmed());
+  auto const scheme(url.scheme().toLower().trimmed());
 
   if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
     return;
@@ -512,8 +512,7 @@ void spoton_chatwindow::slotSendMessage(void)
 void spoton_chatwindow::slotSetIcons(void)
 {
   QSettings settings;
-  QString iconSet(settings.value("gui/iconSet", "nouve").toString().
-		  toLower());
+  auto iconSet(settings.value("gui/iconSet", "nouve").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -565,7 +564,7 @@ void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 void spoton_chatwindow::slotShareStarBeam(void)
 {
   QString error("");
-  spoton_crypt *crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
 
   if(!crypt)
     {
@@ -613,7 +612,7 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
   QApplication::processEvents();
 
-  QFileInfo fileInfo(dialog.selectedFiles().value(0));
+  QFileInfo const fileInfo(dialog.selectedFiles().value(0));
 
   if(!fileInfo.exists() || !fileInfo.isReadable())
     {
@@ -628,18 +627,18 @@ void spoton_chatwindow::slotShareStarBeam(void)
   ** Create a StarBeam magnet.
   */
 
-  QByteArray eKey
+  QByteArray magnet;
+  auto const eKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::
 		       cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm())).
      toBase64());
-  QByteArray mKey
+  auto const mKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
      toBase64());
-  QByteArray magnet;
-  bool ok = true;
+  auto ok = true;
 
   magnet.append("magnet:?");
   magnet.append("ct=");
@@ -665,7 +664,7 @@ void spoton_chatwindow::slotShareStarBeam(void)
   */
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db(spoton_misc::database(connectionName));
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -673,10 +672,10 @@ void spoton_chatwindow::slotShareStarBeam(void)
     if(db.open())
       {
 	QByteArray encryptedMosaic;
-	QByteArray mosaic
+	QSqlQuery query(db);
+	auto const mosaic
 	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
 	   toBase64());
-	QSqlQuery query(db);
 
 	query.prepare("INSERT OR REPLACE INTO magnets "
 		      "(magnet, magnet_hash, origin) "
