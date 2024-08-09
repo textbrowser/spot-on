@@ -1171,7 +1171,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 
 void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
 {
-  QComboBox *comboBox = qobject_cast<QComboBox *> (sender());
+  auto comboBox = qobject_cast<QComboBox *> (sender());
 
   if(!comboBox)
     return;
@@ -1257,11 +1257,11 @@ void spoton::slotLaneWidthChanged(int index)
     auto db(spoton_misc::database(connectionName));
 
     if(comboBox->property("table") == "listeners")
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "listeners.db");
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "listeners.db");
     else
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "neighbors.db");
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
