@@ -719,8 +719,8 @@ void spoton_kernel::postPoptastic(void)
 	  return;
 	}
 
-      CURL *curl = curl_easy_init();
       auto const hash(h);
+      auto curl = curl_easy_init();
 
       if(curl)
 	{

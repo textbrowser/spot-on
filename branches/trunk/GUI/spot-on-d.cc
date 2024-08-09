@@ -60,7 +60,7 @@ QString spoton::mapIconToEmoticon(const QString &content)
 {
   QList<QString> list;
   QMap<QString, QString> map;
-  QString str(content);
+  auto str(content);
 
   map[":-)"] = map[":)"] = map[":O)"] = map[":]"] = map[":}"] =
     "<img src=\":/emoticons/smile.png\"></img>";
@@ -104,17 +104,17 @@ QString spoton::mapIconToEmoticon(const QString &content)
 QStringList spoton::parseAEMagnet(const QString &magnet) const
 {
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-  QStringList list1
+  auto const list1
     (QString(magnet).remove("magnet:?").split('&', Qt::SkipEmptyParts));
 #else
-  QStringList list1
+  auto const list1
     (QString(magnet).remove("magnet:?").split('&', QString::SkipEmptyParts));
 #endif
   QStringList list2;
 
   for(int i = 0; i < list1.size(); i++)
     {
-      QString str(list1.at(i).trimmed());
+      auto str(list1.at(i).trimmed());
 
       if(str.startsWith("ct="))
 	{
@@ -212,7 +212,7 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
       return;
     }
 
-  spoton_crypt *crypt2 = m_crypts.value("email", 0);
+  auto crypt2 = m_crypts.value("email", 0);
 
   if(!crypt2)
     {
@@ -237,9 +237,9 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
     {
       if(query.next())
 	{
-	  QByteArray attachmentData
+	  auto attachmentData
 	    (QByteArray::fromBase64(query.value(0).toByteArray()));
-	  bool ok2 = true;
+	  auto ok2 = true;
 
 	  attachmentData = crypt2->decryptedAfterAuthenticated
 	    (attachmentData, &ok2);
@@ -270,7 +270,7 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
 
 		  for(int i = 0; i < attachments.size(); i++)
 		    {
-		      QPair<QByteArray, QByteArray> pair(attachments.at(i));
+		      auto const pair(attachments.at(i));
 		      QSqlQuery query(db);
 
 		      query.prepare("INSERT INTO folders_attachment "
@@ -321,12 +321,12 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
 
 void spoton::generateHalfGeminis(void)
 {
-  int row = m_ui.participants->currentRow();
+  auto const row = m_ui.participants->currentRow();
 
   if(row < 0)
     return;
 
-  QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+  auto item = m_ui.participants->item(row, 1); // OID
 
   if(!item)
     return;
@@ -349,7 +349,7 @@ void spoton::joinDefaultBuzzChannel(void)
 			  "Please be patient."));
   m_sb.status->repaint();
 
-  int index = m_ui.commonBuzzChannels->findData
+  auto const index = m_ui.commonBuzzChannels->findData
     ("Spot-On_Developer_Channel_Key", Qt::UserRole, Qt::MatchContains);
 
   if(index >= 0)
@@ -361,7 +361,7 @@ void spoton::joinDefaultBuzzChannel(void)
 
 void spoton::populateAETokens(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -371,10 +371,10 @@ void spoton::populateAETokens(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -424,7 +424,7 @@ void spoton::populateAETokens(void)
 	      QByteArray hType;
 	      QByteArray token;
 	      QByteArray type;
-	      bool ok = true;
+	      auto ok = true;
 
 	      token = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -493,10 +493,10 @@ void spoton::populateMOTD(const QString &listenerOid)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -525,7 +525,7 @@ void spoton::populateMOTD(const QString &listenerOid)
 
 void spoton::prepareUrlContainers(void)
 {
-  spoton_crypt *crypt = spoton_misc::retrieveUrlCommonCredentials
+  auto crypt = spoton_misc::retrieveUrlCommonCredentials
     (m_crypts.value("chat", 0));
 
   if(!crypt)
@@ -537,7 +537,7 @@ void spoton::prepareUrlContainers(void)
 
 void spoton::refreshInstitutions(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -545,10 +545,10 @@ void spoton::refreshInstitutions(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
@@ -578,7 +578,7 @@ void spoton::refreshInstitutions(void)
 	      QByteArray hashType;
 	      QByteArray name;
 	      QByteArray postalAddress;
-	      bool ok = true;
+	      auto ok = true;
 
 	      cipherType = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()),
@@ -649,12 +649,12 @@ void spoton::slotAddAEToken(void)
 {
   QString connectionName("");
   QString error("");
-  QString token(m_ui.ae_token->text());
-  QString type(m_ui.ae_e_type->currentText() + "\n" +
-	       m_ui.ae_h_type->currentText());
   QStringList list;
-  bool ok = true;
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
+  auto ok = true;
+  auto token(m_ui.ae_token->text());
+  auto type
+    (m_ui.ae_e_type->currentText() + "\n" + m_ui.ae_h_type->currentText());
 
   if(!crypt)
     {
@@ -693,10 +693,10 @@ void spoton::slotAddAEToken(void)
   prepareDatabasesFromUI();
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -769,13 +769,13 @@ void spoton::slotAddAttachment(void)
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QStringList list(dialog.selectedFiles());
+      auto list(dialog.selectedFiles());
 
       std::sort(list.begin(), list.end());
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  QFileInfo fileInfo(list.at(i));
+	  QFileInfo const fileInfo(list.at(i));
 
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
@@ -791,7 +791,7 @@ void spoton::slotAddAttachment(void)
 
 void spoton::slotAddInstitution(const QString &text)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -830,7 +830,7 @@ void spoton::slotAddInstitution(const QString &text)
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  QString str(list.at(i));
+	  auto str(list.at(i));
 
 	  if(str.startsWith("in="))
 	    {
@@ -884,13 +884,13 @@ void spoton::slotAddInstitution(const QString &text)
   prepareDatabasesFromUI();
 
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
@@ -972,19 +972,19 @@ void spoton::slotAddInstitutionCheckBoxToggled(bool state)
 
 void spoton::slotAddMagnet(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
 
   prepareDatabasesFromUI();
 
-  QString type(action->property("type").toString().toLower());
-  QUrl url(action->property("url").toUrl());
+  auto const type(action->property("type").toString().toLower());
+  auto const url(action->property("url").toUrl());
 
   if(type == "buzz")
     {
-      spoton_crypt *crypt = m_crypts.value("chat", 0);
+      auto crypt = m_crypts.value("chat", 0);
 
       if(!crypt)
 	{
@@ -1003,17 +1003,17 @@ void spoton::slotAddMagnet(void)
       QByteArray hashType;
       QByteArray iterationCount;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      QStringList list
+      auto const list
 	(url.toString().remove("magnet:?").split('&', Qt::SkipEmptyParts));
 #else
-      QStringList list
+      auto const list
 	(url.toString().remove("magnet:?").split
 	 ('&', QString::SkipEmptyParts));
 #endif
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  QString str(list.at(i).trimmed());
+	  auto str(list.at(i).trimmed());
 
 	  if(str.startsWith("rn="))
 	    {
@@ -1052,13 +1052,13 @@ void spoton::slotAddMagnet(void)
 
       QString connectionName("");
       QString error("");
-      bool ok = true;
+      auto ok = true;
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "buzz_channels.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "buzz_channels.db");
 
 	if(db.open())
 	  {
@@ -1135,7 +1135,7 @@ void spoton::slotAddMagnet(void)
 
 void spoton::slotAssignNewIPToNeighbor(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -1157,7 +1157,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
 
   for(int i = 0; i < m_ui.neighbors->columnCount(); i++)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item(row, i);
+      auto item = m_ui.neighbors->item(row, i);
 
       if(!item)
 	continue;
@@ -1214,17 +1214,16 @@ void spoton::slotAssignNewIPToNeighbor(void)
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
-	QString country
-	  (spoton_misc::countryNameFromIPAddress(ip));
+	auto country(spoton_misc::countryNameFromIPAddress(ip));
+	auto db = spoton_misc::database(connectionName);
 
-	db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			   "neighbors.db");
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	if(db.open())
 	  {
 	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto ok = true;
 
 	    query.prepare("UPDATE neighbors SET "
 			  "country = ?, "
@@ -1299,7 +1298,7 @@ void spoton::slotAutoAddSharedSBMagnets(bool state)
 
 void spoton::slotChatPopup(void)
 {
-  QList<QTableWidgetItem *> items(m_ui.participants->selectedItems());
+  auto const items(m_ui.participants->selectedItems());
 
   if(!items.isEmpty() && items.at(0))
     slotParticipantDoubleClicked
@@ -1308,7 +1307,7 @@ void spoton::slotChatPopup(void)
 
 void spoton::slotClearClipboardBuffer(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(clipboard)
     {
@@ -1347,10 +1346,10 @@ void spoton::slotConnectAllNeighbors(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -1371,7 +1370,7 @@ void spoton::slotConnectAllNeighbors(void)
 
 void spoton::slotCopyAEMagnet(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
+  auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
     return;
@@ -1386,7 +1385,7 @@ void spoton::slotCopyAEMagnet(void)
   if(row < 0)
     return;
 
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(!clipboard)
     return;
@@ -1427,9 +1426,9 @@ void spoton::slotCopyAEMagnet(void)
       if(item1 && item2)
 	{
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-	  QStringList list(item2->text().split('\n', Qt::SkipEmptyParts));
+	  auto const list(item2->text().split('\n', Qt::SkipEmptyParts));
 #else
-	  QStringList list(item2->text().split('\n', QString::SkipEmptyParts));
+	  auto const list(item2->text().split('\n', QString::SkipEmptyParts));
 #endif
 
 	  magnet = QString("magnet:?"
@@ -1448,7 +1447,7 @@ void spoton::slotCopyAEMagnet(void)
 
 void spoton::slotCopyInstitution(void)
 {
-  QClipboard *clipboard = QApplication::clipboard();
+  auto clipboard = QApplication::clipboard();
 
   if(!clipboard)
     return;
@@ -1459,10 +1458,10 @@ void spoton::slotCopyInstitution(void)
 
   if((row = m_ui.institutions->currentRow()) >= 0)
     {
-      QTableWidgetItem *item1 = m_ui.institutions->item(row, 0);
-      QTableWidgetItem *item2 = m_ui.institutions->item(row, 1);
-      QTableWidgetItem *item3 = m_ui.institutions->item(row, 2);
-      QTableWidgetItem *item4 = m_ui.institutions->item(row, 3);
+      auto item1 = m_ui.institutions->item(row, 0);
+      auto item2 = m_ui.institutions->item(row, 1);
+      auto item3 = m_ui.institutions->item(row, 2);
+      auto item4 = m_ui.institutions->item(row, 3);
 
       if(item1 && item2 && item3 && item4)
 	{
@@ -1484,7 +1483,7 @@ void spoton::slotCopyInstitution(void)
 
 void spoton::slotDeleteAEToken(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1496,7 +1495,7 @@ void spoton::slotDeleteAEToken(void)
       return;
     }
 
-  QList<QTableWidgetItem *> list(m_ui.ae_tokens->selectedItems());
+  auto const list(m_ui.ae_tokens->selectedItems());
 
   if(list.size() != 3 || !list.at(0) || !list.at(1) || !list.at(2))
     {
@@ -1508,13 +1507,13 @@ void spoton::slotDeleteAEToken(void)
     }
 
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -1556,7 +1555,7 @@ void spoton::slotDeleteAEToken(void)
 
 void spoton::slotDeleteInstitution(void)
 {
-  QModelIndexList list
+  auto const list
     (m_ui.institutions->selectionModel()->selectedRows(0)); // Name
 
   if(list.isEmpty())
@@ -1565,15 +1564,15 @@ void spoton::slotDeleteInstitution(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM institutions WHERE hash = ?");
@@ -1602,10 +1601,10 @@ void spoton::slotDisconnectAllNeighbors(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -1676,7 +1675,8 @@ void spoton::slotEncryptionKeyTypeChanged(int index)
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  int index = s_publicKeySizes.value("mceliece").indexOf(list.at(i));
+	  auto const index = s_publicKeySizes.value("mceliece").indexOf
+	    (list.at(i));
 
 	  if(index >= 0)
 	    m_ui.encryptionKeySize->model()->setData
@@ -1835,8 +1835,8 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
     {
       if(item->checkState() == Qt::Checked)
 	{
-	  QFile::Permissions g(file.permissions());
-	  QFile::Permissions s = QFile::Permissions();
+	  auto const g(file.permissions());
+	  auto s = QFile::Permissions();
 
 	  if(g & QFile::ExeOther)
 	    s |= QFile::ExeOther;
@@ -1877,7 +1877,7 @@ void spoton::slotReceiversChanged(QTableWidgetItem *item)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -1912,7 +1912,7 @@ void spoton::slotResendMail(void)
        m_ui.folder->currentIndex() == 2))
     return;
 
-  QModelIndexList list
+  auto const list
     (m_ui.mail->selectionModel()->
      selectedRows(m_ui.mail->columnCount() - 1)); // OID
 
@@ -1924,10 +1924,10 @@ void spoton::slotResendMail(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "email.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "email.db");
 
     if(db.open())
       {
@@ -1935,8 +1935,8 @@ void spoton::slotResendMail(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
-	    QString oid(list.at(i).data().toString());
-	    bool ok = true;
+	    auto const oid(list.at(i).data().toString());
+	    auto ok = true;
 
 	    query.prepare("UPDATE folders SET folder_index = 1, "
 			  "status = ? WHERE "
@@ -1978,10 +1978,10 @@ void spoton::slotResetAETokenInformation(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -2003,7 +2003,7 @@ void spoton::slotResetAETokenInformation(void)
 
 void spoton::slotSaveAttachment(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -2046,16 +2046,16 @@ void spoton::slotSaveAttachment(void)
   QApplication::processEvents();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  bool ok = false;
+  auto ok = false;
 
   {
     QString connectionName("");
 
     {
-      QSqlDatabase db = spoton_misc::database(connectionName);
+      auto db = spoton_misc::database(connectionName);
 
-      db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			 "email.db");
+      db.setDatabaseName
+	(spoton_misc::homePath() + QDir::separator() + "email.db");
 
       if(db.open())
 	{
@@ -2081,7 +2081,7 @@ void spoton::slotSaveAttachment(void)
 
 		if(ok)
 		  {
-		    QByteArray bytes
+		    auto const bytes
 		      (crypt->
 		       decryptedAfterAuthenticated(QByteArray::
 						   fromBase64(query.value(1).
@@ -2147,7 +2147,7 @@ void spoton::slotSaveMOTD(void)
 
   if((row = m_ui.listeners->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.listeners->item
+      auto item = m_ui.listeners->item
 	(row, m_ui.listeners->columnCount() - 1); // OID
 
       if(item)
@@ -2161,15 +2161,15 @@ void spoton::slotSaveMOTD(void)
     }
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString str(m_ui.motd->toPlainText().trimmed());
+	auto str(m_ui.motd->toPlainText().trimmed());
 
 	if(str.isEmpty())
 	  str = QString("Welcome to %1.").arg(SPOTON_APPLICATION_NAME);
@@ -2203,7 +2203,7 @@ void spoton::slotSaveMOTD(void)
 
 void spoton::slotSetAETokenInformation(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -2233,7 +2233,7 @@ void spoton::slotSetAETokenInformation(void)
   else
     oid = list.at(0).data().toString();
 
-  QStringList etypes(spoton_crypt::cipherTypes());
+  auto const etypes(spoton_crypt::cipherTypes());
 
   if(etypes.isEmpty())
     {
@@ -2246,7 +2246,7 @@ void spoton::slotSetAETokenInformation(void)
       return;
     }
 
-  QStringList htypes(spoton_crypt::hashTypes());
+  auto const htypes(spoton_crypt::hashTypes());
 
   if(htypes.isEmpty())
     {
@@ -2272,10 +2272,10 @@ void spoton::slotSetAETokenInformation(void)
     {
       QApplication::processEvents();
 
-      QString token(ui.token->text());
-      QString tokenType(ui.token_e_type->currentText() + "\n" +
-			ui.token_h_type->currentText());
       QStringList list;
+      auto token(ui.token->text());
+      auto tokenType(ui.token_e_type->currentText() + "\n" +
+		     ui.token_h_type->currentText());
 
       if(ui.magnet->isChecked())
 	{
@@ -2296,13 +2296,13 @@ void spoton::slotSetAETokenInformation(void)
       if(token.length() >= 96)
 	{
 	  QString connectionName("");
-	  bool ok = true;
+	  auto ok = true;
 
 	  {
-	    QSqlDatabase db = spoton_misc::database(connectionName);
+	    auto db = spoton_misc::database(connectionName);
 
-	    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-			       "neighbors.db");
+	    db.setDatabaseName
+	      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
 	    if(db.open())
 	      {
@@ -2360,7 +2360,7 @@ void spoton::slotSetListenerSSLControlString(void)
 
   if((row = m_ui.listeners->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.listeners->item
+      auto item = m_ui.listeners->item
 	(row, m_ui.listeners->columnCount() - 1); // OID
 
       if(item)
@@ -2402,7 +2402,7 @@ void spoton::slotSetListenerSSLControlString(void)
 
  continue_label:
 
-  bool ok = true;
+  auto ok = true;
 
   sslCS = QInputDialog::getText
     (this,
@@ -2424,10 +2424,10 @@ void spoton::slotSetListenerSSLControlString(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "listeners.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
     if(db.open())
       {
@@ -2456,7 +2456,7 @@ void spoton::slotSetNeighborSSLControlString(void)
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item
+      auto item = m_ui.neighbors->item
 	(row, m_ui.neighbors->columnCount() - 1); // OID
 
       if(item)
@@ -2498,7 +2498,7 @@ void spoton::slotSetNeighborSSLControlString(void)
 
  continue_label:
 
-  bool ok = true;
+  auto ok = true;
 
   sslCS = QInputDialog::getText
     (this,
@@ -2520,10 +2520,10 @@ void spoton::slotSetNeighborSSLControlString(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -2565,7 +2565,7 @@ void spoton::slotSharePoptasticPublicKey(void)
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.neighbors->item
+      auto item = m_ui.neighbors->item
 	(row, m_ui.neighbors->columnCount() - 1); // OID
 
       if(item)
@@ -2580,7 +2580,7 @@ void spoton::slotSharePoptasticPublicKey(void)
 
   QByteArray publicKey;
   QByteArray signature;
-  bool ok = true;
+  auto ok = true;
 
   publicKey = m_crypts.value("poptastic")->publicKey(&ok);
 
@@ -2601,7 +2601,7 @@ void spoton::slotSharePoptasticPublicKey(void)
   if(ok)
     {
       QByteArray message;
-      QByteArray name(poptasticName());
+      auto name(poptasticName());
 
       if(name.isEmpty())
 	name = "unknown@unknown.org";
@@ -2641,7 +2641,7 @@ void spoton::slotShowEncryptFile(void)
 void spoton::slotShowMinimalDisplay(bool state)
 {
 #if SPOTON_GOLDBUG == 1
-  foreach(QObject *object, m_ui.kernelBox->children())
+  foreach(auto object, m_ui.kernelBox->children())
     if(qobject_cast<QWidget *> (object))
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
@@ -2861,7 +2861,7 @@ void spoton::slotUpdateChatWindows(void)
 
 void spoton::slotUpdateSpinBoxChanged(double value)
 {
-  QDoubleSpinBox *doubleSpinBox = qobject_cast<QDoubleSpinBox *> (sender());
+  auto doubleSpinBox = qobject_cast<QDoubleSpinBox *> (sender());
 
   if(!doubleSpinBox)
     return;

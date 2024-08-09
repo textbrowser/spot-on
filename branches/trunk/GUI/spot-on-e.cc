@@ -63,7 +63,7 @@ QStandardItemModel *spoton::starbeamReceivedModel(void) const
 
 QString spoton::savePoptasticAccount(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return "Invalid spoton_crypt object. This is a fatal flaw.";
@@ -75,15 +75,15 @@ QString spoton::savePoptasticAccount(void)
   QString error("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "poptastic.db");
 
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare
 	  ("INSERT OR REPLACE INTO poptastic "
@@ -310,7 +310,7 @@ static QStringList curl_protocols(void)
 {
   QStringList list;
 #ifdef SPOTON_POPTASTIC_SUPPORTED
-  curl_version_info_data *data = curl_version_info(CURLVERSION_NOW);
+  auto data = curl_version_info(CURLVERSION_NOW);
 
   for(int i = 0; data->protocols[i] != 0; i++)
     list << QString(data->protocols[i]).toLower();
@@ -334,17 +334,17 @@ void spoton::computeFileDigests(const QString &fileName,
       QString connectionName("");
 
       {
-	QSqlDatabase db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
 
 	if(db.open())
 	  {
-	    QByteArray hash1
+	    auto const hash1
 	      (spoton_crypt::sha1FileHash(fileName,
 					  m_starbeamDigestInterrupt));
-	    QByteArray hash2
+	    auto const hash2
 	      (spoton_crypt::sha3_512FileHash(fileName,
 					      m_starbeamDigestInterrupt));
 
@@ -387,7 +387,7 @@ void spoton::initializeUrlDistillers(void)
 {
   spoton_misc::prepareUrlDistillersDatabase();
 
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     return;
@@ -397,10 +397,12 @@ void spoton::initializeUrlDistillers(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "urls_distillers_information.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() +
+       QDir::separator() +
+       "urls_distillers_information.db");
 
     if(db.open())
       {
@@ -470,14 +472,14 @@ void spoton::initializeUrlDistillers(void)
 
 	for(int i = 0; i < list.size(); i++)
 	  {
-	    QByteArray direction(list.at(i).value(1).toByteArray());
-	    QByteArray domain
+	    QSqlQuery query(db);
+	    auto const direction(list.at(i).value(1).toByteArray());
+	    auto const domain
 	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
 	       list.at(i).value(0).toUrl().host().toUtf8() +
 	       list.at(i).value(0).toUrl().path().toUtf8());
-	    QByteArray permission(list.at(i).value(2).toByteArray());
-	    QSqlQuery query(db);
-	    bool ok = true;
+	    auto const permission(list.at(i).value(2).toByteArray());
+	    auto ok = true;
 
 	    query.prepare("INSERT INTO distillers "
 			  "(direction, "
@@ -522,7 +524,7 @@ void spoton::initializeUrlDistillers(void)
 
 void spoton::playSound(const QString &name)
 {
-  QMediaPlayer *player = findChild<QMediaPlayer *> ();
+  auto player = findChild<QMediaPlayer *> ();
 
   if(player)
     player->deleteLater();
@@ -534,9 +536,11 @@ void spoton::playSound(const QString &name)
     return;
 
   QFileInfo fileInfo;
-  QString str
+  auto const str
     (QDir::cleanPath(QCoreApplication::applicationDirPath() +
-		     QDir::separator() + "Sounds" + QDir::separator() +
+		     QDir::separator() +
+		     "Sounds" +
+		     QDir::separator() +
 		     name));
 
   fileInfo.setFile(str);
@@ -794,7 +798,7 @@ void spoton::setSBField(const QString &oid,
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -848,7 +852,7 @@ void spoton::slotActiveUrlDistribution(bool state)
 
 void spoton::slotConfigurePoptastic(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -894,7 +898,7 @@ void spoton::slotConfigurePoptastic(void)
   m_poptasticRetroPhoneSettingsUi.proxy_frame->setVisible(false);
 
   QList<QHash<QString, QVariant> > list;
-  bool ok = true;
+  auto ok = true;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   list = spoton_misc::poptasticSettings("", crypt, &ok);
@@ -925,7 +929,7 @@ void spoton::slotConfigurePoptastic(void)
 
       m_poptasticRetroPhoneSettingsUi.account->blockSignals(false);
 
-      int index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
+      auto index = m_poptasticRetroPhoneSettingsUi.chat_primary_account->
 	findText(m_settings.value("gui/poptasticName").toByteArray());
 
       if(index >= 0)
@@ -946,7 +950,7 @@ void spoton::slotConfigurePoptastic(void)
 	  setCurrentIndex(0);
     }
 
-  QStringList protocols(curl_protocols());
+  auto const protocols(curl_protocols());
 
   connect(m_poptasticRetroPhoneSettingsUi.account,
 	  SIGNAL(currentIndexChanged(int)),
@@ -1124,7 +1128,7 @@ void spoton::slotDeletePoptasticAccount(void)
 
   QApplication::processEvents();
 
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1139,13 +1143,13 @@ void spoton::slotDeletePoptasticAccount(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QString connectionName("");
-  bool ok = true;
+  auto ok = true;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "poptastic.db");
 
     if(db.open())
       {
@@ -1171,7 +1175,7 @@ void spoton::slotDeletePoptasticAccount(void)
   if(ok)
     {
       QList<QHash<QString, QVariant> > list;
-      bool ok = true;
+      auto ok = true;
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       list = spoton_misc::poptasticSettings("", crypt, &ok);
@@ -1275,21 +1279,19 @@ void spoton::slotDeletePoptasticAccount(void)
 void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 					const QString &oid)
 {
-  QList<QTableWidgetItem *> list(findItems(m_ui.participants,
-					   oid,
-					   1));
+  auto const list(findItems(m_ui.participants, oid, 1));
 
   if(list.isEmpty())
     return;
 
-  QTableWidgetItem *item = list.at(0);
+  auto item = list.at(0);
 
   if(!item)
     return;
   else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
-  spoton_smp *smp = m_smps.value(publicKeyHash, 0);
+  auto smp = m_smps.value(publicKeyHash, 0);
 
   if(!smp)
     return;
@@ -1320,21 +1322,20 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
 
 void spoton::slotDeriveGeminiPairViaSMP(void)
 {
-  int row = m_ui.participants->currentRow();
+  auto const row = m_ui.participants->currentRow();
 
   if(row < 0)
     return;
 
-  QTableWidgetItem *item1 = m_ui.participants->item(row, 1); // OID
-  QTableWidgetItem *item2 = m_ui.participants->item
-    (row, 3); // public_key_hash
+  auto item1 = m_ui.participants->item(row, 1); // OID
+  auto item2 = m_ui.participants->item(row, 3); // public_key_hash
 
   if(!item1 || !item2)
     return;
   else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
-  spoton_smp *smp = m_smps.value(item2->text(), 0);
+  auto smp = m_smps.value(item2->text(), 0);
 
   if(!smp)
     return;
@@ -1375,12 +1376,12 @@ void spoton::slotInitializeSMP(const QString &hash)
 void spoton::slotInitializeSMP(void)
 {
   QString hash("");
-  bool temporary = true;
+  auto temporary = true;
   int row = -1;
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+      auto item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	temporary = item->data(Qt::UserRole).toBool();
@@ -1410,7 +1411,7 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
 
 void spoton::slotMediaError(QMediaPlayer::Error error)
 {
-  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+  auto player = qobject_cast<QMediaPlayer *> (sender());
 
   if(!player)
     return;
@@ -1424,7 +1425,7 @@ void spoton::slotMediaError(QMediaPlayer::Error error,
 {
   Q_UNUSED(errorString);
 
-  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+  auto player = qobject_cast<QMediaPlayer *> (sender());
 
   if(!player)
     return;
@@ -1435,7 +1436,7 @@ void spoton::slotMediaError(QMediaPlayer::Error error,
 
 void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
 {
-  QMediaPlayer *player = qobject_cast<QMediaPlayer *> (sender());
+  auto player = qobject_cast<QMediaPlayer *> (sender());
 
   if(!player)
     return;
@@ -1456,8 +1457,8 @@ void spoton::slotOntopChatDialogs(bool state)
 void spoton::slotPoptasticAccountChanged(int index)
 {
   QList<QHash<QString, QVariant> > list;
-  auto text(m_poptasticRetroPhoneSettingsUi.account->itemText(index));
-  bool ok = true;
+  auto const text(m_poptasticRetroPhoneSettingsUi.account->itemText(index));
+  auto ok = true;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   list = spoton_misc::poptasticSettings(text, m_crypts.value("chat", 0), &ok);
@@ -1551,10 +1552,10 @@ void spoton::slotPoptasticSettingsReset(void)
   QString connectionName("");
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "poptastic.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "poptastic.db");
 
     if(db.open())
       {
@@ -1583,12 +1584,12 @@ void spoton::slotPrepareSMP(const QString &hash)
 void spoton::slotPrepareSMP(void)
 {
   QString hash("");
-  bool temporary = true;
+  auto temporary = true;
   int row = -1;
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+      auto item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	temporary = item->data(Qt::UserRole).toBool();
@@ -1617,7 +1618,7 @@ void spoton::slotReloadEmailNames(void)
 		       toByteArray().length()).trimmed());
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QList<QHash<QString, QVariant> > list
+  auto const list
     (spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), 0));
 
   for(int i = 0; i < list.size(); i++)
@@ -1642,7 +1643,7 @@ void spoton::slotRemoveOtmOnExit(bool state)
 
 void spoton::slotSaveAlternatingColors(bool state)
 {
-  QCheckBox *checkBox = qobject_cast<QCheckBox *> (sender());
+  auto checkBox = qobject_cast<QCheckBox *> (sender());
 
   if(!checkBox)
     return;
@@ -1678,7 +1679,7 @@ void spoton::slotSaveAlternatingColors(bool state)
 
 void spoton::slotSaveCustomStatus(void)
 {
-  QString text
+  auto const text
     (m_ui.custom->toPlainText().
      mid(0, spoton_common::STATUS_TEXT_MAXIMUM_LENGTH));
 
@@ -1703,7 +1704,7 @@ void spoton::slotSavePoptasticAccount(void)
   prepareDatabasesFromUI();
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QString error(savePoptasticAccount());
+  auto const error(savePoptasticAccount());
 
   QApplication::restoreOverrideCursor();
 
@@ -1719,7 +1720,7 @@ void spoton::slotSavePoptasticAccount(void)
   else
     {
       QList<QHash<QString, QVariant> > list;
-      bool ok = true;
+      auto ok = true;
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       list = spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), &ok);
@@ -1727,9 +1728,10 @@ void spoton::slotSavePoptasticAccount(void)
 
       if(ok)
 	{
-	  QString account
+	  auto const account
 	    (m_poptasticRetroPhoneSettingsUi.account->currentText());
-	  bool initial = m_poptasticRetroPhoneSettingsUi.account->count() == 0;
+	  auto const initial = m_poptasticRetroPhoneSettingsUi.
+	    account->count() == 0;
 
 	  m_poptasticRetroPhoneSettingsUi.account->blockSignals(true);
 	  m_poptasticRetroPhoneSettingsUi.account->clear();
@@ -1892,8 +1894,8 @@ void spoton::slotSetIconSize(int index)
 
 void spoton::slotSetNeighborPriority(void)
 {
-  QAction *action = qobject_cast<QAction *> (sender());
-  QThread::Priority priority = QThread::HighPriority;
+  auto action = qobject_cast<QAction *> (sender());
+  auto priority = QThread::HighPriority;
 
   if(!action)
     return;
@@ -1914,10 +1916,10 @@ void spoton::slotSetNeighborPriority(void)
     priority = QThread::HighPriority;
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() +
-		       "neighbors.db");
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "neighbors.db");
 
     if(db.open())
       {
@@ -1939,7 +1941,7 @@ void spoton::slotSetNeighborPriority(void)
 
 void spoton::slotSetSBPulseSize(void)
 {
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -1957,7 +1959,7 @@ void spoton::slotSetSBPulseSize(void)
 
   if((row = m_ui.transmitted->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.transmitted->item
+      auto item = m_ui.transmitted->item
 	(row, m_ui.transmitted->columnCount() - 1); // OID
 
       if(item)
@@ -1972,7 +1974,7 @@ void spoton::slotSetSBPulseSize(void)
   if(oid.isEmpty())
     return;
 
-  bool ok = true;
+  auto ok = true;
 
   integer = QInputDialog::getInt
     (this,
@@ -1987,8 +1989,8 @@ void spoton::slotSetSBPulseSize(void)
   if(!ok)
     return;
 
-  QByteArray bytes(crypt->encryptedThenHashed(QByteArray::number(integer),
-					      &ok).toBase64());
+  auto const bytes
+    (crypt->encryptedThenHashed(QByteArray::number(integer), &ok).toBase64());
 
   if(ok)
     setSBField(oid, bytes, "pulse_size");
@@ -2010,7 +2012,7 @@ void spoton::slotSetSBReadInterval(void)
 
   if((row = m_ui.transmitted->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.transmitted->item
+      auto item = m_ui.transmitted->item
 	(row, m_ui.transmitted->columnCount() - 1); // OID
 
       if(item)
@@ -2025,7 +2027,7 @@ void spoton::slotSetSBReadInterval(void)
   if(oid.isEmpty())
     return;
 
-  bool ok = true;
+  auto ok = true;
 
   rational = QInputDialog::getDouble
     (this,
@@ -2051,14 +2053,14 @@ void spoton::slotShareKeysWithKernel(const QString &link)
 
 void spoton::slotShareStarBeam(void)
 {
-  int row = m_ui.participants->currentRow();
+  auto const row = m_ui.participants->currentRow();
 
   if(row < 0)
     return;
 
-  QTableWidgetItem *item1 = m_ui.participants->item(row, 0); // Participant
-  QTableWidgetItem *item2 = m_ui.participants->item(row, 1); // OID
-  QTableWidgetItem *item3 = m_ui.participants->item(row, 3); // Public Key Hash
+  auto item1 = m_ui.participants->item(row, 0); // Participant
+  auto item2 = m_ui.participants->item(row, 1); // OID
+  auto item3 = m_ui.participants->item(row, 3); // Public Key Hash
 
   if(!item1 || !item2 || !item3)
     return;
@@ -2069,7 +2071,7 @@ void spoton::slotShareStarBeam(void)
     return;
 
   QString error("");
-  spoton_crypt *crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", 0);
 
   if(!crypt)
     {
@@ -2096,8 +2098,7 @@ void spoton::slotShareStarBeam(void)
       return;
     }
 
-  QModelIndexList list(m_ui.participants->selectionModel()->
-		       selectedRows(1)); // OID
+  auto const list(m_ui.participants->selectionModel()->selectedRows(1)); // OID
 
   if(list.isEmpty())
     {
@@ -2107,8 +2108,8 @@ void spoton::slotShareStarBeam(void)
       return;
     }
 
-  QString participant(item1->text());
-  QString publicKeyHash(item3->text());
+  auto const participant(item1->text());
+  auto const publicKeyHash(item3->text());
 
   /*
   ** Select a file.
@@ -2131,7 +2132,7 @@ void spoton::slotShareStarBeam(void)
 
   QApplication::processEvents();
 
-  QFileInfo fileInfo(dialog.selectedFiles().value(0));
+  QFileInfo const fileInfo(dialog.selectedFiles().value(0));
 
   if(!fileInfo.exists() || !fileInfo.isReadable())
     {
@@ -2144,18 +2145,18 @@ void spoton::slotShareStarBeam(void)
   ** Create a StarBeam magnet.
   */
 
-  QByteArray eKey
+  QByteArray magnet;
+  auto const eKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::
 		       cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm())).
      toBase64());
-  QByteArray mKey
+  auto const mKey
     (spoton_crypt::
      strongRandomBytes(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
      toBase64());
-  QByteArray magnet;
-  bool ok = true;
+  auto ok = true;
 
   magnet.append("magnet:?");
   magnet.append("ct=");
@@ -2186,7 +2187,7 @@ void spoton::slotShareStarBeam(void)
   */
 
   {
-    QSqlDatabase db = spoton_misc::database(connectionName);
+    auto db = spoton_misc::database(connectionName);
 
     db.setDatabaseName
       (spoton_misc::homePath() + QDir::separator() + "starbeam.db");
@@ -2194,10 +2195,10 @@ void spoton::slotShareStarBeam(void)
     if(db.open())
       {
 	QByteArray encryptedMosaic;
-	QByteArray mosaic
+	QSqlQuery query(db);
+	auto const mosaic
 	  (spoton_crypt::strongRandomBytes(spoton_common::MOSAIC_SIZE).
 	   toBase64());
-	QSqlQuery query(db);
 
 	query.prepare("INSERT OR REPLACE INTO magnets "
 		      "(magnet, magnet_hash, origin) "
@@ -2322,7 +2323,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
   QString error("");
-  bool ok = false;
+  auto ok = false;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   curl = curl_easy_init();
@@ -2369,10 +2370,11 @@ void spoton::slotTestPoptasticPop3Settings(void)
 			   trimmed().toLatin1().constData());
 	}
 
-      QString method
-	(m_poptasticRetroPhoneSettingsUi.in_method->currentText().toUpper());
       QString url("");
-      int index = m_poptasticRetroPhoneSettingsUi.in_ssltls->currentIndex();
+      auto const index = m_poptasticRetroPhoneSettingsUi.
+	in_ssltls->currentIndex();
+      auto const method
+	(m_poptasticRetroPhoneSettingsUi.in_method->currentText().toUpper());
 
       if(index == 1 || index == 2)
 	{
@@ -2387,7 +2389,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 		  text().trimmed()).
 	      arg(m_poptasticRetroPhoneSettingsUi.in_server_port->value());
 
-	  long int verify = static_cast<long int>
+	  auto verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.in_verify_host->isChecked());
 
 	  if(verify)
@@ -2401,7 +2403,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 
 	  if(index == 2) // TLS
 	    {
-	      QFileInfo fileInfo
+	      QFileInfo const fileInfo
 		(m_settings.value("gui/poptasticCAPath", "").toString());
 
 	      if(fileInfo.isReadable())
@@ -2467,7 +2469,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
   CURL *curl = 0;
   CURLcode res = CURLE_OK;
   QString error("");
-  bool ok = false;
+  auto ok = false;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   curl = curl_easy_init();
@@ -2514,10 +2516,11 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 			   trimmed().toLatin1().constData());
 	}
 
-      QString method
-	(m_poptasticRetroPhoneSettingsUi.out_method->currentText().toUpper());
       QString url("");
-      int index = m_poptasticRetroPhoneSettingsUi.out_ssltls->currentIndex();
+      auto const index = m_poptasticRetroPhoneSettingsUi.
+	out_ssltls->currentIndex();
+      auto const method
+	(m_poptasticRetroPhoneSettingsUi.out_method->currentText().toUpper());
 
       if(index == 1 || index == 2)
 	{
@@ -2543,7 +2546,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 		      smtp_localname->text());
 	    }
 
-	  long int verify = static_cast<long int>
+	  auto verify = static_cast<long int>
 	    (m_poptasticRetroPhoneSettingsUi.out_verify_host->isChecked());
 
 	  if(verify)
@@ -2557,7 +2560,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 
 	  if(index == 2) // TLS
 	    {
-	      QFileInfo fileInfo
+	      QFileInfo const fileInfo
 		(m_settings.value("gui/poptasticCAPath", "").toString());
 
 	      if(fileInfo.isReadable())
@@ -2640,12 +2643,12 @@ void spoton::slotVerifySMPSecret(void)
   QString hash("");
   QString keyType("");
   QString oid("");
-  bool temporary = true;
+  auto temporary = true;
   int row = -1;
 
   if((row = m_ui.participants->currentRow()) >= 0)
     {
-      QTableWidgetItem *item = m_ui.participants->item(row, 1); // OID
+      auto item = m_ui.participants->item(row, 1); // OID
 
       if(item)
 	{
@@ -2693,7 +2696,7 @@ void spoton::verifySMPSecret(const QString &hash,
     smp = m_smps.value(hash, 0);
 
   QList<QByteArray> list;
-  bool ok = true;
+  auto ok = true;
 
   if(smp)
     {

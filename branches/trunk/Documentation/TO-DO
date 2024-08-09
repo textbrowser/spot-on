@@ -322,14 +322,14 @@ Completed Items
 220.   Correct effervescent tool tips. StarBeam.
 221.   QString::split() and empty parts.
 222.   Archive architectures.
+223.   Automatics and constants:
+       Common (Completed)
+       GUI (Completed)
+       Kernel (Completed)
 
 Remaining Items
 
 1.     Dark mode for Windows.
 2.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
-3.     Automatics and constants:
-       Common (Completed)
-       GUI
-       Kernel (Completed)
-4.     Shift operators and types.
+3.     Shift operators and types.
