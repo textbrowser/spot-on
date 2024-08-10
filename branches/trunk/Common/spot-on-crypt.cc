@@ -3933,8 +3933,10 @@ void spoton_crypt::generateCertificate(const int keySize,
 	 static_cast<size_t> (length));
   commonNameEntry = X509_NAME_ENTRY_create_by_NID
     (0,
-     NID_commonName, V_ASN1_PRINTABLESTRING,
-     commonName, length);
+     NID_commonName,
+     V_ASN1_PRINTABLESTRING,
+     commonName,
+     length);
 
   if(!commonNameEntry)
     {
