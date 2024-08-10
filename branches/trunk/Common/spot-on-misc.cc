@@ -55,7 +55,7 @@ extern "C"
 #include <sys/socket.h>
 #include <unistd.h>
 }
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
 extern "C"
 {
 #include <winsock2.h>
@@ -67,7 +67,7 @@ extern "C"
 #include <QDir>
 #include <QFile>
 #include <QLocale>
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
 #include <qt_windows.h>
 #include <QNetworkInterface>
 #else
@@ -415,7 +415,7 @@ QByteArray spoton_misc::wrap(const QByteArray &data, const int c)
   for(int i = 0; i < data.size(); i += characters)
     {
       bytes.append(data.mid(i, characters));
-#ifndef Q_OS_WIN
+#ifndef Q_OS_WINDOWS
       bytes.append("\n");
 #else
       bytes.append("\r\n");
@@ -533,7 +533,7 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 }
 
 QHostAddress spoton_misc::peerAddressAndPort(
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 					     const SOCKET socketDescriptor,
 #else
 					     const int socketDescriptor,
@@ -549,11 +549,14 @@ QHostAddress spoton_misc::peerAddressAndPort(
   if(port)
     *port = 0;
 
-  if(getpeername(socketDescriptor, (struct sockaddr *) &peeraddr, &length) == 0)
+  if(getpeername(socketDescriptor,
+		 reinterpret_cast<struct sockaddr *> (&peeraddr),
+		 &length) == 0)
     {
       if(peeraddr.ss_family == AF_INET)
 	{
-	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr =
+	    reinterpret_cast<spoton_type_punning_sockaddr_t *> (&peeraddr);
 
 	  if(sockaddr)
 	    {
@@ -566,13 +569,15 @@ QHostAddress spoton_misc::peerAddressAndPort(
 	}
       else
 	{
-	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr =
+	    reinterpret_cast<spoton_type_punning_sockaddr_t *> (&peeraddr);
 
 	  if(sockaddr)
 	    {
 	      Q_IPV6ADDR temp;
 
-	      memcpy(&temp.c, &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
+	      memcpy(&temp.c,
+		     &sockaddr->sockaddr_in6.sin6_addr.s6_addr,
 		     qMin(sizeof(sockaddr->sockaddr_in6.sin6_addr.s6_addr),
 			  sizeof(temp.c)));
 	      address.setAddress(temp);
@@ -1256,7 +1261,7 @@ QString spoton_misc::homePath(void)
   QString homePath(qgetenv("SPOTON_HOME").trimmed());
 
   if(homePath.isEmpty())
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
     return QDir::currentPath() + QDir::separator() + ".spot-on";
 #else
     return QDir::homePath() + QDir::separator() + ".spot-on";
@@ -1486,7 +1491,7 @@ QString spoton_misc::wrap(const QString &t, const int c)
   for(int i = 0; i < t.size(); i += characters)
     {
       text.append(t.mid(i, characters));
-#ifndef Q_OS_WIN
+#ifndef Q_OS_WINDOWS
       text.append("\n");
 #else
       text.append("\r\n");
@@ -2338,31 +2343,26 @@ bool spoton_misc::isPrivateNetwork(const QHostAddress &address)
     return isPrivate;
   else if(address.protocol() == QAbstractSocket::IPv4Protocol)
     {
-      QPair<QHostAddress, int> pair1
-	(QHostAddress::parseSubnet("10.0.0.0/8"));
-      QPair<QHostAddress, int> pair2
-	(QHostAddress::parseSubnet("127.0.0.0/8"));
-      QPair<QHostAddress, int> pair3
-	(QHostAddress::parseSubnet("169.254.0.0/16"));
-      QPair<QHostAddress, int> pair4
-	(QHostAddress::parseSubnet("172.16.0.0/12"));
-      QPair<QHostAddress, int> pair5
-	(QHostAddress::parseSubnet("192.168.0.0/16"));
+      auto const pair1(QHostAddress::parseSubnet("10.0.0.0/8"));
+      auto const pair2(QHostAddress::parseSubnet("127.0.0.0/8"));
+      auto const pair3(QHostAddress::parseSubnet("169.254.0.0/16"));
+      auto const pair4(QHostAddress::parseSubnet("172.16.0.0/12"));
+      auto const pair5(QHostAddress::parseSubnet("192.168.0.0/16"));
 
-      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
-	address.isInSubnet(pair3) || address.isInSubnet(pair4) ||
+      isPrivate = address.isInSubnet(pair1) ||
+	address.isInSubnet(pair2) ||
+	address.isInSubnet(pair3) ||
+	address.isInSubnet(pair4) ||
 	address.isInSubnet(pair5);
     }
   else if(address.protocol() == QAbstractSocket::IPv6Protocol)
     {
-      QPair<QHostAddress, int> pair1
-	(QHostAddress::parseSubnet("::1/128"));
-      QPair<QHostAddress, int> pair2
-	(QHostAddress::parseSubnet("fc00::/7"));
-      QPair<QHostAddress, int> pair3
-	(QHostAddress::parseSubnet("fe80::/10"));
+      auto const pair1(QHostAddress::parseSubnet("::1/128"));
+      auto const pair2(QHostAddress::parseSubnet("fc00::/7"));
+      auto const pair3(QHostAddress::parseSubnet("fe80::/10"));
 
-      isPrivate = address.isInSubnet(pair1) || address.isInSubnet(pair2) ||
+      isPrivate = address.isInSubnet(pair1) ||
+	address.isInSubnet(pair2) ||
 	address.isInSubnet(pair3);
     }
 
@@ -3010,7 +3010,7 @@ bool spoton_misc::isValidStarBeamMagnet(const QByteArray &magnet)
 
 bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 				     const QVariant &loop,
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 				     const SOCKET socketDescriptor,
 #else
 				     const int socketDescriptor,
@@ -3028,12 +3028,12 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       mreq4.imr_interface.s_addr = htonl(INADDR_ANY);
       mreq4.imr_multiaddr.s_addr = htonl(address.toIPv4Address());
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       if(setsockopt(socketDescriptor,
 		    IPPROTO_IP,
 		    IP_ADD_MEMBERSHIP,
-		    (const char *) &mreq4,
-		    (int) length) == -1)
+		    reinterpret_cast<const char *> (&mreq4),
+		    static_cast<int> (length)) == -1)
 #else
       if(setsockopt(socketDescriptor,
 		    IPPROTO_IP,
@@ -3055,7 +3055,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 	  length = sizeof(option);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IP,
 			IP_MULTICAST_LOOP,
@@ -3087,7 +3087,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
       memcpy(&mreq6.ipv6mr_multiaddr, &ip6, sizeof(ip6));
       mreq6.ipv6mr_interface = 0;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       if(setsockopt(socketDescriptor,
 		    IPPROTO_IPV6,
 		    IPV6_JOIN_GROUP,
@@ -3114,7 +3114,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 
 	  length = sizeof(option);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  if(setsockopt(socketDescriptor,
 			IPPROTO_IPV6,
 			IPV6_MULTICAST_LOOP,
@@ -4300,7 +4300,7 @@ void spoton_misc::closeSocket(const qintptr socketDescriptor)
   if(socketDescriptor < 0)
     return;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   shutdown(static_cast<SOCKET> (socketDescriptor), SD_BOTH);
   closesocket(static_cast<SOCKET> (socketDescriptor));
 #else
@@ -4669,7 +4669,7 @@ void spoton_misc::logError(const QString &error)
 
   if(file.open(QIODevice::Append | QIODevice::WriteOnly))
     {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       QString eol("\r\n");
 #else
       QString eol("\n");

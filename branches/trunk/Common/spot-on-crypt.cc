@@ -39,7 +39,7 @@
 #include <iostream>
 #include <limits>
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
 #define WIN32_LEAN_AND_MEAN 1
 #endif
 
@@ -3819,7 +3819,7 @@ void spoton_crypt::generateCertificate(const int keySize,
 
   if(keySize < 1024)
     {
-      ecc = (EC_KEY *) key;
+      ecc = static_cast<EC_KEY *> (key);
 
       if(!ecc)
 	{
@@ -3831,7 +3831,7 @@ void spoton_crypt::generateCertificate(const int keySize,
     }
   else
     {
-      rsa = (RSA *) key;
+      rsa = static_cast<RSA *> (key);
 
       if(!rsa)
 	{

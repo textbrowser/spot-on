@@ -47,7 +47,7 @@
 #include <QMediaPlayer>
 #include <QMessageBox>
 #include <QMouseEvent>
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
 #include <qt_windows.h>
 #include <QNetworkInterface>
 #else

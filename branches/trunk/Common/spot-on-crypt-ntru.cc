@@ -174,7 +174,7 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
     }
 
   NtruRandContext rand_ctx_def;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   NtruRandGen rng_def = NTRU_RNG_DEFAULT;
 #else
   NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;
@@ -359,7 +359,7 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
 
   NtruEncKeyPair kp;
   NtruRandContext rand_ctx_def;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   NtruRandGen rng_def = NTRU_RNG_DEFAULT;
 #else
   NtruRandGen rng_def = NTRU_RNG_DEVURANDOM;

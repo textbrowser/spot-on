@@ -50,7 +50,7 @@ static size_t curl_payload_source(void *ptr,
   if(nmemb == 0 || !ptr || size == 0 || (nmemb * size) < 1 || !userp)
     return 0;
 
-  auto upload_ctx = (struct curl_upload_status *) userp;
+  auto upload_ctx = static_cast<struct curl_upload_status *> (userp);
 
   if(!upload_ctx || upload_ctx->lines_read >= curl_payload_text.size())
     return 0;
@@ -81,7 +81,7 @@ static size_t curl_write_memory_callback(void *contents,
     return 0;
 
   curl_receive_data.append
-    ((const char *) contents, static_cast<int> (nmemb *size));
+    (static_cast<const char *> (contents), static_cast<int> (nmemb *size));
   return nmemb * size;
 }
 #endif
@@ -999,7 +999,9 @@ void spoton_kernel::postPoptastic(void)
 		*/
 
 		curl_easy_setopt
-		  (curl, CURLOPT_TIMEOUT, (long int) 2.5 * count + timeout);
+		  (curl,
+		   CURLOPT_TIMEOUT,
+		   static_cast<long int> (2.5 * count + timeout));
 
 	      curl_easy_setopt(curl, CURLOPT_UPLOAD, 1L);
 

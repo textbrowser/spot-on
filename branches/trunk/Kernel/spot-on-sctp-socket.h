@@ -100,7 +100,7 @@ class spoton_sctp_socket: public QObject
   QString m_ipAddress;
   QString m_socketOptions;
   QTimer m_timer;
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
 #ifdef SPOTON_SCTP_ENABLED
   SOCKET m_socketDescriptor;
 #else
@@ -109,7 +109,7 @@ class spoton_sctp_socket: public QObject
 #endif
   SocketState m_state;
   int m_hostLookupId;
-#ifndef Q_OS_WIN
+#ifndef Q_OS_WINDOWS
   int m_socketDescriptor;
 #endif
   qint64 m_readBufferSize;

@@ -77,14 +77,14 @@ extern "C"
 
 void spoton_socket_options::setSocketOptions(const QString &options,
 					     const QString &t,
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 					     const SOCKET socket,
 #else
 					     const qint64 socket,
 #endif
 					     bool *ok)
 {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   if(socket == INVALID_SOCKET)
 #else
   if(socket < 0)
@@ -120,18 +120,19 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
       if(string.startsWith("ip_tos="))
 	{
-#ifndef Q_OS_WIN
+#ifndef Q_OS_WINDOWS
 	  string = string.mid(static_cast<int> (qstrlen("ip_tos=")));
 
 	  if(!string.isEmpty())
 	    {
 	      auto const v = string.toInt();
-	      auto const length = (socklen_t) sizeof(v);
+	      auto const length = static_cast<socklen_t> (sizeof(v));
 	      int level = IPPROTO_IP;
 	      int option = IP_TOS;
 	      int rc = 0;
 
-	      rc = setsockopt((int) socket, level, option, &v, length);
+	      rc = setsockopt
+		(static_cast<int> (socket), level, option, &v, length);
 
 	      if(rc != 0)
 		{
@@ -158,7 +159,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	  if(!string.isEmpty())
 	    {
 	      auto const v = qBound(0, string.toInt(), 1);
-	      auto const length = (socklen_t) sizeof(v);
+	      auto const length = static_cast<socklen_t> (sizeof(v));
 #ifdef SPOTON_SCTP_ENABLED
 	      int level = IPPROTO_SCTP;
 	      int option = SCTP_NODELAY;
@@ -174,11 +175,16 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		  option = TCP_NODELAY;
 		}
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      rc = setsockopt
-		(socket, level, option, (const char *) &v, (int) length);
+		(socket,
+		 level,
+		 option,
+		 reinterpret_cast<const char *> (&v),
+		 static_cast<int> (length));
 #else
-	      rc = setsockopt((int) socket, level, option, &v, length);
+	      rc = setsockopt
+		(static_cast<int> (socket), level, option, &v, length);
 #endif
 
 	      if(rc != 0)
@@ -205,18 +211,22 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	  if(!string.isEmpty())
 	    {
 	      auto const v = qBound(0, string.toInt(), 1);
-	      auto const length = (socklen_t) sizeof(v);
+	      auto const length = static_cast<socklen_t> (sizeof(v));
 	      int rc = 0;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      rc = setsockopt(socket,
 			      SOL_SOCKET,
 			      SO_KEEPALIVE,
-			      (const char *) &v,
-			      (int) length);
+			      reinterpret_cast<const char *> (&v),
+			      static_cast<int> (length));
 #else
 	      rc = setsockopt
-		((int) socket, SOL_SOCKET, SO_KEEPALIVE, &v, length);
+		(static_cast<int> (socket),
+		 SOL_SOCKET,
+		 SO_KEEPALIVE,
+		 &v,
+		 length);
 #endif
 
 	      if(rc != 0)
@@ -245,7 +255,7 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 	    {
 	      int rc = 0;
 	      socklen_t length = 0;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      struct linger
 	      {
 		u_short l_onoff;
@@ -254,19 +264,20 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	      l.l_linger = static_cast<u_short> (qAbs(v));
 	      l.l_onoff = v < 0 ? 0 : 1;
-	      length = (socklen_t) sizeof(l);
+	      length = static_cast<socklen_t> (sizeof(l));
 	      rc = setsockopt(socket,
 			      SOL_SOCKET,
 			      SO_LINGER,
-			      (const char *) &l,
-			      (int) length);
+			      reinterpret_cast<const char *> (&l),
+			      static_cast<int> (length));
 #else
 	      struct linger l = {};
 
 	      l.l_linger = qAbs(v);
 	      l.l_onoff = v < 0 ? 0 : 1;
-	      length = (socklen_t) sizeof(l);
-	      rc = setsockopt((int) socket, SOL_SOCKET, SO_LINGER, &l, length);
+	      length = static_cast<socklen_t> (sizeof(l));
+	      rc = setsockopt
+		(static_cast<int> (socket), SOL_SOCKET, SO_LINGER, &l, length);
 #endif
 
 	      if(rc != 0)
@@ -300,14 +311,19 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 
 	      auto const v = qBound
 		(4096, string.toInt(), std::numeric_limits<int>::max());
-	      auto const length = (socklen_t) sizeof(v);
+	      auto const length = static_cast<socklen_t> (sizeof(v));
 	      int rc = 0;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      rc = setsockopt
-		(socket, SOL_SOCKET, option, (const char *) &v, (int) length);
+		(socket,
+		 SOL_SOCKET,
+		 option,
+		 reinterpret_cast<const char *> (&v),
+		 static_cast<int> (length));
 #else
-	      rc = setsockopt((int) socket, SOL_SOCKET, option, &v, length);
+	      rc = setsockopt
+		(static_cast<int> (socket), SOL_SOCKET, option, &v, length);
 #endif
 
 	      if(rc != 0)
@@ -352,18 +368,20 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		  so_timestamping_flags |= SOF_TIMESTAMPING_TX_SOFTWARE;
 		}
 
-#if defined(Q_OS_WIN)
-	      rc = setsockopt(socket,
-			      SOL_SOCKET,
-			      SO_TIMESTAMPING,
-			      (const char *) &so_timestamping_flags,
-			      (int) sizeof(so_timestamping_flags));
+#if defined(Q_OS_WINDOWS)
+	      rc = setsockopt
+		(socket,
+		 SOL_SOCKET,
+		 SO_TIMESTAMPING,
+		 reinterpret_cast<const char *> (&so_timestamping_flags),
+		 static_cast<int> (sizeof(so_timestamping_flags)));
 #else
-	      rc = setsockopt((int) socket,
-			      SOL_SOCKET,
-			      SO_TIMESTAMPING,
-			      &so_timestamping_flags,
-			      (socklen_t) sizeof(so_timestamping_flags));
+	      rc = setsockopt
+		(static_cast<int> (socket),
+		 SOL_SOCKET,
+		 SO_TIMESTAMPING,
+		 &so_timestamping_flags,
+		 static_cast<socklen_t> (sizeof(so_timestamping_flags)));
 #endif
 
 	      if(rc != 0)

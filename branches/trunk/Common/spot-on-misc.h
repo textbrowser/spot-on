@@ -39,7 +39,7 @@
 #include <QString>
 #include <QVariant>
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 extern "C"
 {
 #include <winsock2.h>
@@ -94,7 +94,7 @@ class spoton_misc
     (const QString &communityName, spoton_crypt *crypt);
   static QHostAddress localAddressIPv4(void);
   static QHostAddress peerAddressAndPort(
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 					 const SOCKET socketDescriptor,
 #else
 					 const int socketDescriptor,
@@ -180,7 +180,7 @@ class spoton_misc
   static bool isValidStarBeamMagnet(const QByteArray &magnet);
   static bool joinMulticastGroup(const QHostAddress &address,
 				 const QVariant &loop,
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 				 const SOCKET socketDescriptor,
 #else
 				 const int socketDescriptor,

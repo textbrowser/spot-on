@@ -30,7 +30,7 @@
 
 #include <QAbstractSocket>
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 extern "C"
 {
 #include <winsock2.h>
@@ -45,7 +45,7 @@ class spoton_socket_options
  public:
   static void setSocketOptions(const QString &options,
 			       const QString &t, // Transport
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
 			       const SOCKET socket,
 #else
 			       const qint64 socket,
