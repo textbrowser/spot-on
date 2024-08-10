@@ -1287,7 +1287,7 @@ bool spoton::isKernelActive(void) const
     {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       return kill(pid, 0) == 0;
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
       DWORD PID = (DWORD) pid;
       HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, PID);
 
@@ -1721,7 +1721,7 @@ void spoton::highlightPaths(void)
 
 #if defined(Q_OS_MACOS)
   if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
   if(fileInfo.isReadable() && fileInfo.size() > 0)
 #else
   if(fileInfo.isExecutable() && fileInfo.size() > 0)
@@ -4916,7 +4916,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -5042,7 +5042,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -5123,7 +5123,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(chat)
 			{
 			  chat->append(msg);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			  if(chat->isVisible())
 			    chat->activateWindow();
 #endif
@@ -5177,7 +5177,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(chat)
 			    {
 			      chat->append(msg);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			      if(chat->isVisible())
 				chat->activateWindow();
 #endif
@@ -5292,7 +5292,7 @@ void spoton::slotReceivedKernelMessage(void)
 			    {
 			      chat->append(msg);
 			      chat->setSMPVerified(passed);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 			      if(chat->isVisible())
 				chat->activateWindow();
 #endif
@@ -5489,7 +5489,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(chat)
 		    {
 		      chat->append(msg);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 		      if(chat->isVisible())
 			chat->activateWindow();
 #endif
@@ -6023,7 +6023,7 @@ void spoton::slotResetAll(void)
 
   QApplication::instance()->exit(0);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   auto const program(QCoreApplication::applicationDirPath() +
 		     QDir::separator() +
 		     SPOTON_APPLICATION_NAME);

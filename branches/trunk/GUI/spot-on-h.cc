@@ -1471,7 +1471,7 @@ void spoton::slotSetSocketOptions(void)
     }
 #endif
 
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WINDOWS
   ui.type_of_service->setEnabled(false);
   ui.type_of_service->setToolTip(tr("Not available on Windows."));
 #endif

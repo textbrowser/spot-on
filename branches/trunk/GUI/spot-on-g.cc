@@ -2203,7 +2203,7 @@ void spoton::slotWizardButtonClicked(void)
       {
 	m_wizardUi->next->setEnabled(true);
 	m_wizardUi->previous->setEnabled(false);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	auto const tmp(qgetenv("USERNAME").mid(0, 256).trimmed());
 
 	if(!tmp.isEmpty())

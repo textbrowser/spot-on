@@ -228,11 +228,11 @@ int main(int argc, char *argv[])
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_init(CURL_GLOBAL_ALL);
 #endif
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   QApplication::addLibraryPath("plugins");
 #endif
   qInstallMessageHandler(qt_message_handler);
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
 
   QSettings settings;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   if(!settings.contains("gui/etpDestinationPath"))
     {
       QDir dir(QDir::currentPath());
@@ -845,13 +845,13 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_sb.warning->setVisible(false);
   m_notificationsWindow->setWindowTitle
     (tr("%1: Notifications").arg(SPOTON_APPLICATION_NAME));
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
   m_notificationsWindow->setWindowFlags
     (m_notificationsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
   m_statisticsWindow->setWindowTitle
     (tr("%1: Statistics").arg(SPOTON_APPLICATION_NAME));
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
   m_statisticsWindow->setWindowFlags
     (m_statisticsWindow->windowFlags() | Qt::WindowStaysOnTopHint);
 #endif
@@ -2472,7 +2472,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_ui.neighborIP->setInputMask("");
   m_ui.neighborScopeId->setEnabled(false);
   m_ui.neighborScopeIdLabel->setEnabled(false);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   m_ui.emailParticipants->setStyleSheet
     ("QTableWidget {selection-background-color: lightgreen}");
   m_ui.participants->setStyleSheet
@@ -2657,7 +2657,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     (m_settings.value("gui/geoipPath6",
 		      "/usr/share/GeoIP/GeoIP.dat").toString());
   m_optionsUi.geoipPath6->setCursorPosition(0);
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
   m_optionsUi.geoipPath4->setText
     (m_settings.value("gui/geoipPath4", "GeoIP.dat").toString());
   m_optionsUi.geoipPath4->setCursorPosition(0);
@@ -2702,7 +2702,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     {
       auto const path(QCoreApplication::applicationDirPath() +
 		      QDir::separator() +
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 		      "Spot-On-Kernel.exe"
 #else
 		      "Spot-On-Kernel"
@@ -2978,7 +2978,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     (m_settings.value("gui/limit_sqlite_synchronization", false).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
-#if defined(Q_OS_MACOS) || defined(Q_OS_WIN)
+#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
 #else
@@ -4319,7 +4319,7 @@ void spoton::slotActivateKernel(void)
 
 #if defined(Q_OS_MACOS)
   if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
   if(fileInfo.isReadable() && fileInfo.size() > 0)
 #else
   if(fileInfo.isExecutable() && fileInfo.size() > 0)
@@ -4355,7 +4355,7 @@ void spoton::slotActivateKernel(void)
     }
   else
     status = QProcess::startDetached(program, QStringList());
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
   status = QProcess::startDetached
     (QString("\"%1\"").arg(program), QStringList());
 #else
@@ -4372,7 +4372,7 @@ void spoton::slotActivateKernel(void)
     }
   else
     status = QProcess::startDetached(program);
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
   status = QProcess::startDetached(QString("\"%1\"").arg(program));
 #else
   status = QProcess::startDetached(program);

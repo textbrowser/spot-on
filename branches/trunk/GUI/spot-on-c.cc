@@ -5064,7 +5064,7 @@ void spoton::slotTransportChanged(int index)
         m_ui.listenerKeySize->setEnabled(false);
 #endif
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       m_ui.listenerShareAddress->setEnabled(false);
 #else
       m_ui.listenerShareAddress->setEnabled(index == 3);
