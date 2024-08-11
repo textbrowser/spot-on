@@ -78,49 +78,20 @@ class spoton_mceliece_private_key
   spoton_mceliece_private_key(const size_t m, const size_t t);
   ~spoton_mceliece_private_key();
 
+  NTL::GF2EX m_X;
+  NTL::GF2EX m_gZ;
+  NTL::mat_GF2 m_G;
+  NTL::mat_GF2 m_P;
+  NTL::mat_GF2 m_Pinv;
+  NTL::mat_GF2 m_S;
+  NTL::mat_GF2 m_Sinv;
+  NTL::vec_GF2E m_L;
+  std::vector<NTL::GF2EX> m_preSynTab;
+  std::vector<long int> m_swappingColumns;
+
   Conversions conversion(void) const
   {
     return m_conversion;
-  }
-
-  NTL::GF2EX X(void) const
-  {
-    return m_X;
-  }
-
-  NTL::GF2EX gZ(void) const
-  {
-    return m_gZ;
-  }
-
-  NTL::mat_GF2 G(void) const
-  {
-    return m_G;
-  }
-
-  NTL::mat_GF2 P(void) const
-  {
-    return m_P;
-  }
-
-  NTL::mat_GF2 Pinv(void) const
-  {
-    return m_Pinv;
-  }
-
-  NTL::mat_GF2 S(void) const
-  {
-    return m_S;
-  }
-
-  NTL::mat_GF2 Sinv(void) const
-  {
-    return m_Sinv;
-  }
-
-  NTL::vec_GF2E L(void) const
-  {
-    return m_L;
   }
 
   bool ok(void) const
@@ -155,35 +126,15 @@ class spoton_mceliece_private_key
     return m_t;
   }
 
-  std::vector<NTL::GF2EX> preSynTab(void) const
-  {
-    return m_preSynTab;
-  }
-
-  std::vector<long int> swappingColumns(void) const
-  {
-    return m_swappingColumns;
-  }
-
   void swapSwappingColumns(const size_t i, const size_t j);
 
  private:
   Conversions m_conversion;
-  NTL::GF2EX m_X;
-  NTL::GF2EX m_gZ;
-  NTL::mat_GF2 m_G;
-  NTL::mat_GF2 m_P;
-  NTL::mat_GF2 m_Pinv;
-  NTL::mat_GF2 m_S;
-  NTL::mat_GF2 m_Sinv;
-  NTL::vec_GF2E m_L;
   bool m_ok;
   size_t m_k;
   size_t m_m;
   size_t m_n;
   size_t m_t;
-  std::vector<NTL::GF2EX> m_preSynTab;
-  std::vector<long int> m_swappingColumns;
   bool prepareP(void);
   bool preparePreSynTab(void);
   bool prepareS(void);
@@ -199,10 +150,7 @@ class spoton_mceliece_public_key
   spoton_mceliece_public_key(const size_t t, const NTL::mat_GF2 &Gcar);
   ~spoton_mceliece_public_key();
 
-  NTL::mat_GF2 Gcar(void) const
-  {
-    return m_Gcar;
-  }
+  NTL::mat_GF2 m_Gcar;
 
   bool ok(void) const
   {
@@ -229,7 +177,6 @@ class spoton_mceliece_public_key
   }
 
  private:
-  NTL::mat_GF2 m_Gcar;
   bool m_ok;
   size_t m_t;
   void reset(const bool ok);
@@ -306,12 +253,12 @@ class spoton_mceliece
 
  private:
   spoton_mceliece_private_key::Conversions
-  m_conversion; /*
-		** 000 - None
-		** foa - Fujisaki-Okamoto Model A
-		** fob - Fujisaki-Okamoto Model B
-		** pca - Pointcheval Model A
-		*/
+    m_conversion; /*
+		  ** 000 - None
+		  ** foa - Fujisaki-Okamoto Model A
+		  ** fob - Fujisaki-Okamoto Model B
+		  ** pca - Pointcheval Model A
+		  */
   spoton_mceliece_private_key *m_privateKey;
   spoton_mceliece_public_key *m_publicKey;
   size_t m_k;
