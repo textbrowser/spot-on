@@ -77,8 +77,7 @@ QByteArray spoton_crypt::publicKeyDecryptMcEliece
     {
       locker.unlock();
       bytes = QByteArray // A deep copy is required.
-	(plaintext.str().c_str(),
-	 static_cast<int> (plaintext.str().size()));
+	(plaintext.str().c_str(), static_cast<int> (plaintext.str().size()));
 
       if(!bytes.isEmpty())
 	if(ok)
@@ -118,8 +117,7 @@ QByteArray spoton_crypt::publicKeyEncryptMcEliece(const QByteArray &data,
 		       ciphertext))
     {
       bytes = QByteArray // A deep copy is required.
-	(ciphertext.str().c_str(),
-	 static_cast<int> (ciphertext.str().size()));
+	(ciphertext.str().c_str(), static_cast<int> (ciphertext.str().size()));
 
       if(!bytes.isEmpty())
 	if(ok)

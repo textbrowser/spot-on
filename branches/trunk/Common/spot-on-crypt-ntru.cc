@@ -34,9 +34,10 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
     *ok = false;
 
 #ifdef SPOTON_LINKED_WITH_LIBNTRU
-  if(data.isEmpty() || !m_privateKey || m_privateKeyLength == 0 ||
-     m_privateKeyLength <=
-     static_cast<size_t> (qstrlen("ntru-private-key-")) ||
+  if(!m_privateKey ||
+     data.isEmpty() ||
+     m_privateKeyLength <= static_cast<size_t> (qstrlen("ntru-private-key-")) ||
+     m_privateKeyLength == 0 ||
      static_cast<uint> (m_publicKey.length()) <= qstrlen("ntru-public-key-"))
     {
       spoton_misc::logError
@@ -70,23 +71,19 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
       QByteArray privateKey;
       QByteArray publicKey;
 
-      privateKey.append
-	(m_privateKey, static_cast<int> (m_privateKeyLength));
-      privateKey.remove
-	(0, static_cast<int> (qstrlen("ntru-private-key-")));
+      privateKey.append(m_privateKey, static_cast<int> (m_privateKeyLength));
+      privateKey.remove(0, static_cast<int> (qstrlen("ntru-private-key-")));
       memcpy(privateKey_array, privateKey.constData(), length1);
       ntru_import_priv(privateKey_array, &kp.priv);
       spoton_crypt::memzero(privateKey);
       publicKey.append(m_publicKey, m_publicKey.length());
-      publicKey.remove
-	(0, static_cast<int> (qstrlen("ntru-public-key-")));
+      publicKey.remove(0, static_cast<int> (qstrlen("ntru-public-key-")));
       memcpy(publicKey_array, publicKey.constData(), length2);
       ntru_import_pub(publicKey_array, &kp.pub); /*
 						 ** Returns a value.
 						 */
       spoton_crypt::memzero(publicKey);
-      memcpy(encrypted, data.constData(),
-	     static_cast<size_t> (data.length()));
+      memcpy(encrypted, data.constData(), static_cast<size_t> (data.length()));
       memset(privateKey_array, 0, length1);
       memset(publicKey_array, 0, length2);
 
@@ -190,24 +187,23 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
   uint8_t *publicKey_array = 0;
 
   data_array = new uint8_t[data.length()];
-  publicKey_array = new
-    uint8_t[publicKey.
-	    mid(static_cast<int> (qstrlen("ntru-public-key-"))).length()];
+  publicKey_array = new uint8_t
+    [publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).length()];
 
   NtruEncPubKey pk;
 
   memcpy(data_array, data.constData(), static_cast<size_t> (data.length()));
   memcpy
     (publicKey_array,
-     publicKey.
-     mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
+     publicKey.mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
      static_cast<size_t> (publicKey.length() -
 			  static_cast<int> (qstrlen("ntru-public-key-"))));
   ntru_import_pub(publicKey_array, &pk); /*
 					 ** Returns a value.
 					 */
   memset
-    (publicKey_array, 0,
+    (publicKey_array,
+     0,
      static_cast<size_t> (publicKey.
 			  mid(static_cast<int> (qstrlen("ntru-public-key-"))).
 			  length()));
@@ -284,8 +280,7 @@ QString spoton_crypt::publicKeySizeNTRU(const QByteArray &data)
 
   memcpy
     (publicKey_array,
-     data.
-     mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
+     data.mid(static_cast<int> (qstrlen("ntru-public-key-"))).constData(),
      static_cast<size_t> (data.length() -
 			  static_cast<int> (qstrlen("ntru-public-key-"))));
   ntru_import_pub(publicKey_array, &pk); /*
