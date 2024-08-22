@@ -64,7 +64,7 @@ extern "C"
 #include <unistd.h>
 #include <usrsctp.h>
 }
-#elif defined(Q_OS_WIN)
+#elif defined(Q_OS_WINDOWS)
 extern "C"
 {
 #include <winsock2.h>
@@ -84,7 +84,7 @@ spoton_sctp_server::spoton_sctp_server(const qint64 id,
   m_id = id;
   m_isListening = false;
   m_serverPort = 0;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 #if defined(SPOTON_SCTP_ENABLED)
   m_socketDescriptor = INVALID_SOCKET;
 #else
@@ -149,7 +149,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 #ifdef SPOTON_SCTP_ENABLED
   if(m_isListening)
     return true;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   else if(m_socketDescriptor != INVALID_SOCKET)
     return m_isListening;
 #else
@@ -161,7 +161,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   int optval = 0;
   auto const optlen = static_cast<socklen_t> (sizeof(optval));
   int rc = 0;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   unsigned long int enabled = 1;
 #endif
 
@@ -173,7 +173,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   else
     m_socketDescriptor = socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   if(m_socketDescriptor == INVALID_SOCKET)
     rc = -1;
 #else
@@ -182,7 +182,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 
   if(rc == -1)
     {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       m_errorString = QString("listen()::socket()::error=%1").arg
 	(WSAGetLastError());
 #else
@@ -191,7 +191,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       goto done_label;
     }
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   rc = ioctlsocket(m_socketDescriptor, FIONBIO, &enabled);
 
   if(rc != 0)
@@ -221,7 +221,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   ** Set the read and write buffer sizes.
   */
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   spoton_socket_options::setSocketOptions
     (socketOptions, "sctp", m_socketDescriptor, 0);
 #else
@@ -234,7 +234,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
   */
 
   optval = 1;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   rc = setsockopt
     (m_socketDescriptor,
      SOL_SOCKET,
@@ -263,7 +263,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin_family = AF_INET;
       serveraddr.sin_port = htons(port);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA((LPSTR) address.toString().toLatin1().data(),
 			       AF_INET, 0, (LPSOCKADDR) &serveraddr, &length);
 #else
@@ -271,7 +271,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 		     &serveraddr.sin_addr.s_addr);
 #endif
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 
       if(rc != 0)
 	{
@@ -302,7 +302,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 
       if(rc != 0)
 	{
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  m_errorString = QString
 	    ("listen()::bind()::error=%1").arg(WSAGetLastError());
 #else
@@ -321,7 +321,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin6_family = AF_INET6;
       serveraddr.sin6_port = htons(port);
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA((LPSTR) address.toString().toLatin1().data(),
 			       AF_INET6, 0, (LPSOCKADDR) &serveraddr, &length);
 #else
@@ -329,7 +329,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 		     &serveraddr.sin6_addr);
 #endif
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       if(rc != 0)
 	{
 	  m_errorString = QString("listen()::WSAStringToAddressA()::rc=%1").
@@ -359,7 +359,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 
       if(rc != 0)
 	{
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  m_errorString = QString
 	    ("listen()::bind()::error=%1").arg(WSAGetLastError());
 #else
@@ -402,7 +402,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 #endif
     }
   else
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
     m_errorString = QString("listen()::listen()::error=%1").
       arg(WSAGetLastError());
 #else
@@ -437,7 +437,7 @@ int spoton_sctp_server::maxPendingConnections(void) const
 
 int spoton_sctp_server::socketDescriptor(void) const
 {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   return static_cast<int> (m_socketDescriptor);
 #else
   return m_socketDescriptor;
@@ -456,7 +456,7 @@ quint16 spoton_sctp_server::serverPort(void) const
 void spoton_sctp_server::close(void)
 {
 #ifdef SPOTON_SCTP_ENABLED
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   closesocket(m_socketDescriptor);
 #else
   ::close(m_socketDescriptor);
@@ -464,7 +464,7 @@ void spoton_sctp_server::close(void)
   m_isListening = false;
   m_serverAddress.clear();
   m_serverPort = 0;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   m_socketDescriptor = INVALID_SOCKET;
 #else
   m_socketDescriptor = -1;
@@ -506,7 +506,7 @@ void spoton_sctp_server::slotTimeout(void)
   if(protocol == QAbstractSocket::IPv4Protocol)
     {
       QHostAddress address;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       SOCKET socketDescriptor = INVALID_SOCKET;
 #else
       int socketDescriptor = -1;
@@ -520,7 +520,7 @@ void spoton_sctp_server::slotTimeout(void)
       socketDescriptor = accept
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       if(socketDescriptor != INVALID_SOCKET)
 #else
       if(socketDescriptor > -1)
@@ -528,7 +528,7 @@ void spoton_sctp_server::slotTimeout(void)
 	{
 	  if(spoton_kernel::s_connectionCounts.count(m_id) >= m_backlog)
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -543,7 +543,7 @@ void spoton_sctp_server::slotTimeout(void)
 	     !spoton_kernel::instance()->
 	     acceptRemoteConnection(m_serverAddress, address))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -553,7 +553,7 @@ void spoton_sctp_server::slotTimeout(void)
 					     m_id,
 					     spoton_kernel::crypt("chat")))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -577,7 +577,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  else if(spoton_misc::isIpBlocked(address,
 					   spoton_kernel::crypt("chat")))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -603,13 +603,13 @@ void spoton_sctp_server::slotTimeout(void)
 			       address,
 			       port);
 	}
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       else if(WSAGetLastError() != WSAEWOULDBLOCK)
 #else
       else if(!(errno == EAGAIN || errno == EWOULDBLOCK))
 #endif
 	{
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  m_errorString = QString
 	    ("run()::accept()::error=%1").arg(WSAGetLastError());
 #else
@@ -621,7 +621,7 @@ void spoton_sctp_server::slotTimeout(void)
   else
     {
       QHostAddress address;
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       SOCKET socketDescriptor = INVALID_SOCKET;
 #else
       int socketDescriptor = -1;
@@ -635,7 +635,7 @@ void spoton_sctp_server::slotTimeout(void)
       socketDescriptor = accept
 	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       if(socketDescriptor != INVALID_SOCKET)
 #else
       if(socketDescriptor > -1)
@@ -643,7 +643,7 @@ void spoton_sctp_server::slotTimeout(void)
 	{
 	  if(spoton_kernel::s_connectionCounts.count(m_id) >= m_backlog)
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -664,7 +664,7 @@ void spoton_sctp_server::slotTimeout(void)
 	     !spoton_kernel::instance()->
 	     acceptRemoteConnection(m_serverAddress, address))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -674,7 +674,7 @@ void spoton_sctp_server::slotTimeout(void)
 					     m_id,
 					     spoton_kernel::crypt("chat")))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -698,7 +698,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  else if(spoton_misc::isIpBlocked(address,
 					   spoton_kernel::crypt("chat")))
 	    {
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
 #else
 	      ::close(socketDescriptor);
@@ -724,13 +724,13 @@ void spoton_sctp_server::slotTimeout(void)
 			       address,
 			       port);
 	}
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
       else if(WSAGetLastError() != WSAEWOULDBLOCK)
 #else
       else if(!(errno == EAGAIN || errno == EWOULDBLOCK))
 #endif
 	{
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  m_errorString = QString
 	    ("run()::accept()::error=%1").arg(WSAGetLastError());
 #else

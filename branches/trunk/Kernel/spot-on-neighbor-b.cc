@@ -235,7 +235,7 @@ void spoton_neighbor::close(void)
 	  int socketDescriptor = static_cast<int>
 	    (m_tcpSocket->socketDescriptor());
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	  shutdown((SOCKET) socketDescriptor, SD_BOTH);
 #else
 	  shutdown(socketDescriptor, SHUT_RDWR);
@@ -265,7 +265,8 @@ void spoton_neighbor::close(void)
 
 void spoton_neighbor::deleteLater(void)
 {
-#if QT_VERSION >= 0x050501 && defined(Q_OS_MACOS) && \
+#if QT_VERSION >= 0x050501 &&			\
+  defined(Q_OS_MACOS) &&			\
   defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_transport == "bluetooth")
     {

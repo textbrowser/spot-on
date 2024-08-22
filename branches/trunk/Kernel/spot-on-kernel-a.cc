@@ -42,7 +42,7 @@ extern "C"
 #ifndef SPOTON_POSTGRESQL_DISABLED
 #include <libpq-fe.h>
 #endif
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 #include <process.h>
 #endif
 #include <signal.h>
@@ -221,7 +221,7 @@ static void signal_handler(int signal_number)
   ** Resume console input echo.
   */
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
   DWORD mode = 0;
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); // Safe?
 
@@ -555,7 +555,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
 	auto error = false;
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	DWORD mode = 0;
 	HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -615,7 +615,7 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	      }
 	  }
 
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WINDOWS)
 	SetConsoleMode(hStdin, mode);
 #else
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
