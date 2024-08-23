@@ -6,7 +6,7 @@
 
 # GCrypt
 
-gcrypt=mingw-w64-x86_64-libgcrypt-1.10.3-1-any.pkg.tar.zst
+gcrypt=mingw-w64-x86_64-libgcrypt-1.11.0-2-any.pkg.tar.zst
 
 rm -f $gcrypt
 wget --output-document=$gcrypt \

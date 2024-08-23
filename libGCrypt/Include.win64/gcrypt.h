@@ -1,7 +1,6 @@
 /* gcrypt.h -  GNU Cryptographic Library Interface              -*- c -*-
- * Copyright (C) 2012-2023 g10 Code GmbH
- * Copyright (C) 2013-2023 Jussi Kivilinna
  * Copyright (C) 1998-2018 Free Software Foundation, Inc.
+ * Copyright (C) 2012-2024 g10 Code GmbH
  *
  * This file is part of Libgcrypt.
  *
@@ -16,7 +15,8 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
- * License along with this program; if not, see <http://www.gnu.org/licenses/>.
+ * License along with this program; if not, see <https://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: LGPL-2.1-or-later
  *
  * File: src/gcrypt.h.  Generated from gcrypt.h.in by configure.
  */
@@ -54,11 +54,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.10.3-unknown"
+#define GCRYPT_VERSION "1.11.0-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010a03
+#define GCRYPT_VERSION_NUMBER 0x010b00
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -207,7 +207,7 @@ struct gcry_thread_cbs
        Bits  7 - 0  are used for the thread model
        Bits 15 - 8  are used for the version number.  */
   unsigned int option;
-} _GCRY_ATTR_INTERNAL;
+} _GCRY_GCC_ATTR_DEPRECATED;
 
 #define GCRY_THREAD_OPTION_PTH_IMPL                                     \
   static struct gcry_thread_cbs gcry_threads_pth = {                    \
@@ -334,7 +334,8 @@ enum gcry_ctl_cmds
     GCRYCTL_FIPS_SERVICE_INDICATOR_FUNCTION = 84,
     GCRYCTL_FIPS_SERVICE_INDICATOR_MAC = 85,
     GCRYCTL_FIPS_SERVICE_INDICATOR_MD = 86,
-    GCRYCTL_FIPS_SERVICE_INDICATOR_PK_FLAGS = 87
+    GCRYCTL_FIPS_SERVICE_INDICATOR_PK_FLAGS = 87,
+    GCRYCTL_MD_CUSTOMIZE = 88
   };
 
 /* Perform various operations defined by CMD. */
@@ -947,7 +948,10 @@ enum gcry_cipher_algos
     GCRY_CIPHER_GOST28147   = 315,
     GCRY_CIPHER_CHACHA20    = 316,
     GCRY_CIPHER_GOST28147_MESH   = 317, /* With CryptoPro key meshing.  */
-    GCRY_CIPHER_SM4         = 318
+    GCRY_CIPHER_SM4         = 318,
+    GCRY_CIPHER_ARIA128     = 319,
+    GCRY_CIPHER_ARIA192     = 320,
+    GCRY_CIPHER_ARIA256     = 321
   };
 
 /* The Rijndael algorithm is basically AES, so provide some macros. */
@@ -988,6 +992,13 @@ enum gcry_cipher_flags
     GCRY_CIPHER_CBC_CTS     = 4,  /* Enable CBC cipher text stealing (CTS). */
     GCRY_CIPHER_CBC_MAC     = 8,  /* Enable CBC message auth. code (MAC).  */
     GCRY_CIPHER_EXTENDED    = 16  /* Enable extended AES-WRAP.  */
+  };
+
+/* Methods used for AEAD IV generation. */
+enum gcry_cipher_geniv_methods
+  {
+    GCRY_CIPHER_GENIV_METHOD_CONCAT = 1,
+    GCRY_CIPHER_GENIV_METHOD_XOR = 2
   };
 
 /* GCM works only with blocks of 128 bits */
@@ -1061,6 +1072,15 @@ gcry_error_t gcry_cipher_setkey (gcry_cipher_hd_t hd,
 gcry_error_t gcry_cipher_setiv (gcry_cipher_hd_t hd,
                                 const void *iv, size_t ivlen);
 
+/* Initialization vector generation setup for AEAD modes/ciphers.  */
+gcry_error_t gcry_cipher_setup_geniv (gcry_cipher_hd_t hd, int method,
+                                      const void *fixed_iv, size_t fixed_ivlen,
+                                      const void *dyn_iv, size_t dyn_ivlen);
+
+/* Initialization vector generation for AEAD modes/ciphers.  */
+gcry_error_t gcry_cipher_geniv (gcry_cipher_hd_t hd,
+                                void *iv, size_t ivlen);
+
 /* Provide additional authentication data for AEAD modes/ciphers.  */
 gcry_error_t gcry_cipher_authenticate (gcry_cipher_hd_t hd, const void *abuf,
                                        size_t abuflen);
@@ -1132,7 +1152,8 @@ enum gcry_pk_algos
     GCRY_PK_ELG   = 20,     /* Elgamal       */
     GCRY_PK_ECDSA = 301,    /* (only for external use).  */
     GCRY_PK_ECDH  = 302,    /* (only for external use).  */
-    GCRY_PK_EDDSA = 303     /* (only for external use).  */
+    GCRY_PK_EDDSA = 303,    /* (only for external use).  */
+    GCRY_PK_KEM   = 333     /* Pseudo ID for KEM algos.  */
   };
 
 /* Flags describing usage capabilities of a PK algorithm. */
@@ -1286,7 +1307,9 @@ enum gcry_md_algos
     GCRY_MD_BLAKE2S_128   = 325,
     GCRY_MD_SM3           = 326,
     GCRY_MD_SHA512_256    = 327,
-    GCRY_MD_SHA512_224    = 328
+    GCRY_MD_SHA512_224    = 328,
+    GCRY_MD_CSHAKE128     = 329,
+    GCRY_MD_CSHAKE256     = 330
   };
 
 /* Flags used with the open function.  */
@@ -1368,6 +1391,12 @@ void gcry_md_hash_buffer (int algo, void *digest,
 gpg_error_t gcry_md_hash_buffers (int algo, unsigned int flags, void *digest,
                                   const gcry_buffer_t *iov, int iovcnt);
 
+/* Convenience function to hash multiple buffers.
+   Algorithm can be 'expendable-output function'.  */
+gpg_error_t gcry_md_hash_buffers_ext (int algo, unsigned int flags,
+                                      void *digest, int digestlen,
+                                      const gcry_buffer_t *iov, int iovcnt);
+
 /* Retrieve the algorithm used with HD.  This does not work reliable
    if more than one algorithm is enabled in HD. */
 int gcry_md_get_algo (gcry_md_hd_t hd);
@@ -1436,6 +1465,14 @@ void gcry_md_debug (gcry_md_hd_t hd, const char *suffix);
 #define gcry_md_get_asnoid(a,b,n) \
             gcry_md_algo_info((a), GCRYCTL_GET_ASNOID, (b), (n))
 
+struct gcry_cshake_customization
+{
+  const void *n;
+  unsigned int n_len;
+  const void *s;
+  unsigned int s_len;
+};
+
 
 
 /**********************************************
@@ -1498,19 +1535,24 @@ enum gcry_mac_algos
     GCRY_MAC_CMAC_IDEA          = 210,
     GCRY_MAC_CMAC_GOST28147     = 211,
     GCRY_MAC_CMAC_SM4           = 212,
+    GCRY_MAC_CMAC_ARIA          = 213,
 
     GCRY_MAC_GMAC_AES           = 401,
     GCRY_MAC_GMAC_CAMELLIA      = 402,
     GCRY_MAC_GMAC_TWOFISH       = 403,
     GCRY_MAC_GMAC_SERPENT       = 404,
     GCRY_MAC_GMAC_SEED          = 405,
+    GCRY_MAC_GMAC_SM4           = 406,
+    GCRY_MAC_GMAC_ARIA          = 407,
 
     GCRY_MAC_POLY1305           = 501,
     GCRY_MAC_POLY1305_AES       = 502,
     GCRY_MAC_POLY1305_CAMELLIA  = 503,
     GCRY_MAC_POLY1305_TWOFISH   = 504,
     GCRY_MAC_POLY1305_SERPENT   = 505,
-    GCRY_MAC_POLY1305_SEED      = 506
+    GCRY_MAC_POLY1305_SEED      = 506,
+    GCRY_MAC_POLY1305_SM4       = 507,
+    GCRY_MAC_POLY1305_ARIA      = 508
   };
 
 /* Flags used with the open function.  */
@@ -1598,8 +1640,22 @@ enum gcry_kdf_algos
     GCRY_KDF_PBKDF1 = 33,
     GCRY_KDF_PBKDF2 = 34,
     GCRY_KDF_SCRYPT = 48,
+    /**/
     GCRY_KDF_ARGON2   = 64,
-    GCRY_KDF_BALLOON  = 65
+    GCRY_KDF_BALLOON  = 65,
+    /**/
+    /* In the original SP 800-56A, it's called
+     * "Concatenation Key Derivation Function".
+     * Now (as of 2022), it's defined in SP 800-56C rev.2, as
+     * "One-Step Key Derivation".
+     */
+    GCRY_KDF_ONESTEP_KDF = 96, /* One-Step Key Derivation with hash */
+    GCRY_KDF_ONESTEP_KDF_MAC = 97, /* One-Step Key Derivation with MAC */
+    GCRY_KDF_HKDF = 98,
+    /* Two-Step Key Derivation with HMAC */
+    /* Two-Step Key Derivation with CMAC */
+    /* KDF PRF in SP 800-108r1 */
+    GCRY_KDF_X963_KDF = 101
   };
 
 enum gcry_kdf_subalgo_argon2
@@ -1643,6 +1699,124 @@ gcry_error_t gcry_kdf_compute (gcry_kdf_hd_t h,
                                const gcry_kdf_thread_ops_t *ops);
 gcry_error_t gcry_kdf_final (gcry_kdf_hd_t h, size_t resultlen, void *result);
 void gcry_kdf_close (gcry_kdf_hd_t h);
+
+
+/**********************************
+ *                                *
+ *  Key Encapsulation Mechanisms  *
+ *                                *
+ **********************************/
+
+/* Algorithm IDs for the KEMs.  */
+enum gcry_kem_algos
+  {
+    GCRY_KEM_NONE = 0,
+    GCRY_KEM_SNTRUP761  = 1,
+    GCRY_KEM_CM6688128F = 2,    /* Classic McEliece */
+    GCRY_KEM_MLKEM512   = 3,    /* aka Kyber512  */
+    GCRY_KEM_MLKEM768   = 4,    /* aka Kyber768  */
+    GCRY_KEM_MLKEM1024  = 5,    /* aka Kyber1024 */
+    /* From here, ECC KEMs */
+    GCRY_KEM_RAW_X25519 =31,    /* Using X25519 with Identity KDF */
+    GCRY_KEM_RAW_X448   =32,    /* Using X448 with Identity KDF */
+    GCRY_KEM_RAW_BP256  =33,
+    GCRY_KEM_RAW_BP384  =34,
+    GCRY_KEM_RAW_BP512  =35,
+    GCRY_KEM_RAW_P256R1 =36,
+    GCRY_KEM_RAW_P384R1 =37,
+    GCRY_KEM_RAW_P521R1 =38,
+    GCRY_KEM_DHKEM25519 =41,    /* DHKEM with X25519, HKDF, and SHA256 */
+    GCRY_KEM_DHKEM448 =  42,    /* DHKEM with X448, HKDF, and SHA512 */
+    GCRY_KEM_DHKEMP256R1=43,
+    GCRY_KEM_DHKEMP384R1=44,
+    GCRY_KEM_DHKEMP521R1=45
+  };
+
+/*
+ * Before C99, limitation is 31 significant initial characters in a
+ * macro name
+ *
+ *      1 ...                        31
+ *      |                             |
+ *      v                             v
+ *      _______________________________
+ */
+#define GCRY_KEM_SNTRUP761_SECKEY_LEN   1763
+#define GCRY_KEM_SNTRUP761_PUBKEY_LEN   1158
+#define GCRY_KEM_SNTRUP761_ENCAPS_LEN   1039
+#define GCRY_KEM_SNTRUP761_CIPHER_LEN   GCRY_KEM_SNTRUP761_ENCAPS_LEN
+#define GCRY_KEM_SNTRUP761_SHARED_LEN   32
+
+#define GCRY_KEM_CM6688128F_SECKEY_LEN  13932
+#define GCRY_KEM_CM6688128F_PUBKEY_LEN  1044992
+#define GCRY_KEM_CM6688128F_ENCAPS_LEN  208
+#define GCRY_KEM_CM6688128F_CIPHER_LEN  GCRY_KEM_CM6688128F_ENCAPS_LEN
+#define GCRY_KEM_CM6688128F_SHARED_LEN  32
+
+#define GCRY_KEM_MLKEM512_SECKEY_LEN    (2*384+2*384+32+2*32)  /* 1632 */
+#define GCRY_KEM_MLKEM512_PUBKEY_LEN    (2*384+32)             /*  800 */
+#define GCRY_KEM_MLKEM512_ENCAPS_LEN    (128+2*320)            /*  768 */
+#define GCRY_KEM_MLKEM512_CIPHER_LEN    GCRY_KEM_MLKEM512_ENCAPS_LEN
+#define GCRY_KEM_MLKEM512_SHARED_LEN    32
+
+#define GCRY_KEM_MLKEM768_SECKEY_LEN    (3*384+3*384+32+2*32)  /* 2400 */
+#define GCRY_KEM_MLKEM768_PUBKEY_LEN    (3*384+32)             /* 1184 */
+#define GCRY_KEM_MLKEM768_ENCAPS_LEN    (128+3*320)            /* 1088 */
+#define GCRY_KEM_MLKEM768_CIPHER_LEN    GCRY_KEM_MLKEM768_ENCAPS_LEN
+#define GCRY_KEM_MLKEM768_SHARED_LEN    32
+
+#define GCRY_KEM_MLKEM1024_SECKEY_LEN   (4*384+4*384+32+2*32)  /* 3168 */
+#define GCRY_KEM_MLKEM1024_PUBKEY_LEN   (4*384+32)             /* 1568 */
+#define GCRY_KEM_MLKEM1024_ENCAPS_LEN   (160+4*352)            /* 1568 */
+#define GCRY_KEM_MLKEM1024_CIPHER_LEN   GCRY_KEM_MLKEM1024_ENCAPS_LEN
+#define GCRY_KEM_MLKEM1024_SHARED_LEN   32
+
+/* For ECC, seckey, pubkey, and ciphertext is defined by the curve.  */
+#define GCRY_KEM_ECC_X25519_SECKEY_LEN  32
+#define GCRY_KEM_ECC_X25519_PUBKEY_LEN  32
+#define GCRY_KEM_ECC_X25519_ENCAPS_LEN  32
+#define GCRY_KEM_ECC_X25519_CIPHER_LEN  GCRY_KEM_ECC_X25519_ENCAPS_LEN
+/* And shared secret is specific to the protocol.  */
+#define GCRY_KEM_RAW_X25519_SHARED_LEN  32
+
+#define GCRY_KEM_DHKEM25519_SECKEY_LEN  GCRY_KEM_ECC_X25519_SECKEY_LEN
+#define GCRY_KEM_DHKEM25519_PUBKEY_LEN  GCRY_KEM_ECC_X25519_PUBKEY_LEN
+#define GCRY_KEM_DHKEM25519_ENCAPS_LEN  GCRY_KEM_ECC_X25519_ENCAPS_LEN
+#define GCRY_KEM_DHKEM25519_CIPHER_LEN  GCRY_KEM_DHKEM25519_ENCAPS_LEN
+#define GCRY_KEM_DHKEM25519_SHARED_LEN  32
+
+#define GCRY_KEM_ECC_BP256_SECKEY_LEN   32
+#define GCRY_KEM_ECC_BP256_PUBKEY_LEN   (1+32+32)
+#define GCRY_KEM_ECC_BP256_ENCAPS_LEN   (1+32+32)
+#define GCRY_KEM_ECC_BP256_CIPHER_LEN   GCRY_KEM_ECC_BP256_ENCAPS_LEN
+#define GCRY_KEM_RAW_BP256_SHARED_LEN   (1+32+32)
+
+#define GCRY_KEM_ECC_BP384_SECKEY_LEN   48
+#define GCRY_KEM_ECC_BP384_PUBKEY_LEN   (1+48+48)
+#define GCRY_KEM_ECC_BP384_ENCAPS_LEN   (1+48+48)
+#define GCRY_KEM_ECC_BP384_CIPHER_LEN   GCRY_KEM_ECC_BP384_ENCAPS_LEN
+#define GCRY_KEM_RAW_BP384_SHARED_LEN   (1+48+48)
+
+/* Generate a new key pair with ALGO.  */
+gcry_error_t gcry_kem_keypair (int algo,
+                               void *pubkey, size_t pubkey_len,
+                               void *seckey, size_t seckey_len);
+
+/* With ALGO, for a PUBKEY, generate SHARED secret and encapsulate
+   it into CIPHERTEXT.  */
+gcry_error_t gcry_kem_encap (int algo,
+                             const void *pubkey, size_t pubkey_len,
+                             void *ciphertext, size_t ciphertext_len,
+                             void *shared, size_t shared_len,
+                             const void *optional, size_t optional_len);
+
+/* With ALGO, for a SECKEY and CIPHERTEXT, compute its SHARED secret.  */
+gcry_error_t gcry_kem_decap (int algo,
+                             const void *seckey, size_t seckey_len,
+                             const void *ciphertext, size_t ciphertext_len,
+                             void *shared, size_t shared_len,
+                             const void *optional, size_t optional_len);
+
 
 /************************************
  *                                  *
@@ -1823,7 +1997,7 @@ typedef int (*gcry_handler_no_mem_t) (void *, size_t, unsigned int);
 /* Type for fatal error handlers.  */
 typedef void (*gcry_handler_error_t) (void *, int, const char *);
 
-/* Type for logging handlers.  */
+/* Type for the deprecated log handler.  */
 typedef void (*gcry_handler_log_t) (void *, int, const char *, va_list);
 
 /* Certain operations can provide progress information.  This function
@@ -1847,9 +2021,9 @@ void gcry_set_outofcore_handler (gcry_handler_no_mem_t h, void *opaque);
    handler. */
 void gcry_set_fatalerror_handler (gcry_handler_error_t fnc, void *opaque);
 
-/* Register a function used instead of the internal logging
-   facility. */
-void gcry_set_log_handler (gcry_handler_log_t f, void *opaque);
+/* This function has no more effect.  */
+void gcry_set_log_handler (gcry_handler_log_t f,
+                           void *opaque) _GCRY_ATTR_INTERNAL;
 
 /* Reserved for future use. */
 void gcry_set_gettext_handler (const char *(*f)(const char*));
@@ -1902,6 +2076,7 @@ gcry_error_t gcry_pk_hash_verify (gcry_sexp_t sigval,
 
 gcry_error_t gcry_pk_random_override_new (gcry_ctx_t *r_ctx,
                                           const unsigned char *p, size_t len);
+#define gcry_pk_input_data_push gcry_pk_random_override_new
 
 #if 0 /* (Keep Emacsens' auto-indent happy.) */
 {
