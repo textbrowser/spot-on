@@ -72,7 +72,9 @@ uint8_t ntruprime_rand_tern_t(uint16_t N, uint16_t t, NtruIntPoly *poly, NtruRan
     if (ntru_rand_generate((uint8_t*)rand_bits, sizeof rand_bits, rand_ctx) != NTRU_SUCCESS)
         return 0;
     uint16_t i;
-    for (i=0; i<2*t; i++) {
+    int i_int = 0;
+    int t_int = (int) (2 * t);
+    for (i=0; i_int<t_int; i++,i_int++) {
         uint8_t r = (rand_bits[i/8] >> (i%8)) & 1;
         poly->coeffs[i] = r ? 1 : 2;
     }
@@ -371,7 +373,9 @@ void ntru_mult_int_16_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uin
     memset(c, 0, 2*(2*len-1));   /* only needed if N < NTRU_KARATSUBA_THRESH_16 */
     uint16_t c_idx = 0;
     uint16_t k;
-    for (k=0; k<2*len-1; k++) {
+    int k_int = 0;
+    int len_int = (int) (2 * len - 1);
+    for (k=0; k_int<len_int; k++,k_int++) {
         int16_t ck = 0;
         uint16_t i;
         int16_t istart = k - len + 1;
