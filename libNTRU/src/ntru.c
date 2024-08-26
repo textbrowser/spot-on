@@ -206,7 +206,9 @@ void ntru_from_sves(uint8_t *M, uint16_t M_len, uint16_t N, NtruIntPoly *poly) {
 
     uint16_t coeff_idx = 0;
     uint16_t i = 0;
-    while (i<(M_len+2)/3*3 && coeff_idx<N-1) {
+    int i_int = 0;
+    int M_len_int = (int) ((M_len+2)/3*3);
+    while (i_int<M_len_int && coeff_idx<N-1) {
         /* process 24 bits at a time in the outer loop */
         int32_t chunk = (uint8_t)M[i+2];
         chunk <<= 8;
@@ -214,6 +216,7 @@ void ntru_from_sves(uint8_t *M, uint16_t M_len, uint16_t N, NtruIntPoly *poly) {
         chunk <<= 8;
         chunk += (uint8_t)M[i];
         i += 3;
+	i_int += 3;
 
         uint8_t j;
         for (j=0; j<8 && coeff_idx<N-1; j++) {
