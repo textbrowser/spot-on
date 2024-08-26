@@ -374,8 +374,8 @@ void ntru_mult_int_16_base(int16_t *a, int16_t *b, int16_t *c, uint16_t len, uin
     uint16_t c_idx = 0;
     uint16_t k;
     int k_int = 0;
-    int int_len = (int) (2 * len - 1);
-    for (k=0; k_int<int_len; k++,k_int++) {
+    int len_int = (int) (2 * len - 1);
+    for (k=0; k_int<len_int; k++,k_int++) {
         int16_t ck = 0;
         uint16_t i;
         int16_t istart = k - len + 1;
@@ -402,7 +402,6 @@ void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
     if (len < NTRU_KARATSUBA_THRESH_16)
         ntru_mult_int_16_base(a, b, c, len, N, -1);
     else {
-      	int i_int = 0;
         uint16_t len2 = len / 2;
         int16_t z0[NTRU_INT_POLY_SIZE];
         int16_t z1[NTRU_INT_POLY_SIZE];
@@ -425,12 +424,14 @@ void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
             lh2[len-len2-1] = b[len-1];
         }
         ntru_mult_karatsuba_16(lh1, lh2, z1, len-len2, N);
-	int int_len = (int) (2*len2-1);
-	i_int = 0;
-        for (i=0; i_int<int_len; i++,i_int++)
+	int i_int = 0;
+	int len_int = (int) (2*len2-1);
+        for (i=0; i_int<len_int; i++,i_int++)
             z1[i] -= z0[i];
         z1[len] = 0;
-        for (i=0; i<2*(len-len2)-1; i++)
+	i_int = 0;
+	len_int = (int) (2*(len-len2)-1);
+        for (i=0; i_int<len_int; i++,i_int++)
             z1[i] -= z2[i];
 
         /* c */
@@ -438,8 +439,8 @@ void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
         memcpy(c, z0, 2*(2*len2-1));   /* 2*len2-1 coefficients */
         uint16_t c_idx = len2;
 	i_int = 0;
-	int_len = (int) (2*(len-len2)-1);
-        for (i=0; i_int<int_len; i++,i_int++) {
+	len_int = (int) (2*(len-len2)-1);
+        for (i=0; i_int<len_int; i++,i_int++) {
             c[c_idx] += z1[i];
             c_idx++;
             if (c_idx >= N)
@@ -449,8 +450,8 @@ void ntru_mult_karatsuba_16(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
         if (c_idx >= N)
             c_idx = 0;
 	i_int = 0;
-	int_len = (int) (2*(len-len2)-1);
-        for (i=0; i_int<int_len; i++,i_int++) {
+	len_int = (int) (2*(len-len2)-1);
+        for (i=0; i_int<len_int; i++,i_int++) {
             c[c_idx] += z2[i];
             c_idx++;
             if (c_idx >= N)
@@ -553,21 +554,21 @@ void ntru_mult_karatsuba_64(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
         }
         ntru_mult_karatsuba_64(lh1, lh2, z1, len-len2, N, mod_mask);
 	int i_int = 0;
-	int int_len = (int) (2*len2-1);
-        for (i=0; i_int<int_len; i++,i_int++)
+	int len_int = (int) (2*len2-1);
+        for (i=0; i_int<len_int; i++,i_int++)
             z1[i] -= z0[i];
         z1[len] = 0;
 	i_int = 0;
-	int_len = (int) (2*(len-len2)-1);
-        for (i=0; i_int<int_len; i++,i_int++)
+	len_int = (int) (2*(len-len2)-1);
+        for (i=0; i_int<len_int; i++,i_int++)
             z1[i] -= z2[i];
         /* c */
         memset(c, 0, NTRU_INT_POLY_SIZE*2);
         memcpy(c, z0, 2*(2*len2-1));   /* 2*len2-1 coefficients */
 	i_int = 0;
-	int_len = (int) (2*(len-len2)-1);
+	len_int = (int) (2*(len-len2)-1);
         uint16_t c_idx = len2;
-        for (i=0; i_int<int_len; i++,i_int++) {
+        for (i=0; i_int<len_int; i++,i_int++) {
             c[c_idx] += z1[i];
             c_idx++;
             if (c_idx >= N)
@@ -577,8 +578,8 @@ void ntru_mult_karatsuba_64(int16_t *a, int16_t *b, int16_t *c, uint16_t len, ui
         if (c_idx >= N)
             c_idx = 0;
 	i_int = 0;
-	int_len = (int) (2*(len-len2)-1);
-        for (i=0; i_int<int_len; i++,i_int++) {
+	len_int = (int) (2*(len-len2)-1);
+        for (i=0; i_int<len_int; i++,i_int++) {
             c[c_idx] += z2[i];
             c_idx++;
             if (c_idx >= N)
