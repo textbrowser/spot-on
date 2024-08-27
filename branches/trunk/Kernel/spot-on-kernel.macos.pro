@@ -13,7 +13,6 @@ QT              -= gui
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
            SPOTON_DTLS_DISABLED \
-           SPOTON_LINKED_WITH_LIBGEOIP \
            SPOTON_LINKED_WITH_LIBNTRU \
 	   SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
@@ -59,7 +58,6 @@ INCLUDEPATH	  += . \
 LIBS		  += -L../../../libNTRU \
                      -L/opt/homebrew/lib \
                      -framework Cocoa \
-                     -lGeoIP \
                      -lcrypto \
                      -lgcrypt \
                      -lgmp \
