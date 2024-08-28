@@ -9091,7 +9091,8 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 	      */
 
 	      if((m_ui.hideOfflineParticipants->isChecked() &&
-		  status == "offline") || publicKeyContainsPoptastic)
+		  status == "offline") ||
+		 publicKeyContainsPoptastic)
 		{
 		  /*
 		  ** This may be a plain Poptastic participant.

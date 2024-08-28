@@ -1,15 +1,16 @@
 Spot-On is a software carnival.
 
-Qt 5.15 LTS or Qt 6.5 LTS is required for Linux. All other operating systems require Qt 6.5 LTS. Have fun!
+All operating systems require Qt LTS. Have fun!
+Qt 5.5.1 on Debian PowerPC.
 
 <ul>
 <li>Alpha processors.</li>
-<li>Android, FreeBSD, Linux, MacOS, OS/2, OpenBSD, Windows.</li>
+<li>Android, FreeBSD, Linux, MacOS, OS/2, OpenBSD, PiOS, Windows.</li>
 <li>Apple Silicon.</li>
 <li>Authenticated and encrypted SQLite and PostgreSQL URL databases.</li>
 <li>BSD license.</li>
 <li>Bluetooth, SCTP, TCP, UDP.</li>
-<li>Completed.</li>
+<li>Completed?</li>
 <li>Configurable thread priorities.</li>
 <li>Custom URL rules.</li>
 <li>Custom socket options.</li>
@@ -18,11 +19,11 @@ Qt 5.15 LTS or Qt 6.5 LTS is required for Linux. All other operating systems req
 <li>Debian packages.</li>
 <li>Distributed URL system.</li>
 <li>Distributed e-mail.</li>
-<li>Dooble, Firefox, Lynx, etc. support for custom search engine.</li>
+<li>Dooble, Firefox, Lynx, etc. support for special search engine.</li>
 <li>E-mail (IMAP, POP, Spot-On).</li>
 <li>Echo public-key distribution system.</li>
 <li>End-to-End, not Hop-to-Hop encryption.</li>
-<li>Fortuna.</li>
+<li>Fortuna, or, randomness.</li>
 <li>GPG-lite via Rosetta.</li>
 <li>Human Proxies project.</li>
 <li>Infinite listeners and neighbors.</li>

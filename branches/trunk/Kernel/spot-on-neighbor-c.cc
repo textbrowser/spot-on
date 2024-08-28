@@ -3141,6 +3141,8 @@ void spoton_neighbor::process0100(int length,
 			      if(stream.status() == QDataStream::Ok)
 				{
 				  /*
+				  ** Determine if there is a spectral
+				  ** proxy about the interface.
 				  ** Echo the actual message.
 				  */
 
