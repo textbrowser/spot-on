@@ -333,3 +333,4 @@ Remaining Items
 2.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
 3.     Shift operators and types.
+4.     Spectral human proxy.

@@ -6461,7 +6461,10 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Uptime', ?)");
 	query.bindValue
-	  (0, QString("%1 Minute(s)").arg(uptime.elapsed() / 60000));
+	  (0,
+	   QString("%1 Minute(s) / %2 Hour(s)").
+	   arg(uptime.elapsed() / 60000).
+	   arg(uptime.elapsed() / 3600000));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
