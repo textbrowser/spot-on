@@ -6270,7 +6270,7 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	    (0, locale.toString(QThreadPool::globalInstance()->
 				activeThreadCount()));
 	else
-	  query.bindValue(0, -1);
+	  query.bindValue(0, QString::number(-1));
 
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
@@ -6369,7 +6369,8 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('Kernel PID', ?)");
-	query.bindValue(0, QCoreApplication::applicationPid());
+	query.bindValue
+	  (0, QString::number(QCoreApplication::applicationPid()));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
@@ -6398,6 +6399,16 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	  query.exec();
 	}
 
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('RSS Last Feed', ?)");
+	query.addBindValue(m_rss->lastUniqueId().first);
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES ('RSS Last Feed ID', ?)");
+	query.addBindValue(QString::number(m_rss->lastUniqueId().second));
+	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
 		      "VALUES ('RSS URLs Imported', ?)");

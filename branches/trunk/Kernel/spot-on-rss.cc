@@ -99,6 +99,11 @@ spoton_rss::~spoton_rss()
   deactivate();
 }
 
+QPair<QByteArray, qint64> spoton_rss::lastUniqueId(void) const
+{
+  return m_lastUniqueId;
+}
+
 bool spoton_rss::importUrl(const QList<QVariant> &list,
 			   const int maximumKeywords)
 {

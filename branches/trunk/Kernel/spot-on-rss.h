@@ -43,6 +43,7 @@ class spoton_rss: public QObject
  public:
   spoton_rss(QObject *parent);
   ~spoton_rss();
+  QPair<QByteArray, qint64> lastUniqueId(void) const;
   quint64 imported(void) const;
   void deactivate(void);
 
