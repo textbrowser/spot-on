@@ -738,8 +738,8 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 
   m_prepareTimer.start(10000);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
-  m_settingsTimer.setInterval(1500);
   m_scramblerTimer.setSingleShot(true);
+  m_settingsTimer.setInterval(1500);
   m_settingsTimer.setSingleShot(true);
   m_statusTimer.start(1000 * spoton_common::STATUS_INTERVAL);
   m_urlImportFutures.resize
@@ -981,7 +981,26 @@ spoton_kernel::spoton_kernel(void):QObject(0)
 	  SIGNAL(fileChanged(const QString &)),
 	  this,
 	  SLOT(slotSettingsChanged(const QString &)));
-  m_settingsWatcher.addPath(settings.fileName());
+
+  if(!m_settingsWatcher.addPath(settings.fileName()))
+    {
+      disconnect(&m_settingsWatcher,
+		 SIGNAL(fileChanged(const QString &)),
+		 this,
+		 SLOT(slotSettingsChanged(const QString &)));
+
+      if(settings.fileName().trimmed().isEmpty())
+	spoton_misc::logError("The settings file cannot be monitored.");
+      else
+	spoton_misc::logError
+	  (QString("The settings path %1 cannot be monitored.").
+	   arg(settings.fileName()));
+
+      m_settingsTimer.setInterval(5000);
+      m_settingsTimer.setSingleShot(false);
+      m_settingsTimer.start();
+    }
+
   m_fireShare->start();
   m_messagingCachePurgeTimer.start();
 
