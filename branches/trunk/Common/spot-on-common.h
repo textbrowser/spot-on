@@ -31,6 +31,9 @@
 #include <QHash>
 #include <QStringList>
 
+#ifndef SPOTON_MCELIECE_ENABLED
+#include <climits>
+#endif
 #include <limits>
 
 typedef QHash<QString, QByteArray> QStringByteArrayHash;
