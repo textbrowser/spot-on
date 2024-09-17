@@ -58,16 +58,16 @@ wget --output-document=$openssl \
      https://www.firedaemon.com/download-firedaemon-$openssl
 
 if [ -r "$openssl" ]; then
-    unzip $openssl
+    unzip $openssl -d openssl.d
     mkdir -p libOpenSSL/Include.win64
     mkdir -p libOpenSSL/Libraries.win64
     rm -rf libOpenSSL/Include.win64/openssl
-    mv openssl-*/x64/bin/libcrypto-3-x64.dll libOpenSSL/Libraries.win64/.
-    mv openssl-*/x64/bin/libssl-3-x64.dll libOpenSSL/Libraries.win64/.
-    mv openssl-*/x64/include/openssl libOpenSSL/Include.win64/.
+    mv openssl.d/x64/bin/libcrypto-3-x64.dll libOpenSSL/Libraries.win64/.
+    mv openssl.d/x64/bin/libssl-3-x64.dll libOpenSSL/Libraries.win64/.
+    mv openssl.d/x64/include/openssl libOpenSSL/Include.win64/.
     chmod +w,-x libOpenSSL/Libraries.win64/*.dll
     rm -f $openssl
-    rm -fr openssl-3*
+    rm -fr openssl.d
 else
     echo "Cannot read $openssl."
 fi
