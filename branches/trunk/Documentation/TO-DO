@@ -326,11 +326,11 @@ Completed Items
        Common (Completed)
        GUI (Completed)
        Kernel (Completed)
+224.   Dark mode for Windows.
 
 Remaining Items
 
-1.     Dark mode for Windows.
-2.     Replace OpenSSL with executable. Create and remove local files
+1.     Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
-3.     Shift operators and types.
-4.     Spectral human proxy.
+2.     Shift operators and types.
+3.     Spectral human proxy.
