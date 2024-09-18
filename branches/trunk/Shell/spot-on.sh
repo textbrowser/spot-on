@@ -24,7 +24,7 @@ then
     # Disable https://en.wikipedia.org/wiki/MIT-SHM.
 
     export QT_X11_NO_MITSHM=1
-    cd /opt/spot-on && exec ./Spot-On "$@"
+    cd /opt/spot-on && exec ./Spot-On -style=Breeze "$@"
     exit $?
 else
     echo "Could not locate /opt/spot-on/Spot-On."
