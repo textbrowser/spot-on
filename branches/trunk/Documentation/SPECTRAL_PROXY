@@ -1,0 +1,7 @@
+A Spectral Human Proxy is a proxy of a proxy of ... a proxy. For example,
+person A specifies B as a proxy and B specifies C as a proxy and C specifies
+D as a proxy, etc. A receiver R receiving a message from A is actually
+receiving a message from X. Every proxy which is able to decipher a message
+will then transfer the message through its own proxy. The message may
+be lost because of some inconsistent proxy or it may arrive. Spectral human
+proxies create spectral decompositions through the Echo machinery.
