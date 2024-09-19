@@ -29,7 +29,7 @@ make
 
 OS/2
 
-qmake -o Makefile spot-on.win.pro
+qmake -o Makefile spot-on.windows.pro
 make
 
 PowerPC
@@ -39,6 +39,6 @@ make
 
 Windows
 
-qmake -o Makefile spot-on.win.pro
+qmake -o Makefile spot-on.windows.pro
 mingw32-make
 mingw32-make install
