@@ -107,16 +107,8 @@ libntrudll.files = ..\\..\\libNTRU\\*.dll
 libntrudll.path = release\\.
 libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
-plugins1.files = $$[QT_INSTALL_PLUGINS]\\*
-plugins1.path = release\\plugins\\.
-plugins2.files = $$[QT_INSTALL_PLUGINS]\\gamepads\\xinputgamepad.dll
-plugins2.path = release\\plugins\\gamepads\\.
-plugins3.files = $$[QT_INSTALL_PLUGINS]\\platforms\\qdirect2d.dll
-plugins3.path = release\\plugins\\platforms\\.
-plugins4.files = $$[QT_INSTALL_PLUGINS]\\renderplugins\\scene2d.dll
-plugins4.path = release\\plugins\\renderplugins\\.
-pluginspurge.extra = del /q /s *d.dll
-pluginspurge.path = release\\plugins\\.
+plugins.files = $$[QT_INSTALL_PLUGINS]\\*
+plugins.path = release\\plugins\\.
 qt.files = Qt\\qt.conf
 qt.path = release\\.
 qtlibraries.files = $$[QT_INSTALL_BINS]\\Qt6Core.dll \
@@ -139,18 +131,14 @@ spotonbat.path = release\\.
 translations.files = Translations\\*.qm
 translations.path = release\\Translations\\.
 
-INSTALLS = plugins1 \
-           pluginspurge \
-           data \
+INSTALLS = data \
            documentation \
            executables \
            libgcrypt1 \
            libgcrypt2 \
            libntrudll \
            libopenssl \
-           plugins2 \
-           plugins3 \
-           plugins4 \
+           plugins \
            qt \
            qtlibraries \
            sounds \
