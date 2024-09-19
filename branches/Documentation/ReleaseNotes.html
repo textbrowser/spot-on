@@ -9,6 +9,10 @@
 	<li>Beautiful source!</li>
 	<li>Breeze style on Unix-like, excluding MacOS.</li>
 	<li>Completed some of spoton_smpwindow::slotSetIcons().</li>
+	<li>Corrected Windows project file. Deleting debug plugins may
+	  delete required plugins files in the Windows install target.
+	  Qt 6.5 LTS has separated the debug and release files and the
+	  additional logic in the project file is not necessary.</li>
 	<li>Corrected incorrect error report in spoton_crypt::init().</li>
 	<li>Eliminated GitHub warnings of NTRU.</li>
 	<li>GCrypt 1.11.1; Windows.</li>
