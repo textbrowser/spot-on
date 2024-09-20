@@ -837,7 +837,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
 		  /*
 		  ** Someone's name changed.
 		  */
- 
+
 		  QString msg("");
 		  auto const now(QDateTime::currentDateTime());
 

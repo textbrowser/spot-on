@@ -118,26 +118,24 @@ class spoton_common
   static const int URL_CONTENT_SHARE_MAXIMUM_SIZE = 5 * 1024 * 1024;
   static const int URL_TIME_DELTA = 30;
   static const int WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM = 2500;
-  static const int WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED = 250; /*
-								  ** Please
-								  ** consider
-								  ** changing
-								  ** if the
-								  ** maximums
-								  ** (BLUETOOTH,
-								  ** SCTP, TCP,
-								  ** UDP) are
-								  ** changed.
-								  */
+
+  /*
+  ** Please consider changing if the maximums (BLUETOOTH, SCTP, TCP, UDP) are
+  ** changed.
+  */
+
+  static const int WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED = 250;
   static const int WEB_SERVER_KEY_SIZE = 3072;
   static const long int WEB_SERVER_CERTIFICATE_LIFETIME =
     24L * 60L * 60L * 365L;
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;
+
+  /*
+  ** The buffer size must be greater than the content length.
+  */
+
   static const qint64 MAXIMUM_NEIGHBOR_BUFFER_SIZE =
-    static_cast<qint64> (LANE_WIDTH_MAXIMUM); /*
-					      ** The buffer size must be greater
-					      ** than the content length.
-					      */
+    static_cast<qint64> (LANE_WIDTH_MAXIMUM);
   static const qint64 MAXIMUM_NEIGHBOR_CONTENT_LENGTH =
     MAXIMUM_NEIGHBOR_BUFFER_SIZE / 2;
   static const qint64 MAXIMUM_SCTP_PACKET_SIZE = 500;
