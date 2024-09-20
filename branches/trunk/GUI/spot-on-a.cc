@@ -744,7 +744,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 #else
      arg("0.0").
 #endif
-     arg("N/A").
+     arg(SPOTON_VERSION_STR).
      arg(spoton_misc::homePath()).
      arg(qversion).
 #ifdef SPOTON_GPGME_ENABLED
