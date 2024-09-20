@@ -701,7 +701,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	     "<br><br>"
 	     "Compiled on %1, %2.<br>"
 	     "%3.<br>"
-	     "Architecture %4.<br>"
+	     "Operating System %4.<br>"
 	     "Qt %5 (runtime %12), %6-bit.<br>"
 	     "%7.<br>"
 	     "libgcrypt %8.<br>"
@@ -730,7 +730,9 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	 SSLeay_version(SSLEAY_VERSION) :
 #endif
 	 "OpenSSL is not supported, according to Qt").
-     arg(QSysInfo::buildCpuArchitecture()).
+     arg(QSysInfo::prettyProductName() +
+	 " " +
+	 QSysInfo::currentCpuArchitecture()).
      arg(QT_VERSION_STR).
      arg(CHAR_BIT * sizeof(void *)).
 #ifdef SPOTON_POPTASTIC_SUPPORTED
