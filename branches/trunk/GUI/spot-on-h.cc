@@ -77,6 +77,62 @@ QString spoton::neighborTransport(void) const
   return QString("");
 }
 
+QString spoton::optionsEnabled(void)
+{
+  QString options("");
+  QStringList list;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#ifndef SPOTON_DTLS_DISABLED
+  list << "DTLS";
+#endif
+#endif
+#if QT_VERSION >= 0x050300
+#ifdef SPOTON_WEBSOCKETS_ENABLED
+  list << "WebSockets";
+#endif
+#endif
+#if QT_VERSION >= 0x050501
+#ifdef SPOTON_BLUETOOTH_ENABLED
+  list << "Bluetooth";
+#endif
+#endif
+#ifdef SPOTON_GPGME_ENABLED
+  list << "GPGME";
+#endif
+#ifdef SPOTON_LINKED_WITH_LIBGEOIP
+  list << "GeoIP";
+#endif
+#ifdef SPOTON_LINKED_WITH_LIBNTRU
+  list << "NTRU";
+#endif
+#ifdef SPOTON_MCELIECE_ENABLED
+  list << "McEliece";
+#endif
+#ifdef SPOTON_POPTASTIC_SUPPORTED
+  list << "Poptastic";
+#endif
+#ifdef SPOTON_SCTP_ENABLED
+  list << "SCTP";
+#endif
+#ifdef SPOTON_WEBENGINE_ENABLED
+  list << "WebEngine";
+#endif
+#ifdef SPOTON_WEBKIT_ENABLED
+  list << "WebKit";
+#endif
+#ifndef SPOTON_POSTGRESQL_DISABLED
+  list << "PostgreSQL";
+#endif
+
+  std::sort(list.begin(), list.end());
+
+  foreach(auto const &str, list)
+    options += str + " ";
+
+  return options.trimmed();
+}
+
 QString spoton::participantKeyType(QTableWidget *table) const
 {
   if(!table)

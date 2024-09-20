@@ -699,15 +699,16 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     (QString("<html>"
 	     "<font color=\"#6a5acd\">Space Trees</font>"
 	     "<br><br>"
-	     "Compiled on %1, %2.<br>"
+	     "Compilation: %1, %2.<br>"
 	     "%3.<br>"
-	     "Operating System %4.<br>"
-	     "Qt %5 (runtime %12), %6-bit.<br>"
+	     "Operating System: %4.<br>"
+	     "Options Enabled: %14.<br>"
+	     "Qt: %5 (runtime %12), %6-bit.<br>"
 	     "%7.<br>"
-	     "libgcrypt %8.<br>"
-	     "libgpgme %13.<br>"
-	     "libntl %9.<br>"
-	     "libspoton %10.<br>"
+	     "libgcrypt: %8.<br>"
+	     "libgpgme: %13.<br>"
+	     "libntl: %9.<br>"
+	     "libspoton: %10.<br>"
 	     "Location of .spot-on: %11.<br><br>"
 	     "Translators<br>"
 	     "Chinese - Zhao Wang<br>"
@@ -750,10 +751,11 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
      arg(spoton_misc::homePath()).
      arg(qversion).
 #ifdef SPOTON_GPGME_ENABLED
-     arg(GPGME_VERSION)
+     arg(GPGME_VERSION).
 #else
-     arg("0.0")
+     arg("0.0").
 #endif
+     arg(optionsEnabled())
      );
   m_ui.emailSecrets->setVisible(false);
   m_ui.passphrase_strength_indicator->setVisible(false);

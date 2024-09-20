@@ -1,11 +1,13 @@
 exists(/usr/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
 LIBS += -lgpgme
+message("GPGME enabled!")
 }
 
 exists(/usr/local/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
 LIBS += -lgpgme
+message("GPGME enabled!")
 }
 
 DEFINES	+= QT_DEPRECATED_WARNINGS

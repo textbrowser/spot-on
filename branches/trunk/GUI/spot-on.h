@@ -462,6 +462,7 @@ class spoton: public QMainWindow
 					     const QString &text,
 					     const int column);
   static QString mapIconToEmoticon(const QString &content);
+  static QString optionsEnabled(void);
   static void prepareDatabasesFromUI(void);
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,

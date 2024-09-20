@@ -22,11 +22,13 @@ QT		+= concurrent \
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
+message("Bluetooth enabled!")
 }
 
 qtHaveModule(websockets) {
 DEFINES += SPOTON_WEBSOCKETS_ENABLED
 QT += websockets
+message("WebSockets enabled!")
 }
 
 DEFINES	+= QT_DEPRECATED_WARNINGS \
@@ -44,19 +46,23 @@ warning("McEliece disabled!")
 
 exists(/usr/include/GeoIP.h) {
 DEFINES += SPOTON_LINKED_WITH_LIBGEOIP
+message("GeoIP enabled!")
 }
 
 exists(/usr/include/netinet/sctp.h) {
 DEFINES += SPOTON_SCTP_ENABLED
+message("SCTP enabled!")
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
+message("PostgreSQL enabled!")
 } else {
 DEFINES += SPOTON_POSTGRESQL_DISABLED
 }
 
 exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
 DEFINES += SPOTON_POPTASTIC_SUPPORTED
+message("Poptastic enabled!")
 }
 
 # Unfortunately, the clean target assumes too much knowledge
