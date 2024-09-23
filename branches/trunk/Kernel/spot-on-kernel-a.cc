@@ -226,7 +226,7 @@ static void signal_handler(int signal_number)
   HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE); // Safe?
 
   GetConsoleMode(hStdin, &mode); // Safe?
-  SetConsoleMode(hStdin, mode | ENABLE_ECHO_INPUT); // Safe?
+  SetConsoleMode(hStdin, ENABLE_ECHO_INPUT | mode); // Safe?
 #else
   termios oldt;
 
@@ -3591,7 +3591,7 @@ void spoton_kernel::slotBuzzMagnetReceivedFromUI(const qint64 oid,
 
   auto const data(spoton_send::message0065(magnet));
 
-  if(neighbor->write(data.constData(), data.length()) != data.length())
+  if(data.length() != neighbor->write(data.constData(), data.length()))
     spoton_misc::logError
       (QString("spoton_kernel::slotBuzzMagnetReceivedFromUI(): "
 	       "write() failure for %1:%2.").
@@ -4776,7 +4776,7 @@ void spoton_kernel::slotPublicKeyReceivedFromUI(const qint64 oid,
 				  sPublicKey,
 				  sSignature));
 
-      if(neighbor->write(data.constData(), data.length()) != data.length())
+      if(data.length() != neighbor->write(data.constData(), data.length()))
 	spoton_misc::logError
 	  (QString("spoton_kernel::slotPublicKeyReceivedFromUI(): "
 		   "write() failure for %1:%2.").
@@ -5407,7 +5407,7 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      QByteArray recipientHashInformation;
 	      QByteArray symmetricKey;
 	      QByteArray symmetricKeyAlgorithm;
-	      QString institutionCipherType;
+	      QString institutionCipherType("");
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
 		 toString().toLatin1());

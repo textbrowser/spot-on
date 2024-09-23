@@ -3,7 +3,7 @@
 
 os=$(uname -o 2>/dev/null)
 
-if [ "$os" == "Darwin" ]
+if [ "$os" = "Darwin" ]
 then
     if [ -x ./Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel ]
     then
