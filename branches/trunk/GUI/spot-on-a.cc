@@ -241,20 +241,18 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication qapplication(argc, argv);
+  QTranslator translator1;
+  QTranslator translator2;
   auto const path(QDir::currentPath() + QDir::separator() + "Translations");
-  auto translator1 = new QTranslator();
-  auto translator2 = new QTranslator();
 
-  if(!translator1->load(QLocale(), "qtbase", "_", path, ".qm"))
+  if(!translator1.load(QLocale(), "qtbase", "_", path, ".qm"))
     qDebug() << "Could not discover the Qt translation file(s).";
-
-  if(!qapplication.installTranslator(translator1))
+  else if(!qapplication.installTranslator(&translator1))
     qDebug() << "Could not install the Qt translator.";
 
-  if(!translator2->load(QLocale(), "spot-on", "_", path, ".qm"))
+  if(!translator2.load(QLocale(), "spot-on", "_", path, ".qm"))
     qDebug() << "Could not discover the Spot-On translation file(s).";
-
-  if(!qapplication.installTranslator(translator2))
+  else if(!qapplication.installTranslator(&translator2))
     qDebug() << "Could not install the Spot-On translator.";
 
   QFont font(qapplication.font());
@@ -435,8 +433,6 @@ int main(int argc, char *argv[])
   curl_global_cleanup();
 #endif
   spoton_crypt::terminate();
-  delete translator1;
-  delete translator2;
   return rc;
 }
 
