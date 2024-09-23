@@ -194,6 +194,7 @@ static void qt_message_handler(QtMsgType type,
 {
   Q_UNUSED(context);
   Q_UNUSED(type);
+  std::cerr << msg.toStdString() << std::endl;
   spoton_misc::logError(QString("A UI error (%1) occurred.").arg(msg));
 }
 
@@ -240,6 +241,22 @@ int main(int argc, char *argv[])
 #endif
 
   QApplication qapplication(argc, argv);
+  auto const path(QDir::currentPath() + QDir::separator() + "Translations");
+  auto translator1 = new QTranslator();
+  auto translator2 = new QTranslator();
+
+  if(!translator1->load(QLocale(), "qtbase", "_", path, ".qm"))
+    qDebug() << "Could not discover the Qt translation file(s).";
+
+  if(!qapplication.installTranslator(translator1))
+    qDebug() << "Could not install the Qt translator.";
+
+  if(!translator2->load(QLocale(), "spot-on", "_", path, ".qm"))
+    qDebug() << "Could not discover the Spot-On translation file(s).";
+
+  if(!qapplication.installTranslator(translator2))
+    qDebug() << "Could not install the Spot-On translator.";
+
   QFont font(qapplication.font());
 #if SPOTON_GOLDBUG == 0
   QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
@@ -343,28 +360,13 @@ int main(int argc, char *argv[])
   CocoaInitializer ci;
 #endif
 
-  /*
-  ** Configure translations.
-  */
-
-  QTranslator qtTranslator;
-
-  Q_UNUSED(qtTranslator.load("qt_" + QLocale::system().name(), "Translations"));
-  qapplication.installTranslator(&qtTranslator);
-
-  QTranslator myappTranslator;
-
-  Q_UNUSED
-    (myappTranslator.
-     load("spot-on_" + QLocale::system().name(), "Translations"));
-  qapplication.installTranslator(&myappTranslator);
   QCoreApplication::setApplicationName("SpotOn");
   QCoreApplication::setOrganizationName("SpotOn");
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
-  QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
-                     spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
+  QSettings::setPath
+    (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
   splash.showMessage
     (QObject::tr("Processing INI values."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -433,6 +435,8 @@ int main(int argc, char *argv[])
   curl_global_cleanup();
 #endif
   spoton_crypt::terminate();
+  delete translator1;
+  delete translator2;
   return rc;
 }
 
