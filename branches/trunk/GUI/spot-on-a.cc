@@ -216,6 +216,14 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+  auto launchKernel = false;
+
+  for(int i = 1; i < argc; i++)
+    if(argv && argv[i])
+      {
+	if(strcmp(argv[i], "--launch-kernel") == 0)
+	  launchKernel = true;
+      }
   /*
   ** Disable JIT.
   */
