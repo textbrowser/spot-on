@@ -45,7 +45,7 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 {
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > 0 &&
+  if(maxPendingConnections > -1 &&
      maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
@@ -526,7 +526,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 {
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > 0 &&
+  if(maxPendingConnections > -1 &&
      maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     /*
     ** Do not listen!
@@ -752,7 +752,7 @@ int spoton_listener::maxPendingConnections(void) const
     return m_webSocketServer->maxPendingConnections();
 #endif
 
-  return 0;
+  return -1;
 }
 
 qint64 spoton_listener::id(void) const
@@ -806,7 +806,7 @@ void spoton_listener::closeIfFull(void)
 {
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > 0 &&
+  if(maxPendingConnections > -1 &&
      maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     close();
 }
@@ -884,7 +884,7 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
 
   if(isListening())
     status = "online";
-  else if(maxPendingConnections > 0 &&
+  else if(maxPendingConnections > -1 &&
 	  maxPendingConnections <=
 	  spoton_kernel::s_connectionCounts.count(m_id))
     status = "asleep";
@@ -1440,7 +1440,7 @@ void spoton_listener::slotNewConnection(void)
 
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > 0 &&
+  if(maxPendingConnections > -1 &&
      maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       socket->deleteLater();
@@ -2192,7 +2192,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > 0 &&
+  if(maxPendingConnections > -1 &&
      maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       socket->deleteLater();
