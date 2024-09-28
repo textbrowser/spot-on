@@ -265,9 +265,9 @@ void spoton_neighbor::close(void)
 
 void spoton_neighbor::deleteLater(void)
 {
-#if QT_VERSION >= 0x050501 &&			\
-  defined(Q_OS_MACOS) &&			\
-  defined(SPOTON_BLUETOOTH_ENABLED)		\
+#if QT_VERSION >= 0x050501 &&				\
+  defined(Q_OS_MACOS) &&				\
+  defined(SPOTON_BLUETOOTH_ENABLED) &&			\
   defined(SPOTON_MACOS_OVERRIDE_NEIGHBOR_DELETE_LATER)
   if(m_transport == "bluetooth")
     {
