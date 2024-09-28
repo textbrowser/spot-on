@@ -2920,7 +2920,7 @@ void spoton_neighbor::slotTimeout(void)
 #ifndef Q_OS_MACOS
 	    QList<QBluetoothServiceInfo> list;
 
-	    if(m_bluetoothServiceDiscoveryAgent && !m_bluetoothSocket)
+	    if(!m_bluetoothSocket && m_bluetoothServiceDiscoveryAgent)
 	      {
 		list = m_bluetoothServiceDiscoveryAgent->discoveredServices();
 
