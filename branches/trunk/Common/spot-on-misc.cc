@@ -1101,10 +1101,10 @@ QString spoton_misc::adjustPQConnectOptions(const QString &s)
 
 QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
 {
-  const char *code = 0;
+  const char *code = nullptr;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  QHostAddress address(ipAddress);
+  QHostAddress const address(ipAddress);
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
@@ -1125,7 +1125,7 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
   if(fileName.trimmed().isEmpty())
     return QString("Unknown");
 
-  GeoIP *gi = 0;
+  GeoIP *gi = nullptr;
   QFileInfo fileInfo;
 
   fileInfo.setFile(fileName);
@@ -1154,10 +1154,10 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
 
 QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
 {
-  const char *country = 0;
+  const char *country = nullptr;
 
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  QHostAddress address(ipAddress);
+  QHostAddress const address(ipAddress);
   QString fileName("");
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
@@ -3915,7 +3915,7 @@ spoton_crypt *spoton_misc::cryptFromForwardSecrecyMagnet
   QList<QByteArray> list;
 
   if(!isValidForwardSecrecyMagnet(magnet, list))
-    return 0;
+    return nullptr;
 
   return new spoton_crypt(list.value(2),
 			  list.value(0),
@@ -3938,7 +3938,7 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
   auto const list
     (QByteArray(magnet.trimmed()).
      remove(0, static_cast<int> (qstrlen("magnet:?"))).split('&'));
-  spoton_crypt *crypt = 0;
+  spoton_crypt *crypt = nullptr;
   unsigned long int ic = 0;
 
   for(int i = 0; i < list.size(); i++)
@@ -3995,11 +3995,11 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
     {
       logError
 	("spoton_misc::retrieveUrlCommonCredentials(): crypt is zero.");
-      return 0;
+      return nullptr;
     }
 
   QString connectionName("");
-  spoton_crypt *c = 0;
+  spoton_crypt *c = nullptr;
 
   {
     auto db(database(connectionName));
@@ -5477,7 +5477,7 @@ void spoton_misc::prepareSignalHandler(void (*signal_handler) (int))
       act.sa_handler = signal_handler;
       sigemptyset(&act.sa_mask);
 
-      if(sigaction(list.at(i), &act, 0))
+      if(sigaction(list.at(i), &act, nullptr))
 	logError(QString("spoton_misc::prepareSignalHandler(): "
 			 "sigaction() failure for %1.").arg(list.at(i)));
 #else

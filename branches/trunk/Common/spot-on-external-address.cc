@@ -41,7 +41,7 @@ spoton_external_address::spoton_external_address(const QUrl &url,
 }
 
 spoton_external_address::spoton_external_address(const QUrl &url):
-  QNetworkAccessManager(0)
+  QNetworkAccessManager(nullptr)
 {
   m_address = QHostAddress();
   m_url = url;
@@ -50,7 +50,8 @@ spoton_external_address::spoton_external_address(const QUrl &url):
     m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
-spoton_external_address::spoton_external_address(void):QNetworkAccessManager(0)
+spoton_external_address::spoton_external_address(void):
+  QNetworkAccessManager(nullptr)
 {
   m_address = QHostAddress();
   m_url = QUrl::fromUserInput("https://api.ipify.org");

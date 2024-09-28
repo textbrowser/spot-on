@@ -58,7 +58,7 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
       return;
     }
 
-  char *c = 0;
+  char *c = nullptr;
 
   try
     {
@@ -576,8 +576,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   m_k = 0;
   m_m = 0;
   m_n = 0;
-  m_privateKey = 0;
-  m_publicKey = 0;
+  m_privateKey = nullptr;
+  m_publicKey = nullptr;
   m_t = 0;
 
   auto const offset = static_cast<size_t>
@@ -602,7 +602,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
 	{
 	  NTL::clear(Gcar);
 	  delete m_publicKey;
-	  m_publicKey = 0;
+	  m_publicKey = nullptr;
 	  m_t = 0;
 	}
     }
@@ -629,7 +629,7 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   else
     {
       delete m_publicKey;
-      m_publicKey = 0;
+      m_publicKey = nullptr;
     }
 
   if(!m_publicKey)
@@ -652,8 +652,8 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
   else
     m_conversion = spoton_mceliece_private_key::ZZZ;
 
-  m_privateKey = 0;
-  m_publicKey = 0;
+  m_privateKey = nullptr;
+  m_publicKey = nullptr;
 
   try
     {
@@ -670,7 +670,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 {
   m_privateKey = new (std::nothrow) spoton_mceliece_private_key
     (privateKey, privateKeyLength);
-  m_publicKey = 0;
+  m_publicKey = nullptr;
 
   if(m_privateKey && m_privateKey->ok())
     {
@@ -683,7 +683,7 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
   else
     {
       delete m_privateKey;
-      m_privateKey = 0;
+      m_privateKey = nullptr;
     }
 
   auto const offset = static_cast<size_t>
@@ -707,16 +707,16 @@ spoton_mceliece::spoton_mceliece(const char *privateKey,
 	{
 	  NTL::clear(Gcar);
 	  delete m_publicKey;
-	  m_publicKey = 0;
+	  m_publicKey = nullptr;
 	}
     }
 
   if(!(m_privateKey && m_privateKey->ok() && m_publicKey && m_publicKey->ok()))
     {
       delete m_privateKey;
-      m_privateKey = 0;
       delete m_publicKey;
-      m_publicKey = 0;
+      m_privateKey = nullptr;
+      m_publicKey = nullptr;
     }
 
   if(!m_privateKey)
@@ -1508,9 +1508,9 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 bool spoton_mceliece::generatePrivatePublicKeys(void)
 {
   delete m_privateKey;
-  m_privateKey = 0;
   delete m_publicKey;
-  m_publicKey = 0;
+  m_privateKey = nullptr;
+  m_publicKey = nullptr;
   m_privateKey = new (std::nothrow) spoton_mceliece_private_key(m_m, m_t);
 
   if(!m_privateKey)
@@ -1521,7 +1521,7 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
   if(!m_publicKey)
     {
       delete m_privateKey;
-      m_privateKey = 0;
+      m_privateKey = nullptr;
       return false;
     }
 
@@ -1673,9 +1673,9 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 				    "failure (%1).").
 			    arg(exception.what()));
       delete m_privateKey;
-      m_privateKey = 0;
       delete m_publicKey;
-      m_publicKey = 0;
+      m_privateKey = nullptr;
+      m_publicKey = nullptr;
       return false;
     }
   catch(...)
@@ -1684,9 +1684,9 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 			    "generatePrivatePublicKeys(): "
 			    "failure.");
       delete m_privateKey;
-      m_privateKey = 0;
       delete m_publicKey;
-      m_publicKey = 0;
+      m_privateKey = nullptr;
+      m_publicKey = nullptr;
       return false;
     }
 

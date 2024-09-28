@@ -48,10 +48,10 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
   QByteArray decrypted;
   size_t length1 = 0;
   size_t length2 = 0;
-  uint8_t *d = 0;
-  uint8_t *encrypted = 0;
-  uint8_t *privateKey_array = 0;
-  uint8_t *publicKey_array = 0;
+  uint8_t *d = nullptr;
+  uint8_t *encrypted = nullptr;
+  uint8_t *privateKey_array = nullptr;
+  uint8_t *publicKey_array = nullptr;
 
   length1 = m_privateKeyLength -
     static_cast<size_t> (qstrlen("ntru-private-key-"));
@@ -182,9 +182,9 @@ QByteArray spoton_crypt::publicKeyEncryptNTRU(const QByteArray &data,
       ("spoton_crypt::publicKeyEncryptNTRU(): ntru_rand_init() failure.");
 
   QByteArray encrypted;
-  uint8_t *data_array = 0;
-  uint8_t *e = 0;
-  uint8_t *publicKey_array = 0;
+  uint8_t *data_array = nullptr;
+  uint8_t *e = nullptr;
+  uint8_t *publicKey_array = nullptr;
 
   data_array = new uint8_t[data.length()];
   publicKey_array = new uint8_t
@@ -370,8 +370,8 @@ void spoton_crypt::generateNTRUKeys(const QString &keySize,
     {
       auto const length1 = ntru_priv_len(&parameters[index]);
       auto const length2 = ntru_pub_len(&parameters[index]);
-      uint8_t *privateKey_array = 0;
-      uint8_t *publicKey_array = 0;
+      uint8_t *privateKey_array = nullptr;
+      uint8_t *publicKey_array = nullptr;
 
       if(length1 > 0 && length2 > 0)
 	{
