@@ -425,6 +425,7 @@ void spoton_web_server_thread::process
     {
       QString about("");
 
+      about.append("<p><font size=3>");
       about.append("Build ABI: ");
       about.append(QSysInfo::buildAbi());
       about.append("<br>");
@@ -452,6 +453,7 @@ void spoton_web_server_thread::process
       about.append("<br>");
       about.append("Product Version: ");
       about.append(QSysInfo::productVersion());
+      about.append("</font></p>");
 
       QString html("");
 

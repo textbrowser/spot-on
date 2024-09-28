@@ -4,6 +4,14 @@
 # Download dependencies for Windows.
 # Must be executed in the top-level source directory.
 
+if [ "$(which wget)" = "" ]
+then
+    echo "Could not locate wget."
+    exit 1
+fi
+
+rc=0
+
 # GCrypt
 
 gcrypt=mingw-w64-x86_64-libgcrypt-1.11.0-2-any.pkg.tar.zst
@@ -13,7 +21,8 @@ wget --output-document=$gcrypt \
      --progress=bar \
      https://repo.msys2.org/mingw/mingw64/$gcrypt
 
-if [ -r "$gcrypt" ]; then
+if [ -r "$gcrypt" ]
+then
     tar -I zstd -vxf $gcrypt
     mkdir -p libGCrypt/Include.win64
     mkdir -p libGCrypt/Libraries.win64
@@ -24,6 +33,7 @@ if [ -r "$gcrypt" ]; then
     rm -f $gcrypt
 else
     echo "Cannot read $gcrypt."
+    rc=1
 fi
 
 # GPG-Error
@@ -35,7 +45,8 @@ wget --output-document=$gpgerror \
      --progress=bar \
      https://repo.msys2.org/mingw/mingw64/$gpgerror
 
-if [ -r "$gpgerror" ]; then
+if [ -r "$gpgerror" ]
+then
     tar -I zstd -vxf $gpgerror
     mkdir -p libGCrypt/Include.win64
     mkdir -p libGCrypt/Libraries.win64
@@ -46,6 +57,7 @@ if [ -r "$gpgerror" ]; then
     rm -f $gpgerror
 else
     echo "Cannot read $gpgerror."
+    rc=1
 fi
 
 # OpenSSL
@@ -57,7 +69,8 @@ wget --output-document=$openssl \
      --progress=bar \
      https://www.firedaemon.com/download-firedaemon-$openssl
 
-if [ -r "$openssl" ]; then
+if [ -r "$openssl" ]
+then
     unzip $openssl -d openssl.d
     mkdir -p libOpenSSL/Include.win64
     mkdir -p libOpenSSL/Libraries.win64
@@ -70,4 +83,7 @@ if [ -r "$openssl" ]; then
     rm -fr openssl.d
 else
     echo "Cannot read $openssl."
+    rc=1
 fi
+
+echo $rc
