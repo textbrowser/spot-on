@@ -38,6 +38,11 @@ SPOTON_LINKED_WITH_LIBPTHREAD
 
 Enable if Spot-On is linked with the pthread library.
 
+SPOTON_MACOS_OVERRIDE_NEIGHBOR_DELETE_LATER
+
+Define in the kernel so as to override deleteLater() for the
+neighbor class.
+
 SPOTON_MCELIECE_ENABLED
 
 Enable if McEliece is desired. Requires the NTL library.

@@ -267,7 +267,8 @@ void spoton_neighbor::deleteLater(void)
 {
 #if QT_VERSION >= 0x050501 &&			\
   defined(Q_OS_MACOS) &&			\
-  defined(SPOTON_BLUETOOTH_ENABLED)
+  defined(SPOTON_BLUETOOTH_ENABLED)		\
+  defined(SPOTON_MACOS_OVERRIDE_NEIGHBOR_DELETE_LATER)
   if(m_transport == "bluetooth")
     {
       /*
@@ -340,6 +341,7 @@ void spoton_neighbor::deleteLater(void)
       m_externalAddressDiscovererTimer.stop();
       m_keepAliveTimer.stop();
       m_lifetime.stop();
+      m_specialPeerTimer.stop();
       m_timer.stop();
       delete this;
     }
