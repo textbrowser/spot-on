@@ -43,7 +43,10 @@
 
 void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 {
-  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+  auto const maxPendingConnections = this->maxPendingConnections();
+
+  if(maxPendingConnections > 0 &&
+     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
@@ -198,7 +201,7 @@ spoton_listener::spoton_listener
  QObject *parent):QObject(parent)
 {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-  m_bluetoothServiceInfo = 0;
+  m_bluetoothServiceInfo = nullptr;
 #endif
   m_transport = transport.toLower().trimmed();
 
@@ -284,7 +287,7 @@ spoton_listener::spoton_listener
 	   maximumContentLength,
 	   spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH);
   m_motd = motd;
-  m_networkInterface = 0;
+  m_networkInterface = nullptr;
   m_orientation = orientation;
   m_passthrough = passthrough;
   m_port = m_externalPort = port.toUShort();
@@ -521,7 +524,10 @@ bool spoton_listener::isListening(void) const
 
 bool spoton_listener::listen(const QString &address, const quint16 port)
 {
-  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+  auto const maxPendingConnections = this->maxPendingConnections();
+
+  if(maxPendingConnections > 0 &&
+     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     /*
     ** Do not listen!
     */
@@ -638,7 +644,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 		m_bluetoothServiceInfo->unregisterService();
 
 	      delete m_bluetoothServiceInfo;
-	      m_bluetoothServiceInfo = 0;
+	      m_bluetoothServiceInfo = nullptr;
 	    }
 
 	  m_bluetoothServer->deleteLater();
@@ -777,7 +783,7 @@ void spoton_listener::close(void)
 	m_bluetoothServiceInfo->unregisterService();
 
       delete m_bluetoothServiceInfo;
-      m_bluetoothServiceInfo = 0;
+      m_bluetoothServiceInfo = nullptr;
     }
 
   if(m_bluetoothServer)
@@ -798,7 +804,10 @@ void spoton_listener::close(void)
 
 void spoton_listener::closeIfFull(void)
 {
-  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+  auto const maxPendingConnections = this->maxPendingConnections();
+
+  if(maxPendingConnections > 0 &&
+     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     close();
 }
 
@@ -866,6 +875,7 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
 
   QSqlQuery query(db);
   QString status("");
+  auto const maxPendingConnections = this->maxPendingConnections();
 
   query.prepare("UPDATE listeners SET connections = ?, status = ? "
 		"WHERE OID = ? AND status <> ?");
@@ -874,8 +884,9 @@ void spoton_listener::saveStatus(const QSqlDatabase &db)
 
   if(isListening())
     status = "online";
-  else if(spoton_kernel::s_connectionCounts.count(m_id) >=
-	  maxPendingConnections())
+  else if(maxPendingConnections > 0 &&
+	  maxPendingConnections <=
+	  spoton_kernel::s_connectionCounts.count(m_id))
     status = "asleep";
   else
     status = "offline";
@@ -927,10 +938,10 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-	 0,
+	 nullptr,
 #endif
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
-	 0,
+	 nullptr,
 #endif
 	 m_keySize,
 	 this);
@@ -1301,7 +1312,7 @@ void spoton_listener::prepareNetworkInterface(void)
   if(m_networkInterface)
     {
       delete m_networkInterface;
-      m_networkInterface = 0;
+      m_networkInterface = nullptr;
     }
 
   auto const list(QNetworkInterface::allInterfaces());
@@ -1320,7 +1331,7 @@ void spoton_listener::prepareNetworkInterface(void)
 		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
 		    delete m_networkInterface;
-		    m_networkInterface = 0;
+		    m_networkInterface = nullptr;
 		  }
 		else
 		  break;
@@ -1335,7 +1346,7 @@ void spoton_listener::prepareNetworkInterface(void)
 		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
 		    delete m_networkInterface;
-		    m_networkInterface = 0;
+		    m_networkInterface = nullptr;
 		  }
 		else
 		  break;
@@ -1350,7 +1361,7 @@ void spoton_listener::prepareNetworkInterface(void)
 		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
 		    delete m_networkInterface;
-		    m_networkInterface = 0;
+		    m_networkInterface = nullptr;
 		  }
 		else
 		  break;
@@ -1366,7 +1377,7 @@ void spoton_listener::prepareNetworkInterface(void)
 		if(!(m_networkInterface->flags() & QNetworkInterface::IsUp))
 		  {
 		    delete m_networkInterface;
-		    m_networkInterface = 0;
+		    m_networkInterface = nullptr;
 		  }
 		else
 		  break;
@@ -1427,7 +1438,10 @@ void spoton_listener::slotNewConnection(void)
   if(!socket)
     return;
 
-  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+  auto const maxPendingConnections = this->maxPendingConnections();
+
+  if(maxPendingConnections > 0 &&
+     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       socket->deleteLater();
       return;
@@ -2176,7 +2190,10 @@ void spoton_listener::slotNewWebSocketConnection(void)
   if(!socket)
     return;
 
-  if(spoton_kernel::s_connectionCounts.count(m_id) >= maxPendingConnections())
+  auto const maxPendingConnections = this->maxPendingConnections();
+
+  if(maxPendingConnections > 0 &&
+     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
     {
       socket->deleteLater();
       return;
@@ -2251,7 +2268,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	 m_sourceOfRandomness,
 	 m_privateApplicationCredentials,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-	 0, // Bluetooth.
+	 nullptr, // Bluetooth.
 #endif
 	 socket,
 	 m_keySize,
