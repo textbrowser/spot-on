@@ -426,32 +426,32 @@ void spoton_web_server_thread::process
       QString about("");
 
       about.append("<p><font size=3>");
-      about.append("Build ABI: ");
+      about.append("<b>Build ABI:</b> ");
       about.append(QSysInfo::buildAbi());
       about.append("<br>");
-      about.append("Build CPU: ");
+      about.append("<b>Build CPU:</b> ");
       about.append(QSysInfo::buildCpuArchitecture());
       about.append("<br>");
-      about.append("CPU: ");
+      about.append("<b>CPU:</b> ");
       about.append(QSysInfo::currentCpuArchitecture());
       about.append("<br>");
-      about.append("Kernel Type: ");
+      about.append("<b>Kernel Type:</b> ");
       about.append(QSysInfo::kernelType());
       about.append("<br>");
-      about.append("Kernel Version: ");
+      about.append("<b>Kernel Version:</b> ");
       about.append(QSysInfo::kernelVersion());
       about.append("<br>");
-      about.append("Machine Host Name: ");
+      about.append("<b>Machine Host Name:</b> ");
 #if QT_VERSION < 0x050600
       about.append(QHostInfo::localHostName());
 #else
       about.append(QSysInfo::machineHostName());
 #endif
       about.append("<br>");
-      about.append("Product Type: ");
+      about.append("<b>Product Type:</b> ");
       about.append(QSysInfo::productType());
       about.append("<br>");
-      about.append("Product Version: ");
+      about.append("<b>Product Version:</b> ");
       about.append(QSysInfo::productVersion());
       about.append("</font></p>");
 
