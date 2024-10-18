@@ -133,6 +133,11 @@ QString spoton_neighbor::findMessageType
 	     type == "0013" ||  // Participant Status
 	     type == "0100")    // Human Proxy
 	    {
+	      if(spoton_kernel::
+		 setting("gui/human_proxy", false).toBool() == false &&
+		 type == "0100")
+		return type;
+
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append(spoton_crypt::preferredCipherAlgorithm());
 	      symmetricKeys.append(gemini.second);
@@ -3084,6 +3089,9 @@ void spoton_neighbor::process0100(int length,
 				  const QByteArray &dataIn,
 				  const QList<QByteArray> &symmetricKeys)
 {
+  if(spoton_kernel::setting("gui/human_proxy", false).toBool() == false)
+    return;
+
   auto data(dataIn);
 
   if(length == data.length())
