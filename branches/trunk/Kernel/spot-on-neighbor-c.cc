@@ -128,10 +128,10 @@ QString spoton_neighbor::findMessageType
 		type = a;
 	    }
 
-	  if(type == "0000" ||
-	     type == "0000b" ||
-	     type == "0013" ||
-	     type == "0100")
+	  if(type == "0000" ||  // Chat
+	     type == "0000b" || // Call-Within-A-Call
+	     type == "0013" ||  // Participant Status
+	     type == "0100")    // Human Proxy
 	    {
 	      symmetricKeys.append(gemini.first);
 	      symmetricKeys.append(spoton_crypt::preferredCipherAlgorithm());

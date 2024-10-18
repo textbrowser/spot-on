@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-    	<file>spot-on_af.qm</file>
+	<file>spot-on_af.qm</file>
 	<file>spot-on_al.qm</file>
 	<file>spot-on_am.qm</file>
 	<file>spot-on_as.qm</file>

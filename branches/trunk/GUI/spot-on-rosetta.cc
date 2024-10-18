@@ -730,10 +730,10 @@ void spoton_rosetta::slotAddContact(void)
 
   if(!eCrypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
@@ -883,10 +883,10 @@ void spoton_rosetta::slotAddContact(void)
 
   if(!sCrypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
@@ -1345,10 +1345,10 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
   if(!eCrypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
@@ -1598,10 +1598,10 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
   if(!sCrypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
@@ -2159,10 +2159,10 @@ void spoton_rosetta::slotRename(void)
 
   if(!eCrypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }

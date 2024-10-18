@@ -1980,6 +1980,10 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotHideOfflineParticipants(bool)));
+  connect(m_ui.humanProxy,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotBehaveAsHumanProxy(bool)));
   connect(m_ui.importUrls,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2542,6 +2546,8 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     (m_settings.value("gui/showUrlsPage", true).toBool());
   m_ui.email_pages->setValue
     (m_settings.value("gui/email_letters_per_page", 500).toInt());
+  m_ui.humanProxy->setChecked
+    (m_settings.value("gui/human_proxy", false).toBool());
   m_ui.secondary_storage_maximum_page_count->setValue
     (m_settings.value("gui/congestion_control_max_page_count", 10000).toInt());
   m_ui.soss_maximum_clients->blockSignals(true);

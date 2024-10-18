@@ -817,6 +817,15 @@ void spoton::slotApplyOtherOptions(void)
   prepareOtherOptions();
 }
 
+void spoton::slotBehaveAsHumanProxy(bool state)
+{
+  m_settings["gui/human_proxy"] = state;
+
+  QSettings settings;
+
+  settings.setValue("gui/human_proxy", state);
+}
+
 void spoton::slotEmailLettersPerPageChanged(int value)
 {
   m_settings["gui/email_letters_per_page"] = value;

@@ -1,5 +1,4 @@
 Echo Chat
-Echoed? Yes
 
 Groups: 3
 Gemini Encryption Key (Base-64)
@@ -50,7 +49,6 @@ EOL
 }
 
 Echo Call
-Echoed? Yes
 
 Two-Way Call
 Groups: 4
@@ -127,7 +125,6 @@ EOL
 }
 
 Echo Mail
-Echoed? Yes
 
 Groups: 7
 Public Key
@@ -286,7 +283,6 @@ EOL
 }
 
 Retrieve Mail
-Echoed? Yes
 
 Groups: 4
 Public Key
@@ -351,7 +347,6 @@ EOL
 }
 
 Key Exchange
-Echoed? No
 
 Message Type ("0011" or "0012")
 0 - Key Type (Base-64)
@@ -367,7 +362,6 @@ EOL
 5 - Dispatcher's Signature Public Key Signature (Base-64)
 
 Participant Status
-Echoed? Yes
 
 Groups: 3
 Gemini Encryption Key (Base-64)
@@ -417,7 +411,6 @@ EOL
 }
 
 Capabilities Exchange
-Echoed? No
 
 Message Type ("0014") (Base-64)
 0 - UUID
@@ -427,7 +420,6 @@ EOL
 2 - Full / Half-Echo
 
 Echo Listener Publication
-Echoed? Yes
 
 Message Type ("0030")
 0 - IP Address (Base-64)
@@ -441,7 +433,6 @@ EOL
 4 - Orientation (Base-64)
 
 Echo Buzz
-Echoed? Yes
 
 Groups: 3
 Symmetric Key (Base-64)
@@ -486,7 +477,6 @@ EOL
 }
 
 Account Authentication
-Echoed? No
 
 Message Type ("0050") (Client Request)
 0 - Keyed Digest (Base-64)
@@ -502,7 +492,6 @@ Message Type ("0052") (Server Authentication Request)
 0 - 0 (Base-64)
 
 StarBeam
-Echoed? Yes
 
 Groups: 3
 Symmetric Key
@@ -565,19 +554,16 @@ EOL
 }
 
 Buzz Magnet Share
-Echoed? No
 
 Message Type ("0065")
 0 - Buzz Magnet (Base-64)
 
 Message of the Day
-Echoed? No
 
 Message Type ("0070")
 0 - MOTD (Base-64)
 
 URL Distribution
-Echoed? Yes
 
 Message Type ("0080")
 
@@ -620,7 +606,6 @@ EOL
 }
 
 Echo Public Key Share
-Echoed? Yes
 
 Groups: 3
 Symmetric Key (Base-64)
@@ -646,7 +631,6 @@ EOL
 }
 
 Echo Forward Secrecy
-Echoed? Yes
 
 Groups: 4
 Public Key (Base-64)
@@ -713,7 +697,6 @@ EOL
 }
 
 Echo SMP
-Echoed? Yes
 
 Groups: 4
 Public Key (Base-64)
@@ -745,6 +728,7 @@ EOL
 }
 
 Human Proxy
+
 Groups: 3
 Gemini Encryption Key (Base-64)
 {

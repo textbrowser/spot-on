@@ -732,6 +732,7 @@ class spoton: public QMainWindow
   void slotAutoRetrieveEmail(bool state);
   void slotBlockNeighbor(void);
   void slotBluetoothSecurityChanged(int index);
+  void slotBehaveAsHumanProxy(bool state);
   void slotBuzzActionsActivated(int index);
   void slotBuzzChanged(void);
   void slotBuzzInvite(void);
