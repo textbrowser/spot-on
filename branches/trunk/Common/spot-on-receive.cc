@@ -1627,7 +1627,11 @@ QList<QByteArray> spoton_receive::process0091
       auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+      dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
       dateTime.setTimeSpec(Qt::UTC);
+#endif
 
       auto const secsTo = qAbs(now.secsTo(dateTime));
       int timeDelta = 0;
@@ -1829,7 +1833,11 @@ QList<QByteArray> spoton_receive::process0092
       auto dateTime
 	(QDateTime::fromString(list.value(2).constData(), "MMddyyyyhhmmss"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+      dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
       dateTime.setTimeSpec(Qt::UTC);
+#endif
 
       auto const secsTo = qAbs(now.secsTo(dateTime));
       auto const timeDelta = spoton_common::SMP_TIME_DELTA_MAXIMUM;

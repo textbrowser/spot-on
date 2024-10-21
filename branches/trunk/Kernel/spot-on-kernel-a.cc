@@ -2097,7 +2097,11 @@ void spoton_kernel::discoverAdaptiveEchoPair
 
 	  auto const now(QDateTime::currentDateTimeUtc());
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+	  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
 	  dateTime.setTimeSpec(Qt::UTC);
+#endif
 
 	  auto const secsTo = qAbs(now.secsTo(dateTime));
 

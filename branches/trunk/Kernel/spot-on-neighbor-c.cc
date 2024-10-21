@@ -2762,7 +2762,11 @@ void spoton_neighbor::process0080(int length,
 		    (QDateTime::fromString(list.value(1).constData(),
 					   "MMddyyyyhhmmss"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+		  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
 		  dateTime.setTimeSpec(Qt::UTC);
+#endif
 
 		  if(!spoton_misc::
 		     acceptableTimeSeconds(dateTime,
@@ -2943,7 +2947,11 @@ void spoton_neighbor::process0090(int length,
 	    (QDateTime::fromString(list.value(list.size() - 1).
 				   constData(), "MMddyyyyhhmmss"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+	  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
 	  dateTime.setTimeSpec(Qt::UTC);
+#endif
 
 	  if(!spoton_misc::
 	     acceptableTimeSeconds(dateTime, spoton_common::EPKS_TIME_DELTA))
@@ -3962,7 +3970,11 @@ void spoton_neighbor::saveGemini(const QByteArray &publicKeyHash,
 
   auto const now(QDateTime::currentDateTimeUtc());
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
   dateTime.setTimeSpec(Qt::UTC);
+#endif
 
   auto const secsTo = qAbs(now.secsTo(dateTime));
 

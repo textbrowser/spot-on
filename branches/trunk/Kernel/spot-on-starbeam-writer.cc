@@ -392,7 +392,11 @@ void spoton_starbeam_writer::processData(void)
     dateTime = QDateTime::fromString
       (list.value(2).constData(), "MMddyyyyhhmmss");
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
   dateTime.setTimeSpec(Qt::UTC);
+#endif
 
   if(!spoton_misc::acceptableTimeSeconds(dateTime,
 					 spoton_common::STARBEAM_TIME_DELTA))

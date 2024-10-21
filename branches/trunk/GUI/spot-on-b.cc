@@ -4855,7 +4855,11 @@ void spoton::slotReceivedKernelMessage(void)
 		(QDateTime::fromString(list.at(list.size() - 1).constData(),
 				       "MMddyyyyhhmmss"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+	      dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
 	      dateTime.setTimeSpec(Qt::UTC);
+#endif
 
 	      if(!spoton_misc::
 		 acceptableTimeSeconds(dateTime,
@@ -5373,7 +5377,11 @@ void spoton::slotReceivedKernelMessage(void)
 			  auto d(dateTime);
 			  QString str("green");
 
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+			  d.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
 			  d.setTimeSpec(Qt::UTC);
+#endif
 
 			  if(qAbs(d.secsTo(n)) >
 			     static_cast<qint64> (spoton_common::
