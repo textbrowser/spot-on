@@ -59,7 +59,7 @@ QString spoton::listenerTransport(void) const
 	return item->text();
     }
 
-  return QString("");
+  return "";
 }
 
 QString spoton::neighborTransport(void) const
@@ -74,7 +74,7 @@ QString spoton::neighborTransport(void) const
 	return item->text();
     }
 
-  return QString("");
+  return "";
 }
 
 QString spoton::optionsEnabled(void)
@@ -136,7 +136,7 @@ QString spoton::optionsEnabled(void)
 QString spoton::participantKeyType(QTableWidget *table) const
 {
   if(!table)
-    return QString("");
+    return "";
 
   int row = -1;
 
@@ -149,7 +149,7 @@ QString spoton::participantKeyType(QTableWidget *table) const
 	  (Qt::ItemDataRole(Qt::UserRole + 1)).toString().toLower();
     }
 
-  return QString("");
+  return "";
 }
 
 QThread::Priority spoton::neighborThreadPriority(void) const
@@ -222,7 +222,7 @@ bool spoton::neighborSpecialClient(void) const
 
   if((row = m_ui.neighbors->currentRow()) >= 0)
     {
-      QTableWidgetItem *item1 = m_ui.neighbors->item(row, 3); // SSL Key Size
+      auto item1 = m_ui.neighbors->item(row, 3); // SSL Key Size
       auto item2 = m_ui.neighbors->item(row, 27); // Transport
       auto item3 = m_ui.neighbors->item(row, 43); // Bind IP Address
 
@@ -543,6 +543,8 @@ void spoton::prepareOtherOptions(void)
 			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
       m_optionsUi.other_options->appendPlainText
 	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
+      m_optionsUi.other_options->appendPlainText
+	("PUBLISHED_PAGES := Directory, Title-Line, URL-Line");
       m_optionsUi.other_options->appendPlainText
 	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText

@@ -3983,8 +3983,7 @@ spoton_crypt *spoton_misc::parsePrivateApplicationMagnet
      spoton_crypt::cipherTypes().contains(ct) &&
      spoton_crypt::hashTypes().contains(ht) &&
      xt == "urn:private-application-credentials")
-    crypt = new spoton_crypt
-      (ct, ht, QByteArray(), ek, hk, 0, ic, QString(""));
+    crypt = new spoton_crypt(ct, ht, QByteArray(), ek, hk, 0, ic, "");
 
   return crypt;
 }
