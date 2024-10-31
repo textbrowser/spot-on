@@ -62,7 +62,7 @@ fi
 
 # OpenSSL
 
-openssl=openssl-3-3-zip
+openssl=openssl-3-4-zip
 
 rm -f $openssl
 wget --output-document=$openssl \

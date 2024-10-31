@@ -30,7 +30,7 @@ extern "C" {
 # ifndef OPENSSL_SYS_WIN64A
 #  define OPENSSL_SYS_WIN64A 1
 # endif
-# define OPENSSL_CONFIGURED_API 30300
+# define OPENSSL_CONFIGURED_API 30400
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
 # endif
@@ -67,6 +67,9 @@ extern "C" {
 # ifndef OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 #  define OPENSSL_NO_CRYPTO_MDEBUG_BACKTRACE
 # endif
+# ifndef OPENSSL_NO_DEMOS
+#  define OPENSSL_NO_DEMOS
+# endif
 # ifndef OPENSSL_NO_DEVCRYPTOENG
 #  define OPENSSL_NO_DEVCRYPTOENG
 # endif
@@ -79,6 +82,9 @@ extern "C" {
 # ifndef OPENSSL_NO_EXTERNAL_TESTS
 #  define OPENSSL_NO_EXTERNAL_TESTS
 # endif
+# ifndef OPENSSL_NO_FIPS_POST
+#  define OPENSSL_NO_FIPS_POST
+# endif
 # ifndef OPENSSL_NO_FIPS_SECURITYCHECKS
 #  define OPENSSL_NO_FIPS_SECURITYCHECKS
 # endif
@@ -88,6 +94,12 @@ extern "C" {
 # ifndef OPENSSL_NO_FUZZ_LIBFUZZER
 #  define OPENSSL_NO_FUZZ_LIBFUZZER
 # endif
+# ifndef OPENSSL_NO_H3DEMO
+#  define OPENSSL_NO_H3DEMO
+# endif
+# ifndef OPENSSL_NO_JITTER
+#  define OPENSSL_NO_JITTER
+# endif
 # ifndef OPENSSL_NO_KTLS
 #  define OPENSSL_NO_KTLS
 # endif
@@ -96,6 +108,9 @@ extern "C" {
 # endif
 # ifndef OPENSSL_NO_MSAN
 #  define OPENSSL_NO_MSAN
+# endif
+# ifndef OPENSSL_NO_PIE
+#  define OPENSSL_NO_PIE
 # endif
 # ifndef OPENSSL_NO_RC5
 #  define OPENSSL_NO_RC5
