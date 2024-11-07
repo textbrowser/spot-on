@@ -264,12 +264,12 @@ int main(int argc, char *argv[])
   else if(!qapplication.installTranslator(&translator2))
     qDebug() << "Could not install the Spot-On translator.";
 
-  QFont font(qapplication.font());
 #if SPOTON_GOLDBUG == 0
   QSplashScreen splash(QPixmap(":/Logo/spot-on-splash.png"));
 #else
   QSplashScreen splash(QPixmap(":/Logo/goldbug-splash.png"));
 #endif
+  auto font(qapplication.font());
 
   splash.setEnabled(false);
   splash.show();
@@ -418,9 +418,9 @@ int main(int argc, char *argv[])
   splash.repaint();
 
   auto ok = true;
-  auto integer = settings.value("gui/gcryctl_init_secmem",
-				spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).
-    toInt(&ok);
+  auto integer = settings.value
+    ("gui/gcryctl_init_secmem",
+     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE).toInt(&ok);
 
   if(!ok)
     integer = spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE;
@@ -437,7 +437,7 @@ int main(int argc, char *argv[])
   spoton spoton(&splash);
 
   splash.finish(&spoton);
-  rc = qapplication.exec();
+  rc = static_cast<int> (qapplication.exec());
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   curl_global_cleanup();
 #endif
@@ -458,7 +458,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_urlLimit = 10;
   m_urlOffset = 0;
   m_urlPages = 0;
-  m_wizardUi = 0;
+  m_wizardUi = nullptr;
   s_publicKeySizes["dsa"] = QStringList() << "3072";
   s_publicKeySizes["ecdsa"] = QStringList() << "224"
 					    << "256"
@@ -566,7 +566,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   list << tr("Statistic") << tr("Value");
   m_statisticsModel->setHorizontalHeaderLabels(list);
   list.clear();
-  m_urlCommonCrypt = 0;
+  m_urlCommonCrypt = nullptr;
   splash->showMessage
     (tr("Creating the primary interface object."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -693,8 +693,8 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     (m_ui.neighborOrientation->model()->index(1, 0), 0, Qt::UserRole - 1);
 
   QString qversion("");
-  auto sslSupported = QSslSocket::supportsSsl();
-  const char *tmp = qVersion();
+  auto const sslSupported = QSslSocket::supportsSsl();
+  auto const tmp = qVersion();
 
   if(tmp)
     qversion = tmp;
@@ -781,7 +781,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_ui.postgresql_credentials->setVisible(false);
 
 #ifndef SPOTON_POSTGRESQL_DISABLED
-  foreach(const QString &driver, QSqlDatabase::drivers())
+  foreach(auto const &driver, QSqlDatabase::drivers())
     if(driver.contains("qpsql", Qt::CaseInsensitive))
       {
 	m_ui.postgresqlConnect->setEnabled(true);
@@ -805,7 +805,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_addParticipantWindow->setWindowTitle
     (tr("%1: Add Participant").arg(SPOTON_APPLICATION_NAME));
 
-  QAction *action = 0;
+  QAction *action = nullptr;
   auto menu = new QMenu("&File", this);
 
   action = menu->addAction(tr("&Close"),
@@ -814,9 +814,9 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   action->setShortcut(tr("Ctrl+W"));
   m_addParticipantWindow->menuBar()->addMenu(menu);
 #else
-  QMenu *menu = 0;
+  QMenu *menu = nullptr;
 
-  m_addParticipantWindow = 0;
+  m_addParticipantWindow = nullptr;
 #endif
   m_externalAddress = new spoton_external_address();
   m_notificationsWindow = new QMainWindow(0);
@@ -2444,28 +2444,41 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   menu = new QMenu(this);
   connect
     (menu->addAction(tr("Copy &Chat Public Key Pair")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyMyChatPublicKey(void)));
+     SIGNAL(triggered(void)),
+     this,
+     SLOT(slotCopyMyChatPublicKey(void)));
   connect
     (menu->addAction(tr("Copy &E-Mail Public Key Pair")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyMyEmailPublicKey(void)));
+     SIGNAL(triggered(void)),
+     this,
+     SLOT(slotCopyMyEmailPublicKey(void)));
 #ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
   connect
     (menu->addAction(tr("Copy &Open Library Public Key Pair")),
-     SIGNAL(triggered(void)), this,
+     SIGNAL(triggered(void)),
+     this,
      SLOT(slotCopyMyOpenLibraryPublicKey(void)));
 #endif
   connect
     (menu->addAction(tr("Copy &Poptastic Public Key Pair")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyMyPoptasticPublicKey(void)));
+     SIGNAL(triggered(void)),
+     this,
+     SLOT(slotCopyMyPoptasticPublicKey(void)));
   connect
     (menu->addAction(tr("Copy &Rosetta Public Key Pair")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyMyRosettaPublicKey(void)));
+     SIGNAL(triggered(void)),
+     this,
+     SLOT(slotCopyMyRosettaPublicKey(void)));
   connect
     (menu->addAction(tr("Copy &URL Public Key Pair")),
-     SIGNAL(triggered(void)), this, SLOT(slotCopyMyURLPublicKey(void)));
+     SIGNAL(triggered(void)),
+     this,
+     SLOT(slotCopyMyURLPublicKey(void)));
   menu->addSeparator();
   connect(menu->addAction(tr("Copy &All Public Key Pairs")),
-	  SIGNAL(triggered(void)), this, SLOT(slotCopyAllMyPublicKeys(void)));
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotCopyAllMyPublicKeys(void)));
   m_ui.commonBuzzChannels->setItemData
     (0,
      "magnet:?rn=Spot-On_Developer_Channel_Key&xf=10000&"
@@ -3877,7 +3890,7 @@ void spoton::cleanup(void)
   m_smpWindow->deleteLater();
   m_statisticsWindow->deleteLater();
   delete m_urlCommonCrypt;
-  m_urlCommonCrypt = 0;
+  m_urlCommonCrypt = nullptr;
 
   QMutableHashIterator<QString, spoton_crypt *> it(m_crypts);
 
@@ -6297,7 +6310,7 @@ void spoton::slotFavoritesActivated(int index)
 void spoton::slotGeneralTimerTimeout(void)
 {
   QColor color(240, 128, 128); // Light coral!
-  QStandardItem *item = 0;
+  QStandardItem *item = nullptr;
   auto const list(m_statisticsModel->findItems("Kernel PID"));
   auto const text(m_ui.pid->text());
   auto pidPalette(m_ui.pid->palette());
@@ -7390,7 +7403,7 @@ void spoton::slotPopulateListeners(void)
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    spoton_table_widget_item *item = 0;
+		    spoton_table_widget_item *item = nullptr;
 
 		    if(i == 0 || i == 12) // status_control, use_accounts
 		      {
@@ -7419,7 +7432,7 @@ void spoton::slotPopulateListeners(void)
 			if(transport.toLower() == "bluetooth")
 			  {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-			    QComboBox *box = 0;
+			    QComboBox *box = nullptr;
 			    QList<QBluetooth::Security> items;
 			    QMap<QBluetooth::Security, QString> map;
 			    QMap<QBluetooth::SecurityFlags,
@@ -7557,7 +7570,7 @@ void spoton::slotPopulateListeners(void)
 			(query.value(i).toString());
 		    else if(i == 10) // maximum_clients
 		      {
-			QComboBox *box = 0;
+			QComboBox *box = nullptr;
 			auto widget = combinationBoxForTable();
 
 			box = widget->findChild<QComboBox *> ();
@@ -7678,7 +7691,7 @@ void spoton::slotPopulateListeners(void)
 			(QString(certificateDigest));
 		    else if(i == 20) // lane_width
 		      {
-			QComboBox *box = 0;
+			QComboBox *box = nullptr;
 			auto list(spoton_common::LANE_WIDTHS);
 			auto widget = combinationBoxForTable();
 
@@ -8289,7 +8302,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 
       for(int i = 1; i < query->record().count(); i++)
 	{
-	  spoton_table_widget_item *item = 0;
+	  spoton_table_widget_item *item = nullptr;
 
 	  if(i == 1 || i == 3 ||
 	     i == 7 || (i >= 9 && i <= 13) || (i >= 14 &&
@@ -8472,7 +8485,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
 	    }
 	  else if(i == 36) // lane_width
 	    {
-	      QComboBox *box = 0;
+	      QComboBox *box = nullptr;
 	      auto list(spoton_common::LANE_WIDTHS);
 	      auto widget = combinationBoxForTable();
 
@@ -8920,7 +8933,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 
 	    continue;
 
-	  QTableWidgetItem *item = 0;
+	  QTableWidgetItem *item = nullptr;
 
 	  if(keyType == "chat" || keyType == "poptastic")
 	    {
@@ -10309,7 +10322,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 {
   if(m_ui.emailParticipants == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction
@@ -10317,92 +10330,114 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareEmailPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareEmailPublicKeyWithParticipant(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/copy.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Copy Keys (Clipboard Buffer)"),
-		     this, SLOT(slotCopyEmailKeys(void)));
+		     this,
+		     SLOT(slotCopyEmailKeys(void)));
       menu.addAction(QIcon(":/generic/repleo-email.png"),
 		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyEmailFriendshipBundle(void)));
+		     this,
+		     SLOT(slotCopyEmailFriendshipBundle(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveEmailParticipants(void)));
+		     this,
+		     SLOT(slotRemoveEmailParticipants(void)));
       menu.addSeparator();
       action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
+			      this,
+			      SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu.addSeparator();
       action = menu.addAction
 	(tr("Initiate Forward &Secrecy Exchange(s)..."),
-	 this, SLOT(slotEstablishForwardSecrecy(void)));
+	 this,
+	 SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu.addAction
 	(tr("Purge Forward &Secrecy Key Pair"),
-	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
+	 this,
+	 SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "email");
       action = menu.addAction
 	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+	 this,
+	 SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.emailParticipants->mapToGlobal(point));
     }
   else if(m_ui.listeners == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Delete"),
-		     this, SLOT(slotDeleteListener(void)));
+		     this,
+		     SLOT(slotDeleteListener(void)));
       menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteAllListeners(void)));
+		     this,
+		     SLOT(slotDeleteAllListeners(void)));
       menu.addSeparator();
       menu.addAction(tr("Detach &Neighbors"),
-		     this, SLOT(slotDetachListenerNeighbors(void)));
+		     this,
+		     SLOT(slotDetachListenerNeighbors(void)));
       menu.addAction(tr("Disconnect &Neighbors"),
-		     this, SLOT(slotDisconnectListenerNeighbors(void)));
+		     this,
+		     SLOT(slotDisconnectListenerNeighbors(void)));
       menu.addSeparator();
       menu.addAction(tr("&Publish Information (Plaintext)"),
-		     this, SLOT(slotPublicizeListenerPlaintext(void)));
+		     this,
+		     SLOT(slotPublicizeListenerPlaintext(void)));
       menu.addAction(tr("Publish &All (Plaintext)"),
-		     this, SLOT(slotPublicizeAllListenersPlaintext(void)));
+		     this,
+		     SLOT(slotPublicizeAllListenersPlaintext(void)));
       menu.addSeparator();
       menu.addAction(tr("&Full Echo"),
-		     this, SLOT(slotListenerFullEcho(void)));
+		     this,
+		     SLOT(slotListenerFullEcho(void)));
       menu.addAction(tr("&Half Echo"),
-		     this, SLOT(slotListenerHalfEcho(void)));
+		     this,
+		     SLOT(slotListenerHalfEcho(void)));
       menu.addSeparator();
       action = menu.addAction
 	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+	 this,
+	 SLOT(slotCopyPrivateApplicationMagnet(void)));
       action->setProperty("type", "listeners");
       action = menu.addAction
 	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotSetPrivateApplicationInformation(void)));
       action->setProperty("type", "listeners");
       action = menu.addAction
 	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "listeners");
       menu.addSeparator();
       menu.addAction(tr("&Prepare New One-Year Certificate"),
-		     this, SLOT(slotGenerateOneYearListenerCertificate(void)))->
+		     this,
+		     SLOT(slotGenerateOneYearListenerCertificate(void)))->
 	setEnabled(listenerSupportsSslTls());
       menu.addAction(tr("Set &SSL Control String..."),
-		     this, SLOT(slotSetListenerSSLControlString(void)))->
+		     this,
+		     SLOT(slotSetListenerSSLControlString(void)))->
 	setEnabled(listenerSupportsSslTls());
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
-			      this, SLOT(slotSetSocketOptions(void)));
+			      this,
+			      SLOT(slotSetSocketOptions(void)));
       action->setEnabled(listenerTransport() > "bluetooth");
       action->setProperty("type", "listeners");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -10410,7 +10445,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
     }
   else if(m_ui.neighbors == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
       auto const neighborSpecialClient = this->neighborSpecialClient();
       auto const neighborSupportsSslTls = this->neighborSupportsSslTls();
@@ -10419,41 +10454,51 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("Share &Chat Public Key Pair"),
-		     this, SLOT(slotShareChatPublicKey(void)));
+		     this,
+		     SLOT(slotShareChatPublicKey(void)));
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("Share &E-Mail Public Key Pair"),
-		     this, SLOT(slotShareEmailPublicKey(void)));
+		     this,
+		     SLOT(slotShareEmailPublicKey(void)));
 #ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("Share &Open Library Public Key Pair"),
-		     this, SLOT(slotShareOpenLibraryPublicKey(void)));
+		     this,
+		     SLOT(slotShareOpenLibraryPublicKey(void)));
 #endif
       menu.addAction(QIcon(QString(":/%1/share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("Share &Poptastic Public Key Pair"),
-		     this, SLOT(slotSharePoptasticPublicKey(void)));
+		     this,
+		     SLOT(slotSharePoptasticPublicKey(void)));
       menu.addAction(QIcon(QString(":%1//share.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("Share &URL Public Key Pair"),
-		     this, SLOT(slotShareURLPublicKey(void)));
+		     this,
+		     SLOT(slotShareURLPublicKey(void)));
       menu.addSeparator();
       menu.addAction(tr("&Assign New Remote IP Information..."),
-		     this, SLOT(slotAssignNewIPToNeighbor(void)));
+		     this,
+		     SLOT(slotAssignNewIPToNeighbor(void)));
       menu.addAction(tr("&Connect"),
-		     this, SLOT(slotConnectNeighbor(void)));
+		     this,
+		     SLOT(slotConnectNeighbor(void)));
       menu.addAction(tr("&Disconnect"),
-		     this, SLOT(slotDisconnectNeighbor(void)));
+		     this,
+		     SLOT(slotDisconnectNeighbor(void)));
       menu.addSeparator();
       menu.addAction(tr("&Connect All"),
-		     this, SLOT(slotConnectAllNeighbors(void)));
+		     this,
+		     SLOT(slotConnectAllNeighbors(void)));
       menu.addAction(tr("&Disconnect All"),
-		     this, SLOT(slotDisconnectAllNeighbors(void)));
+		     this,
+		     SLOT(slotDisconnectAllNeighbors(void)));
       menu.addSeparator();
       menu.addAction
 	(tr("&Authenticate Account..."),
@@ -10472,51 +10517,67 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Delete"),
-		     this, SLOT(slotDeleteNeighbor(void)));
+		     this,
+		     SLOT(slotDeleteNeighbor(void)));
       menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteAllNeighbors(void)));
+		     this,
+		     SLOT(slotDeleteAllNeighbors(void)));
       menu.addAction(tr("Delete All Non-Unique &Blocked"),
-		     this, SLOT(slotDeleteAllBlockedNeighbors(void)));
+		     this,
+		     SLOT(slotDeleteAllBlockedNeighbors(void)));
       menu.addAction(tr("Delete All Non-Unique &UUIDs"),
-		     this, SLOT(slotDeleteAllUuids(void)));
+		     this,
+		     SLOT(slotDeleteAllUuids(void)));
       menu.addSeparator();
       menu.addAction(tr("B&lock"),
-		     this, SLOT(slotBlockNeighbor(void)));
+		     this,
+		     SLOT(slotBlockNeighbor(void)));
       menu.addAction(tr("U&nblock"),
-		     this, SLOT(slotUnblockNeighbor(void)));
+		     this,
+		     SLOT(slotUnblockNeighbor(void)));
       menu.addSeparator();
       menu.addAction(tr("&Full Echo"),
-		     this, SLOT(slotNeighborFullEcho(void)));
+		     this,
+		     SLOT(slotNeighborFullEcho(void)));
       menu.addAction(tr("&Half Echo"),
-		     this, SLOT(slotNeighborHalfEcho(void)));
+		     this,
+		     SLOT(slotNeighborHalfEcho(void)));
       menu.addSeparator();
       action = menu.addAction(tr("&Copy Adaptive Echo Magnet"),
-			      this, SLOT(slotCopyAEMagnet(void)));
+			      this,
+			      SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "neighbors");
       menu.addAction(tr("&Set Adaptive Echo Token Information..."),
-		     this, SLOT(slotSetAETokenInformation(void)));
+		     this,
+		     SLOT(slotSetAETokenInformation(void)));
       menu.addAction(tr("&Reset Adaptive Echo Token Information"),
-		     this, SLOT(slotResetAETokenInformation(void)));
+		     this,
+		     SLOT(slotResetAETokenInformation(void)));
       menu.addSeparator();
       action = menu.addAction
 	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+	 this,
+	 SLOT(slotCopyPrivateApplicationMagnet(void)));
       action->setProperty("type", "neighbors");
       action = menu.addAction
 	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotSetPrivateApplicationInformation(void)));
       action->setProperty("type", "neighbors");
       action = menu.addAction
 	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "neighbors");
       menu.addSeparator();
       menu.addAction(tr("Set &SSL Control String..."),
-		     this, SLOT(slotSetNeighborSSLControlString(void)))->
+		     this,
+		     SLOT(slotSetNeighborSSLControlString(void)))->
 	setEnabled(neighborSupportsSslTls);
       menu.addSeparator();
       action = menu.addAction(tr("Set Socket &Options..."),
-			      this, SLOT(slotSetSocketOptions(void)));
+			      this,
+			      SLOT(slotSetSocketOptions(void)));
       action->setEnabled(neighborTransport() > "bluetooth");
       action->setProperty("type", "neighbors");
       menu.addSeparator();
@@ -10588,7 +10649,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
     }
   else if(m_ui.participants == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction
@@ -10596,14 +10657,17 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareChatPublicKeyWithParticipant(void)));
       menu.addSeparator();
-      menu.addAction(tr("Chat &Popup..."), this,
-		      SLOT(slotChatPopup(void)));
+      menu.addAction(tr("Chat &Popup..."),
+		     this,
+		     SLOT(slotChatPopup(void)));
       menu.addSeparator();
       menu.addAction(QIcon(":/generic/repleo-chat.png"),
 		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyFriendshipBundle(void)));
+		     this,
+		     SLOT(slotCopyFriendshipBundle(void)));
       menu.addSeparator();
 #if SPOTON_GOLDBUG == 1
       action = menu.addAction(QIcon(QString(":/%1/melodica.png").
@@ -10611,7 +10675,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 							 "nouve").
 					toString().toLower())),
 			      tr("MELODICA: &Call Friend (New Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
       action = menu.addAction(QIcon(QString(":/%1/melodica.png").
 				    arg(m_settings.value("gui/iconSet",
@@ -10620,7 +10685,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 			      tr("MELODICA: &Call Friend "
 				 "(New Gemini Pair Using "
 				 "Existing Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
       action = menu.addAction(QIcon(QString(":/%1/melodica.png").
 				    arg(m_settings.value("gui/iconSet",
@@ -10628,26 +10694,31 @@ void spoton::slotShowContextMenu(const QPoint &point)
 					toString().toLower())),
 			      tr("MELODICA Two-Way: &Call Friend (New "
 				 "Gemini Pair)"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu.addAction(tr("&Call Participant"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
       action = menu.addAction
 	(tr("&Call Participant (Existing Gemini Pair)"),
-	 this, SLOT(slotCallParticipant(void)));
+	 this,
+	 SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
       action = menu.addAction(tr("&Two-Way Calling"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu.addAction(tr("&Terminate Call"),
-			      this, SLOT(slotCallParticipant(void)));
+			      this,
+			      SLOT(slotCallParticipant(void)));
       action->setProperty("type", "terminating");
       menu.addSeparator();
 #if SPOTON_GOLDBUG == 1
@@ -10656,17 +10727,20 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	 this, SLOT(slotGenerateGeminiInChat(void)));
 #else
       menu.addAction(tr("&Generate Random Gemini Pair"),
-		     this, SLOT(slotGenerateGeminiInChat(void)));
+		     this,
+		     SLOT(slotGenerateGeminiInChat(void)));
 #endif
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveParticipants(void)));
+		     this,
+		     SLOT(slotRemoveParticipants(void)));
       menu.addSeparator();
       action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
+			      this,
+			      SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu.addSeparator();
       menu.addAction(tr("&Derive Gemini Pair From SMP Secret"),
@@ -10699,18 +10773,22 @@ void spoton::slotShowContextMenu(const QPoint &point)
       menu.addSeparator();
       menu.addAction
 	(tr("Call Via Forward &Secrecy Credentials"),
-	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
+	 this,
+	 SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu.addAction
 	(tr("Initiate Forward &Secrecy Exchange(s)..."),
-	 this, SLOT(slotEstablishForwardSecrecy(void)));
+	 this,
+	 SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu.addAction
 	(tr("Purge Forward &Secrecy Key Pair"),
-	 this, SLOT(slotPurgeEphemeralKeyPair(void)));
+	 this,
+	 SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "chat");
       action = menu.addAction
 	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+	 this,
+	 SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/buzz.png").
@@ -10727,22 +10805,26 @@ void spoton::slotShowContextMenu(const QPoint &point)
     }
   else if(m_ui.received == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("&Delete"), this,
+		     tr("&Delete"),
+		     this,
 		     SLOT(slotDeleteReceived(void)));
-      menu.addAction(tr("Delete &All"), this,
+      menu.addAction(tr("Delete &All"),
+		     this,
 		     SLOT(slotDeleteAllReceived(void)));
       menu.addSeparator();
-      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
+      action = menu.addAction(tr("&Compute SHA-1 Hash"),
+			      this,
 			      SLOT(slotComputeFileHash(void)));
       action->setProperty("hash", "sha-1");
       action->setProperty("widget_of", "received");
-      action = menu.addAction(tr("&Compute SHA3-512 Hash"), this,
+      action = menu.addAction(tr("&Compute SHA3-512 Hash"),
+			      this,
 			      SLOT(slotComputeFileHash(void)));
 #if QT_VERSION < 0x050100
       action->setEnabled(false);
@@ -10750,7 +10832,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "received");
       menu.addSeparator();
-      action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
+      action = menu.addAction(tr("&Copy SHA-1 Hash"),
+			      this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "received");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -10758,21 +10841,25 @@ void spoton::slotShowContextMenu(const QPoint &point)
     }
   else if(m_ui.transmitted == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
-		     tr("&Delete"), this,
+		     tr("&Delete"),
+		     this,
 		     SLOT(slotDeleteTransmitted(void)));
-      menu.addAction(tr("Delete &All"), this,
+      menu.addAction(tr("Delete &All"),
+		     this,
 		     SLOT(slotDeleteAllTransmitted(void)));
       menu.addSeparator();
-      action = menu.addAction(tr("&Compute SHA-1 Hash"), this,
+      action = menu.addAction(tr("&Compute SHA-1 Hash"),
+			      this,
 			      SLOT(slotComputeFileHash(void)));
       action->setProperty("widget_of", "transmitted");
-      action = menu.addAction(tr("&Compute SHA3-512 Hash"), this,
+      action = menu.addAction(tr("&Compute SHA3-512 Hash"),
+			      this,
 			      SLOT(slotComputeFileHash(void)));
 #if QT_VERSION < 0x050100
       action->setEnabled(false);
@@ -10780,13 +10867,16 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action->setProperty("hash", "sha3-512");
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
-      action = menu.addAction(tr("&Copy SHA-1 Hash"), this,
+      action = menu.addAction(tr("&Copy SHA-1 Hash"),
+			      this,
 			      SLOT(slotCopyFileHash(void)));
       action->setProperty("widget_of", "transmitted");
       menu.addSeparator();
-      menu.addAction(tr("Set &Pulse Size..."), this,
+      menu.addAction(tr("Set &Pulse Size..."),
+		     this,
 		     SLOT(slotSetSBPulseSize(void)));
-      menu.addAction(tr("Set &Read Interval..."), this,
+      menu.addAction(tr("Set &Read Interval..."),
+		     this,
 		     SLOT(slotSetSBReadInterval(void)));
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.transmitted->mapToGlobal(point));
@@ -10796,14 +10886,16 @@ void spoton::slotShowContextMenu(const QPoint &point)
       QMenu menu(this);
 
       menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyTransmittedMagnet(void)));
+		     this,
+		     SLOT(slotCopyTransmittedMagnet(void)));
       menu.addAction(tr("&Duplicate Magnet"),
-		     this, SLOT(slotDuplicateTransmittedMagnet(void)));
+		     this,
+		     SLOT(slotDuplicateTransmittedMagnet(void)));
       menu.exec(m_ui.transmittedMagnets->mapToGlobal(point));
     }
   else if(m_ui.urlParticipants == sender())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       QMenu menu(this);
 
       menu.addAction
@@ -10811,25 +10903,30 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareUrlPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareUrlPublicKeyWithParticipant(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/copy.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Copy Keys (Clipboard Buffer)"),
-		     this, SLOT(slotCopyUrlKeys(void)));
+		     this,
+		     SLOT(slotCopyUrlKeys(void)));
       menu.addAction(QIcon(":/generic/repleo-url.png"),
 		     tr("&Copy Repleo (Clipboard Buffer)"),
-		     this, SLOT(slotCopyUrlFriendshipBundle(void)));
+		     this,
+		     SLOT(slotCopyUrlFriendshipBundle(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Remove Participant(s)"),
-		     this, SLOT(slotRemoveUrlParticipants(void)));
+		     this,
+		     SLOT(slotRemoveUrlParticipants(void)));
       menu.addSeparator();
       action = menu.addAction(tr("&Rename Participant..."),
-			      this, SLOT(slotRenameParticipant(void)));
+			      this,
+			      SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
       menu.setStyleSheet("QMenu {menu-scrollable: 1;}");
       menu.exec(m_ui.urlParticipants->mapToGlobal(point));
