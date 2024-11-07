@@ -224,6 +224,7 @@ int main(int argc, char *argv[])
 	if(strcmp(argv[i], "--launch-kernel") == 0)
 	  launchKernel = true;
       }
+
   /*
   ** Disable JIT.
   */
