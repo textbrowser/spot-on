@@ -92,8 +92,8 @@ QByteArray spoton::copyMyEmailPublicKey(void) const
   QByteArray sSignature;
   auto ok = true;
 
-  name = m_settings.value("gui/emailName", "unknown").toByteArray();
   mPublicKey = m_crypts.value("email")->publicKey(&ok);
+  name = m_settings.value("gui/emailName", "unknown").toByteArray();
 
   if(ok)
     mSignature = m_crypts.value("email")->digitalSignature(mPublicKey, &ok);
@@ -202,8 +202,8 @@ QByteArray spoton::copyMyUrlPublicKey(void) const
   QByteArray sSignature;
   auto ok = true;
 
-  name = m_settings.value("gui/urlName", "unknown").toByteArray();
   mPublicKey = m_crypts.value("url")->publicKey(&ok);
+  name = m_settings.value("gui/urlName", "unknown").toByteArray();
 
   if(ok)
     mSignature = m_crypts.value("url")->digitalSignature(mPublicKey, &ok);
