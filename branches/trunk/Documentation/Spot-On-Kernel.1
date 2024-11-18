@@ -5,7 +5,8 @@ Spot-On-Kernel
 .B Spot-On-Kernel [options]
 .SH DESCRIPTION
 .B Spot-On-Kernel
-is the kernel program that's responsible for most of the networking tasks of Spot-On.
+is the kernel program that's responsible for most of the networking
+tasks of Spot-On.
 .SH OPTIONS
 .TP
 .BI --disable-mail
@@ -24,7 +25,10 @@ Disable the user interface server.
 Display some documentation.
 .TP
 .BI --passphrase
-Disable echo and authenticate the provided input. If the input is correct, the Spot-On-Kernel process will generate the defined keys and prepare its appropriate containers. If the input is incorrect, the Spot-On-Kernel process will terminate with a failure.
+Disable echo and authenticate the provided input. If the input is correct,
+the Spot-On-Kernel process will generate the defined keys and prepare
+its appropriate containers. If the input is incorrect, the Spot-On-Kernel
+process will terminate with a failure.
 .TP
 .BI --question-answer
 Please read the passphrase option's description.
@@ -33,10 +37,13 @@ Please read the passphrase option's description.
 Display kernel statistics and exit.
 .TP
 .BI --terminate
-Attempt to terminate the Spot-On-Kernel process as correctly as possible. Please note that a Spot-On-Kernel process that is awaiting authentication cannot be terminated via this option.
+Attempt to terminate the Spot-On-Kernel process as correctly as possible.
+Please note that a Spot-On-Kernel process that is awaiting authentication
+cannot be terminated via this option.
 .TP
 .BI --vacuum
-Vacuum various SQLite databases. The process will be performed before the authentication procedure.
+Vacuum various SQLite databases. The process will be performed before the
+authentication procedure.
 .TP
 .BI --version
 Display version information and exit.
