@@ -1,7 +1,0 @@
-<map id="spoton_gui_server_tcp_server" name="spoton_gui_server_tcp_server">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,79,173,119"/>
-<area shape="rect" id="Node000003" href="$classspoton__gui__server.html" title=" " alt="" coords="19,167,160,192"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="92,132,92,166,87,166,87,132"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="42,5,137,31"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="92,44,92,79,87,79,87,44"/>
-</map>
