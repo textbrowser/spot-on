@@ -544,7 +544,7 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
       m_optionsUi.other_options->appendPlainText
-	("PUBLISHED_PAGES := Directory, Title-Line, URL-Line");
+	("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
       m_optionsUi.other_options->appendPlainText
 	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
       m_optionsUi.other_options->appendPlainText
