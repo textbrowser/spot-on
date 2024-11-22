@@ -4,7 +4,8 @@ Set to GoldBug or Spot-On.
 
 SPOTON_BLUETOOTH_ENABLED
 
-Enable Bluetooth. Define if the system supports Bluetooth. Requires Qt support.
+Enable Bluetooth. Define if the system supports Bluetooth.
+Requires Qt support.
 
 SPOTON_DATELESS_COMPILATION
 

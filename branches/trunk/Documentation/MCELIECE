@@ -11,7 +11,8 @@ To enable McEliece for other systems, please follow the following
 suggestions. Good luck!
 
 1. Verify that libtool is installed. On Debian-based systems, issue
-sudo apt-get install libtool-bin. Please ignore on FreeBSD, MacOS, and Windows.
+sudo apt-get install libtool-bin. Please ignore on FreeBSD, MacOS,
+and Windows.
 
 2. Create a special libntl target. Please note that a kernel's
 project file will reference different libNTL paths (../../../libNTL).
