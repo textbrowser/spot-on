@@ -170,7 +170,7 @@ void spoton::cancelUrlQuery(void)
   if(!m_urlDatabase.driver() || m_urlDatabase.driverName() != "QPSQL")
     return;
 
-  auto const handle(m_urlDatabase.driver()->handle());
+  auto handle(m_urlDatabase.driver()->handle());
 
   if(!handle.isValid() || handle.typeName() != QString("PGconn"))
     return;
