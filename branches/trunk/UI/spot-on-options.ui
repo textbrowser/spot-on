@@ -44,8 +44,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>769</width>
-         <height>4712</height>
+         <width>776</width>
+         <height>4258</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -125,10 +125,13 @@
            <item>
             <widget class="QCheckBox" name="monitor">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Forward-secrecy protocol information, network events, etc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Forward-secrecy protocol information, network events, etc. Show an interactive widget in the main window's status bar.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>&amp;Monitor events.</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -2872,7 +2875,7 @@ with the kernel process.</string>
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>34</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

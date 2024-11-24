@@ -170,7 +170,7 @@ void spoton::cancelUrlQuery(void)
   if(!m_urlDatabase.driver() || m_urlDatabase.driverName() != "QPSQL")
     return;
 
-  auto handle(m_urlDatabase.driver()->handle());
+  auto const handle(m_urlDatabase.driver()->handle());
 
   if(!handle.isValid() || handle.typeName() != QString("PGconn"))
     return;
@@ -832,7 +832,7 @@ void spoton::slotCopyPrivateApplicationMagnet(void)
   else
     clipboard->clear();
 
-  QTableWidgetItem *item = 0;
+  QTableWidgetItem *item = nullptr;
 
   if(action->property("type") == "listeners")
     item = m_ui.listeners->item(row, 23); // private_application_credentials
@@ -2135,7 +2135,7 @@ void spoton::slotShowNeighborStatistics(void)
 
 void spoton::slotShowNotificationsWindow(void)
 {
-  auto wasVisible = m_notificationsWindow->isVisible();
+  auto const wasVisible = m_notificationsWindow->isVisible();
 
   if(!wasVisible)
     spoton_utilities::centerWidget(m_notificationsWindow, this);

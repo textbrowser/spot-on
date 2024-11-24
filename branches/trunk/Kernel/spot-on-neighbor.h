@@ -70,7 +70,7 @@ class spoton_neighbor_tcp_socket: public QSslSocket
   Q_OBJECT
 
  public:
-  spoton_neighbor_tcp_socket(QObject *parent = 0):QSslSocket(parent)
+  spoton_neighbor_tcp_socket(QObject *parent = nullptr):QSslSocket(parent)
   {
   }
 
@@ -85,9 +85,9 @@ class spoton_neighbor_udp_socket: public QUdpSocket
   Q_OBJECT
 
  public:
-  spoton_neighbor_udp_socket(QObject *parent = 0):QUdpSocket(parent)
+  spoton_neighbor_udp_socket(QObject *parent = nullptr):QUdpSocket(parent)
   {
-    m_multicastSocket = 0;
+    m_multicastSocket = nullptr;
   }
 
   void initializeMulticast(const QHostAddress &address,
