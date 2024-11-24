@@ -58,7 +58,7 @@ class spoton_gui_server_tcp_server: public QTcpServer
   QSslSocket *nextPendingConnection(void)
   {
     if(m_queue.isEmpty())
-      return 0;
+      return nullptr;
     else
       return m_queue.dequeue();
   }

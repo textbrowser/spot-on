@@ -532,9 +532,9 @@ static void wordsToBytes(char *B,
 spoton_threefish::spoton_threefish(void)
 {
   m_blockSize = 0;
-  m_key = 0;
+  m_key = nullptr;
   m_keyLength = 0;
-  m_tweak = 0;
+  m_tweak = nullptr;
   m_tweakLength = 0;
 }
 
@@ -869,7 +869,7 @@ void spoton_threefish::setTweak(const QByteArray &tweak, bool *ok)
 
  done_label:
   delete []m_tweak;
-  m_tweak = 0;
+  m_tweak = nullptr;
   m_tweakLength = 0;
 }
 

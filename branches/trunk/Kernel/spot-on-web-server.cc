@@ -292,7 +292,7 @@ void spoton_web_server::slotTimeout(void)
 	("so_linger=" + QString::number(so_linger),
 	 "tcp",
 	 m_http->socketDescriptor(),
-	 0);
+	 nullptr);
     }
 
   if(!m_https->isListening() &&
@@ -312,7 +312,7 @@ void spoton_web_server::slotTimeout(void)
 	("so_linger=" + QString::number(so_linger),
 	 "tcp",
 	 m_https->socketDescriptor(),
-	 0);
+	 nullptr);
     }
 }
 

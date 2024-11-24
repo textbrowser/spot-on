@@ -159,7 +159,7 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
       if(m_privateKeyLength == 0 ||
 	 (m_privateKey =
 	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
-						  sizeof(char)))) == 0)
+						  sizeof(char)))) == nullptr)
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
@@ -172,7 +172,7 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
     {
       if(m_privateKeyLength == 0 ||
 	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
-						     sizeof(char)))) == 0)
+						     sizeof(char)))) == nullptr)
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
@@ -316,7 +316,7 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
       if(gcry_cipher_decrypt(m_cipherHandle,
 			     decrypted.data(),
 			     static_cast<size_t> (decrypted.length()),
-			     0,
+			     nullptr,
 			     0) == 0)
 	{
 	  QByteArray originalLength;
@@ -498,11 +498,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
   QString keyType("");
   QStringList list;
   gcry_error_t err = 0;
-  gcry_mpi_t hash_t = 0;
-  gcry_sexp_t data_t = 0;
-  gcry_sexp_t key_t = 0;
-  gcry_sexp_t signature_t = 0;
-  unsigned char *hash_p = 0;
+  gcry_mpi_t hash_t = nullptr;
+  gcry_sexp_t data_t = nullptr;
+  gcry_sexp_t key_t = nullptr;
+  gcry_sexp_t signature_t = nullptr;
+  unsigned char *hash_p = nullptr;
 
   if((err = gcry_sexp_new(&key_t,
 			  m_privateKey,

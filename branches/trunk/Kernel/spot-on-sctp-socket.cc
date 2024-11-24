@@ -124,7 +124,7 @@ QByteArray spoton_sctp_socket::readAll(void)
 QHostAddress spoton_sctp_socket::localAddress(void) const
 {
 #ifdef SPOTON_SCTP_ENABLED
-  return localAddressAndPort(0);
+  return localAddressAndPort(nullptr);
 #else
   return QHostAddress();
 #endif
@@ -206,7 +206,7 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 QHostAddress spoton_sctp_socket::peerAddress(void) const
 {
 #ifdef SPOTON_SCTP_ENABLED
-  return peerAddressAndPort(0);
+  return peerAddressAndPort(nullptr);
 #else
   return QHostAddress();
 #endif
@@ -724,10 +724,13 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
 #if defined(Q_OS_WINDOWS)
   spoton_socket_options::setSocketOptions
-    (m_socketOptions, "sctp", m_socketDescriptor, 0);
+    (m_socketOptions, "sctp", m_socketDescriptor, nullptr);
 #else
   spoton_socket_options::setSocketOptions
-    (m_socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
+    (m_socketOptions,
+     "sctp",
+     static_cast<qint64> (m_socketDescriptor),
+     nullptr);
 #endif
 
   if(protocol == IPv4Protocol)
@@ -1006,7 +1009,7 @@ void spoton_sctp_socket::slotTimeout(void)
       tv.tv_sec = 0;
       tv.tv_usec = 500000; // 500 milliseconds.
 
-      if(select(m_socketDescriptor + 1, &rfds, &wfds, 0, &tv) > 0)
+      if(select(m_socketDescriptor + 1, &rfds, &wfds, nullptr, &tv) > 0)
 	{
 	  if(FD_ISSET(m_socketDescriptor, &rfds) ||
 	     FD_ISSET(m_socketDescriptor, &wfds))

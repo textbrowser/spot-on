@@ -133,7 +133,7 @@ class spoton_neighbor_udp_socket: public QUdpSocket
       (socketOptions,
        "udp",
        static_cast<qint64> (m_multicastSocket->socketDescriptor()),
-       0);
+       nullptr);
 
     if(!m_multicastSocket->joinMulticastGroup(address))
       {
@@ -635,7 +635,7 @@ class spoton_neighbor_worker: public QObject
   Q_OBJECT
 
  public:
-  spoton_neighbor_worker(spoton_neighbor *neighbor):QObject(0)
+  spoton_neighbor_worker(spoton_neighbor *neighbor):QObject(nullptr)
   {
     m_neighbor = neighbor;
   }

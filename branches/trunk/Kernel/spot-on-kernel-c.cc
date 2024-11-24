@@ -199,7 +199,7 @@ spoton_crypt *spoton_kernel::crypt(const QString &key)
 {
   QReadLocker locker(&s_cryptsMutex);
 
-  return s_crypts.value(key, 0);
+  return s_crypts.value(key, nullptr);
 }
 
 void spoton_kernel::cryptSave(const QString &k, spoton_crypt *crypt)
@@ -482,5 +482,5 @@ void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 
 void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
 {
-  writeMessage006X(data, "0061", 0, 0);
+  writeMessage006X(data, "0061", nullptr, nullptr);
 }

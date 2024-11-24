@@ -223,10 +223,10 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 
 #if defined(Q_OS_WINDOWS)
   spoton_socket_options::setSocketOptions
-    (socketOptions, "sctp", m_socketDescriptor, 0);
+    (socketOptions, "sctp", m_socketDescriptor, nullptr);
 #else
   spoton_socket_options::setSocketOptions
-    (socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), 0);
+    (socketOptions, "sctp", static_cast<qint64> (m_socketDescriptor), nullptr);
 #endif
 
   /*

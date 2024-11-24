@@ -4507,7 +4507,8 @@ void spoton_neighbor::saveStatistics(const QSqlDatabase &db)
 			   arg(cipher.keyExchangeMethod()).
 			   arg(cipher.protocolString()).
 			   arg(cipher.supportedBits()).
-			   arg(cipher.usedBits()).toUtf8(), 0).toBase64());
+			   arg(cipher.usedBits()).toUtf8(), nullptr).
+       toBase64());
 
   switch(state())
     {

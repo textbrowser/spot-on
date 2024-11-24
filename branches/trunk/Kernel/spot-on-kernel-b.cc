@@ -96,7 +96,7 @@ void spoton_kernel::importUrls(void)
   }
 
   auto s_crypt = this->crypt("chat");
-  spoton_crypt *crypt = 0;
+  spoton_crypt *crypt = nullptr;
 
   crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
 
@@ -383,7 +383,7 @@ void spoton_kernel::popPoptastic(void)
       return;
     }
 
-  CURL *curl = 0;
+  CURL *curl = nullptr;
   QHash<QByteArray, char> cache;
   auto const method(hash.value("in_method").toString().toUpper().trimmed());
   auto const limit = setting("gui/poptasticNumberOfMessages", 15).toInt();
@@ -391,7 +391,7 @@ void spoton_kernel::popPoptastic(void)
 
   for(int ii = 1; ii <= limit + 1; ii++)
     {
-      if(curl == 0)
+      if(curl == nullptr)
 	curl = curl_easy_init();
 
       if(!curl)
@@ -832,7 +832,7 @@ void spoton_kernel::postPoptastic(void)
 
 	      auto bytes(values.value("message").toByteArray());
 	      long int count = 0;
-	      struct curl_slist *recipients = 0;
+	      struct curl_slist *recipients = nullptr;
 	      struct curl_upload_status upload_ctx;
 
 	      upload_ctx.lines_read = 0;

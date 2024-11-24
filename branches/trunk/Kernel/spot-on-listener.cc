@@ -914,7 +914,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	(m_socketOptions,
 	 m_transport,
 	 static_cast<qint64> (socketDescriptor),
-	 0);
+	 nullptr);
       neighbor = new (std::nothrow) spoton_neighbor
 	(socketDescriptor,
 	 m_certificate,

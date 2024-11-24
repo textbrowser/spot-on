@@ -1388,13 +1388,13 @@ void spoton_neighbor::slotConnected(void)
       (m_socketOptions,
        m_transport,
        static_cast<qint64> (m_sctpSocket->socketDescriptor()),
-       0);
+       nullptr);
   else if(m_tcpSocket)
     spoton_socket_options::setSocketOptions
       (m_socketOptions,
        m_transport,
        static_cast<qint64> (m_tcpSocket->socketDescriptor()),
-       0);
+       nullptr);
   else if(m_udpSocket)
     {
       if(m_isUserDefined)
@@ -1403,7 +1403,7 @@ void spoton_neighbor::slotConnected(void)
 	    (m_socketOptions,
 	     m_transport,
 	     static_cast<qint64> (m_udpSocket->socketDescriptor()),
-	     0);
+	     nullptr);
 
 	  QHostAddress address(m_address);
 

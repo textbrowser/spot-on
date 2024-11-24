@@ -191,9 +191,9 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-static QPointer<spoton_kernel> s_kernel = 0;
-static char *s_congestion_control_db_path = 0; // We're not deleting.
-static char *s_kernel_db_path = 0; // We're not deleting.
+static QPointer<spoton_kernel> s_kernel = nullptr;
+static char *s_congestion_control_db_path = nullptr; // We're not deleting.
+static char *s_kernel_db_path = nullptr; // We're not deleting.
 
 static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,
@@ -324,7 +324,7 @@ int main(int argc, char *argv[])
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
 
-  if(sigaction(SIGHUP, &act, 0))
+  if(sigaction(SIGHUP, &act, nullptr))
     std::cerr << "sigaction() failure on SIGHUP. Continuing." << std::endl;
 
   /*
@@ -335,7 +335,7 @@ int main(int argc, char *argv[])
   sigemptyset(&act.sa_mask);
   act.sa_flags = 0;
 
-  if(sigaction(SIGPIPE, &act, 0))
+  if(sigaction(SIGPIPE, &act, nullptr))
     std::cerr << "sigaction() failure on SIGPIPE. Continuing." << std::endl;
 #endif
   qInstallMessageHandler(qt_message_handler);
@@ -488,7 +488,7 @@ int main(int argc, char *argv[])
     }
 }
 
-spoton_kernel::spoton_kernel(void):QObject(0)
+spoton_kernel::spoton_kernel(void):QObject(nullptr)
 {
   qRegisterMetaType<QAbstractSocket::SocketError>
     ("QAbstractSocket::SocketError");
@@ -1504,7 +1504,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	    for(int i = 0; i < list.size(); i++)
 	      if(!crypt(list.at(i)))
 		{
-		  spoton_crypt *s_crypt = 0;
+		  spoton_crypt *s_crypt = nullptr;
 
 		  try
 		    {
@@ -1530,7 +1530,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 		  catch(...)
 		    {
 		      delete s_crypt;
-		      s_crypt = 0;
+		      s_crypt = nullptr;
 		    }
 
 		  cryptSave(list.at(i), s_crypt);
@@ -2901,7 +2901,7 @@ void spoton_kernel::prepareNeighbors(void)
 		}
 	      else
 		{
-		  neighbor = m_neighbors.value(id, 0);
+		  neighbor = m_neighbors.value(id, nullptr);
 
 		  if(neighbor)
 		    neighbor->deleteLater();
@@ -3019,7 +3019,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		    }
 		  else
 		    {
-		      starbeam = m_starbeamReaders.value(id, 0);
+		      starbeam = m_starbeamReaders.value(id, nullptr);
 
 		      if(starbeam)
 			starbeam->setReadInterval(readInterval);
@@ -3027,7 +3027,7 @@ void spoton_kernel::prepareStarbeamReaders(void)
 		}
 	      else if(status != "paused")
 		{
-		  auto starbeam(m_starbeamReaders.value(id, 0));
+		  auto starbeam(m_starbeamReaders.value(id, nullptr));
 
 		  if(starbeam)
 		    starbeam->deleteLater();
@@ -3662,14 +3662,15 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
       ** Now, the destination tag.
       */
 
-      spoton_crypt crypt("aes256", // Buzz
-			 "sha512", // Buzz
-			 QByteArray(),
-			 QByteArray(),
-			 spoton_crypt::sha512Hash(hashKey.mid(48), 0), // Buzz
-			 0,
-			 0,
-			 "");
+      spoton_crypt crypt
+	("aes256", // Buzz
+	 "sha512", // Buzz
+	 QByteArray(),
+	 QByteArray(),
+	 spoton_crypt::sha512Hash(hashKey.mid(48), nullptr), // Buzz
+	 0,
+	 0,
+	 "");
 
       destination = crypt.keyedHash(a1 + a2, &ok);
 
@@ -4386,7 +4387,7 @@ void spoton_kernel::slotDetachNeighbors(const qint64 listenerOid)
   QPointer<spoton_listener> listener;
 
   if(m_listeners.contains(listenerOid))
-    listener = m_listeners.value(listenerOid, 0);
+    listener = m_listeners.value(listenerOid, nullptr);
   else
     spoton_misc::logError(QString("spoton_kernel::slotDetachNeighbors(): "
 				  "listener %1 not found.").arg(listenerOid));
@@ -4405,7 +4406,7 @@ void spoton_kernel::slotDisconnectNeighbors(const qint64 listenerOid)
   QPointer<spoton_listener> listener;
 
   if(m_listeners.contains(listenerOid))
-    listener = m_listeners.value(listenerOid, 0);
+    listener = m_listeners.value(listenerOid, nullptr);
 
   if(listener)
     {
@@ -4696,7 +4697,7 @@ void spoton_kernel::slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor)
     {
       auto const id = neighbor->id();
 
-      if(m_neighbors.contains(id) && !m_neighbors.value(id, 0))
+      if(m_neighbors.contains(id) && !m_neighbors.value(id, nullptr))
 	m_neighbors.remove(id);
 
       if(!m_neighbors.contains(id))
@@ -4891,7 +4892,7 @@ void spoton_kernel::slotPublicizeAllListenersPlaintext(void)
 
 void spoton_kernel::slotPublicizeListenerPlaintext(const qint64 oid)
 {
-  auto listener(m_listeners.value(oid, 0));
+  auto listener(m_listeners.value(oid, nullptr));
 
   if(!listener)
     return;

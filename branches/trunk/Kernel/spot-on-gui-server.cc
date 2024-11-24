@@ -757,7 +757,7 @@ void spoton_gui_server::slotReadyRead(void)
 		      catch(...)
 			{
 			  delete s_crypt;
-			  s_crypt = 0;
+			  s_crypt = nullptr;
 			}
 
 		      if(Q_LIKELY(s_crypt))

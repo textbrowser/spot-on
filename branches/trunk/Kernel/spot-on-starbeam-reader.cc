@@ -400,7 +400,7 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
     if(spoton_kernel::instance())
       {
 	spoton_kernel::instance()->writeMessage006X
-	  (data, "0060", m_fragmented ? &m_neighborIndex : 0, &ok);
+	  (data, "0060", m_fragmented ? &m_neighborIndex : nullptr, &ok);
 
 	if(ok)
 	  m_expiredResponse.start();
