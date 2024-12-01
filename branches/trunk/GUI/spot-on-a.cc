@@ -2273,6 +2273,10 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotResendMail(void)));
+  connect(m_ui.reset_search_results,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotResetSearch(void)));
   connect(m_ui.retrieveMail,
 	  SIGNAL(clicked(void)),
 	  this,

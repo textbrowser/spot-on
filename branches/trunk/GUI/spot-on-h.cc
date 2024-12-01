@@ -1252,6 +1252,16 @@ void spoton::slotPrepareContextMenuMirrors(void)
   prepareContextMenuMirrors();
 }
 
+void spoton::slotResetSearch(void)
+{
+  m_ui.find->clear();
+  m_ui.search->clear();
+  m_ui.search->setFocus();
+  m_ui.searchfor->clear();
+  m_ui.url_pages->setText(tr("| 1 |"));
+  m_ui.urls->clear();
+}
+
 void spoton::slotSOSSMaximumClientsChanged(int value)
 {
   QSettings settings;

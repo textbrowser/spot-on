@@ -2377,8 +2377,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>729</width>
-             <height>461</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3120,7 +3120,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>374</width>
+                     <width>363</width>
                      <height>1602</height>
                     </rect>
                    </property>
@@ -3691,8 +3691,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>234</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4104,7 +4104,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>811</width>
+                  <width>835</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -4967,8 +4967,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>625</width>
-             <height>426</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5052,9 +5052,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>906</width>
-                 <height>749</height>
+                 <y>-426</y>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5893,6 +5893,13 @@
                   </widget>
                  </item>
                  <item>
+                  <widget class="QPushButton" name="reset_search_results">
+                   <property name="text">
+                    <string>Reset All</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <spacer name="horizontalSpacer_5">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
@@ -6074,8 +6081,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1062</width>
-             <height>1359</height>
+             <width>1029</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7325,8 +7332,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>672</width>
-             <height>732</height>
+             <width>851</width>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8532,7 +8539,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>840</width>
+             <width>851</width>
              <height>833</height>
             </rect>
            </property>
@@ -9320,8 +9327,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>308</width>
-             <height>179</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -10121,6 +10128,7 @@
   <tabstop>importUrls</tabstop>
   <tabstop>search</tabstop>
   <tabstop>discover</tabstop>
+  <tabstop>reset_search_results</tabstop>
   <tabstop>searchfor</tabstop>
   <tabstop>urls</tabstop>
   <tabstop>find</tabstop>
