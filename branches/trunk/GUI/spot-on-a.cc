@@ -10728,7 +10728,8 @@ void spoton::slotShowContextMenu(const QPoint &point)
 #if SPOTON_GOLDBUG == 1
       menu.addAction
 	(tr("&Generate Random Gemini Pair (Without Call)"),
-	 this, SLOT(slotGenerateGeminiInChat(void)));
+	 this,
+	 SLOT(slotGenerateGeminiInChat(void)));
 #else
       menu.addAction(tr("&Generate Random Gemini Pair"),
 		     this,

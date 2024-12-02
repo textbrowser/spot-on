@@ -741,14 +741,16 @@ void spoton::prepareContextMenuMirrors(void)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareChatPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareChatPublicKeyWithParticipant(void)));
       menu->addSeparator();
       menu->addAction(tr("Chat &Popup..."), this,
 		      SLOT(slotChatPopup(void)));
       menu->addSeparator();
       menu->addAction(QIcon(":/generic/repleo-chat.png"),
 		      tr("&Copy Repleo (Clipboard Buffer)"),
-		      this, SLOT(slotCopyFriendshipBundle(void)));
+		      this,
+		      SLOT(slotCopyFriendshipBundle(void)));
       menu->addSeparator();
 #if SPOTON_GOLDBUG == 1
       action = menu->addAction(QIcon(QString(":/%1/melodica.png").
@@ -757,7 +759,8 @@ void spoton::prepareContextMenuMirrors(void)
 					 toString().toLower())),
 			       tr("MELODICA: &Call Friend (New "
 				  "Gemini Pair)"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
       action = menu->addAction(QIcon(QString(":/%1/melodica.png").
 				     arg(m_settings.value("gui/iconSet",
@@ -766,7 +769,8 @@ void spoton::prepareContextMenuMirrors(void)
 			       tr("MELODICA: &Call Friend (New "
 				  "Gemini Pair Using Existing "
 				  "Gemini Pair)"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
       action = menu->addAction(QIcon(QString(":/%1/melodica.png").
 				     arg(m_settings.value("gui/iconSet",
@@ -774,45 +778,54 @@ void spoton::prepareContextMenuMirrors(void)
 					 toString().toLower())),
 			       tr("MELODICA Two-Way: &Call Friend (New "
 				  "Gemini Pair)"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu->addAction(tr("&Call Participant"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling");
       action = menu->addAction(tr("&Call Participant ("
 				  "Existing Gemini Pair)"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setProperty("type", "calling_using_gemini");
       action = menu->addAction(tr("&Two-Way Calling"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setEnabled
 	("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu->addAction(tr("&Terminate Call"),
-			       this, SLOT(slotCallParticipant(void)));
+			       this,
+			       SLOT(slotCallParticipant(void)));
       action->setProperty("type", "terminating");
       menu->addSeparator();
 #if SPOTON_GOLDBUG == 1
       menu->addAction
 	(tr("&Generate Random Gemini Pair (Without Call)"),
-	 this, SLOT(slotGenerateGeminiInChat(void)));
+	 this,
+	 SLOT(slotGenerateGeminiInChat(void)));
 #else
       menu->addAction(tr("&Generate Random Gemini Pair"),
-		      this, SLOT(slotGenerateGeminiInChat(void)));
+		      this,
+		      SLOT(slotGenerateGeminiInChat(void)));
 #endif
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Remove Participant(s)"),
-		      this, SLOT(slotRemoveParticipants(void)));
+		      this,
+		      SLOT(slotRemoveParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
-			       this, SLOT(slotRenameParticipant(void)));
+			       this,
+			       SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
       menu->addAction(tr("&Derive Gemini Pair From SMP Secret"),
@@ -845,16 +858,20 @@ void spoton::prepareContextMenuMirrors(void)
       menu->addSeparator();
       menu->addAction
 	(tr("Call Via Forward &Secrecy Credentials"),
-	 this, SLOT(slotCallParticipantViaForwardSecrecy(void)));
+	 this,
+	 SLOT(slotCallParticipantViaForwardSecrecy(void)));
       action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
-			       this, SLOT(slotEstablishForwardSecrecy(void)));
+			       this,
+			       SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "chat");
       action = menu->addAction(tr("Purge Forward &Secrecy Key Pair"),
-			       this, SLOT(slotPurgeEphemeralKeyPair(void)));
+			       this,
+			       SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "chat");
       action = menu->addAction
 	(tr("Reset Forward &Secrecy Information of Selected Participant(s)"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+	 this,
+	 SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "chat");
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/buzz.png").
@@ -924,36 +941,44 @@ void spoton::prepareContextMenuMirrors(void)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareEmailPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareEmailPublicKeyWithParticipant(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/copy.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Copy Keys (Clipboard Buffer)"),
-		      this, SLOT(slotCopyEmailKeys(void)));
+		      this,
+		      SLOT(slotCopyEmailKeys(void)));
       menu->addAction(QIcon(":/generic/repleo-email.png"),
 		      tr("&Copy Repleo (Clipboard Buffer)"),
-		      this, SLOT(slotCopyEmailFriendshipBundle(void)));
+		      this,
+		      SLOT(slotCopyEmailFriendshipBundle(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Remove Participant(s)"),
-		      this, SLOT(slotRemoveEmailParticipants(void)));
+		      this,
+		      SLOT(slotRemoveEmailParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
-			       this, SLOT(slotRenameParticipant(void)));
+			       this,
+			       SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "email");
       menu->addSeparator();
       action = menu->addAction(tr("Initiate Forward &Secrecy Exchange(s)..."),
-			       this, SLOT(slotEstablishForwardSecrecy(void)));
+			       this,
+			       SLOT(slotEstablishForwardSecrecy(void)));
       action->setProperty("type", "email");
       action = menu->addAction(tr("Purge Forward &Secrecy Key Pair"),
-			       this, SLOT(slotPurgeEphemeralKeyPair(void)));
+			       this,
+			       SLOT(slotPurgeEphemeralKeyPair(void)));
       action->setProperty("type", "email");
       action = menu->addAction
 	(tr("Reset Forward &Secrecy Information"),
-	 this, SLOT(slotResetForwardSecrecyInformation(void)));
+	 this,
+	 SLOT(slotResetForwardSecrecyInformation(void)));
       action->setProperty("type", "email");
       m_ui.emailWriteActionMenu->setMenu(menu);
       connect(m_ui.emailWriteActionMenu,
@@ -981,52 +1006,67 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Delete"),
-		      this, SLOT(slotDeleteListener(void)));
+		      this,
+		      SLOT(slotDeleteListener(void)));
       menu->addAction(tr("Delete &All"),
-		      this, SLOT(slotDeleteAllListeners(void)));
+		      this,
+		      SLOT(slotDeleteAllListeners(void)));
       menu->addSeparator();
       menu->addAction(tr("Detach &Neighbors"),
-		      this, SLOT(slotDetachListenerNeighbors(void)));
+		      this,
+		      SLOT(slotDetachListenerNeighbors(void)));
       menu->addAction(tr("Disconnect &Neighbors"),
-		      this, SLOT(slotDisconnectListenerNeighbors(void)));
+		      this,
+		      SLOT(slotDisconnectListenerNeighbors(void)));
       menu->addSeparator();
       menu->addAction(tr("&Publish Information (Plaintext)"),
-		      this, SLOT(slotPublicizeListenerPlaintext(void)));
+		      this,
+		      SLOT(slotPublicizeListenerPlaintext(void)));
       menu->addAction(tr("Publish &All (Plaintext)"),
-		      this, SLOT(slotPublicizeAllListenersPlaintext(void)));
+		      this,
+		      SLOT(slotPublicizeAllListenersPlaintext(void)));
       menu->addSeparator();
       menu->addAction(tr("&Full Echo"),
-		      this, SLOT(slotListenerFullEcho(void)));
+		      this,
+		      SLOT(slotListenerFullEcho(void)));
       menu->addAction(tr("&Half Echo"),
-		      this, SLOT(slotListenerHalfEcho(void)));
+		      this,
+		      SLOT(slotListenerHalfEcho(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
-			       this, SLOT(slotCopyAEMagnet(void)));
+			       this,
+			       SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "listeners");
       menu->addSeparator();
       action = menu->addAction
 	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+	 this,
+	 SLOT(slotCopyPrivateApplicationMagnet(void)));
       action->setProperty("type", "listeners");
       action = menu->addAction
 	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotSetPrivateApplicationInformation(void)));
       action->setProperty("type", "listeners");
       action = menu->addAction
 	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "listeners");
       menu->addSeparator();
       menu->addAction
 	(tr("&Prepare New One-Year Certificate"),
-	 this, SLOT(slotGenerateOneYearListenerCertificate(void)))->setEnabled
+	 this,
+	 SLOT(slotGenerateOneYearListenerCertificate(void)))->setEnabled
 	(listenerSupportsSslTls());
       menu->addAction(tr("Set &SSL Control String..."),
-		      this, SLOT(slotSetListenerSSLControlString(void)))->
+		      this,
+		      SLOT(slotSetListenerSSLControlString(void)))->
 	setEnabled(listenerSupportsSslTls());
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
-			       this, SLOT(slotSetSocketOptions(void)));
+			       this,
+			       SLOT(slotSetSocketOptions(void)));
       action->setEnabled(listenerTransport() > "bluetooth");
       action->setProperty("type", "listeners");
       m_ui.listenersActionMenu->setMenu(menu);
@@ -1047,15 +1087,18 @@ void spoton::prepareContextMenuMirrors(void)
       auto menu = new QMenu(this);
 
       menu->addAction(tr("Copy &Magnet"),
-		      this, SLOT(slotCopyEtpMagnet(void)));
+		      this,
+		      SLOT(slotCopyEtpMagnet(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Delete"),
-		      this, SLOT(slotDeleteEtpMagnet(void)));
+		      this,
+		      SLOT(slotDeleteEtpMagnet(void)));
       menu->addAction(tr("Delete &All"),
-		      this, SLOT(slotDeleteEtpAllMagnets(void)));
+		      this,
+		      SLOT(slotDeleteEtpAllMagnets(void)));
       m_ui.magnetsActionMenu->setMenu(menu);
       connect(m_ui.magnetsActionMenu,
 	      SIGNAL(clicked(void)),
@@ -1084,41 +1127,51 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &Chat Public Key Pair"),
-		      this, SLOT(slotShareChatPublicKey(void)));
+		      this,
+		      SLOT(slotShareChatPublicKey(void)));
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &E-Mail Public Key Pair"),
-		      this, SLOT(slotShareEmailPublicKey(void)));
+		      this,
+		      SLOT(slotShareEmailPublicKey(void)));
 #ifdef SPOTON_OPEN_LIBRARY_SUPPORTED
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &Open Library Public Key Pair"),
-		      this, SLOT(slotShareOpenLibraryPublicKey(void)));
+		      this,
+		      SLOT(slotShareOpenLibraryPublicKey(void)));
 #endif
       menu->addAction(QIcon(QString(":/%1/share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &Poptastic Public Key Pair"),
-		      this, SLOT(slotSharePoptasticPublicKey(void)));
+		      this,
+		      SLOT(slotSharePoptasticPublicKey(void)));
       menu->addAction(QIcon(QString(":%1//share.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("Share &URL Public Key Pair"),
-		      this, SLOT(slotShareURLPublicKey(void)));
+		      this,
+		      SLOT(slotShareURLPublicKey(void)));
       menu->addSeparator();
       menu->addAction(tr("&Assign New Remote IP Information..."),
-		      this, SLOT(slotAssignNewIPToNeighbor(void)));
+		      this,
+		      SLOT(slotAssignNewIPToNeighbor(void)));
       menu->addAction(tr("&Connect"),
-		      this, SLOT(slotConnectNeighbor(void)));
+		      this,
+		      SLOT(slotConnectNeighbor(void)));
       menu->addAction(tr("&Disconnect"),
-		      this, SLOT(slotDisconnectNeighbor(void)));
+		      this,
+		      SLOT(slotDisconnectNeighbor(void)));
       menu->addSeparator();
       menu->addAction(tr("&Connect All"),
-		      this, SLOT(slotConnectAllNeighbors(void)));
+		      this,
+		      SLOT(slotConnectAllNeighbors(void)));
       menu->addAction(tr("&Disconnect All"),
-		      this, SLOT(slotDisconnectAllNeighbors(void)));
+		      this,
+		      SLOT(slotDisconnectAllNeighbors(void)));
       menu->addSeparator();
       menu->addAction
 	(tr("&Authenticate Account..."),
@@ -1137,51 +1190,67 @@ void spoton::prepareContextMenuMirrors(void)
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Delete"),
-		      this, SLOT(slotDeleteNeighbor(void)));
+		      this,
+		      SLOT(slotDeleteNeighbor(void)));
       menu->addAction(tr("Delete &All"),
-		      this, SLOT(slotDeleteAllNeighbors(void)));
+		      this,
+		      SLOT(slotDeleteAllNeighbors(void)));
       menu->addAction(tr("Delete All Non-Unique &Blocked"),
-		      this, SLOT(slotDeleteAllBlockedNeighbors(void)));
+		      this,
+		      SLOT(slotDeleteAllBlockedNeighbors(void)));
       menu->addAction(tr("Delete All Non-Unique &UUIDs"),
-		      this, SLOT(slotDeleteAllUuids(void)));
+		      this,
+		      SLOT(slotDeleteAllUuids(void)));
       menu->addSeparator();
       menu->addAction(tr("B&lock"),
-		      this, SLOT(slotBlockNeighbor(void)));
+		      this,
+		      SLOT(slotBlockNeighbor(void)));
       menu->addAction(tr("U&nblock"),
-		      this, SLOT(slotUnblockNeighbor(void)));
+		      this,
+		      SLOT(slotUnblockNeighbor(void)));
       menu->addSeparator();
       menu->addAction(tr("&Full Echo"),
-		      this, SLOT(slotNeighborFullEcho(void)));
+		      this,
+		      SLOT(slotNeighborFullEcho(void)));
       menu->addAction(tr("&Half Echo"),
-		      this, SLOT(slotNeighborHalfEcho(void)));
+		      this,
+		      SLOT(slotNeighborHalfEcho(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Copy Adaptive Echo Magnet"),
-			       this, SLOT(slotCopyAEMagnet(void)));
+			       this,
+			       SLOT(slotCopyAEMagnet(void)));
       action->setProperty("from", "neighbors");
       menu->addAction(tr("&Set Adaptive Echo Token Information..."),
-		      this, SLOT(slotSetAETokenInformation(void)));
+		      this,
+		      SLOT(slotSetAETokenInformation(void)));
       menu->addAction(tr("&Reset Adaptive Echo Token Information"),
-		      this, SLOT(slotResetAETokenInformation(void)));
+		      this,
+		      SLOT(slotResetAETokenInformation(void)));
       menu->addSeparator();
       action = menu->addAction
 	(tr("&Copy Private Application Magnet"),
-	 this, SLOT(slotCopyPrivateApplicationMagnet(void)));
+	 this,
+	 SLOT(slotCopyPrivateApplicationMagnet(void)));
       action->setProperty("type", "neighbors");
       action = menu->addAction
 	(tr("&Set Private Application Information..."),
-	 this, SLOT(slotSetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotSetPrivateApplicationInformation(void)));
       action->setProperty("type", "neighbors");
       action = menu->addAction
 	(tr("&Reset Private Application Information"),
-	 this, SLOT(slotResetPrivateApplicationInformation(void)));
+	 this,
+	 SLOT(slotResetPrivateApplicationInformation(void)));
       action->setProperty("type", "neighbors");
       menu->addSeparator();
       menu->addAction(tr("Set &SSL Control String..."),
-		      this, SLOT(slotSetNeighborSSLControlString(void)))->
+		      this,
+		      SLOT(slotSetNeighborSSLControlString(void)))->
 	setEnabled(neighborSupportsSslTls);
       menu->addSeparator();
       action = menu->addAction(tr("Set Socket &Options..."),
-			       this, SLOT(slotSetSocketOptions(void)));
+			       this,
+			       SLOT(slotSetSocketOptions(void)));
       action->setEnabled(neighborTransport() > "bluetooth");
       action->setProperty("type", "neighbors");
       menu->addSeparator();
@@ -1329,9 +1398,11 @@ void spoton::prepareContextMenuMirrors(void)
       action->setProperty("widget_of", "transmitted");
       menu->addSeparator();
       menu->addAction(tr("Copy &Magnet"),
-		      this, SLOT(slotCopyTransmittedMagnet(void)));
+		      this,
+		      SLOT(slotCopyTransmittedMagnet(void)));
       menu->addAction(tr("&Duplicate Magnet"),
-		      this, SLOT(slotDuplicateTransmittedMagnet(void)));
+		      this,
+		      SLOT(slotDuplicateTransmittedMagnet(void)));
       menu->addSeparator();
       menu->addAction(tr("Set &Pulse Size..."), this,
 		      SLOT(slotSetSBPulseSize(void)));
@@ -1356,25 +1427,30 @@ void spoton::prepareContextMenuMirrors(void)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())),
 	 tr("&Add Participant As Friend"),
-	 this, SLOT(slotShareUrlPublicKeyWithParticipant(void)));
+	 this,
+	 SLOT(slotShareUrlPublicKeyWithParticipant(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/copy.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Copy Keys (Clipboard Buffer)"),
-		      this, SLOT(slotCopyUrlKeys(void)));
+		      this,
+		      SLOT(slotCopyUrlKeys(void)));
       menu->addAction(QIcon(":/generic/repleo-url.png"),
 		      tr("&Copy Repleo (Clipboard Buffer)"),
-		      this, SLOT(slotCopyUrlFriendshipBundle(void)));
+		      this,
+		      SLOT(slotCopyUrlFriendshipBundle(void)));
       menu->addSeparator();
       menu->addAction(QIcon(QString(":/%1/clear.png").
 			    arg(m_settings.value("gui/iconSet", "nouve").
 				toString().toLower())),
 		      tr("&Remove Participant(s)"),
-		      this, SLOT(slotRemoveUrlParticipants(void)));
+		      this,
+		      SLOT(slotRemoveUrlParticipants(void)));
       menu->addSeparator();
       action = menu->addAction(tr("&Rename Participant..."),
-			       this, SLOT(slotRenameParticipant(void)));
+			       this,
+			       SLOT(slotRenameParticipant(void)));
       action->setProperty("type", "url");
       m_ui.urlActionMenu->setMenu(menu);
       connect(m_ui.urlActionMenu,
@@ -4594,15 +4670,18 @@ void spoton::slotShowEtpMagnetsMenu(const QPoint &point)
       QMenu menu(this);
 
       menu.addAction(tr("Copy &Magnet"),
-		     this, SLOT(slotCopyEtpMagnet(void)));
+		     this,
+		     SLOT(slotCopyEtpMagnet(void)));
       menu.addSeparator();
       menu.addAction(QIcon(QString(":/%1/clear.png").
 			   arg(m_settings.value("gui/iconSet", "nouve").
 			       toString().toLower())),
 		     tr("&Delete"),
-		     this, SLOT(slotDeleteEtpMagnet(void)));
+		     this,
+		     SLOT(slotDeleteEtpMagnet(void)));
       menu.addAction(tr("Delete &All"),
-		     this, SLOT(slotDeleteEtpAllMagnets(void)));
+		     this,
+		     SLOT(slotDeleteEtpAllMagnets(void)));
       menu.exec(m_ui.etpMagnets->mapToGlobal(point));
     }
 }
