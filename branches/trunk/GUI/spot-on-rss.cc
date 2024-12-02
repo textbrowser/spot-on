@@ -258,8 +258,9 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 		  SLOT(slotPopulateFeeds(void)));
   menu->addSeparator();
   m_scheduleAction = menu->addAction
-    (tr("&Schedule Selected RSS Feed For Update"),
-     this, SLOT(slotScheduleFeedUpdate(void)));
+    (tr("Schedule Selected RSS Feed For &Update"),
+     this,
+     SLOT(slotScheduleFeedUpdate(void)));
   m_scheduleAction->setEnabled(m_ui.activate->isChecked());
   menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.action_menu->setMenu(menu);
@@ -1195,6 +1196,8 @@ void spoton_rss::populateFeeds(void)
 	     SLOT(slotItemChanged(QTableWidgetItem *)));
 
   QString connectionName("");
+  auto const hVal = m_ui.feeds->horizontalScrollBar()->value();
+  auto const vVal = m_ui.feeds->verticalScrollBar()->value();
 
   {
     auto db(spoton_misc::database(connectionName));
@@ -1244,6 +1247,9 @@ void spoton_rss::populateFeeds(void)
 		  item->setData(Qt::UserRole, feed);
 		  item->setText(feed);
 		  item->setToolTip(item->text());
+
+		  if(feed == m_selectedFeed)
+		    m_ui.feeds->setCurrentItem(item);
 		}
 
 	      if(ok)
@@ -1276,6 +1282,12 @@ void spoton_rss::populateFeeds(void)
 	      row += 1;
 	    }
 
+	if(m_selectedFeed.length() > 0)
+	  {
+	    m_ui.feeds->horizontalScrollBar()->setValue(hVal);
+	    m_ui.feeds->verticalScrollBar()->setValue(vVal);
+	  }
+
 	m_ui.feeds->resizeColumnToContents(0);
 	m_ui.feeds->setRowCount(row);
 	m_ui.feeds->setSortingEnabled(true);
@@ -1289,6 +1301,7 @@ void spoton_rss::populateFeeds(void)
 	  SIGNAL(itemChanged(QTableWidgetItem *)),
 	  this,
 	  SLOT(slotItemChanged(QTableWidgetItem *)));
+  m_selectedFeed.clear();
 }
 
 void spoton_rss::prepareAfterAuthentication(void)
@@ -2560,7 +2573,8 @@ void spoton_rss::slotItemChanged(QTableWidgetItem *item)
 
   auto const before(m_ui.new_feed->text().trimmed());
 
-  m_ui.new_feed->setText(item->text());
+  m_selectedFeed = item->text().trimmed();
+  m_ui.new_feed->setText(item->text().trimmed());
   slotDeleteFeed();
   slotAddFeed();
   m_ui.new_feed->setText(before);
@@ -3167,20 +3181,26 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
   QMenu menu(this);
 
   menu.addAction(tr("Copy All Links"),
-		 this, SLOT(slotCopyFeedLinks(void)));
+		 this,
+		 SLOT(slotCopyFeedLinks(void)));
   menu.addAction(tr("Copy Selected &Link"),
-		 this, SLOT(slotCopyFeedLink(void)));
+		 this,
+		 SLOT(slotCopyFeedLink(void)));
   menu.addSeparator();
   menu.addAction(tr("Delete &All Feeds"),
-		 this, SLOT(slotDeleteAllFeeds(void)));
+		 this,
+		 SLOT(slotDeleteAllFeeds(void)));
   menu.addAction(tr("Delete &Selected Feed"),
-		 this, SLOT(slotDeleteFeed(void)));
+		 this,
+		 SLOT(slotDeleteFeed(void)));
   menu.addSeparator();
   menu.addAction(tr("&Refresh Table"),
-		 this, SLOT(slotPopulateFeeds(void)));
+		 this,
+		 SLOT(slotPopulateFeeds(void)));
   menu.addSeparator();
   menu.addAction(tr("&Schedule Selected Feed For Update"),
-		 this, SLOT(slotScheduleFeedUpdate(void)))->setEnabled
+		 this,
+		 SLOT(slotScheduleFeedUpdate(void)))->setEnabled
     (m_ui.activate->isChecked());
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }

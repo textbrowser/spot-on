@@ -62,6 +62,7 @@ class spoton_rss: public QMainWindow
   QPalette m_originalFindPalette;
   QPointer<QAction> m_scheduleAction;
   QPointer<spoton> m_parent;
+  QString m_selectedFeed;
   QTimer m_downloadContentTimer;
   QTimer m_downloadTimer;
   QTimer m_importTimer;
