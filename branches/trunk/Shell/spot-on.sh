@@ -24,7 +24,17 @@ then
     # Disable https://en.wikipedia.org/wiki/MIT-SHM.
 
     export QT_X11_NO_MITSHM=1
-    cd /opt/spot-on && exec ./Spot-On -style=Breeze "$@"
+    kde=$(env | grep -ci kde 2>/dev/null)
+
+    if [ $kde -gt 0 ]
+    then
+	echo "KDE!"
+	style="-style=Breeze"
+    else
+	style="-style=Fusion"
+    fi
+
+    cd /opt/spot-on && exec ./Spot-On "$style" "$@"
     exit $?
 else
     echo "Could not locate /opt/spot-on/Spot-On."
