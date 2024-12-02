@@ -3890,6 +3890,7 @@ void spoton::cleanup(void)
   m_notificationsWindow->deleteLater();
   m_optionsWindow->deleteLater();
   m_releaseNotes->deleteLater();
+  m_rss->close(); // Retain geometry.
   m_rss->deleteLater();
   m_smpWindow->deleteLater();
   m_statisticsWindow->deleteLater();

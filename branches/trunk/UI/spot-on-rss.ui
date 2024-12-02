@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>725</width>
-    <height>725</height>
+    <height>888</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -420,6 +420,16 @@
          </layout>
         </item>
         <item>
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Double-clicking an item will place the item in an edit mode. The record process is detailed below.&lt;/p&gt;&lt;ol&gt;&lt;li&gt;The Feed(s) widget's current text is retained.&lt;/li&gt;&lt;li&gt;The item's new text is saved in the Feed(s) text.&lt;/li&gt;&lt;li&gt;The current item is removed from the database.&lt;/li&gt;&lt;li&gt;A new item having the new text is recorded in the database.&lt;/li&gt;&lt;li&gt;The Feed(s) widget's text is restored.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;Please note that an error dialog may be displayed during this process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QTableWidget" name="feeds">
           <property name="alternatingRowColors">
            <bool>true</bool>
@@ -748,6 +758,9 @@
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <widget class="QCheckBox" name="record_notices">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Record interesting events in the official error log and in this panel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>&amp;Record Notices</string>
             </property>

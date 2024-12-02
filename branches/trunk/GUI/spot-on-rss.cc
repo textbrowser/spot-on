@@ -2565,7 +2565,7 @@ void spoton_rss::slotItemChanged(QTableWidgetItem *item)
   if(!item || item->text().trimmed().isEmpty())
     {
       m_ui.feeds->blockSignals(true);
-      item->setText(item->data(Qt::UserRole).toString());
+      item->setText(item->data(Qt::UserRole).toString().trimmed());
       item->setToolTip(item->text());
       m_ui.feeds->blockSignals(false);
       return;
@@ -2582,11 +2582,8 @@ void spoton_rss::slotItemChanged(QTableWidgetItem *item)
 
 void spoton_rss::slotLogError(const QString &error)
 {
-  if(error.trimmed().isEmpty())
+  if(error.trimmed().isEmpty() || m_ui.record_notices->isChecked() == false)
     return;
-  else if(!m_ui.record_notices->isChecked())
-    if(!error.contains("scheduled for an update"))
-      return;
 
   m_ui.errors->append(QDateTime::currentDateTime().toString(Qt::ISODate));
   m_ui.errors->append(error.trimmed().append("<br>"));
