@@ -328,6 +328,7 @@ Completed Items
        Kernel (Completed)
 224.   Dark mode for Windows.
 225.   Clear in Search.
+226.   Editable RSS table items.
 
 Remaining Items
 
@@ -338,4 +339,3 @@ Remaining Items
 4.     Import published pages. (PUBLISHED_PAGES)
 5.     C++ nullptr.
 6.     Verify RSS links in RSS.
-7.     Editable RSS table items.

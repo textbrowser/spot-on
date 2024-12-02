@@ -1189,6 +1189,11 @@ void spoton_rss::populateFeeds(void)
   if(!crypt)
     return;
 
+  disconnect(m_ui.feeds,
+	     SIGNAL(itemChanged(QTableWidgetItem *)),
+	     this,
+	     SLOT(slotItemChanged(QTableWidgetItem *)));
+
   QString connectionName("");
 
   {
@@ -1223,15 +1228,23 @@ void spoton_rss::populateFeeds(void)
 	      auto ok = true;
 
 	      feed = crypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok).
+		trimmed();
 	      item = new QTableWidgetItem();
-	      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	      item->setFlags
+		(Qt::ItemIsEditable |
+		 Qt::ItemIsEnabled |
+		 Qt::ItemIsSelectable);
 	      m_ui.feeds->setItem(row, 0, item);
 
 	      if(!ok)
 		item->setText(tr("error"));
 	      else
-		item->setText(feed);
+		{
+		  item->setData(Qt::UserRole, feed);
+		  item->setText(feed);
+		  item->setToolTip(item->text());
+		}
 
 	      if(ok)
 		{
@@ -1272,6 +1285,10 @@ void spoton_rss::populateFeeds(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  connect(m_ui.feeds,
+	  SIGNAL(itemChanged(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotItemChanged(QTableWidgetItem *)));
 }
 
 void spoton_rss::prepareAfterAuthentication(void)
@@ -2032,8 +2049,8 @@ void spoton_rss::slotDeleteAllFeeds(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to delete all of the RSS "
-		"feeds?"));
+  mb.setText
+    (tr("Are you sure that you wish to delete all of the RSS feeds?"));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
@@ -2072,23 +2089,26 @@ void spoton_rss::slotDeleteAllFeeds(void)
 
 void spoton_rss::slotDeleteFeed(void)
 {
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to delete the selected RSS "
-		"feed?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::ApplicationModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
+  if(qobject_cast<QAction *> (sender()))
     {
-      QApplication::processEvents();
-      return;
-    }
+      QMessageBox mb(this);
 
-  QApplication::processEvents();
+      mb.setIcon(QMessageBox::Question);
+      mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+      mb.setText
+	(tr("Are you sure that you wish to delete the selected RSS feed?"));
+      mb.setWindowIcon(windowIcon());
+      mb.setWindowModality(Qt::ApplicationModal);
+      mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+      if(mb.exec() != QMessageBox::Yes)
+	{
+	  QApplication::processEvents();
+	  return;
+	}
+
+      QApplication::processEvents();
+    }
 
   QString oid("");
   QTableWidgetItem *item = 0;
@@ -2525,6 +2545,25 @@ void spoton_rss::slotImport(void)
     m_importFuture = QtConcurrent::run
       (this, &spoton_rss::import, m_ui.maximum_keywords->value());
 #endif
+}
+
+void spoton_rss::slotItemChanged(QTableWidgetItem *item)
+{
+  if(!item || item->text().trimmed().isEmpty())
+    {
+      m_ui.feeds->blockSignals(true);
+      item->setText(item->data(Qt::UserRole).toString());
+      item->setToolTip(item->text());
+      m_ui.feeds->blockSignals(false);
+      return;
+    }
+
+  auto const before(m_ui.new_feed->text().trimmed());
+
+  m_ui.new_feed->setText(item->text());
+  slotDeleteFeed();
+  slotAddFeed();
+  m_ui.new_feed->setText(before);
 }
 
 void spoton_rss::slotLogError(const QString &error)

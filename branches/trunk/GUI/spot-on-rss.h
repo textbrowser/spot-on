@@ -106,6 +106,7 @@ class spoton_rss: public QMainWindow
   void slotFind(void);
   void slotFindInitialize(void);
   void slotImport(void);
+  void slotItemChanged(QTableWidgetItem *item);
   void slotLogError(const QString &error);
   void slotMaximumKeywordsChanged(int value);
   void slotPopulateFeeds(void);
