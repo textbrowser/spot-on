@@ -5,6 +5,9 @@
     new features are detailed below.
     <p>
       <ul>
+	<li>Allow comments (#) in Options -> Miscellaneous. An entry
+	  is considered a comment if the first character in it is
+	  a number sign.</li>
 	<li>Attempt to load translation files according to
 	  QTranslator::load(QLocale(), "qtbase", "_", path, ".qm") and
 	  QTranslator::load(QLocale(), "spot-on", "_", path, ".qm").</li>
@@ -45,9 +48,11 @@
 	<li>Rapid McEliece.</li>
 	<li>Removed Doxygen.</li>
 	<li>Removed GeoIP from MacOS, PiOS, and PowerPC. GeoIP is dead!</li>
+	<li>Resize a dialog before centering it.</li>
 	<li>Replaced old-style C casts.</li>
 	<li>Select the Breeze style on KDE systems in spot-on.sh.</li>
 	<li>Set QMAKE_MACOSX_DEPLOYMENT_TARGET to 12.0.</li>
+	<li>Spot-On contains at least 740 options.</li>
 	<li>The method spoton_listener::maxPendingConnections() may
 	  return a special value, indicating that a listener has not completed
 	  initialization. Adjusted logic.</li>

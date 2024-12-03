@@ -2020,8 +2020,8 @@ void spoton::slotShareOpenLibraryPublicKey(void)
 void spoton::slotShowAddParticipant(void)
 {
 #if SPOTON_GOLDBUG == 0
-  spoton_utilities::centerWidget(m_addParticipantWindow, this);
   m_addParticipantWindow->resize(500, 600);
+  spoton_utilities::centerWidget(m_addParticipantWindow, this);
   m_addParticipantWindow->showNormal();
   m_addParticipantWindow->activateWindow();
   m_addParticipantWindow->raise();
