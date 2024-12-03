@@ -3881,7 +3881,7 @@ void spoton::cleanup(void)
   m_ui.url_database_connection_information->clear();
   saveSettings();
   delete m_wizardUi;
-  m_wizardUi = 0;
+  m_wizardUi = nullptr;
 #if SPOTON_GOLDBUG == 0
   m_addParticipantWindow->deleteLater();
 #endif
