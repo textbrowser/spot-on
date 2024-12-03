@@ -524,9 +524,15 @@ void spoton::prepareOtherOptions(void)
   while(it.hasNext())
     {
       it.next();
-      m_settings[it.key()] = it.value();
-      m_optionsUi.other_options->appendPlainText
-	(it.key() + " := " + it.value().toString());
+
+      if(it.key().trimmed().startsWith('#'))
+	m_optionsUi.other_options->appendPlainText(it.key().trimmed());
+      else
+	{
+	  m_settings[it.key()] = it.value();
+	  m_optionsUi.other_options->appendPlainText
+	    (it.key() + " := " + it.value().toString());
+	}
     }
 
   m_optionsUi.other_options->appendPlainText("");
@@ -544,7 +550,8 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
       m_optionsUi.other_options->appendPlainText
-	("# Absolute-File-Path, Title-Line-Number, URL-Line-Number");
+	("# PUBLISHED_PAGES: "
+	 "Absolute-File-Path, Title-Line-Number, URL-Line-Number");
       m_optionsUi.other_options->appendPlainText
 	("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
       m_optionsUi.other_options->appendPlainText

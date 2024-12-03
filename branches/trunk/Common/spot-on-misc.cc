@@ -961,7 +961,10 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
       QString const str(list.at(i).trimmed());
 
       if(str.startsWith("#"))
-	continue;
+	{
+	  map[str] = QVariant();
+	  continue;
+	}
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       auto const pair(str.split(":=", Qt::SkipEmptyParts));

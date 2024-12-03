@@ -6139,7 +6139,9 @@ void spoton_kernel::slotUpdateSettings(void)
   while(it.hasNext())
     {
       it.next();
-      s_settings[it.key()] = it.value();
+
+      if(!it.key().trimmed().startsWith('#'))
+	s_settings[it.key()] = it.value();
     }
 
   spoton_misc::correctSettingsContainer(s_settings);
