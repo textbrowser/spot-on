@@ -151,7 +151,7 @@ void spoton_logviewer::slotSetIcons(void)
 
 void spoton_logviewer::slotTimeout(void)
 {
-  QFileInfo fileInfo
+  QFileInfo const fileInfo
     (spoton_misc::homePath() + QDir::separator() + "error_log.dat");
 
   if(fileInfo.exists())

@@ -41,7 +41,7 @@ spoton_textedit::~spoton_textedit()
 
 QSize spoton_textedit::sizeHint(void) const
 {
-  QFontMetrics fm(font());
+  QFontMetrics const fm(font());
   auto const h = fm.height();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 11, 0))
   auto const w = fm.horizontalAdvance(QLatin1Char('a'));

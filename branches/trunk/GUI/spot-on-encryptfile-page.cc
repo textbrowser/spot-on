@@ -559,8 +559,8 @@ void spoton_encryptfile_page::slotConvert(void)
   if(!m_future.isFinished())
     return;
 
-  QFileInfo destination(ui.destination->text());
-  QFileInfo fileInfo(ui.file->text());
+  QFileInfo const destination(ui.destination->text());
+  QFileInfo const fileInfo(ui.file->text());
   QList<QVariant> list;
   QPair<QByteArray, QByteArray> derivedKeys;
   QScopedPointer<QMessageBox> mb;

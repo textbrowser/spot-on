@@ -60,7 +60,8 @@ void spoton_tabwidget::setSpotOn(spoton *parent)
 
 void spoton_tabwidget::slotTimeout(void)
 {
-  QFileInfo fileInfo(spoton_misc::homePath() + QDir::separator() + "email.db");
+  QFileInfo const fileInfo
+    (spoton_misc::homePath() + QDir::separator() + "email.db");
   auto const maximumSize = 1048576 *
     (m_parent ?
      m_parent->m_settings.value("gui/maximumEmailFileSize", 1024).
