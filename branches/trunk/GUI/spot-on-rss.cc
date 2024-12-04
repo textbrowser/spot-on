@@ -2542,6 +2542,7 @@ void spoton_rss::slotFindInitialize(void)
 {
   m_ui.find->selectAll();
   m_ui.find->setFocus();
+  m_ui.tab->setCurrentIndex(1);
 }
 
 void spoton_rss::slotImport(void)
