@@ -258,7 +258,8 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 		  SLOT(slotPopulateFeeds(void)));
   menu->addSeparator();
   m_scheduleAction = menu->addAction
-    (tr("Schedule Selected RSS Feed For &Update"),
+    (tr("Schedule Selected RSS Feed For &Update (%1)").
+     arg(m_ui.activate->isChecked() ? tr("Active") : tr("Not Active")),
      this,
      SLOT(slotScheduleFeedUpdate(void)));
   m_scheduleAction->setEnabled(m_ui.activate->isChecked());
@@ -3195,9 +3196,11 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 		 this,
 		 SLOT(slotPopulateFeeds(void)));
   menu.addSeparator();
-  menu.addAction(tr("&Schedule Selected Feed For Update"),
-		 this,
-		 SLOT(slotScheduleFeedUpdate(void)))->setEnabled
+  menu.addAction
+    (tr("Schedule Selected RSS Feed For &Update (%1)").
+     arg(m_ui.activate->isChecked() ? tr("Active") : tr("Not Active")),
+     this,
+     SLOT(slotScheduleFeedUpdate(void)))->setEnabled
     (m_ui.activate->isChecked());
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }
@@ -3205,7 +3208,12 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
 void spoton_rss::slotShowMenu(void)
 {
   if(m_scheduleAction)
-    m_scheduleAction->setEnabled(m_ui.activate->isChecked());
+    {
+      m_scheduleAction->setEnabled(m_ui.activate->isChecked());
+      m_scheduleAction->setText
+	(tr("Schedule Selected RSS Feed For &Update (%1)").
+	 arg(m_ui.activate->isChecked() ? tr("Active") : tr("Not Active")));
+    }
 
   m_ui.action_menu->showMenu();
 }
