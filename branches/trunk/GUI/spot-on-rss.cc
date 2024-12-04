@@ -1856,7 +1856,7 @@ void spoton_rss::slotContentReplyFinished(void)
 
   if(reply && reply->error() == QNetworkReply::NoError)
     {
-      QUrl redirectUrl
+      auto redirectUrl
 	(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
 	 toUrl());
 
@@ -2527,7 +2527,7 @@ void spoton_rss::slotFind(void)
     m_ui.find->setPalette(m_originalFindPalette);
   else if(!m_ui.timeline->find(m_ui.find->text()))
     {
-      QColor color(240, 128, 128); // Light Coral
+      QColor const color(240, 128, 128); // Light Coral
       auto palette(m_ui.find->palette());
 
       palette.setColor(m_ui.find->backgroundRole(), color);
@@ -3301,7 +3301,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 
     db.close();
 
-    QFontMetrics fm(statusBar()->fontMetrics());
+    QFontMetrics const fm(statusBar()->fontMetrics());
 
     statusBar()->setToolTip
       ("<html>" + QString(str).replace(" | ", "<br>") + "</html>");

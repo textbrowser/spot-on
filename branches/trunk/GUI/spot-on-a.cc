@@ -4369,7 +4369,7 @@ void spoton::slotActivateKernel(void)
   m_ui.pid->setText("0");
   m_ui.pid->setCursorPosition(0);
 
-  QColor color(240, 128, 128); // Light coral!
+  QColor const color(240, 128, 128); // Light coral!
   auto palette(m_ui.pid->palette());
 
   palette.setColor(m_ui.pid->backgroundRole(), color);
@@ -6314,7 +6314,7 @@ void spoton::slotFavoritesActivated(int index)
 
 void spoton::slotGeneralTimerTimeout(void)
 {
-  QColor color(240, 128, 128); // Light coral!
+  QColor const color(240, 128, 128); // Light coral!
   QStandardItem *item = nullptr;
   auto const list(m_statisticsModel->findItems("Kernel PID"));
   auto const text(m_ui.pid->text());
@@ -6338,7 +6338,7 @@ void spoton::slotGeneralTimerTimeout(void)
     }
   else
     {
-      QColor color(144, 238, 144); // Light green!
+      QColor const color(144, 238, 144); // Light green!
       auto palette(m_ui.pid->palette());
 
       palette.setColor(m_ui.pid->backgroundRole(), color);

@@ -254,7 +254,7 @@ void spoton_pageviewer::slotFind(void)
     {
       if(!text.isEmpty())
 	{
-	  QColor color(240, 128, 128); // Light Coral
+	  QColor const color(240, 128, 128); // Light Coral
 	  auto palette(m_ui.find->palette());
 
 	  palette.setColor(m_ui.find->backgroundRole(), color);

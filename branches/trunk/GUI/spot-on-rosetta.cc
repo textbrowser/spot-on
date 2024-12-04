@@ -1911,7 +1911,7 @@ void spoton_rosetta::slotDecryptClear(void)
   ui.from->setText(tr("Empty"));
   ui.outputDecrypt->clear();
 
-  QColor color(240, 128, 128); // Light coral!
+  QColor const color(240, 128, 128); // Light coral!
 
   ui.signedMessage->setStyleSheet
     (QString("QLabel {background: %1;}").arg(color.name()));
