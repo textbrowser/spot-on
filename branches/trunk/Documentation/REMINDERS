@@ -329,6 +329,7 @@ Completed Items
 224.   Dark mode for Windows.
 225.   Clear in Search.
 226.   Editable RSS table items.
+227.   Verify RSS links in RSS.
 
 Remaining Items
 
@@ -338,4 +339,3 @@ Remaining Items
 3.     Spectral human proxy.
 4.     Import published pages. (PUBLISHED_PAGES)
 5.     C++ nullptr.
-6.     Verify RSS links in RSS.

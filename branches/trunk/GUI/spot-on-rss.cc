@@ -44,7 +44,7 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 
-static char s_user_agent[] = "Spot-On";
+static char const s_user_agent[] = "Spot-On";
 
 spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 {
@@ -60,6 +60,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   m_ui.feeds->verticalHeader()->setSectionResizeMode
     (QHeaderView::ResizeToContents);
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
+  m_ui.verified->setVisible(false);
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -220,6 +221,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotRefreshTimeline(void)));
+  connect(m_ui.verified_feeds,
+	  SIGNAL(toggled(bool)),
+	  m_ui.verified,
+	  SLOT(setVisible(bool)));
   connect(this,
 	  SIGNAL(downloadFeedImage(const QUrl &, const QUrl &)),
 	  this,
@@ -263,6 +268,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
      this,
      SLOT(slotScheduleFeedUpdate(void)));
   m_scheduleAction->setEnabled(m_ui.activate->isChecked());
+  menu->addSeparator();
+  menu->addAction(tr("Verify Feeds"),
+		  this,
+		  SLOT(slotVerifyFeeds(void)));
   menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
   m_ui.action_menu->setMenu(menu);
   connect(m_ui.action_menu,
@@ -3165,7 +3174,7 @@ void spoton_rss::slotSaveProxy(void)
 
 void spoton_rss::slotScheduleFeedUpdate(void)
 {
-  m_currentFeedRow = m_ui.feeds->currentRow() - 1;
+  m_currentFeedRow = qMax(-1, m_ui.feeds->currentRow() - 1);
 
   auto item = m_ui.feeds->item(m_currentFeedRow + 1, 0);
 
@@ -3203,6 +3212,10 @@ void spoton_rss::slotShowContextMenu(const QPoint &point)
      this,
      SLOT(slotScheduleFeedUpdate(void)))->setEnabled
     (m_ui.activate->isChecked());
+  menu.addSeparator();
+  menu.addAction(tr("Verify Feeds"),
+		 this,
+		 SLOT(slotVerifyFeeds(void)));
   menu.exec(m_ui.feeds->mapToGlobal(point));
 }
 
@@ -3579,4 +3592,9 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
   pageViewer->activateWindow();
   pageViewer->raise();
   QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::slotVerifyFeeds(void)
+{
+  m_ui.verified_feeds->setChecked(true);
 }

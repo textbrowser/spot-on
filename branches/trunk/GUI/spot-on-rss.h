@@ -129,6 +129,7 @@ class spoton_rss: public QMainWindow
   void slotTimelineShowOption(bool state);
   void slotToggleState(void);
   void slotUrlClicked(const QUrl &url);
+  void slotVerifyFeeds(void);
 
  signals:
   void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);

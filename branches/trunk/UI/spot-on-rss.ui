@@ -526,6 +526,31 @@
           </layout>
          </widget>
         </item>
+        <item>
+         <widget class="QGroupBox" name="verified_feeds">
+          <property name="title">
+           <string>Verified Feeds</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QTextBrowser" name="verified">
+             <property name="tabChangesFocus">
+              <bool>true</bool>
+             </property>
+             <property name="openLinks">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
@@ -547,7 +572,7 @@
              <x>0</x>
              <y>0</y>
              <width>693</width>
-             <height>603</height>
+             <height>766</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -985,6 +1010,7 @@
   <tabstop>feeds</tabstop>
   <tabstop>new_feed</tabstop>
   <tabstop>add</tabstop>
+  <tabstop>verified</tabstop>
   <tabstop>scrollArea</tabstop>
   <tabstop>timeline</tabstop>
   <tabstop>timeline_filter</tabstop>
