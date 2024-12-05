@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>725</width>
-    <height>888</height>
+    <height>1027</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -27,9 +27,9 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QLabel" name="label_11">
+         <widget class="QLabel" name="notice_label">
           <property name="text">
-           <string>Please note that the kernel will adhere to some of the following configuration options.</string>
+           <string>Please note that the kernel will adhere to some of the following configuration options. Please notice the bold text.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
@@ -38,6 +38,9 @@
         </item>
         <item>
          <widget class="QGroupBox" name="proxy">
+          <property name="toolTip">
+           <string>Monitored by the kernel.</string>
+          </property>
           <property name="title">
            <string>Pro&amp;xy</string>
           </property>
@@ -322,7 +325,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="download_interval_label">
             <property name="text">
              <string>&amp;Download Interval</string>
             </property>
@@ -348,7 +351,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label_6">
+           <widget class="QLabel" name="maximum_keywords_label">
             <property name="text">
              <string>&amp;Maximum Keywords</string>
             </property>
@@ -571,8 +574,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>693</width>
-             <height>766</height>
+             <width>392</width>
+             <height>235</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -682,7 +685,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_9">
+               <widget class="QLabel" name="older_than_label_1">
                 <property name="text">
                  <string>links that are older than</string>
                 </property>
@@ -702,7 +705,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_10">
+               <widget class="QLabel" name="older_than_label_2">
                 <property name="text">
                  <string>&amp;day(s).</string>
                 </property>

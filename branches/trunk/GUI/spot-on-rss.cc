@@ -354,6 +354,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
     m_purgeTimer.start();
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  prepareBoldLabels();
   prepareDatabases();
   QApplication::restoreOverrideCursor();
   restoreGeometry(settings.value("gui/rss_window_geometry").toByteArray());
@@ -1455,6 +1456,33 @@ void spoton_rss::prepareAfterAuthentication(void)
   QApplication::restoreOverrideCursor();
 }
 
+void spoton_rss::prepareBoldLabels(void)
+{
+  static QVector<QWidget *> const list
+    (QVector<QWidget *> ()
+     << m_ui.download_interval_label
+     << m_ui.maximum_keywords_label
+     << m_ui.notice_label
+     << m_ui.older_than_label_1
+     << m_ui.older_than_label_2
+     << m_ui.proxy
+     << m_ui.purge_malformed);
+
+  foreach(auto widget, list)
+    {
+      if(m_ui.proxy == widget)
+	widget = m_ui.proxy->findChild<QCheckBox *> ();
+
+      if(widget)
+	{
+	  auto font(widget->font());
+
+	  font.setBold(true);
+	  widget->setFont(font);
+	}
+    }
+}
+
 void spoton_rss::prepareDatabases(void)
 {
   QString connectionName("");
@@ -2537,13 +2565,28 @@ void spoton_rss::slotFeedVerificationReplyFinished(void)
   if(reply)
     {
       if(reply->error() == QNetworkReply::NoError)
-	m_ui.verified->append
-	  (tr("The URL <a href=\"%1\">%1</a> was accessed correctly.").
-	   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+	{
+	  if(!reply->attribute(QNetworkRequest::
+			       RedirectionTargetAttribute).isNull())
+	    {
+	      auto const url
+		(reply->attribute(QNetworkRequest::RedirectionTargetAttribute).
+		 toUrl());
+
+	      m_ui.verified->append
+		(tr("The URL <a href=\"%1\">%1</a> was redirected to %2.").
+		 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
+		 arg(spoton_misc::urlToEncoded(url).constData()));
+	    }
+	  else
+	    m_ui.verified->append
+	      (tr("The URL <a href=\"%1\">%1</a> was accessed correctly.").
+	       arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+	}
       else
 	m_ui.verified->append
-	  (tr("The URL <a href=\"%1\">%1</a> "
-	      "could not be accessed correctly (%2).").
+	  (tr("<font color='red'>The URL <a href=\"%1\">%1</a> "
+	      "could not be accessed correctly (%2).</font>").
 	   arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	   arg(reply->errorString()));
 

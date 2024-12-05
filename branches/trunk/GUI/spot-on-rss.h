@@ -77,6 +77,7 @@ class spoton_rss: public QMainWindow
   void import(const int maximumKeywords);
   void parseXmlContent(const QByteArray &data, const QUrl &url);
   void populateFeeds(void);
+  void prepareBoldLabels(void);
   void prepareDatabases(void);
   void saveFeedData(const QString &description,
 		    const QString &link,
