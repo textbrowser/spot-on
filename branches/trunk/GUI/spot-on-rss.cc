@@ -1471,7 +1471,12 @@ void spoton_rss::prepareBoldLabels(void)
   foreach(auto widget, list)
     {
       if(m_ui.proxy == widget)
-	widget = m_ui.proxy->findChild<QCheckBox *> ();
+	{
+	  widget = m_ui.proxy->findChild<QCheckBox *> ();
+
+	  if(!widget)
+	    widget = m_ui.proxy;
+	}
 
       if(widget)
 	{
@@ -2585,7 +2590,7 @@ void spoton_rss::slotFeedVerificationReplyFinished(void)
 	}
       else
 	m_ui.verified->append
-	  (tr("<font color='red'>The URL <a href=\"%1\">%1</a> "
+	  (tr("<font color=\"red\">The URL <a href=\"%1\">%1</a> "
 	      "could not be accessed correctly (%2).</font>").
 	   arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 	   arg(reply->errorString()));
