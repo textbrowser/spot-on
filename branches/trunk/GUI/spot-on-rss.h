@@ -104,6 +104,7 @@ class spoton_rss: public QMainWindow
   void slotFeedImageReplyFinished(void);
   void slotFeedReplyFinished(void);
   void slotFeedReplyReadyRead(void);
+  void slotFeedVerificationReplyFinished(void);
   void slotFind(void);
   void slotFindInitialize(void);
   void slotImport(void);

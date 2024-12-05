@@ -2530,6 +2530,27 @@ void spoton_rss::slotFeedReplyReadyRead(void)
     m_feedDownloadContent.append(reply->readAll());
 }
 
+void spoton_rss::slotFeedVerificationReplyFinished(void)
+{
+  auto reply = qobject_cast<QNetworkReply *> (sender());
+
+  if(reply)
+    {
+      if(reply->error() == QNetworkReply::NoError)
+	m_ui.verified->append
+	  (tr("The URL <a href=\"%1\">%1</a> was accessed correctly.").
+	   arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+      else
+	m_ui.verified->append
+	  (tr("The URL <a href=\"%1\">%1</a> "
+	      "could not be accessed correctly (%2).").
+	   arg(spoton_misc::urlToEncoded(reply->url()).constData()).
+	   arg(reply->errorString()));
+
+      reply->deleteLater();
+    }
+}
+
 void spoton_rss::slotFind(void)
 {
   if(m_ui.find->text().isEmpty())
@@ -3596,5 +3617,51 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
 
 void spoton_rss::slotVerifyFeeds(void)
 {
+  m_ui.verified->clear();
   m_ui.verified_feeds->setChecked(true);
+
+  for(int i = 0; i < m_ui.feeds->rowCount(); i++)
+    {
+      auto item = m_ui.feeds->item(i, 0);
+
+      if(!item)
+	continue;
+
+      QNetworkRequest request(item->text());
+
+      request.setRawHeader("Accept", "text/html");
+      request.setRawHeader("User-Agent", s_user_agent);
+
+      auto reply = m_feedNetworkAccessManager.get(request);
+
+      if(!reply)
+	{
+	  emit logError
+	    (QString("QNetworkAccessManager::get() failure on "
+		     "<a href=\"%1\">%1</a>.").
+	     arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
+		 constData()));
+	  continue;
+	}
+
+      reply->ignoreSslErrors();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+      connect(reply,
+	      SIGNAL(error(QNetworkReply::NetworkError)),
+	      this,
+	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+      connect(reply,
+	      SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+	      this,
+	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
+      connect(reply,
+	      SIGNAL(finished(void)),
+	      this,
+	      SLOT(slotFeedVerificationReplyFinished(void)));
+      m_ui.verified->append
+	(tr("Verifying the feed <a href=\"%1\">%1</a>.").
+	 arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+    }
 }
