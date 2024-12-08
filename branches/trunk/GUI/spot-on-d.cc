@@ -652,7 +652,7 @@ void spoton::slotAddAEToken(void)
   QStringList list;
   auto crypt = m_crypts.value("chat", 0);
   auto ok = true;
-  auto token(m_ui.ae_token->text());
+  auto token(m_ui.ae_token->text().trimmed());
   auto type
     (m_ui.ae_e_type->currentText() + "\n" + m_ui.ae_h_type->currentText());
 
@@ -1522,12 +1522,11 @@ void spoton::slotDeleteAEToken(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM listeners_adaptive_echo_tokens WHERE "
 		      "token_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash((list.at(0)->text() +
-				list.at(1)->text() +
-				"\n" +
-				list.at(2)->text()).toLatin1(), &ok).
-	   toBase64());
+	query.addBindValue
+	  (crypt->keyedHash((list.at(0)->text() +
+			     list.at(1)->text() +
+			     "\n" +
+			     list.at(2)->text()).toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
