@@ -1794,15 +1794,15 @@ void spoton::slotAddReceiveNova(void)
 
   if(!crypt)
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid spoton_crypt object. This is "
-			       "a fatal flaw."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid spoton_crypt object. This is a fatal flaw."));
       QApplication::processEvents();
       return;
     }
 
-  auto const nova(m_ui.receiveNova->text());
+  auto const nova(m_ui.receiveNova->text().trimmed());
 
   if(nova.length() < 48)
     {
@@ -1810,8 +1810,7 @@ void spoton::slotAddReceiveNova(void)
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	 tr("Please provide a nova that contains at least "
-	    "forty-eight characters. Reach for the "
-	    "stars!"));
+	    "forty-eight characters. Reach for the stars!"));
       QApplication::processEvents();
       return;
     }
@@ -1830,16 +1829,14 @@ void spoton::slotAddReceiveNova(void)
 	QSqlQuery query(db);
 
 	query.prepare
-	  ("INSERT OR REPLACE INTO received_novas "
-	   "(nova, nova_hash) VALUES (?, ?)");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(nova.toLatin1(),
-					 &ok).toBase64());
+	  ("INSERT OR REPLACE INTO received_novas (nova, nova_hash) "
+	   "VALUES (?, ?)");
+	query.addBindValue
+	  (crypt->encryptedThenHashed(nova.toLatin1(), &ok).toBase64());
 
 	if(ok)
-	  query.bindValue
-	    (1, crypt->keyedHash(nova.toLatin1(), &ok).
-	     toBase64());
+	  query.addBindValue
+	    (crypt->keyedHash(nova.toLatin1(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -2615,9 +2612,9 @@ void spoton::slotDeleteNova(void)
       return;
     }
 
-  auto const list(m_ui.novas->selectedItems());
+  auto const list(m_ui.novas->selectionModel()->selectedRows());
 
-  if(list.isEmpty() || !list.at(0))
+  if(list.isEmpty() || list.value(0).isValid() == false)
     {
       QMessageBox::critical(this,
 			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
@@ -2640,10 +2637,9 @@ void spoton::slotDeleteNova(void)
 	QSqlQuery query(db);
 
 	query.exec("PRAGMA secure_delete = ON");
-	query.prepare("DELETE FROM received_novas WHERE "
-		      "nova_hash = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).
+	query.prepare("DELETE FROM received_novas WHERE nova_hash = ?");
+	query.addBindValue
+	  (crypt->keyedHash(list.at(0).data().toString().toLatin1(), &ok).
 	   toBase64());
 
 	if(ok)
