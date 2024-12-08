@@ -1298,11 +1298,11 @@ void spoton::slotAutoAddSharedSBMagnets(bool state)
 
 void spoton::slotChatPopup(void)
 {
-  auto const items(m_ui.participants->selectedItems());
+  auto const items(m_ui.participants->selectionModel()->selectedRows());
 
-  if(!items.isEmpty() && items.at(0))
+  if(!items.isEmpty() && items.at(0).isValid())
     slotParticipantDoubleClicked
-      (m_ui.participants->item(items.at(0)->row(), 0));
+      (m_ui.participants->item(items.at(0).row(), 0));
 }
 
 void spoton::slotClearClipboardBuffer(void)

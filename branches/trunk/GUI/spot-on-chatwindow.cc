@@ -174,6 +174,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
+  ui.message->setFocus();
 }
 
 spoton_chatwindow::~spoton_chatwindow()
@@ -452,6 +453,7 @@ void spoton_chatwindow::showNormal(void)
     setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
 #endif
   QMainWindow::showNormal();
+  ui.message->setFocus();
 }
 
 void spoton_chatwindow::slotDeriveGeminiPairViaSMP(void)
