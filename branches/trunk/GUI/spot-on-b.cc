@@ -2749,8 +2749,8 @@ void spoton::slotAddAccount(void)
   QString connectionName("");
   QString error("");
   QString oid("");
-  auto const name(m_ui.accountName->text());
-  auto const password(m_ui.accountPassword->text());
+  auto const name(m_ui.accountName->text().trimmed());
+  auto const password(m_ui.accountPassword->text().trimmed());
   auto crypt = m_crypts.value("chat", 0);
   auto ok = true;
   int row = -1;
