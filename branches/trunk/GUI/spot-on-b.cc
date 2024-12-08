@@ -1838,10 +1838,11 @@ void spoton::populateAccounts(const QString &listenerOid)
     if(db.open())
       {
 	QString account("");
-	auto item = m_ui.accounts->selectedItems().value(0);
+	auto const index =
+	  m_ui.accounts->selectionModel()->selectedRows().value(0);
 
-	if(item)
-	  account = item->text();
+	if(index.isValid())
+	  account = index.data().toString();
 
 	m_ui.accounts->clear();
 
@@ -1878,7 +1879,8 @@ void spoton::populateAccounts(const QString &listenerOid)
 	      m_ui.accounts->addItems(names);
 	  }
 
-	item = m_ui.accounts->findItems(account, Qt::MatchExactly).value(0);
+	auto item = m_ui.accounts->findItems
+	  (account, Qt::MatchExactly).value(0);
 
 	if(item)
 	  item->setSelected(true);
@@ -1908,10 +1910,11 @@ void spoton::populateListenerIps(const QString &listenerOid)
     if(db.open())
       {
 	QString ip("");
-	auto item = m_ui.acceptedIPList->selectedItems().value(0);
+	auto const index = m_ui.acceptedIPList->
+	  selectionModel()->selectedRows().value(0);
 
-	if(item)
-	  ip = item->text();
+	if(index.isValid())
+	  ip = index.data().toString();
 
 	m_ui.acceptedIPList->clear();
 
@@ -1948,7 +1951,8 @@ void spoton::populateListenerIps(const QString &listenerOid)
 	      m_ui.acceptedIPList->addItems(ips);
 	  }
 
-	item = m_ui.acceptedIPList->findItems(ip, Qt::MatchExactly).value(0);
+	auto item = m_ui.acceptedIPList->findItems
+	  (ip, Qt::MatchExactly).value(0);
 
 	if(item)
 	  item->setSelected(true);
@@ -3531,17 +3535,17 @@ void spoton::slotDeleteAccount(void)
 
   if(oid.isEmpty())
     {
-      QMessageBox::critical(this,
-			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-			    tr("Invalid listener OID. "
-			       "Please select a listener."));
+      QMessageBox::critical
+	(this,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("Invalid listener OID. Please select a listener."));
       QApplication::processEvents();
       return;
     }
 
-  auto const list(m_ui.accounts->selectedItems());
+  auto const list(m_ui.accounts->selectionModel()->selectedRows());
 
-  if(list.isEmpty() || !list.at(0))
+  if(list.isEmpty() || list.value(0).isValid() == false)
     {
       QMessageBox::critical(this,
 			    tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
@@ -3566,9 +3570,10 @@ void spoton::slotDeleteAccount(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM listeners_accounts WHERE "
 		      "account_name_hash = ? AND listener_oid = ?");
-	query.bindValue
-	  (0, crypt->keyedHash(list.at(0)->text().toLatin1(), &ok).toBase64());
-	query.bindValue(1, oid);
+	query.addBindValue
+	  (crypt->keyedHash(list.at(0).data().toString().toLatin1(), &ok).
+	   toBase64());
+	query.addBindValue(oid);
 
 	if(ok)
 	  ok = query.exec();
@@ -4496,7 +4501,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
 void spoton::slotMailSelected(void)
 {
-  if(m_ui.mail->selectedItems().isEmpty())
+  if(!m_ui.mail->selectionModel()->hasSelection())
     m_ui.mailMessage->clear();
   else
     slotMailSelected(m_ui.mail->currentItem());
