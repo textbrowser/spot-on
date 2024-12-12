@@ -80,8 +80,7 @@ spoton_rss::spoton_rss(QObject *parent):QObject(parent)
   m_downloadContentTimer.start();
   m_downloadTimer.setInterval(static_cast<int> (60000.0 * value));
   m_downloadTimer.start();
-  m_importFutures.resize
-    (qCeil(1.5 * qMax(1, QThread::idealThreadCount())));
+  m_importFutures.resize(qCeil(1.5 * qMax(1, QThread::idealThreadCount())));
 
   for(int i = 0; i < m_importFutures.size(); i++)
     m_importFutures.replace(i, QFuture<void> ());
@@ -779,6 +778,8 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString error("");
   auto db(spoton_kernel::urlDatabase());
   auto const connectionName(db.connectionName());
+  auto const synchronize = spoton_kernel::setting
+    ("gui/disable_kernel_synchronous_sqlite_url_download", false).toBool();
 
   spoton_misc::importUrl
     (data,
@@ -786,10 +787,8 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
      title.toUtf8(),
      spoton_misc::urlToEncoded(url),
      db,
-     spoton_kernel::setting("gui/rss_maximum_keywords", 50).toInt(),
-     spoton_kernel::
-     setting("gui/disable_kernel_synchronous_sqlite_url_download",
-	     false).toBool(),
+     maximumKeywords,
+     synchronize,
      m_cancelImport,
      error,
      ucc.data());
