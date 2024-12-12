@@ -2377,6 +2377,9 @@ void spoton_rosetta::toDesktop(void) const
      ".asc");
 
   file.setFileName(fileName);
-  file.open(QIODevice::Truncate | QIODevice::WriteOnly);
-  file.write(ui.outputEncrypt->toPlainText().toUtf8());
+
+  if(file.open(QIODevice::Truncate | QIODevice::WriteOnly))
+    file.write(ui.outputEncrypt->toPlainText().toUtf8());
+
+  file.close();
 }

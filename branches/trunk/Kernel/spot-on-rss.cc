@@ -155,7 +155,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 		     QDir::separator() +
 		     QUrl::toPercentEncoding(url.toString()));
 
-	  if(file.open(QIODevice::Truncate | QIODevice::ReadWrite))
+	  if(file.open(QIODevice::ReadWrite | QIODevice::Truncate))
 	    {
 	      file.write(list.value(0).toByteArray()); // Content
 	      file.flush();
@@ -172,7 +172,7 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
 			   QUrl::toPercentEncoding(url.toString()) +
 			   "_title");
 
-	  if(file.open(QIODevice::Truncate | QIODevice::ReadWrite))
+	  if(file.open(QIODevice::ReadWrite | QIODevice::Truncate))
 	    {
 	      file.write(list.value(2).toString().toUtf8()); // Title
 	      file.flush();
