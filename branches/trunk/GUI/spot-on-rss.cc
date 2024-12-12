@@ -2579,13 +2579,15 @@ void spoton_rss::slotFeedVerificationReplyFinished(void)
 		 toUrl());
 
 	      m_ui.verified->append
-		(tr("The URL <a href=\"%1\">%1</a> was redirected to %2.").
+		(tr("<font color=\"green\">The URL <a href=\"%1\">%1</a> was "
+		    "redirected to %2.</font>").
 		 arg(spoton_misc::urlToEncoded(reply->url()).constData()).
 		 arg(spoton_misc::urlToEncoded(url).constData()));
 	    }
 	  else
 	    m_ui.verified->append
-	      (tr("The URL <a href=\"%1\">%1</a> was accessed correctly.").
+	      (tr("<font color=\"green\">The URL <a href=\"%1\">%1</a> was "
+		  "accessed correctly.</font>").
 	       arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 	}
       else
