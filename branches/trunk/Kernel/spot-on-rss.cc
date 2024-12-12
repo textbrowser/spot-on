@@ -778,6 +778,8 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   QString error("");
   auto db(spoton_kernel::urlDatabase());
   auto const connectionName(db.connectionName());
+  auto const maximumKeywords = spoton_kernel::setting
+    ("gui/rss_maximum_keywords", 50).toInt();
   auto const synchronize = spoton_kernel::setting
     ("gui/disable_kernel_synchronous_sqlite_url_download", false).toBool();
 
