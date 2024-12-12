@@ -667,7 +667,6 @@ void spoton_rss::import(const int maximumKeywords)
 			polarizers.append(pair);
 		      }
 		}
-
 	    }
       }
 

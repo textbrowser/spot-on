@@ -238,7 +238,7 @@ void spoton_fireshare::slotTimeout(void)
     }
 
   /*
-  ** Next, retrieve some URL(s).
+  ** Next, retrieve some URLs.
   */
 
   QByteArray data;

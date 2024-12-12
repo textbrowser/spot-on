@@ -229,7 +229,7 @@ void spoton_urldistribution::run(void)
     }
 
   /*
-  ** Next, retrieve some URL(s).
+  ** Next, retrieve some URLs.
   */
 
   QByteArray data;

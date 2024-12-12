@@ -162,7 +162,6 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 			polarizers.append(pair);
 		      }
 		}
-
 	    }
       }
 
@@ -170,6 +169,42 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+
+  foreach(auto const &fileInfo,
+	  QDir(values.at(0).toString()).entryInfoList(QDir::Files))
+    {
+      if(fileInfo.absoluteFilePath().isEmpty())
+	continue;
+
+      if(m_cancelImport.fetchAndAddOrdered(0))
+	break;
+
+      QFile file(fileInfo.absoluteFilePath());
+
+      if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+	{
+	  QString title("");
+	  QUrl url;
+	  auto const line1(file.readLine());
+	  auto const line2(file.readLine());
+	  auto const remaining(file.readAll().trimmed());
+	  auto const titleLN = values.at(1).toInt();
+
+	  if(titleLN == 1)
+	    {
+	      title = line1.trimmed();
+	      url = QUrl::fromUserInput(line2.trimmed());
+	    }
+	  else
+	    {
+	      title = line2.trimmed();
+	      url = QUrl::fromUserInput(line1.trimmed());
+	    }
+	}
+
+      file.close();
+      file.remove();
+    }
 }
 
 void spoton_import_published_pages::slotImport(void)
