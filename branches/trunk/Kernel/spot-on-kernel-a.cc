@@ -61,6 +61,7 @@ extern "C"
 #include "Common/spot-on-version.h"
 #include "spot-on-fireshare.h"
 #include "spot-on-gui-server.h"
+#include "spot-on-import-published-pages.h"
 #include "spot-on-kernel.h"
 #include "spot-on-listener.h"
 #include "spot-on-mailer.h"
@@ -721,6 +722,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
   m_droppedTimer.setInterval(1500);
   m_forwardSecrecyKeysTimer.start(2500);
   m_impersonateTimer.setInterval(2500);
+  m_importPublishedPages = new spoton_import_published_pages(this);
   m_messagingCachePurgeTimer.setInterval
     (static_cast<int> (1000 * setting("kernel/cachePurgeInterval", 15.00).
 		       toDouble()));
@@ -1030,6 +1032,7 @@ spoton_kernel::~spoton_kernel()
   m_droppedTimer.stop();
   m_forwardSecrecyKeysTimer.stop();
   m_impersonateTimer.stop();
+  m_importPublishedPages->deactivate();
   m_messagingCachePurgeTimer.stop();
   m_poptasticPopTimer.stop();
   m_poptasticPostTimer.stop();

@@ -58,6 +58,7 @@ extern "C"
 class spoton_crypt;
 class spoton_fireshare;
 class spoton_gui_server;
+class spoton_import_published_pages;
 class spoton_listener;
 class spoton_mailer;
 class spoton_neighbor;
@@ -144,6 +145,7 @@ class spoton_kernel: public QObject
   QList<QHash<QString, QVariant> > m_poptasticAccounts;
   QPointer<spoton_fireshare> m_fireShare;
   QPointer<spoton_gui_server> m_guiServer;
+  QPointer<spoton_import_published_pages> m_importPublishedPages;
   QPointer<spoton_mailer> m_mailer;
   QPointer<spoton_rss> m_rss;
   QPointer<spoton_starbeam_writer> m_starbeamWriter;

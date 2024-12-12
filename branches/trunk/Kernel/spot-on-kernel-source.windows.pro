@@ -2,8 +2,9 @@ HEADERS		= ..\\Common\\spot-on-external-address.h \
 		  ..\\Common\\spot-on-fortuna.h \
 		  ..\\Common\\spot-on-version.h \
 		  spot-on-fireshare.h \
-		  spot-on-gui-server.h \
-		  spot-on-kernel.h \
+                  spot-on-gui-server.h \
+                  spot-on-import-published-pages.h \
+                  spot-on-kernel.h \
 		  spot-on-listener.h \
 		  spot-on-mailer.h \
 		  spot-on-neighbor.h \
@@ -28,10 +29,11 @@ SOURCES		= ..\\Common\\spot-on-crypt.cc \
 		  ..\\Common\\spot-on-socket-options.cc \
 		  ..\\Common\\spot-on-threefish.cc \
 		  spot-on-fireshare.cc \
-		  spot-on-gui-server.cc \
+                  spot-on-gui-server.cc \
+                  spot-on-import-published-pages.cc \
 		  spot-on-kernel-a.cc \
 		  spot-on-kernel-b.cc \
-		  spot-on-kernel-c.cc \
+                  spot-on-kernel-c.cc \
 		  spot-on-listener.cc \
 		  spot-on-mailer.cc \
 		  spot-on-neighbor-a.cc \

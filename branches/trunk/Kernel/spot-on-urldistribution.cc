@@ -108,8 +108,8 @@ void spoton_urldistribution::run(void)
 		      "permission "     // 1
 		      "FROM distillers WHERE "
 		      "direction_hash = ?");
-	query.bindValue(0, s_crypt1->keyedHash(QByteArray("upload"),
-					       &ok).toBase64());
+	query.bindValue
+	  (0, s_crypt1->keyedHash(QByteArray("upload"), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())

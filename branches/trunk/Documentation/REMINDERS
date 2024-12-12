@@ -330,6 +330,7 @@ Completed Items
 225.   Clear in Search.
 226.   Editable RSS table items.
 227.   Verify RSS links in RSS.
+228.   Import published pages. (PUBLISHED_PAGES)
 
 Remaining Items
 
@@ -337,5 +338,4 @@ Remaining Items
        via the openssl executable. Library becoming stale.
 2.     Shift operators and types.
 3.     Spectral human proxy.
-4.     Import published pages. (PUBLISHED_PAGES)
-5.     C++ nullptr.
+4.     C++ nullptr.
