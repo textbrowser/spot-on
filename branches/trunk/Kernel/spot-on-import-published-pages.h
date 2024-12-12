@@ -45,11 +45,12 @@ class spoton_import_published_pages: public QObject
   void deactivate(void);
 
  private:
-  QAtomicInt m_cancelImport;
   QAtomicInteger<quint64> m_imported;
   QTimer m_importTimer;
   QVector<QFuture<void > > m_importFutures;
+  mutable QAtomicInt m_cancelImport;
   spoton_crypt *urlCommonCrypt(void) const;
+  bool allow(const QList<QPair<QUrl, QString> > &list, const QUrl &url) const;
   void import(const QList<QVariant> &values);
 
  private slots:

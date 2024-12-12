@@ -1180,7 +1180,9 @@ void spoton_rss::saveFeedLink(const QString &d,
 
 	if(ok)
 	  query.bindValue
-	    (7, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	    (7,
+	     s_crypt->encryptedThenHashed(spoton_misc::urlToEncoded(link), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.exec();

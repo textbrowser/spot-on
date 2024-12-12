@@ -25,6 +25,12 @@
 	  Qt 6.5 LTS has separated the debug and release files and the
 	  additional logic in the project file is not necessary.</li>
 	<li>Corrected incorrect error report in spoton_crypt::init().</li>
+	<li>Corrected interface and kernel RSS: place the original URL
+	  into the redirected URL database field
+	  (rss_feeds_links database table) as the redirected URL is the URL
+	  which determines if its contents should be imported. If the
+	  original URL is redirected, the redirected URL field will be
+	  correct. Excellent!</li>
 	<li>Editable RSS feeds. Double-click the desired feed,
 	  modify its link, and press the Enter key.</li>
 	<li>Eliminated GitHub warnings of NTRU.</li>

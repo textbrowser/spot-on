@@ -63,6 +63,34 @@ spoton_import_published_pages::~spoton_import_published_pages()
   deactivate();
 }
 
+bool spoton_import_published_pages::allow
+(const QList<QPair<QUrl, QString> > &list, const QUrl &url) const
+{
+  for(int i = 0; i < list.size(); i++)
+    {
+      if(m_cancelImport.fetchAndAddOrdered(0))
+	return false;
+
+      auto const type(list.at(i).second);
+      auto const u(list.at(i).first);
+
+      if(type == "accept")
+	{
+	  if(spoton_misc::urlToEncoded(url).startsWith(spoton_misc::
+						       urlToEncoded(u)))
+	    return true;
+	}
+      else
+	{
+	  if(spoton_misc::urlToEncoded(url).startsWith(spoton_misc::
+						       urlToEncoded(u)))
+	    return false;
+	}
+    }
+
+  return false;
+}
+
 quint64 spoton_import_published_pages::imported(void) const
 {
   return m_imported.loadAcquire();
@@ -170,6 +198,9 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 
   QSqlDatabase::removeDatabase(connectionName);
 
+  if(m_cancelImport.fetchAndAddOrdered(0))
+    return;
+
   foreach(auto const &fileInfo,
 	  QDir(values.at(0).toString()).entryInfoList(QDir::Files))
     {
@@ -199,6 +230,10 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 	    {
 	      title = line2.trimmed();
 	      url = QUrl::fromUserInput(line1.trimmed());
+	    }
+
+	  if(allow(polarizers, url))
+	    {
 	    }
 	}
 
