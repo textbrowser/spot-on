@@ -214,6 +214,7 @@ class spoton_misc
   static qint64 participantCount(const QString &keyType,
 				 spoton_crypt *crypt);
   static qint64 sendQueueSize(QTcpSocket *socket);
+  static qint64 urlsCount(const QSqlDatabase &db);
   static quint64 databaseAccesses(void);
   static spoton_crypt *cryptFromForwardSecrecyMagnet
     (const QByteArray &magnet);

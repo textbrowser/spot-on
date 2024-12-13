@@ -453,7 +453,17 @@ void spoton_web_server_thread::process
       about.append("<br>");
       about.append("<b>Product Version:</b> ");
       about.append(QSysInfo::productVersion());
+      about.append("<br>");
+
+      auto db(spoton_kernel::urlDatabase());
+      auto const connectionName(db.databaseName()); // Order.
+
+      about.append("<b>Total Links:</b> ");
+      about.append(QString::number(spoton_misc::urlsCount(db)));
       about.append("</font></p>");
+      db.close();
+      db = QSqlDatabase();
+      QSqlDatabase::removeDatabase(connectionName);
 
       QString html("");
 
@@ -1021,7 +1031,7 @@ void spoton_web_server_thread::processLocal
 
   QByteArray html;
   auto db(spoton_kernel::urlDatabase());
-  auto const connectionName(db.connectionName());
+  auto const connectionName(db.connectionName()); // Order.
 
   if(db.isOpen())
     {

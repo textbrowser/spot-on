@@ -3909,6 +3909,41 @@ qint64 spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
   return count;
 }
 
+qint64 spoton_misc::urlsCount(const QSqlDatabase &db)
+{
+  qint64 count = 0;
+
+  if(!db.isOpen())
+    return count;
+
+  QChar c1;
+  QChar c2;
+  QSqlQuery query(db);
+
+  query.setForwardOnly(true);
+
+  for(int i = 0; i < 10 + 6; i++)
+    for(int j = 0; j < 10 + 6; j++)
+      {
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	if(query.exec(QString("SELECT COUNT(*) FROM spot_on_urls_%1%2").
+		      arg(c1).arg(c2)))
+	  if(query.next())
+	    count += query.value(0).toLongLong();
+      }
+
+  return count;
+}
+
 quint64 spoton_misc::databaseAccesses(void)
 {
   QReadLocker locker(&s_dbMutex);
