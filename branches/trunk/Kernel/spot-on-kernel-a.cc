@@ -80,6 +80,7 @@ QAtomicInt spoton_kernel::s_congestion_control_secondary_storage = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
+QElapsedTimer spoton_kernel::s_uptime;
 QHash<QByteArray, QList<QByteArray> > spoton_kernel::s_buzzKeys;
 QHash<QByteArray, char> spoton_kernel::s_messagingCache;
 QHash<QByteArray, qint64> spoton_kernel::s_emailRequestCache;
@@ -491,6 +492,7 @@ int main(int argc, char *argv[])
 
 spoton_kernel::spoton_kernel(void):QObject(nullptr)
 {
+  s_uptime.start(); // First!
   qRegisterMetaType<QAbstractSocket::SocketError>
     ("QAbstractSocket::SocketError");
   qRegisterMetaType<QByteArrayList> ("QByteArrayList");
@@ -507,7 +509,6 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
   m_activeStarbeams = 0;
   m_initialized = false;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
-  m_uptime.start();
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
   s_institutionLastModificationTime = QDateTime();
@@ -4733,7 +4734,7 @@ void spoton_kernel::slotPollDatabase(void)
     m_statisticsFuture = QtConcurrent::run
       (&spoton_kernel::updateStatistics,
        this,
-       m_uptime,
+       s_uptime,
        QVector<int> () << interfaces()
                        << m_activeListeners
 	               << m_activeNeighbors
@@ -4743,7 +4744,7 @@ void spoton_kernel::slotPollDatabase(void)
     m_statisticsFuture = QtConcurrent::run
       (this,
        &spoton_kernel::updateStatistics,
-       m_uptime,
+       s_uptime,
        QVector<int> () << interfaces()
                        << m_activeListeners
 	               << m_activeNeighbors
@@ -6399,7 +6400,7 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 		      "(statistic, value) "
 		      "VALUES ('Imported Shared URLs', ?)");
 	query.addBindValue
-	  (QString::number(m_importPublishedPages->imported()));
+	  (locale.toString(m_importPublishedPages->imported()));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
@@ -6509,8 +6510,8 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	query.bindValue
 	  (0,
 	   QString("%1 Minute(s) / %2 Hour(s)").
-	   arg(uptime.elapsed() / 60000).
-	   arg(uptime.elapsed() / 3600000));
+	   arg(locale.toString(uptime.elapsed() / 60000)).
+	   arg(locale.toString(uptime.elapsed() / 3600000)));
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "

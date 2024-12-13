@@ -423,6 +423,7 @@ void spoton_web_server_thread::process
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /about"))
     {
+      QLocale locale;
       QString about("");
 
       about.append("<p><font size=3>");
@@ -454,12 +455,15 @@ void spoton_web_server_thread::process
       about.append("<b>Product Version:</b> ");
       about.append(QSysInfo::productVersion());
       about.append("<br>");
+      about.append("<b>Spot-On Kernel Uptime Minutes:</b> ");
+      about.append(locale.toString(spoton_kernel::uptimeMinutes()));
+      about.append("<br>");
 
       auto db(spoton_kernel::urlDatabase());
       auto const connectionName(db.databaseName()); // Order.
 
-      about.append("<b>Total Links:</b> ");
-      about.append(QLocale().toString(spoton_misc::urlsCount(db)));
+      about.append("<b>Total Spot-On Web Pages:</b> ");
+      about.append(locale.toString(spoton_misc::urlsCount(db)));
       about.append("</font></p>");
       db.close();
       db = QSqlDatabase();

@@ -689,7 +689,8 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 	       arg(m_settings.value("gui/iconSet", "nouve").toString().
 		   toLower())));
       m_sb.listeners->setToolTip
-	(tr("There is (are) %1 active listener(s).").arg(activeListeners));
+	(tr("There is (are) %1 active listener(s).").
+	 arg(locale.toString(activeListeners)));
     }
   else
     {
@@ -708,7 +709,7 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
 		   toLower())));
       m_sb.neighbors->setToolTip
 	(tr("There is (are) %1 connected neighbor(s).").
-	 arg(activeNeighbors));
+	 arg(locale.toString(activeNeighbors)));
     }
   else
     {

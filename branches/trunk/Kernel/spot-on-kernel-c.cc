@@ -195,6 +195,11 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
   return ok;
 }
 
+qint64 spoton_kernel::uptimeMinutes(void)
+{
+  return s_uptime.elapsed() / 60000;
+}
+
 spoton_crypt *spoton_kernel::crypt(const QString &key)
 {
   QReadLocker locker(&s_cryptsMutex);

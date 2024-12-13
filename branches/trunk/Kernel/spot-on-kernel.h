@@ -95,6 +95,7 @@ class spoton_kernel: public QObject
 				     const bool do_not_hash = false);
   static int buzzKeyCount(void);
   static int interfaces(void);
+  static qint64 uptimeMinutes(void);
   static spoton_crypt *crypt(const QString &key);
   static void addBuzzKey(const QByteArray &key,
 			 const QByteArray &channelType,
@@ -129,7 +130,6 @@ class spoton_kernel: public QObject
  private:
   QAtomicInt m_urlImportFutureInterrupt;
   QDateTime m_lastPoptasticStatus;
-  QElapsedTimer m_uptime;
   QFileSystemWatcher m_settingsWatcher;
   QFuture<void> m_checkForTerminationFuture;
   QFuture<void> m_future;
@@ -179,6 +179,7 @@ class spoton_kernel: public QObject
   static QAtomicInt s_congestion_control_secondary_storage;
   static QByteArray s_messagingCacheKey;
   static QDateTime s_institutionLastModificationTime;
+  static QElapsedTimer s_uptime;
   static QHash<QByteArray, QList<QByteArray> > s_buzzKeys;
   static QHash<QByteArray, char> s_messagingCache;
   static QHash<QByteArray, qint64> s_emailRequestCache;
