@@ -1713,6 +1713,12 @@ void spoton::slotShowErrorMessage(void)
 
 void spoton::slotShowReleaseNotes(void)
 {
+  m_releaseNotes->property("resized").toBool() ?
+    (void) 0 :
+    m_releaseNotes->resize
+    (m_releaseNotes->size().width(),
+     qMax(-100 + size().height(), m_releaseNotes->size().height())),
+    m_releaseNotes->setProperty("resized", true);
   spoton_utilities::centerWidget(m_releaseNotes, this);
   m_releaseNotes->showNormal();
   m_releaseNotes->activateWindow();

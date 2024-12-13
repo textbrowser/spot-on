@@ -7332,5 +7332,11 @@ void spoton::slotTestSslControlString(void)
 
 void spoton::slotViewLog(void)
 {
+  m_logViewer.property("resized").toBool() ?
+    (void) 0:
+    m_logViewer.resize
+    (m_logViewer.size().width(),
+     qMax(-100 + size().height(), m_logViewer.size().height())),
+    m_logViewer.setProperty("resized", true);
   m_logViewer.show(this);
 }

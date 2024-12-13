@@ -2047,6 +2047,12 @@ void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
 
 void spoton::slotShowDocumentation(void)
 {
+  m_documentation->property("resized").toBool() ?
+    (void) 0 :
+    m_documentation->resize
+    (m_documentation->size().width(),
+     qMax(-100 + size().height(), m_documentation->size().height())),
+    m_documentation->setProperty("resized", true);
   spoton_utilities::centerWidget(m_documentation, this);
   m_documentation->showNormal();
   m_documentation->activateWindow();

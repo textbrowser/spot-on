@@ -2310,9 +2310,12 @@ void spoton::slotShareStarBeam(void)
 
 void spoton::slotShowOptions(void)
 {
-  m_optionsWindow->resize
+  m_optionsWindow->property("resized").toBool() ?
+    (void) 0 :
+    m_optionsWindow->resize
     (m_optionsWindow->size().width(),
-     qMax(-100 + size().height(), m_optionsWindow->size().height()));
+     qMax(-100 + size().height(), m_optionsWindow->size().height())),
+    m_optionsWindow->setProperty("resized", true);
   spoton_utilities::centerWidget(m_optionsWindow, this);
   m_optionsWindow->showNormal();
   m_optionsWindow->activateWindow();
