@@ -459,7 +459,7 @@ void spoton_web_server_thread::process
       auto const connectionName(db.databaseName()); // Order.
 
       about.append("<b>Total Links:</b> ");
-      about.append(QString::number(spoton_misc::urlsCount(db)));
+      about.append(QLocale().toString(spoton_misc::urlsCount(db)));
       about.append("</font></p>");
       db.close();
       db = QSqlDatabase();
