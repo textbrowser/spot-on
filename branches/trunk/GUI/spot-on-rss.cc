@@ -2603,19 +2603,15 @@ void spoton_rss::slotFeedVerificationReplyFinished(void)
 
 void spoton_rss::slotFind(void)
 {
-  if(m_ui.find->text().isEmpty())
-    m_ui.find->setPalette(m_originalFindPalette);
-  else if(!m_ui.timeline->find(m_ui.find->text()))
-    {
-      QColor const color(240, 128, 128); // Light Coral
-      auto palette(m_ui.find->palette());
+  auto const static findPalette = m_ui.find->palette();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  auto options = QTextDocument::FindFlags();
+#else
+  QTextDocument::FindFlags options = 0;
+#endif
 
-      palette.setColor(m_ui.find->backgroundRole(), color);
-      m_ui.find->setPalette(palette);
-      m_ui.timeline->moveCursor(QTextCursor::Start);
-    }
-  else
-    m_ui.find->setPalette(m_originalFindPalette);
+  spoton_utilities::searchText
+    (m_ui.find, m_ui.timeline, findPalette, options);
 }
 
 void spoton_rss::slotFindInitialize(void)

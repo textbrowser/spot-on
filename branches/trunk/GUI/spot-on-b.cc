@@ -5985,6 +5985,7 @@ void spoton::slotResetAll(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setDefaultButton(QMessageBox::No); // After setStandardButtons().
   mb.setText(tr("Are you sure that you wish to reset %1? All "
 		"data will be lost. PostgreSQL databases must be "
 		"removed separately.").

@@ -855,10 +855,15 @@ void spoton::slotEmailPageChanged(int value)
 void spoton::slotFindInSearch(void)
 {
 #if SPOTON_GOLDBUG == 0
-  auto const text(m_ui.find->text());
+  auto const static findPalette = m_ui.find->palette();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  auto options = QTextDocument::FindFlags();
+#else
+  QTextDocument::FindFlags options = 0;
+#endif
 
-  if(!m_ui.urls->find(text))
-    m_ui.urls->moveCursor(QTextCursor::Start);
+  spoton_utilities::searchText
+    (m_ui.find, m_ui.urls, findPalette, options);
 #endif
 }
 

@@ -33,6 +33,7 @@
 
 #include "spot-on-defines.h"
 #include "spot-on-documentation.h"
+#include "spot-on-utilities.h"
 
 spoton_documentation::spoton_documentation
 (const QUrl &url, QWidget *parent):QMainWindow(parent)
@@ -100,10 +101,15 @@ void spoton_documentation::slotAnchorClicked(const QUrl &url)
 
 void spoton_documentation::slotFind(void)
 {
-  auto const text(m_ui.find->text());
+  auto const static findPalette = m_ui.find->palette();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  auto options = QTextDocument::FindFlags();
+#else
+  QTextDocument::FindFlags options = 0;
+#endif
 
-  if(!m_ui.textBrowser->find(text))
-    m_ui.textBrowser->moveCursor(QTextCursor::Start);
+  spoton_utilities::searchText
+    (m_ui.find, m_ui.textBrowser, findPalette, options);
 }
 
 void spoton_documentation::slotFindInitialize(void)

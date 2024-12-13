@@ -33,7 +33,9 @@
 #else
 #include <QDesktopWidget>
 #endif
+#include <QLineEdit>
 #include <QScreen>
+#include <QTextEdit>
 #include <QWidget>
 
 class spoton_utilities
@@ -150,6 +152,50 @@ class spoton_utilities
     foreach(auto tab, parent->findChildren<QTabWidget *> ())
       if(tab)
 	tab->setDocumentMode(true);
+  }
+
+  static void searchText(QLineEdit *find,
+			 QTextEdit *text,
+			 const QPalette &originalFindPalette,
+			 const QTextDocument::FindFlags options)
+  {
+    if(!find || !text)
+      return;
+
+    if(find->text().isEmpty())
+      {
+	find->setPalette(originalFindPalette);
+	find->setProperty("found", true);
+	text->moveCursor(QTextCursor::Left);
+      }
+    else if(!text->find(find->text(), options))
+      {
+	auto const found = find->property("found").toBool();
+
+	if(found)
+	  find->setProperty("found", false);
+	else
+	  {
+	    QColor const color(240, 128, 128); // Light Coral
+	    auto palette(find->palette());
+
+	    palette.setColor(find->backgroundRole(), color);
+	    find->setPalette(palette);
+	  }
+
+	if(options)
+	  text->moveCursor(QTextCursor::End);
+	else
+	  text->moveCursor(QTextCursor::Start);
+
+	if(found)
+	  searchText(find, text, originalFindPalette, options);
+      }
+    else
+      {
+	find->setPalette(originalFindPalette);
+	find->setProperty("found", true);
+      }
   }
 
  private:
