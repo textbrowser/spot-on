@@ -455,7 +455,7 @@ void spoton_web_server_thread::process
       about.append("<b>Product Version:</b> ");
       about.append(QSysInfo::productVersion());
       about.append("<br>");
-      about.append("<b>Spot-On Kernel Uptime Minutes:</b> ");
+      about.append("<b>Spot-On Kernel Uptime Minute(s):</b> ");
       about.append(locale.toString(spoton_kernel::uptimeMinutes()));
       about.append("<br>");
 
