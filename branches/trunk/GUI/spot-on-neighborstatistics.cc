@@ -204,7 +204,9 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 		  if(pair.first.contains("buffer") ||
 		     pair.first.contains("bytes") ||
 		     pair.first.contains("length") ||
+		     pair.first.contains("silence_time") ||
 		     pair.first.contains("size") ||
+		     pair.first.contains("uptime") ||
 		     pair.first.contains("width"))
 		    text = locale.toString(text.toULongLong());
 
