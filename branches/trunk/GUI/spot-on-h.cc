@@ -551,7 +551,7 @@ void spoton::prepareOtherOptions(void)
 	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
       m_optionsUi.other_options->appendPlainText
 	("# PUBLISHED_PAGES: "
-	 "Absolute-File-Path, Title-Line-Number, URL-Line-Number");
+	 "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
       m_optionsUi.other_options->appendPlainText
 	("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
       m_optionsUi.other_options->appendPlainText

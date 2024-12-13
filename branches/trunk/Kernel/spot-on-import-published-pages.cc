@@ -48,12 +48,12 @@ spoton_import_published_pages::spoton_import_published_pages(QObject *parent):
 	  this,
 	  SLOT(slotLogError(const QString &)));
   m_cancelImport = 0;
-  m_importFutures.resize(qCeil(1.5 * qMax(1, QThread::idealThreadCount())));
+  m_importFutures.resize(1);
 
   for(int i = 0; i < m_importFutures.size(); i++)
     m_importFutures.replace(i, QFuture<void> ());
 
-  m_importTimer.setInterval(10000);
+  m_importTimer.setInterval(5000);
   m_importTimer.start();
   m_imported = 0;
 }
@@ -219,7 +219,7 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 	  auto const line1(file.readLine());
 	  auto const line2(file.readLine());
 	  auto const remaining(file.readAll().trimmed());
-	  auto const titleLN = values.at(1).toInt();
+	  auto const titleLN = values.at(2).toInt();
 
 	  if(titleLN == 1)
 	    {
@@ -234,6 +234,34 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 
 	  if(allow(polarizers, url))
 	    {
+	      QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+	      QString error("");
+	      auto db(spoton_kernel::urlDatabase());
+	      auto const connectionName(db.connectionName());
+	      auto const maximumKeywords = values.at(1).toInt();
+	      auto const synchronize = spoton_kernel::setting
+		("gui/disable_kernel_synchronous_sqlite_url_download", false).
+		toBool();
+	      auto imported = false;
+
+	      imported = spoton_misc::importUrl
+		(remaining,
+		 title.toUtf8(), // Description
+		 title.toUtf8(),
+		 spoton_misc::urlToEncoded(url),
+		 db,
+		 maximumKeywords,
+		 synchronize,
+		 m_cancelImport,
+		 error,
+		 ucc.data());
+	      db.close();
+	      db = QSqlDatabase();
+	      QSqlDatabase::removeDatabase(connectionName);
+	      m_imported.fetchAndAddOrdered(imported ? 1 : 0);
+
+	      if(!error.isEmpty())
+		emit logError(error);
 	    }
 	}
 

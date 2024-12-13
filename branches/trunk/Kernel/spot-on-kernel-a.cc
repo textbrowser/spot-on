@@ -6397,6 +6397,12 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 	query.exec();
 	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
 		      "(statistic, value) "
+		      "VALUES ('Imported Shared URLs', ?)");
+	query.addBindValue
+	  (QString::number(m_importPublishedPages->imported()));
+	query.exec();
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
 		      "VALUES ('Kernel PID', ?)");
 	query.bindValue
 	  (0, QString::number(QCoreApplication::applicationPid()));
