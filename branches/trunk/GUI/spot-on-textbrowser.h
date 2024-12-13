@@ -37,12 +37,10 @@ class spoton_textbrowser: public QTextBrowser
  public:
   spoton_textbrowser(QWidget *parent);
   ~spoton_textbrowser();
+  static QString removeSpecial(const QString &text);
   void append(const QString &text);
   void setContent(const QByteArray &text);
   void setHtml(const QString &text);
-
- private:
-  QString removeSpecial(const QString &text);
 };
 
 #endif

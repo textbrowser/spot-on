@@ -2006,16 +2006,13 @@ void spoton::populateMail(void)
 	QList<int> rows;
 	QSqlQuery query(db);
 	QStringList oids;
-	QTextBrowser textBrowser; // Preview tool tip.
-	auto const html(m_ui.mailMessage->toHtml());
+	auto const html(m_ui.mailMessage->toPlainText());
 	auto const list
 	  (m_ui.mail->selectionModel()->
 	   selectedRows(m_ui.mail->columnCount() - 1)); // OID
 	auto const vValue = m_ui.mail->verticalScrollBar()->value();
 	auto emailPage = m_ui.email_page->currentIndex();
 	int totalRows = 0;
-
-	textBrowser.setVisible(false);
 
 	for(int i = 0; i < list.size(); i++)
 	  {
@@ -2117,8 +2114,12 @@ void spoton::populateMail(void)
 		    if(i == 0)
 		      row += 1;
 
-		    if(i == 0 || i == 1 || i == 2 ||
-		       i == 3 || i == 6 || i == 7 ||
+		    if(i == 0 ||
+		       i == 1 ||
+		       i == 2 ||
+		       i == 3 ||
+		       i == 6 ||
+		       i == 7 ||
 		       i == 10)
 		      {
 			if(i == 1 || i == 2 || i == 3 || i == 6 || i == 10)
@@ -2172,19 +2173,9 @@ void spoton::populateMail(void)
 
 				    if(i == 6)
 				      {
-					textBrowser.setText(item->text());
 					tooltip.append
 					  (m_ui.mail->
 					   horizontalHeaderItem(i)->text());
-					tooltip.append(": ");
-					tooltip.append
-					  (textBrowser.
-					   toPlainText().mid(0, 128).trimmed());
-
-					if(textBrowser.toPlainText().
-					   trimmed().length() > 128)
-					  tooltip.append("...");
-
 					tooltip.append("<br>");
 				      }
 				  }
@@ -2325,7 +2316,7 @@ void spoton::populateMail(void)
 	m_ui.mail->setSelectionMode(QAbstractItemView::MultiSelection);
 
 	if(cRow.values().value(0))
-	  m_ui.mailMessage->setHtml(html);
+	  m_ui.mailMessage->setPlainText(html);
 
 	for(int i = 0; i < rows.size(); i++)
 	  m_ui.mail->selectRow(rows.at(i));
@@ -4494,7 +4485,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
     }
 
   m_ui.mailMessage->clear();
-  m_ui.mailMessage->append(text);
+  m_ui.mailMessage->setPlainText(text);
   m_ui.mailMessage->horizontalScrollBar()->setValue(0);
   m_ui.mailMessage->verticalScrollBar()->setValue(0);
 }

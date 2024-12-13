@@ -989,7 +989,7 @@ void spoton::slotMailContextMenu(const QPoint &point)
 
   if(enabled)
     {
-      action->setProperty("message", m_ui.mailMessage->toHtml());
+      action->setProperty("message", m_ui.mailMessage->toPlainText());
       list = m_ui.mail->selectionModel()->selectedRows(3); // Subject
       action->setProperty("subject", list.value(0).data().toString());
       list = m_ui.mail->selectionModel()->

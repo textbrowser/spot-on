@@ -185,9 +185,8 @@ void spoton_pageviewer::setPage(const QByteArray &data,
       m_content = data;
 
       /*
-      ** setContent() will not display
-      ** some characters. setHtml() may
-      ** produce network activity.
+      ** setContent() will not display some characters.
+      ** setHtml() may produce network activity.
       */
 
       m_webView->setHtml(m_content);
@@ -404,10 +403,8 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 		m_content = content;
 
 		/*
-		** setContent() will not
-		** display some characters.
-		** setHtml() may produce
-		** network activity.
+		** setContent() will not display some characters.
+		** setHtml() may produce network activity.
 		*/
 
 		m_webView->setHtml(m_content);
