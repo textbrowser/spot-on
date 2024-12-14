@@ -2317,8 +2317,10 @@ void spoton_rss::slotDownloadContent(void)
 
 void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 {
-  if(!imageUrl.isEmpty() && imageUrl.isValid() &&
-     !url.isEmpty() && url.isValid())
+  if(!imageUrl.isEmpty() &&
+     !url.isEmpty() &&
+     imageUrl.isValid() &&
+     url.isValid())
     {
       QNetworkRequest request(imageUrl);
 
