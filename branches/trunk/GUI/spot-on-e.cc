@@ -902,15 +902,19 @@ void spoton::slotConfigurePoptastic(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   list = spoton_misc::poptasticSettings("", crypt, &ok);
+  m_poptasticRetroPhoneDialog->resize
+    (m_poptasticRetroPhoneDialog->size().width(),
+     qMax(m_poptasticRetroPhoneDialog->sizeHint().height(),
+	  size().height() - 100));
   QApplication::restoreOverrideCursor();
 
   if(!ok)
     {
       m_poptasticRetroPhoneDialog->show();
-      QMessageBox::critical(m_poptasticRetroPhoneDialog, tr("%1: Error").
-			    arg(SPOTON_APPLICATION_NAME),
-			    tr("A failure occurred with "
-			       "spoton_misc::poptasticSettings()."));
+      QMessageBox::critical
+	(m_poptasticRetroPhoneDialog,
+	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
+	 tr("A failure occurred with spoton_misc::poptasticSettings()."));
       QApplication::processEvents();
     }
   else
@@ -1022,16 +1026,14 @@ void spoton::slotConfigurePoptastic(void)
       m_poptasticRetroPhoneSettingsUi.out_ssltls->addItem("None");
     }
 
-  if(!(protocols.contains("pop3") ||
-       protocols.contains("pop3s")))
+  if(!(protocols.contains("pop3") || protocols.contains("pop3s")))
     {
       m_poptasticRetroPhoneSettingsUi.testpop3->setEnabled(false);
       m_poptasticRetroPhoneSettingsUi.testpop3->setToolTip
 	(tr("Your version of libcURL does not support POP3."));
     }
 
-  if(!(protocols.contains("smtp") ||
-       protocols.contains("smtps")))
+  if(!(protocols.contains("smtp") || protocols.contains("smtps")))
     {
       m_poptasticRetroPhoneSettingsUi.testsmtp->setEnabled(false);
       m_poptasticRetroPhoneSettingsUi.testsmtp->setToolTip

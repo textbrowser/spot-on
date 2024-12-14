@@ -626,6 +626,11 @@ void spoton::prepareTearOffMenus(void)
   m_ui.menu_View->setTearOffEnabled(m_optionsUi.tear_off_menus->isChecked());
 }
 
+void spoton::resizeEvent(QResizeEvent *event)
+{
+  QMainWindow::resizeEvent(event);
+}
+
 void spoton::retrieveNeighbors(void)
 {
   QFileInfo const fileInfo
