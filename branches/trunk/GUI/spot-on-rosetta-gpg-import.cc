@@ -79,14 +79,14 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
   if(data.trimmed().isEmpty())
     return tr("Empty GPG Data");
 
-  gpgme_check_version(0);
+  gpgme_check_version(nullptr);
 
   auto dump(tr("Empty GPG Data"));
-  gpgme_ctx_t ctx = 0;
+  gpgme_ctx_t ctx = nullptr;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
-      gpgme_data_t keydata = 0;
+      gpgme_data_t keydata = nullptr;
       auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
@@ -97,7 +97,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 
 	  while(err == GPG_ERR_NO_ERROR)
 	    {
-	      gpgme_key_t key = 0;
+	      gpgme_key_t key = nullptr;
 
 	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
 		break;
@@ -149,14 +149,14 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
   if(data.trimmed().isEmpty())
     return "";
 
-  gpgme_check_version(0);
+  gpgme_check_version(nullptr);
 
   QString email("");
-  gpgme_ctx_t ctx = 0;
+  gpgme_ctx_t ctx = nullptr;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
-      gpgme_data_t keydata = 0;
+      gpgme_data_t keydata = nullptr;
       auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
@@ -167,7 +167,7 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 
 	  while(err == GPG_ERR_NO_ERROR)
 	    {
-	      gpgme_key_t key = 0;
+	      gpgme_key_t key = nullptr;
 
 	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
 		break;
@@ -198,7 +198,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 
-  auto crypt = m_spoton->crypts().value("rosetta", 0);
+  auto crypt = m_spoton->crypts().value("rosetta", nullptr);
 
   if(!crypt)
     {
@@ -302,7 +302,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 		   "public_keys TEXT NOT NULL, "
 		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
 
-	auto crypt = m_spoton->crypts().value("rosetta", 0);
+	auto crypt = m_spoton->crypts().value("rosetta", nullptr);
 
 	if(crypt)
 	  {
@@ -380,7 +380,7 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
   if(publicKey.isEmpty())
     return;
 
-  auto crypt = m_spoton->crypts().value("rosetta", 0);
+  auto crypt = m_spoton->crypts().value("rosetta", nullptr);
 
   if(!crypt)
     {

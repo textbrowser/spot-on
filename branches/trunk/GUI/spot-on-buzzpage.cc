@@ -93,7 +93,7 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
     m_key = "unknown";
 
   m_hashKeyGenerated = spoton_crypt::derivedSha1Key
-    (spoton_crypt::sha512Hash(m_hashKey + m_hashType, 0),
+    (spoton_crypt::sha512Hash(m_hashKey + m_hashType, nullptr),
      m_hashKey,
      112,
      m_iterationCount);
@@ -334,7 +334,7 @@ void spoton_buzzpage::slotMinimal(const bool state)
 
 void spoton_buzzpage::slotRemove(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     {
@@ -422,7 +422,7 @@ void spoton_buzzpage::slotRemove(void)
 
 void spoton_buzzpage::slotSave(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     {
@@ -774,7 +774,7 @@ void spoton_buzzpage::userStatus(const QList<QByteArray> &list)
     {
       m_ui.clients->setRowCount(m_ui.clients->rowCount() + 1);
 
-      QTableWidgetItem *item = 0;
+      QTableWidgetItem *item = nullptr;
 
       item = new QTableWidgetItem(QString::fromUtf8(name.constData(),
 						    name.length()));

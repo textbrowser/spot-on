@@ -40,7 +40,7 @@
 
 spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 					     spoton *parent):
-  QMainWindow(0)
+  QMainWindow(nullptr)
 {
   m_kernelSocket = kernelSocket;
   m_parent = parent;
@@ -142,7 +142,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 				 const QString &name,
 				 const QVariant &category_oid)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return false;
@@ -239,7 +239,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 void spoton_echo_key_share::addCategory(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nulltr) : nullptr;
 
   if(!crypt)
     return;
@@ -300,7 +300,7 @@ void spoton_echo_key_share::addCategory(void)
 
 void spoton_echo_key_share::createDefaultUrlCommunity(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return;
@@ -447,7 +447,7 @@ void spoton_echo_key_share::deleteSelected(void)
 
   QApplication::processEvents();
 
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return;
@@ -512,7 +512,7 @@ void spoton_echo_key_share::keyPressEvent(QKeyEvent *event)
 
 void spoton_echo_key_share::populate(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return;
@@ -547,7 +547,7 @@ void spoton_echo_key_share::populate(void)
 	    {
 	      QByteArray bytes;
 	      QStringList strings;
-	      QTreeWidgetItem *parent = 0;
+	      QTreeWidgetItem *parent = nullptr;
 	      auto ok = true;
 
 	      bytes = crypt->decryptedAfterAuthenticated
@@ -691,9 +691,9 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
   m_ui.menu->menu()->repaint();
   repaint();
 
-  auto eCrypt = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  auto eCrypt = m_parent ? m_parent->crypts().value(keyType, nullptr) : nullptr;
   auto sCrypt = m_parent ?
-    m_parent->crypts().value(keyType + "-signature", 0) : 0;
+    m_parent->crypts().value(keyType + "-signature", nullptr) : nullptr;
 
   if(!eCrypt || !sCrypt)
     {
@@ -882,7 +882,7 @@ void spoton_echo_key_share::slotClose(void)
 void spoton_echo_key_share::slotItemChanged(QTreeWidgetItem *item,
 					    int column)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return;

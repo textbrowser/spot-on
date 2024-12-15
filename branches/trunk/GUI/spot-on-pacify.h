@@ -50,7 +50,7 @@ class spoton_pacify
     //   11......  Initial byte in multibyte character     (Count these.)
     //   10......  Non-initial byte in multibyte character (Do not count these.)
 
-    m_passphrase = 0;
+    m_passphrase = nullptr;
     m_passphrase_length = 0;
 
     for(size_t i = 0; i < n; i++)

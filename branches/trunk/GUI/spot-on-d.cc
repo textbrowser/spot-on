@@ -212,7 +212,7 @@ void spoton::applyGoldBugToAttachments(const QString &folderOid,
       return;
     }
 
-  auto crypt2 = m_crypts.value("email", 0);
+  auto crypt2 = m_crypts.value("email", nullptr);
 
   if(!crypt2)
     {
@@ -361,7 +361,7 @@ void spoton::joinDefaultBuzzChannel(void)
 
 void spoton::populateAETokens(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -526,7 +526,7 @@ void spoton::populateMOTD(const QString &listenerOid)
 void spoton::prepareUrlContainers(void)
 {
   auto crypt = spoton_misc::retrieveUrlCommonCredentials
-    (m_crypts.value("chat", 0));
+    (m_crypts.value("chat", nullptr));
 
   if(!crypt)
     return;
@@ -537,7 +537,7 @@ void spoton::prepareUrlContainers(void)
 
 void spoton::refreshInstitutions(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -599,7 +599,7 @@ void spoton::refreshInstitutions(void)
 		  (QByteArray::fromBase64(query.value(3).toByteArray()),
 		   &ok);
 
-	      QTableWidgetItem *item = 0;
+	      QTableWidgetItem *item = nullptr;
 
 	      if(ok)
 		item = new QTableWidgetItem(QString(name));
@@ -650,7 +650,7 @@ void spoton::slotAddAEToken(void)
   QString connectionName("");
   QString error("");
   QStringList list;
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = true;
   auto token(m_ui.ae_token->text().trimmed());
   auto type
@@ -791,7 +791,7 @@ void spoton::slotAddAttachment(void)
 
 void spoton::slotAddInstitution(const QString &text)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -984,7 +984,7 @@ void spoton::slotAddMagnet(void)
 
   if(type == "buzz")
     {
-      auto crypt = m_crypts.value("chat", 0);
+      auto crypt = m_crypts.value("chat", nullptr);
 
       if(!crypt)
 	{
@@ -1135,7 +1135,7 @@ void spoton::slotAddMagnet(void)
 
 void spoton::slotAssignNewIPToNeighbor(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1393,9 +1393,9 @@ void spoton::slotCopyAEMagnet(void)
     clipboard->clear();
 
   QString magnet("");
-  QTableWidgetItem *item1 = 0;
-  QTableWidgetItem *item2 = 0;
-  QTableWidgetItem *item3 = 0;
+  QTableWidgetItem *item1 = nullptr;
+  QTableWidgetItem *item2 = nullptr;
+  QTableWidgetItem *item3 = nullptr;
 
   if(action->property("from") == "listeners")
     {
@@ -1483,7 +1483,7 @@ void spoton::slotCopyInstitution(void)
 
 void spoton::slotDeleteAEToken(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1576,7 +1576,7 @@ void spoton::slotDeleteInstitution(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM institutions WHERE hash = ?");
 
-	if(m_crypts.value("email", 0))
+	if(m_crypts.value("email", nullptr))
 	  query.bindValue
 	    (0, m_crypts.value("email")->
 	     keyedHash(list.value(0).data().toString().toLatin1(), &ok).

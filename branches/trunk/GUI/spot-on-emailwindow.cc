@@ -263,7 +263,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   if(!m_parent)
     return;
 
-  auto crypt = m_parent->crypts().value("chat", 0);
+  auto crypt = m_parent->crypts().value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -280,7 +280,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
   m_ui.emailNameEditable->setText(m_ui.emailName->currentText());
   m_ui.emailNameEditable->setCursorPosition(0);
 
-  auto const list(spoton_misc::poptasticSettings("", crypt, 0));
+  auto const list(spoton_misc::poptasticSettings("", crypt, nullptr));
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -376,7 +376,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 
 		    continue;
 
-		  QTableWidgetItem *item = 0;
+		  QTableWidgetItem *item = nullptr;
 
 		  if(i == 0)
 		    {
@@ -630,7 +630,7 @@ void spoton_emailwindow::slotSendMail(void)
       QApplication::restoreOverrideCursor();
     }
 
-  auto crypt = m_parent->crypts().value("email", 0);
+  auto crypt = m_parent->crypts().value("email", nullptr);
 
   if(!crypt)
     {

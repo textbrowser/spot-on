@@ -46,8 +46,8 @@ extern "C"
 
 QByteArray spoton::copyMyChatPublicKey(void) const
 {
-  if(!m_crypts.value("chat", 0) ||
-     !m_crypts.value("chat-signature", 0))
+  if(!m_crypts.value("chat", nullptr) ||
+     !m_crypts.value("chat-signature", nullptr))
     return QByteArray();
 
   QByteArray name;
@@ -81,8 +81,8 @@ QByteArray spoton::copyMyChatPublicKey(void) const
 
 QByteArray spoton::copyMyEmailPublicKey(void) const
 {
-  if(!m_crypts.value("email", 0) ||
-     !m_crypts.value("email-signature", 0))
+  if(!m_crypts.value("email", nullptr) ||
+     !m_crypts.value("email-signature", nullptr))
     return QByteArray();
 
   QByteArray name;
@@ -116,8 +116,8 @@ QByteArray spoton::copyMyEmailPublicKey(void) const
 
 QByteArray spoton::copyMyPoptasticPublicKey(void) const
 {
-  if(!m_crypts.value("poptastic", 0) ||
-     !m_crypts.value("poptastic-signature", 0))
+  if(!m_crypts.value("poptastic", nullptr) ||
+     !m_crypts.value("poptastic-signature", nullptr))
     return QByteArray();
 
   QByteArray name;
@@ -156,8 +156,8 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
 
 QByteArray spoton::copyMyRosettaPublicKey(void) const
 {
-  if(!m_crypts.value("rosetta", 0) ||
-     !m_crypts.value("rosetta-signature", 0))
+  if(!m_crypts.value("rosetta", nullptr) ||
+     !m_crypts.value("rosetta-signature", nullptr))
     return QByteArray();
 
   QByteArray name;
@@ -191,8 +191,8 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
 
 QByteArray spoton::copyMyUrlPublicKey(void) const
 {
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
+  if(!m_crypts.value("url", nullptr) ||
+     !m_crypts.value("url-signature", nullptr))
     return QByteArray();
 
   QByteArray name;

@@ -197,7 +197,8 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
       return;
     }
 
-  auto s_crypt = m_parent ? m_parent->crypts().value(smp->m_keyType, 0) : 0;
+  auto s_crypt = m_parent ?
+    m_parent->crypts().value(smp->m_keyType, nullptr) : nullptr;
 
   if(!s_crypt)
     {
@@ -305,7 +306,8 @@ void spoton_smpwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_smpwindow::populateSecrets(void)
 {
-  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ?
+    m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!s_crypt)
     return;
@@ -349,7 +351,7 @@ void spoton_smpwindow::populateSecrets(void)
 	      for(int i = 0; i < 4; i++)
 		{
 		  QByteArray bytes;
-		  QTableWidgetItem *item = 0;
+		  QTableWidgetItem *item = nullptr;
 		  auto ok = true;
 
 		  if(i != 1)
@@ -435,9 +437,10 @@ void spoton_smpwindow::slotExecute(void)
   auto list
     (m_ui.participants->selectionModel()->selectedRows(1)); // Public Key Type
   auto const keyType(list.value(0).data().toString());
-  auto s_crypt1 = m_parent ? m_parent->crypts().value(keyType, 0) : 0;
+  auto s_crypt1 = m_parent ?
+    m_parent->crypts().value(keyType, nullptr) : nullptr;
   auto s_crypt2 = m_parent ? m_parent->
-    crypts().value(keyType + "-signature", 0) : 0;
+    crypts().value(keyType + "-signature", nullptr) : nullptr;
 
   if(!s_crypt1 || !s_crypt2)
     {
@@ -447,7 +450,7 @@ void spoton_smpwindow::slotExecute(void)
     }
 
   QString error("");
-  auto kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
+  auto kernelSocket = m_parent ? m_parent->kernelSocket() : nullptr;
 
   if(!kernelSocket)
     {
@@ -529,7 +532,7 @@ void spoton_smpwindow::slotExecute(void)
   auto const name
     (m_ui.participants->selectionModel()->selectedRows(0).value(0).data().
      toString());
-  auto smp = m_smps.value(bytes, 0);
+  auto smp = m_smps.value(bytes, nullptr);
 
   if(!smp)
     {
@@ -721,7 +724,8 @@ void spoton_smpwindow::slotGenerateData(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  auto s_crypt = m_parent ? m_parent-> crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ?
+    m_parent-> crypts().value("chat", nullptr) : nullptr;
 
   if(!s_crypt)
     {
@@ -875,7 +879,8 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ?
+    m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!s_crypt)
     {
@@ -944,7 +949,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
     }
 
   auto const bytes(spoton_crypt::preferredHash(publicKey));
-  auto smp = m_smps.value(bytes, 0);
+  auto smp = m_smps.value(bytes, nullptr);
 
   if(!smp)
     {
@@ -982,7 +987,8 @@ void spoton_smpwindow::slotPurgeSMPStateMachines(void)
 
 void spoton_smpwindow::slotRefresh(void)
 {
-  auto s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto s_crypt = m_parent ?
+    m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!s_crypt)
     {
@@ -1075,7 +1081,7 @@ void spoton_smpwindow::slotRefresh(void)
 
 	      for(int i = 0; i < list.size(); i++)
 		{
-		  QTableWidgetItem *item = 0;
+		  QTableWidgetItem *item = nullptr;
 
 		  item = new QTableWidgetItem(QString(list.at(i)));
 
@@ -1087,7 +1093,7 @@ void spoton_smpwindow::slotRefresh(void)
 		  m_ui.participants->setItem(row, i, item);
 		}
 
-	      QTableWidgetItem *item = 0;
+	      QTableWidgetItem *item = nullptr;
 
 	      item = new QTableWidgetItem
 		(QString::
@@ -1120,7 +1126,8 @@ void spoton_smpwindow::slotRemove(void)
   if(list.isEmpty())
     return;
 
-  spoton_crypt *s_crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  spoton_crypt *s_crypt = m_parent ?
+    m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!s_crypt)
     {
@@ -1176,7 +1183,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 {
   QString message("");
   auto const dateTime(QDateTime::currentDateTime());
-  auto smp = m_smps.value(list.value(0), 0);
+  auto smp = m_smps.value(list.value(0), nullptr);
 
   if(!smp)
     {
@@ -1187,9 +1194,10 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       return;
     }
 
-  auto s_crypt1 = m_parent ? m_parent->crypts().value(smp->m_keyType, 0) : 0;
+  auto s_crypt1 = m_parent ?
+    m_parent->crypts().value(smp->m_keyType, nullptr) : nullptr;
   auto s_crypt2 = m_parent ? m_parent->crypts().value
-    (smp->m_keyType + "-signature", 0) : 0;
+    (smp->m_keyType + "-signature", nullptr) : nullptr;
 
   if(!s_crypt1 || !s_crypt2)
     {
@@ -1206,13 +1214,13 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   {
     auto bytes(list.value(1));
 
-    if(smp->m_cache.contains(s_crypt1->keyedHash(bytes, 0)))
+    if(smp->m_cache.contains(s_crypt1->keyedHash(bytes, nullptr)))
       {
 	QApplication::restoreOverrideCursor();
 	return;
       }
     else
-      smp->m_cache[s_crypt1->keyedHash(bytes, 0)] = 0;
+      smp->m_cache[s_crypt1->keyedHash(bytes, nullptr)] = 0;
 
     QDataStream stream(&bytes, QIODevice::ReadOnly);
 
@@ -1239,7 +1247,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
   QByteArray signature;
   QScopedPointer<spoton_crypt> crypt;
   QString error("");
-  auto kernelSocket = m_parent ? m_parent->kernelSocket() : 0;
+  auto kernelSocket = m_parent ? m_parent->kernelSocket() : nullptr;
   auto ok = true;
   auto passed = false;
 
