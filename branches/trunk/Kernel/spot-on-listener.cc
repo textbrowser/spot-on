@@ -724,7 +724,7 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 #else
 	     static_cast<qint64> (m_webSocketServer->nativeDescriptor()),
 #endif
-	     0);
+	     nullptr);
 #endif
 	  return true;
 	}
@@ -1517,7 +1517,7 @@ void spoton_listener::slotNewConnection(void)
 	 m_privateApplicationCredentials,
 	 socket,
 #ifdef SPOTON_WEBSOCKETS_ENABLED
-	 0, // WebSocket.
+	 nullptr, // WebSocket.
 #endif
 	 m_keySize,
 	 this);

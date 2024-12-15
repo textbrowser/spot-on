@@ -436,7 +436,7 @@ class spoton: public QMainWindow
   Q_OBJECT
 
  public:
-  spoton(QSplashScreen *splash);
+  spoton(QSplashScreen *splash, const bool launchKernel);
   ~spoton();
   QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;

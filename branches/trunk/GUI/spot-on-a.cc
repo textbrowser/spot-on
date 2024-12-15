@@ -226,8 +226,6 @@ int main(int argc, char *argv[])
 	  launchKernel = true;
       }
 
-  Q_UNUSED(launchKernel);
-
   /*
   ** Disable JIT.
   */
@@ -437,7 +435,7 @@ int main(int argc, char *argv[])
     (integer, settings.value("gui/cbc_cts_enabled", true).toBool());
 
   int rc = 0;
-  spoton spoton(&splash);
+  spoton spoton(&splash, launchKernel);
 
   splash.finish(&spoton);
   rc = static_cast<int> (qapplication.exec());
@@ -448,7 +446,7 @@ int main(int argc, char *argv[])
   return rc;
 }
 
-spoton::spoton(QSplashScreen *splash):QMainWindow()
+spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 {
   splash->showMessage
     (tr("Preparing static variables."),
@@ -2763,8 +2761,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   auto keySize(m_settings.value("gui/kernelKeySize", "2048").toString());
 
   if(m_ui.kernelKeySize->findText(keySize) > -1)
-    m_ui.kernelKeySize->setCurrentIndex
-      (m_ui.kernelKeySize->findText(keySize));
+    m_ui.kernelKeySize->setCurrentIndex(m_ui.kernelKeySize->findText(keySize));
   else
     m_ui.kernelKeySize->setCurrentIndex(4); // 2048
 
@@ -3122,8 +3119,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   str = m_settings.value("gui/kernelHashType", "sha512").toString();
 
   if(m_ui.kernelHashType->findText(str) > -1)
-    m_ui.kernelHashType->setCurrentIndex
-      (m_ui.kernelHashType->findText(str));
+    m_ui.kernelHashType->setCurrentIndex(m_ui.kernelHashType->findText(str));
 
   str = m_settings.value("gui/hashType", "sha512").toString();
 
@@ -3640,8 +3636,10 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
   m_optionsUi.theme->setCurrentIndex(m_settings.value("gui/theme", -1).toInt());
 
   if(m_optionsUi.theme->currentIndex() < 0)
-    m_optionsUi.theme->setCurrentIndex(3);
+    m_optionsUi.theme->setCurrentIndex(3); // Default theme.
 
+  launchKernel ?
+    QTimer::singleShot(1500, this, SLOT(slotActivateKernel(void))) : (void) 0;
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   foreach(auto lineEdit, findChildren<QLineEdit *> ())
