@@ -41,7 +41,7 @@ class spoton_utilities_private: public QObject
  public:
   spoton_utilities_private(void):QObject()
   {
-    m_centerTimer.setInterval(100);
+    m_centerTimer.setInterval(0);
     m_centerTimer.setSingleShot(true);
     connect(&m_centerTimer,
 	    SIGNAL(timeout(void)),
