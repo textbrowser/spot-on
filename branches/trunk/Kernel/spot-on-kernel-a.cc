@@ -6239,7 +6239,7 @@ void spoton_kernel::slotUpdateSettings(void)
   if(url.isEmpty() == false && url.isValid())
     {
       auto const address(url.host());
-      auto const interval = setting("FORTUNA_QUERY_INTERVAL_MS", 0).toInt();
+      auto const interval = setting("FORTUNA_QUERY_INTERVAL_MSECS", 0).toInt();
       auto const port = static_cast<quint16> (url.port());
       auto const tls = (url.scheme() == "https");
 

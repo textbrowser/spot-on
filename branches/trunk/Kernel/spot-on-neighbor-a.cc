@@ -1013,7 +1013,7 @@ spoton_neighbor::spoton_neighbor
 	  m_specialPeerTimer.start
 	    (qBound(0,
 		    spoton_kernel::
-		    setting("P2P_SERVERLESS_CONNECT_INTERVAL_MS", 1).toInt(),
+		    setting("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS", 1).toInt(),
 		    1500));
       }
 

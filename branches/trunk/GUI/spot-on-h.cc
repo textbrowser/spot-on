@@ -540,7 +540,7 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
-	("FORTUNA_QUERY_INTERVAL_MS := 0");
+	("FORTUNA_QUERY_INTERVAL_MSECS := 0");
       m_optionsUi.other_options->appendPlainText
 	("FORTUNA_URL := http://127.0.0.1:5000");
       m_optionsUi.other_options->appendPlainText
@@ -548,7 +548,7 @@ void spoton::prepareOtherOptions(void)
 	 QString::number(spoton_common::
 			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
       m_optionsUi.other_options->appendPlainText
-	("P2P_SERVERLESS_CONNECT_INTERVAL_MS := 1");
+	("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
       m_optionsUi.other_options->appendPlainText
 	("# PUBLISHED_PAGES: "
 	 "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
