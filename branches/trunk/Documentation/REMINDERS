@@ -340,3 +340,4 @@ Remaining Items
 2.     Shift operators and types.
 3.     Spectral human proxy.
 4.     C++ nullptr.
+5.     Complete --launch-kernel option.

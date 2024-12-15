@@ -226,6 +226,8 @@ int main(int argc, char *argv[])
 	  launchKernel = true;
       }
 
+  Q_UNUSED(launchKernel);
+
   /*
   ** Disable JIT.
   */
