@@ -3621,7 +3621,7 @@ spoton::spoton(QSplashScreen *splash):QMainWindow()
     }
 
 #if defined(Q_OS_MACOS)
-  foreach(QToolButton *toolButton, findChildren<QToolButton *> ())
+  foreach(auto toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     toolButton->setStyleSheet
       ("QToolButton {border: none; padding-right: 10px;}"
