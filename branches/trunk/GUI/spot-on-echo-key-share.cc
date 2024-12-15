@@ -34,8 +34,9 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on-defines.h"
 #include "spot-on-echo-key-share.h"
-#include "spot-on.h"
+#include "spot-on-utilities.h"
 #include "spot-on-woody.h"
+#include "spot-on.h"
 
 spoton_echo_key_share::spoton_echo_key_share(QSslSocket *kernelSocket,
 					     spoton *parent):
@@ -860,25 +861,7 @@ void spoton_echo_key_share::show(QWidget *parent)
   showNormal();
   activateWindow();
   raise();
-
-  if(parent)
-    {
-      auto const p(parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - parent->width()) / 2;
-
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - parent->height()) / 2;
-
-      move(X, Y);
-    }
+  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_echo_key_share::showError(const QString &error)

@@ -67,6 +67,7 @@ HEADERS		= Common/spot-on-external-address.h \
                   GUI/spot-on-tabwidget.h \
 		  GUI/spot-on-textbrowser.h \
                   GUI/spot-on-textedit.h \
+                  GUI/spot-on-utilities.h \
                   GUI/spot-on-woody.h
 
 RESOURCES	= Documentation/documentation.qrc \

@@ -187,6 +187,7 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
+spoton_utilities_private spoton_utilities::s_utilitiesPrivate;
 
 static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,

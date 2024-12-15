@@ -33,6 +33,7 @@
 #include "Common/spot-on-misc.h"
 #include "spot-on-defines.h"
 #include "spot-on-logviewer.h"
+#include "spot-on-utilities.h"
 
 spoton_logviewer::spoton_logviewer(void):QMainWindow()
 {
@@ -86,31 +87,12 @@ void spoton_logviewer::keyPressEvent(QKeyEvent *event)
 
 void spoton_logviewer::show(QWidget *parent)
 {
+  m_lastModificationTime = QDateTime();
+  m_timer.start();
   showNormal();
   activateWindow();
   raise();
-
-  if(parent)
-    {
-      auto const p(parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(parent->width() >= width())
-	X = p.x() + (parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - parent->width()) / 2;
-
-      if(parent->height() >= height())
-	Y = p.y() + (parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - parent->height()) / 2;
-
-      move(X, Y);
-    }
-
-  m_lastModificationTime = QDateTime();
-  m_timer.start();
+  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_logviewer::slotClear(void)

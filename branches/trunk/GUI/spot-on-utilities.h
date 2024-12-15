@@ -28,15 +28,64 @@
 #ifndef _spoton_utilities_h_
 #define _spoton_utilities_h_
 
-#include <QApplication>
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#else
-#include <QDesktopWidget>
-#endif
 #include <QLineEdit>
-#include <QScreen>
+#include <QPointer>
+#include <QTabWidget>
 #include <QTextEdit>
-#include <QWidget>
+#include <QTimer>
+
+class spoton_utilities_private: public QObject
+{
+  Q_OBJECT
+
+ public:
+  spoton_utilities_private(void):QObject()
+  {
+    m_centerTimer.setInterval(100);
+    m_centerTimer.setSingleShot(true);
+    connect(&m_centerTimer,
+	    SIGNAL(timeout(void)),
+	    this,
+	    SLOT(slotCenterChildren(void)));
+  }
+
+  ~spoton_utilities_private()
+  {
+    m_centerTimer.stop();
+  }
+
+  void centerWidget(QWidget *child, QWidget *parent)
+  {
+    m_widgetsToCenter << QPair<QPointer<QWidget>, QPointer<QWidget> >
+      (child, parent);
+
+    if(!m_centerTimer.isActive())
+      m_centerTimer.start();
+  }
+
+ private:  
+  QTimer m_centerTimer;
+  QVector<QPair<QPointer<QWidget>, QPointer<QWidget> > > m_widgetsToCenter;
+
+ private slots:
+  void slotCenterChildren(void)
+  {
+    for(int i = 0; i < m_widgetsToCenter.size(); i++)
+      {
+	auto pair(m_widgetsToCenter.at(i));
+
+	if(!pair.first || !pair.second)
+	  continue;
+
+	auto child(pair.first->geometry());
+
+	child.moveCenter(pair.second->geometry().center());
+	pair.first->setGeometry(child);
+      }
+
+    m_widgetsToCenter.clear();
+  }
+};
 
 class spoton_utilities
 {
@@ -46,102 +95,7 @@ class spoton_utilities
     if(!child || !parent)
       return;
 
-    /*
-    ** From QDialog.
-    */
-
-#ifdef Q_WS_X11
-    if(X11->isSupportedByWM(ATOM(_NET_WM_FULL_PLACEMENT)))
-      return;
-#endif
-
-#ifdef Q_OS_SYMBIAN
-    /*
-    ** Perhaps implement symbianAdjustedPosition().
-    */
-#endif
-
-    QPoint p(0, 0);
-    int extrah = 0, extraw = 0;
-
-    if(parent)
-      parent = parent->window();
-
-    QRect desk;
-
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    int scrn = 0;
-
-    if(parent)
-      scrn = QApplication::desktop()->screenNumber(parent);
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    else if(QApplication::desktop()->isVirtualDesktop())
-      scrn = QApplication::desktop()->screenNumber(QCursor::pos());
-#endif
-    else
-      scrn = QApplication::desktop()->screenNumber(child);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 11, 0)
-    desk = QApplication::desktop()->availableGeometry(scrn);
-#else
-    desk = QGuiApplication::screens().value(scrn) ?
-      QGuiApplication::screens().value(scrn)->geometry() : QRect();
-#endif
-#else
-    auto screen = QGuiApplication::screenAt(child->pos());
-
-    if(screen)
-      desk = screen->geometry();
-#endif
-
-    auto const list = QApplication::topLevelWidgets();
-
-    for(int i = 0; (extrah == 0 || extraw == 0) && i < list.size(); ++i)
-      {
-	auto current = list.at(i);
-
-	if(current && current->isVisible())
-	  {
-	    auto const frameh = current->geometry().y() - current->y();
-	    auto const framew = current->geometry().x() - current->x();
-
-	    extrah = qMax(extrah, frameh);
-	    extraw = qMax(extraw, framew);
-	  }
-      }
-
-    if(extrah == 0 || extrah >= 40 || extraw == 0 || extraw >= 10)
-      {
-	extrah = 40;
-	extraw = 10;
-      }
-
-    if(parent)
-      {
-	auto const pp = parent->mapToGlobal(QPoint(0,0));
-
-	p = QPoint(pp.x() + parent->width() / 2,
-		   pp.y() + parent->height() / 2);
-      }
-    else
-      p = QPoint(desk.x() + desk.width() / 2, desk.y() + desk.height() / 2);
-
-    p = QPoint(p.x() - child->width() / 2 - extraw,
-	       p.y() - child->height() / 2 - extrah);
-
-    if(p.x() + extraw + child->width() > desk.x() + desk.width())
-      p.setX(desk.x() + desk.width() - child->width() - extraw);
-
-    if(p.x() < desk.x())
-      p.setX(desk.x());
-
-    if(p.y() + extrah + child->height() > desk.y() + desk.height())
-      p.setY(desk.y() + desk.height() - child->height() - extrah);
-
-    if(p.y() < desk.y())
-      p.setY(desk.y());
-
-    child->move(p);
+    s_utilitiesPrivate.centerWidget(child, parent);
   }
 
   static void enableTabDocumentMode(QWidget *parent)
@@ -200,6 +154,7 @@ class spoton_utilities
 
  private:
   spoton_utilities(void);
+  static spoton_utilities_private s_utilitiesPrivate;
 };
 
 #endif

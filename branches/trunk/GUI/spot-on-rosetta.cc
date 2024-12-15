@@ -694,29 +694,10 @@ void spoton_rosetta::show(spoton *parent)
       restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
 
   m_parent = parent;
-
-  if(m_parent)
-    {
-      auto const p(m_parent->pos());
-      int X = 0;
-      int Y = 0;
-
-      if(m_parent->width() >= width())
-	X = p.x() + (m_parent->width() - width()) / 2;
-      else
-	X = p.x() - (width() - m_parent->width()) / 2;
-
-      if(m_parent->height() >= height())
-	Y = p.y() + (m_parent->height() - height()) / 2;
-      else
-	Y = p.y() - (height() - m_parent->height()) / 2;
-
-      move(X, Y);
-    }
-
   showNormal();
   activateWindow();
   raise();
+  spoton_utilities::centerWidget(this, m_parent);
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
