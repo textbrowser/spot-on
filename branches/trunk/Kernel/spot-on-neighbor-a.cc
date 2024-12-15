@@ -546,7 +546,7 @@ spoton_neighbor::spoton_neighbor
 
   QTimer::singleShot(30000, this, SLOT(slotSendMOTD(void)));
   m_keepAliveTimer.start(15000);
-  m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MS);
+  m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MSECS);
   m_timer.start(2500);
 }
 
@@ -1026,7 +1026,7 @@ spoton_neighbor::spoton_neighbor
     m_externalAddressDiscovererTimer.setInterval(30000);
 
   m_keepAliveTimer.setInterval(15000);
-  m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MS);
+  m_lifetime.start(spoton_common::NEIGHBOR_LIFETIME_MSECS);
   m_timer.start(2500);
 }
 

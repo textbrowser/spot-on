@@ -101,7 +101,7 @@ class spoton_common
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
-  static const int NEIGHBOR_LIFETIME_MS = 10 * 60 * 1000;
+  static const int NEIGHBOR_LIFETIME_MSECS = 10 * 60 * 1000;
   static const int NEIGHBOR_SILENCE_TIME = 180;
   static const int POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 60;
   static const int POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
