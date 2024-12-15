@@ -3133,6 +3133,7 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
 	<< "sha3-512"
 	<< "sha384"
 	<< "sha512"
+	<< "shake256"
 	<< "stribog256"
 	<< "stribog512"
 	<< "tiger"
