@@ -292,8 +292,8 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
     (settings.value("gui/rss_publication_dates_in_timeline", true).toBool());
   m_ui.action_URL_Links_in_Timeline->setChecked
     (settings.value("gui/rss_url_links_in_timeline", true).toBool());
-  m_ui.activate->setChecked(settings.value("gui/rss_download_activate",
-					   false).toBool());
+  m_ui.activate->setChecked
+    (settings.value("gui/rss_download_activate", false).toBool());
   ivalue = qBound(m_ui.maximum_keywords->minimum(),
 		  settings.value("gui/rss_maximum_keywords", 50).toInt(),
 		  m_ui.maximum_keywords->maximum());
