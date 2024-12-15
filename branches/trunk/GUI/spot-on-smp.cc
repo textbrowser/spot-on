@@ -119,8 +119,7 @@ QByteArray spoton_smp::guessSha(void) const
 QByteArray spoton_smp::guessWhirlpool(void) const
 {
   if(m_guessWhirl && m_guessWhirlLength > 0)
-    return QByteArray(m_guessWhirl,
-		      static_cast<int> (m_guessWhirlLength));
+    return QByteArray(m_guessWhirl, static_cast<int> (m_guessWhirlLength));
   else
     return QByteArray();
 }
