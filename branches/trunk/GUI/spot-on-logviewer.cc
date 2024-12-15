@@ -69,10 +69,12 @@ spoton_logviewer::spoton_logviewer(void):QMainWindow()
   slotSetIcons();
   m_lastModificationTime = QDateTime();
 
-  QFont font(ui.log->font());
+#ifndef Q_OS_MACOS
+  auto font(ui.log->font());
 
   font.setStyleHint(QFont::Monospace);
   ui.log->setFont(font);
+#endif
 }
 
 spoton_logviewer::~spoton_logviewer()
