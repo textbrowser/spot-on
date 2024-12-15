@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.50"
-#define GPGRT_VERSION     "1.50"
+#define GPG_ERROR_VERSION "1.51"
+#define GPGRT_VERSION     "1.51"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013200
-#define GPGRT_VERSION_NUMBER     0x013200
+#define GPG_ERROR_VERSION_NUMBER 0x013300
+#define GPGRT_VERSION_NUMBER     0x013300
 
 
 #ifdef __GNUC__
@@ -1067,6 +1067,13 @@ const char *_gpg_w32_dngettext (const char *domainname, const char *msgid1,
                                 const char *msgid2, unsigned long int n)
             _GPG_ERR_ATTR_FORMAT_ARG (2) _GPG_ERR_ATTR_FORMAT_ARG (3);
 const char *_gpg_w32_gettext_localename (void);
+
+/* With a VALUE of 1 switch the gettext functions into utf8 mode; with
+ * 2 or 3 all new threads will initially be using UTF8 (this new
+ * default init can't be reverted, though).  That is the strings are
+ * returned without translation to the native charset.  A VALUE of 0
+ * switches back to translated strings.  A VALUE of -1 returns the
+ * current value (1 or 0). */
 int _gpg_w32_gettext_use_utf8 (int value);
 
 #ifdef GPG_ERR_ENABLE_GETTEXT_MACROS
@@ -1815,6 +1822,9 @@ void _gpgrt_log_assert (const char *expr, const char *file, int line,
 /* Allow a detached process with uid != euid (Posix only).  */
 #define GPGRT_PROCESS_NO_EUID_CHECK       (1 << 3)
 
+/* Allow the child process to set the foreground window (Windows only).  */
+#define GPGRT_PROCESS_ALLOW_SET_FG        (1 << 4)
+
 /* Specify how to keep/connect standard fds.  */
 #define GPGRT_PROCESS_STDIN_PIPE          (1 << 8)
 #define GPGRT_PROCESS_STDOUT_PIPE         (1 << 9)
@@ -1834,6 +1844,8 @@ typedef struct gpgrt_process *gpgrt_process_t;
 typedef struct gpgrt_spawn_actions *gpgrt_spawn_actions_t;
 gpg_err_code_t gpgrt_spawn_actions_new (gpgrt_spawn_actions_t *r_act);
 void gpgrt_spawn_actions_release (gpgrt_spawn_actions_t act);
+void gpgrt_spawn_actions_set_env_rev (gpgrt_spawn_actions_t,
+                                      const char *const*);
 void gpgrt_spawn_actions_set_envvars (gpgrt_spawn_actions_t, char *);
 void gpgrt_spawn_actions_set_redirect (gpgrt_spawn_actions_t, void *, void *, void *);
 void gpgrt_spawn_actions_set_inherit_handles (gpgrt_spawn_actions_t, void **);
