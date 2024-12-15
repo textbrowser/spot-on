@@ -63,7 +63,7 @@ spoton_neighborstatistics::~spoton_neighborstatistics()
 QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 {
   QList<QPair<QString, QString> > list;
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(crypt)
     {
@@ -260,7 +260,7 @@ void spoton_neighborstatistics::slotFinished(void)
 
       for(int i = 0; i < list.size(); i++)
 	{
-	  QTableWidgetItem *item = 0;
+	  QTableWidgetItem *item = nullptr;
 
 	  item = new QTableWidgetItem();
 	  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);

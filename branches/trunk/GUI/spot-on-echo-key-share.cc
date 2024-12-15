@@ -239,7 +239,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 void spoton_echo_key_share::addCategory(void)
 {
-  auto crypt = m_parent ? m_parent->crypts().value("chat", nulltr) : nullptr;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     return;

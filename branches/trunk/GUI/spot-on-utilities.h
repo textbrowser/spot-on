@@ -63,7 +63,7 @@ class spoton_utilities_private: public QObject
       m_centerTimer.start();
   }
 
- private:  
+ private:
   QTimer m_centerTimer;
   QVector<QPair<QPointer<QWidget>, QPointer<QWidget> > > m_widgetsToCenter;
 

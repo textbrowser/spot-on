@@ -135,7 +135,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   ui.share->setEnabled(m_keyType != "poptastic");
   ui.starbeam->setEnabled(m_keyType != "poptastic");
   ui.table->resizeColumnToContents(0);
-  ui.table->setModel(m_parent ? m_parent->starbeamReceivedModel() : 0);
+  ui.table->setModel(m_parent ? m_parent->starbeamReceivedModel() : nullptr);
   ui.table->setVisible(false);
 
   auto menu = new QMenu(this);
@@ -508,7 +508,7 @@ void spoton_chatwindow::slotPrepareSMP(void)
 
 void spoton_chatwindow::slotSendMessage(void)
 {
-  sendMessage(0);
+  sendMessage(nullptr);
 }
 
 void spoton_chatwindow::slotSetIcons(void)
@@ -566,7 +566,7 @@ void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 void spoton_chatwindow::slotShareStarBeam(void)
 {
   QString error("");
-  auto crypt = m_parent ? m_parent->crypts().value("chat", 0) : 0;
+  auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
   if(!crypt)
     {
