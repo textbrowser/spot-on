@@ -3537,7 +3537,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   prepareTearOffMenus();
   prepareTimeWidgets();
 
-#ifndef Q_OS_MACOS
   QList<QWidget *> widgets;
 
   widgets << m_ui.etpMagnet
@@ -3553,7 +3552,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
       font.setStyleHint(QFont::Monospace);
       widgets.at(i)->setFont(font);
     }
-#endif
 
   m_ui.action_Minimal_Display->setEnabled(false);
 
@@ -4343,11 +4341,13 @@ void spoton::slotAbout(void)
 
 void spoton::slotActivateKernel(void)
 {
-  if(m_ui.pid->text().toLongLong() < 0) // Error.
+  auto const pid = m_ui.pid->text().toLongLong();
+
+  if(pid < 0) // Error.
     return;
   else if(!m_optionsUi.forceRegistration->isChecked())
     {
-      if(m_ui.pid->text().toLongLong() > 0)
+      if(pid > 0)
 	return;
     }
   else

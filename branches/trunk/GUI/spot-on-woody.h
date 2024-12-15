@@ -53,7 +53,7 @@ class woody_collapse_expand_tool_button: public QToolButton
 
 	auto font(this->font());
 
-	font.setStyleHint(QFont::Courier);
+	font.setStyleHint(QFont::Monospace);
 	setFont(font);
 	setStyleSheet("QToolButton {border: none;}"
 		      "QToolButton::menu-button {border: none;}");
