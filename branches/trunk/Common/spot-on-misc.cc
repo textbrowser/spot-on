@@ -4124,13 +4124,9 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 	if(!query.exec("SELECT EXISTS (SELECT signatures_required FROM "
 		       "echo_key_sharing_secrets)"))
 	  {
-	    /*
-	    ** Perhaps signatures_required does not exist.
-	    */
-
 	    query.exec
 	      ("CREATE TABLE IF NOT EXISTS "
-	       "echo_key_sharing_secrets_temporary ("
+	       "echo_key_sharing_secrets ("
 	       "accept TEXT NOT NULL, "
 	       "authentication_key TEXT NOT NULL, "
 	       "category_oid INTEGER NOT NULL, "
@@ -4162,7 +4158,7 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 		    auto ok = true;
 
 		    insertQuery.prepare
-		      ("INSERT INTO echo_key_sharing_secrets_temporary "
+		      ("INSERT INTO echo_key_sharing_secrets "
 		       "(authentication_key, category_oid, cipher_type, "
 		       "encryption_key, hash_type, iteration_count, "
 		       "name, name_hash, share, signatures_required) "
@@ -4176,10 +4172,6 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 						      &ok).toBase64());
 		    insertQuery.exec();
 		  }
-
-		query.exec("DROP TABLE echo_key_sharing_secrets");
-		query.exec("ALTER TABLE echo_key_sharing_secrets_temporary "
-			   "RENAME TO echo_key_sharing_secrets");
 	      }
 	  }
       }
@@ -5304,14 +5296,15 @@ void spoton_misc::prepareDatabases(void)
 		   "CHECK (silence_time >= 0 AND silence_time <= %6), "
 		   "buffered_content INTEGER NOT NULL DEFAULT 0 "
 		   "CHECK (buffered_content >= 0), "
-		   "bind_ip_address TEXT)").
+		   "bind_ip_address TEXT, "
+		   "ssl_configuration TEXT)").
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_BUFFER_SIZE).
 	   arg(spoton_common::MAXIMUM_NEIGHBOR_CONTENT_LENGTH).
 	   arg(spoton_common::LANE_WIDTH_DEFAULT).
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(999999999));
-	query.exec("ALTER TABLE neighbors ADD bind_ip_address TEXT");
+	query.exec("ALTER TABLE neighbors ADD ssl_configuration TEXT");
       }
 
     db.close();
