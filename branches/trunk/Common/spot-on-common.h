@@ -142,7 +142,7 @@ class spoton_common
   static const qint64 MAXIMUM_STARBEAM_PULSE_SIZE = 2500000;
   static const qint64 MAXIMUM_TCP_PACKET_SIZE = 4096;
   static const qint64 MINIMUM_NEIGHBOR_CONTENT_LENGTH = 256;
-  static const unsigned long int GEMINI_ITERATION_COUNT = 100000;
+  static const unsigned long int GEMINI_ITERATION_COUNT = 250000;
 
   /*
   ** Dynamic values. Not a pleasant solution.
