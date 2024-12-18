@@ -44,27 +44,12 @@ class spoton_smp
  public:
   spoton_smp(spoton *spoton);
   ~spoton_smp(void);
-  static const unsigned int BITS = 1536;
-  static gcry_mpi_t generateWeakRandomPrime(bool *ok);
   static void test1(void);
   static void test2(void);
   static void test3(void);
   static void test4(void);
   QByteArray guessSha(void) const;
   QByteArray guessWhirlpool(void) const;
-  QList<QByteArray> coordinatesProof(const gcry_mpi_t g2,
-				     const gcry_mpi_t g3,
-				     const gcry_mpi_t r,
-				     const int version,
-				     bool *ok) const;
-  QList<QByteArray> equalLogs(const gcry_mpi_t qab,
-			      const gcry_mpi_t x,
-			      const int version,
-			      bool *ok) const;
-  QList<QByteArray> logProof(const gcry_mpi_t g,
-			     const gcry_mpi_t x,
-			     const int version,
-			     bool *ok) const;
   QList<QByteArray> nextStep(const QList<QByteArray> &other,
 			     bool *ok,
 			     bool *passed);
@@ -76,30 +61,9 @@ class spoton_smp
   }
 
   bool passed(void) const;
-  bool verifyCoordinatesProof(const QList<QByteArray> &list,
-			      const gcry_mpi_t g2,
-			      const gcry_mpi_t g3,
-			      const gcry_mpi_t p,
-			      const gcry_mpi_t q,
-			      const int version) const;
-  bool verifyEqualLogs(const QList<QByteArray> &list,
-		       const gcry_mpi_t g3,
-		       const gcry_mpi_t qab,
-		       const gcry_mpi_t r,
-		       const int version) const;
-  bool verifyLogProof(const QList<QByteArray> &list,
-		      const gcry_mpi_t g,
-		      const gcry_mpi_t x,
-		      const int version) const;
   int step(void) const;
   void initialize();
   void setGuess(const QString &guess);
-
-  void setModulus(const gcry_mpi_t modulus)
-  {
-    gcry_mpi_release(m_modulus);
-    m_modulus = gcry_mpi_copy(modulus);
-  }
 
   void setStep0(void)
   {
@@ -129,13 +93,50 @@ class spoton_smp
   size_t m_guessWhirlLength;
   spoton *m_spoton;
   static const int TERMINAL_STATE = -1;
+  static const unsigned int BITS = 1536;
+  QList<QByteArray> coordinatesProof(const gcry_mpi_t g2,
+				     const gcry_mpi_t g3,
+				     const gcry_mpi_t r,
+				     const int version,
+				     bool *ok) const;
+  QList<QByteArray> equalLogs(const gcry_mpi_t qab,
+			      const gcry_mpi_t x,
+			      const int version,
+			      bool *ok) const;
+  QList<QByteArray> logProof(const gcry_mpi_t g,
+			     const gcry_mpi_t x,
+			     const int version,
+			     bool *ok) const;
   QList<QByteArray> step2(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step3(const QList<QByteArray> &other, bool *ok);
   QList<QByteArray> step4(const QList<QByteArray> &other,
 			  bool *ok,
 			  bool *passed);
+  bool verifyCoordinatesProof(const QList<QByteArray> &list,
+			      const gcry_mpi_t g2,
+			      const gcry_mpi_t g3,
+			      const gcry_mpi_t p,
+			      const gcry_mpi_t q,
+			      const int version) const;
+  bool verifyEqualLogs(const QList<QByteArray> &list,
+		       const gcry_mpi_t g3,
+		       const gcry_mpi_t qab,
+		       const gcry_mpi_t r,
+		       const int version) const;
+  bool verifyLogProof(const QList<QByteArray> &list,
+		      const gcry_mpi_t g,
+		      const gcry_mpi_t x,
+		      const int version) const;
   gcry_mpi_t generateRandomExponent(bool *ok) const;
+  static gcry_mpi_t generateWeakRandomPrime(bool *ok);
   void reset(void);
+
+  void setModulus(const gcry_mpi_t modulus)
+  {
+    gcry_mpi_release(m_modulus);
+    m_modulus = gcry_mpi_copy(modulus);
+  }
+
   void step5(const QList<QByteArray> &other, bool *ok, bool *passed);
 };
 
