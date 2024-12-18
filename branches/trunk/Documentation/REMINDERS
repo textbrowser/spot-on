@@ -341,3 +341,6 @@ Remaining Items
 2.     Shift operators and types.
 3.     Spectral human proxy.
 4.     C++ nullptr. Kernel is complete.
+5.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
+       A QR has a text capacity of 4296 characters. This is also good.
+       Snap-Call. More details later. Only a reminder.
