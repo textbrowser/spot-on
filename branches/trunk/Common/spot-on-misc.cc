@@ -1219,11 +1219,13 @@ QSqlDatabase spoton_misc::database(QString &connectionName)
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
   if(QRandomGenerator::global())
     db = QSqlDatabase::addDatabase
-      ("QSQLITE", QString("spoton_database_%1_%2").
+      ("QSQLITE",
+       QString("spoton_database_%1_%2").
        arg(QRandomGenerator::global()->generate64()).arg(dbId));
   else
     db = QSqlDatabase::addDatabase
-      ("QSQLITE", QString("spoton_database_%1_%2").
+      ("QSQLITE",
+       QString("spoton_database_%1_%2").
        arg(QRandomGenerator().generate64()).arg(dbId));
 #else
   db = QSqlDatabase::addDatabase

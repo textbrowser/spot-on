@@ -235,9 +235,9 @@ void spoton_import_published_pages::import(const QList<QVariant> &values)
 	  if(allow(polarizers, url))
 	    {
 	      QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+	      QString connectionName("");
 	      QString error("");
-	      auto db(spoton_kernel::urlDatabase());
-	      auto const connectionName(db.connectionName()); // Order.
+	      auto db(spoton_kernel::urlDatabase(connectionName));
 	      auto const maximumKeywords = values.at(1).toInt();
 	      auto const synchronize = spoton_kernel::setting
 		("gui/disable_kernel_synchronous_sqlite_url_download", false).

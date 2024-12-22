@@ -24,6 +24,10 @@
 	<li>Close the RSS panel before deleting it as this will
 	  preserve its geometry.</li>
 	<li>Completed some of spoton_smpwindow::slotSetIcons().</li>
+	<li>Corrected access of the URLs database in the kernel.
+	  QSqlDatabase::connectionName() is not
+	  QSqlDatabase::databaseName(). The error may result in
+	  lingering database connections.</li>
 	<li>Corrected Windows project file. Deleting debug plugins may
 	  delete required plugins files in the Windows install target.
 	  Qt 6.5 LTS has separated the debug and release files and the

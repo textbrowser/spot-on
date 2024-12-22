@@ -459,8 +459,8 @@ void spoton_web_server_thread::process
       about.append(locale.toString(spoton_kernel::uptimeMinutes()));
       about.append("<br>");
 
-      auto db(spoton_kernel::urlDatabase());
-      auto const connectionName(db.databaseName()); // Order.
+      QString connectionName("");
+      auto db(spoton_kernel::urlDatabase(connectionName));
 
       about.append("<b>Total Spot-On Web Pages:</b> ");
       about.append(locale.toString(spoton_misc::urlsCount(db)));
@@ -576,9 +576,9 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   elapsed.start();
 
+  QString connectionName("");
   QString html("");
-  auto db(spoton_kernel::urlDatabase());
-  auto const connectionName(db.connectionName()); // Order.
+  auto db(spoton_kernel::urlDatabase(connectionName));
 
   if(db.isOpen())
     {
@@ -1033,9 +1033,9 @@ void spoton_web_server_thread::processLocal
       return;
     }
 
+  QString connectionName("");
   QByteArray html;
-  auto db(spoton_kernel::urlDatabase());
-  auto const connectionName(db.connectionName()); // Order.
+  auto db(spoton_kernel::urlDatabase(connectionName));
 
   if(db.isOpen())
     {

@@ -34,10 +34,11 @@
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
 
-QSqlDatabase spoton_kernel::urlDatabase(void)
+QSqlDatabase spoton_kernel::urlDatabase(QString &connectionName)
 {
+  connectionName = spoton_misc::databaseName();
+
   QSqlDatabase db;
-  auto const connectionName(spoton_misc::databaseName());
 
   if(setting("gui/sqliteSearch", true).toBool())
     {

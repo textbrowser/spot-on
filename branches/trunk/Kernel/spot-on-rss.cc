@@ -117,9 +117,9 @@ bool spoton_rss::importUrl(const QList<QVariant> &list,
   if(url.isEmpty() || !url.isValid())
     url = list.value(3).toUrl();
 
-  auto db(spoton_kernel::urlDatabase());
-  auto const connectionName(db.connectionName());
+  QString connectionName("");
   QString error("");
+  auto db(spoton_kernel::urlDatabase(connectionName));
 
   imported = spoton_misc::importUrl
     (list.value(0).toByteArray(),       // Content
@@ -774,9 +774,9 @@ void spoton_rss::parseXmlContent(const QByteArray &data, const QUrl &url)
   saveFeedData(description, link, title);
 
   QScopedPointer<spoton_crypt> ucc(urlCommonCrypt());
+  QString connectionName("");
   QString error("");
-  auto db(spoton_kernel::urlDatabase());
-  auto const connectionName(db.connectionName());
+  auto db(spoton_kernel::urlDatabase(connectionName));
   auto const maximumKeywords = spoton_kernel::setting
     ("gui/rss_maximum_keywords", 50).toInt();
   auto const synchronize = spoton_kernel::setting
