@@ -1806,8 +1806,7 @@ void spoton::slotPostgreSQLDisconnect(int index)
 
       if(m_urlDatabase.isOpen())
 	m_ui.url_database_connection_information->setText
-	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").
-	   arg("urls.db"));
+	  (QString("%1@%2/%3").arg("sqlite").arg("localhost").arg("urls.db"));
     }
 
   m_settings["gui/sqliteSearch"] = index == 1;
