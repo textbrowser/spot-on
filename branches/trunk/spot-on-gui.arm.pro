@@ -15,7 +15,6 @@ QT		+= concurrent \
                    network \
                    printsupport \
                    sql \
-                   webenginewidgets \
                    websockets \
                    widgets
 
@@ -25,13 +24,17 @@ QT += bluetooth
 message("Bluetooth enabled!")
 }
 
+qtHaveModule(webenginewidgets) {
+DEFINES += SPOTON_WEBENGINE_ENABLED
+QT += webenginewidgets
+}
+
 DEFINES	+= SPOTON_DATELESS_COMPILATION \
 	   SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
            SPOTON_SCTP_ENABLED \
-           SPOTON_WEBENGINE_ENABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
