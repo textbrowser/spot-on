@@ -3,7 +3,7 @@ AS=$(CC) -c
 
 # set CFLAGS depending on SIMD
 CFLAGS?=-g
-CFLAGS+=-Wall -Wextra -Wno-unused-parameter
+CFLAGS+=-Wall -Wextra -Wno-unused-command-line-argument -Wno-unused-parameter
 SIMD=none
 ifeq ($(SIMD), ssse3)
     CFLAGS+=-mssse3 -mno-avx2
@@ -13,7 +13,7 @@ else ifneq ($(SIMD), none)
     SIMD=auto
     CFLAGS+=-DNTRU_DETECT_SIMD
 else
-#   CFLAGS+=-mno-ssse3 -mno-avx2
+    CFLAGS+=-mno-ssse3 -mno-avx2
 endif
 
 # use -march=native if SIMD=auto
