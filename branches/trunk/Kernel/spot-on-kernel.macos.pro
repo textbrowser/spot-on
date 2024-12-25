@@ -87,10 +87,16 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
+copyspoton.extra  = cp -r ../Spot-On-Kernel.app ../Spot-On.d/.
+copyspoton.path   = ../Spot-On.d
 macdeployqt.extra = $$[QT_INSTALL_BINS]/macdeployqt \
                     ../Spot-On.d/Spot-On-Kernel.app \
                     -executable=../Spot-On.d/Spot-On-Kernel.app/\
                     Contents/MacOS/Spot-On-Kernel
 macdeployqt.path  = Spot-On-Kernel.app
+preinstall.extra  = rm -rf ../Spot-On.d/Spot-On-Kernel.app/*
+preinstall.path   = ../Spot-On.d
 
-INSTALLS = macdeployqt
+INSTALLS = preinstall \
+           copyspoton \
+           macdeployqt

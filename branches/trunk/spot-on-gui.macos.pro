@@ -97,8 +97,20 @@ UI_DIR            = temp/ui
 
 QMAKE_STRIP	= echo
 
-macdeployqt.extra = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app \
-                    -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
-macdeployqt.path  = Spot-On.app
+copyspoton.extra   = cp -r ./Spot-On.app ./Spot-On.d/.
+copyspoton.path    = ./Spot-On.d
+macdeployqt.extra  = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app \
+                     -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
+macdeployqt.path   = Spot-On.app
+preinstall.extra   = rm -rf ./Spot-On.d/Spot-On.app/*
+preinstall.path    = ./Spot-On.d
+sounds.files       = Sounds/*.wav
+sounds.path        = ./Spot-On.d/Spot-On.app/Contents/MacOS/Sounds
+translations.files = Translations/*.qm
+translations.path  = ./Spot-On.d/Translations
 
-INSTALLS = macdeployqt
+INSTALLS = preinstall \
+           copyspoton \
+           sounds \
+           translations \
+           macdeployqt
