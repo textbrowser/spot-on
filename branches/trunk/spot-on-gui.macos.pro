@@ -1,11 +1,9 @@
 cache()
 include(spot-on-gui-source.pro)
 
-macx {
 dmg.commands = make install && hdiutil create Spot-On.d.dmg \
                -srcfolder Spot-On.d
 QMAKE_EXTRA_TARGETS += dmg
-}
 
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
