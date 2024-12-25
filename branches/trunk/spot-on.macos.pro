@@ -4,5 +4,9 @@ dmg.commands = make install && hdiutil create Spot-On.d.dmg \
 purge.commands = rm -f */*~ *~
 
 QMAKE_EXTRA_TARGETS = dmg purge
-SUBDIRS		    = Kernel/spot-on-kernel.macos.pro spot-on-gui.macos.pro
+
+# Order of project files is important. For example, the dmg target
+# expects some order.
+
+SUBDIRS		    = spot-on-gui.macos.pro Kernel/spot-on-kernel.macos.pro
 TEMPLATE	    = subdirs
