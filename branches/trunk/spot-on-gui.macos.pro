@@ -63,10 +63,10 @@ INCLUDEPATH	  += . \
 
 exists(/opt/homebrew) {
 INCLUDEPATH       += /opt/homebrew/include
-LIB               += -L/opt/homebrew/lib
+LIBS              += -L/opt/homebrew/lib
 } else {
 INCLUDEPATH       += /usr/local/include
-LIB               += -L/usr/local/lib
+LIBS              += -L/usr/local/lib
 }
 
 ICON		  = Icons/Logo/spot-on-logo.icns
