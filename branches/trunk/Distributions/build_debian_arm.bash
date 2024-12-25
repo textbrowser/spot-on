@@ -51,7 +51,7 @@ architecture="$(dpkg --print-architecture)"
 
 mkdir -p spot-on-debian/opt
 mkdir -p spot-on-debian/usr/share/applications
-cp -p ./spot-on.desktop spot-on-debian/usr/share/applications/.
+cp -p ./Distributions/spot-on.desktop spot-on-debian/usr/share/applications/.
 
 if [ "$architecture" = "armhf" ]; then
     cp -pr ./DEBIAN-ARM spot-on-debian/DEBIAN
