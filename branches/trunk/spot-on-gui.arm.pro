@@ -15,12 +15,14 @@ QT		+= concurrent \
                    network \
                    printsupport \
                    sql \
+                   webenginewidgets \
                    websockets \
                    widgets
 
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
+message("Bluetooth enabled!")
 }
 
 DEFINES	+= SPOTON_DATELESS_COMPILATION \
