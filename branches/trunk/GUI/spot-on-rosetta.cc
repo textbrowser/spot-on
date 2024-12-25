@@ -40,9 +40,7 @@
 #include "spot-on-defines.h"
 #include "spot-on-rosetta-gpg-import.h"
 #include "spot-on-rosetta.h"
-#if defined(Q_OS_MACOS) || defined(SPOTON_GPGME_ENABLED)
 #include "spot-on-utilities.h"
-#endif
 #include "spot-on.h"
 
 #ifdef SPOTON_GPGME_ENABLED
