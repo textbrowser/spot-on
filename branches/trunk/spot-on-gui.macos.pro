@@ -1,5 +1,12 @@
 cache()
 include(spot-on-gui-source.pro)
+
+macx {
+dmg.commands = make install && hdiutil create Spot-On.d.dmg \
+               -srcfolder Spot-On.d
+QMAKE_EXTRA_TARGETS += dmg
+}
+
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.dylib
@@ -95,3 +102,9 @@ UI_DIR            = temp/ui
 # Prevent qmake from stripping everything.
 
 QMAKE_STRIP	= echo
+
+macdeployqt.extra = $$[QT_INSTALL_BINS]/macdeployqt ./Spot-On.d/Spot-On.app \
+                    -executable=./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
+macdeployqt.path  = Spot-On.app
+
+INSTALLS = macdeployqt
