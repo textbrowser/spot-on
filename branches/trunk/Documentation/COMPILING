@@ -26,6 +26,7 @@ Homebrew is required for MacOS.
 
 qmake -o Makefile spot-on.macos.pro
 make
+make dmg
 
 OS/2
 

@@ -86,3 +86,11 @@ UI_DIR            = temp/ui
 # Prevent qmake from stripping everything.
 
 QMAKE_STRIP	= echo
+
+macdeployqt.extra = $$[QT_INSTALL_BINS]/macdeployqt \
+                    ../Spot-On.d/Spot-On-Kernel.app \
+                    -executable=../Spot-On.d/Spot-On-Kernel.app/\
+                    Contents/MacOS/Spot-On-Kernel
+macdeployqt.path  = Spot-On-Kernel.app
+
+INSTALLS = macdeployqt
