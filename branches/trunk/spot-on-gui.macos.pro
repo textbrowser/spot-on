@@ -3,8 +3,6 @@ include(spot-on-gui-source.pro)
 
 dmg.commands = make install && hdiutil create Spot-On.d.dmg \
                -srcfolder Spot-On.d
-QMAKE_EXTRA_TARGETS += dmg
-
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.dylib
@@ -60,7 +58,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
-QMAKE_EXTRA_TARGETS    = libntru purge
+QMAKE_EXTRA_TARGETS    = dmg libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 INCLUDEPATH	  += . \
                      ../../. \
