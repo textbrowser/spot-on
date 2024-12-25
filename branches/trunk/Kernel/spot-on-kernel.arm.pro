@@ -16,6 +16,7 @@ QT              -= gui
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
+message("Bluetooth enabled!")
 }
 
 DEFINES += QT_DEPRECATED_WARNINGS \
