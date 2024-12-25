@@ -59,13 +59,18 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 INCLUDEPATH	  += . \
                      ../../. \
-		     /opt/homebrew/include \
-		     /opt/homebrew/ntl \
-                     /opt/homebrew/openssl \
                      GUI
+
+exists(/opt/homebrew) {
+INCLUDEPATH       += /opt/homebrew/include
+LIB               += -L/opt/homebrew/lib
+} else {
+INCLUDEPATH       += /usr/local/include
+LIB               += -L/usr/local/lib
+}
+
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../../libNTRU \
-                     -L/opt/homebrew/lib \
                      -framework AppKit \
                      -framework Cocoa \
                      -lcrypto \
