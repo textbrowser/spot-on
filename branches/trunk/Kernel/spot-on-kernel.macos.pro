@@ -90,16 +90,16 @@ QMAKE_STRIP	= echo
 copyspoton.extra  = cp -r ../Spot-On-Kernel.app ../Spot-On.d/.
 copyspoton.path   = ../Spot-On.d
 libntru.extra     = cp ../../../libNTRU/libntru.dylib \
-                    ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/ \
+                    ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/\
                     libntru.dylib && \
                     install_name_tool -change libntru.dylib \
                     @executable_path/../Frameworks/libntru.dylib \
-                    ../Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/ \
+                    ../Spot-On.d/Spot-On-Kernel.app/Contents/MacOS/\
                     Spot-On-Kernel
 libntru.path      = .
 macdeployqt.extra = $$[QT_INSTALL_BINS]/macdeployqt \
                     ../Spot-On.d/Spot-On-Kernel.app \
-                    -executable=../Spot-On.d/Spot-On-Kernel.app/ \
+                    -executable=../Spot-On.d/Spot-On-Kernel.app/\
                     Contents/MacOS/Spot-On-Kernel
 macdeployqt.path  = Spot-On-Kernel.app
 preinstall.extra  = rm -rf ../Spot-On.d/Spot-On-Kernel.app/*
