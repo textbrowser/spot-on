@@ -4,7 +4,6 @@ As of now, MacOS, and Windows will be manufactured.
 Everyone else should delegate themselves in the source. For YOU!
 
 All operating systems require Qt LTS. Have fun!
-Qt 5.5.1 on Debian PowerPC.
 
 <ul>
 <li>Alpha processors.</li>
