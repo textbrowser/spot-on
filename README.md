@@ -1,7 +1,9 @@
 Spot-On is a software carnival.
 
-As of now, MacOS and Windows will be manufactured.
-Everyone else should delegate themselves in the source. For YOU!
+As of now, MacOS and Windows bundles will be manufactured.
+Everyone else should delegate themselves in the source.
+There are far too many variations of Debian distributions.
+For YOU!
 
 All operating systems require Qt LTS. Have fun!
 
