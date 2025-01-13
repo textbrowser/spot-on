@@ -520,7 +520,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       else
 	freePrivateKey();
 
-      m_privateKey = 0;
+      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -570,7 +570,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       else
 	freePrivateKey();
 
-      m_privateKey = 0;
+      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -617,7 +617,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	hash_p = static_cast<unsigned char *>
 	  (malloc(static_cast<size_t> (hash.length())));
       else
-	hash_p = 0;
+	hash_p = nullptr;
 
       if(!hash_p)
 	{
@@ -633,8 +633,11 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	       static_cast<size_t> (hash.length()));
 
       err = gcry_mpi_scan
-	(&hash_t, GCRYMPI_FMT_USG, hash_p,
-	 static_cast<size_t> (hash.length()), 0);
+	(&hash_t,
+	 GCRYMPI_FMT_USG,
+	 hash_p,
+	 static_cast<size_t> (hash.length()),
+	 nullptr);
 
       if(err != 0 || !hash_t)
 	{
@@ -662,12 +665,14 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 	  goto done_label;
 	}
 
-      err = gcry_sexp_build(&data_t, 0,
+      err = gcry_sexp_build(&data_t,
+			    nullptr,
 			    "(data (flags raw)(value %m))",
 			    hash_t);
     }
   else if(keyType == "eddsa")
-    err = gcry_sexp_build(&data_t, 0,
+    err = gcry_sexp_build(&data_t,
+			  nullptr,
 			  "(data (flags eddsa)(hash-algo "
 			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 			  ")"
@@ -677,7 +682,8 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
   else if(keyType == "rsa")
     {
       random = strongRandomBytes(static_cast<size_t> (random.length()));
-      err = gcry_sexp_build(&data_t, 0,
+      err = gcry_sexp_build(&data_t,
+			    nullptr,
 			    "(data (flags pss)(hash "
 			    SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 			    " %b)"
@@ -703,7 +709,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 			     key_t)) == 0 && signature_t)
 	{
 	  auto const length = gcry_sexp_sprint
-	    (signature_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
+	    (signature_t, GCRYSEXP_FMT_ADVANCED, nullptr, 0);
 
 	  if(length > 0)
 	    {
@@ -746,7 +752,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 		memset(buffer, 0, length);
 
 	      free(buffer);
-	      buffer = 0;
+	      buffer = nullptr;
 	    }
 	  else
 	    {
@@ -909,7 +915,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 				      encrypted.data(),
 				      static_cast<size_t> (encrypted.
 							   length()),
-				      0,
+				      nullptr,
 				      0)) == 0)
 		{
 		  if(ok)
@@ -1061,7 +1067,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 {
   QByteArray hash;
   gcry_error_t err = 0;
-  gcry_md_hd_t hd = 0;
+  gcry_md_hd_t hd = nullptr;
   auto const hashAlgorithm = gcry_md_map_name(hashType.constData());
 
   if(hashAlgorithm == 0)
@@ -1201,9 +1207,10 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 
   QByteArray hash;
   gcry_error_t err = 0;
-  gcry_md_hd_t hd = 0;
+  gcry_md_hd_t hd = nullptr;
 
-  if((err = gcry_md_open(&hd, m_hashAlgorithm,
+  if((err = gcry_md_open(&hd,
+			 m_hashAlgorithm,
 			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
     {
       if(ok)
@@ -1337,7 +1344,7 @@ QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
 	if(query.exec("SELECT public_keys FROM gpg") && query.next())
 	  {
 	    publicKey = QByteArray::fromBase64(query.value(0).toByteArray());
-	    publicKey = crypt->decryptedAfterAuthenticated(publicKey, 0);
+	    publicKey = crypt->decryptedAfterAuthenticated(publicKey, nullptr);
 	  }
       }
 
@@ -1489,12 +1496,12 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
   QByteArray decrypted;
   QByteArray random;
   QString keyType("");
-  const char *buffer = 0;
+  const char *buffer = nullptr;
   gcry_error_t err = 0;
-  gcry_sexp_t data_t = 0;
-  gcry_sexp_t decrypted_t = 0;
-  gcry_sexp_t key_t = 0;
-  gcry_sexp_t raw_t = 0;
+  gcry_sexp_t data_t = nullptr;
+  gcry_sexp_t decrypted_t = nullptr;
+  gcry_sexp_t key_t = nullptr;
+  gcry_sexp_t raw_t = nullptr;
   size_t length = 0;
 
   if((err = gcry_sexp_new(&key_t,
@@ -1513,7 +1520,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       else
 	freePrivateKey();
 
-      m_privateKey = 0;
+      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -1563,7 +1570,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       else
 	freePrivateKey();
 
-      m_privateKey = 0;
+      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker1.unlock();
 
@@ -1609,7 +1616,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
   gcry_sexp_release(raw_t);
   raw_t = gcry_sexp_find_token(data_t, keyType.toLatin1().constData(), 0);
   gcry_sexp_release(data_t);
-  data_t = 0;
+  data_t = nullptr;
 
   if(!raw_t)
     {
@@ -1620,7 +1627,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
     }
 
   if(keyType == "elg")
-    err = gcry_sexp_build(&data_t, 0,
+    err = gcry_sexp_build(&data_t,
+			  nullptr,
 			  "(enc-val (flags raw) %S)",
 			  raw_t);
   else
@@ -1630,7 +1638,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       if(nbits == 2048) // We do not support 2048-bit keys.
 	{
 	  random.resize(SHA384_OUTPUT_SIZE_IN_BYTES);
-	  err = gcry_sexp_build(&data_t, 0,
+	  err = gcry_sexp_build(&data_t,
+				nullptr,
 				"(enc-val (flags oaep)"
 				"(hash-algo sha384)(random-override %b) %S)",
 				random.length(),
@@ -1640,7 +1649,8 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       else
 	{
 	  random.resize(XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
-	  err = gcry_sexp_build(&data_t, 0,
+	  err = gcry_sexp_build(&data_t,
+				nullptr,
 				"(enc-val (flags oaep)"
 				"(hash-algo "
 				SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
@@ -1715,7 +1725,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
   QByteArray encrypted;
   auto const publicKey(qUncompress(pk));
   gcry_error_t err = 0;
-  gcry_sexp_t key_t = 0;
+  gcry_sexp_t key_t = nullptr;
 
   if((err = gcry_sexp_new(&key_t,
 			  publicKey.constData(),
@@ -1723,9 +1733,9 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 			  1)) == 0 && key_t)
     {
       QString keyType("");
-      gcry_sexp_t data_t = 0;
-      gcry_sexp_t encodedData_t = 0;
-      gcry_sexp_t raw_t = 0;
+      gcry_sexp_t data_t = nullptr;
+      gcry_sexp_t encodedData_t = nullptr;
+      gcry_sexp_t raw_t = nullptr;
 
       raw_t = gcry_sexp_find_token(key_t, "elg", 0);
 
@@ -1742,7 +1752,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
       gcry_sexp_release(raw_t);
 
       if(keyType == "elg")
-	err = gcry_sexp_build(&data_t, 0,
+	err = gcry_sexp_build(&data_t,
+			      nullptr,
 			      "(data (flags raw)(value %b))",
 			      data.toBase64().length(),
 			      data.toBase64().constData());
@@ -1756,7 +1767,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	      random.resize(SHA384_OUTPUT_SIZE_IN_BYTES);
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
-	      err = gcry_sexp_build(&data_t, 0,
+	      err = gcry_sexp_build(&data_t,
+				    nullptr,
 				    "(data (flags oaep)(hash-algo sha384)"
 				    "(value %b)(random-override %b))",
 				    data.length(),
@@ -1770,7 +1782,8 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 	      random = strongRandomBytes
 		(static_cast<size_t> (random.length()));
 	      err = gcry_sexp_build
-		(&data_t, 0,
+		(&data_t,
+		 nullptr,
 		 "(data (flags oaep)(hash-algo "
 		 SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 		 ")"
@@ -1788,7 +1801,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 				    key_t)) == 0 && encodedData_t)
 	    {
 	      auto const length = gcry_sexp_sprint
-		(encodedData_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
+		(encodedData_t, GCRYSEXP_FMT_ADVANCED, nullptr, 0);
 
 	      if(length > 0)
 		{
@@ -1831,7 +1844,7 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 		    memset(buffer, 0, length);
 
 		  free(buffer);
-		  buffer = 0;
+		  buffer = nullptr;
 		}
 	      else
 		{
@@ -2188,7 +2201,7 @@ QByteArray spoton_crypt::shake256(const QByteArray &buffer,
   return QByteArray();
 #else
   gcry_error_t err = 0;
-  gcry_md_hd_t hd = 0;
+  gcry_md_hd_t hd = nullptr;
 
   if((err = gcry_md_open(&hd, GCRY_MD_SHAKE256, 0)) != 0 || !hd)
     {
@@ -2309,10 +2322,10 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 {
   QList<QSslCipher> list;
   QStringList protocols;
-  SSL *ssl = 0;
-  SSL_CTX *ctx = 0;
+  SSL *ssl = nullptr;
+  SSL_CTX *ctx = nullptr;
   auto controlString(scs.trimmed());
-  const char *next = 0;
+  const char *next = nullptr;
   int index = 0;
 
   if(controlString.isEmpty())
@@ -2343,7 +2356,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
       auto const protocol(protocols.at(i));
 
       index = 0;
-      next = 0;
+      next = nullptr;
 
 #if OPENSSL_VERSION_NUMBER >= 0x10100000L
       ctx = SSL_CTX_new(TLS_client_method());
@@ -2467,8 +2480,8 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
     done_label:
       SSL_CTX_free(ctx);
       SSL_free(ssl);
-      ctx = 0;
-      ssl = 0;
+      ctx = nullptr;
+      ssl = nullptr;
     }
 
   if(list.isEmpty())
@@ -2665,11 +2678,11 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   QString connectionName("");
   QString genkey("");
   auto ks = keySize.toInt();
-  char *buffer = 0;
+  char *buffer = nullptr;
   gcry_error_t err = 0;
-  gcry_sexp_t keyPair_t = 0;
-  gcry_sexp_t key_t = 0;
-  gcry_sexp_t parameters_t = 0;
+  gcry_sexp_t keyPair_t = nullptr;
+  gcry_sexp_t key_t = nullptr;
+  gcry_sexp_t parameters_t = nullptr;
   size_t length = 0;
 
   m_isMcEliece.fetchAndStoreOrdered(0);
@@ -2685,7 +2698,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   else
     freePrivateKey();
 
-  m_privateKey = 0;
+  m_privateKey = nullptr;
   m_privateKeyLength = 0;
   locker1.unlock();
 
@@ -2763,7 +2776,8 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
       goto done_label;
     }
 
-  if((err = gcry_sexp_build(&parameters_t, 0,
+  if((err = gcry_sexp_build(&parameters_t,
+			    nullptr,
 			    genkey.toLatin1().constData())) != 0 ||
      !parameters_t)
     {
@@ -2831,7 +2845,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 	  goto done_label;
 	}
 
-      length = gcry_sexp_sprint(key_t, GCRYSEXP_FMT_ADVANCED, 0, 0);
+      length = gcry_sexp_sprint(key_t, GCRYSEXP_FMT_ADVANCED, nullptr, 0);
 
       if(length == 0)
 	{
@@ -2865,7 +2879,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
 	      memset(buffer, 0, length);
 	      free(buffer);
-	      buffer = 0;
+	      buffer = nullptr;
 	    }
 	  else
 	    {
@@ -2878,7 +2892,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 	}
 
       gcry_free(key_t);
-      key_t = 0;
+      key_t = nullptr;
     }
 
  save_keys_label:
@@ -3039,7 +3053,7 @@ QString spoton_crypt::publicKeySize(const QByteArray &data)
     keySize = publicKeySizeNTRU(data);
   else
     {
-      gcry_sexp_t key_t = 0;
+      gcry_sexp_t key_t = nullptr;
 
       if(gcry_sexp_new(&key_t,
 		       data.constData(),
@@ -3298,11 +3312,11 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
   QStringList list;
   auto ok = true;
   gcry_error_t err = 0;
-  gcry_mpi_t hash_t = 0;
-  gcry_sexp_t data_t = 0;
-  gcry_sexp_t key_t = 0;
-  gcry_sexp_t signature_t = 0;
-  unsigned char *hash_p = 0;
+  gcry_mpi_t hash_t = nullptr;
+  gcry_sexp_t data_t = nullptr;
+  gcry_sexp_t key_t = nullptr;
+  gcry_sexp_t signature_t = nullptr;
+  unsigned char *hash_p = nullptr;
 
   if(data.isEmpty() || publicKey.isEmpty() || signature.isEmpty())
     {
@@ -3399,7 +3413,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	hash_p = static_cast<unsigned char *>
 	  (malloc(static_cast<size_t> (hash.length())));
       else
-	hash_p = 0;
+	hash_p = nullptr;
 
       if(!hash_p)
 	{
@@ -3413,8 +3427,11 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	       static_cast<size_t> (hash.length()));
 
       err = gcry_mpi_scan
-	(&hash_t, GCRYMPI_FMT_USG, hash_p,
-	 static_cast<size_t> (hash.length()), 0);
+	(&hash_t,
+	 GCRYMPI_FMT_USG,
+	 hash_p,
+	 static_cast<size_t> (hash.length()),
+	 nullptr);
 
       if(err != 0 || !hash_t)
 	{
@@ -3441,12 +3458,14 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 	  goto done_label;
 	}
 
-      err = gcry_sexp_build(&data_t, 0,
+      err = gcry_sexp_build(&data_t,
+			    nullptr,
 			    "(data (flags raw)(value %m))",
 			    hash_t);
     }
   else if(keyType == "eddsa")
-    err = gcry_sexp_build(&data_t, 0,
+    err = gcry_sexp_build(&data_t,
+			  nullptr,
 			  "(data (flags eddsa)(hash-algo "
 			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 			  ")"
@@ -3454,7 +3473,8 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
 			  hash.length(),
 			  hash.constData());
   else if(keyType == "rsa")
-    err = gcry_sexp_build(&data_t, 0,
+    err = gcry_sexp_build(&data_t,
+			  nullptr,
 			  "(data (flags pss)(hash "
 			  SPOTON_DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING
 			  " %b)"
@@ -3732,7 +3752,7 @@ void spoton_crypt::freeHashKey(void)
     m_hashKey[i] = 0;
 
   gcry_free(m_hashKey);
-  m_hashKey = 0;
+  m_hashKey = nullptr;
 
   if(locked)
     m_hashKeyMutex.unlock();
@@ -3754,7 +3774,7 @@ void spoton_crypt::freePrivateKey(void)
     m_privateKey[i] = 0;
 
   free(m_privateKey);
-  m_privateKey = 0;
+  m_privateKey = nullptr;
 
   if(locked)
     m_privateKeyMutex.unlock();
@@ -3776,7 +3796,7 @@ void spoton_crypt::freeSymmetricKey(void)
     m_symmetricKey[i] = 0;
 
   gcry_free(m_symmetricKey);
-  m_symmetricKey = 0;
+  m_symmetricKey = nullptr;
 
   if(locked)
     m_symmetricKeyMutex.unlock();
@@ -3798,22 +3818,22 @@ void spoton_crypt::generateCertificate(const int keySize,
       return;
     }
 
-  BIO *memory = 0;
+  BIO *memory = nullptr;
   BUF_MEM *bptr;
-  EC_KEY *ecc = 0;
-  EVP_PKEY *pk = 0;
-  RSA *rsa = 0;
-  X509 *x509 = 0;
-  X509_NAME *name = 0;
-  X509_NAME *subject = 0;
-  X509_NAME_ENTRY *commonNameEntry = 0;
+  EC_KEY *ecc = nullptr;
+  EVP_PKEY *pk = nullptr;
+  RSA *rsa = nullptr;
+  X509 *x509 = nullptr;
+  X509_NAME *name = nullptr;
+  X509_NAME *subject = nullptr;
+  X509_NAME_ENTRY *commonNameEntry = nullptr;
   auto addressString(address.toString().trimmed());
-  char *buffer = 0;
+  char *buffer = nullptr;
   const auto organization = reinterpret_cast<const unsigned char *>
     ("Spot-On Origami Self-Signed Certificate");
   int length = 0;
   int rc = 0;
-  unsigned char *commonName = 0;
+  unsigned char *commonName = nullptr;
 
   if(!error.isEmpty())
     goto done_label;
@@ -3891,7 +3911,7 @@ void spoton_crypt::generateCertificate(const int keySize,
       goto done_label;
     }
 
-  if(X509_gmtime_adj(X509_get_notBefore(x509), 0) == 0)
+  if(X509_gmtime_adj(X509_get_notBefore(x509), 0) == nullptr)
     {
       error = QObject::tr("X509_gmtime_adj() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
@@ -3902,7 +3922,7 @@ void spoton_crypt::generateCertificate(const int keySize,
   if(X509_gmtime_adj(X509_get_notAfter(x509),
 		     qBound(60L,
 			    days,
-			    std::numeric_limits<long int>::max())) == 0)
+			    std::numeric_limits<long int>::max())) == nullptr)
     {
       error = QObject::tr("X509_gmtime_adj() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
@@ -3914,7 +3934,7 @@ void spoton_crypt::generateCertificate(const int keySize,
     addressString = "Spot-On-" + weakRandomBytes(10).toHex();
 
   if(std::numeric_limits<int>::max() - addressString.toLatin1().length() < 1)
-    commonName = 0;
+    commonName = nullptr;
   else
     commonName = static_cast<unsigned char *>
       (calloc(static_cast<size_t> (addressString.toLatin1().length() + 1),
@@ -3933,7 +3953,7 @@ void spoton_crypt::generateCertificate(const int keySize,
 	 addressString.toLatin1().constData(),
 	 static_cast<size_t> (length));
   commonNameEntry = X509_NAME_ENTRY_create_by_NID
-    (0,
+    (nullptr,
      NID_commonName,
      V_ASN1_PRINTABLESTRING,
      commonName,
@@ -3987,7 +4007,7 @@ void spoton_crypt::generateCertificate(const int keySize,
       goto done_label;
     }
 
-  if((name = X509_get_subject_name(x509)) == 0)
+  if((name = X509_get_subject_name(x509)) == nullptr)
     {
       error = QObject::tr("X509_get_subject_name() returned zero");
       spoton_misc::logError("spoton_crypt::generateCertificate(): "
@@ -4113,13 +4133,13 @@ void spoton_crypt::generateECCKeys(QByteArray &certificate,
       return;
     }
 
-  BIO *privateMemory = 0;
-  BIO *publicMemory = 0;
+  BIO *privateMemory = nullptr;
+  BIO *publicMemory = nullptr;
   BUF_MEM *bptr;
-  EC_KEY *ecc = 0;
-  EVP_PKEY *pk = 0;
-  char *privateBuffer = 0;
-  char *publicBuffer = 0;
+  EC_KEY *ecc = nullptr;
+  EVP_PKEY *pk = nullptr;
+  char *privateBuffer = nullptr;
+  char *publicBuffer = nullptr;
   int eccGroup = 0;
 
   switch(keySize)
@@ -4191,7 +4211,13 @@ void spoton_crypt::generateECCKeys(QByteArray &certificate,
       goto done_label;
     }
 
-  if(!PEM_write_bio_PrivateKey(privateMemory, pk, 0, 0, 0, 0, 0))
+  if(!PEM_write_bio_PrivateKey(privateMemory,
+			       pk,
+			       nullptr,
+			       nullptr,
+			       0,
+			       nullptr,
+			       nullptr))
     {
       error = QObject::tr("PEM_write_bio_PrivateKey() failure");
       goto done_label;
@@ -4265,13 +4291,13 @@ void spoton_crypt::generateSslKeys(const int keySize,
       return;
     }
 
-  BIGNUM *f4 = 0;
-  BIO *privateMemory = 0;
-  BIO *publicMemory = 0;
+  BIGNUM *f4 = nullptr;
+  BIO *privateMemory = nullptr;
+  BIO *publicMemory = nullptr;
   BUF_MEM *bptr;
-  RSA *rsa = 0;
-  char *privateBuffer = 0;
-  char *publicBuffer = 0;
+  RSA *rsa = nullptr;
+  char *privateBuffer = nullptr;
+  char *publicBuffer = nullptr;
 
   if(!error.isEmpty())
     goto done_label;
@@ -4317,7 +4343,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
       goto done_label;
     }
 
-  if(RSA_generate_key_ex(rsa, keySize, f4, 0) == -1)
+  if(RSA_generate_key_ex(rsa, keySize, f4, nullptr) == -1)
     {
       error = QObject::tr("RSA_generate_key_ex() returned negative one");
       spoton_misc::logError("spoton_crypt::generateSslKeys(): "
@@ -4341,7 +4367,13 @@ void spoton_crypt::generateSslKeys(const int keySize,
       goto done_label;
     }
 
-  if(PEM_write_bio_RSAPrivateKey(privateMemory, rsa, 0, 0, 0, 0, 0) == 0)
+  if(PEM_write_bio_RSAPrivateKey(privateMemory,
+				 rsa,
+				 nullptr,
+				 nullptr,
+				 0,
+				 nullptr,
+				 nullptr) == 0)
     {
       error = QObject::tr("PEM_write_bio_RSAPrivateKey() returned zero");
       spoton_misc::logError("spoton_crypt::generateSslKeys(): "
@@ -4432,23 +4464,23 @@ void spoton_crypt::init(const QString &cipherType,
   Q_UNUSED(passphrase);
   m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
     gcry_cipher_map_name(cipherType.toLatin1().constData());
-  m_cipherHandle = 0;
+  m_cipherHandle = nullptr;
   m_cipherType = cipherType;
   m_hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
-  m_hashKey = 0;
+  m_hashKey = nullptr;
   m_hashKeyLength = 0;
   m_hashType = hashType;
   m_id = id;
   m_isMcEliece.fetchAndStoreOrdered(0);
   m_iterationCount = iterationCount;
 #ifdef SPOTON_MCELIECE_ENABLED
-  m_mceliece = 0;
+  m_mceliece = nullptr;
 #endif
-  m_privateKey = 0;
+  m_privateKey = nullptr;
   m_privateKeyLength = 0;
   m_saltLength = saltLength;
-  m_symmetricKey = 0;
-  m_threefish = 0;
+  m_symmetricKey = nullptr;
+  m_threefish = nullptr;
 
   if(m_cipherAlgorithm > 0)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
@@ -4529,7 +4561,7 @@ void spoton_crypt::init(const QString &cipherType,
 	  if(!ok)
 	    {
 	      delete m_threefish;
-	      m_threefish = 0;
+	      m_threefish = nullptr;
 	    }
 	}
       else
@@ -4783,7 +4815,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
       if(m_privateKeyLength == 0 ||
 	 (m_privateKey =
 	  static_cast<char *> (gcry_calloc_secure(m_privateKeyLength,
-						  sizeof(char)))) == 0)
+						  sizeof(char)))) == nullptr)
 	{
 	  if(ok)
 	    *ok = false;
@@ -4802,7 +4834,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
     {
       if(m_privateKeyLength == 0 ||
 	 (m_privateKey = static_cast<char *> (calloc(m_privateKeyLength,
-						     sizeof(char)))) == 0)
+						     sizeof(char)))) == nullptr)
 	{
 	  if(ok)
 	    *ok = false;
@@ -4893,7 +4925,7 @@ void spoton_crypt::purgePrivatePublicKeys(void)
   else
     freePrivateKey();
 
-  m_privateKey = 0;
+  m_privateKey = nullptr;
   m_privateKeyLength = 0;
   locker1.unlock();
 
@@ -5178,13 +5210,13 @@ void spoton_crypt::setHashKey(const QByteArray &hashKey)
   QWriteLocker locker(&m_hashKeyMutex);
 
   freeHashKey();
-  m_hashKey = 0;
+  m_hashKey = nullptr;
   m_hashKeyLength = static_cast<size_t> (hashKey.length());
 
   if(m_hashKeyLength > 0 &&
      (m_hashKey =
       static_cast<char *> (gcry_calloc_secure(m_hashKeyLength,
-					      sizeof(char)))) != 0)
+					      sizeof(char)))) != nullptr)
     memcpy(m_hashKey,
 	   hashKey.constData(),
 	   qMin(m_hashKeyLength,
