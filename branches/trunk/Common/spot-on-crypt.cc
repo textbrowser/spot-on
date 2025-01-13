@@ -972,14 +972,14 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
   if(publicKey.trimmed().isEmpty())
     return QByteArray();
 
-  gpgme_check_version(0);
+  gpgme_check_version(nullptr);
 
   QByteArray fingerprint;
-  gpgme_ctx_t ctx = 0;
+  gpgme_ctx_t ctx = nullptr;
 
   if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
     {
-      gpgme_data_t keydata = 0;
+      gpgme_data_t keydata = nullptr;
       auto err = gpgme_data_new_from_mem
 	// 1 = A private copy.
 	(&keydata,
@@ -993,7 +993,7 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
 
 	  while(err == GPG_ERR_NO_ERROR)
 	    {
-	      gpgme_key_t key = 0;
+	      gpgme_key_t key = nullptr;
 
 	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
 		break;

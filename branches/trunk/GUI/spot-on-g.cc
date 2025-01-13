@@ -48,8 +48,8 @@ extern "C"
 
 QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
 {
-  if(!m_crypts.value("open-library", 0) ||
-     !m_crypts.value("open-library-signature", 0))
+  if(!m_crypts.value("open-library", nullptr) ||
+     !m_crypts.value("open-library-signature", nullptr))
     return QByteArray();
 
   QByteArray name;
@@ -185,7 +185,7 @@ void spoton::cancelUrlQuery(void)
   if(!cancel)
     return;
 
-  PQcancel(cancel, 0, 0);
+  PQcancel(cancel, nullptr, 0);
   PQfreeCancel(cancel);
 #endif
 }
@@ -263,7 +263,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
   if(!error.isEmpty())
     return;
 
-  page = m_buzzPages.value(keys.first, 0);
+  page = m_buzzPages.value(keys.first, nullptr);
 
   if(page)
     {
@@ -329,7 +329,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  SLOT(slotMinimal(const bool)));
   emit minimal(m_ui.action_Minimal_Display->isChecked());
 
-  auto mainWindow = new QMainWindow(0);
+  auto mainWindow = new QMainWindow(nullptr);
 
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
@@ -542,7 +542,7 @@ void spoton::slotBuzzInvite(void)
   if(!error.isEmpty())
     return;
 
-  page = m_buzzPages.value(keys.first, 0);
+  page = m_buzzPages.value(keys.first, nullptr);
 
   if(page)
     if(m_ui.buzzTab->indexOf(page) != -1)
@@ -606,7 +606,7 @@ void spoton::slotBuzzInvite(void)
 	      SLOT(slotMinimal(const bool)));
       emit minimal(m_ui.action_Minimal_Display->isChecked());
 
-      auto mainWindow = new QMainWindow(0);
+      auto mainWindow = new QMainWindow(nullptr);
 
       mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
       mainWindow->setCentralWidget(page);
@@ -875,7 +875,7 @@ void spoton::slotCopyUrlKeys(void)
   if(!clipboard)
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1001,7 +1001,7 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
   if(row < 0)
     return;
 
-  QTableWidgetItem *item = 0;
+  QTableWidgetItem *item = nullptr;
 
   item = m_ui.listeners->item(row, 2); // Bluetooth Flags / SSL Key Size
 
@@ -1040,7 +1040,7 @@ void spoton::slotGenerateOneYearListenerCertificate(void)
   else
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1422,7 +1422,7 @@ void spoton::slotPreviewStyleSheet(void)
       if(parent)
 	parent = parent->parentWidget();
     }
-  while(parent != 0);
+  while(parent != nullptr);
 
   if(!parent)
     return;
@@ -1598,7 +1598,7 @@ void spoton::slotSeparateBuzzPage(void)
 
   m_ui.buzzTab->removeTab(index);
 
-  auto mainWindow = new QMainWindow(0);
+  auto mainWindow = new QMainWindow(nullptr);
 
   connect(page,
 	  SIGNAL(destroyed(void)),
@@ -1625,7 +1625,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
   if(!action)
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1899,7 +1899,7 @@ void spoton::slotSetWidgetStyleSheet(const QPoint &point)
   if(!widget)
     return;
 
-  QAction *action = 0;
+  QAction *action = nullptr;
   QMenu menu(this);
 
   action = menu.addAction(tr("&Copy Style Sheet"),
@@ -1927,8 +1927,8 @@ void spoton::slotSetWidgetStyleSheet(const QPoint &point)
 
 void spoton::slotShareOpenLibraryPublicKey(void)
 {
-  if(!m_crypts.value("open-library", 0) ||
-     !m_crypts.value("open-library-signature", 0))
+  if(!m_crypts.value("open-library", nullptr) ||
+     !m_crypts.value("open-library-signature", nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
@@ -2035,7 +2035,7 @@ void spoton::slotShowBuzzDetails(bool state)
 
 void spoton::slotShowBuzzTabContextMenu(const QPoint &point)
 {
-  QAction *action = 0;
+  QAction *action = nullptr;
   QMenu menu(this);
 
   action = menu.addAction(tr("&Separate..."),
@@ -2098,7 +2098,7 @@ void spoton::slotShowMainTabContextMenu(const QPoint &point)
   else if(name.isEmpty())
     enabled = false;
 
-  QAction *action = 0;
+  QAction *action = nullptr;
   QMenu menu(this);
 
   action = menu.addAction(tr("&Close Page"), this, SLOT(slotCloseTab(void)));
@@ -2173,7 +2173,7 @@ void spoton::slotUnifyBuzz(void)
 
   if(mainWindow)
     {
-      mainWindow->setCentralWidget(0);
+      mainWindow->setCentralWidget(nullptr);
       mainWindow->deleteLater();
     }
 

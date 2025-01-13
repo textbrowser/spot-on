@@ -263,9 +263,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 {
-  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
   auto sCrypt = m_parent ? m_parent->crypts().
-    value("rosetta-signature", 0) : 0;
+    value("rosetta-signature", nullptr) : nullptr;
 
   if(!eCrypt || !sCrypt)
     return QByteArray();
@@ -323,16 +324,16 @@ QByteArray spoton_rosetta::gpgEncrypt
 {
 #ifdef SPOTON_GPGME_ENABLED
   Q_UNUSED(sender);
-  gpgme_check_version(0);
+  gpgme_check_version(nullptr);
 
   QByteArray output;
-  gpgme_ctx_t ctx = 0;
+  gpgme_ctx_t ctx = nullptr;
   auto err = gpgme_new(&ctx);
 
   if(err == GPG_ERR_NO_ERROR)
     {
-      gpgme_data_t ciphertext = 0;
-      gpgme_data_t plaintext = 0;
+      gpgme_data_t ciphertext = nullptr;
+      gpgme_data_t plaintext = nullptr;
 
       gpgme_set_armor(ctx, 1);
       err = gpgme_data_new(&ciphertext);
@@ -350,8 +351,8 @@ QByteArray spoton_rosetta::gpgEncrypt
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  gpgme_data_t keydata = 0;
-	  gpgme_key_t keys[] = {0, 0};
+	  gpgme_data_t keydata = nullptr;
+	  gpgme_key_t keys[] = {nullptr, nullptr};
 
 	  err = gpgme_data_new_from_mem
 	    // 1 = A private copy.
@@ -375,7 +376,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 
 		  if(err == GPG_ERR_NO_ERROR)
 		    {
-		      gpgme_set_passphrase_cb(ctx, &gpgPassphrase, 0);
+		      gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
 		      err = gpgme_op_encrypt_sign
 			(ctx,
 			 keys,
@@ -386,7 +387,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 		}
 	      else
 		{
-		  gpgme_set_passphrase_cb(ctx, 0, 0);
+		  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
 		  err = gpgme_op_encrypt
 		    (ctx,
 		     keys,
@@ -440,7 +441,8 @@ QByteArray spoton_rosetta::gpgEncrypt
 QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
 {
   QMap<QString, QByteArray> map;
-  auto crypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto crypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!crypt)
     return map;
@@ -545,7 +547,8 @@ void spoton_rosetta::populateContacts(void)
       {
 	QMultiMap<QString, QPair<DestinationTypes, QByteArray> > names;
 	QSqlQuery query(db);
-	auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+	auto eCrypt = m_parent ?
+	  m_parent->crypts().value("rosetta", nullptr) : nullptr;
 	auto ok = true;
 
 	ui.contacts->clear();
@@ -707,7 +710,8 @@ void spoton_rosetta::show(spoton *parent)
 
 void spoton_rosetta::slotAddContact(void)
 {
-  spoton_crypt *eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  spoton_crypt *eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!eCrypt)
     {
@@ -742,14 +746,14 @@ void spoton_rosetta::slotAddContact(void)
 	    return;
 	  }
 
-	gpgme_check_version(0);
+	gpgme_check_version(nullptr);
 
-	gpgme_ctx_t ctx = 0;
+	gpgme_ctx_t ctx = nullptr;
 	auto err = gpgme_new(&ctx);
 
 	if(err == GPG_ERR_NO_ERROR)
 	  {
-	    gpgme_data_t keydata = 0;
+	    gpgme_data_t keydata = nullptr;
 
 	    err = gpgme_data_new_from_mem
 	      // 1 = A private copy.
@@ -860,7 +864,7 @@ void spoton_rosetta::slotAddContact(void)
 #endif
 
   auto sCrypt = m_parent ?
-    m_parent->crypts().value("rosetta-signature", 0) : 0;
+    m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
 
   if(!sCrypt)
     {
@@ -1159,7 +1163,8 @@ void spoton_rosetta::slotContactsChanged(int index)
   if(destinationType == GPG)
     {
       QByteArray publicKey;
-      auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+      auto eCrypt = m_parent ?
+	m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
       publicKey = spoton_misc::publicKeyFromHash
 	(QByteArray::fromBase64(ui.contacts->
@@ -1208,17 +1213,17 @@ void spoton_rosetta::slotConvertDecrypt(void)
       {
 	data = data.mid
 	  (index1, index2 - index1 + static_cast<int> (qstrlen(end)));
-	gpgme_check_version(0);
+	gpgme_check_version(nullptr);
 
 	QColor signatureColor(240, 128, 128); // Light coral!
 	auto signedMessage(tr("Invalid signature."));
-	gpgme_ctx_t ctx = 0;
+	gpgme_ctx_t ctx = nullptr;
 	auto err = gpgme_new(&ctx);
 
 	if(err == GPG_ERR_NO_ERROR)
 	  {
-	    gpgme_data_t ciphertext = 0;
-	    gpgme_data_t plaintext = 0;
+	    gpgme_data_t ciphertext = nullptr;
+	    gpgme_data_t plaintext = nullptr;
 
 	    gpgme_set_armor(ctx, 1);
 	    err = gpgme_data_new(&plaintext);
@@ -1234,7 +1239,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	      {
 		err = gpgme_set_pinentry_mode
 		  (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
-		gpgme_set_passphrase_cb(ctx, &gpgPassphrase, 0);
+		gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
 	      }
 
 	    if(err == GPG_ERR_NO_ERROR)
@@ -1272,7 +1277,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
 		    if(signature && signature->fpr)
 		      {
-			gpgme_key_t key = 0;
+			gpgme_key_t key = nullptr;
 
 			if(gpgme_get_key(ctx, signature->fpr, &key, 0) ==
 			   GPG_ERR_NO_ERROR)
@@ -1322,7 +1327,8 @@ void spoton_rosetta::slotConvertDecrypt(void)
   }
 #endif
 
-  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta-signature", 0) : 0;
+  auto eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
 
   if(!eCrypt)
     {
@@ -1539,7 +1545,8 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
 void spoton_rosetta::slotConvertEncrypt(void)
 {
-  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!eCrypt)
     {
@@ -1575,7 +1582,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
       return;
     }
 
-  auto sCrypt = m_parent ? m_parent->crypts().value("rosetta-signature", 0) : 0;
+  auto sCrypt = m_parent ?
+    m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
 
   if(!sCrypt)
     {
@@ -1766,7 +1774,8 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
   repaint();
   QApplication::processEvents();
 
-  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!eCrypt)
     return;
@@ -1793,7 +1802,8 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 	  while(query.next())
 	    {
 	      auto const publicKey = eCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()), 0);
+		(QByteArray::fromBase64(query.value(0).toByteArray()),
+		 nullptr);
 
 	      if(!publicKey.isEmpty())
 		{
@@ -1954,17 +1964,18 @@ void spoton_rosetta::slotDelete(void)
 #ifdef SPOTON_GPGME_ENABLED
   if(destinationType == GPG)
     {
-      gpgme_check_version(0);
+      gpgme_check_version(nullptr);
 
-      gpgme_ctx_t ctx = 0;
+      gpgme_ctx_t ctx = nullptr;
       auto err = gpgme_new(&ctx);
 
       if(err == GPG_ERR_NO_ERROR)
 	{
 	  QByteArray publicKey;
-	  gpgme_data_t keydata = 0;
-	  gpgme_key_t key = 0;
-	  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+	  gpgme_data_t keydata = nullptr;
+	  gpgme_key_t key = nullptr;
+	  auto eCrypt = m_parent ?
+	    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
 	  publicKey = spoton_misc::publicKeyFromHash
 	    (QByteArray::fromBase64(publicKeyHash), true, eCrypt);
@@ -2015,7 +2026,8 @@ void spoton_rosetta::slotDelete(void)
 
 	if(destinationType == ROSETTA)
 	  spoton_misc::purgeSignatureRelationships
-	    (db, m_parent ? m_parent->crypts().value("rosetta", 0) : 0);
+	    (db,
+	     m_parent ? m_parent->crypts().value("rosetta", nullptr) : nullptr);
       }
     else
       ok = false;
@@ -2136,7 +2148,8 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
 void spoton_rosetta::slotRename(void)
 {
-  auto eCrypt = m_parent ? m_parent->crypts().value("rosetta", 0) : 0;
+  auto eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!eCrypt)
     {

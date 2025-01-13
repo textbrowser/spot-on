@@ -342,7 +342,7 @@ void spoton_pageviewer::slotPrint(QPrinter *printer)
 
 void spoton_pageviewer::slotRevisionChanged(int index)
 {
-  auto crypt = m_parent ? m_parent->urlCommonCrypt() : 0;
+  auto crypt = m_parent ? m_parent->urlCommonCrypt() : nullptr;
 
   if(!crypt || !m_database || !m_database->isOpen())
     {

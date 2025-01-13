@@ -150,7 +150,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
 
 void spoton::populateUrlDistillers(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -213,7 +213,7 @@ void spoton::populateUrlDistillers(void)
 
 	      if(ok)
 		{
-		  QComboBox *box = 0;
+		  QComboBox *box = nullptr;
 		  auto item = new QTableWidgetItem
 		    (QString::fromUtf8(domain.constData(), domain.length()));
 		  auto widget = combinationBoxForTable();
@@ -280,7 +280,7 @@ void spoton::populateUrlDistillers(void)
 void spoton::prepareUrlLabels(void)
 {
   QString connectionName("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   int importCount = 0;
   int remoteCount = 0;
 
@@ -402,7 +402,7 @@ void spoton::slotAddDistiller(void)
 {
   spoton_misc::prepareUrlDistillersDatabase();
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -759,7 +759,7 @@ void spoton::slotDeleteAllUrls(void)
   auto const deleted = deleteAllUrls();
 
   delete m_urlCommonCrypt;
-  m_urlCommonCrypt = 0;
+  m_urlCommonCrypt = nullptr;
   prepareUrlLabels();
 
   if(!deleted)
@@ -776,7 +776,7 @@ void spoton::slotDeleteAllUrls(void)
 
 void spoton::slotDeleteUrlDistillers(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1072,7 +1072,7 @@ void spoton::slotGatherUrlStatistics(void)
 
 void spoton::slotImportUrls(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1397,7 +1397,7 @@ void spoton::slotPostgreSQLConnect(void)
       return;
     }
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1803,7 +1803,7 @@ void spoton::slotSaveCommonUrlCredentials(void)
   QPair<QByteArray, QByteArray> keys;
   QScopedPointer<QMessageBox> mb;
   QString error("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1881,7 +1881,7 @@ void spoton::slotSaveUrlCredentials(void)
   QPair<QByteArray, QByteArray> keys;
   QString error("");
   auto const salt(QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -2474,7 +2474,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
 void spoton::slotUrlPolarizerTypeChange(int index)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;

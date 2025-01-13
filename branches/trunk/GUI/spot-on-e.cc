@@ -63,7 +63,7 @@ QStandardItemModel *spoton::starbeamReceivedModel(void) const
 
 QString spoton::savePoptasticAccount(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return "Invalid spoton_crypt object. This is a fatal flaw.";
@@ -312,7 +312,7 @@ static QStringList curl_protocols(void)
 #ifdef SPOTON_POPTASTIC_SUPPORTED
   auto data = curl_version_info(CURLVERSION_NOW);
 
-  for(int i = 0; data->protocols[i] != 0; i++)
+  for(int i = 0; data->protocols[i] != nullptr; i++)
     list << QString(data->protocols[i]).toLower();
 #endif
   return list;
@@ -367,17 +367,17 @@ void spoton::initializeSMP(const QString &hash)
   if(hash.isEmpty())
     return;
 
-  spoton_smp *smp = 0;
+  spoton_smp *smp = nullptr;
 
   if(m_smps.contains(hash))
-    smp = m_smps.value(hash, 0);
+    smp = m_smps.value(hash, nullptr);
 
   if(smp)
     smp->initialize();
   else
     spoton_misc::logError("spoton::initializeSMP(): smp is zero!");
 
-  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, nullptr);
 
   if(chat)
     chat->setSMPVerified(false);
@@ -387,7 +387,7 @@ void spoton::initializeUrlDistillers(void)
 {
   spoton_misc::prepareUrlDistillersDatabase();
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -681,10 +681,10 @@ void spoton::prepareSMP(const QString &hash)
   if(hash.isEmpty())
     return;
 
-  spoton_smp *smp = 0;
+  spoton_smp *smp = nullptr;
 
   if(m_smps.contains(hash))
-    smp = m_smps.value(hash, 0);
+    smp = m_smps.value(hash, nullptr);
 
   QString guess("");
   spoton_virtual_keyboard dialog(QApplication::activeWindow());
@@ -717,7 +717,7 @@ void spoton::prepareSMP(const QString &hash)
   else
     spoton_misc::logError("spoton::prepareSMP(): smp is zero!");
 
-  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, 0);
+  QPointer<spoton_chatwindow> chat = m_chatWindows.value(hash, nullptr);
 
   if(chat)
     chat->setSMPVerified(false);
@@ -852,7 +852,7 @@ void spoton::slotActiveUrlDistribution(bool state)
 
 void spoton::slotConfigurePoptastic(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1130,7 +1130,7 @@ void spoton::slotDeletePoptasticAccount(void)
 
   QApplication::processEvents();
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1293,7 +1293,7 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
-  auto smp = m_smps.value(publicKeyHash, 0);
+  auto smp = m_smps.value(publicKeyHash, nullptr);
 
   if(!smp)
     return;
@@ -1337,7 +1337,7 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   else if(item1->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
 
-  auto smp = m_smps.value(item2->text(), 0);
+  auto smp = m_smps.value(item2->text(), nullptr);
 
   if(!smp)
     return;
@@ -1458,12 +1458,14 @@ void spoton::slotOntopChatDialogs(bool state)
 
 void spoton::slotPoptasticAccountChanged(int index)
 {
-  QList<QHash<QString, QVariant> > list;
   auto const text(m_poptasticRetroPhoneSettingsUi.account->itemText(index));
   auto ok = true;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  list = spoton_misc::poptasticSettings(text, m_crypts.value("chat", 0), &ok);
+
+  auto const list = spoton_misc::poptasticSettings
+    (text, m_crypts.value("chat", nullptr), &ok);
+
   QApplication::restoreOverrideCursor();
 
   if(ok)
@@ -1621,7 +1623,8 @@ void spoton::slotReloadEmailNames(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   auto const list
-    (spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), 0));
+    (spoton_misc::
+     poptasticSettings("", m_crypts.value("chat", nullptr), nullptr));
 
   for(int i = 0; i < list.size(); i++)
     {
@@ -1721,11 +1724,13 @@ void spoton::slotSavePoptasticAccount(void)
     }
   else
     {
-      QList<QHash<QString, QVariant> > list;
       auto ok = true;
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      list = spoton_misc::poptasticSettings("", m_crypts.value("chat", 0), &ok);
+
+      auto const list = spoton_misc::poptasticSettings
+	("", m_crypts.value("chat", nullptr), &ok);
+
       QApplication::restoreOverrideCursor();
 
       if(ok)
@@ -1785,7 +1790,8 @@ void spoton::slotSavePoptasticAccount(void)
 	      setCurrentIndex(0);
 
 	  if(initial)
-	    updatePoptasticNameSettingsFromWidgets(m_crypts.value("chat", 0));
+	    updatePoptasticNameSettingsFromWidgets
+	      (m_crypts.value("chat", nullptr));
 
 	  slotReloadEmailNames();
 	}
@@ -1943,7 +1949,7 @@ void spoton::slotSetNeighborPriority(void)
 
 void spoton::slotSetSBPulseSize(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -2328,7 +2334,7 @@ void spoton::slotShowOptions(void)
 void spoton::slotTestPoptasticPop3Settings(void)
 {
 #ifdef SPOTON_POPTASTIC_SUPPORTED
-  CURL *curl = 0;
+  CURL *curl = nullptr;
   CURLcode res = CURLE_OK;
   QString error("");
   auto ok = false;
@@ -2474,7 +2480,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 void spoton::slotTestPoptasticSmtpSettings(void)
 {
 #ifdef SPOTON_POPTASTIC_SUPPORTED
-  CURL *curl = 0;
+  CURL *curl = nullptr;
   CURLcode res = CURLE_OK;
   QString error("");
   auto ok = false;
@@ -2696,12 +2702,12 @@ void spoton::verifySMPSecret(const QString &hash,
   if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
     return;
 
-  spoton_smp *smp = 0;
+  spoton_smp *smp = nullptr;
 
   if(!m_smps.contains(hash))
     return;
   else
-    smp = m_smps.value(hash, 0);
+    smp = m_smps.value(hash, nullptr);
 
   QList<QByteArray> list;
   auto ok = true;

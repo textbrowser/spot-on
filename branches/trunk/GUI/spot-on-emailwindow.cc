@@ -480,7 +480,7 @@ void spoton_emailwindow::slotPopulateParticipants(void)
 			   "QTableWidgetItem does not have a parent "
 			   "table. Deleting.");
 			delete item;
-			item = 0;
+			item = nullptr;
 		      }
 		}
 	    }

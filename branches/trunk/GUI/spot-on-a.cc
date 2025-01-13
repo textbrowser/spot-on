@@ -10097,7 +10097,7 @@ void spoton::slotSetPassphrase(void)
 		  if(saveCommonUrlCredentials(derivedKeys,
 					      m_ui.cipherType->currentText(),
 					      m_ui.hashType->currentText(),
-					      m_crypts.value("chat", 0)).
+					      m_crypts.value("chat", nullptr)).
 		     isEmpty())
 		    {
 		      prepareUrlContainers();
@@ -11003,7 +11003,7 @@ void spoton::slotTabChanged(int index)
 
 void spoton::slotUnblockNeighbor(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -11172,9 +11172,10 @@ void spoton::slotValidatePassphrase(void)
 
 	    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 	    spoton_misc::alterDatabasesAfterAuthentication
-	      (m_crypts.value("chat", 0));
-	    spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
-	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", 0));
+	      (m_crypts.value("chat", nullptr));
+	    spoton_misc::prepareAuthenticationHint
+	      (m_crypts.value("chat", nullptr));
+	    spoton_crypt::removeFlawedEntries(m_crypts.value("chat", nullptr));
 	    QApplication::restoreOverrideCursor();
 
 	    if(m_optionsUi.launchKernel->isChecked())
@@ -11248,7 +11249,9 @@ void spoton::slotValidatePassphrase(void)
 
 	      auto const list
 		(spoton_misc::
-		 poptasticSettings("", m_crypts.value("chat", 0), 0));
+		 poptasticSettings("",
+				   m_crypts.value("chat", nullptr),
+				   nullptr));
 
 	      for(int i = 0; i < list.size(); i++)
 		{
@@ -11278,7 +11281,7 @@ void spoton::slotValidatePassphrase(void)
 	    QString name("");
 	    QString nameEmail("");
 
-	    if(m_crypts.value("chat", 0))
+	    if(m_crypts.value("chat", nullptr))
 	      {
 		QByteArray bytes;
 		QSettings settings;

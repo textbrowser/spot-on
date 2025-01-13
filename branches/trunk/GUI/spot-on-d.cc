@@ -441,7 +441,7 @@ void spoton::populateAETokens(void)
 		  hType = type.split('\n').value(1);
 		}
 
-	      QTableWidgetItem *item = 0;
+	      QTableWidgetItem *item = nullptr;
 
 	      if(ok)
 		item = new QTableWidgetItem(QString(token));
@@ -1726,7 +1726,7 @@ void spoton::slotMessagesAnchorClicked(const QUrl &link)
   if(type.isEmpty())
     return;
 
-  QAction *action = 0;
+  QAction *action = nullptr;
   QMenu menu(this);
 
   action = menu.addAction(tr("&Add magnet."),
@@ -1940,7 +1940,7 @@ void spoton::slotResendMail(void)
 			  "status = ? WHERE "
 			  "OID = ?");
 
-	    if(m_crypts.value("email", 0))
+	    if(m_crypts.value("email", nullptr))
 	      query.bindValue
 		(0, m_crypts.value("email")->
 		 encryptedThenHashed(QByteArray("Queued"), &ok).
@@ -2001,7 +2001,7 @@ void spoton::slotResetAETokenInformation(void)
 
 void spoton::slotSaveAttachment(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -2201,7 +2201,7 @@ void spoton::slotSaveMOTD(void)
 
 void spoton::slotSetAETokenInformation(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -2542,8 +2542,8 @@ void spoton::slotSetNeighborSSLControlString(void)
 
 void spoton::slotSharePoptasticPublicKey(void)
 {
-  if(!m_crypts.value("poptastic", 0) ||
-     !m_crypts.value("poptastic-signature", 0))
+  if(!m_crypts.value("poptastic", nullptr) ||
+     !m_crypts.value("poptastic-signature", nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
@@ -2799,7 +2799,7 @@ void spoton::slotUpdateChatWindows(void)
 	QString oid("");
 	QString publicKeyHash("");
 	QString status("");
-	QTableWidgetItem *item = 0;
+	QTableWidgetItem *item = nullptr;
 
 	item = m_ui.participants->item(i, 0);
 
