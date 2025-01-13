@@ -276,12 +276,12 @@ bool spoton::nodeExists(const QSqlDatabase &db,
 			const QString &identifier,
 			const QString &table) const
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return true;
 
-  auto const hash(crypt->keyedHash(identifier.toLatin1(), 0));
+  auto const hash(crypt->keyedHash(identifier.toLatin1(), nullptr));
 
   if(hash.isEmpty())
     return true;
@@ -984,7 +984,7 @@ void spoton::slotMailContextMenu(const QPoint &point)
 	enabled = false;
     }
 
-  QAction *action = 0;
+  QAction *action = nullptr;
   QMenu menu(this);
 
   action = menu.addAction(tr("Read (New Window)..."),
@@ -1022,7 +1022,7 @@ void spoton::slotNewEmailWindow(void)
 {
 #if SPOTON_GOLDBUG == 0
   auto action = qobject_cast<QAction *> (sender());
-  spoton_emailwindow *window = 0;
+  spoton_emailwindow *window = nullptr;
 
   if(action)
     window = new spoton_emailwindow
@@ -1098,10 +1098,10 @@ void spoton::slotPopulateParticipants(void)
   if(m_participantsFuture.isFinished())
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     m_participantsFuture = QtConcurrent::run
-      (&spoton::retrieveParticipants, this, m_crypts.value("chat", 0));
+      (&spoton::retrieveParticipants, this, m_crypts.value("chat", nullptr));
 #else
     m_participantsFuture = QtConcurrent::run
-      (this, &spoton::retrieveParticipants, m_crypts.value("chat", 0));
+      (this, &spoton::retrieveParticipants, m_crypts.value("chat", nullptr));
 #endif
 }
 
@@ -1116,7 +1116,7 @@ void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
 
 void spoton::slotPostgreSQLWebServerCredentials(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1842,7 +1842,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
     }
   else
     {
-      auto crypt = m_crypts.value("chat", 0);
+      auto crypt = m_crypts.value("chat", nullptr);
 
       if(!crypt)
 	{

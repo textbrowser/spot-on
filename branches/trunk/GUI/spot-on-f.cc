@@ -72,7 +72,7 @@ QList<QByteArray> spoton::retrieveForwardSecrecyInformation
     *ok1 = false;
 
   QList<QByteArray> list;
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return list;
@@ -335,9 +335,9 @@ void spoton::forwardSecrecyRequested(const QList<QByteArray> &list)
   if(!m_sb.forward_secrecy_request->isVisible())
     {
       auto const keyType = spoton_misc::keyTypeFromPublicKeyHash
-	(publicKeyHash, m_crypts.value("chat", 0));
+	(publicKeyHash, m_crypts.value("chat", nullptr));
       auto name = spoton_misc::nameFromPublicKeyHash
-	(publicKeyHash, m_crypts.value("chat", 0));
+	(publicKeyHash, m_crypts.value("chat", nullptr));
 
       if(name.isEmpty())
 	{
@@ -766,8 +766,8 @@ void spoton::slotDeleteKey(void)
   else if(m_ui.keys->currentText() == "URL")
     keyType = "url";
 
-  auto crypt1 = m_crypts.value(keyType, 0);
-  auto crypt2 = m_crypts.value(QString("%1-signature").arg(keyType), 0);
+  auto crypt1 = m_crypts.value(keyType, nullptr);
+  auto crypt2 = m_crypts.value(QString("%1-signature").arg(keyType), nullptr);
 
   if(!(crypt1 && crypt2))
     {
@@ -865,7 +865,7 @@ void spoton::slotDuplicateTransmittedMagnet(void)
 
   QString connectionName("");
   auto const magnet(item->text());
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = false;
 
   if(!crypt)
@@ -1189,7 +1189,7 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
       if(parent)
 	parent = parent->parentWidget();
     }
-  while(parent != 0);
+  while(parent != nullptr);
 
   if(!parent)
     return;
@@ -1713,7 +1713,7 @@ void spoton::slotReplayMessages(void)
     return;
 
   QString msg("");
-  auto chat = m_chatWindows.value(item->text(), 0);
+  auto chat = m_chatWindows.value(item->text(), nullptr);
   auto const now(QDateTime::currentDateTime());
   auto const queue1(m_chatQueues.value(item->text()).first);
 
@@ -1837,7 +1837,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   QByteArray hashKey;
   QByteArray message;
   QByteArray symmetricKey;
-  QDialog *dialog = 0;
+  QDialog *dialog = nullptr;
   QString aKey("");
   QString connectionName("");
   QString error("");
@@ -1850,7 +1850,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   auto const publicKeyHash
     (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
   QString str(publicKeyHash.toBase64());
-  auto s_crypt = m_crypts.value("email", 0);
+  auto s_crypt = m_crypts.value("email", nullptr);
   auto sfs = m_forwardSecrecyRequests.value(publicKeyHash);
 
   if(!s_crypt)

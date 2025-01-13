@@ -2079,7 +2079,7 @@ void spoton::slotShareStarBeam(void)
     return;
 
   QString error("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
