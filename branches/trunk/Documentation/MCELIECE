@@ -1,10 +1,7 @@
-The McEliece cryptographic system is only enabled for the FreeBSD, Linux,
-and MacOS project files.
-
 Version 9.10.0 of NTL, or newer, is suitable. C++ exceptions must
 be enabled (NTL_EXCEPTIONS)!
 
-On Linux systems, please issue a ./configure followed by a make
+On Unix systems, please issue a ./configure followed by a make
 within libNTL/unix.d/src.
 
 To enable McEliece for other systems, please follow the following
@@ -18,9 +15,9 @@ and Windows.
 project file will reference different libNTL paths (../../../libNTL).
 Please ignore on FreeBSD, MacOS, and Windows.
 
-libntl.target = libntl.so
 libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
 libntl.depends =
+libntl.target = libntl.so
 
 3. Modify DEFINES.
 
@@ -28,23 +25,23 @@ DEFINES	+= SPOTON_MCELIECE_ENABLED
 
 4. Modify INCLUDEPATH and LIBS.
 
-INCLUDEPATH	+= ../../libNTL/unix.d/include
-LIBS		+= -L../../libNTL/unix.d/src/.libs -lntl
+INCLUDEPATH += ../../libNTL/unix.d/include
+LIBS += -L../../libNTL/unix.d/src/.libs -lntl
 
-On FreeBSD, NTL requires GMP.
+On FreeBSD, NTL may require GMP.
 
-LIBS		+= -lgmp -lntl
+LIBS += -lgmp -lntl
 
-On MacOS, Homebrew should be used. NTL requires GMP.
+On MacOS, Homebrew should be used. NTL may require GMP.
 
-LIBS		+= -lgmp -lntl
+LIBS += -lgmp -lntl
 
 5. Modify QMAKE_CLEAN. FreeBSD, MacOS, and Windows, please ignore.
 
 QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
 
-6. Modify QMAKE_EXTRA_TARGETS and PRE_TARGETDEPS.
+6. Modify PRE_TARGETDEPS and QMAKE_EXTRA_TARGETS.
 Please ignore on FreeBSD, MacOS, and Windows.
 
-QMAKE_EXTRA_TARGETS = libntl libntru purge
 PRE_TARGETDEPS = libntl.so libntru.so
+QMAKE_EXTRA_TARGETS = libntl libntru purge

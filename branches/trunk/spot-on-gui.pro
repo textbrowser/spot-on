@@ -1,8 +1,5 @@
 cache()
 include(spot-on-gui-source.pro)
-libntl.commands = echo
-libntl.depends =
-libntl.target = libntl.so
 libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
@@ -37,7 +34,7 @@ DEFINES	+= QT_DEPRECATED_WARNINGS \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_WEBENGINE_ENABLED
 
-exists(../../libNTL/unix.d/src/.libs/libntl.so) {
+exists(/usr/include/NTL) {
 DEFINES += SPOTON_MCELIECE_ENABLED
 message("McEliece enabled!")
 } else {
@@ -66,11 +63,9 @@ message("Poptastic enabled!")
 }
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTL and libNTRU.
+# about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../libNTL/unix.d/src/*.lo \
-                          ../../libNTL/unix.d/src/*.o \
-                          ../../libNTRU/*.so \
+QMAKE_CLEAN            += ../../libNTRU/*.so \
                           ../../libNTRU/src/*.o \
                           ../../libNTRU/src/*.s \
                           Spot-On
@@ -98,7 +93,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstrict-overflow=5 \
                           -Wstringop-overflow=4 \
                           -Wunused \
-                          -Wzero-as-null-pointer-constant \
                           -fPIE \
                           -fstack-protector-all \
                           -funroll-loops \
@@ -107,7 +101,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pie \
                           -std=c++17
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
-QMAKE_EXTRA_TARGETS    = libntl libntru purge
+QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
@@ -126,13 +120,12 @@ LIBS		+= -L../../libNTRU \
                    -lpthread \
                    -lssl
 
-exists(../../libNTL/unix.d/src/.libs/libntl.so) {
-INCLUDEPATH     += ../../libNTL/unix.d/include
-LIBS            += -L../../libNTL/unix.d/src/.libs -lntl
-}
-
 exists(/usr/include/GeoIP.h) {
 LIBS            += -lGeoIP
+}
+
+exists(/usr/include/NTL) {
+LIBS            += -lntl
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
@@ -147,11 +140,6 @@ LIBS            += -lcurl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
 PRE_TARGETDEPS  = libntru.so
-
-exists(../../libNTL/unix.d/src/.libs/libntl.so) {
-PRE_TARGETDEPS  += libntl.so
-}
-
 PROJECTNAME	= Spot-On
 RCC_DIR         = temp/rcc
 TARGET		= Spot-On

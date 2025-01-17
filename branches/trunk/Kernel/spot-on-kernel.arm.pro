@@ -1,8 +1,5 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntl.commands = echo
-libntl.depends =
-libntl.target = libntl.so
 libntru.commands = $(MAKE) -C ../../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
@@ -29,11 +26,9 @@ DEFINES += QT_DEPRECATED_WARNINGS \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
-# about the internals of libNTL and libNTRU.
+# about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../../libNTL/unix.d/src/*.lo \
-                          ../../../libNTL/unix.d/src/*.o \
-                          ../../../libNTRU/*.so \
+QMAKE_CLEAN            += ../../../libNTRU/*.so \
                           ../../../libNTRU/src/*.o \
                           ../../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
@@ -59,17 +54,15 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pie \
                           -std=c++17
 QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
-QMAKE_EXTRA_TARGETS    = libntl libntru purge
+QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
                    ../. \
                    ../../../. \
-                   ../../../libNTL/unix.d/include \
                    /usr/include/postgresql
-LIBS		+= -L../../../libNTL/unix.d/src/.libs \
-                   -L../../../libNTRU \
+LIBS		+= -L../../../libNTRU \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
@@ -81,7 +74,7 @@ LIBS		+= -L../../../libNTL/unix.d/src/.libs \
                    -lssl
 MOC_DIR         = temp/moc
 OBJECTS_DIR     = temp/obj
-PRE_TARGETDEPS  = libntl.so libntru.so
+PRE_TARGETDEPS  = libntru.so
 PROJECTNAME	= Spot-On-Kernel
 RCC_DIR         = temp/rcc
 TARGET		= ../Spot-On-Kernel
