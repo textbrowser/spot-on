@@ -10635,6 +10635,9 @@ void spoton::slotShowContextMenu(const QPoint &point)
 	    action->setChecked(true);
 	}
 
+      if(actionGroup->actions().isEmpty())
+	actionGroup->deleteLater();
+
 #if SPOTON_GOLDBUG == 0
       menu.addSeparator();
       menu.addAction("&Statistics...",

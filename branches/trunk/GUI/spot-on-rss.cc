@@ -2645,10 +2645,14 @@ void spoton_rss::slotItemChanged(QTableWidgetItem *item)
 {
   if(!item || item->text().trimmed().isEmpty())
     {
-      m_ui.feeds->blockSignals(true);
-      item->setText(item->data(Qt::UserRole).toString().trimmed());
-      item->setToolTip(item->text());
-      m_ui.feeds->blockSignals(false);
+      if(item)
+	{
+	  m_ui.feeds->blockSignals(true);
+	  item->setText(item->data(Qt::UserRole).toString().trimmed());
+	  item->setToolTip(item->text());
+	  m_ui.feeds->blockSignals(false);
+	}
+
       return;
     }
 
