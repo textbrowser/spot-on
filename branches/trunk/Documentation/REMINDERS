@@ -333,6 +333,7 @@ Completed Items
 228.   Import published pages. (PUBLISHED_PAGES)
 229.   Fancy find in plenty of places.
 230.   Complete --launch-kernel option.
+231.   C++ nullptr. Kernel is complete.
 
 Remaining Items
 
@@ -340,7 +341,6 @@ Remaining Items
        via the openssl executable. Library becoming stale.
 2.     Shift operators and types.
 3.     Spectral human proxy.
-4.     C++ nullptr. Kernel is complete.
-5.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
+4.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
