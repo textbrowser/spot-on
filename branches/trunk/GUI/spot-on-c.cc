@@ -120,7 +120,7 @@ void spoton::askKernelToReadStarBeamKeys(void)
 
 void spoton::importNeighbors(const QString &filePath)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt || filePath.trimmed().isEmpty())
     return;
@@ -519,7 +519,7 @@ void spoton::importNeighbors(const QString &filePath)
 
 void spoton::populateNovas(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -728,8 +728,8 @@ void spoton::prepareContextMenuMirrors(void)
       if(m_ui.chatActionMenu->menu())
 	m_ui.chatActionMenu->menu()->clear();
 
-      QAction *action = 0;
-      QMenu *menu = 0;
+      QAction *action = nullptr;
+      QMenu *menu = nullptr;
 
       if(m_ui.chatActionMenu->menu())
 	menu = m_ui.chatActionMenu->menu();
@@ -933,7 +933,7 @@ void spoton::prepareContextMenuMirrors(void)
 
   if(!m_ui.emailWriteActionMenu->menu())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       auto menu = new QMenu(this);
 
       menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -994,8 +994,8 @@ void spoton::prepareContextMenuMirrors(void)
       if(m_ui.listenersActionMenu->menu())
 	m_ui.listenersActionMenu->menu()->clear();
 
-      QAction *action = 0;
-      QMenu *menu = 0;
+      QAction *action = nullptr;
+      QMenu *menu = nullptr;
 
       if(m_ui.listenersActionMenu->menu())
 	menu = m_ui.listenersActionMenu->menu();
@@ -1113,8 +1113,8 @@ void spoton::prepareContextMenuMirrors(void)
       if(m_ui.neighborsActionMenu->menu())
 	m_ui.neighborsActionMenu->menu()->clear();
 
-      QAction *action = 0;
-      QMenu *menu = 0;
+      QAction *action = nullptr;
+      QMenu *menu = nullptr;
       auto const neighborSpecialClient = this->neighborSpecialClient();
       auto const neighborSupportsSslTls = this->neighborSupportsSslTls();
 
@@ -1333,7 +1333,7 @@ void spoton::prepareContextMenuMirrors(void)
 
   if(!m_ui.receivedActionMenu->menu())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       auto menu = new QMenu(this);
 
       menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -1370,7 +1370,7 @@ void spoton::prepareContextMenuMirrors(void)
 
   if(!m_ui.transmittedActionMenu->menu())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       auto menu = new QMenu(this);
 
       menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -1419,7 +1419,7 @@ void spoton::prepareContextMenuMirrors(void)
 
   if(!m_ui.urlActionMenu->menu())
     {
-      QAction *action = 0;
+      QAction *action = nullptr;
       auto menu = new QMenu(this);
 
       menu->setStyleSheet("QMenu {menu-scrollable: 1;}");
@@ -1477,8 +1477,8 @@ void spoton::saveDestination(const QString &path)
 
 void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 {
-  if(!m_crypts.value(keyType, 0) ||
-     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
+  if(!m_crypts.value(QString("%1-signature").arg(keyType), nullptr) ||
+     !m_crypts.value(keyType, nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
@@ -1493,7 +1493,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 
   QString oid("");
   QString publicKeyHash("");
-  QTableWidget *table = 0;
+  QTableWidget *table = nullptr;
   int row = -1;
 
   if(keyType == "chat" || keyType == "poptastic")
@@ -1681,7 +1681,7 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   QString connectionName("");
   QString error("");
   QString magnet("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = true;
   auto origin(tr("StarBeam"));
 
@@ -1791,7 +1791,7 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 
 void spoton::slotAddReceiveNova(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -1920,7 +1920,7 @@ void spoton::slotBuzzActionsActivated(int index)
 
 void spoton::slotComputeFileHash(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1930,7 +1930,7 @@ void spoton::slotComputeFileHash(void)
   if(!action)
     return;
 
-  QTableWidget *table = 0;
+  QTableWidget *table = nullptr;
 
   if(action->property("widget_of").toString().toLower() == "received")
     table = m_ui.received;
@@ -1954,7 +1954,7 @@ void spoton::slotComputeFileHash(void)
   if(oid.isEmpty())
     return;
 
-  QTableWidgetItem *item = 0;
+  QTableWidgetItem *item = nullptr;
 
   if(m_ui.received == table)
     item = table->item(table->currentRow(), 4); // File
@@ -2035,7 +2035,7 @@ void spoton::slotCopyEmailKeys(void)
   if(!clipboard)
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -2176,7 +2176,7 @@ void spoton::slotCopyFileHash(void)
       return;
     }
 
-  QTableWidget *table = 0;
+  QTableWidget *table = nullptr;
 
   if(action->property("widget_of").toString().toLower() == "received")
     table = m_ui.received;
@@ -2206,7 +2206,7 @@ void spoton::slotCopyFileHash(void)
       return;
     }
 
-  QTableWidgetItem *item = 0;
+  QTableWidgetItem *item = nullptr;
 
   if(m_ui.received == table)
     item = table->item(table->currentRow(), 5); // Hash
@@ -2286,8 +2286,8 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   if(!clipboard)
     return;
 
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
+  if(!m_crypts.value("url", nullptr) ||
+     !m_crypts.value("url-signature", nullptr))
     {
       clipboard->clear();
       return;
@@ -2352,7 +2352,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value("url", 0),
+				     m_crypts.value("url", nullptr),
 				     &ok);
 
   if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
@@ -2601,7 +2601,7 @@ void spoton::slotDeleteEtpMagnet(void)
 
 void spoton::slotDeleteNova(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -3063,7 +3063,7 @@ void spoton::slotImpersonate(bool state)
 
 void spoton::slotImportNeighbors(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -3238,7 +3238,7 @@ void spoton::slotPopulateEtpMagnets(void)
   if(currentTabName() != "starbeam")
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -3322,7 +3322,7 @@ void spoton::slotPopulateEtpMagnets(void)
 		bytes = crypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-		QTableWidgetItem *item = 0;
+		QTableWidgetItem *item = nullptr;
 		auto checkBox = new QCheckBox();
 
 		if(ok)
@@ -3400,7 +3400,7 @@ void spoton::slotPopulateStars(void)
     if(m_chatWindows.size() == 0)
       return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -3499,13 +3499,13 @@ void spoton::slotPopulateStars(void)
 	      QByteArray expectedSha3512FileHash;
 	      QByteArray hash;
 	      QByteArray sha3512Hash;
-	      QCheckBox *check = 0;
+	      QCheckBox *check = nullptr;
 	      QString fileName("");
 	      auto ok = true;
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  QTableWidgetItem *item = 0;
+		  QTableWidgetItem *item = nullptr;
 
 		  if(i == 0)
 		    {
@@ -3833,7 +3833,7 @@ void spoton::slotPopulateStars(void)
 
 	      for(int i = 0; i < query.record().count(); i++)
 		{
-		  QTableWidgetItem *item = 0;
+		  QTableWidgetItem *item = nullptr;
 
 		  if(i == 0)
 		    {
@@ -4060,8 +4060,8 @@ void spoton::slotRegenerateKey(void)
   else if(m_ui.keys->currentText() == "URL")
     keyType = "url";
 
-  auto crypt1 = m_crypts.value(keyType, 0);
-  auto crypt2 = m_crypts.value(QString("%1-signature").arg(keyType), 0);
+  auto crypt1 = m_crypts.value(keyType, nullptr);
+  auto crypt2 = m_crypts.value(QString("%1-signature").arg(keyType), nullptr);
 
   if(!crypt1 || !crypt2)
     {
@@ -4266,7 +4266,7 @@ void spoton::slotRemoveUrlParticipants(void)
 	  }
 
 	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
+	  (db, m_crypts.value("chat", nullptr));
       }
 
     db.close();
@@ -4278,7 +4278,7 @@ void spoton::slotRemoveUrlParticipants(void)
 
 void spoton::slotRenameParticipant(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -4389,7 +4389,7 @@ void spoton::slotRenameParticipant(void)
 
 	      if(m_chatWindows.contains(publicKeyHash))
 		{
-		  auto chat = m_chatWindows.value(publicKeyHash, 0);
+		  auto chat = m_chatWindows.value(publicKeyHash, nullptr);
 
 		  if(chat)
 		    chat->setName(name);
@@ -4427,7 +4427,7 @@ void spoton::slotRenameParticipant(void)
 
 void spoton::slotResetCertificate(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -4473,7 +4473,7 @@ void spoton::slotResetCertificate(void)
 
 void spoton::slotRewindFile(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -4737,7 +4737,7 @@ void spoton::slotTransmit(void)
   QList<QByteArray> magnets;
   QString connectionName("");
   QString error("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = true;
   auto zero = true;
 
@@ -4934,7 +4934,8 @@ void spoton::slotTransmit(void)
 	    query.exec("PRAGMA secure_delete = ON");
 	    query.prepare("DELETE FROM magnets WHERE "
 			  "magnet_hash = ? and one_time_magnet = 1");
-	    query.addBindValue(crypt->keyedHash(magnets.at(i), 0).toBase64());
+	    query.addBindValue
+	      (crypt->keyedHash(magnets.at(i), nullptr).toBase64());
 
 	    /*
 	    ** It's fine if this query fails.
@@ -5013,7 +5014,7 @@ void spoton::slotTransmittedPaused(bool state)
 
 void spoton::slotTransmittedSelected(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -5288,7 +5289,7 @@ void spoton::updatePublicKeysLabel(void)
 
   for(int i = 0; i < list.size(); i++)
     {
-      auto crypt = m_crypts.value(list.at(i), 0);
+      auto crypt = m_crypts.value(list.at(i), nullptr);
 
       if(!crypt)
 	continue;
