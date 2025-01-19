@@ -541,7 +541,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_keysShared["keys_sent_to_kernel"] = "false";
   m_buzzStatusTimer.setInterval(15000);
   m_buzzFavoritesLastModificationTime = QDateTime();
-  m_documentation = new spoton_documentation(QUrl("qrc:/Spot-On.html"), 0);
+  m_documentation = new spoton_documentation
+    (QUrl("qrc:/Spot-On.html"), nullptr);
   m_documentation->setWindowTitle
     (tr("%1: Documentation").arg(SPOTON_APPLICATION_NAME));
   m_echoKeyShare = new spoton_echo_key_share(&m_kernelSocket, this);
@@ -549,7 +550,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
-    (QUrl("qrc:/Documentation/ReleaseNotes.html"), 0);
+    (QUrl("qrc:/Documentation/ReleaseNotes.html"), nullptr);
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(this);
@@ -799,7 +800,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
   m_ui.search->setPlaceholderText(tr("Search"));
 #if SPOTON_GOLDBUG == 0
-  m_addParticipantWindow = new QMainWindow(0);
+  m_addParticipantWindow = new QMainWindow(nullptr);
   m_addParticipantWindow->layout()->setContentsMargins(5, 5, 5, 5);
   m_addParticipantWindow->setCentralWidget(m_ui.add_participant_groupbox);
   m_addParticipantWindow->setWindowIcon(windowIcon());
@@ -820,9 +821,9 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_addParticipantWindow = nullptr;
 #endif
   m_externalAddress = new spoton_external_address();
-  m_notificationsWindow = new QMainWindow(0);
-  m_optionsWindow = new QMainWindow(0);
-  m_statisticsWindow = new QMainWindow(0);
+  m_notificationsWindow = new QMainWindow(nullptr);
+  m_optionsWindow = new QMainWindow(nullptr);
+  m_statisticsWindow = new QMainWindow(nullptr);
   m_notificationsUi.setupUi(m_notificationsWindow);
   m_optionsUi.setupUi(m_optionsWindow);
 #ifndef SPOTON_LINKED_WITH_LIBGEOIP
@@ -3744,7 +3745,7 @@ void spoton::authenticate
 
 void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -4036,7 +4037,7 @@ void spoton::removeFavorite(const bool removeAll)
 {
   QString connectionName("");
   QString error("");
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = true;
 
   if(!crypt)
@@ -4230,7 +4231,7 @@ void spoton::sendKeysToKernel(void)
       return;
     }
 
-  if(m_crypts.value("chat", 0))
+  if(m_crypts.value("chat", nullptr))
     if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
       if(m_kernelSocket.isEncrypted() ||
 	 m_ui.kernelKeySize->currentText().toInt() == 0)
@@ -4473,7 +4474,7 @@ void spoton::slotActivateKernel(void)
 
 void spoton::slotAddListener(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -4928,7 +4929,7 @@ void spoton::slotAddListener(void)
 
 void spoton::slotAddNeighbor(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -5370,7 +5371,7 @@ void spoton::slotAddNeighbor(void)
 
 void spoton::slotAuthenticate(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -5401,7 +5402,7 @@ void spoton::slotAuthenticate(void)
 
 void spoton::slotBlockNeighbor(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -5739,8 +5740,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
       return;
     }
 
-  if(!m_crypts.value(keyType, 0) ||
-     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
+  if(!m_crypts.value(QString("%1-signature").arg(keyType), nullptr) ||
+     !m_crypts.value(keyType, nullptr))
     {
       clipboard->clear();
       QApplication::restoreOverrideCursor();
@@ -5783,7 +5784,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value(keyType, 0),
+				     m_crypts.value(keyType, nullptr),
 				     &ok);
 
   if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
@@ -6538,7 +6539,7 @@ void spoton::slotGeneralTimerTimeout(void)
       if(findChildren<QProgressDialog *> ().isEmpty())
 	if(m_pqUrlDatabaseFuture.isFinished())
 	  {
-	    auto crypt = m_crypts.value("chat", 0);
+	    auto crypt = m_crypts.value("chat", nullptr);
 
 	    if(crypt)
 	      {
@@ -6997,7 +6998,7 @@ void spoton::slotNeighborMaximumChanged(int value)
 
 void spoton::slotPopulateBuzzFavorites(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -7182,7 +7183,7 @@ void spoton::slotPopulateListeners(void)
   if(currentTabName() != "listeners")
     return;
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -7952,7 +7953,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
       return;
     }
 
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt || !db || !query)
     {
@@ -8799,7 +8800,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 				      QSqlQuery *query,
 				      const QString &connectionName)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt || !db || !query)
     {
@@ -9140,7 +9141,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		  */
 
 		  delete item;
-		  item = 0;
+		  item = nullptr;
 		}
 	      else
 		m_ui.participants->setItem(row - 1, i, item);
@@ -9304,7 +9305,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		   "QTableWidgetItem does not have a parent "
 		   "table. Deleting.");
 		delete item;
-		item = 0;
+		item = nullptr;
 	      }
 	}
 
@@ -9515,7 +9516,7 @@ void spoton::slotQuit(void)
 
 void spoton::slotResetAccountInformation(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -9766,7 +9767,7 @@ void spoton::slotSetPassphrase(void)
     {
       if(!m_ui.newKeys->isChecked() && reencode)
 	{
-	  if(m_crypts.value("chat", 0))
+	  if(m_crypts.value("chat", nullptr))
 	    {
 	      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -9802,7 +9803,7 @@ void spoton::slotSetPassphrase(void)
 
 		  spoton_crypt::reencodePrivatePublicKeys
 		    (crypt.data(),
-		     m_crypts.value("chat", 0), list.at(i), error2);
+		     m_crypts.value("chat", nullptr), list.at(i), error2);
 		  m_sb.status->clear();
 
 		  if(!error2.isEmpty())
@@ -10009,7 +10010,7 @@ void spoton::slotSetPassphrase(void)
     }
   else
     {
-      if(!m_crypts.value("chat", 0) || reencode)
+      if(!m_crypts.value("chat", nullptr) || reencode)
 	{
 	  if(reencode)
 	    {
@@ -10029,7 +10030,7 @@ void spoton::slotSetPassphrase(void)
 
 	      QApplication::setOverrideCursor(Qt::WaitCursor);
 	      reencode.reencode
-		(m_sb, crypt.data(), m_crypts.value("chat", 0));
+		(m_sb, crypt.data(), m_crypts.value("chat", nullptr));
 	      spoton_crypt::removeFlawedEntries(crypt.data());
 	      QApplication::restoreOverrideCursor();
 	    }
@@ -10063,7 +10064,8 @@ void spoton::slotSetPassphrase(void)
 								value()),
 				list.at(i)));
 
-	  spoton_misc::prepareAuthenticationHint(m_crypts.value("chat", 0));
+	  spoton_misc::prepareAuthenticationHint
+	    (m_crypts.value("chat", nullptr));
 
 	  if(!reencode)
 	    {

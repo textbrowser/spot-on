@@ -616,7 +616,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 
   if(type == "E")
     {
-      if(!m_crypts.value("chat", 0))
+      if(!m_crypts.value("chat", nullptr))
 	{
 	  QMessageBox::critical
 	    (parent,
@@ -666,7 +666,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				     QByteArray(),
 				     -1,
 				     db,
-				     m_crypts.value("chat", 0))))
+				     m_crypts.value("chat", nullptr))))
 	      m_ui.friendInformation->selectAll();
 	  }
 	else
@@ -689,12 +689,12 @@ bool spoton::addFriendsKey(const QByteArray &k,
     }
   else if(type == "K")
     {
-      if(!m_crypts.value("chat", 0) ||
-	 !m_crypts.value("email", 0) ||
-	 !m_crypts.value("open-library", 0) ||
-	 !m_crypts.value("poptastic", 0) ||
-	 !m_crypts.value("rosetta", 0) ||
-	 !m_crypts.value("url", 0))
+      if(!m_crypts.value("chat", nullptr) ||
+	 !m_crypts.value("email", nullptr) ||
+	 !m_crypts.value("open-library", nullptr) ||
+	 !m_crypts.value("poptastic", nullptr) ||
+	 !m_crypts.value("rosetta", nullptr) ||
+	 !m_crypts.value("url", nullptr))
 	{
 	  QMessageBox::critical(parent,
 				tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
@@ -899,7 +899,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				     sPublicKey,
 				     -1,
 				     db,
-				     m_crypts.value("chat", 0))))
+				     m_crypts.value("chat", nullptr))))
 	      if((ok = spoton_misc::
 		  saveFriendshipBundle(keyType + "-signature",
 				       name,
@@ -907,7 +907,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				       QByteArray(),
 				       -1,
 				       db,
-				       m_crypts.value("chat", 0))))
+				       m_crypts.value("chat", nullptr))))
 		m_ui.friendInformation->selectAll();
 	  }
 	else
@@ -937,12 +937,12 @@ bool spoton::addFriendsKey(const QByteArray &k,
       ** Have fun!
       */
 
-      if(!m_crypts.value("chat", 0) ||
-	 !m_crypts.value("email", 0) ||
-	 !m_crypts.value("open-library", 0) ||
-	 !m_crypts.value("poptastic", 0) ||
-	 !m_crypts.value("rosetta", 0) ||
-	 !m_crypts.value("url", 0))
+      if(!m_crypts.value("chat", nullptr) ||
+	 !m_crypts.value("email", nullptr) ||
+	 !m_crypts.value("open-library", nullptr) ||
+	 !m_crypts.value("poptastic", nullptr) ||
+	 !m_crypts.value("rosetta", nullptr) ||
+	 !m_crypts.value("url", nullptr))
 	{
 	  QMessageBox::critical(parent,
 				tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
@@ -1246,7 +1246,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				                    // Public Key
 				     -1,            // Neighbor OID
 				     db,
-				     m_crypts.value("chat", 0))))
+				     m_crypts.value("chat", nullptr))))
 	      if((ok = spoton_misc::
 		  saveFriendshipBundle(list.value(0) + "-signature",
 				       list.value(1), // Name
@@ -1254,7 +1254,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 				       QByteArray(),  // Signature Public Key
 				       -1,            // Neighbor OID
 				       db,
-				       m_crypts.value("chat", 0))))
+				       m_crypts.value("chat", nullptr))))
 		m_ui.friendInformation->selectAll();
 	  }
 	else
@@ -1317,12 +1317,12 @@ bool spoton::isKernelActive(void) const
 bool spoton::saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 			const QString &oid)
 {
-  return spoton_misc::saveGemini(gemini, oid, m_crypts.value("chat", 0));
+  return spoton_misc::saveGemini(gemini, oid, m_crypts.value("chat", nullptr));
 }
 
 bool spoton::updateMailStatus(const QString &oid, const QString &status)
 {
-  if(!m_crypts.value("email", 0))
+  if(!m_crypts.value("email", nullptr))
     return false;
 
   QString connectionName("");
@@ -1358,7 +1358,7 @@ bool spoton::updateMailStatus(const QString &oid, const QString &status)
 int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 				 const int row)
 {
-  if(!m_crypts.value("email", 0))
+  if(!m_crypts.value("email", nullptr))
     return APPLY_GOLDBUG_TO_LETTER_ERROR_MEMORY;
 
   auto item = m_ui.mail->item(row, m_ui.mail->columnCount() - 1); // OID
@@ -1822,7 +1822,7 @@ void spoton::initializeKernelSocket(void)
 
 void spoton::populateAccounts(const QString &listenerOid)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1894,7 +1894,7 @@ void spoton::populateAccounts(const QString &listenerOid)
 
 void spoton::populateListenerIps(const QString &listenerOid)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -1966,7 +1966,7 @@ void spoton::populateListenerIps(const QString &listenerOid)
 
 void spoton::populateMail(void)
 {
-  if(!m_crypts.value("email", 0))
+  if(!m_crypts.value("email", nullptr))
     return;
 
   if(m_ui.folder->currentIndex() == 0 || m_ui.folder->currentIndex() == 2)
@@ -2109,7 +2109,7 @@ void spoton::populateMail(void)
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    QTableWidgetItem *item = 0;
+		    QTableWidgetItem *item = nullptr;
 
 		    if(i == 0)
 		      row += 1;
@@ -2548,7 +2548,7 @@ void spoton::sendMessage(bool *ok)
 	  message.append("\n");
 	  addMessageToReplayQueue(msg, message, publicKeyHash);
 
-	  auto chat = m_chatWindows.value(publicKeyHash, 0);
+	  auto chat = m_chatWindows.value(publicKeyHash, nullptr);
 
 	  if(chat)
 	    chat->append(msg);
@@ -2620,7 +2620,7 @@ void spoton::slotAcceptPublicizedListeners(void)
 
 void spoton::slotAddAcceptedIP(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -2742,7 +2742,7 @@ void spoton::slotAddAccount(void)
   QString oid("");
   auto const name(m_ui.accountName->text().trimmed());
   auto const password(m_ui.accountPassword->text().trimmed());
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
   auto ok = true;
   int row = -1;
 
@@ -2883,7 +2883,7 @@ void spoton::slotAuthenticationRequestButtonClicked(void)
 
   if(m_neighborToOidMap.contains(m_sb.authentication_request->
 				 property("data").toByteArray()))
-    authenticate(m_crypts.value("chat", 0),
+    authenticate(m_crypts.value("chat", nullptr),
 		 m_neighborToOidMap.
 		 value(m_sb.authentication_request->
 		       property("data").toByteArray()),
@@ -3005,8 +3005,8 @@ void spoton::slotCopyFriendshipBundle(void)
       return;
     }
 
-  if(!m_crypts.value(keyType, 0) ||
-     !m_crypts.value(QString("%1-signature").arg(keyType), 0))
+  if(!m_crypts.value(QString("%1-signature").arg(keyType), nullptr) ||
+     !m_crypts.value(keyType, nullptr))
     {
       clipboard->clear();
       QApplication::restoreOverrideCursor();
@@ -3049,7 +3049,7 @@ void spoton::slotCopyFriendshipBundle(void)
 				     receiverName,
 				     cipherType,
 				     oid,
-				     m_crypts.value(keyType, 0),
+				     m_crypts.value(keyType, nullptr),
 				     &ok);
 
   if(!ok || hashKey.isEmpty() || publicKey.isEmpty() || symmetricKey.isEmpty())
@@ -3363,7 +3363,7 @@ void spoton::slotDaysChanged(int value)
 
 void spoton::slotDeleteAcceptedIP(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -3500,7 +3500,7 @@ void spoton::slotDeleteAcceptedIP(void)
 
 void spoton::slotDeleteAccount(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     {
@@ -3591,7 +3591,7 @@ void spoton::slotDeleteAccount(void)
 
 void spoton::slotDeleteAllBlockedNeighbors(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -3663,7 +3663,7 @@ void spoton::slotDeleteAllBlockedNeighbors(void)
 
 void spoton::slotDeleteAllUuids(void)
 {
-  auto crypt = m_crypts.value("chat", 0);
+  auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
     return;
@@ -3772,7 +3772,7 @@ void spoton::slotDeleteMail(void)
 			      "status = ? WHERE "
 			      "OID = ?");
 
-		if(m_crypts.value("email", 0))
+		if(m_crypts.value("email", nullptr))
 		  query.bindValue
 		    (0, m_crypts.value("email")->
 		     encryptedThenHashed(QByteArray("Deleted"), &ok).
@@ -3986,7 +3986,7 @@ void spoton::slotJoinBuzzChannel(void)
   if(!error.isEmpty())
     goto done_label;
 
-  if((page = m_buzzPages.value(keys.first, 0)))
+  if((page = m_buzzPages.value(keys.first, nullptr)))
     {
       if(m_ui.buzzTab->indexOf(page) != -1)
 	m_ui.buzzTab->setCurrentWidget(page);
@@ -4432,7 +4432,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
       if(status != "Read")
 	{
-	  QTableWidgetItem *item = 0;
+	  QTableWidgetItem *item = nullptr;
 
 	  if((item = m_ui.mail->
 	      item(row, m_ui.mail->columnCount() - 1))) // OID
@@ -4474,7 +4474,7 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
 
       if(status != "Deleted")
 	{
-	  QTableWidgetItem *item = 0;
+	  QTableWidgetItem *item = nullptr;
 
 	  if((item = m_ui.mail->
 	      item(row, m_ui.mail->columnCount() - 1))) // OID
@@ -4556,7 +4556,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   if(item)
     status = item->text();
 
-  auto smp = m_smps.value(publicKeyHash, 0);
+  auto smp = m_smps.value(publicKeyHash, nullptr);
 
   if(m_chatWindows.contains(publicKeyHash))
     {
@@ -4680,8 +4680,8 @@ void spoton::slotParticipantsItemChanged(QTableWidgetItem *item)
       return;
     }
 
-  QTableWidgetItem *item1 = 0;
-  QTableWidgetItem *item2 = 0;
+  QTableWidgetItem *item1 = nullptr;
+  QTableWidgetItem *item2 = nullptr;
 
   if(item->column() == 6)
     {
@@ -4833,7 +4833,7 @@ void spoton::slotReceivedKernelMessage(void)
 	      ** Find the channel(s)!
 	      */
 
-	      auto page = m_buzzPages.value(key, 0);
+	      auto page = m_buzzPages.value(key, nullptr);
 
 	      if(!page)
 		continue;
@@ -4959,9 +4959,9 @@ void spoton::slotReceivedKernelMessage(void)
 	      if(!list.isEmpty())
 		{
 		  auto const keyType = spoton_misc::keyTypeFromPublicKeyHash
-		    (list.value(0), m_crypts.value("chat", 0));
+		    (list.value(0), m_crypts.value("chat", nullptr));
 		  auto name = spoton_misc::nameFromPublicKeyHash
-		    (list.value(0), m_crypts.value("chat", 0));
+		    (list.value(0), m_crypts.value("chat", nullptr));
 
 		  if(name.isEmpty())
 		    {
@@ -5009,7 +5009,8 @@ void spoton::slotReceivedKernelMessage(void)
 		    notsigned = " unsigned ";
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
-		    chat = m_chatWindows.value(list.value(0).toBase64(), 0);
+		    chat = m_chatWindows.value
+		      (list.value(0).toBase64(), nullptr);
 
 		  if(spoton_misc::isValidBuzzMagnet(list.value(2)))
 		    {
@@ -5149,7 +5150,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  continue;
 			}
 
-		      auto smp = m_smps.value(hash.toBase64(), 0);
+		      auto smp = m_smps.value(hash.toBase64(), nullptr);
 
 		      if(!smp)
 			{
@@ -5486,8 +5487,8 @@ void spoton::slotReceivedKernelMessage(void)
 			if(!m_chatWindows.contains(hash.toBase64()))
 			  {
 			    slotParticipantDoubleClicked(items.at(0));
-			    chat = m_chatWindows.value(list.value(0).
-						       toBase64(), 0);
+			    chat = m_chatWindows.value
+			      (list.value(0).toBase64(), nullptr);
 			  }
 
 		  if(chat)
@@ -5574,7 +5575,7 @@ void spoton::slotRefreshMail(void)
 
 void spoton::slotRefreshPostOffice(void)
 {
-  if(!m_crypts.value("email", 0))
+  if(!m_crypts.value("email", nullptr))
     return;
   else if(m_ui.mailTab->currentIndex() != 1)
     return;
@@ -5616,7 +5617,7 @@ void spoton::slotRefreshPostOffice(void)
 
 		for(int i = 0; i < query.record().count(); i++)
 		  {
-		    QTableWidgetItem *item = 0;
+		    QTableWidgetItem *item = nullptr;
 		    auto ok = true;
 
 		    if(i == 0)
@@ -5729,7 +5730,7 @@ void spoton::slotRemoveEmailParticipants(void)
 	  }
 
 	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
+	  (db, m_crypts.value("chat", nullptr));
       }
 
     db.close();
@@ -5811,7 +5812,7 @@ void spoton::slotRemoveParticipants(void)
 
 	    if(m_chatWindows.contains(hash.toString()))
 	      {
-		auto chat = m_chatWindows.value(hash.toString(), 0);
+		auto chat = m_chatWindows.value(hash.toString(), nullptr);
 
 		m_chatWindows.remove(hash.toString());
 
@@ -5821,7 +5822,7 @@ void spoton::slotRemoveParticipants(void)
 
 	    if(m_smps.contains(hash.toString()))
 	      {
-		auto smp = m_smps.value(hash.toString(), 0);
+		auto smp = m_smps.value(hash.toString(), nullptr);
 
 		m_smps.remove(hash.toString());
 		delete smp;
@@ -5829,7 +5830,7 @@ void spoton::slotRemoveParticipants(void)
 	  }
 
 	spoton_misc::purgeSignatureRelationships
-	  (db, m_crypts.value("chat", 0));
+	  (db, m_crypts.value("chat", nullptr));
       }
 
     db.close();
@@ -6270,7 +6271,7 @@ void spoton::slotSendMail(void)
       QApplication::restoreOverrideCursor();
     }
 
-  auto crypt = m_crypts.value("email", 0);
+  auto crypt = m_crypts.value("email", nullptr);
 
   if(!crypt)
     {
@@ -6691,7 +6692,7 @@ void spoton::slotSendMail(void)
 
 void spoton::slotSendMessage(void)
 {
-  sendMessage(0);
+  sendMessage(nullptr);
 }
 
 void spoton::slotSetIcons(int index)
@@ -6740,7 +6741,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.chatActionMenu->menu())
     {
       m_ui.chatActionMenu->menu()->deleteLater();
-      m_ui.chatActionMenu->setMenu(0);
+      m_ui.chatActionMenu->setMenu(nullptr);
     }
 
   m_ui.clearMessages->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
@@ -6759,7 +6760,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.emailWriteActionMenu->menu())
     {
       m_ui.emailWriteActionMenu->menu()->deleteLater();
-      m_ui.emailWriteActionMenu->setMenu(0);
+      m_ui.emailWriteActionMenu->setMenu(nullptr);
     }
 
   m_ui.refreshMail->setIcon(QIcon(QString(":/%1/refresh.png").arg(iconSet)));
@@ -6794,7 +6795,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.listenersActionMenu->menu())
     {
       m_ui.listenersActionMenu->menu()->deleteLater();
-      m_ui.listenersActionMenu->setMenu(0);
+      m_ui.listenersActionMenu->setMenu(nullptr);
     }
 
   m_ui.addAEToken->setIcon(QIcon(QString(":/%1/add.png").
@@ -6830,7 +6831,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.neighborsActionMenu->menu())
     {
       m_ui.neighborsActionMenu->menu()->deleteLater();
-      m_ui.neighborsActionMenu->setMenu(0);
+      m_ui.neighborsActionMenu->setMenu(nullptr);
     }
 
   m_ui.toolButtonCopyToClipboard->setIcon
@@ -6850,7 +6851,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.deleteAllUrls->menu())
     {
       m_ui.deleteAllUrls->menu()->deleteLater();
-      m_ui.deleteAllUrls->setMenu(0);
+      m_ui.deleteAllUrls->setMenu(nullptr);
     }
 
   m_ui.discover->setIcon(QIcon(QString(":/%1/search.png").arg(iconSet)));
@@ -6868,19 +6869,19 @@ void spoton::slotSetIcons(int index)
   if(m_ui.magnetsActionMenu->menu())
     {
       m_ui.magnetsActionMenu->menu()->deleteLater();
-      m_ui.magnetsActionMenu->setMenu(0);
+      m_ui.magnetsActionMenu->setMenu(nullptr);
     }
 
   if(m_ui.receivedActionMenu->menu())
     {
       m_ui.receivedActionMenu->menu()->deleteLater();
-      m_ui.receivedActionMenu->setMenu(0);
+      m_ui.receivedActionMenu->setMenu(nullptr);
     }
 
   if(m_ui.transmittedActionMenu->menu())
     {
       m_ui.transmittedActionMenu->menu()->deleteLater();
-      m_ui.transmittedActionMenu->setMenu(0);
+      m_ui.transmittedActionMenu->setMenu(nullptr);
     }
 
   m_ui.addMagnet->setIcon(QIcon(QString(":/%1/add.png").
@@ -6913,7 +6914,7 @@ void spoton::slotSetIcons(int index)
   if(m_ui.urlActionMenu->menu())
     {
       m_ui.urlActionMenu->menu()->deleteLater();
-      m_ui.urlActionMenu->setMenu(0);
+      m_ui.urlActionMenu->setMenu(nullptr);
     }
 
   m_ui.addDistiller->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
@@ -6933,8 +6934,8 @@ void spoton::slotSetIcons(int index)
 
 void spoton::slotShareChatPublicKey(void)
 {
-  if(!m_crypts.value("chat", 0) ||
-     !m_crypts.value("chat-signature", 0))
+  if(!m_crypts.value("chat", nullptr) ||
+     !m_crypts.value("chat-signature", nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
@@ -7033,8 +7034,8 @@ void spoton::slotShareChatPublicKeyWithParticipant(void)
 
 void spoton::slotShareEmailPublicKey(void)
 {
-  if(!m_crypts.value("email", 0) ||
-     !m_crypts.value("email-signature", 0))
+  if(!m_crypts.value("email", nullptr) ||
+     !m_crypts.value("email-signature", nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
@@ -7133,8 +7134,8 @@ void spoton::slotShareEmailPublicKeyWithParticipant(void)
 
 void spoton::slotShareURLPublicKey(void)
 {
-  if(!m_crypts.value("url", 0) ||
-     !m_crypts.value("url-signature", 0))
+  if(!m_crypts.value("url", nullptr) ||
+     !m_crypts.value("url-signature", nullptr))
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
