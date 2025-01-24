@@ -1300,6 +1300,28 @@ void spoton::slotResetAddListener(void)
 
 void spoton::slotResetAddNeighbor(void)
 {
+  m_ui.addException->setChecked(false);
+  m_ui.bind_ip->clear();
+  m_ui.ipv4Neighbor->setChecked(true);
+  m_ui.neighborIP->clear();
+  m_ui.neighborKeySize->setCurrentIndex
+    (m_ui.neighborKeySize->findText(tr("2048")));
+  m_ui.neighborKeySize->setCurrentIndex
+    (m_ui.neighborKeySize->currentIndex() < 0 ?
+     3 : m_ui.neighborKeySize->currentIndex());
+  m_ui.neighborOrientation->setCurrentIndex(0);
+  m_ui.neighborPort->setValue(4710);
+  m_ui.neighborScopeId->clear();
+  m_ui.neighborTransport->setCurrentIndex
+    (m_ui.neighborTransport->findText(tr("TCP")));
+  m_ui.neighborTransport->setCurrentIndex
+    (m_ui.neighborTransport->currentIndex() < 0 ?
+     2 : m_ui.neighborTransport->currentIndex());
+  m_ui.neighborsEchoMode->setCurrentIndex(0);
+  m_ui.neighborsSslControlString->setText
+    ("HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH");
+  m_ui.proxy->setChecked(false);
+  m_ui.requireSsl->setChecked(true);
 }
 
 void spoton::slotResetSearch(void)
