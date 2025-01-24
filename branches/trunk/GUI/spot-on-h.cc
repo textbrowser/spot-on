@@ -300,7 +300,10 @@ bool spoton::nodeExists(const QSqlDatabase &db,
 
 bool spoton::writeKernelSocketData(const QByteArray &bytes)
 {
-  return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());
+  if(m_kernelSocket.state() == QSslSocket::ConnectedState)
+    return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());
+  else
+    return false;
 }
 
 qint64 spoton::selectedHumanProxyOID(void) const
@@ -1979,4 +1982,11 @@ void spoton::slotWebServerValueChangedTimeout(void)
 
       QApplication::restoreOverrideCursor();
     }
+}
+
+void spoton::writePrisonBlues
+(const QByteArray &message, const QByteArray &publicKeyHash)
+{
+  if(message.trimmed().isEmpty() || publicKeyHash.trimmed().isEmpty())
+    return;
 }

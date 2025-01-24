@@ -733,7 +733,7 @@ void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
   else if(oid.isEmpty())
@@ -2098,7 +2098,7 @@ void spoton::slotShareStarBeam(void)
       showError(error);
       return;
     }
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
@@ -2639,7 +2639,7 @@ void spoton::slotVerifySMPSecret(const QString &hash,
 
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -2650,7 +2650,7 @@ void spoton::slotVerifySMPSecret(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 

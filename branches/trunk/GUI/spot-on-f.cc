@@ -665,7 +665,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -970,7 +970,7 @@ void spoton::slotEstablishForwardSecrecy(void)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
@@ -1146,8 +1146,7 @@ void spoton::slotEstablishForwardSecrecy(void)
 	  if(!writeKernelSocketData(message))
 	    spoton_misc::logError
 	      (QString("spoton::slotEstablishEmailForwardSecrecy(): "
-		       "write() failure for "
-		       "%1:%2.").
+		       "write() failure for %1:%2.").
 	       arg(m_kernelSocket.peerAddress().toString()).
 	       arg(m_kernelSocket.peerPort()));
 	}
@@ -1636,7 +1635,7 @@ void spoton::slotPurgeEphemeralKeyPair(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -1681,7 +1680,7 @@ void spoton::slotPurgeEphemeralKeys(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -1699,7 +1698,7 @@ void spoton::slotReplayMessages(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -1863,7 +1862,7 @@ void spoton::slotRespondToForwardSecrecy(void)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");

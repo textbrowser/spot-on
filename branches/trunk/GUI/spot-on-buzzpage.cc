@@ -189,7 +189,7 @@ spoton_buzzpage::~spoton_buzzpage()
 	message.append("\n");
 
 	if(m_kernelSocket->write(message.constData(), message.length()) !=
-	   message.length())
+	   static_cast<qint64> (message.length()))
 	  spoton_misc::logError
 	    (QString("spoton_buzzpage::~spoton_buzzpage(): write() failure "
 		     "for %1:%2.").
@@ -533,7 +533,7 @@ void spoton_buzzpage::slotSendMessage(void)
       error = tr("The interface is not connected to the kernel.");
       goto done_label;
     }
-  else if(!m_kernelSocket->isEncrypted() &&
+  else if(m_kernelSocket->isEncrypted() == false &&
 	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
@@ -598,7 +598,8 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("\n");
 
     if(m_kernelSocket->write(message.constData(),
-			     message.length()) != message.length())
+			     message.length()) !=
+       static_cast<qint64> (message.length()))
       {
 	error = tr("An error occurred while writing to the "
 		   "kernel socket.");
@@ -629,7 +630,7 @@ void spoton_buzzpage::slotSendStatus(void)
     return;
   else if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket->isEncrypted() &&
+  else if(m_kernelSocket->isEncrypted() == false &&
 	  m_kernelSocket->property("key_size").toInt() > 0)
     return;
 
@@ -661,7 +662,8 @@ void spoton_buzzpage::slotSendStatus(void)
   message.append("\n");
 
   if(m_kernelSocket->write(message.constData(),
-			   message.length()) != message.length())
+			   message.length()) !=
+     static_cast<qint64> (message.length()))
     spoton_misc::logError
       (QString("spoton_buzzpage::slotSendStatus(): write() failure "
 	       "for %1:%2.").

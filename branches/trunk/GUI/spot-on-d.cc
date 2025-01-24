@@ -2547,7 +2547,7 @@ void spoton::slotSharePoptasticPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 

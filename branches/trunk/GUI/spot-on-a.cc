@@ -5517,7 +5517,7 @@ void spoton::slotCallParticipant(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -6519,7 +6519,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
   if(isKernelActive)
     if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
-       m_kernelSocket.write("\n", 1) != 1)
+       m_kernelSocket.write("\n", 1) != static_cast<qint64> (1))
       if(!m_crypts.isEmpty())
 	{
 	  /*
@@ -6669,6 +6669,7 @@ void spoton::slotKernelSocketState(void)
 	 m_settings.value("gui/tcp_nodelay", 1).toInt()); /*
 							  ** Disable Nagle?
 							  */
+
       if(m_kernelSocket.isEncrypted() ||
 	 m_ui.kernelKeySize->currentText().toInt() == 0)
 	{
@@ -6711,6 +6712,7 @@ void spoton::slotKernelSocketState(void)
     }
   else if(state == QAbstractSocket::UnconnectedState)
     {
+      m_kernelSocketData.clear();
       m_keysShared["buzz_channels_sent_to_kernel"] = "false";
       m_keysShared["keys_sent_to_kernel"] = "false";
 

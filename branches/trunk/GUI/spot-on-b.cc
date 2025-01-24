@@ -2444,15 +2444,11 @@ void spoton::sendMessage(bool *ok)
   auto const publicKeyHashes
     (m_ui.participants->selectionModel()->selectedRows(3)); // public_key_hash
 
-  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+  if(m_kernelSocket.isEncrypted() == false &&
+     m_ui.kernelKeySize->currentText().toInt() > 0)
     {
-      error = tr("The interface is not connected to the kernel.");
-      goto done_label;
-    }
-  else if(!m_kernelSocket.isEncrypted() &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    {
-      error = tr("The connection to the kernel is not encrypted.");
+      error = tr("The connection to the kernel is not encrypted. "
+		 "A secure connection is requested.");
       goto done_label;
     }
   else if(m_ui.message->toPlainText().isEmpty())
@@ -4708,7 +4704,7 @@ void spoton::slotPublicizeAllListenersPlaintext(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -4728,7 +4724,7 @@ void spoton::slotPublicizeListenerPlaintext(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -4785,14 +4781,16 @@ void spoton::slotPublishedKeySizeChanged(int index)
 
 void spoton::slotReceivedKernelMessage(void)
 {
-  {
-    auto const data(m_kernelSocket.readAll());
+  while(m_kernelSocket.bytesAvailable() > 0 &&
+	m_kernelSocket.state() == QSslSocket::ConnectedState)
+    {
+      auto const data(m_kernelSocket.readAll());
 
-    if(!data.isEmpty())
-      emit dataReceived(static_cast<qint64> (data.length()));
+      if(!data.isEmpty())
+	emit dataReceived(static_cast<qint64> (data.length()));
 
-    m_kernelSocketData.append(data);
-  }
+      m_kernelSocketData.append(data);
+    }
 
   if(m_kernelSocketData.endsWith("\n"))
     {
@@ -6939,7 +6937,7 @@ void spoton::slotShareChatPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -7039,7 +7037,7 @@ void spoton::slotShareEmailPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -7139,7 +7137,7 @@ void spoton::slotShareURLPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 

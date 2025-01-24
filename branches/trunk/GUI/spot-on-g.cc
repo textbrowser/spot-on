@@ -362,8 +362,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
 	if(!writeKernelSocketData(message))
 	  spoton_misc::logError
-	    (QString("spoton::joinBuzzChannel(): "
-		     "write() failure for %1:%2.").
+	    (QString("spoton::joinBuzzChannel(): write() failure for %1:%2.").
 	     arg(m_kernelSocket.peerAddress().toString()).
 	     arg(m_kernelSocket.peerPort()));
       }
@@ -474,7 +473,7 @@ void spoton::slotBuzzInvite(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 
@@ -636,8 +635,7 @@ void spoton::slotBuzzInvite(void)
 
   if(!writeKernelSocketData(message))
     spoton_misc::logError
-      (QString("spoton::slotBuzzInvite(): "
-	       "write() failure for %1:%2.").
+      (QString("spoton::slotBuzzInvite(): write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 
@@ -1932,7 +1930,7 @@ void spoton::slotShareOpenLibraryPublicKey(void)
     return;
   else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
     return;
-  else if(!m_kernelSocket.isEncrypted() &&
+  else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
     return;
 

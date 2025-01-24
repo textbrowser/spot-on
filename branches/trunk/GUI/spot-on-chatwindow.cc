@@ -217,6 +217,14 @@ void spoton_chatwindow::keyPressEvent(QKeyEvent *event)
 
 void spoton_chatwindow::sendMessage(bool *ok)
 {
+  if(!m_kernelSocket)
+    {
+      if(ok)
+	*ok = false;
+
+      return;
+    }
+
   QByteArray message;
   QByteArray name;
   QSettings settings;
@@ -225,15 +233,11 @@ void spoton_chatwindow::sendMessage(bool *ok)
   auto const to(ui.name->text());
   auto const now(QDateTime::currentDateTime());
 
-  if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
+  if(m_kernelSocket->isEncrypted() == false &&
+     m_kernelSocket->property("key_size").toInt() > 0)
     {
-      error = tr("The interface is not connected to the kernel.");
-      goto done_label;
-    }
-  else if(!m_kernelSocket->isEncrypted() &&
-	  m_kernelSocket->property("key_size").toInt() > 0)
-    {
-      error = tr("The connection to the kernel is not encrypted.");
+      error = tr("The connection to the kernel is not encrypted. "
+		 "A secure connection is requested.");
       goto done_label;
     }
   else if(ui.message->toPlainText().isEmpty())
@@ -322,8 +326,9 @@ void spoton_chatwindow::sendMessage(bool *ok)
   if(m_parent)
     m_parent->addMessageToReplayQueue(msg, message, m_publicKeyHash);
 
-  if(m_kernelSocket->write(message.constData(), message.length()) !=
-     message.length())
+  if(m_kernelSocket->state() != QSslSocket::ConnectedState ||
+     m_kernelSocket->write(message.constData(), message.length()) !=
+     static_cast<qint64> (message.length()))
     {
       error = tr("An error occurred while writing to the kernel socket.");
       spoton_misc::logError
@@ -565,6 +570,9 @@ void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 
 void spoton_chatwindow::slotShareStarBeam(void)
 {
+  if(!m_kernelSocket)
+    return;
+
   QString error("");
   auto crypt = m_parent ? m_parent->crypts().value("chat", nullptr) : nullptr;
 
@@ -585,7 +593,7 @@ void spoton_chatwindow::slotShareStarBeam(void)
       showError(error);
       return;
     }
-  else if(!m_kernelSocket->isEncrypted() &&
+  else if(m_kernelSocket->isEncrypted() == false &&
 	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted.");
