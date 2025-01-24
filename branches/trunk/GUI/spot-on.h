@@ -835,6 +835,7 @@ class spoton: public QMainWindow
   void slotFindInSearchInitialize(void);
   void slotForceKernelRegistration(bool state);
   void slotForwardSecrecyEncryptionKeyChanged(int index);
+  void slotGITChat(bool state);
   void slotGatherStatistics(void);
   void slotGatherUrlStatistics(void);
   void slotGeneralTimerTimeout(void);

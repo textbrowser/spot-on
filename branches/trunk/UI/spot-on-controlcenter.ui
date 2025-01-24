@@ -521,8 +521,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>445</width>
-                <height>547</height>
+                <width>862</width>
+                <height>672</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -786,6 +786,16 @@
                           </property>
                           <property name="text">
                            <string>Enable proxy behavior.</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QCheckBox" name="git_chat">
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place the messages in a special folder within Spot-On's home directory. A separate process will transfer the messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
+                          <property name="text">
+                           <string>GIT message(s).</string>
                           </property>
                          </widget>
                         </item>
@@ -4104,7 +4114,7 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>-235</y>
+                  <y>0</y>
                   <width>835</width>
                   <height>692</height>
                  </rect>
@@ -4975,8 +4985,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>714</width>
-             <height>426</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5061,8 +5071,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>906</width>
-                 <height>749</height>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6089,8 +6099,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1062</width>
-             <height>1359</height>
+             <width>1029</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7340,8 +7350,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>672</width>
-             <height>732</height>
+             <width>851</width>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8547,7 +8557,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>840</width>
+             <width>851</width>
              <height>833</height>
             </rect>
            </property>
@@ -9335,8 +9345,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>308</width>
-             <height>179</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9986,6 +9996,7 @@
   <tabstop>chatActionMenu</tabstop>
   <tabstop>chatSecrets</tabstop>
   <tabstop>humanProxy</tabstop>
+  <tabstop>git_chat</tabstop>
   <tabstop>participants</tabstop>
   <tabstop>hideOfflineParticipants</tabstop>
   <tabstop>message</tabstop>
