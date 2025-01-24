@@ -1271,6 +1271,37 @@ void spoton::slotPrepareContextMenuMirrors(void)
   prepareContextMenuMirrors();
 }
 
+void spoton::slotResetAddListener(void)
+{
+  m_ui.days_valid->setValue(365);
+  m_ui.ipv4Listener->setChecked(true);
+  m_ui.listenerIP->clear();
+  m_ui.listenerIPCombo->setCurrentIndex(0);
+  m_ui.listenerKeySize->setCurrentIndex
+    (m_ui.listenerKeySize->findText(tr("2048")));
+  m_ui.listenerKeySize->setCurrentIndex
+    (m_ui.listenerKeySize->currentIndex() < 0 ?
+     3 : m_ui.listenerKeySize->currentIndex());
+  m_ui.listenerOrientation->setCurrentIndex(0);
+  m_ui.listenerPort->setValue(4710);
+  m_ui.listenerScopeId->clear();
+  m_ui.listenerShareAddress->setChecked(false);
+  m_ui.listenerTransport->setCurrentIndex
+    (m_ui.listenerTransport->findText(tr("TCP")));
+  m_ui.listenerTransport->setCurrentIndex
+    (m_ui.listenerTransport->currentIndex() < 0 ?
+     2 : m_ui.listenerTransport->currentIndex());
+  m_ui.listenersEchoMode->setCurrentIndex(0);
+  m_ui.listenersSslControlString->setText
+    ("HIGH:!aNULL:!eNULL:!3DES:!EXPORT:!SSLv3:@STRENGTH");
+  m_ui.recordIPAddress->setChecked(false);
+  m_ui.sslListener->setChecked(true);
+}
+
+void spoton::slotResetAddNeighbor(void)
+{
+}
+
 void spoton::slotResetSearch(void)
 {
   m_ui.find->clear();

@@ -2371,8 +2371,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>729</width>
-             <height>461</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3068,6 +3068,13 @@
                       </spacer>
                      </item>
                      <item>
+                      <widget class="QPushButton" name="add_listener_reset">
+                       <property name="text">
+                        <string>Reset</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QPushButton" name="addListener">
                        <property name="text">
                         <string>Add</string>
@@ -3114,7 +3121,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>374</width>
+                     <width>363</width>
                      <height>1602</height>
                     </rect>
                    </property>
@@ -3685,8 +3692,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>234</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4097,8 +4104,8 @@
                 <property name="geometry">
                  <rect>
                   <x>0</x>
-                  <y>0</y>
-                  <width>811</width>
+                  <y>-235</y>
+                  <width>835</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -4774,6 +4781,13 @@
                              </size>
                             </property>
                            </spacer>
+                          </item>
+                          <item>
+                           <widget class="QPushButton" name="add_neighbor_reset">
+                            <property name="text">
+                             <string>Reset</string>
+                            </property>
+                           </widget>
                           </item>
                           <item>
                            <widget class="QPushButton" name="addNeighbor">
@@ -10039,6 +10053,7 @@
   <tabstop>days_valid</tabstop>
   <tabstop>listenersSslControlString</tabstop>
   <tabstop>listenerOrientation</tabstop>
+  <tabstop>add_listener_reset</tabstop>
   <tabstop>addListener</tabstop>
   <tabstop>scrollArea_3</tabstop>
   <tabstop>accounts</tabstop>
@@ -10088,6 +10103,7 @@
   <tabstop>proxyPort</tabstop>
   <tabstop>proxyUsername</tabstop>
   <tabstop>proxyPassword</tabstop>
+  <tabstop>add_neighbor_reset</tabstop>
   <tabstop>addNeighbor</tabstop>
   <tabstop>addFriendEmail</tabstop>
   <tabstop>addFriendPublicKeyRadio</tabstop>

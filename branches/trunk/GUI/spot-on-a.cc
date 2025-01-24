@@ -1777,6 +1777,14 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddReceiveNova(void)));
+  connect(m_ui.add_listener_reset,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotResetAddListener(void)));
+  connect(m_ui.add_neighbor_reset,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotResetAddNeighbor(void)));
   connect(m_ui.answer,
 	  SIGNAL(returnPressed(void)),
 	  this,

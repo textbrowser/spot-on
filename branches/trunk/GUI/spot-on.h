@@ -970,6 +970,8 @@ class spoton: public QMainWindow
   void slotResendMail(void);
   void slotResetAETokenInformation(void);
   void slotResetAccountInformation(void);
+  void slotResetAddListener(void);
+  void slotResetAddNeighbor(void);
   void slotResetAll(void);
   void slotResetAllStyleSheets(void);
   void slotResetCertificate(void);
