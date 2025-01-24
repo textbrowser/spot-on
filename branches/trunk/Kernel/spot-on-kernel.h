@@ -248,6 +248,8 @@ class spoton_kernel: public QObject
 			   const QString &messageType);
   void updateStatistics
     (const QElapsedTimer &uptime, const QVector<int> &integers);
+  void writePrisonBluesChat
+    (const QByteArray &message, const QByteArray &publicKeyHash);
 
  private slots:
   void slotBuzzMagnetReceivedFromUI(const qint64 oid,

@@ -4680,6 +4680,11 @@ void spoton_kernel::slotMessageReceivedFromUI
 		emit sendMessage(data, spoton_send::ARTIFICIAL_GET);
 	      else
 		emit sendMessage(data, spoton_send::NORMAL_POST);
+
+	      if(setting("gui/git_chat", false).toBool())
+		writePrisonBluesChat
+		  (spoton_send::message0000(data),
+		   spoton_crypt::preferredHash(publicKey));
 	    }
 	}
     }

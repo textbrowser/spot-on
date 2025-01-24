@@ -490,3 +490,37 @@ void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
 {
   writeMessage006X(data, "0061", nullptr, nullptr);
 }
+
+void spoton_kernel::writePrisonBluesChat
+(const QByteArray &message, const QByteArray &publicKeyHash)
+{
+  if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
+    return;
+
+  auto const publicKeyHashHex(publicKeyHash.toHex());
+
+  QDir().mkpath
+    (spoton_misc::homePath() +
+     QDir::separator() +
+     "PrisonBlues" +
+     QDir::separator() +
+     publicKeyHashHex);
+
+  QTemporaryFile file
+    (spoton_misc::homePath() +
+     QDir::separator() +
+     "PrisonBlues" +
+     QDir::separator() +
+     publicKeyHashHex +
+     QDir::separator() +
+     "PrisonBluesChatXXXXXX.txt");
+
+  if(file.open())
+    {
+      QTextStream stream(&file);
+
+      Q_UNUSED(file.fileName()); // Prevents removal of file.
+      file.setAutoRemove(false);
+      stream << message << Qt::endl;
+    }
+}

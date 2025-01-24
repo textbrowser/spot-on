@@ -2444,8 +2444,13 @@ void spoton::sendMessage(bool *ok)
   auto const publicKeyHashes
     (m_ui.participants->selectionModel()->selectedRows(3)); // public_key_hash
 
-  if(m_kernelSocket.isEncrypted() == false &&
-     m_ui.kernelKeySize->currentText().toInt() > 0)
+  if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      goto done_label;
+    }
+  else if(m_kernelSocket.isEncrypted() == false &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted. "
 		 "A secure connection is requested.");

@@ -233,8 +233,13 @@ void spoton_chatwindow::sendMessage(bool *ok)
   auto const to(ui.name->text());
   auto const now(QDateTime::currentDateTime());
 
-  if(m_kernelSocket->isEncrypted() == false &&
-     m_kernelSocket->property("key_size").toInt() > 0)
+  if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
+    {
+      error = tr("The interface is not connected to the kernel.");
+      goto done_label;
+    }
+  else if(m_kernelSocket->isEncrypted() == false &&
+	  m_kernelSocket->property("key_size").toInt() > 0)
     {
       error = tr("The connection to the kernel is not encrypted. "
 		 "A secure connection is requested.");

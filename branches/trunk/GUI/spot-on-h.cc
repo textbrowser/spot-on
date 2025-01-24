@@ -1983,10 +1983,3 @@ void spoton::slotWebServerValueChangedTimeout(void)
       QApplication::restoreOverrideCursor();
     }
 }
-
-void spoton::writePrisonBlues
-(const QByteArray &message, const QByteArray &publicKeyHash)
-{
-  if(message.trimmed().isEmpty() || publicKeyHash.trimmed().isEmpty())
-    return;
-}

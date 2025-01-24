@@ -695,8 +695,6 @@ class spoton: public QMainWindow
   void updatePublicKeysLabel(void);
   void verifySMPSecret
     (const QString &hash, const QString &keyType, const QString &oid);
-  void writePrisonBlues
-    (const QByteArray &message, const QByteArray &publicKeyHash);
 
  private slots:
   void slotAbout(void);
