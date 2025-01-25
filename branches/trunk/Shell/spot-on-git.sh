@@ -1,6 +1,20 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
+local_directory="/var/tmp/prison-blues.d"
+site="https://github.com/textbrowser/prison-blues"
+
+git clone -q "$site" "$local_directory" 2>/dev/null
+
+if [ ! $? -eq 0 ]
+then
+    if [ ! -r "$local_directory" ]
+    then
+	echo "Cloning of $site failed. Bye!"
+	exit 1
+    fi
+fi
+
 if [ -z ${GIT_A} ]
 then
     echo "Please export the account (GIT_A)."
@@ -15,11 +29,21 @@ fi
 
 site=https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues
 
-while
-    git pull
-    git push $site
-    sleep 5
-do true
-done
+cd $local_directory
+
+if [ ! $? -eq 0 ]
+then
+    echo "No! Cannot proceed to $local_directory."
+    exit 1
+else
+    git pull 2>/dev/null
+
+    if [ $? -eq 0 ]
+    then
+	exit 0
+    else
+	exit 1
+    fi
+fi
 
 exit 0
