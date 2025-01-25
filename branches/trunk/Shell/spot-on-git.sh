@@ -52,6 +52,12 @@ then
     echo "No! Cannot proceed to $local_directory."
     exit 1
 else
+    # Merge.
+
+    git config pull.rebase false 2>/dev/null
+
+    # Pull?
+
     git pull 2>/dev/null
 
     if [ $? -eq 0 ]
