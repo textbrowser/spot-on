@@ -527,7 +527,12 @@ void spoton_kernel::slotReadPrisonBlues(void)
 
       if(file.open(QIODevice::ReadOnly))
 	{
-	  auto const data(file.readAll());
+	  auto data(file.readAll());
+
+	  data = data.mid
+	    (data.indexOf("content=") + static_cast<int> (qstrlen("content=")));
+	  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
+
 	  auto const list
 	    (spoton_receive::
 	     process0000
