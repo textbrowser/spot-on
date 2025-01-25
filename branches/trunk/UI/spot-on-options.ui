@@ -45,7 +45,7 @@
          <x>0</x>
          <y>-406</y>
          <width>769</width>
-         <height>4891</height>
+         <height>4919</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -461,6 +461,16 @@
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_7">
                  <item>
+                  <widget class="QLabel" name="label_38">
+                   <property name="text">
+                    <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous.</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_24">
                    <item>
                     <widget class="QLabel" name="label_37">
@@ -473,6 +483,9 @@
                     <widget class="QLineEdit" name="git_a">
                      <property name="placeholderText">
                       <string>GIT_A Account Environment Variable</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -491,6 +504,9 @@
                     <widget class="QLineEdit" name="git_t">
                      <property name="placeholderText">
                       <string>GIT_T Token Environment Variable</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>

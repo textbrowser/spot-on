@@ -1,8 +1,38 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
-local_directory="/var/tmp/prison-blues.d"
-site="https://github.com/textbrowser/prison-blues"
+if [ -z ${GIT_A} ]
+then
+    echo "Please export GIT_A."
+    exit 1
+fi
+
+if [ -z ${GIT_LOCAL_DIRECTORY} ]
+then
+    echo "Please export GIT_LOCAL_DIRECTORY."
+    exit 1
+fi
+
+if [ -z ${GIT_SITE_CLONE} ]
+then
+    echo "Please export GIT_SITE_CLONE."
+    exit 1
+fi
+
+if [ -z ${GIT_SITE_PUSH} ]
+then
+    echo "Please export GIT_SITE_PUSH."
+    exit 1
+fi
+
+if [ -z ${GIT_T} ]
+then
+    echo "Please export GIT_T."
+    exit 1
+fi
+
+local_directory="${GIT_LOCAL_DIRECTORY}"
+site=$(eval "echo ${GIT_SITE_CLONE}")
 
 git clone -q "$site" "$local_directory" 2>/dev/null
 
@@ -13,18 +43,6 @@ then
 	echo "Cloning of $site failed. Bye!"
 	exit 1
     fi
-fi
-
-if [ -z ${GIT_A} ]
-then
-    echo "Please export the account (GIT_A)."
-    exit 1
-fi
-
-if [ -z ${GIT_T} ]
-then
-    echo "Please export the token (GIT_T)."
-    exit 1
 fi
 
 cd $local_directory
@@ -39,13 +57,38 @@ else
     if [ $? -eq 0 ]
     then
 	git add . 2>/dev/null
+
+	rc = $?
+
+	if [ ! $rc -eq 0 ]
+	then
+	    echo "GIT-ADD failure."
+	    exit $rc
+	fi
+
 	git commit -m "New message(s)." 2>/dev/null
 
-	site="https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues"
+	rc = $?
+
+	if [ ! $rc -eq 0 ]
+	then
+	    echo "GIT-COMMIT failure."
+	    exit $rc
+	fi
+
+	site=$(eval "echo ${GIT_SITE_PUSH}")
 
 	git push "$site" 2>/dev/null
-	exit 0
+
+	rc = $?
+
+	if [ ! $rc -eq 0 ]
+	then
+	    echo "GIT-PUSH failure."
+	    exit $rc
+	fi
     else
+	echo "GIT-PULL failure."
 	exit 1
     fi
 fi

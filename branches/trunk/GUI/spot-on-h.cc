@@ -547,7 +547,12 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("FORTUNA_URL := http://127.0.0.1:5000");
       m_optionsUi.other_options->appendPlainText
-	("GIT_CHAT_DIRECTORY := /var/tmp/prison-blues.d");
+	("GIT_LOCAL_DIRECTORY := /var/tmp/prison-blues.d");
+      m_optionsUi.other_options->appendPlainText
+	("GIT_SITE_CLONE := https://github.com/${GIT_A}/prison-blues");
+      m_optionsUi.other_options->appendPlainText
+	("GIT_SITE_PUSH := "
+	 "https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues");
       m_optionsUi.other_options->appendPlainText
 	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
 	 QString::number(spoton_common::

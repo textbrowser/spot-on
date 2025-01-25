@@ -345,3 +345,4 @@ Remaining Items
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
 5.     Verify m_kernelSocket.write() is on connected socket.
+6.     Secure GIT_A and GIT_T INI values.

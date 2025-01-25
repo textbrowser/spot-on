@@ -441,13 +441,16 @@ void spoton_kernel::slotPrisonBluesTimeout(void)
 
   auto const gitA(setting("gui/git_a", "").toString().trimmed());
   auto const gitT(setting("gui/git_t", "").toString().trimmed());
-
-  if(gitA.isEmpty() || gitT.isEmpty())
-    return;
-
+  auto const gitLocalDirectory
+    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
+  auto const gitSiteClone(setting("GIT_SITE_CLONE", "").toString().trimmed());
+  auto const gitSitePush(setting("GIT_SITE_PUSH", "").toString().trimmed());
   auto environment(QProcessEnvironment::systemEnvironment());
 
   environment.insert("GIT_A", gitA);
+  environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
+  environment.insert("GIT_SITE_CLONE", gitSiteClone);
+  environment.insert("GIT_SITE_PUSH", gitSitePush);
   environment.insert("GIT_T", gitT);
   m_prisonBluesProcess.setProcessEnvironment(environment);
   m_prisonBluesProcess.start(fileInfo.absoluteFilePath(), QStringList());
@@ -500,6 +503,22 @@ void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
     }
 }
 
+void spoton_kernel::slotReadPrisonBlues(void)
+{
+  auto s_crypt1 = crypt("chat");
+
+  if(!s_crypt1)
+    return;
+
+  QFileInfo const directory(setting("GIT_LOCAL_DIRECTORY", "").toString());
+
+  if(!directory.isReadable())
+    return;
+
+  auto const myPublicKeyHash = spoton_crypt::preferredHash
+    (s_crypt1->publicKey(nullptr)).toHex();
+}
+
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 {
   if(QByteArray::fromBase64(list.value(0)) == "poptastic")
@@ -522,7 +541,7 @@ void spoton_kernel::writePrisonBluesChat
   if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
     return;
 
-  QFileInfo const directory(setting("GIT_CHAT_DIRECTORY", "").toString());
+  QFileInfo const directory(setting("GIT_LOCAL_DIRECTORY", "").toString());
 
   if(!directory.isWritable())
     return;

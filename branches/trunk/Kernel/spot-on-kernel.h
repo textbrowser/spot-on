@@ -168,6 +168,7 @@ class spoton_kernel: public QObject
   QTimer m_prepareTimer;
   QTimer m_prisonBluesTimer;
   QTimer m_publishAllListenersPlaintextTimer;
+  QTimer m_readPrisonBluesTimer;
   QTimer m_scramblerTimer;
   QTimer m_settingsTimer;
   QTimer m_statusTimer;
@@ -309,6 +310,7 @@ class spoton_kernel: public QObject
   void slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash);
   void slotPurgeEphemeralKeys(void);
   void slotPurgeEphemeralKeysTimeout(void);
+  void slotReadPrisonBlues(void);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
   void slotSMPMessageReceivedFromUI(const QByteArrayList &list);

@@ -699,6 +699,10 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPublicizeAllListenersPlaintext(void)));
+  connect(&m_readPrisonBluesTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotReadPrisonBlues(void)));
   connect(&m_scramblerTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -746,6 +750,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
   m_prepareTimer.start(10000);
   m_prisonBluesTimer.start(2500);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
+  m_readPrisonBluesTimer.start(2500);
   m_scramblerTimer.setSingleShot(true);
   m_settingsTimer.setInterval(1500);
   m_settingsTimer.setSingleShot(true);
@@ -1046,6 +1051,7 @@ spoton_kernel::~spoton_kernel()
   m_prisonBluesProcess.kill();
   m_prisonBluesProcess.waitForFinished();
   m_prisonBluesTimer.stop();
+  m_readPrisonBluesTimer.stop();
   m_publishAllListenersPlaintextTimer.stop();
   m_rss->deactivate();
   m_scramblerTimer.stop();
