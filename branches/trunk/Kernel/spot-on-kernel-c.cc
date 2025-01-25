@@ -97,6 +97,12 @@ QSqlDatabase spoton_kernel::urlDatabase(QString &connectionName)
   return db;
 }
 
+QString spoton_kernel::prisonBluesSequence(void)
+{
+  return QString("%1").arg
+    (s_prisonBluesSequence.fetchAndAddOrdered(1), 10, 10, QChar('0'));
+}
+
 bool spoton_kernel::hasStarBeamReaderId(const qint64 id) const
 {
   QHashIterator<qint64, QPointer<spoton_starbeam_reader> > it
@@ -224,6 +230,80 @@ void spoton_kernel::cryptSave(const QString &k, spoton_crypt *crypt)
     }
 
   s_crypts.insert(key, crypt);
+}
+
+void spoton_kernel::readPrisonBlues(void)
+{
+  auto s_crypt = crypt("chat");
+
+  if(!s_crypt)
+    return;
+
+  QFileInfo const directory
+    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
+
+  if(!directory.isReadable())
+    return;
+
+  QDir dir;
+  auto const myPublicKeyHash = spoton_crypt::sha512Hash
+    (qCompress(s_crypt->publicKey(nullptr)), nullptr).toHex();
+
+  dir = QDir
+    (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
+
+  foreach(auto const &fileInfo,
+	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable,
+			    QDir::Name))
+    {
+      if(m_readPrisonBluesFuture.isCanceled())
+	break;
+
+      QFile file(fileInfo.absoluteFilePath());
+
+      if(file.open(QIODevice::ReadOnly))
+	{
+	  auto data(file.readAll());
+
+	  data = data.mid
+	    (data.indexOf("content=") + static_cast<int> (qstrlen("content=")));
+	  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
+
+	  auto const list
+	    (spoton_receive::
+	     process0000
+	     (data.length(),
+	      data,
+	      QList<QByteArray> (),
+	      setting("gui/chatAcceptSignedMessagesOnly", true).toBool(),
+	      "127.0.0.1",
+	      0,
+	      s_crypt));
+
+	  if(!list.isEmpty())
+	    {
+	      spoton_misc::saveParticipantStatus
+		(list.value(1), // Name
+		 list.value(0), // Public Key Hash
+		 QByteArray(), // Status
+		 QDateTime::currentDateTimeUtc().
+		 toString("MMddyyyyhhmmss").toLatin1(), // Timestamp
+		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
+		 s_crypt);
+	      emit receivedChatMessage
+		("message_" +
+		 list.value(0).toBase64() + "_" +
+		 list.value(1).toBase64() + "_" +
+		 list.value(2).toBase64() + "_" +
+		 list.value(3).toBase64() + "_" +
+		 list.value(4).toBase64() + "_" +
+		 list.value(5).toBase64() + "_" +
+		 list.last().toBase64().append("\n"));
+	    }
+	}
+
+      file.remove();
+    }
 }
 
 void spoton_kernel::slotCallParticipantUsingForwardSecrecy
@@ -502,72 +582,14 @@ void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
 
 void spoton_kernel::slotReadPrisonBlues(void)
 {
-  auto s_crypt = crypt("chat");
-
-  if(!s_crypt)
-    return;
-
-  QFileInfo const directory
-    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
-
-  if(!directory.isReadable())
-    return;
-
-  QDir dir;
-  auto const myPublicKeyHash = spoton_crypt::sha512Hash
-    (qCompress(s_crypt->publicKey(nullptr)), nullptr).toHex();
-
-  dir = QDir
-    (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
-
-  foreach(auto const &fileInfo,
-	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable))
-    {
-      QFile file(fileInfo.absoluteFilePath());
-
-      if(file.open(QIODevice::ReadOnly))
-	{
-	  auto data(file.readAll());
-
-	  data = data.mid
-	    (data.indexOf("content=") + static_cast<int> (qstrlen("content=")));
-	  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
-
-	  auto const list
-	    (spoton_receive::
-	     process0000
-	     (data.length(),
-	      data,
-	      QList<QByteArray> (),
-	      setting("gui/chatAcceptSignedMessagesOnly", true).toBool(),
-	      "127.0.0.1",
-	      0,
-	      s_crypt));
-
-	  if(!list.isEmpty())
-	    {
-	      spoton_misc::saveParticipantStatus
-		(list.value(1), // Name
-		 list.value(0), // Public Key Hash
-		 QByteArray(), // Status
-		 QDateTime::currentDateTimeUtc().
-		 toString("MMddyyyyhhmmss").toLatin1(), // Timestamp
-		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
-		 s_crypt);
-	      emit receivedChatMessage
-		("message_" +
-		 list.value(0).toBase64() + "_" +
-		 list.value(1).toBase64() + "_" +
-		 list.value(2).toBase64() + "_" +
-		 list.value(3).toBase64() + "_" +
-		 list.value(4).toBase64() + "_" +
-		 list.value(5).toBase64() + "_" +
-		 list.last().toBase64().append("\n"));
-	    }
-	}
-
-      file.remove();
-    }
+  if(m_readPrisonBluesFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_readPrisonBluesFuture = QtConcurrent::run
+      (&spoton_kernel::readPrisonBlues, this);
+#else
+    m_readPrisonBluesFuture = QtConcurrent::run
+      (this, &spoton_kernel::readPrisonBlues);
+#endif
 }
 
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
@@ -621,7 +643,7 @@ void spoton_kernel::writePrisonBluesChat
      QDir::separator() +
      publicKeyHashHex +
      QDir::separator() +
-     "PrisonBluesChatXXXXXX.txt");
+     QString("PrisonBluesChatXXXXXX_%1.txt").arg(prisonBluesSequence()));
 
   if(file.open())
     {

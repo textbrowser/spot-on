@@ -76,8 +76,9 @@ extern "C"
 #include "Common/CocoaInitializer.h"
 #endif
 
-QAtomicInt spoton_kernel::s_congestion_control_secondary_storage = 0;
+QAtomicInt spoton_kernel::s_congestionControlSecondaryStorage = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
+QAtomicInteger<quint64> spoton_kernel::s_prisonBluesSequence = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
 QDateTime spoton_kernel::s_institutionLastModificationTime;
 QElapsedTimer spoton_kernel::s_uptime;
@@ -1031,7 +1032,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
   if(m_starbeamWriter)
     m_starbeamWriter->start();
 
-  s_congestion_control_secondary_storage = static_cast<int>
+  s_congestionControlSecondaryStorage = static_cast<int>
     (setting ("gui/secondary_storage_congestion_control", false).toBool());
   m_initialized = true;
   QTimer::singleShot(2500, this, SLOT(slotUpdateSettings(void)));
@@ -1051,6 +1052,8 @@ spoton_kernel::~spoton_kernel()
   m_prisonBluesProcess.kill();
   m_prisonBluesProcess.waitForFinished();
   m_prisonBluesTimer.stop();
+  m_readPrisonBluesFuture.cancel();
+  m_readPrisonBluesFuture.waitForFinished();
   m_readPrisonBluesTimer.stop();
   m_publishAllListenersPlaintextTimer.stop();
   m_rss->deactivate();
@@ -1588,7 +1591,7 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
   else
     hash = data;
 
-  if(s_congestion_control_secondary_storage)
+  if(s_congestionControlSecondaryStorage)
     {
       QString connectionName("");
       auto contains = false;
@@ -2201,7 +2204,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
   else
     hash = data;
 
-  if(s_congestion_control_secondary_storage)
+  if(s_congestionControlSecondaryStorage)
     {
       QString connectionName("");
 
@@ -3495,7 +3498,7 @@ void spoton_kernel::purgeMessagingCache(void)
   ** Remove expired cache items.
   */
 
-  if(s_congestion_control_secondary_storage)
+  if(s_congestionControlSecondaryStorage)
     {
       QString connectionName("");
 
@@ -6214,9 +6217,9 @@ void spoton_kernel::slotUpdateSettings(void)
     static_cast<int> (setting("gui/secondary_storage_congestion_control",
 			      false).toBool());
 
-  if(integer != s_congestion_control_secondary_storage)
+  if(integer != s_congestionControlSecondaryStorage)
     {
-      s_congestion_control_secondary_storage = integer;
+      s_congestionControlSecondaryStorage = integer;
 
       if(integer == 0)
 	/*

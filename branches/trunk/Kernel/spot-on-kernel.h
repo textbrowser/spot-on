@@ -135,6 +135,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_future;
   QFuture<void> m_poptasticPopFuture;
   QFuture<void> m_poptasticPostFuture;
+  QFuture<void> m_readPrisonBluesFuture;
   QFuture<void> m_statisticsFuture;
   QHash<QByteArray, QVector<QVariant> > m_forwardSecrecyKeys;
   QHash<QPair<QByteArray, qint64>, QByteArray> m_droppedPackets;
@@ -179,7 +180,8 @@ class spoton_kernel: public QObject
   int m_activeNeighbors;
   int m_activeStarbeams;
   quint64 m_urlsProcessed;
-  static QAtomicInt s_congestion_control_secondary_storage;
+  static QAtomicInt s_congestionControlSecondaryStorage;
+  static QAtomicInteger<quint64> s_prisonBluesSequence;
   static QByteArray s_messagingCacheKey;
   static QDateTime s_institutionLastModificationTime;
   static QElapsedTimer s_uptime;
@@ -201,6 +203,7 @@ class spoton_kernel: public QObject
   static QReadWriteLock s_institutionLastModificationTimeMutex;
   static QReadWriteLock s_messagingCacheMutex;
   static QReadWriteLock s_settingsMutex;
+  static QString prisonBluesSequence(void);
   bool initializeSecurityContainers(const QString &passphrase,
 				    const QString &answer);
   bool prepareAlmostAnonymousEmail(const QByteArray &attachmentData,
@@ -243,6 +246,7 @@ class spoton_kernel: public QObject
   void prepareStarbeamReaders(void);
   void prepareStatus(const QString &keyType);
   void purgeMessagingCache(void);
+  void readPrisonBlues(void);
   void saveGeminiPoptastic(const QByteArray &publicKeyHash,
 			   const QByteArray &gemini,
 			   const QByteArray &geminiHashKey,
