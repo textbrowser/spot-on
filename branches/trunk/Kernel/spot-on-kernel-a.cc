@@ -4689,7 +4689,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 	      if(keyType == "chat" && setting("gui/git_chat", false).toBool())
 		writePrisonBluesChat
 		  (spoton_send::message0000(data),
-		   spoton_crypt::preferredHash(publicKey));
+		   spoton_crypt::sha512Hash(publicKey, nullptr));
 
 	      if(setting("gui/chatSendMethod", "Artificial_GET").toString().
 		 toLower() == "artificial_get")

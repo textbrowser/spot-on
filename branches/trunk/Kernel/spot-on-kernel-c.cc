@@ -514,8 +514,8 @@ void spoton_kernel::slotReadPrisonBlues(void)
     return;
 
   QDir dir;
-  auto const myPublicKeyHash = spoton_crypt::preferredHash
-    (s_crypt->publicKey(nullptr)).toHex();
+  auto const myPublicKeyHash = spoton_crypt::sha512Hash
+    (s_crypt->publicKey(nullptr), nullptr).toHex();
   auto start = false;
 
   dir = QDir
