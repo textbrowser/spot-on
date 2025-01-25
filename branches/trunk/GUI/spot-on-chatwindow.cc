@@ -612,12 +612,12 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select StarBeam Transmit File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() != QDialog::Accepted)
     {

@@ -1013,6 +1013,7 @@ class spoton: public QMainWindow
   void slotSecureMemoryPoolChanged(int value);
   void slotSelectCAPath(void);
   void slotSelectDestination(void);
+  void slotSelectGITPath(void);
   void slotSelectGeoIPPath(void);
   void slotSelectKernelPath(void);
   void slotSelectTransmitFile(void);

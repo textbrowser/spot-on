@@ -1516,6 +1516,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
+  connect(m_optionsUi.select_git_script,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectGITPath(void)));
   connect(m_optionsUi.sharePrivateKeys,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2611,14 +2615,16 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   if(m_ui.urls_db_type->currentIndex() == 1)
     m_ui.showUrlSettings->setChecked(false);
 
+  m_emailRetrievalTimer.setInterval
+    (m_settings.value("gui/emailRetrievalInterval", 5 * 60 * 1000).toInt());
   m_optionsUi.buzz_maximum_lines->setValue
     (m_settings.value("gui/buzz_maximum_lines", -1).toInt());
   m_optionsUi.chatUpdateInterval->setValue
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_optionsUi.chat_maximum_lines->setValue
     (m_settings.value("gui/chat_maximum_lines", -1).toInt());
-  m_emailRetrievalTimer.setInterval
-    (m_settings.value("gui/emailRetrievalInterval", 5 * 60 * 1000).toInt());
+  m_optionsUi.git_script->setText
+    (m_settings.value("gui/git_script").toString());
   m_optionsUi.kernelCacheInterval->setValue
     (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue
@@ -9627,12 +9633,12 @@ void spoton::slotSelectGeoIPPath(void)
 {
   QFileDialog dialog(m_optionsWindow);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select GeoIP Data Path").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -9651,12 +9657,12 @@ void spoton::slotSelectKernelPath(void)
 {
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select Kernel Path").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
     {

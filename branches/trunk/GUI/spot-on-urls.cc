@@ -1978,14 +1978,13 @@ void spoton::slotSelectUrlIniPath(void)
 {
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle
-    (tr("%1: Select INI Path").
-     arg(SPOTON_APPLICATION_NAME));
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setFilter(QDir::AllEntries | QDir::Hidden);
-  dialog.setDirectory(QDir::homePath());
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setWindowTitle
+    (tr("%1: Select INI Path").arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -2086,9 +2085,9 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       QFileDialog dialog(this);
 
       dialog.setAcceptMode(QFileDialog::AcceptSave);
-      dialog.setDirectory(QStandardPaths::
-			  standardLocations(QStandardPaths::DesktopLocation).
-			  value(0));
+      dialog.setDirectory
+	(QStandardPaths::
+	 standardLocations(QStandardPaths::DesktopLocation).value(0));
 
       QString fileName("");
 
@@ -2104,11 +2103,11 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
       else // What if the file's extension is PDF? That's fine.
 	fileName += ".pdf";
 
-      dialog.selectFile(fileName);
       dialog.setFileMode(QFileDialog::AnyFile);
       dialog.setLabelText(QFileDialog::Accept, tr("Save"));
       dialog.setWindowTitle
 	(tr("%1: Export Link As PDF").arg(SPOTON_APPLICATION_NAME));
+      dialog.selectFile(fileName);
 
       if(dialog.exec() == QDialog::Accepted)
 	{

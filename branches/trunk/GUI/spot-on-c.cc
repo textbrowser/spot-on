@@ -2786,18 +2786,18 @@ void spoton::slotExportListeners(void)
 
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+  dialog.setDirectory
+    (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
+     value(0));
+  dialog.setFileMode(QFileDialog::AnyFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
     (tr("%1: Select Listeners Export File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::AnyFile);
-  dialog.setDirectory(QStandardPaths::
-		      standardLocations(QStandardPaths::DesktopLocation).
-		      value(0));
-  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
-  dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.selectFile(QString("spot-on-listeners-export-%1.txt").
-		    arg(QDateTime::currentDateTime().
-			toString("MM-dd-yyyy-hh-mm-ss")));
+  dialog.selectFile
+    (QString("spot-on-listeners-export-%1.txt").
+     arg(QDateTime::currentDateTime().toString("MM-dd-yyyy-hh-mm-ss")));
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -2858,18 +2858,18 @@ void spoton::slotExportPublicKeys(void)
 
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptSave);
+  dialog.setDirectory
+    (QStandardPaths::
+     standardLocations(QStandardPaths::DesktopLocation).value(0));
+  dialog.setFileMode(QFileDialog::AnyFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
   dialog.setOption(QFileDialog::DontConfirmOverwrite, false);
   dialog.setWindowTitle
     (tr("%1: Select Public Keys Export File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::AnyFile);
-  dialog.setDirectory(QStandardPaths::
-		      standardLocations(QStandardPaths::DesktopLocation).
-		      value(0));
-  dialog.setLabelText(QFileDialog::Accept, tr("Save"));
-  dialog.setAcceptMode(QFileDialog::AcceptSave);
-  dialog.selectFile(QString("spot-on-public-keys-export-%1.txt").
-		    arg(QDateTime::currentDateTime().
-			toString("MM-dd-yyyy-hh-mm-ss")));
+  dialog.selectFile
+    (QString("spot-on-public-keys-export-%1.txt").
+     arg(QDateTime::currentDateTime().toString("MM-dd-yyyy-hh-mm-ss")));
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -3080,14 +3080,14 @@ void spoton::slotImportNeighbors(void)
 
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle
-    (tr("%1: Select Neighbors Import File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
+  dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setWindowTitle
+    (tr("%1: Select Neighbors Import File").arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -3133,14 +3133,14 @@ void spoton::slotImportPublicKeys(void)
 {
   QFileDialog dialog(this);
 
-  dialog.setWindowTitle
-    (tr("%1: Select Public Keys Import File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
   dialog.setDirectory
     (QStandardPaths::standardLocations(QStandardPaths::DesktopLocation).
      value(0));
+  dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setWindowTitle
+    (tr("%1: Select Public Keys Import File").arg(SPOTON_APPLICATION_NAME));
 
   int imported = 0;
   int notimported = 0;
@@ -4580,13 +4580,13 @@ void spoton::slotSelectDestination(void)
 {
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::Directory);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select StarBeam Destination Directory").
      arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::Directory);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
     {
@@ -4601,12 +4601,12 @@ void spoton::slotSelectTransmitFile(void)
 {
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select StarBeam Transmit File").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFile);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
     {

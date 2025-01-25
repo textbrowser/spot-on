@@ -820,27 +820,28 @@ void spoton_encryptfile_page::slotReset(void)
 void spoton_encryptfile_page::slotSelect(void)
 {
   QFileDialog dialog(this);
-
-  dialog.setWindowTitle(tr("%1: Select File").arg(SPOTON_APPLICATION_NAME));
+  auto mode = QFileDialog::AnyFile;
 
   if(sender() == ui.select)
     {
       if(ui.directory_mode->isChecked())
-	dialog.setFileMode(QFileDialog::Directory);
+	mode = QFileDialog::Directory;
       else
-	dialog.setFileMode(QFileDialog::ExistingFile);
+	mode = QFileDialog::ExistingFile;
     }
   else
     {
       if(ui.directory_mode->isChecked())
-	dialog.setFileMode(QFileDialog::Directory);
+	mode = QFileDialog::Directory;
       else
-	dialog.setFileMode(QFileDialog::AnyFile);
+	mode = QFileDialog::AnyFile;
     }
 
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(mode);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle(tr("%1: Select File").arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() == QDialog::Accepted)
     {

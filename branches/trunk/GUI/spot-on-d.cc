@@ -757,12 +757,12 @@ void spoton::slotAddAttachment(void)
 {
   QFileDialog dialog(this);
 
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFiles);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
   dialog.setWindowTitle
     (tr("%1: Select Attachment").arg(SPOTON_APPLICATION_NAME));
-  dialog.setFileMode(QFileDialog::ExistingFiles);
-  dialog.setDirectory(QDir::homePath());
-  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setAcceptMode(QFileDialog::AcceptOpen);
 
   if(dialog.exec() == QDialog::Accepted)
     {
