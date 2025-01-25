@@ -41,7 +41,7 @@ else
 	git add . 2>/dev/null
 	git commit -m "New message(s)." 2>/dev/null
 
-	site=https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues
+	site="https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues"
 
 	git push "$site" 2>/dev/null
 	exit 0

@@ -429,6 +429,31 @@ void spoton_kernel::slotPrepareObjects(void)
   prepareStarbeamReaders();
 }
 
+void spoton_kernel::slotPrisonBluesTimeout(void)
+{
+  if(m_prisonBluesProcess.state() == QProcess::Running)
+    return;
+
+  QFileInfo const fileInfo(setting("gui/git_script", "").toString());
+
+  if(!fileInfo.isExecutable())
+    return;
+
+  auto const gitA(setting("gui/git_a", "").toString().trimmed());
+  auto const gitT(setting("gui/git_t", "").toString().trimmed());
+
+  if(gitA.isEmpty() || gitT.isEmpty())
+    return;
+
+  auto environment(QProcessEnvironment::systemEnvironment());
+
+  environment.insert("GIT_A", gitA);
+  environment.insert("GIT_T", gitT);
+  m_prisonBluesProcess.setProcessEnvironment(environment);
+  m_prisonBluesProcess.start(fileInfo.absoluteFilePath(), QStringList());
+  m_prisonBluesProcess.waitForStarted();
+}
+
 void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)
 {
   QWriteLocker locker(&m_forwardSecrecyKeysMutex);

@@ -151,6 +151,7 @@ class spoton_kernel: public QObject
   QPointer<spoton_starbeam_writer> m_starbeamWriter;
   QPointer<spoton_urldistribution> m_urlDistribution;
   QPointer<spoton_web_server> m_webServer;
+  QProcess m_prisonBluesProcess;
   QQueue<QHash<QString, QVariant> > m_poptasticCache;
   QReadWriteLock m_droppedPacketsMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;
@@ -165,6 +166,7 @@ class spoton_kernel: public QObject
   QTimer m_poptasticPopTimer;
   QTimer m_poptasticPostTimer;
   QTimer m_prepareTimer;
+  QTimer m_prisonBluesTimer;
   QTimer m_publishAllListenersPlaintextTimer;
   QTimer m_scramblerTimer;
   QTimer m_settingsTimer;
@@ -293,6 +295,7 @@ class spoton_kernel: public QObject
   void slotPoptasticPop(void);
   void slotPoptasticPost(void);
   void slotPrepareObjects(void);
+  void slotPrisonBluesTimeout(void);
   void slotPublicKeyReceivedFromUI(const qint64 oid,
 				   const QByteArray &keyType,
 				   const QByteArray &name,
