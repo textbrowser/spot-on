@@ -431,7 +431,7 @@ void spoton_kernel::slotPrisonBluesTimeout(void)
   if(m_prisonBluesProcess.state() == QProcess::Running)
     return;
 
-  QFileInfo const fileInfo(setting("gui/git_script", "").toString());
+  QFileInfo const fileInfo(setting("gui/git_script", "").toString().trimmed());
 
   if(!fileInfo.isExecutable())
     return;
@@ -507,7 +507,8 @@ void spoton_kernel::slotReadPrisonBlues(void)
   if(!s_crypt)
     return;
 
-  QFileInfo const directory(setting("GIT_LOCAL_DIRECTORY", "").toString());
+  QFileInfo const directory
+    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
 
   if(!directory.isReadable())
     return;
@@ -588,14 +589,13 @@ void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
 void spoton_kernel::writePrisonBluesChat
 (const QByteArray &message, const QByteArray &publicKeyHash)
 {
-  if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
+  if(message.trimmed().isEmpty() ||
+     publicKeyHash.toHex().trimmed().isEmpty() ||
+     setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed().isEmpty())
     return;
 
-  QFileInfo const directory(setting("GIT_LOCAL_DIRECTORY", "").toString());
-
-  if(!directory.isWritable())
-    return;
-
+  QFileInfo const directory
+    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
   auto const publicKeyHashHex(publicKeyHash.toHex());
 
   QDir().mkpath

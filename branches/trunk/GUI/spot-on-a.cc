@@ -2634,7 +2634,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.git_a->setText
     (m_settings.value("gui/git_a").toString().trimmed());
   m_optionsUi.git_script->setText
-    (m_settings.value("gui/git_script").toString());
+    (m_settings.value("gui/git_script").toString().trimmed());
   m_optionsUi.git_t->setText
     (m_settings.value("gui/git_t").toString().trimmed());
   m_optionsUi.kernelCacheInterval->setValue
