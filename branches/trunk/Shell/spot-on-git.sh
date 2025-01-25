@@ -58,7 +58,7 @@ else
     then
 	git add . 2>/dev/null
 
-	rc = $?
+	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
@@ -68,7 +68,7 @@ else
 
 	git commit -m "New message(s)." 2>/dev/null
 
-	rc = $?
+	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
@@ -80,7 +80,7 @@ else
 
 	git push "$site" 2>/dev/null
 
-	rc = $?
+	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
