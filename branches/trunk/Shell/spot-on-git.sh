@@ -27,8 +27,6 @@ then
     exit 1
 fi
 
-site=https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues
-
 cd $local_directory
 
 if [ ! $? -eq 0 ]
@@ -40,6 +38,12 @@ else
 
     if [ $? -eq 0 ]
     then
+	git add . 2>/dev/null
+	git commit -m "New message(s)." 2>/dev/null
+
+	site=https://${GIT_A}:${GIT_T}@github.com/${GIT_A}/prison-blues
+
+	git push "$site" 2>/dev/null
 	exit 0
     else
 	exit 1
