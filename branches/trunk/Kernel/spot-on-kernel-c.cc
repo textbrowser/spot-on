@@ -596,6 +596,21 @@ void spoton_kernel::writePrisonBluesChat
 
   QFileInfo const directory
     (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
+
+  if(!directory.exists())
+    /*
+    ** Clone the special GIT repository.
+    */
+
+    slotPrisonBluesTimeout();
+
+  if(!directory.exists())
+    /*
+    ** The clone failed.
+    */
+
+    return;
+
   auto const publicKeyHashHex(publicKeyHash.toHex());
 
   QDir().mkpath
