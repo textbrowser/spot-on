@@ -14,6 +14,7 @@ All operating systems require Qt LTS. Have fun!
 <li>Authenticated and encrypted SQLite and PostgreSQL URL databases.</li>
 <li>BSD license.</li>
 <li>Bluetooth, SCTP, TCP, UDP.</li>
+<li>Communications through GIT. Prison Blues.</li>
 <li>Completed?</li>
 <li>Configurable thread priorities.</li>
 <li>Custom URL rules.</li>

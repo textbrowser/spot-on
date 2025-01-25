@@ -497,19 +497,18 @@ void spoton_kernel::writePrisonBluesChat
   if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
     return;
 
+  QFileInfo const directory(setting("GIT_CHAT_DIRECTORY", "").toString());
+
+  if(!directory.isWritable())
+    return;
+
   auto const publicKeyHashHex(publicKeyHash.toHex());
 
   QDir().mkpath
-    (spoton_misc::homePath() +
-     QDir::separator() +
-     "PrisonBlues" +
-     QDir::separator() +
-     publicKeyHashHex);
+    (directory.absoluteFilePath() + QDir::separator() + publicKeyHashHex);
 
   QTemporaryFile file
-    (spoton_misc::homePath() +
-     QDir::separator() +
-     "PrisonBlues" +
+    (directory.absoluteFilePath() +
      QDir::separator() +
      publicKeyHashHex +
      QDir::separator() +
