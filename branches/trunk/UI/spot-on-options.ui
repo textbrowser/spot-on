@@ -507,6 +507,9 @@
                    </item>
                    <item>
                     <widget class="QLineEdit" name="git_script">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
                      <property name="placeholderText">
                       <string>GIT Script</string>
                      </property>

@@ -1365,6 +1365,24 @@ void spoton::slotSaveExternalIPUrl(void)
     ("gui/external_ip_url", m_optionsUi.external_ip_url->text());
 }
 
+void spoton::slotSaveGITEnvironment(void)
+{
+  if(m_optionsUi.git_a == sender())
+    {
+      m_optionsUi.git_a->setText(m_optionsUi.git_a->text().trimmed());
+      QSettings().setValue("gui/git_a", m_optionsUi.git_a->text());
+      m_optionsUi.git_a->selectAll();
+      m_settings["gui/git_a"] = m_optionsUi.git_a->text();
+    }
+  else if(m_optionsUi.git_t == sender())
+    {
+      m_optionsUi.git_t->setText(m_optionsUi.git_t->text().trimmed());
+      QSettings().setValue("gui/git_t", m_optionsUi.git_t->text());
+      m_optionsUi.git_t->selectAll();
+      m_settings["gui/git_t"] = m_optionsUi.git_t->text();
+    }
+}
+
 void spoton::slotSaveLineLimits(int value)
 {
   QSettings settings;

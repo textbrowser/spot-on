@@ -1372,6 +1372,14 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
+  connect(m_optionsUi.git_a,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveGITEnvironment(void)));
+  connect(m_optionsUi.git_t,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveGITEnvironment(void)));
   connect(m_optionsUi.guiExternalIpFetch,
 	  SIGNAL(activated(int)),
 	  this,
@@ -2623,8 +2631,12 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_optionsUi.chat_maximum_lines->setValue
     (m_settings.value("gui/chat_maximum_lines", -1).toInt());
+  m_optionsUi.git_a->setText
+    (m_settings.value("gui/git_a").toString().trimmed());
   m_optionsUi.git_script->setText
     (m_settings.value("gui/git_script").toString());
+  m_optionsUi.git_t->setText
+    (m_settings.value("gui/git_t").toString().trimmed());
   m_optionsUi.kernelCacheInterval->setValue
     (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue

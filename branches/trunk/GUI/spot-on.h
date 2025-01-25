@@ -993,6 +993,7 @@ class spoton: public QMainWindow
   void slotSaveDestination(void);
   void slotSaveEmailName(void);
   void slotSaveExternalIPUrl(void);
+  void slotSaveGITEnvironment(void);
   void slotSaveGeoIPPath(void);
   void slotSaveKernelPath(void);
   void slotSaveLineLimits(int value);
