@@ -30,6 +30,7 @@
 
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
+#include "Common/spot-on-receive.h"
 #include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
@@ -336,11 +337,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
   if(ok)
     {
       if(keyType == "poptastic")
-	{
-	  auto const message(spoton_send::message0000d(data));
-
-	  postPoptasticMessage(receiverName, message);
-	}
+	postPoptasticMessage(receiverName, spoton_send::message0000d(data));
       else
 	emit callParticipant(data, "0000d");
     }
@@ -505,9 +502,9 @@ void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
 
 void spoton_kernel::slotReadPrisonBlues(void)
 {
-  auto s_crypt1 = crypt("chat");
+  auto s_crypt = crypt("chat");
 
-  if(!s_crypt1)
+  if(!s_crypt)
     return;
 
   QFileInfo const directory(setting("GIT_LOCAL_DIRECTORY", "").toString());
@@ -517,7 +514,7 @@ void spoton_kernel::slotReadPrisonBlues(void)
 
   QDir dir;
   auto const myPublicKeyHash = spoton_crypt::preferredHash
-    (s_crypt1->publicKey(nullptr)).toHex();
+    (s_crypt->publicKey(nullptr)).toHex();
   auto start = false;
 
   dir = QDir
@@ -530,7 +527,38 @@ void spoton_kernel::slotReadPrisonBlues(void)
 
       if(file.open(QIODevice::ReadOnly))
 	{
-	  auto const bytes(file.readAll());
+	  auto const data(file.readAll());
+	  auto const list
+	    (spoton_receive::
+	     process0000
+	     (data.length(),
+	      data,
+	      QList<QByteArray> (),
+	      setting("gui/chatAcceptSignedMessagesOnly", true).toBool(),
+	      "127.0.0.1",
+	      0,
+	      s_crypt));
+
+	  if(!list.isEmpty())
+	    {
+	      spoton_misc::saveParticipantStatus
+		(list.value(1), // Name
+		 list.value(0), // Public Key Hash
+		 QByteArray(), // Status
+		 QDateTime::currentDateTimeUtc().
+		 toString("MMddyyyyhhmmss").toLatin1(), // Timestamp
+		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
+		 s_crypt);
+	      emit receivedChatMessage
+		("message_" +
+		 list.value(0).toBase64() + "_" +
+		 list.value(1).toBase64() + "_" +
+		 list.value(2).toBase64() + "_" +
+		 list.value(3).toBase64() + "_" +
+		 list.value(4).toBase64() + "_" +
+		 list.value(5).toBase64() + "_" +
+		 list.last().toBase64().append("\n"));
+	    }
 
 	  start = true;
 	}

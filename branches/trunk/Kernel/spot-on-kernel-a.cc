@@ -4625,11 +4625,7 @@ void spoton_kernel::slotMessageReceivedFromUI
       if(ok)
 	{
 	  if(keyType == "poptastic")
-	    {
-	      auto const message(spoton_send::message0000(data));
-
-	      postPoptasticMessage(receiverName, message);
-	    }
+	    postPoptasticMessage(receiverName, spoton_send::message0000(data));
 	  else
 	    {
 	      if(hpOid != -1 && hpOid != oid)
@@ -4690,16 +4686,16 @@ void spoton_kernel::slotMessageReceivedFromUI
 		    }
 		}
 
+	      if(keyType == "chat" && setting("gui/git_chat", false).toBool())
+		writePrisonBluesChat
+		  (spoton_send::message0000(data),
+		   spoton_crypt::preferredHash(publicKey));
+
 	      if(setting("gui/chatSendMethod", "Artificial_GET").toString().
 		 toLower() == "artificial_get")
 		emit sendMessage(data, spoton_send::ARTIFICIAL_GET);
 	      else
 		emit sendMessage(data, spoton_send::NORMAL_POST);
-
-	      if(setting("gui/git_chat", false).toBool())
-		writePrisonBluesChat
-		  (spoton_send::message0000(data),
-		   spoton_crypt::preferredHash(publicKey));
 	    }
 	}
     }
