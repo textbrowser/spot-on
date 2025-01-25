@@ -515,8 +515,30 @@ void spoton_kernel::slotReadPrisonBlues(void)
   if(!directory.isReadable())
     return;
 
+  QDir dir;
   auto const myPublicKeyHash = spoton_crypt::preferredHash
     (s_crypt1->publicKey(nullptr)).toHex();
+  auto start = false;
+
+  dir = QDir
+    (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
+
+  foreach(auto const &fileInfo,
+	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable))
+    {
+      QFile file(fileInfo.absoluteFilePath());
+
+      if(file.open(QIODevice::ReadOnly))
+	{
+	  auto const bytes(file.readAll());
+
+	  start = true;
+	}
+
+      file.remove();
+    }
+
+  start ? m_prisonBluesTimer.start() : (void) 0;
 }
 
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
@@ -565,5 +587,6 @@ void spoton_kernel::writePrisonBluesChat
       Q_UNUSED(file.fileName()); // Prevents removal of file.
       file.setAutoRemove(false);
       stream << message << Qt::endl;
+      m_prisonBluesTimer.start();
     }
 }

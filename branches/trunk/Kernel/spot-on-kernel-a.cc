@@ -748,7 +748,8 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
     m_poptasticPostTimer.start(1500);
 
   m_prepareTimer.start(10000);
-  m_prisonBluesTimer.start(2500);
+  m_prisonBluesTimer.setInterval(2500);
+  m_prisonBluesTimer.setSingleShot(true);
   m_publishAllListenersPlaintextTimer.setInterval(30 * 1000);
   m_readPrisonBluesTimer.start(2500);
   m_scramblerTimer.setSingleShot(true);
