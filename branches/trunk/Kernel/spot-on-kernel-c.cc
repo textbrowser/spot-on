@@ -254,7 +254,7 @@ void spoton_kernel::readPrisonBlues(void)
 
   foreach(auto const &fileInfo,
 	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable,
-			    QDir::Name))
+			    QDir::Name | QDir::Time))
     {
       if(m_readPrisonBluesFuture.isCanceled())
 	break;
