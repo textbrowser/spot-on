@@ -63,7 +63,8 @@ else
 
     if [ $? -eq 0 ]
     then
-	rc=$(git ls-files --exclude-standard --others 2>/dev/null | wc -l)
+	rc=$(git ls-files --deleted --exclude-standard --others \
+		 2>/dev/null | wc -l)
 
 	if [ $rc -lt 1 ]
 	then
