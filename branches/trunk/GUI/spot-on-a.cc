@@ -4455,7 +4455,19 @@ void spoton::slotActivateKernel(void)
     {
       QApplication::processEvents();
 
-      if(m_ui.pid->text().toLongLong() > 0)
+      auto const list(m_statisticsModel->findItems("Kernel PID"));
+
+      if(list.isEmpty() == false)
+	{
+	  auto item = list.at(0);
+
+	  if(item)
+	    item = m_statisticsModel->item(item->row(), 1);
+
+	  if(item && item->text().toLongLong() > 0)
+	    break;
+	}
+      else if(m_ui.pid->text().toLongLong() > 0)
 	break;
       else if(time.hasExpired(10000))
 	break;
