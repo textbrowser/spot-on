@@ -1663,7 +1663,7 @@ int spoton_kernel::interfaces(void)
 
       foreach(auto socket,
 	      instance->m_guiServer->findChildren<QSslSocket *> ())
-	count += (kernelKeySize == 0) || socket->isEncrypted();
+	count += kernelKeySize == 0 || socket->isEncrypted();
 
       return count;
     }

@@ -81,7 +81,7 @@ else
 	    exit $rc
 	fi
 
-	git commit -m "New message(s)." 2>/dev/null
+	git commit -m "New data." 2>/dev/null
 
 	rc=$?
 

@@ -254,7 +254,7 @@ void spoton_kernel::readPrisonBlues(void)
 
   foreach(auto const &fileInfo,
 	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable,
-			    QDir::Name | QDir::Time))
+			    QDir::Name))
     {
       if(m_readPrisonBluesFuture.isCanceled())
 	break;
@@ -601,6 +601,9 @@ void spoton_kernel::slotPurgeEphemeralKeysTimeout(void)
 
 void spoton_kernel::slotReadPrisonBlues(void)
 {
+  if(interfaces() == 0)
+    return;
+
   if(m_readPrisonBluesFuture.isFinished())
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     m_readPrisonBluesFuture = QtConcurrent::run
