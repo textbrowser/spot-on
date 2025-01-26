@@ -72,7 +72,7 @@ else
 	    exit 0
 	fi
 
-	git add . 2>/dev/null
+	git add --all 2>/dev/null
 
 	rc=$?
 
@@ -91,6 +91,8 @@ else
 	    echo "GIT-COMMIT failure."
 	    exit $rc
 	fi
+
+	git pull 2>/dev/null
 
 	site=$(eval "echo ${GIT_SITE_PUSH}")
 
