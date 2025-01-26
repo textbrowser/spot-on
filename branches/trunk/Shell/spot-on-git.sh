@@ -32,13 +32,14 @@ then
 fi
 
 local_directory="${GIT_LOCAL_DIRECTORY}"
-site=$(eval "echo ${GIT_SITE_CLONE}")
 
-git clone -q "$site" "$local_directory" 2>/dev/null
-
-if [ ! $? -eq 0 ]
+if [ ! -r "$local_directory" ]
 then
-    if [ ! -r "$local_directory" ]
+    site=$(eval "echo ${GIT_SITE_CLONE}")
+
+    git clone -q "$site" "$local_directory" 2>/dev/null
+
+    if [ ! $? -eq 0 ]
     then
 	echo "Cloning of $site failed. Bye!"
 	exit 1
@@ -62,6 +63,14 @@ else
 
     if [ $? -eq 0 ]
     then
+	rc=$(git ls-files --exclude-standard --others 2>/dev/null | wc -l)
+
+	if [ $rc -lt 1 ]
+	then
+	    echo "All set."
+	    exit 0
+	fi
+
 	git add . 2>/dev/null
 
 	rc=$?
