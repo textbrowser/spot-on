@@ -708,7 +708,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 
   m_ui.buildInformation->setText
     (QString("<html>"
-	     "<font color=\"#6a5acd\">Space Trees</font>"
+	     "<font color=\"#6a5acd\">Prison Blues</font>"
 	     "<br><br>"
 	     "Compilation: %1, %2.<br>"
 	     "%3.<br>"
