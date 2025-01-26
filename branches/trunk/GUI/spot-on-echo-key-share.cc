@@ -841,8 +841,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 		messageCode.toBase64() + "\n";
 
 	      if(m_kernelSocket->write(message.constData(),
-				       message.length()) !=
-		 static_cast<qint64> (message.length()))
+				       static_cast<qint64> (message.length()))
+		 != static_cast<qint64> (message.length()))
 		spoton_misc::logError
 		  (QString("spoton_echo_key_share::shareSelected():"
 			   "write() failure "

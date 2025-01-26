@@ -1357,7 +1357,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  this,
 	  SLOT(slotEnableChatEmoticons(bool)));
   connect(m_optionsUi.external_ip_url,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveExternalIPUrl(void)));
   connect(m_optionsUi.forceRegistration,
@@ -1365,19 +1365,19 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  this,
 	  SLOT(slotForceKernelRegistration(bool)));
   connect(m_optionsUi.geoipPath4,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
   connect(m_optionsUi.geoipPath6,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
   connect(m_optionsUi.git_a,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGITEnvironment(void)));
   connect(m_optionsUi.git_t,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGITEnvironment(void)));
   connect(m_optionsUi.guiExternalIpFetch,
@@ -1533,7 +1533,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  this,
 	  SLOT(slotSaveSharePrivateKeys(bool)));
   connect(m_optionsUi.sslControlString,
-	  SIGNAL(returnPressed(void)),
+	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveSslControlString(void)));
   connect(m_optionsUi.starbeamAutoVerify,
@@ -2631,12 +2631,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_optionsUi.chat_maximum_lines->setValue
     (m_settings.value("gui/chat_maximum_lines", -1).toInt());
-  m_optionsUi.git_a->setText
-    (m_settings.value("gui/git_a").toString().trimmed());
   m_optionsUi.git_script->setText
     (m_settings.value("gui/git_script").toString().trimmed());
-  m_optionsUi.git_t->setText
-    (m_settings.value("gui/git_t").toString().trimmed());
   m_optionsUi.kernelCacheInterval->setValue
     (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue
@@ -5485,11 +5481,7 @@ void spoton::slotBlockNeighbor(void)
 	      auto ok = true;
 
 	      ip = crypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		if(ip == remoteIp)
@@ -6537,7 +6529,8 @@ void spoton::slotGeneralTimerTimeout(void)
 
   if(isKernelActive)
     if(m_kernelSocket.state() != QAbstractSocket::ConnectedState ||
-       m_kernelSocket.write("\n", 1) != static_cast<qint64> (1))
+       m_kernelSocket.write("\n", static_cast<qint64> (1)) !=
+       static_cast<qint64> (1))
       if(!m_crypts.isEmpty())
 	{
 	  /*
@@ -11323,20 +11316,37 @@ void spoton::slotValidatePassphrase(void)
 	      {
 		QByteArray bytes;
 		QSettings settings;
+		auto crypt = m_crypts.value("chat");
 		auto ok = true;
 
-		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(settings.
-					  value("gui/poptasticName").
-					  toByteArray()), &ok).trimmed();
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(settings.value("gui/git_a").
+			      toByteArray()), &ok).trimmed();
+
+		if(ok)
+		  m_optionsUi.git_a->setText(bytes.trimmed());
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(settings.value("gui/git_t").
+			      toByteArray()), &ok).trimmed();
+
+		if(ok)
+		  m_optionsUi.git_t->setText(bytes.trimmed());
+
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(settings.value("gui/poptasticName").
+			      toByteArray()), &ok).trimmed();
 
 		if(ok)
 		  name = bytes;
 
-		bytes = m_crypts.value("chat")->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(settings.
-					  value("gui/poptasticNameEmail").
-					  toByteArray()), &ok).trimmed();
+		bytes = crypt->decryptedAfterAuthenticated
+		  (QByteArray::
+		   fromBase64(settings.value("gui/poptasticNameEmail").
+			      toByteArray()), &ok).trimmed();
 
 		if(ok)
 		  nameEmail = bytes;

@@ -4787,7 +4787,7 @@ void spoton::slotPublishedKeySizeChanged(int index)
 void spoton::slotReceivedKernelMessage(void)
 {
   while(m_kernelSocket.bytesAvailable() > 0 &&
-	m_kernelSocket.state() == QSslSocket::ConnectedState)
+	m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     {
       auto const data(m_kernelSocket.readAll());
 

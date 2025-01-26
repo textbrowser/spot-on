@@ -300,7 +300,7 @@ bool spoton::nodeExists(const QSqlDatabase &db,
 
 bool spoton::writeKernelSocketData(const QByteArray &bytes)
 {
-  if(m_kernelSocket.state() == QSslSocket::ConnectedState)
+  if(m_kernelSocket.state() == QAbstractSocket::ConnectedState)
     return m_kernelSocket.write(bytes) == static_cast<qint64> (bytes.length());
   else
     return false;
@@ -1377,14 +1377,46 @@ void spoton::slotSaveGITEnvironment(void)
   if(m_optionsUi.git_a == sender())
     {
       m_optionsUi.git_a->setText(m_optionsUi.git_a->text().trimmed());
-      QSettings().setValue("gui/git_a", m_optionsUi.git_a->text());
+
+      auto crypt = m_crypts.value("chat", nullptr);
+
+      if(crypt)
+	{
+	  QSettings settings;
+	  auto ok = true;
+
+	  settings.setValue
+	    ("gui/git_a",
+	     crypt->encryptedThenHashed(m_optionsUi.git_a->text().
+					trimmed().toUtf8(), &ok).toBase64());
+
+	  if(!ok)
+	    settings.remove("gui/git_a");
+	}
+
       m_optionsUi.git_a->selectAll();
       m_settings["gui/git_a"] = m_optionsUi.git_a->text();
     }
   else if(m_optionsUi.git_t == sender())
     {
       m_optionsUi.git_t->setText(m_optionsUi.git_t->text().trimmed());
-      QSettings().setValue("gui/git_t", m_optionsUi.git_t->text());
+
+      auto crypt = m_crypts.value("chat", nullptr);
+
+      if(crypt)
+	{
+	  QSettings settings;
+	  auto ok = true;
+
+	  settings.setValue
+	    ("gui/git_t",
+	     crypt->encryptedThenHashed(m_optionsUi.git_t->text().
+					trimmed().toUtf8(), &ok).toBase64());
+
+	  if(!ok)
+	    settings.remove("gui/git_t");
+	}
+
       m_optionsUi.git_t->selectAll();
       m_settings["gui/git_t"] = m_optionsUi.git_t->text();
     }

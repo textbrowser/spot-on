@@ -308,8 +308,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  if(!query.isNull(i))
 		    bytes = oldCrypt->decryptedAfterAuthenticated
 		      (QByteArray::
-		       fromBase64(query.value(i).
-				  toByteArray()), &ok);
+		       fromBase64(query.value(i).toByteArray()), &ok);
 
 		  if(ok)
 		    list.append(bytes);
@@ -402,8 +401,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 		  bytes = oldCrypt->decryptedAfterAuthenticated
 		    (QByteArray::
-		     fromBase64(query.value(i).
-				toByteArray()), &ok);
+		     fromBase64(query.value(i).toByteArray()), &ok);
 
 		  if(ok)
 		    list.append(bytes);
@@ -1046,83 +1044,43 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "private_application_credentials = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		port = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(1).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
 		scopeId = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(2).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		protocol = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(3).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
 
 	      if(ok)
 		echoMode = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(4).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(4).toByteArray()), &ok);
 
 	      if(ok)
 		certificate = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(5).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(5).toByteArray()), &ok);
 
 	      if(ok)
 		privateKey = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(6).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(6).toByteArray()), &ok);
 
 	      if(ok)
 		publicKey = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(7).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(7).toByteArray()), &ok);
 
 	      if(ok)
 		transport = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(8).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(8).toByteArray()), &ok);
 
 	      if(ok)
 		orientation = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(9).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(9).toByteArray()), &ok);
 
 	      if(ok)
 		if(!query.isNull(10))
@@ -1245,19 +1203,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "WHERE account_name_hash = ? AND "
 				  "listener_oid = ?");
 	      name = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		password = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(2).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1269,8 +1219,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		updateQuery.bindValue
-		  (2, newCrypt->encryptedThenHashed(password,
-						    &ok).toBase64());
+		  (2, newCrypt->encryptedThenHashed(password, &ok).toBase64());
 
 	      updateQuery.bindValue(3, query.value(1));
 	      updateQuery.bindValue(4, query.value(3));
@@ -1309,19 +1258,11 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "token_type = ? "
 				  "WHERE token_hash = ?");
 	      token = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		tokenType = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(2).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1372,11 +1313,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "WHERE ip_address_hash = ? AND "
 				  "listener_oid = ?");
 	      ip = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1493,67 +1430,35 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 				  "bind_ip_address = ? "
 				  "WHERE hash = ?");
 	      ipAddress = oldCrypt->decryptedAfterAuthenticated
-		(QByteArray::
-		 fromBase64(query.
-			    value(0).
-			    toByteArray()),
-		 &ok);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		port = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(1).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
 		scopeId = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(2).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		country = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(3).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
 
 	      if(ok)
 		proxyHostName = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(5).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(5).toByteArray()), &ok);
 
 	      if(ok)
 		proxyPassword = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(6).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(6).toByteArray()), &ok);
 
 	      if(ok)
 		proxyPort = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(7).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(7).toByteArray()), &ok);
 
 	      if(ok)
 		proxyType = oldCrypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(query.
-			      value(8).
-			      toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(8).toByteArray()), &ok);
 
 	      if(ok)
 		proxyUsername = oldCrypt->decryptedAfterAuthenticated
@@ -2895,6 +2800,28 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
   if(!ok)
     settings.remove("gui/authenticationHint");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::
+     fromBase64(settings.value("gui/git_a", "").toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/git_a", newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/git_a");
+
+  bytes = oldCrypt->decryptedAfterAuthenticated
+    (QByteArray::
+     fromBase64(settings.value("gui/git_t", "").toByteArray()), &ok);
+
+  if(ok)
+    settings.setValue
+      ("gui/git_t", newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+
+  if(!ok)
+    settings.remove("gui/git_t");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/poptasticName", "").

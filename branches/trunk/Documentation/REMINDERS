@@ -334,6 +334,8 @@ Completed Items
 229.   Fancy find in plenty of places.
 230.   Complete --launch-kernel option.
 231.   C++ nullptr. Kernel is complete.
+232.   Secure GIT_A and GIT_T INI values.
+233.   Verify m_kernelSocket.write() is on a connected socket.
 
 Remaining Items
 
@@ -344,5 +346,5 @@ Remaining Items
 4.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
-5.     Verify m_kernelSocket.write() is on connected socket.
-6.     Secure GIT_A and GIT_T INI values.
+5.     WebEngine and local directories. Remove.
+6.     Prison Blues and GPG.

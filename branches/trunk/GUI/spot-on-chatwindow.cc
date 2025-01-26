@@ -331,8 +331,9 @@ void spoton_chatwindow::sendMessage(bool *ok)
   if(m_parent)
     m_parent->addMessageToReplayQueue(msg, message, m_publicKeyHash);
 
-  if(m_kernelSocket->state() != QSslSocket::ConnectedState ||
-     m_kernelSocket->write(message.constData(), message.length()) !=
+  if(m_kernelSocket->state() != QAbstractSocket::ConnectedState ||
+     m_kernelSocket->write(message.constData(),
+			   static_cast<qint64> (message.length())) !=
      static_cast<qint64> (message.length()))
     {
       error = tr("An error occurred while writing to the kernel socket.");

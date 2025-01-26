@@ -511,13 +511,32 @@ void spoton_kernel::slotPrisonBluesTimeout(void)
   if(m_prisonBluesProcess.state() == QProcess::Running)
     return;
 
+  auto s_crypt = crypt("chat");
+
+  if(!s_crypt)
+    return;
+
   QFileInfo const fileInfo(setting("gui/git_script", "").toString().trimmed());
 
   if(!fileInfo.isExecutable())
     return;
 
-  auto const gitA(setting("gui/git_a", "").toString().trimmed());
-  auto const gitT(setting("gui/git_t", "").toString().trimmed());
+  auto gitA(setting("gui/git_a", "").toByteArray());
+
+  gitA = s_crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(gitA), nullptr).trimmed();
+
+  if(gitA.isEmpty())
+    return;
+
+  auto gitT(setting("gui/git_t", "").toByteArray());
+
+  gitT = s_crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(gitT), nullptr).trimmed();
+
+  if(gitT.isEmpty())
+    return;
+
   auto const gitLocalDirectory
     (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
   auto const gitSiteClone(setting("GIT_SITE_CLONE", "").toString().trimmed());

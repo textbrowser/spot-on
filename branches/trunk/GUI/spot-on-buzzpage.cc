@@ -188,7 +188,8 @@ spoton_buzzpage::~spoton_buzzpage()
 	message.append(m_key.toBase64());
 	message.append("\n");
 
-	if(m_kernelSocket->write(message.constData(), message.length()) !=
+	if(m_kernelSocket->write(message.constData(),
+				 static_cast<qint64> (message.length())) !=
 	   static_cast<qint64> (message.length()))
 	  spoton_misc::logError
 	    (QString("spoton_buzzpage::~spoton_buzzpage(): write() failure "
@@ -598,7 +599,7 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("\n");
 
     if(m_kernelSocket->write(message.constData(),
-			     message.length()) !=
+			     static_cast<qint64> (message.length())) !=
        static_cast<qint64> (message.length()))
       {
 	error = tr("An error occurred while writing to the "
@@ -662,7 +663,7 @@ void spoton_buzzpage::slotSendStatus(void)
   message.append("\n");
 
   if(m_kernelSocket->write(message.constData(),
-			   message.length()) !=
+			   static_cast<qint64> (message.length())) !=
      static_cast<qint64> (message.length()))
     spoton_misc::logError
       (QString("spoton_buzzpage::slotSendStatus(): write() failure "

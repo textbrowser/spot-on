@@ -481,6 +481,9 @@
                    </item>
                    <item>
                     <widget class="QLineEdit" name="git_a">
+                     <property name="toolTip">
+                      <string>Press the Enter key to save.</string>
+                     </property>
                      <property name="placeholderText">
                       <string>GIT_A Account Environment Variable</string>
                      </property>
@@ -502,6 +505,9 @@
                    </item>
                    <item>
                     <widget class="QLineEdit" name="git_t">
+                     <property name="toolTip">
+                      <string>Press the Enter key to save.</string>
+                     </property>
                      <property name="placeholderText">
                       <string>GIT_T Token Environment Variable</string>
                      </property>
