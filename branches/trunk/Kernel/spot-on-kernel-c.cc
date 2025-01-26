@@ -662,7 +662,7 @@ void spoton_kernel::writePrisonBluesChat
      QDir::separator() +
      publicKeyHashHex +
      QDir::separator() +
-     QString("%1_PrisonBluesChatXXXXXX.txt").arg(prisonBluesSequence()));
+     QString("%1_PrisonBluesXXXXXX.txt").arg(prisonBluesSequence()));
 
   if(file.open())
     {

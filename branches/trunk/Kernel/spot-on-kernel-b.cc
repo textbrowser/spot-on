@@ -1643,8 +1643,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     (message.mid(message.indexOf("content=") +
 		 static_cast<int> (qstrlen("content="))));
 
-  data = data.mid
-    (0, data.indexOf(spoton_send::EOM)).trimmed();
+  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
 
   if(data.isEmpty())
     return;
@@ -1652,15 +1651,12 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
     {
       spoton_misc::logError
 	(QString("spoton_kernel::slotPoppedMessage(): "
-		 "too much data (%1 bytes). "
-		 "Ignoring.").
-	 arg(data.length()));
+		 "too much data (%1 bytes). Ignoring.").arg(data.length()));
       return;
     }
 
   /*
-  ** The following logic must agree with the logic in
-  ** spoton_neighbor.
+  ** The following logic must agree with the logic in spoton_neighbor.
   */
 
   QList<QByteArray> symmetricKeys;
