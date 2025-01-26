@@ -336,6 +336,7 @@ Completed Items
 231.   C++ nullptr. Kernel is complete.
 232.   Secure GIT_A and GIT_T INI values.
 233.   Verify m_kernelSocket.write() is on a connected socket.
+234.   Prison Blues and calling. Not possible.
 
 Remaining Items
 
@@ -348,4 +349,3 @@ Remaining Items
        Snap-Call. More details later. Only a reminder.
 5.     WebEngine and local directories. Remove.
 6.     Prison Blues and GPG.
-7.     Prison Blues and calling.

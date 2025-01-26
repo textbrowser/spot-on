@@ -254,7 +254,7 @@ void spoton_kernel::readPrisonBlues(void)
 
   foreach(auto const &fileInfo,
 	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable,
-			    QDir::Name))
+			    QDir::Time))
     {
       if(m_readPrisonBluesFuture.isCanceled())
 	break;
@@ -665,7 +665,7 @@ void spoton_kernel::writePrisonBluesChat
      QDir::separator() +
      publicKeyHashHex +
      QDir::separator() +
-     QString("%1_PrisonBluesXXXXXX.txt").arg(prisonBluesSequence()));
+     "PrisonBluesXXXXXX.txt");
 
   if(file.open())
     {
