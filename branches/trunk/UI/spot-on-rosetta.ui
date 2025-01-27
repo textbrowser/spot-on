@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>550</height>
+    <width>800</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -108,10 +108,10 @@
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>-358</x>
+         <x>0</x>
          <y>0</y>
-         <width>977</width>
-         <height>590</height>
+         <width>1045</width>
+         <height>628</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -120,7 +120,7 @@
           <property name="currentIndex">
            <number>0</number>
           </property>
-          <widget class="QWidget" name="tab">
+          <widget class="QWidget" name="decrypt_encrypt_page">
            <attribute name="title">
             <string>Decrypt / Encrypt</string>
            </attribute>
@@ -721,9 +721,9 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="tab_2">
+          <widget class="QWidget" name="new_contact_page">
            <attribute name="title">
-            <string>Add Contact</string>
+            <string>New Contact</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_6">
             <item>
@@ -790,6 +790,100 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="saved_git_messages_page">
+           <attribute name="title">
+            <string>Saved GPG Messages</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>If GIT is properly configured, GPG messages will be included in the below table.</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QPushButton" name="remove_git_messages">
+                <property name="text">
+                 <string>Removed Selected</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="git_messages">
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="verticalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="horizontalScrollMode">
+               <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>true</bool>
+              </property>
+              <attribute name="horizontalHeaderDefaultSectionSize">
+               <number>200</number>
+              </attribute>
+              <attribute name="horizontalHeaderStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <attribute name="verticalHeaderVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>Destination</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Insert Date</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Origin</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Size</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>OID</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPlainTextEdit" name="selected_message"/>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -803,8 +897,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>650</width>
-     <height>30</height>
+     <width>800</width>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -908,6 +1002,9 @@
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>
+  <tabstop>remove_git_messages</tabstop>
+  <tabstop>git_messages</tabstop>
+  <tabstop>selected_message</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
