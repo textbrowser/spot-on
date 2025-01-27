@@ -5006,10 +5006,10 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  QList<QByteArray> values;
 		  QPointer<spoton_chatwindow> chat;
-		  QString notsigned(" ");
+		  QString notsigned(tr(" "));
 
 		  if(list.value(5).isEmpty())
-		    notsigned = " unsigned ";
+		    notsigned = tr(" unsigned ");
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
 		    chat = m_chatWindows.value
@@ -5069,8 +5069,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      playSound("receive.wav");
 		      continue;
 		    }
-		  else if(spoton_misc::isValidSMPMagnet(list.value(2),
-							values))
+		  else if(spoton_misc::isValidSMPMagnet(list.value(2), values))
 		    {
 		      QList<QTableWidgetItem *> items;
 		      QString keyType("");
@@ -5445,7 +5444,7 @@ void spoton::slotReceivedKernelMessage(void)
 		     arg(QString::fromUtf8(name.constData(),
 					   name.length())));
 
-		  if(notsigned != " ")
+		  if(notsigned != tr(" "))
 		    msg.append
 		      ("<font color=orange>unsigned: </font>");
 

@@ -2816,8 +2816,8 @@ bool spoton_misc::isValidInstitutionMagnet(const QByteArray &magnet)
   return valid;
 }
 
-bool spoton_misc::isValidSMPMagnet(const QByteArray &magnet,
-				   QList<QByteArray> &values)
+bool spoton_misc::isValidSMPMagnet
+(const QByteArray &magnet, QList<QByteArray> &values)
 {
   QList<QByteArray> list;
   QStringList starts;
