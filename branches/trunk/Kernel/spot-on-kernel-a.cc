@@ -1565,6 +1565,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 
 	    spoton_crypt::removeFlawedEntries(crypt("chat"));
 	    spoton_misc::prepareAuthenticationHint(crypt("chat"));
+	    QTimer::singleShot(2500, this, SLOT(slotUpdateSettings(void)));
 	  }
       }
 
