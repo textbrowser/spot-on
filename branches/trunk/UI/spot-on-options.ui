@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>450</height>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-406</y>
+         <y>-4164</y>
          <width>769</width>
-         <height>4919</height>
+         <height>4920</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -455,101 +455,6 @@
                </widget>
               </item>
               <item>
-               <widget class="QGroupBox" name="groupBox_18">
-                <property name="title">
-                 <string>GIT</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_7">
-                 <item>
-                  <widget class="QLabel" name="label_38">
-                   <property name="text">
-                    <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous.</string>
-                   </property>
-                   <property name="wordWrap">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_24">
-                   <item>
-                    <widget class="QLabel" name="label_37">
-                     <property name="text">
-                      <string>GIT_A</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="git_a">
-                     <property name="toolTip">
-                      <string>Press the Enter key to save.</string>
-                     </property>
-                     <property name="placeholderText">
-                      <string>GIT_A Account Environment Variable</string>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_22">
-                   <item>
-                    <widget class="QLabel" name="label_36">
-                     <property name="text">
-                      <string>GIT_T</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="git_t">
-                     <property name="toolTip">
-                      <string>Press the Enter key to save.</string>
-                     </property>
-                     <property name="placeholderText">
-                      <string>GIT_T Token Environment Variable</string>
-                     </property>
-                     <property name="clearButtonEnabled">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_21">
-                   <item>
-                    <widget class="QLabel" name="label_35">
-                     <property name="text">
-                      <string>Script</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLineEdit" name="git_script">
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                     <property name="placeholderText">
-                      <string>GIT Script</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="select_git_script">
-                     <property name="text">
-                      <string>Select</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
                <layout class="QHBoxLayout" name="horizontalLayout_18">
                 <item>
                  <widget class="QLabel" name="label_31">
@@ -789,6 +694,101 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+               </layout>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox_18">
+             <property name="title">
+              <string>GIT</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_38">
+                <property name="text">
+                 <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous.</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
+                <item>
+                 <widget class="QLabel" name="label_37">
+                  <property name="text">
+                   <string>GIT_A</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="git_a">
+                  <property name="toolTip">
+                   <string>Press the Enter key to save.</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>GIT_A Account Environment Variable</string>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_22">
+                <item>
+                 <widget class="QLabel" name="label_36">
+                  <property name="text">
+                   <string>GIT_T</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="git_t">
+                  <property name="toolTip">
+                   <string>Press the Enter key to save.</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>GIT_T Token Environment Variable</string>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_21">
+                <item>
+                 <widget class="QLabel" name="label_35">
+                  <property name="text">
+                   <string>Script</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="git_script">
+                  <property name="readOnly">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>GIT Script</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="select_git_script">
+                  <property name="text">
+                   <string>Select</string>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -3005,10 +3005,6 @@ with the kernel process.</string>
   <tabstop>chatAlternatingRowColors</tabstop>
   <tabstop>displayPopups</tabstop>
   <tabstop>enableChatEmoticons</tabstop>
-  <tabstop>git_a</tabstop>
-  <tabstop>git_t</tabstop>
-  <tabstop>git_script</tabstop>
-  <tabstop>select_git_script</tabstop>
   <tabstop>chat_maximum_lines</tabstop>
   <tabstop>ontopChatDialogs</tabstop>
   <tabstop>chatSendMethod</tabstop>
@@ -3018,6 +3014,10 @@ with the kernel process.</string>
   <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
+  <tabstop>git_a</tabstop>
+  <tabstop>git_t</tabstop>
+  <tabstop>git_script</tabstop>
+  <tabstop>select_git_script</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>
