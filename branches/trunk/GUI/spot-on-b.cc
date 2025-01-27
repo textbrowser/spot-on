@@ -5106,6 +5106,8 @@ void spoton::slotReceivedKernelMessage(void)
 			    smpName = "unknown";
 			}
 
+		      auto smp = m_smps.value(hash.toBase64(), nullptr);
+
 		      msg.append
 			(QString("[%1/%2/%3 %4:%5<font color=gray>:%6"
 				 "</font>] ").
@@ -5117,11 +5119,12 @@ void spoton::slotReceivedKernelMessage(void)
 			 arg(now.toString("ss")));
 		      msg.append
 			(tr("<i>Received an%1SMP message "
-			    "from %2 (%3...%4).</i>").
+			    "from %2 (%3...%4). We're at step %5.</i>").
 			 arg(notsigned).
 			 arg(smpName).
 			 arg(hash.toBase64().mid(0, 16).constData()).
-			 arg(hash.toBase64().right(16).constData()));
+			 arg(hash.toBase64().right(16).constData()).
+			 arg(smp ? smp->step() : -1));
 
 		      if(chat)
 			{
@@ -5151,8 +5154,6 @@ void spoton::slotReceivedKernelMessage(void)
 			  playSound("receive.wav");
 			  continue;
 			}
-
-		      auto smp = m_smps.value(hash.toBase64(), nullptr);
 
 		      if(!smp)
 			{
