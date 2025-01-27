@@ -72,6 +72,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wno-deprecated-copy \
                           -Wno-expansion-to-defined \
                           -Wno-unused \
+                          -Wold-style-cast \
                           -Woverloaded-virtual \
                           -Wpointer-arith \
                           -Wstack-protector \

@@ -1288,12 +1288,12 @@ bool spoton::isKernelActive(void) const
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
       return kill(pid, 0) == 0;
 #elif defined(Q_OS_WINDOWS)
-      DWORD PID = (DWORD) pid;
-      HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, false, PID);
+      auto handle = OpenProcess
+	(PROCESS_ALL_ACCESS, false, static_cast<DWORD> (pid));
 
       if(handle)
 	{
-	  DWORD exitCode;
+	  DWORD exitCode {};
 
 	  if(!GetExitCodeProcess(handle, &exitCode))
 	    {

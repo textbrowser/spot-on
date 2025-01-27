@@ -259,7 +259,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       socklen_t length = 0;
       struct sockaddr_in serveraddr;
 
-      length = (socklen_t) sizeof(serveraddr);
+      length = static_cast<socklen_t> (sizeof(serveraddr));
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin_family = AF_INET;
       serveraddr.sin_port = htons(port);
@@ -303,7 +303,9 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	}
 #endif
       rc = bind
-	(m_socketDescriptor, (const struct sockaddr *) &serveraddr, length);
+	(m_socketDescriptor,
+	 reinterpret_cast<const struct sockaddr *> (&serveraddr),
+	 length);
 
       if(rc != 0)
 	{
@@ -322,7 +324,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       socklen_t length = 0;
       struct sockaddr_in6 serveraddr;
 
-      length = (socklen_t) sizeof(serveraddr);
+      length = static_cast<socklen_t> (sizeof(serveraddr));
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin6_family = AF_INET6;
       serveraddr.sin6_port = htons(port);
@@ -365,7 +367,9 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	}
 #endif
       rc = bind
-	(m_socketDescriptor, (const struct sockaddr *) &serveraddr, length);
+	(m_socketDescriptor,
+	 reinterpret_cast<const struct sockaddr *> (&serveraddr),
+	 length);
 
       if(rc != 0)
 	{
@@ -525,10 +529,12 @@ void spoton_sctp_server::slotTimeout(void)
       socklen_t length = 0;
       struct sockaddr_in clientaddr;
 
-      length = (socklen_t) sizeof(clientaddr);
+      length = static_cast<socklen_t> (sizeof(clientaddr));
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
-	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
+	(m_socketDescriptor,
+	 reinterpret_cast<struct sockaddr *> (&clientaddr),
+	 &length);
 
 #if defined(Q_OS_WINDOWS)
       if(socketDescriptor != INVALID_SOCKET)
@@ -640,10 +646,12 @@ void spoton_sctp_server::slotTimeout(void)
       socklen_t length = 0;
       struct sockaddr_in6 clientaddr;
 
-      length = (socklen_t) sizeof(clientaddr);
+      length = static_cast<socklen_t> (sizeof(clientaddr));
       memset(&clientaddr, 0, sizeof(clientaddr));
       socketDescriptor = accept
-	(m_socketDescriptor, (struct sockaddr *) &clientaddr, &length);
+	(m_socketDescriptor,
+	 reinterpret_cast<struct sockaddr *> (&clientaddr),
+	 &length);
 
 #if defined(Q_OS_WINDOWS)
       if(socketDescriptor != INVALID_SOCKET)

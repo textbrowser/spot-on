@@ -148,7 +148,7 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
   socklen_t length = 0;
   struct sockaddr_storage peeraddr;
 
-  length = (socklen_t) sizeof(peeraddr);
+  length = static_cast<socklen_t> (sizeof(peeraddr));
 
   if(getsockname(
 #if defined(Q_OS_WINDOWS)
@@ -156,12 +156,13 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 #else
 		 m_socketDescriptor,
 #endif
-		 (struct sockaddr *) &peeraddr,
+		 reinterpret_cast<struct sockaddr *> (&peeraddr),
 		 &length) == 0)
     {
       if(peeraddr.ss_family == AF_INET)
 	{
-	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr = reinterpret_cast<spoton_type_punning_sockaddr_t *>
+	    (&peeraddr);
 
 	  if(sockaddr)
 	    {
@@ -174,7 +175,8 @@ QHostAddress spoton_sctp_socket::localAddressAndPort(quint16 *port) const
 	}
       else
 	{
-	  auto sockaddr = (spoton_type_punning_sockaddr_t *) &peeraddr;
+	  auto sockaddr = reinterpret_cast<spoton_type_punning_sockaddr_t *>
+	    (&peeraddr);
 
 	  if(sockaddr)
 	    {
@@ -738,7 +740,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       socklen_t length = 0;
       struct sockaddr_in serveraddr;
 
-      length = (socklen_t) sizeof(serveraddr);
+      length = static_cast<socklen_t> (sizeof(serveraddr));
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
       serveraddr.sin_family = AF_INET;
@@ -788,7 +790,9 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 #endif
       m_state = ConnectingState;
       rc = ::connect
-	(m_socketDescriptor, (const struct sockaddr *) &serveraddr, length);
+	(m_socketDescriptor,
+	 reinterpret_cast<const struct sockaddr *> (&serveraddr),
+	 length);
 
       if(rc == 0)
 	{
@@ -811,7 +815,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       socklen_t length = 0;
       struct sockaddr_in6 serveraddr;
 
-      length = (socklen_t) sizeof(serveraddr);
+      length = static_cast<socklen_t> (sizeof(serveraddr));
       memset(&serveraddr, 0, sizeof(serveraddr));
       serveraddr.sin6_addr = in6addr_any;
       serveraddr.sin6_family = AF_INET6;
@@ -861,7 +865,9 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 #endif
       m_state = ConnectingState;
       rc = ::connect
-	(m_socketDescriptor, (const struct sockaddr *) &serveraddr, length);
+	(m_socketDescriptor,
+	 reinterpret_cast<const struct sockaddr *> (&serveraddr),
+	 length);
 
       if(rc == 0)
 	{
