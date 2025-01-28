@@ -4455,21 +4455,7 @@ void spoton::slotActivateKernel(void)
     {
       QApplication::processEvents();
 
-      auto const list(m_statisticsModel->findItems("Kernel PID"));
-
-      if(list.isEmpty() == false)
-	{
-	  auto item = list.at(0);
-
-	  if(item)
-	    item = m_statisticsModel->item(item->row(), 1);
-
-	  if(item && item->text().toLongLong() > 0)
-	    break;
-	}
-      else if(m_ui.pid->text().toLongLong() > 0)
-	break;
-      else if(time.hasExpired(10000))
+      if(spoton_misc::kernelPid() > 0 || time.hasExpired(10000))
 	break;
     }
   while(true);
@@ -6001,16 +5987,17 @@ void spoton::slotDeactivateKernel(void)
     {
       QApplication::processEvents();
 
-      auto const pid = static_cast<pid_t> (m_ui.pid->text().toLongLong());
+      auto const pid = spoton_misc::kernelPid();
 
       if(pid <= 0)
 	break;
       else if(time.hasExpired(10000))
 	{
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
-	  kill(pid, SIGTERM);
-#endif
+	  kill(static_cast<pid_t> (pid), SIGTERM);
+#else
 	  break;
+#endif
 	}
     }
   while(!m_quit);
@@ -6397,7 +6384,7 @@ void spoton::slotGeneralTimerTimeout(void)
 
   highlightPaths();
 
-  if(text != m_ui.pid->text())
+  if(m_ui.pid->text() != text)
     {
       m_buzzFavoritesLastModificationTime = QDateTime();
       m_listenersLastModificationTime = QDateTime();
