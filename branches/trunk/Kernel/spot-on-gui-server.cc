@@ -751,7 +751,7 @@ void spoton_gui_server::slotReadyRead(void)
 			     static_cast<unsigned
 			     long int> (spoton_kernel::
 					setting("gui/iterationCount",
-						10000).toInt()),
+						250000).toInt()),
 			     names.at(i));
 			}
 		      catch(...)

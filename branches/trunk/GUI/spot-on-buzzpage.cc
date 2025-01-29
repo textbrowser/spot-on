@@ -79,13 +79,13 @@ spoton_buzzpage::spoton_buzzpage(QSslSocket *kernelSocket,
     m_hashType = "sha512";
 
   m_id = id.trimmed();
-  m_iterationCount = qMax(static_cast<unsigned long int> (10000),
-			  iterationCount);
 
   if(m_id.isEmpty())
     m_id = spoton_crypt::strongRandomBytes
       (spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
 
+  m_iterationCount = qMax
+    (static_cast<unsigned long int> (10000), iterationCount);
   m_kernelSocket = kernelSocket;
   m_key = key;
 

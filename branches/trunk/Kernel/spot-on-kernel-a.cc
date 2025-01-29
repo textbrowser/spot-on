@@ -1504,9 +1504,8 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	  (spoton_crypt::
 	   derivedKeys(setting("gui/cipherType", "aes256").toString(),
 		       setting("gui/hashType", "sha512").toString(),
-		       static_cast<unsigned long int> (setting("gui/"
-							       "iterationCount",
-							       10000).toInt()),
+		       static_cast<unsigned long int>
+		       (setting("gui/iterationCount", 250000).toInt()),
 		       passphrase,
 		       salt,
 		       false,
@@ -1538,7 +1537,7 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 			 setting("gui/saltLength", 512).toInt(),
 			 static_cast
 			 <unsigned long int> (setting("gui/iterationCount",
-						      10000).toInt()),
+						      250000).toInt()),
 			 list.at(i));
 
 		      if(!altered && s_crypt)

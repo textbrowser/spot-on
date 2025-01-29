@@ -72,7 +72,7 @@ class spoton_utilities_private: public QObject
   {
     for(int i = 0; i < m_widgetsToCenter.size(); i++)
       {
-	auto pair(m_widgetsToCenter.at(i));
+	auto const pair(m_widgetsToCenter.at(i));
 
 	if(!pair.first || !pair.second)
 	  continue;

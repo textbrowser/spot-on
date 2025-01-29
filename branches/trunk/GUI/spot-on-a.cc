@@ -3161,8 +3161,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     m_ui.congestionAlgorithm->setCurrentIndex
       (m_ui.congestionAlgorithm->findText(str));
 
-  m_ui.iterationCount->setValue(m_settings.value("gui/iterationCount",
-						 10000).toInt());
+  m_ui.iterationCount->setValue
+    (m_settings.value("gui/iterationCount", 250000).toInt());
   str = m_settings.value("gui/guiExternalIpInterval", "-1").toString();
 
   if(str == "30")
@@ -10242,12 +10242,12 @@ void spoton::slotSetPassphrase(void)
       settings.setValue("gui/cipherType", m_settings["gui/cipherType"]);
       settings.setValue("gui/emailName", m_settings["gui/emailName"]);
       settings.setValue("gui/hashType", m_settings["gui/hashType"]);
-      settings.setValue("gui/iterationCount",
-			m_settings["gui/iterationCount"]);
-      settings.setValue("gui/kernelCipherType",
-			m_settings["gui/kernelCipherType"]);
-      settings.setValue("gui/kernelHashType",
-			m_settings["gui/kernelHashType"]);
+      settings.setValue
+	("gui/iterationCount", m_settings["gui/iterationCount"]);
+      settings.setValue
+	("gui/kernelCipherType", m_settings["gui/kernelCipherType"]);
+      settings.setValue
+	("gui/kernelHashType", m_settings["gui/kernelHashType"]);
       settings.setValue("gui/nodeName", m_settings["gui/nodeName"]);
       settings.setValue("gui/rosettaName", m_settings["gui/rosettaName"]);
       settings.setValue("gui/salt", m_settings["gui/salt"]);

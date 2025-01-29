@@ -4420,12 +4420,12 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     str = "nouve";
 
   settings.insert("gui/iconSet", str);
-  integer = qAbs(settings.value("gui/iterationCount", 10000).toInt(&ok));
+  integer = qAbs(settings.value("gui/iterationCount", 250000).toInt(&ok));
 
   if(!ok)
-    integer = 10000;
+    integer = 250000;
   else if(integer < 10000 || integer > 999999999)
-    integer = 10000;
+    integer = 250000;
 
   settings.insert("gui/iterationCount", integer);
   str = settings.value("gui/kernelCipherType").toString();
