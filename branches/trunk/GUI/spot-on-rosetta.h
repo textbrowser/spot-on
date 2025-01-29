@@ -29,6 +29,7 @@
 #define _spoton_rosetta_h_
 
 #include <QPointer>
+#include <QProcess>
 
 #ifdef SPOTON_GPGME_ENABLED
 extern "C"
@@ -56,6 +57,7 @@ class spoton_rosetta: public QMainWindow
   };
 
   spoton_rosetta(void);
+  ~spoton_rosetta();
   void setName(const QString &text);
   void show(spoton *parent);
 
@@ -65,6 +67,7 @@ class spoton_rosetta: public QMainWindow
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
+  QProcess m_prisonBluesProcess;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(const QByteArray &receiver,
 			const QByteArray &sender) const;
@@ -80,7 +83,9 @@ class spoton_rosetta: public QMainWindow
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
+  void prisonBluesProcess(void);
   void resizeEvent(QResizeEvent *event);
+  void showMessage(const QString &message, const int milliseconds = 0);
   void sortContacts(void);
   void toDesktop(void) const;
 
@@ -103,6 +108,7 @@ class spoton_rosetta: public QMainWindow
   void slotImportGPGKeys(void);
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
+  void slotPublishGPG(void);
   void slotRemoveGPGKeys(void);
   void slotRename(void);
   void slotSaveName(void);

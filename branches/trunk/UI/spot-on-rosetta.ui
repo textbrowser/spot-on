@@ -108,8 +108,8 @@
       <widget class="QWidget" name="scrollAreaWidgetContents">
        <property name="geometry">
         <rect>
-         <x>0</x>
-         <y>0</y>
+         <x>-276</x>
+         <y>-115</y>
          <width>1045</width>
          <height>628</height>
         </rect>
@@ -687,6 +687,16 @@
                         </property>
                        </widget>
                       </item>
+                      <item>
+                       <widget class="QPushButton" name="publish">
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Publish a GPG message in the special GIT repository. An active kernel is not required. GPG only!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="text">
+                         <string>Publish GPG</string>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </item>
                     <item>
@@ -998,6 +1008,7 @@
   <tabstop>inputEncrypt</tabstop>
   <tabstop>clearOutput</tabstop>
   <tabstop>copyEncrypt</tabstop>
+  <tabstop>publish</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
