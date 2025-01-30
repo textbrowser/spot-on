@@ -1,6 +1,14 @@
 #!/usr/bin/env sh
 # Alexis Megas.
 
+# We will not correct GIT errors.
+
+# If git has locked the local directory, some git command will fail.
+# We will not remove the lock.
+
+# If the local directory already exists, a git-clone will fail.
+# We will not remove the local directory!
+
 if [ -z ${GIT_A} ]
 then
     echo "Please export GIT_A. Bye!"
