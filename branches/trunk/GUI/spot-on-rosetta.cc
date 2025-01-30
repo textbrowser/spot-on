@@ -50,6 +50,7 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
+  m_prisonBluesTimer.start(5000);
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
 #ifndef SPOTON_GPGME_ENABLED
@@ -92,6 +93,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  connect(&m_prisonBluesTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotPrisonBluesTimeout(void)));
   connect(ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -272,6 +277,7 @@ spoton_rosetta::~spoton_rosetta()
 {
   m_prisonBluesProcess.kill();
   m_prisonBluesProcess.waitForFinished();
+  m_prisonBluesTimer.stop();
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
@@ -2114,6 +2120,11 @@ void spoton_rosetta::slotPopulateGPGEmailAddresses(void)
   populateGPGEmailAddresses();
 }
 
+void spoton_rosetta::slotPrisonBluesTimeout(void)
+{
+  prisonBluesProcess();
+}
+
 void spoton_rosetta::slotPublishGPG(void)
 {
   if(!m_parent)
@@ -2179,7 +2190,7 @@ void spoton_rosetta::slotPublishGPG(void)
 
       Q_UNUSED(file.fileName()); // Prevents removal of file.
       file.setAutoRemove(false);
-      stream << ui.outputEncrypt->toPlainText() << Qt::endl;
+      stream << ui.outputEncrypt->toPlainText();
       prisonBluesProcess();
     }
 }

@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-4164</y>
+         <y>-756</y>
          <width>769</width>
-         <height>4920</height>
+         <height>5118</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -784,6 +784,13 @@
                  </widget>
                 </item>
                 <item>
+                 <widget class="QPushButton" name="execute_git_script">
+                  <property name="text">
+                   <string>Execute</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="select_git_script">
                   <property name="text">
                    <string>Select</string>
@@ -791,6 +798,19 @@
                  </widget>
                 </item>
                </layout>
+              </item>
+              <item>
+               <widget class="QPlainTextEdit" name="git_script_results">
+                <property name="tabChangesFocus">
+                 <bool>true</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>GIT Script Results</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -3017,7 +3037,9 @@ with the kernel process.</string>
   <tabstop>git_a</tabstop>
   <tabstop>git_t</tabstop>
   <tabstop>git_script</tabstop>
+  <tabstop>execute_git_script</tabstop>
   <tabstop>select_git_script</tabstop>
+  <tabstop>git_script_results</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>

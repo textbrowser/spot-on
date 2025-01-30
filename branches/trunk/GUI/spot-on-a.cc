@@ -1356,6 +1356,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnableChatEmoticons(bool)));
+  connect(m_optionsUi.execute_git_script,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotExecuteGITScript(void)));
   connect(m_optionsUi.external_ip_url,
 	  SIGNAL(editingFinished(void)),
 	  this,
@@ -3866,6 +3870,8 @@ void spoton::cleanup(void)
   m_listenersUpdateTimer.stop();
   m_neighborsUpdateTimer.stop();
   m_participantsUpdateTimer.stop();
+  m_prisonBluesProcess.kill();
+  m_prisonBluesProcess.waitForFinished();
   m_starbeamUpdateTimer.stop();
   m_tableTimer.stop();
   m_updateChatWindowsTimer.stop();

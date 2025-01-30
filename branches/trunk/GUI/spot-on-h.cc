@@ -867,6 +867,75 @@ void spoton::slotEmailPageChanged(int value)
   populateMail();
 }
 
+void spoton::slotExecuteGITScript(void)
+{
+  QFileInfo const fileInfo(m_optionsUi.git_script->text().trimmed());
+
+  if(!fileInfo.isExecutable())
+    {
+      m_optionsUi.git_script_results->setPlainText
+	(tr("Please specify an executable script."));
+      return;
+    }
+
+  auto crypt = m_crypts.value("chat", nullptr);
+
+  if(!crypt)
+    {
+      m_optionsUi.git_script_results->setPlainText
+	(tr("Invalid spoton_crypt object."));
+      return;
+    }
+
+  connect(&m_prisonBluesProcess,
+	  SIGNAL(readyReadStandardError(void)),
+	  this,
+	  SLOT(slotReadPrisonBluesProcess(void)),
+	  Qt::UniqueConnection);
+  connect(&m_prisonBluesProcess,
+	  SIGNAL(readyReadStandardOutput(void)),
+	  this,
+	  SLOT(slotReadPrisonBluesProcess(void)),
+	  Qt::UniqueConnection);
+  m_prisonBluesProcess.kill();
+  m_prisonBluesProcess.waitForFinished();
+  m_optionsUi.git_script_results->setPlainText
+    (tr("Executing %1.").arg(fileInfo.absoluteFilePath()));
+
+  auto gitA(m_settings.value("gui/git_a", "").toByteArray());
+
+  gitA = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(gitA), nullptr).trimmed();
+
+  if(gitA.isEmpty())
+    return;
+
+  auto gitT(m_settings.value("gui/git_t", "").toByteArray());
+
+  gitT = crypt->decryptedAfterAuthenticated
+    (QByteArray::fromBase64(gitT), nullptr).trimmed();
+
+  if(gitT.isEmpty())
+    return;
+
+  auto const gitLocalDirectory
+    (m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
+  auto const gitSiteClone
+    (m_settings.value("GIT_SITE_CLONE", "").toString().trimmed());
+  auto const gitSitePush
+    (m_settings.value("GIT_SITE_PUSH", "").toString().trimmed());
+  auto environment(QProcessEnvironment::systemEnvironment());
+
+  environment.insert("GIT_A", gitA);
+  environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
+  environment.insert("GIT_SITE_CLONE", gitSiteClone);
+  environment.insert("GIT_SITE_PUSH", gitSitePush);
+  environment.insert("GIT_T", gitT);
+  m_prisonBluesProcess.setProcessEnvironment(environment);
+  m_prisonBluesProcess.start(fileInfo.absoluteFilePath(), QStringList());
+  m_prisonBluesProcess.waitForStarted();
+}
+
 void spoton::slotFindInSearch(void)
 {
 #if SPOTON_GOLDBUG == 0
@@ -1287,6 +1356,13 @@ void spoton::slotPrepareContextMenuMirrors(void)
   prepareContextMenuMirrors();
 }
 
+void spoton::slotReadPrisonBluesProcess(void)
+{
+  while(m_prisonBluesProcess.bytesAvailable() > 0)
+    m_optionsUi.git_script_results->appendPlainText
+      (m_prisonBluesProcess.readAll().trimmed());
+}
+
 void spoton::slotResetAddListener(void)
 {
   m_ui.days_valid->setValue(365);
@@ -1458,6 +1534,7 @@ void spoton::slotSelectGITPath(void)
 
       QSettings().setValue("gui/git_script", fileName);
       m_optionsUi.git_script->setText(fileName);
+      m_optionsUi.git_script_results->clear();
       m_settings["gui/git_script"] = fileName;
     }
 

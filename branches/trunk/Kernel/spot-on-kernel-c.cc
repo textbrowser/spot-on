@@ -650,7 +650,7 @@ void spoton_kernel::writePrisonBluesChat
 
   if(!directory.exists())
     /*
-    ** The clone failed.
+    ** The GIT local directory does not exist. This is a problem!
     */
 
     return;

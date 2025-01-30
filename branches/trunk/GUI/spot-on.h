@@ -520,6 +520,7 @@ class spoton: public QMainWindow
 				     */
   QPointer<QWidget> m_careOfPage;
   QPointer<spoton_status_activity> m_statusActivity;
+  QProcess m_prisonBluesProcess;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;
@@ -826,6 +827,7 @@ class spoton: public QMainWindow
   void slotEnabledPostOffice(bool state);
   void slotEncryptionKeyTypeChanged(int index);
   void slotEstablishForwardSecrecy(void);
+  void slotExecuteGITScript(void);
   void slotExportListeners(void);
   void slotExportPublicKeys(void);
   void slotExternalIp(int index);
@@ -951,6 +953,7 @@ class spoton: public QMainWindow
   void slotPurgeEphemeralKeyPair(void);
   void slotPurgeEphemeralKeys(void);
   void slotQuit(void);
+  void slotReadPrisonBluesProcess(void);
   void slotReceivedKernelMessage(void);
   void slotReceiversChanged(QTableWidgetItem *item);
   void slotReceiversClicked(bool state);

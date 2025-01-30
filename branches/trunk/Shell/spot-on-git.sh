@@ -3,31 +3,31 @@
 
 if [ -z ${GIT_A} ]
 then
-    echo "Please export GIT_A."
+    echo "Please export GIT_A. Bye!"
     exit 1
 fi
 
 if [ -z ${GIT_LOCAL_DIRECTORY} ]
 then
-    echo "Please export GIT_LOCAL_DIRECTORY."
+    echo "Please export GIT_LOCAL_DIRECTORY. Bye!"
     exit 1
 fi
 
 if [ -z ${GIT_SITE_CLONE} ]
 then
-    echo "Please export GIT_SITE_CLONE."
+    echo "Please export GIT_SITE_CLONE. Bye!"
     exit 1
 fi
 
 if [ -z ${GIT_SITE_PUSH} ]
 then
-    echo "Please export GIT_SITE_PUSH."
+    echo "Please export GIT_SITE_PUSH. Bye!"
     exit 1
 fi
 
 if [ -z ${GIT_T} ]
 then
-    echo "Please export GIT_T."
+    echo "Please export GIT_T. Bye!"
     exit 1
 fi
 
@@ -37,78 +37,116 @@ if [ ! -r "$local_directory" ]
 then
     site=$(eval "echo ${GIT_SITE_CLONE}")
 
-    git clone -q "$site" "$local_directory" 2>/dev/null
+    echo "Cloning $site into $local_directory."
+    git clone -q "$site" "$local_directory" 2>&1 1>/dev/null
 
-    if [ ! $? -eq 0 ]
+    rc=$?
+
+    if [ ! $rc -eq 0 ]
     then
-	echo "Cloning of $site failed. Bye!"
-	exit 1
+	echo "[Failed! Bye!]"
+	exit $rc
+    else
+	echo "[Great!]"
     fi
 fi
 
+echo "Setting $local_directory as the current directory."
 cd $local_directory
 
 if [ ! $? -eq 0 ]
 then
-    echo "No! Cannot proceed to $local_directory."
+    echo "[Failed! Bye!]"
     exit 1
 else
     # Merge.
 
-    git config pull.rebase false 2>/dev/null
+    echo "Instructing GIT to avoid the rebase strategy. " \
+	 "Merge changes instead."
+    git config pull.rebase false 2>&1 1>/dev/null
+
+    if [ ! $? eq 0 ]
+    then
+	echo "[Failed!]"
+    else
+	echo "[Great!]"
+    fi
 
     # Pull?
 
-    git pull 2>/dev/null
+    echo "Issuing a GIT-PULL request."
+    git pull 2>&1 1>/dev/null
 
-    if [ $? -eq 0 ]
+    rc=$?
+
+    if [ $rc -eq 0 ]
     then
+	echo "[Great!]"
+	echo "Determining if there are local revisions."
 	rc=$(git ls-files --deleted --exclude-standard --others \
 		 2>/dev/null | wc -l)
 
 	if [ $rc -lt 1 ]
 	then
-	    echo "All set."
+	    echo "[All set! Bye!]"
 	    exit 0
+	else
+	    echo "[Failed!]"
 	fi
 
-	git add --all 2>/dev/null
+	echo "Adding local files."
+	git add --all 2>&1 1>/dev/null
 
 	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "GIT-ADD failure."
+	    echo "[Failed! Bye!]"
 	    exit $rc
 	fi
 
-	git commit -m "New data." 2>/dev/null
+	echo "Committing new data."
+	git commit -m "New data." 2>&1 1>/dev/null
 
 	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "GIT-COMMIT failure."
+	    echo "[Failed! Bye!]"
 	    exit $rc
+	else
+	    echo "[Great!]"
 	fi
 
-	git pull 2>/dev/null
+	echo "Issuing a GIT-PULL request."
+	git pull 2>&1 1>/dev/null
+
+	if [ ! $? -eq 0 ]
+	then
+	    echo "[Failed!]"
+	else
+	    echo "[Great!]"
+	fi
 
 	site=$(eval "echo ${GIT_SITE_PUSH}")
 
-	git push "$site" 2>/dev/null
+	echo "Issuing a GIT-PUSH request."
+	git push "$site" 2>&1 1>/dev/null
 
 	rc=$?
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "GIT-PUSH failure."
+	    echo "[Failed! Bye!]"
 	    exit $rc
+	else
+	    echo "[Great!]"
 	fi
     else
-	echo "GIT-PULL failure."
-	exit 1
+	echo "[Failed! Bye!]"
+	exit $rc
     fi
 fi
 
+echo "$0 completed successfully!"
 exit 0
