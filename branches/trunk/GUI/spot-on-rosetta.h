@@ -29,7 +29,6 @@
 #define _spoton_rosetta_h_
 
 #include <QPointer>
-#include <QProcess>
 #include <QTimer>
 
 #ifdef SPOTON_GPGME_ENABLED
@@ -68,7 +67,6 @@ class spoton_rosetta: public QMainWindow
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
-  QProcess m_prisonBluesProcess;
   QTimer m_prisonBluesTimer;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(const QByteArray &receiver,

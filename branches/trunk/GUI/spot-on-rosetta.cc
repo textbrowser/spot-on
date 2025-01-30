@@ -275,8 +275,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 spoton_rosetta::~spoton_rosetta()
 {
-  m_prisonBluesProcess.kill();
-  m_prisonBluesProcess.waitForFinished();
   m_prisonBluesTimer.stop();
 }
 
@@ -688,7 +686,8 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 
 void spoton_rosetta::prisonBluesProcess(void)
 {
-  if(m_parent == nullptr || m_prisonBluesProcess.state() == QProcess::Running)
+  if(m_parent == nullptr ||
+     m_parent->m_prisonBluesProcess.state() == QProcess::Running)
     return;
 
   auto crypt = m_parent->crypts().value("chat", nullptr);
@@ -732,9 +731,10 @@ void spoton_rosetta::prisonBluesProcess(void)
   environment.insert("GIT_SITE_CLONE", gitSiteClone);
   environment.insert("GIT_SITE_PUSH", gitSitePush);
   environment.insert("GIT_T", gitT);
-  m_prisonBluesProcess.setProcessEnvironment(environment);
-  m_prisonBluesProcess.start(fileInfo.absoluteFilePath(), QStringList());
-  m_prisonBluesProcess.waitForStarted();
+  m_parent->m_prisonBluesProcess.setProcessEnvironment(environment);
+  m_parent->m_prisonBluesProcess.start
+    (fileInfo.absoluteFilePath(), QStringList());
+  m_parent->m_prisonBluesProcess.waitForStarted();
 }
 
 void spoton_rosetta::resizeEvent(QResizeEvent *event)

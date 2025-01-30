@@ -441,6 +441,7 @@ class spoton: public QMainWindow
   QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
+  QProcess m_prisonBluesProcess;
   static char s_keyDelimiter;
   QHash<QString, spoton_crypt *> crypts(void) const;
   QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
@@ -520,7 +521,6 @@ class spoton: public QMainWindow
 				     */
   QPointer<QWidget> m_careOfPage;
   QPointer<spoton_status_activity> m_statusActivity;
-  QProcess m_prisonBluesProcess;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;

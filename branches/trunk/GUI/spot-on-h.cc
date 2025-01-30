@@ -869,6 +869,13 @@ void spoton::slotEmailPageChanged(int value)
 
 void spoton::slotExecuteGITScript(void)
 {
+  if(m_prisonBluesProcess.state() == QProcess::Running)
+    {
+      m_optionsUi.git_script_results->setPlainText
+	(tr("A special GIT process is already active. Please wait."));
+      return;
+    }
+
   QFileInfo const fileInfo(m_optionsUi.git_script->text().trimmed());
 
   if(!fileInfo.isExecutable())
