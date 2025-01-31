@@ -239,8 +239,8 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
     (m_socketDescriptor,
      SOL_SOCKET,
      SO_REUSEADDR,
-     (const char *) &optval,
-     (int) optlen);
+     reinterpret_cast<const char *> (&optval),
+     static_cast<int> (optlen));
 #else
   rc = setsockopt
     (m_socketDescriptor, SOL_SOCKET, SO_REUSEADDR, &optval, optlen);
@@ -265,10 +265,10 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       serveraddr.sin_port = htons(port);
 #if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA
-	((LPSTR) address.toString().toLatin1().data(),
+	(reinterpret_cast<LPSTR> (address.toString().toLatin1().data()),
 	 AF_INET,
 	 0,
-	 (LPSOCKADDR) &serveraddr,
+	 reinterpret_cast<LPSOCKADDR> (&serveraddr(,
 	 &length);
 #else
       rc = inet_pton(AF_INET,
@@ -330,10 +330,10 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
       serveraddr.sin6_port = htons(port);
 #if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA
-	((LPSTR) address.toString().toLatin1().data(),
+	(reinterpret_cast<LPSTR> (address.toString().toLatin1().data()),
 	 AF_INET6,
 	 0,
-	 (LPSOCKADDR) &serveraddr,
+	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
 	 &length);
 #else
       rc = inet_pton(AF_INET6,

@@ -262,7 +262,7 @@ bool spoton_sctp_socket::setSocketDescriptor(const int socketDescriptor)
     {
       close();
 #if defined(Q_OS_WINDOWS)
-      m_socketDescriptor = (SOCKET) socketDescriptor;
+      m_socketDescriptor = static_cast<SOCKET> (socketDescriptor);
 #else
       m_socketDescriptor = socketDescriptor;
 #endif
@@ -747,11 +747,12 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       serveraddr.sin_port = htons(m_connectToPeerPort);
 
 #if defined(Q_OS_WINDOWS)
-      rc = WSAStringToAddressA((LPSTR) m_ipAddress.toLatin1().data(),
-			       AF_INET,
-			       0,
-			       (LPSOCKADDR) &serveraddr,
-			       &length);
+      rc = WSAStringToAddressA
+	(reinterpret_cast<LPSTR> (m_ipAddress.toLatin1().data()),
+	 AF_INET,
+	 0,
+	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
+	 &length);
 
       if(rc != 0)
 	{
@@ -822,11 +823,12 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       serveraddr.sin6_port = htons(m_connectToPeerPort);
 
 #if defined(Q_OS_WINDOWS)
-      rc = WSAStringToAddressA((LPSTR) m_ipAddress.toLatin1().data(),
-			       AF_INET6,
-			       0,
-			       (LPSOCKADDR) &serveraddr,
-			       &length);
+      rc = WSAStringToAddressA
+	(reinterpret_cast<LPSTR> (m_ipAddress.toLatin1().data()),
+	 AF_INET6,
+	 0,
+	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
+	 &length);
 
       if(rc != 0)
 	{
@@ -924,8 +926,8 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 	rc = setsockopt(m_socketDescriptor,
 			SOL_SOCKET,
 			SO_KEEPALIVE,
-			(const char *) &optval,
-			(int) optlen);
+			reinterpret_cast<const char *> (&optval),
+			static_cast<int> (optlen));
 #else
 	rc = setsockopt
 	  (m_socketDescriptor, SOL_SOCKET, SO_KEEPALIVE, &optval, optlen);
@@ -948,8 +950,8 @@ void spoton_sctp_socket::setSocketOption(const SocketOption option,
 	rc = setsockopt(m_socketDescriptor,
 			IPPROTO_SCTP,
 			SCTP_NODELAY,
-			(const char *) &optval,
-			(int) optlen);
+			reinterpret_cast<const char *> (&optval),
+			static_cast<int> (optlen));
 #else
 	rc = setsockopt(m_socketDescriptor,
 			IPPROTO_SCTP,
@@ -1028,7 +1030,7 @@ void spoton_sctp_socket::slotTimeout(void)
 	      rc = getsockopt(m_socketDescriptor,
 			      SOL_SOCKET,
 			      SO_ERROR,
-			      (char *) &errorcode,
+			      reinterpret_cast<char *> (&errorcode),
 			      &length);
 #else
 	      rc = getsockopt(m_socketDescriptor,
