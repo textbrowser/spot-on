@@ -6006,6 +6006,7 @@ void spoton::slotResetAll(void)
        << "email.db"
        << "error_log.dat"
        << "friends_public_keys.db"
+       << "gpg.db"
        << "idiotes.db"
        << "kernel.db"
        << "kernel_web_server.db"

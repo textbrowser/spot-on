@@ -6490,6 +6490,7 @@ void spoton_misc::vacuumAllDatabases(void)
        << "echo_key_sharing_secrets.db"
        << "email.db"
        << "friends_public_keys.db"
+       << "gpg.db"
        << "idiotes.db"
        << "kernel.db"
        << "kernel_web_server.db"

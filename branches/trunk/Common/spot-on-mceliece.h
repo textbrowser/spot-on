@@ -65,7 +65,7 @@
 class spoton_mceliece_private_key
 {
  public:
-  enum Conversions
+  enum class Conversions
   {
     FOA = 0, // Fujisaki-Okamoto Model A
     FOB,     // Fujisaki-Okamoto Model B

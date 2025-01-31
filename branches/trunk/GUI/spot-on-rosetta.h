@@ -62,6 +62,11 @@ class spoton_rosetta: public QMainWindow
   void show(spoton *parent);
 
  private:
+  enum class GPGMessage
+  {
+    Origin = 0
+  };
+
   Ui_spoton_rosetta ui;
   QPointer<spoton> m_parent;
 #ifdef SPOTON_GPGME_ENABLED
@@ -85,6 +90,7 @@ class spoton_rosetta: public QMainWindow
   void populateGPGEmailAddresses(void);
   void prisonBluesProcess(void);
   void resizeEvent(QResizeEvent *event);
+  void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showMessage(const QString &message, const int milliseconds = 0);
   void sortContacts(void);
   void toDesktop(void) const;

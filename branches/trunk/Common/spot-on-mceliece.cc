@@ -45,7 +45,7 @@
 spoton_mceliece_private_key::spoton_mceliece_private_key
 (const char *privateKey, const size_t privateKeyLength)
 {
-  m_conversion = ZZZ;
+  m_conversion = Conversions::ZZZ;
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -89,15 +89,15 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	      if(memcmp(privateKey,
 			"mceliece-private-key-foa",
 			offset - 7) == 0)
-		m_conversion = FOA;
+		m_conversion = Conversions::FOA;
 	      else if(memcmp(privateKey,
 			     "mceliece-private-key-fob",
 			     offset - 7) == 0)
-		m_conversion = FOB;
+		m_conversion = Conversions::FOB;
 	      else if(memcmp(privateKey,
 			     "mceliece-private-key-pca",
 			     offset - 7) == 0)
-		m_conversion = PCA;
+		m_conversion = Conversions::PCA;
 
 	      memset(c, 0, privateKeyLength - offset + 1);
 	      memcpy(c, privateKey + offset, privateKeyLength - offset);
@@ -481,7 +481,7 @@ void spoton_mceliece_private_key::reset(const bool ok)
   NTL::clear(m_Sinv);
   NTL::clear(m_X);
   NTL::clear(m_gZ);
-  m_conversion = ZZZ;
+  m_conversion = Conversions::ZZZ;
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -572,7 +572,7 @@ void spoton_mceliece_public_key::reset(const bool ok)
 
 spoton_mceliece::spoton_mceliece(const QByteArray &pk)
 {
-  m_conversion = spoton_mceliece_private_key::ZZZ;
+  m_conversion = spoton_mceliece_private_key::Conversions::ZZZ;
   m_k = 0;
   m_m = 0;
   m_n = 0;
@@ -610,11 +610,11 @@ spoton_mceliece::spoton_mceliece(const QByteArray &pk)
   if(m_publicKey && m_publicKey->ok())
     {
       if(publicKey.startsWith("mceliece-public-key-foa"))
-	m_conversion = spoton_mceliece_private_key::FOA;
+	m_conversion = spoton_mceliece_private_key::Conversions::FOA;
       else if(publicKey.startsWith("mceliece-public-key-fob"))
-	m_conversion = spoton_mceliece_private_key::FOB;
+	m_conversion = spoton_mceliece_private_key::Conversions::FOB;
       else if(publicKey.startsWith("mceliece-public-key-pca"))
-	m_conversion = spoton_mceliece_private_key::PCA;
+	m_conversion = spoton_mceliece_private_key::Conversions::PCA;
 
       m_k = m_publicKey->k();
       m_n = m_publicKey->n();
@@ -644,13 +644,13 @@ spoton_mceliece::spoton_mceliece(const QByteArray &conversion,
   auto const c(conversion.mid(0, 3).toLower());
 
   if(c == "foa")
-    m_conversion = spoton_mceliece_private_key::FOA;
+    m_conversion = spoton_mceliece_private_key::Conversions::FOA;
   else if(c == "fob")
-    m_conversion = spoton_mceliece_private_key::FOB;
+    m_conversion = spoton_mceliece_private_key::Conversions::FOB;
   else if(c == "pca")
-    m_conversion = spoton_mceliece_private_key::PCA;
+    m_conversion = spoton_mceliece_private_key::Conversions::PCA;
   else
-    m_conversion = spoton_mceliece_private_key::ZZZ;
+    m_conversion = spoton_mceliece_private_key::Conversions::ZZZ;
 
   m_privateKey = nullptr;
   m_publicKey = nullptr;
@@ -782,7 +782,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
       switch(m_conversion)
 	{
-	case spoton_mceliece_private_key::FOA:
+	case spoton_mceliece_private_key::Conversions::FOA:
 	  {
 	    s >> c2;
 
@@ -805,7 +805,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    break;
 	  }
-	case spoton_mceliece_private_key::FOB:
+	case spoton_mceliece_private_key::Conversions::FOB:
 	  {
 	    s >> c2;
 
@@ -814,7 +814,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
 	    break;
 	  }
-	case spoton_mceliece_private_key::PCA:
+	case spoton_mceliece_private_key::Conversions::PCA:
 	  {
 	    break;
 	  }
@@ -963,7 +963,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 
       switch(m_conversion)
 	{
-	case spoton_mceliece_private_key::FOA:
+	case spoton_mceliece_private_key::Conversions::FOA:
 	  {
 	    NTL::vec_GF2 ecar;
 	    std::stringstream stream1;
@@ -1089,7 +1089,7 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    plaintext.write(p, static_cast<long int> (plaintext_size));
 	    break;
 	  }
-	case spoton_mceliece_private_key::FOB:
+	case spoton_mceliece_private_key::Conversions::FOB:
 	  {
 	    NTL::vec_GF2 ecar;
 	    std::stringstream stream1;
@@ -1187,11 +1187,11 @@ bool spoton_mceliece::decrypt(const std::stringstream &ciphertext,
 	    plaintext.write(p, static_cast<long int> (plaintext_size));
 	    break;
 	  }
-	case spoton_mceliece_private_key::PCA:
+	case spoton_mceliece_private_key::Conversions::PCA:
 	  {
 	    break;
 	  }
-	case spoton_mceliece_private_key::ZZZ:
+	case spoton_mceliece_private_key::Conversions::ZZZ:
 	  {
 	    memset(p, 0, plaintext_size);
 
@@ -1294,7 +1294,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
       switch(m_conversion)
 	{
-	case spoton_mceliece_private_key::FOA:
+	case spoton_mceliece_private_key::Conversions::FOA:
 	  {
 	    std::stringstream stream1;
 
@@ -1406,7 +1406,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 		       << salt2.toBase64().constData();
 	    break;
 	  }
-	case spoton_mceliece_private_key::FOB:
+	case spoton_mceliece_private_key::Conversions::FOB:
 	  {
 	    std::stringstream stream1;
 
@@ -1485,7 +1485,7 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 	    ciphertext << m;
 	    break;
 	  }
-	case spoton_mceliece_private_key::PCA:
+	case spoton_mceliece_private_key::Conversions::PCA:
 	  {
 	    break;
 	  }

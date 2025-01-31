@@ -749,6 +749,36 @@ void spoton_rosetta::resizeEvent(QResizeEvent *event)
   QWidget::resizeEvent(event);
 }
 
+void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
+{
+  Q_UNUSED(map);
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "gpg.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS gpg_messages ("
+		   "destination TEXT NOT NULL, "
+		   "insert_date TEXT NOT NULL, "
+		   "message TEXT NOT NULL PRIMARY KEY, "
+		   "origin TEXT NOT NULL, "
+		   "size TEXT NOT NULL)");
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_rosetta::setName(const QString &text)
 {
   ui.name->setText(text);
@@ -2138,7 +2168,7 @@ void spoton_rosetta::slotPublishGPG(void)
   if(!crypt)
     {
       showMessage(tr("Invalid spoton_crypt object."), 5000);
-      return;      
+      return;
     }
 
   if(m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
@@ -2162,7 +2192,7 @@ void spoton_rosetta::slotPublishGPG(void)
 	 arg(directory.absoluteFilePath()), 5000);
       return;
     }
-  
+
   slotConvertEncrypt();
 
   QString fingerprint("");
