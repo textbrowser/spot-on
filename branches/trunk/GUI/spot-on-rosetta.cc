@@ -592,7 +592,7 @@ void spoton_rosetta::populateContacts(void)
 	      if(ok)
 		{
 		  QPair<DestinationTypes, QByteArray> pair
-		    (ROSETTA, query.value(1).toByteArray());
+		    (DestinationTypes::ROSETTA, query.value(1).toByteArray());
 
 		  names.insert(name, pair);
 		}
@@ -615,7 +615,7 @@ void spoton_rosetta::populateContacts(void)
 	      if(ok)
 		{
 		  QPair<DestinationTypes, QByteArray> pair
-		    (GPG, query.value(1).toByteArray());
+		    (DestinationTypes::GPG, query.value(1).toByteArray());
 
 		  names.insert(name, pair);
 		}
@@ -645,7 +645,7 @@ void spoton_rosetta::populateContacts(void)
 
 	    ui.contacts->setItemData
 	      (ui.contacts->count() - 1,
-	       it.value().first,
+	       static_cast<int> (it.value().first),
 	       Qt::ItemDataRole(Qt::UserRole + 1));
 	  }
       }
@@ -658,7 +658,10 @@ void spoton_rosetta::populateContacts(void)
   if(ui.contacts->count() == 0)
     {
       ui.contacts->addItem("Empty"); // Please do not translate Empty.
-      ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
+      ui.contacts->setItemData
+	(0,
+	 static_cast<int> (DestinationTypes::ZZZ),
+	 Qt::ItemDataRole(Qt::UserRole + 1));
     }
 
   populateGPGEmailAddresses();
@@ -1242,11 +1245,11 @@ void spoton_rosetta::slotContactsChanged(int index)
     (ui.contacts->itemData(index, Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
   ui.cipher->setCurrentIndex(0);
-  ui.cipher->setEnabled(destinationType == ROSETTA);
-  ui.convertEncrypt->setEnabled(destinationType != ZZZ);
-  ui.deleteContact->setEnabled(destinationType != ZZZ);
+  ui.cipher->setEnabled(destinationType == DestinationTypes::ROSETTA);
+  ui.convertEncrypt->setEnabled(destinationType != DestinationTypes::ZZZ);
+  ui.deleteContact->setEnabled(destinationType != DestinationTypes::ZZZ);
 
-  if(destinationType == GPG)
+  if(destinationType == DestinationTypes::GPG)
     {
       QByteArray publicKey;
       auto eCrypt = m_parent ?
@@ -1280,10 +1283,10 @@ void spoton_rosetta::slotContactsChanged(int index)
     }
 
   ui.hash->setCurrentIndex(0);
-  ui.hash->setEnabled(destinationType == ROSETTA);
-  ui.rename->setEnabled(destinationType != ZZZ);
+  ui.hash->setEnabled(destinationType == DestinationTypes::ROSETTA);
+  ui.rename->setEnabled(destinationType != DestinationTypes::ZZZ);
   ui.sign->setChecked(true);
-  ui.sign->setEnabled(destinationType != ZZZ);
+  ui.sign->setEnabled(destinationType != DestinationTypes::ZZZ);
 }
 
 void spoton_rosetta::slotConvertDecrypt(void)
@@ -1641,7 +1644,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
      itemData(ui.contacts->currentIndex(),Qt::ItemDataRole(Qt::UserRole + 1)).
      toInt());
 
-  if(destinationType == GPG)
+  if(destinationType == DestinationTypes::GPG)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
@@ -2000,7 +2003,7 @@ void spoton_rosetta::slotDelete(void)
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
-  if(destinationType == GPG)
+  if(destinationType == DestinationTypes::GPG)
     mb.setText
       (tr("Are you sure that you wish to remove the selected contact? "
 	  "The contact will also be removed from the GPG keyring."));
@@ -2028,7 +2031,7 @@ void spoton_rosetta::slotDelete(void)
   auto ok = true;
 
 #ifdef SPOTON_GPGME_ENABLED
-  if(destinationType == GPG)
+  if(destinationType == DestinationTypes::GPG)
     {
       gpgme_check_version(nullptr);
 
@@ -2081,7 +2084,7 @@ void spoton_rosetta::slotDelete(void)
 
 	query.exec("PRAGMA secure_delete = ON");
 
-	if(destinationType == GPG)
+	if(destinationType == DestinationTypes::GPG)
 	  query.prepare("DELETE FROM gpg WHERE public_keys_hash = ?");
 	else
 	  query.prepare
@@ -2090,7 +2093,7 @@ void spoton_rosetta::slotDelete(void)
 	query.addBindValue(publicKeyHash);
 	ok = query.exec();
 
-	if(destinationType == ROSETTA)
+	if(destinationType == DestinationTypes::ROSETTA)
 	  spoton_misc::purgeSignatureRelationships
 	    (db,
 	     m_parent ? m_parent->crypts().value("rosetta", nullptr) : nullptr);
@@ -2116,7 +2119,10 @@ void spoton_rosetta::slotDelete(void)
       if(ui.contacts->count() == 0)
 	{
 	  ui.contacts->addItem("Empty"); // Please do not translate Empty.
-	  ui.contacts->setItemData(0, ZZZ, Qt::ItemDataRole(Qt::UserRole + 1));
+	  ui.contacts->setItemData
+	    (0,
+	     static_cast<int> (DestinationTypes::ZZZ),
+	     Qt::ItemDataRole(Qt::UserRole + 1));
 	}
       else
 	sortContacts();
@@ -2173,7 +2179,7 @@ void spoton_rosetta::slotPublishGPG(void)
   auto const destinationType = DestinationTypes
     (ui.contacts->currentData(Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
-  if(destinationType != GPG)
+  if(destinationType != DestinationTypes::GPG)
     {
       showMessage(tr("GPG recipient only."), 5000);
       return;
@@ -2241,7 +2247,7 @@ void spoton_rosetta::slotPublishGPG(void)
       QMap<GPGMessage, QVariant> map;
 
       map[GPGMessage::Destination] = ui.contacts->currentText();
-      map[GPGMessage::Message] = ui.outputDecrypt->toPlainText().trimmed();
+      map[GPGMessage::Message] = ui.outputEncrypt->toPlainText().trimmed();
       map[GPGMessage::Origin] = ui.gpg_email_addresses->currentText();
 
       saveGPGMessage(map);
@@ -2349,7 +2355,7 @@ void spoton_rosetta::slotRename(void)
       {
 	QSqlQuery query(db);
 
-	if(destinationType == GPG)
+	if(destinationType == DestinationTypes::GPG)
 	  query.prepare("UPDATE gpg SET email = ? WHERE public_keys_hash = ?");
 	else
 	  query.prepare("UPDATE friends_public_keys "
@@ -2493,7 +2499,7 @@ void spoton_rosetta::sortContacts(void)
 
       ui.contacts->setItemData
 	(ui.contacts->count() - 1,
-	 it.value().first,
+	 static_cast<int> (it.value().first),
 	 Qt::ItemDataRole(Qt::UserRole + 1));
     }
 
