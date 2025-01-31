@@ -751,8 +751,6 @@ void spoton_rosetta::resizeEvent(QResizeEvent *event)
 
 void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
 {
-  Q_UNUSED(map);
-
   QString connectionName("");
 
   {
@@ -771,6 +769,21 @@ void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
 		   "message TEXT NOT NULL PRIMARY KEY, "
 		   "origin TEXT NOT NULL, "
 		   "size TEXT NOT NULL)");
+	query.prepare
+	  ("INSERT INTO gpg_messages "
+	   "(destination, insert_date, message, origin, size) "
+	   "VALUES (?, ?, ?, ?, ?)");
+	query.addBindValue
+	  (map.value(GPGMessage::Destination).toString().trimmed());
+	query.addBindValue
+	  (QDateTime::currentDateTime().toString(Qt::ISODate));
+	query.addBindValue
+	  (map.value(GPGMessage::Message).toString().trimmed());
+	query.addBindValue
+	  (map.value(GPGMessage::Origin).toString().trimmed());
+	query.addBindValue
+	  (map.value(GPGMessage::Message).toString().trimmed().length());
+	query.exec();
       }
 
     db.close();
@@ -2157,6 +2170,15 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
 
 void spoton_rosetta::slotPublishGPG(void)
 {
+  auto const destinationType = DestinationTypes
+    (ui.contacts->currentData(Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
+
+  if(destinationType != GPG)
+    {
+      showMessage(tr("GPG recipient only."), 5000);
+      return;
+    }
+
   if(!m_parent)
     {
       showMessage(tr("Invalid parent object."), 5000);
@@ -2216,6 +2238,14 @@ void spoton_rosetta::slotPublishGPG(void)
 
   if(file.open())
     {
+      QMap<GPGMessage, QVariant> map;
+
+      map[GPGMessage::Destination] = ui.contacts->currentText();
+      map[GPGMessage::Message] = ui.outputDecrypt->toPlainText().trimmed();
+      map[GPGMessage::Origin] = ui.gpg_email_addresses->currentText();
+
+      saveGPGMessage(map);
+
       QTextStream stream(&file);
 
       Q_UNUSED(file.fileName()); // Prevents removal of file.

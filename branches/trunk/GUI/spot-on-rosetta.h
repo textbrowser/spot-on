@@ -64,7 +64,11 @@ class spoton_rosetta: public QMainWindow
  private:
   enum class GPGMessage
   {
-    Origin = 0
+    Destination = 0,
+    InsertDate,
+    Message,
+    Origin,
+    Size
   };
 
   Ui_spoton_rosetta ui;
