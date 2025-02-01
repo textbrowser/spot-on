@@ -93,6 +93,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  connect(&m_gpgWatcher,
+	  SIGNAL(fileChanged(const QString &)),
+	  this,
+	  SLOT(slotGPGChanged(const QString &)));
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -764,6 +768,8 @@ void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
 
     if(db.open())
       {
+	m_gpgWatcher.addPath(db.databaseName());
+
 	QSqlQuery query(db);
 
 	query.exec("CREATE TABLE IF NOT EXISTS gpg_messages ("
@@ -2131,6 +2137,11 @@ void spoton_rosetta::slotDelete(void)
     }
 }
 
+void spoton_rosetta::slotGPGChanged(const QString &path)
+{
+  Q_UNUSED(path);
+}
+
 void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -2246,9 +2257,11 @@ void spoton_rosetta::slotPublishGPG(void)
     {
       QMap<GPGMessage, QVariant> map;
 
-      map[GPGMessage::Destination] = ui.contacts->currentText();
+      map[GPGMessage::Destination] = crypt->encryptedThenHashed
+	(ui.contacts->currentText().toUtf8(), nullptr).toBase64();
       map[GPGMessage::Message] = ui.outputEncrypt->toPlainText().trimmed();
-      map[GPGMessage::Origin] = ui.gpg_email_addresses->currentText();
+      map[GPGMessage::Origin] = crypt->encryptedThenHashed
+	(ui.gpg_email_addresses->currentText().toUtf8(), nullptr).toBase64();
 
       saveGPGMessage(map);
 

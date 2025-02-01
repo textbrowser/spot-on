@@ -10,7 +10,7 @@ Archived Items
 7.     Account credentials should not be recorded via reversible encryption.
        Derive keys? Assume an upper bound during account discovery.
 8.     Database entries containing hashes can be maliciously twisted. Encrypt?
-9.     Rosetta: Inbox, Drafts (?), Sent, Trash.
+9.     Rosetta: Inbox, Drafts, Sent, Trash.
 10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
 11.    Remote kernel termination.
 12.    E-mail GPG.
