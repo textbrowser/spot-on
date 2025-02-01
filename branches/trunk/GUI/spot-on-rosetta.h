@@ -28,7 +28,6 @@
 #ifndef _spoton_rosetta_h_
 #define _spoton_rosetta_h_
 
-#include <QFileSystemWatcher>
 #include <QPointer>
 #include <QTimer>
 
@@ -72,7 +71,6 @@ class spoton_rosetta: public QMainWindow
     Size
   };
 
-  QFileSystemWatcher m_gpgWatcher;
   QPointer<spoton> m_parent;
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
@@ -80,8 +78,10 @@ class spoton_rosetta: public QMainWindow
   QTimer m_prisonBluesTimer;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
-  QByteArray gpgEncrypt(const QByteArray &receiver,
-			const QByteArray &sender) const;
+  QByteArray gpgEncrypt(const QByteArray &message,
+			const QByteArray &receiver,
+			const QByteArray &sender,
+			const bool sign) const;
   QMap<QString, QByteArray> gpgEmailAddresses(void) const;
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;
@@ -117,7 +117,6 @@ class spoton_rosetta: public QMainWindow
   void slotDecryptClear(void);
   void slotDecryptReset(void);
   void slotDelete(void);
-  void slotGPGChanged(const QString &path);
   void slotImportGPGKeys(void);
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
@@ -128,6 +127,7 @@ class spoton_rosetta: public QMainWindow
   void slotSaveName(void);
   void slotSetIcons(void);
   void slotSplitterMoved(int pox, int index);
+  void slotWriteGPG(void);
 
  signals:
   void gpgKeysRemoved(void);
