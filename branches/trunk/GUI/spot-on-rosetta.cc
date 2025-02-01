@@ -2292,7 +2292,7 @@ void spoton_rosetta::slotPublishGPG(void)
      QDir::separator() +
      fingerprint +
      QDir::separator() +
-     "PrisonBluesXXXXXX.txt");
+     "PrisonBluesXXXXXXXXXX.txt");
 
   if(file.open())
     {
@@ -2582,7 +2582,8 @@ void spoton_rosetta::slotWriteGPG(void)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   msg.append
-    (tr("<b>me</b> (<font color=gray>%1</font>)<b>:</b> ").
+    (tr("<b>%1</b> (<font color=gray>%2</font>)<b>:</b> ").
+     arg(ui.gpg_email_addresses->currentText()).
      arg(to.mid(0, to.length() - 2)));
 
   if(m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool())
@@ -2620,7 +2621,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	 QDir::separator() +
 	 fingerprints[i].data().toString() +
 	 QDir::separator() +
-	 "PrisonBluesXXXXXX.txt");
+	 "PrisonBluesXXXXXXXXXX.txt");
 
       if(file.open())
 	{

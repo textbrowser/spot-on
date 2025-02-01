@@ -665,7 +665,7 @@ void spoton_kernel::writePrisonBluesChat
      QDir::separator() +
      publicKeyHashHex +
      QDir::separator() +
-     "PrisonBluesXXXXXX.txt");
+     "PrisonBluesXXXXXXXXXX.txt");
 
   if(file.open())
     {
