@@ -2546,7 +2546,7 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
-  auto const message(ui.gpg_message->toPlainText().trimmed().toUtf8());
+  auto const message(ui.gpg_message->toPlainText().trimmed());
 
   if(message.isEmpty())
     {
@@ -2556,16 +2556,46 @@ void spoton_rosetta::slotWriteGPG(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  auto const fingerprints
-    (ui.gpg_participants->selectionModel()->selectedRows(1));
+  auto const names
+    (ui.gpg_participants->selectionModel()->selectedRows(0));
 
-  if(fingerprints.isEmpty())
+  if(names.isEmpty())
     {
       QApplication::restoreOverrideCursor();
       showMessage(tr("Please select a participant."), 5000);
       return;
     }
 
+  QString msg("");
+  QString to("");
+  auto const now(QDateTime::currentDateTime());
+
+  for(int i = 0; i < names.size(); i++)
+    to.append(names.at(i).data().toString()).append(", ");
+
+  msg.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  msg.append
+    (tr("<b>me</b> (<font color=gray>%1</font>)<b>:</b> ").
+     arg(to.mid(0, to.length() - 2)));
+
+  if(m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool())
+    msg.append(m_parent->mapIconToEmoticon(message));
+  else
+    msg.append(message);
+
+  ui.gpg_messages->append(msg);
+  ui.gpg_messages->verticalScrollBar()->setValue
+    (ui.gpg_messages->verticalScrollBar()->maximum());
+
+  auto const fingerprints
+    (ui.gpg_participants->selectionModel()->selectedRows(1));
   auto const publicKeyHashes
     (ui.gpg_participants->selectionModel()->selectedRows(2));
   auto const sign = ui.gpg_sign_messages->isChecked();
@@ -2598,7 +2628,10 @@ void spoton_rosetta::slotWriteGPG(void)
 
 	  Q_UNUSED(file.fileName()); // Prevents removal of file.
 	  file.setAutoRemove(false);
-	  stream << gpgEncrypt(message, publicKey, QByteArray(), sign);
+	  stream << gpgEncrypt(message.toUtf8(),
+			       publicKey,
+			       QByteArray(),
+			       sign);
 	}
     }
 

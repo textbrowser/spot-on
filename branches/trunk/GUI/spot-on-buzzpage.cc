@@ -540,7 +540,7 @@ void spoton_buzzpage::slotSendMessage(void)
       error = tr("The connection to the kernel is not encrypted.");
       goto done_label;
     }
-  else if(m_ui.message->toPlainText().isEmpty())
+  else if(m_ui.message->toPlainText().trimmed().isEmpty())
     {
       error = tr("Please provide a real message.");
       goto done_label;
@@ -555,7 +555,7 @@ void spoton_buzzpage::slotSendMessage(void)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   message.append(tr("<b>me:</b> "));
-  message.append(m_ui.message->toPlainText());
+  message.append(m_ui.message->toPlainText().trimmed());
   m_ui.messages->append(message);
   m_ui.messages->verticalScrollBar()->setValue
     (m_ui.messages->verticalScrollBar()->maximum());
@@ -586,7 +586,7 @@ void spoton_buzzpage::slotSendMessage(void)
     message.append("_");
     message.append(m_id.toBase64());
     message.append("_");
-    message.append(m_ui.message->toPlainText().toUtf8().toBase64());
+    message.append(m_ui.message->toPlainText().trimmed().toUtf8().toBase64());
     message.append("_");
     message.append(sendMethod.toBase64());
     message.append("_");

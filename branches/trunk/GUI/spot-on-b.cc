@@ -2456,7 +2456,7 @@ void spoton::sendMessage(bool *ok)
 		 "A secure connection is requested.");
       goto done_label;
     }
-  else if(m_ui.message->toPlainText().isEmpty())
+  else if(m_ui.message->toPlainText().trimmed().isEmpty())
     {
       error = tr("Please provide a real message.");
       goto done_label;
@@ -2490,9 +2490,9 @@ void spoton::sendMessage(bool *ok)
      arg(to.mid(0, to.length() - 2)));
 
   if(m_settings.value("gui/enableChatEmoticons", false).toBool())
-    msg.append(mapIconToEmoticon(m_ui.message->toPlainText()));
+    msg.append(mapIconToEmoticon(m_ui.message->toPlainText().trimmed()));
   else
-    msg.append(m_ui.message->toPlainText());
+    msg.append(m_ui.message->toPlainText().trimmed());
 
   m_ui.messages->append(msg);
   m_ui.messages->verticalScrollBar()->setValue
@@ -2536,7 +2536,8 @@ void spoton::sendMessage(bool *ok)
 	  message.append(QString("%1_").arg(data.toString()).toUtf8());
 	  message.append(name.toBase64());
 	  message.append("_");
-	  message.append(m_ui.message->toPlainText().toUtf8().toBase64());
+	  message.append
+	    (m_ui.message->toPlainText().trimmed().toUtf8().toBase64());
 	  message.append("_");
 	  message.append
 	    (QByteArray::number(m_chatSequenceNumbers[data.toString()]).

@@ -245,7 +245,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 		 "A secure connection is requested.");
       goto done_label;
     }
-  else if(ui.message->toPlainText().isEmpty())
+  else if(ui.message->toPlainText().trimmed().isEmpty())
     {
       error = tr("Please provide a real message.");
       goto done_label;
@@ -271,9 +271,9 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
   if(settings.value("gui/enableChatEmoticons", false).toBool())
     msg.append
-      (spoton::mapIconToEmoticon(ui.message->toPlainText()));
+      (spoton::mapIconToEmoticon(ui.message->toPlainText().trimmed()));
   else
-    msg.append(ui.message->toPlainText());
+    msg.append(ui.message->toPlainText().trimmed());
 
   ui.messages->append(msg);
   ui.messages->verticalScrollBar()->setValue
@@ -310,7 +310,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
   message.append(QString("%1_").arg(m_id).toUtf8());
   message.append(name.toBase64());
   message.append("_");
-  message.append(ui.message->toPlainText().toUtf8().toBase64());
+  message.append(ui.message->toPlainText().trimmed().toUtf8().toBase64());
   message.append("_");
   message.append
     (QByteArray::number(m_parent ?
