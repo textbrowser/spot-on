@@ -337,6 +337,7 @@ Completed Items
 232.   Secure GIT_A and GIT_T INI values.
 233.   Verify m_kernelSocket.write() is on a connected socket.
 234.   Prison Blues and calling. Not possible.
+235.   Prison Blues and GPG.
 
 Remaining Items
 
@@ -348,4 +349,4 @@ Remaining Items
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
 5.     WebEngine and local directories. Remove.
-6.     Prison Blues and GPG.
+6.     Save checkbox and splitter values in Rosetta.
