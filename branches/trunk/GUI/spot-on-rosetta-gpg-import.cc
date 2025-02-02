@@ -173,7 +173,7 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 		break;
 
 	      if(key->uids && key->uids->email)
-		email = key->uids->email;
+		email = QString(key->uids->email).trimmed();
 
 	      gpgme_key_unref(key);
 	      break;
