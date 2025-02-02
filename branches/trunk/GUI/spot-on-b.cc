@@ -4910,8 +4910,7 @@ void spoton::slotReceivedKernelMessage(void)
 		     arg(now.toString("hh")).
 		     arg(now.toString("mm")).
 		     arg(now.toString("ss")));
-		  msg.append(QString("<i>%1</i>").
-			     arg(list.at(1).constData()));
+		  msg.append(QString("<i>%1</i>").arg(list.at(1).constData()));
 
 		  if(m_chatWindows.contains(list.value(0).toBase64()))
 		    {
@@ -5479,8 +5478,8 @@ void spoton::slotReceivedKernelMessage(void)
 		      content = str;
 		    }
 
-		  if(m_settings.value("gui/enableChatEmoticons", false).
-		     toBool())
+		  if(m_settings.value("gui/enableChatEmoticons",
+				      false).toBool())
 		    content = mapIconToEmoticon(content);
 
 		  msg.append(content);
