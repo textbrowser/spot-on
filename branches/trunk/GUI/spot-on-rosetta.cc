@@ -34,6 +34,7 @@
 #include <QSqlQuery>
 #include <QStandardPaths>
 #include <QTemporaryFile>
+#include <QtConcurrent>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
@@ -100,6 +101,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPrisonBluesTimeout(void)));
+  connect(this,
+	  SIGNAL(processGPGMessage(const QByteArray &)),
+	  this,
+	  SLOT(slotProcessGPGMessage(const QByteArray &)));
   connect(ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -200,6 +205,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
 	  SLOT(slotSplitterMoved(int, int)));
+  connect(ui.clear_gpg,
+	  SIGNAL(clicked(void)),
+	  ui.gpg_messages,
+	  SLOT(clear(void)));
   connect(ui.gpg_message,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -287,6 +296,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 spoton_rosetta::~spoton_rosetta()
 {
   m_prisonBluesTimer.stop();
+  m_readPrisonBluesFuture.cancel();
+  m_readPrisonBluesFuture.waitForFinished();
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
@@ -530,7 +541,6 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   QString passphrase("");
   auto ok = true;
 
-  QApplication::restoreOverrideCursor();
   passphrase = QInputDialog::getText
     (s_rosetta,
      tr("%1: GPG Passphrase").arg(SPOTON_APPLICATION_NAME),
@@ -711,6 +721,7 @@ void spoton_rosetta::populateContacts(void)
 
 void spoton_rosetta::populateGPGEmailAddresses(void)
 {
+  m_gpgFingerprints.clear();
   ui.gpg_address->clear();
   ui.gpg_email_addresses->clear();
 
@@ -719,6 +730,7 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
   while(it.hasNext())
     {
       it.next();
+      m_gpgFingerprints.append(spoton_crypt::fingerprint(it.value()));
       ui.gpg_address->addItem(it.key(), it.value());
       ui.gpg_email_addresses->addItem(it.key(), it.value());
     }
@@ -787,6 +799,39 @@ void spoton_rosetta::prisonBluesProcess(void)
     (fileInfo.absoluteFilePath(), QStringList());
   m_parent->m_prisonBluesProcess.waitForStarted();
 #endif
+}
+
+void spoton_rosetta::readPrisonBlues
+(const QFileInfo &directory, const QVector<QByteArray> &vector)
+{
+  QVectorIterator<QByteArray> it(vector);
+
+  while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
+    {
+      QDir const fileInfo
+	(directory.absoluteFilePath() + QDir::separator() + it.next());
+
+      if(fileInfo.isReadable())
+	{
+	  foreach(auto const &i, fileInfo.entryInfoList(QDir::Files))
+	    {
+	      QFile file(i.absoluteFilePath());
+
+	      if(file.open(QIODevice::ReadOnly))
+		{
+		  auto const bytes(file.readAll().trimmed());
+
+		  emit processGPGMessage(bytes);
+
+		  if(bytes.startsWith("-----BEGIN PGP MESSAGE-----"))
+		    {
+		      // Remove later.
+		      // file.remove();
+		    }
+		}
+	    }
+	}
+    }
 }
 
 void spoton_rosetta::resizeEvent(QResizeEvent *event)
@@ -917,8 +962,8 @@ void spoton_rosetta::slotAddContact(void)
 	  (spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)));
 
 	if(fingerprint1 == fingerprint2 &&
-	   !fingerprint1.isEmpty() &&
-	   !fingerprint2.isEmpty())
+	   fingerprint1.isEmpty() == false &&
+	   fingerprint2.isEmpty() == false)
 	  {
 	    showMessage(tr("Please do not add personal GPG keys."), 5000);
 	    return;
@@ -2226,7 +2271,35 @@ void spoton_rosetta::slotPopulateGPGEmailAddresses(void)
 
 void spoton_rosetta::slotPrisonBluesTimeout(void)
 {
+  if(m_parent)
+    {
+      QFileInfo const directory
+	(m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
+	 trimmed());
+
+      if(directory.isDir())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+	m_readPrisonBluesFuture = QtConcurrent::run
+	  (&spoton_rosetta::readPrisonBlues,
+	   this,
+	   directory,
+	   m_gpgFingerprints);
+#else
+        m_readPrisonBluesFuture = QtConcurrent::run
+	  (this,
+	   &spoton_rosetta::readPrisonBlues,
+	   directory,
+	   m_gpgFingerprints);
+#endif
+    }
+
   prisonBluesProcess();
+}
+
+void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
+{
+  if(message.trimmed().isEmpty())
+    return;
 }
 
 void spoton_rosetta::slotPublishGPG(void)

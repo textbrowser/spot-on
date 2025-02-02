@@ -28,6 +28,8 @@
 #ifndef _spoton_rosetta_h_
 #define _spoton_rosetta_h_
 
+#include <QFileInfo>
+#include <QFuture>
 #include <QPointer>
 #include <QTimer>
 
@@ -71,11 +73,13 @@ class spoton_rosetta: public QMainWindow
     Size
   };
 
+  QFuture<void> m_readPrisonBluesFuture;
   QPointer<spoton> m_parent;
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
   QTimer m_prisonBluesTimer;
+  QVector<QByteArray> m_gpgFingerprints;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(const QByteArray &message,
@@ -95,6 +99,8 @@ class spoton_rosetta: public QMainWindow
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
   void prisonBluesProcess(void);
+  void readPrisonBlues
+    (const QFileInfo &directory, const QVector<QByteArray> &vector);
   void resizeEvent(QResizeEvent *event);
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showMessage(const QString &message, const int milliseconds = 0);
@@ -121,6 +127,7 @@ class spoton_rosetta: public QMainWindow
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
   void slotPrisonBluesTimeout(void);
+  void slotProcessGPGMessage(const QByteArray &message);
   void slotPublishGPG(void);
   void slotRemoveGPGKeys(void);
   void slotRename(void);
@@ -133,8 +140,9 @@ class spoton_rosetta: public QMainWindow
   void gpgKeysRemoved(void);
   void participantAdded(const QString &type);
   void participantDeleted(const QString &oid, const QString &type);
-  void participantNameChanged(const QByteArray &publicKeyHash,
-			      const QString &name);
+  void participantNameChanged
+    (const QByteArray &publicKeyHash, const QString &name);
+  void processGPGMessage(const QByteArray &message);
 };
 
 #endif

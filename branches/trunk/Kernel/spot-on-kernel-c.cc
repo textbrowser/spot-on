@@ -299,10 +299,9 @@ void spoton_kernel::readPrisonBlues(void)
 		 list.value(4).toBase64() + "_" +
 		 list.value(5).toBase64() + "_" +
 		 list.last().toBase64().append("\n"));
+	      file.remove(); // Be careful, yes?
 	    }
 	}
-
-      file.remove();
     }
 }
 
