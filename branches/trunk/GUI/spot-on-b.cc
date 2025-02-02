@@ -5329,16 +5329,15 @@ void spoton::slotReceivedKernelMessage(void)
 					       ** SHA-512 hash of the sender's
 					       ** public key.
 					       */
-		  auto const items(findItems(m_ui.participants,
-					     hash.toBase64(),
-					     3));
+		  auto const items
+		    (findItems(m_ui.participants, hash.toBase64(), 3));
 		  auto const message(list.value(2));
 		  auto const now(QDateTime::currentDateTime());
-		  auto content(QString::fromUtf8(message.constData(),
-						 message.length()));
+		  auto content
+		    (QString::fromUtf8(message.constData(), message.length()));
 		  auto name(list.value(1).trimmed());
-		  auto sequenceNumber(list.value(3));
 		  auto ok = true;
+		  auto sequenceNumber(list.value(3));
 
 		  if(!items.isEmpty() && items.at(0))
 		    {
@@ -5442,15 +5441,13 @@ void spoton::slotReceivedKernelMessage(void)
 
 		  msg.append
 		    (QString("<font color=blue>%1: </font>").
-		     arg(QString::fromUtf8(name.constData(),
-					   name.length())));
+		     arg(QString::fromUtf8(name.constData(), name.length())));
 
 		  if(notsigned != tr(" "))
 		    msg.append
-		      ("<font color=orange>unsigned: </font>");
+		      (tr("<font color=orange>unsigned: </font>"));
 
-		  if(spoton_misc::isValidInstitutionMagnet(content.
-							   toLatin1()))
+		  if(spoton_misc::isValidInstitutionMagnet(content.toLatin1()))
 		    {
 		      QString str("");
 

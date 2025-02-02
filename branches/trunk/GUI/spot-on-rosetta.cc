@@ -2411,7 +2411,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
       QString content("");
       auto const now(QDateTime::currentDateTime());
 
-      content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]:").
+      content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]: ").
 	arg(now.toString("MM")).
 	arg(now.toString("dd")).
 	arg(now.toString("yyyy")).
