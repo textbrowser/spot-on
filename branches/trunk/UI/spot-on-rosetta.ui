@@ -531,14 +531,8 @@
                       </item>
                       <item>
                        <widget class="QCheckBox" name="sign">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
                         <property name="toolTip">
-                         <string>A dialog may be displayed prompting for the password of the key ring.</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Setting is not retained in the INI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
                          <string>&amp;Sign message.</string>
@@ -890,7 +884,11 @@
                             </widget>
                            </item>
                            <item>
-                            <widget class="QComboBox" name="gpg_address"/>
+                            <widget class="QComboBox" name="gpg_address">
+                             <property name="sizeAdjustPolicy">
+                              <enum>QComboBox::AdjustToContents</enum>
+                             </property>
+                            </widget>
                            </item>
                            <item>
                             <spacer name="horizontalSpacer_16">
@@ -912,7 +910,7 @@
                            <item>
                             <widget class="QCheckBox" name="gpg_sign_messages">
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Setting is not retained in the INI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
                               <string>Sign messages.</string>

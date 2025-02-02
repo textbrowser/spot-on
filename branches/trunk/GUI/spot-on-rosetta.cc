@@ -133,6 +133,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddContact(void)));
+  connect(ui.chatHorizontalSplitter,
+	  SIGNAL(splitterMoved(int, int)),
+	  this,
+	  SLOT(slotSplitterMoved(int, int)));
   connect(ui.clearContact,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -262,10 +266,12 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   QSettings settings;
   QStringList keys;
 
-  keys << "gui/rosettaDecryptSplitter"
+  keys << "gui/rosettaChatHorizontalSplitter"
+       << "gui/rosettaDecryptSplitter"
        << "gui/rosettaEncryptSplitter"
        << "gui/rosettaMainHorizontalSplitter";
-  splitters << ui.decryptSplitter
+  splitters << ui.chatHorizontalSplitter
+	    << ui.decryptSplitter
 	    << ui.encryptSplitter
 	    << ui.mainHorizontalSplitter;
 
@@ -441,7 +447,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  QByteArray bytes(1024, 0);
+	  QByteArray bytes(4096, 0);
 	  ssize_t rc = 0;
 
 	  gpgme_data_seek(ciphertext, 0, SEEK_SET);
@@ -1432,7 +1438,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	      {
 		ui.outputDecrypt->clear();
 
-		QByteArray bytes(1024, 0);
+		QByteArray bytes(4096, 0);
 		ssize_t rc = 0;
 
 		gpgme_data_seek(plaintext, 0, SEEK_SET);
@@ -2299,20 +2305,24 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
     return;
 
 #ifdef SPOTON_GPGME_ENABLED
+  QByteArray const begin("-----BEGIN PGP MESSAGE-----");
+  QByteArray const end("-----END PGP MESSAGE-----");
+  auto const index1 = message.indexOf(begin);
+  auto const index2 = message.indexOf(end);
+
+  if(index1 < 0 || index2 < 0 || index1 >= index2)
+    return;
+
   gpgme_check_version(nullptr);
 
-  QByteArray from("(Unknown)");
   QByteArray msg("");
+  auto from(tr("(Unknown)"));
   auto signedMessage(tr("(Invalid Signature)"));
   gpgme_ctx_t ctx = nullptr;
   gpgme_error_t err = gpgme_new(&ctx);
 
   if(err == GPG_ERR_NO_ERROR)
     {
-      QByteArray const begin("-----BEGIN PGP MESSAGE-----");
-      QByteArray const end("-----END PGP MESSAGE-----");
-      auto const index1 = message.indexOf(begin);
-      auto const index2 = message.indexOf(end);
       auto const data
 	(message.
 	 mid(index1, index2 - index1 + static_cast<int> (qstrlen(end))));
@@ -2341,7 +2351,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  QByteArray bytes(1024, 0);
+	  QByteArray bytes(4096, 0);
 	  ssize_t rc = 0;
 
 	  gpgme_data_seek(plaintext, 0, SEEK_SET);
@@ -2368,17 +2378,21 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 		     GPG_ERR_NO_ERROR)
 		    {
 		      if(key->uids && key->uids->email)
-			from = key->uids->email;
+			{
+			  QByteArray f(key->uids->email);
+
+			  from = QString::fromUtf8(f.constData(), f.length());
+			}
 		      else
-			from = "(Unknown)";
+			from = tr("(Unknown)");
 		    }
 		  else
-		    from = "(Unknown)";
+		    from = tr("(Unknown)");
 
 		  gpgme_key_unref(key);
 		}
 	      else
-		from = "(Unknown)";
+		from = tr("(Unknown)");
 
 	      if((signature && (signature->summary & GPGME_SIGSUM_GREEN)) ||
 		 (signature && !signature->summary))
@@ -2405,9 +2419,8 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 	arg(now.toString("mm")).
 	arg(now.toString("ss"));
       content.append
-	(QString("<font color=blue>%1 %2: </font>").
-	 arg(QString::fromUtf8(from.constData(), from.length())).
-	 arg(signedMessage));
+	(QString("<font color=blue>%1 <b>%2</b>: </font>").
+	 arg(from).arg(signedMessage));
       content.append(QString::fromUtf8(msg.constData(), msg.length()));
       content = m_parent &&
 	m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool() ?
@@ -2691,7 +2704,9 @@ void spoton_rosetta::slotSplitterMoved(int pos, int index)
   QSettings settings;
   QString key("");
 
-  if(splitter == ui.decryptSplitter)
+  if(splitter == ui.chatHorizontalSplitter)
+    key = "gui/rosettaChatHorizontalSplitter";
+  else if(splitter == ui.decryptSplitter)
     key = "gui/rosettaDecryptSplitter";
   else if(splitter == ui.encryptSplitter)
     key = "gui/rosettaEncryptSplitter";
