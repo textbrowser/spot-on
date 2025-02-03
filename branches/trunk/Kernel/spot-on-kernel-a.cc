@@ -360,6 +360,7 @@ int main(int argc, char *argv[])
   QSettings::setPath
     (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
   QSettings::setDefaultFormat(QSettings::IniFormat);
+  auto const separator(QDir::separator());
 
   for(int i = 1; i < argc; i++)
     if(argv && argv[i] && qstrcmp(argv[i], "--status") == 0)
@@ -370,7 +371,7 @@ int main(int argc, char *argv[])
 	  auto db(spoton_misc::database(connectionName));
 
 	  db.setDatabaseName
-	    (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+	    (spoton_misc::homePath() + separator + "kernel.db");
 
 	  if(db.open())
 	    {
@@ -437,9 +438,8 @@ int main(int argc, char *argv[])
 
   QStringList paths;
 
-  paths << spoton_misc::homePath() + QDir::separator() +
-           "congestion_control.db"
-	<< spoton_misc::homePath() + QDir::separator() + "kernel.db";
+  paths << spoton_misc::homePath() + separator + "congestion_control.db"
+	<< spoton_misc::homePath() + separator + "kernel.db";
 
   for(int i = 0; i < paths.size(); i++)
     {
