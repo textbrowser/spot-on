@@ -2141,9 +2141,11 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
   auto ok = true;
 
   hash = spoton_crypt::keyedHash
-    (data, s_messagingCacheKey,
-     setting("kernel/messaging_cache_algorithm", "sha224").
-     toString().toLatin1(), &ok);
+    (data,
+     s_messagingCacheKey,
+     setting("kernel/messaging_cache_algorithm", "sha224").toString().
+     toLatin1(),
+     &ok);
 
   if(!ok)
     return;
@@ -2194,9 +2196,11 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
       auto ok = true;
 
       hash = spoton_crypt::keyedHash
-	(data, s_messagingCacheKey,
+	(data,
+	 s_messagingCacheKey,
 	 setting("kernel/messaging_cache_algorithm", "sha224").
-	 toString().toLatin1(), &ok);
+	 toString().toLatin1(),
+	 &ok);
 
       if(!ok)
 	return;

@@ -295,8 +295,8 @@ int main(int argc, char *argv[])
      QColor(Qt::white));
   splash.repaint();
   QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
-  QWebEngineProfile::defaultProfile()->setCachePath
-    (spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
+  QWebEngineProfile::defaultProfile()->setCachePath("/dev/null");
+  QWebEngineProfile::defaultProfile()->setDownloadPath("/dev/null");
   QWebEngineProfile::defaultProfile()->
     setHttpCacheMaximumSize(0); // Automatic.
   QWebEngineProfile::defaultProfile()->setHttpCacheType
@@ -304,9 +304,7 @@ int main(int argc, char *argv[])
   QWebEngineProfile::defaultProfile()->setHttpUserAgent("");
   QWebEngineProfile::defaultProfile()->setPersistentCookiesPolicy
     (QWebEngineProfile::NoPersistentCookies);
-  QWebEngineProfile::defaultProfile()->setPersistentStoragePath
-    (spoton_misc::homePath() +
-     QDir::separator() + "WebEnginePersistentStorage");
+  QWebEngineProfile::defaultProfile()->setPersistentStoragePath("/dev/null");
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
   QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::AutoLoadImages, false);
@@ -316,6 +314,8 @@ int main(int argc, char *argv[])
     (QWebEngineSettings::LocalContentCanAccessFileUrls, false);
   QWebEngineSettings::defaultSettings()->setAttribute
     (QWebEngineSettings::LocalStorageEnabled, false);
+  QWebEngineSettings::defaultSettings()->setAttribute
+    (QWebEngineSettings::WebGLEnabled, false);
 #else
   QWebEngineProfile::defaultProfile()->settings()->setAttribute
     (QWebEngineSettings::AutoLoadImages, false);
@@ -325,6 +325,8 @@ int main(int argc, char *argv[])
     (QWebEngineSettings::LocalContentCanAccessFileUrls, false);
   QWebEngineProfile::defaultProfile()->settings()->setAttribute
     (QWebEngineSettings::LocalStorageEnabled, false);
+  QWebEngineProfile::defaultProfile()->settings()->setAttribute
+    (QWebEngineSettings::WebGLEnabled, false);
 #endif
 #elif defined(SPOTON_WEBKIT_ENABLED)
   QWebSettings::globalSettings()->setAttribute

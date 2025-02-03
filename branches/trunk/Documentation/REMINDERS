@@ -338,6 +338,8 @@ Completed Items
 233.   Verify m_kernelSocket.write() is on a connected socket.
 234.   Prison Blues and calling. Not possible.
 235.   Prison Blues and GPG.
+236.   Save checkbox and splitter values in Rosetta.
+237.   WebEngine and local directories. Remove.
 
 Remaining Items
 
@@ -348,5 +350,4 @@ Remaining Items
 4.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
-5.     WebEngine and local directories. Remove.
-6.     Save checkbox and splitter values in Rosetta.
+5.     Congestion control and Prison Blues. GIT servers and duplicates.
