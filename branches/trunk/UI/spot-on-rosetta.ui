@@ -878,9 +878,6 @@
                              <property name="text">
                               <string>GPG E-Mail Address</string>
                              </property>
-                             <property name="buddy">
-                              <cstring>nodeName</cstring>
-                             </property>
                             </widget>
                            </item>
                            <item>
