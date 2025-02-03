@@ -1,3 +1,9 @@
+exists(/opt/homebrew/include/gpgme.h) {
+DEFINES += SPOTON_GPGME_ENABLED
+LIBS += -lgpgme
+message("GPGME enabled!")
+}
+
 exists(/usr/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
 LIBS += -lgpgme
