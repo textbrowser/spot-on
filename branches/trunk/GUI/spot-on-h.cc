@@ -1368,6 +1368,20 @@ void spoton::slotReadPrisonBluesProcess(void)
   while(m_prisonBluesProcess.bytesAvailable() > 0)
     m_optionsUi.git_script_results->appendPlainText
       (m_prisonBluesProcess.readAll().trimmed());
+
+  auto const text(m_optionsUi.git_script_results->toPlainText().toLower());
+
+  if(text.contains("all set") || text.contains("completed successfully"))
+    {
+      disconnect(&m_prisonBluesProcess,
+		 SIGNAL(readyReadStandardError(void)),
+		 this,
+		 SLOT(slotReadPrisonBluesProcess(void)));
+      disconnect(&m_prisonBluesProcess,
+		 SIGNAL(readyReadStandardOutput(void)),
+		 this,
+		 SLOT(slotReadPrisonBluesProcess(void)));
+    }
 }
 
 void spoton::slotResetAddListener(void)
