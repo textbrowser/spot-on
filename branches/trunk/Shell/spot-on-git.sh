@@ -98,12 +98,10 @@ else
 	then
 	    echo "[All set! Bye!]"
 	    exit 0
-	else
-	    echo "[Failed!]"
 	fi
 
 	echo "Adding local text files."
-	git add --all */PrisonBlues*.txt 2>&1 1>/dev/null
+	git add --all . 2>&1 1>/dev/null
 
 	rc=$?
 
