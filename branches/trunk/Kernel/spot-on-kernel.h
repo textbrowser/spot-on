@@ -138,6 +138,7 @@ class spoton_kernel: public QObject
   QFuture<void> m_readPrisonBluesFuture;
   QFuture<void> m_statisticsFuture;
   QHash<QByteArray, QVector<QVariant> > m_forwardSecrecyKeys;
+  QHash<QByteArray, QPair<QByteArray, qint64> > m_smokeClients;
   QHash<QPair<QByteArray, qint64>, QByteArray> m_droppedPackets;
   QHash<qint64, QPointer<spoton_listener> > m_listeners;
   QHash<qint64, QPointer<spoton_neighbor> > m_neighbors;
@@ -315,6 +316,7 @@ class spoton_kernel: public QObject
   void slotPurgeEphemeralKeys(void);
   void slotPurgeEphemeralKeysTimeout(void);
   void slotReadPrisonBlues(void);
+  void slotRegisterSmokeClient(const QByteArray &data);
   void slotRequestScramble(void);
   void slotRetrieveMail(void);
   void slotSMPMessageReceivedFromUI(const QByteArrayList &list);

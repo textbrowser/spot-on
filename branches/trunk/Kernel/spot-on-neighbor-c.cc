@@ -3044,6 +3044,7 @@ void spoton_neighbor::process0095a(int length, const QByteArray &dataIn)
   if(length == data.length())
     {
       emit receivedMessage(dataIn, m_id, QPair<QByteArray, QByteArray> ());
+      emit registerSmokeClient(data);
       emit resetKeepAlive();
     }
   else

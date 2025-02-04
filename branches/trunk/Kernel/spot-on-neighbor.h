@@ -607,6 +607,7 @@ class spoton_neighbor: public QThread
      const qint64 id,
      const QPairByteArrayByteArray &adaptiveEchoPair);
   void receivedPublicKey(const QByteArray &name, const QByteArray publicKey);
+  void registerSmokeClient(const QByteArray &data);
   void resetKeepAlive(void);
   void retrieveMail(const QByteArray &data,
 		    const QByteArray &publicKeyHash,
