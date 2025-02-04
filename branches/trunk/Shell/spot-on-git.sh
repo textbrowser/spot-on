@@ -96,6 +96,7 @@ else
 
 	if [ $rc -lt 1 ]
 	then
+	    git clean -df . 2>&1 1>/dev/null
 	    echo "[All set! Bye!]"
 	    exit 0
 	fi
