@@ -1371,7 +1371,9 @@ void spoton::slotReadPrisonBluesProcess(void)
 
   auto const text(m_optionsUi.git_script_results->toPlainText().toLower());
 
-  if(text.contains("all set") || text.contains("completed successfully"))
+  if(m_prisonBluesProcess.state() == QProcess::NotRunning ||
+     text.contains("all set") ||
+     text.contains("completed successfully"))
     {
       disconnect(&m_prisonBluesProcess,
 		 SIGNAL(readyReadStandardError(void)),
