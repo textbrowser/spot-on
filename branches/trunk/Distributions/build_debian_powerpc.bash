@@ -28,6 +28,7 @@ cp -p ../../libNTRU/libntru.so ./opt/spot-on/Lib/.
 cp -p ./Data/spot-on-neighbors.txt ./opt/spot-on/.
 cp -p ./Icons/Logo/spot-on-logo.png ./opt/spot-on/.
 cp -p ./SQL/* ./opt/spot-on/SQL/.
+cp -p ./Shell/spot-on-git.sh ./opt/spot-on/.
 cp -p ./Shell/spot-on-kernel.sh ./opt/spot-on/.
 cp -p ./Shell/spot-on.sh ./opt/spot-on/.
 cp -p ./Sounds/* ./opt/spot-on/Sounds/.

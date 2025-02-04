@@ -1913,10 +1913,6 @@ void spoton_kernel::connectSignalsToNeighbor
 		       const QPairByteArrayByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
-	  SIGNAL(registerSmokeClient(const QByteArray &)),
-	  this,
-	  SLOT(slotRegisterSmokeClient(const QByteArray &)));
-  connect(neighbor,
 	  SIGNAL(saveForwardSecrecySessionKeys(const QByteArrayList &)),
 	  this,
 	  SLOT(slotSaveForwardSecrecySessionKeys(const QByteArrayList &)),

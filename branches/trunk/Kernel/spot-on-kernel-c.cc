@@ -613,20 +613,6 @@ void spoton_kernel::slotReadPrisonBlues(void)
 #endif
 }
 
-void spoton_kernel::slotRegisterSmokeClient(const QByteArray &data)
-{
-  if(data.trimmed().isEmpty())
-    return;
-
-  auto const list(data.trimmed().split(';'));
-
-  if(list.size() == 2 &&
-     list.value(0).trimmed().isEmpty() == false &&
-     list.value(1).trimmed().isEmpty() == false)
-    m_smokeClients[list[0].trimmed().toHex()] = QPair<QByteArray, qint64>
-      (list[1].trimmed(), QDateTime::currentDateTime().toMSecsSinceEpoch());
-}
-
 void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
 {
   if(QByteArray::fromBase64(list.value(0)) == "poptastic")
