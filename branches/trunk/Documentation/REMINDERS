@@ -17,7 +17,6 @@ Archived Items
 13.    Which key types to export and import? A new selection dialog.
 14.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-15.    Multiple proxies.
 16.    Open Library.
 17.    IMAP and optional removal of messages; retrieve latest.
 18.    Optional GCRYPT. Android and OpenSSL.
@@ -340,6 +339,7 @@ Completed Items
 235.   Prison Blues and GPG.
 236.   Save checkbox and splitter values in Rosetta.
 237.   WebEngine and local directories. Remove.
+238.   Multiple proxies. Local machine and local network.
 
 Remaining Items
 
@@ -351,3 +351,4 @@ Remaining Items
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
 5.     Congestion control and Prison Blues. GIT servers and duplicates.
+6.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
