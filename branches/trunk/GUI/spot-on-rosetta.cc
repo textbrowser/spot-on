@@ -2270,7 +2270,7 @@ void spoton_rosetta::slotDelete(void)
       else
 	sortContacts();
 
-      slotContactsChanged(0);
+      populateContacts();
     }
 }
 
