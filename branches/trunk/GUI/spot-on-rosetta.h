@@ -82,7 +82,8 @@ class spoton_rosetta: public QMainWindow
   QVector<QByteArray> m_gpgFingerprints;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
-  QByteArray gpgEncrypt(const QByteArray &message,
+  QByteArray gpgEncrypt(bool &ok,
+			const QByteArray &message,
 			const QByteArray &receiver,
 			const QByteArray &sender,
 			const bool sign) const;

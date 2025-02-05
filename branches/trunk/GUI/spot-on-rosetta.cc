@@ -366,7 +366,8 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
 }
 
 QByteArray spoton_rosetta::gpgEncrypt
-(const QByteArray &message,
+(bool &ok,
+ const QByteArray &message,
  const QByteArray &receiver,
  const QByteArray &sender,
  const bool sign) const
@@ -374,6 +375,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 #ifdef SPOTON_GPGME_ENABLED
   Q_UNUSED(sender);
   gpgme_check_version(nullptr);
+  ok = false;
 
   QByteArray output;
   gpgme_ctx_t ctx = nullptr;
@@ -414,7 +416,11 @@ QByteArray spoton_rosetta::gpgEncrypt
 
 	  if(err == GPG_ERR_NO_ERROR)
 	    {
-	      if(sign)
+	      auto const flags = static_cast<gpgme_encrypt_flags_t>
+		(GPGME_ENCRYPT_ALWAYS_TRUST |
+		 GPGME_ENCRYPT_NO_COMPRESS);
+
+		if(sign)
 		{
 		  err = gpgme_set_pinentry_mode
 		    (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
@@ -425,7 +431,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 		      err = gpgme_op_encrypt_sign
 			(ctx,
 			 keys,
-			 GPGME_ENCRYPT_ALWAYS_TRUST,
+			 flags,
 			 plaintext,
 			 ciphertext);
 		    }
@@ -436,7 +442,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 		  err = gpgme_op_encrypt
 		    (ctx,
 		     keys,
-		     GPGME_ENCRYPT_ALWAYS_TRUST,
+		     flags,
 		     plaintext,
 		     ciphertext);
 		}
@@ -474,6 +480,8 @@ QByteArray spoton_rosetta::gpgEncrypt
 	(QString("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
 	 arg(gpgme_strerror(err)));
     }
+  else
+    ok = true;
 
   return output;
 #else
@@ -542,23 +550,22 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 {
   Q_UNUSED(hook);
   Q_UNUSED(passphrase_info);
-  Q_UNUSED(prev_was_bad);
   Q_UNUSED(uid_hint);
 
   if(!s_rosetta || !s_rosetta->m_parent)
-    return GPG_ERR_USER_1;
+    return GPG_ERR_CANCELED;
 
   auto crypt = s_rosetta->m_parent->crypts().value("chat", nullptr);
 
   if(!crypt)
-    return GPG_ERR_USER_1;
+    return GPG_ERR_CANCELED;
 
   auto passphrase(QSettings().value("gui/gpg_passphrase").toByteArray());
 
   passphrase = crypt->decryptedAfterAuthenticated
     (passphrase, nullptr).trimmed();
 
-  if(passphrase.isEmpty())
+  if(passphrase.isEmpty() || prev_was_bad)
     {
       QDialog dialog(s_rosetta);
       Ui_spoton_gpg_passphrase ui;
@@ -568,7 +575,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
       if(dialog.exec() != QDialog::Accepted)
 	{
 	  QApplication::processEvents();
-	  return GPG_ERR_USER_1;
+	  return GPG_ERR_CANCELED;
 	}
 
       passphrase = ui.passphrase->text().trimmed().toUtf8();
@@ -1773,9 +1780,11 @@ void spoton_rosetta::slotConvertEncrypt(void)
       auto const receiver
 	(spoton_misc::publicKeyFromHash(publicKeyHash, true, eCrypt));
       auto const sender(ui.gpg_email_addresses->currentData().toByteArray());
+      auto ok = true;
 
       ui.outputEncrypt->setText
-	(gpgEncrypt(ui.inputEncrypt->toPlainText().trimmed().toUtf8(),
+	(gpgEncrypt(ok,
+		    ui.inputEncrypt->toPlainText().trimmed().toUtf8(),
 		    receiver,
 		    sender,
 		    ui.sign->isChecked()));
@@ -2850,15 +2859,24 @@ void spoton_rosetta::slotWriteGPG(void)
 
       if(file.open())
 	{
-	  QTextStream stream(&file);
+	  auto ok = true;
+	  auto const output
+	    (gpgEncrypt(ok, message.toUtf8(), publicKey, QByteArray(), sign));
 
-	  Q_UNUSED(file.fileName()); // Prevents removal of file.
-	  file.setAutoRemove(false);
-	  stream << gpgEncrypt(message.toUtf8(),
-			       publicKey,
-			       QByteArray(),
-			       sign);
+	  if(ok)
+	    {
+	      Q_UNUSED(file.fileName()); // Prevents removal of file.
+	      file.setAutoRemove(false);
+
+	      QTextStream stream(&file);
+
+	      stream << output;
+	    }
+	  else
+	    showMessage(output, 5000);
 	}
+      else
+	showMessage(tr("Could not create a temporary file."), 5000);
     }
 
   ui.gpg_message->clear();
