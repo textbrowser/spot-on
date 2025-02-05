@@ -2823,6 +2823,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
   if(!ok)
     settings.remove("gui/git_t");
 
+  settings.remove("gui/gpg_passphrase");
   bytes = oldCrypt->decryptedAfterAuthenticated
     (QByteArray::fromBase64(settings.value("gui/poptasticName", "").
 			    toByteArray()), &ok);

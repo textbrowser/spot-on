@@ -44,6 +44,7 @@
 #include "spot-on-rosetta.h"
 #include "spot-on-utilities.h"
 #include "spot-on.h"
+#include "ui_spot-on-gpg-passphrase.h"
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
@@ -544,27 +545,45 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   Q_UNUSED(prev_was_bad);
   Q_UNUSED(uid_hint);
 
-  QString passphrase("");
-  auto ok = true;
+  if(!s_rosetta || !s_rosetta->m_parent)
+    return GPG_ERR_USER_1;
 
-  passphrase = QInputDialog::getText
-    (s_rosetta,
-     tr("%1: GPG Passphrase").arg(SPOTON_APPLICATION_NAME),
-     tr("&GPG Passphrase"),
-     QLineEdit::Password,
-     "",
-     &ok);
+  auto crypt = s_rosetta->m_parent->crypts().value("chat", nullptr);
 
-  if(!ok || passphrase.isEmpty())
+  if(!crypt)
+    return GPG_ERR_USER_1;
+
+  auto passphrase(QSettings().value("gui/gpg_passphrase").toByteArray());
+
+  passphrase = crypt->decryptedAfterAuthenticated
+    (passphrase, nullptr).trimmed();
+
+  if(passphrase.isEmpty())
     {
-      spoton_crypt::memzero(passphrase);
-      return GPG_ERR_NO_PASSPHRASE;
+      QDialog dialog(s_rosetta);
+      Ui_spoton_gpg_passphrase ui;
+
+      ui.setupUi(&dialog);
+
+      if(dialog.exec() != QDialog::Accepted)
+	{
+	  QApplication::processEvents();
+	  return GPG_ERR_USER_1;
+	}
+
+      passphrase = ui.passphrase->text().trimmed().toUtf8();
+
+      if(ui.retain->isChecked())
+	QSettings().setValue
+	  ("gui/gpg_passphrase",
+	   crypt->encryptedThenHashed(ui.passphrase->text().trimmed().toUtf8(),
+				      nullptr));
     }
 
   Q_UNUSED
     (gpgme_io_writen(fd,
-		     passphrase.toUtf8().constData(),
-		     static_cast<size_t> (passphrase.toUtf8().length())));
+		     passphrase.constData(),
+		     static_cast<size_t> (passphrase.length())));
   Q_UNUSED(gpgme_io_writen(fd, "\n", static_cast<size_t> (1)));
   spoton_crypt::memzero(passphrase);
   return GPG_ERR_NO_ERROR;
