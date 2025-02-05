@@ -961,7 +961,8 @@ void spoton_rosetta::showMessage
     return;
 
   if(statusBar())
-    statusBar()->showMessage(message, milliseconds);
+    statusBar()->showMessage
+      (message.trimmed(), qBound(1000, milliseconds, 25000));
   else
     {
       QMessageBox::critical
@@ -1030,7 +1031,7 @@ void spoton_rosetta::slotAddContact(void)
 	if(err != GPG_ERR_NO_ERROR)
 	  {
 	    showMessage
-	      (tr("GPGME error. Cannot add the key block to the keyring."),
+	      (tr("GPGME error. Cannot add the key block to the key ring."),
 	       5000);
 	    return;
 	  }
@@ -1053,7 +1054,7 @@ void spoton_rosetta::slotAddContact(void)
 	      auto ok = true;
 
 	      /*
-	      ** GPG public keys are not encrypted in the keyring.
+	      ** GPG public keys are not encrypted in the key ring.
 	      */
 
 	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
@@ -2137,12 +2138,15 @@ void spoton_rosetta::slotDelete(void)
 			   Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
   mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setStandardButtons
+    (QMessageBox::No | QMessageBox::Yes | QMessageBox::YesAll);
+  mb.setDefaultButton(QMessageBox::No);
 
   if(destinationType == DestinationTypes::GPG)
     mb.setText
       (tr("Are you sure that you wish to remove the selected contact? "
-	  "The contact will also be removed from the GPG keyring."));
+	  "The key will also be removed from the GPG key ring if Yes to All "
+	  "is selected."));
   else
     mb.setText
       (tr("Are you sure that you wish to remove the selected contact?"));
@@ -2151,7 +2155,9 @@ void spoton_rosetta::slotDelete(void)
   mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
 
-  if(mb.exec() != QMessageBox::Yes)
+  auto const rc = mb.exec();
+
+  if(!(rc == QMessageBox::Yes || rc == QMessageBox::YesAll))
     {
       QApplication::processEvents();
       return;
@@ -2159,15 +2165,11 @@ void spoton_rosetta::slotDelete(void)
 
   QApplication::processEvents();
 
-  QString connectionName("");
   auto const publicKeyHash
     (ui.contacts->itemData(ui.contacts->currentIndex()).toByteArray());
-  auto const oid
-    (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
-  auto ok = true;
 
 #ifdef SPOTON_GPGME_ENABLED
-  if(destinationType == DestinationTypes::GPG)
+  if(destinationType == DestinationTypes::GPG && rc == QMessageBox::YesAll)
     {
       gpgme_check_version(nullptr);
 
@@ -2207,6 +2209,11 @@ void spoton_rosetta::slotDelete(void)
       gpgme_release(ctx);
     }
 #endif
+
+  QString connectionName("");
+  auto const oid
+    (QString::number(spoton_misc::oidFromPublicKeyHash(publicKeyHash)));
+  auto ok = true;
 
   {
     auto db(spoton_misc::database(connectionName));
@@ -2557,8 +2564,9 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setDefaultButton(QMessageBox::No);
   mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
-		"The keys will not be removed from the GPG ring."));
+		"The keys will not be removed from the GPG key ring."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
