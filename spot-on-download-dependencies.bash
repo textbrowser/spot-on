@@ -60,6 +60,31 @@ else
     rc=1
 fi
 
+# GPG-ME
+
+gpgme=mingw-w64-x86_64-gpgme-1.23.2-8-any.pkg.tar.zst
+
+rm -f $gpgme
+wget --output-document=$gpgme \
+     --progress=bar \
+     https://repo.msys2.org/mingw/mingw64/$gpgme
+
+if [ -r "$gpgme" ]
+then
+    tar -I zstd -vxf $gpgme
+    mkdir -p libGPGME/Include.win64
+    mkdir -p libGPGME/Libraries.win64
+    mv mingw64/bin/*.dll libGPGME/Libraries.win64/.
+    mv mingw64/bin/*.exe libGPGME/Libraries.win64/.
+    mv mingw64/include/gpgme.h libGPGME/Include.win64/.
+    chmod +w,-x libGPGME/Libraries.win64/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
+    rm -f $gpgme
+else
+    echo "Cannot read $gpgme."
+    rc=1
+fi
+
 # OpenSSL
 
 openssl=openssl-3-4-zip
