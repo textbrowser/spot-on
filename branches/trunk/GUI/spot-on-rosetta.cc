@@ -2723,9 +2723,11 @@ void spoton_rosetta::slotSetIcons(void)
   ui.clearContact->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.clearInput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.clear_gpg->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
   ui.decryptClear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.decryptReset->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.gpg_send->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }
 
