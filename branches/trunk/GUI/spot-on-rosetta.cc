@@ -422,7 +422,8 @@ QByteArray spoton_rosetta::gpgEncrypt
 	    {
 	      auto const flags = static_cast<gpgme_encrypt_flags_t>
 		(GPGME_ENCRYPT_ALWAYS_TRUST |
-		 GPGME_ENCRYPT_NO_COMPRESS);
+		 GPGME_ENCRYPT_NO_COMPRESS |
+		 GPGME_ENCRYPT_THROW_KEYIDS);
 
 		if(sign)
 		{
