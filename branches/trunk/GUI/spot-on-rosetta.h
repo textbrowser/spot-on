@@ -131,6 +131,7 @@ class spoton_rosetta: public QMainWindow
   void slotProcessGPGMessage(const QByteArray &message);
   void slotPublishGPG(void);
   void slotRemoveGPGKeys(void);
+  void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);
   void slotSaveName(void);
   void slotSetIcons(void);

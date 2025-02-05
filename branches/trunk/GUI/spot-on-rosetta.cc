@@ -130,6 +130,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotRemoveGPGKeys(void)));
+  connect(ui.action_Remove_Stored_INI_GPG_Passphrase,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotRemoveStoredINIGPGPassphrase(void)));
   connect(ui.add,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2589,6 +2593,11 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
   populateGPGEmailAddresses();
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_rosetta::slotRemoveStoredINIGPGPassphrase(void)
+{
+  QSettings().remove("gui/gpg_passphrase");
 }
 
 void spoton_rosetta::slotRename(void)

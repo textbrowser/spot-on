@@ -753,8 +753,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1048</width>
-                    <height>613</height>
+                    <width>377</width>
+                    <height>418</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1140,6 +1140,7 @@
     <addaction name="action_Paste"/>
     <addaction name="separator"/>
     <addaction name="action_Remove_GPG_Keys"/>
+    <addaction name="action_Remove_Stored_INI_GPG_Passphrase"/>
    </widget>
    <widget class="QMenu" name="menu_Tools">
     <property name="title">
@@ -1192,6 +1193,11 @@
   <action name="action_Remove_GPG_Keys">
    <property name="text">
     <string>Remove GPG Keys</string>
+   </property>
+  </action>
+  <action name="action_Remove_Stored_INI_GPG_Passphrase">
+   <property name="text">
+    <string>Remove Stored INI GPG Passphrase</string>
    </property>
   </action>
  </widget>
