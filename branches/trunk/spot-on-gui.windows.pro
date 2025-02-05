@@ -19,6 +19,7 @@ QT		+= concurrent \
                    widgets
 
 DEFINES         += SPOTON_DATELESS_COMPILATION \
+                   SPOTON_GPGME_ENABLED \
                    SPOTON_LINKED_WITH_LIBNTRU \
                    SPOTON_LINKED_WITH_LIBPTHREAD \
                    SPOTON_POSTGRESQL_DISABLED \
@@ -68,10 +69,12 @@ INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
 
 LIBS		+= -L..\\..\\libNTRU \
                    -L..\\..\\libGCrypt\\Libraries.win64 \
+                   -L..\\..\\libGPGME\\Libraries.win64 \
 		   -L..\\..\\libOpenSSL\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
+                   -lgpgme-11 \
                    -lntru \
                    -lpthread \
                    -lssl-3-x64 \
@@ -91,12 +94,10 @@ data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
-executables.files = ..\\..\\Windows\\*.exe
-executables.path = release\\.
-libgcrypt1.files = ..\\..\\libGCrypt\\Libraries.win64\\*.dll
-libgcrypt1.path = release\\.
-libgcrypt2.files = ..\\..\\libGCrypt\\Libraries.win64\\thread.d\\*.dll
-libgcrypt2.path = release\\.
+libgcrypt.files = ..\\..\\libGCrypt\\Libraries.win64\\*.dll
+libgcrypt.path = release\\.
+libgpgme.files = ..\\..\\libGPGME\\Libraries.win64\\*
+libgpgme.path = release\\.
 
 equals(mceliece_supported, "true") {
 libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
@@ -133,9 +134,8 @@ translations.path = release\\Translations\\.
 
 INSTALLS = data \
            documentation \
-           executables \
-           libgcrypt1 \
-           libgcrypt2 \
+           libgcrypt \
+           libgpgme \
            libntrudll \
            libopenssl \
            plugins \
