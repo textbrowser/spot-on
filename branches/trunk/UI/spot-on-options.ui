@@ -45,7 +45,7 @@
          <x>0</x>
          <y>-756</y>
          <width>769</width>
-         <height>5118</height>
+         <height>5138</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -709,7 +709,7 @@
               <item>
                <widget class="QLabel" name="label_38">
                 <property name="text">
-                 <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous.</string>
+                 <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous. An empty GIT_A or GIT_T disables Prison Blues.</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -775,11 +775,14 @@
                 </item>
                 <item>
                  <widget class="QLineEdit" name="git_script">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please provide the absolute path of an executable script.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
                   <property name="readOnly">
                    <bool>true</bool>
                   </property>
                   <property name="placeholderText">
-                   <string>GIT Script</string>
+                   <string>Executable Script</string>
                   </property>
                  </widget>
                 </item>

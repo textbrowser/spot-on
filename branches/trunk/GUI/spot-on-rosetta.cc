@@ -799,7 +799,10 @@ void spoton_rosetta::prisonBluesProcess(void)
     (m_parent->m_settings.value("gui/git_script", "").toString().trimmed());
 
   if(!fileInfo.isExecutable())
-    return;
+    {
+      showMessage(tr("The configured GIT script is not executable."), 5000);
+      return;
+    }
 
   auto gitA(m_parent->m_settings.value("gui/git_a", "").toByteArray());
 
@@ -807,7 +810,10 @@ void spoton_rosetta::prisonBluesProcess(void)
     (QByteArray::fromBase64(gitA), nullptr).trimmed();
 
   if(gitA.isEmpty())
-    return;
+    {
+      showMessage(tr("The option GIT_A is empty."), 5000);
+      return;
+    }
 
   auto gitT(m_parent->m_settings.value("gui/git_t", "").toByteArray());
 
@@ -815,7 +821,10 @@ void spoton_rosetta::prisonBluesProcess(void)
     (QByteArray::fromBase64(gitT), nullptr).trimmed();
 
   if(gitT.isEmpty())
-    return;
+    {
+      showMessage(tr("The option GIT_T is empty."), 5000);
+      return;
+    }
 
   auto const gitLocalDirectory
     (m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
