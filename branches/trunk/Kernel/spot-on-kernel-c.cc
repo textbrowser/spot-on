@@ -268,6 +268,15 @@ void spoton_kernel::readPrisonBlues(void)
 	{
 	  auto data(file.readAll());
 
+	  if(spoton_kernel::messagingCacheContains(data))
+	    /*
+	    ** Should the file be removed?
+	    */
+
+	    continue;
+	  else
+	    spoton_kernel::messagingCacheAdd(data);
+
 	  data = data.mid
 	    (data.indexOf("content=") + static_cast<int> (qstrlen("content=")));
 	  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();

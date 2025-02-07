@@ -340,6 +340,7 @@ Completed Items
 236.   Save checkbox and splitter values in Rosetta.
 237.   WebEngine and local directories. Remove.
 238.   Multiple proxies. Local machine and local network.
+239.   Congestion control and Prison Blues. GIT servers and duplicates.
 
 Remaining Items
 
@@ -350,5 +351,5 @@ Remaining Items
 4.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
-5.     Congestion control and Prison Blues. GIT servers and duplicates.
-6.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
+5.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
+6.     Remove expired files via spot-on-git.sh. Perhaps 15 days?
