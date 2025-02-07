@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>125</height>
+    <height>200</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -15,26 +15,18 @@
     <normaloff>:/Logo/spot-on-logo.png</normaloff>:/Logo/spot-on-logo.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>5</number>
-   </property>
-   <property name="leftMargin">
-    <number>5</number>
-   </property>
-   <property name="topMargin">
-    <number>5</number>
-   </property>
-   <property name="rightMargin">
-    <number>5</number>
-   </property>
-   <property name="bottomMargin">
-    <number>5</number>
-   </property>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>If Retain is on, the passphrase will be stored in an encrypted container within the INI file. It will not be re-encoded during a re-encoding process.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <property name="spacing">
-      <number>5</number>
-     </property>
      <item row="0" column="0">
       <widget class="QLineEdit" name="passphrase">
        <property name="echoMode">
