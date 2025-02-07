@@ -3634,9 +3634,23 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
 	      bytes.remove(0, static_cast<int> (ivLength));
 	    }
 
-	  gcry_cipher_reset(cipherHandle);
+	  auto err = gcry_cipher_reset(cipherHandle);
 
-	  gcry_error_t err = 0;
+	  if(err != GPG_ERR_NO_ERROR)
+	    {
+	      gcry_free(iv);
+
+	      QByteArray buffer(error_buffer_size, 0);
+
+	      gpg_strerror_r(err,
+			     buffer.data(),
+			     static_cast<size_t> (buffer.length()));
+	      spoton_misc::logError
+		(QString("spoton_crypt::setInitializationVector(): "
+			 "gcry_cipher_reset() failure (%1).").
+		 arg(buffer.constData()));
+	      return false;
+	    }
 
 	  if((err = gcry_cipher_setiv(cipherHandle,
 				      iv,
