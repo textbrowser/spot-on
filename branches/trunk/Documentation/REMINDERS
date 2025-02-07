@@ -353,3 +353,4 @@ Remaining Items
        Snap-Call. More details later. Only a reminder.
 5.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
 6.     Remove expired files via spot-on-git.sh. Perhaps 15 days?
+7.     GPG congestion.
