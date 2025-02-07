@@ -245,11 +245,14 @@ void spoton_kernel::readPrisonBlues(void)
   if(!directory.isReadable())
     return;
 
-  QDir dir;
+  auto ok = false;
   auto const myPublicKeyHash = spoton_crypt::sha512Hash
-    (qCompress(s_crypt->publicKey(nullptr)), nullptr).toHex();
+    (qCompress(s_crypt->publicKey(nullptr)), &ok).toHex();
 
-  dir = QDir
+  if(!ok)
+    return;
+
+  auto const dir = QDir
     (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
 
   foreach(auto const &fileInfo,

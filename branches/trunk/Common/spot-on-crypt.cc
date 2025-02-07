@@ -378,8 +378,8 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
   return decrypted;
 }
 
-QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
-						     bool *ok)
+QByteArray spoton_crypt::decryptedAfterAuthenticated
+(const QByteArray &data, bool *ok)
 {
   if(data.isEmpty())
     {
@@ -411,9 +411,15 @@ QByteArray spoton_crypt::decryptedAfterAuthenticated(const QByteArray &data,
     }
 
   auto const computedHash(keyedHash(data.mid(static_cast<int> (length)), ok));
+
+  if(ok && *ok == false)
+    return QByteArray();
+
   auto const hash(data.mid(0, static_cast<int> (length)));
 
-  if(!computedHash.isEmpty() && !hash.isEmpty() && memcmp(computedHash, hash))
+  if(computedHash.isEmpty() == false &&
+     hash.isEmpty() == false &&
+     memcmp(computedHash, hash))
     return decrypted(data.mid(static_cast<int> (length)), ok);
   else
     {
@@ -1089,8 +1095,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
       return hash;
     }
 
-  if((err = gcry_md_open(&hd, hashAlgorithm,
-			 GCRY_MD_FLAG_HMAC)) != 0 || !hd)
+  if((err = gcry_md_open(&hd, hashAlgorithm, GCRY_MD_FLAG_HMAC)) != 0 || !hd)
     {
       if(ok)
 	*ok = false;
@@ -1104,8 +1109,7 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data,
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
 	    (QString("spoton_crypt::keyedHash(): gcry_md_open() "
-		     "failure (%1).").
-	     arg(buffer.constData()));
+		     "failure (%1).").arg(buffer.constData()));
 	}
       else
 	spoton_misc::logError
