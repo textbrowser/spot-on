@@ -839,16 +839,6 @@ void spoton_rosetta::prisonBluesProcess(void)
     (m_parent->m_settings.value("GIT_SITE_PUSH", "").toString().trimmed());
   auto environment(QProcessEnvironment::systemEnvironment());
 
-  connect(&m_parent->m_prisonBluesProcess,
-	  SIGNAL(readyReadStandardError(void)),
-	  this,
-	  SLOT(slotReadPrisonBluesProcess(void)),
-	  Qt::UniqueConnection);
-  connect(&m_parent->m_prisonBluesProcess,
-	  SIGNAL(readyReadStandardOutput(void)),
-	  this,
-	  SLOT(slotReadPrisonBluesProcess(void)),
-	  Qt::UniqueConnection);
   environment.insert("GIT_A", gitA);
   environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
   environment.insert("GIT_SITE_CLONE", gitSiteClone);
@@ -2585,16 +2575,6 @@ void spoton_rosetta::slotPublishGPG(void)
 
 void spoton_rosetta::slotReadPrisonBluesProcess(void)
 {
-  if(!m_parent)
-    return;
-
-  QByteArray data;
-
-  while(m_parent->m_prisonBluesProcess.bytesAvailable() > 0)
-    data.append(m_parent->m_prisonBluesProcess.readAll().trimmed());
-
-  if(!data.isEmpty())
-    showMessage(tr("GIT: %1").arg(data.constData()), 5000);
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)

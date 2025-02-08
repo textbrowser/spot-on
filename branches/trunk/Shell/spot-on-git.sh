@@ -52,7 +52,7 @@ then
 
     if [ ! $rc -eq 0 ]
     then
-	echo "[Failed! Bye!]"
+	echo "[GIT-CLONE failed! Bye!]"
 	exit $rc
     else
 	echo "[Great!]"
@@ -64,7 +64,7 @@ cd $local_directory
 
 if [ ! $? -eq 0 ]
 then
-    echo "[Failed! Bye!]"
+    echo "[Cannot set current directory! Bye!]"
     exit 1
 else
     # Merge.
@@ -75,7 +75,7 @@ else
 
     if [ ! $? eq 0 ]
     then
-	echo "[Failed!]"
+	echo "[GIT-CONFIG failed!]"
     else
 	echo "[Great!]"
     fi
@@ -108,7 +108,7 @@ else
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[Failed! Bye!]"
+	    echo "[GIT-ADD failed! Bye!]"
 	    exit $rc
 	fi
 
@@ -119,18 +119,18 @@ else
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[Failed! Bye!]"
+	    echo "[GIT-COMMIT failed! Bye!]"
 	    exit $rc
 	else
 	    echo "[Great!]"
 	fi
 
 	echo "Issuing a GIT-PULL request."
-	git pull 2>&1 1>/dev/null
+	git pull --no-log 2>&1 1>/dev/null
 
 	if [ ! $? -eq 0 ]
 	then
-	    echo "[Failed!]"
+	    echo "[GIT-PULL failed!]"
 	else
 	    echo "[Great!]"
 	fi
@@ -144,13 +144,13 @@ else
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[Failed! Bye!]"
+	    echo "[GIT-PUSH failed! Bye!]"
 	    exit $rc
 	else
 	    echo "[Great!]"
 	fi
     else
-	echo "[Failed! Bye!]"
+	echo "[GIT-PULL failed! Bye!]"
 	exit $rc
     fi
 fi
