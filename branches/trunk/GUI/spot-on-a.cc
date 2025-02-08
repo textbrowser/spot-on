@@ -11332,7 +11332,10 @@ void spoton::slotValidatePassphrase(void)
 			      toByteArray()), &ok).trimmed();
 
 		if(ok)
-		  m_optionsUi.git_a->setText(bytes.trimmed());
+		  {
+		    m_optionsUi.git_a->setText(bytes.trimmed());
+		    m_settings["gui/git_a"] = bytes.trimmed();
+		  }
 
 		bytes = crypt->decryptedAfterAuthenticated
 		  (QByteArray::
@@ -11340,7 +11343,10 @@ void spoton::slotValidatePassphrase(void)
 			      toByteArray()), &ok).trimmed();
 
 		if(ok)
-		  m_optionsUi.git_t->setText(bytes.trimmed());
+		  {
+		    m_optionsUi.git_t->setText(bytes.trimmed());
+		    m_settings["gui/git_t"] = bytes.trimmed();
+		  }
 
 		bytes = crypt->decryptedAfterAuthenticated
 		  (QByteArray::

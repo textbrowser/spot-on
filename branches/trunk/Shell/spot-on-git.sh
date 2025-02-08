@@ -3,7 +3,7 @@
 
 # We will not correct GIT errors.
 
-# If git has locked the local directory, some git command will fail.
+# If git has locked the local directory, a git command will fail.
 # We will not remove the lock.
 
 # If the local directory already exists, a git-clone will fail.

@@ -904,33 +904,17 @@ void spoton::slotExecuteGITScript(void)
 	  this,
 	  SLOT(slotReadPrisonBluesProcess(void)),
 	  Qt::UniqueConnection);
-  m_prisonBluesProcess.kill();
-  m_prisonBluesProcess.waitForFinished();
   m_optionsUi.git_script_results->setPlainText
     (tr("Executing %1.").arg(fileInfo.absoluteFilePath()));
 
-  auto gitA(m_settings.value("gui/git_a", "").toByteArray());
-
-  gitA = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitA), nullptr).trimmed();
-
-  if(gitA.isEmpty())
-    return;
-
-  auto gitT(m_settings.value("gui/git_t", "").toByteArray());
-
-  gitT = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitT), nullptr).trimmed();
-
-  if(gitT.isEmpty())
-    return;
-
+  auto const gitA(m_settings.value("gui/git_a", "").toByteArray());
   auto const gitLocalDirectory
     (m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
   auto const gitSiteClone
     (m_settings.value("GIT_SITE_CLONE", "").toString().trimmed());
   auto const gitSitePush
     (m_settings.value("GIT_SITE_PUSH", "").toString().trimmed());
+  auto const gitT(m_settings.value("gui/git_t", "").toByteArray());
   auto environment(QProcessEnvironment::systemEnvironment());
 
   environment.insert("GIT_A", gitA);

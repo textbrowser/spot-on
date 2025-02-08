@@ -786,14 +786,24 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 void spoton_rosetta::prisonBluesProcess(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  showMessage(tr("Launching a GIT script process."), 5000);
+
   if(m_parent == nullptr ||
      m_parent->m_prisonBluesProcess.state() == QProcess::Running)
-    return;
+    {
+      if(m_parent == nullptr)
+	showMessage(tr("Invalid parent object."), 5000);
+
+      return;
+    }
 
   auto crypt = m_parent->crypts().value("chat", nullptr);
 
   if(!crypt)
-    return;
+    {
+      showMessage(tr("Invalid spoton_crypt object."), 5000);
+      return;
+    }
 
   QFileInfo const fileInfo
     (m_parent->m_settings.value("gui/git_script", "").toString().trimmed());
@@ -804,10 +814,7 @@ void spoton_rosetta::prisonBluesProcess(void)
       return;
     }
 
-  auto gitA(m_parent->m_settings.value("gui/git_a", "").toByteArray());
-
-  gitA = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitA), nullptr).trimmed();
+  auto const gitA(m_parent->m_settings.value("gui/git_a", "").toByteArray());
 
   if(gitA.isEmpty())
     {
@@ -815,10 +822,7 @@ void spoton_rosetta::prisonBluesProcess(void)
       return;
     }
 
-  auto gitT(m_parent->m_settings.value("gui/git_t", "").toByteArray());
-
-  gitT = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitT), nullptr).trimmed();
+  auto const gitT(m_parent->m_settings.value("gui/git_t", "").toByteArray());
 
   if(gitT.isEmpty())
     {
@@ -835,6 +839,16 @@ void spoton_rosetta::prisonBluesProcess(void)
     (m_parent->m_settings.value("GIT_SITE_PUSH", "").toString().trimmed());
   auto environment(QProcessEnvironment::systemEnvironment());
 
+  connect(&m_parent->m_prisonBluesProcess,
+	  SIGNAL(readyReadStandardError(void)),
+	  this,
+	  SLOT(slotReadPrisonBluesProcess(void)),
+	  Qt::UniqueConnection);
+  connect(&m_parent->m_prisonBluesProcess,
+	  SIGNAL(readyReadStandardOutput(void)),
+	  this,
+	  SLOT(slotReadPrisonBluesProcess(void)),
+	  Qt::UniqueConnection);
   environment.insert("GIT_A", gitA);
   environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
   environment.insert("GIT_SITE_CLONE", gitSiteClone);
@@ -844,6 +858,8 @@ void spoton_rosetta::prisonBluesProcess(void)
   m_parent->m_prisonBluesProcess.start
     (fileInfo.absoluteFilePath(), QStringList());
   m_parent->m_prisonBluesProcess.waitForStarted();
+  showMessage
+    (tr("The script %1 was started.").arg(fileInfo.absoluteFilePath()), 2500);
 #endif
 }
 
@@ -2565,6 +2581,20 @@ void spoton_rosetta::slotPublishGPG(void)
       file.setAutoRemove(false);
       stream << ui.outputEncrypt->toPlainText();
     }
+}
+
+void spoton_rosetta::slotReadPrisonBluesProcess(void)
+{
+  if(!m_parent)
+    return;
+
+  QByteArray data;
+
+  while(m_parent->m_prisonBluesProcess.bytesAvailable() > 0)
+    data.append(m_parent->m_prisonBluesProcess.readAll().trimmed());
+
+  if(!data.isEmpty())
+    showMessage(tr("GIT: %1").arg(data.constData()), 5000);
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
