@@ -949,6 +949,7 @@ void spoton_rosetta::setName(const QString &text)
 void spoton_rosetta::setParent(spoton *parent)
 {
   m_parent = parent;
+  populateContacts();
 }
 
 void spoton_rosetta::show(spoton *parent)
@@ -970,7 +971,6 @@ void spoton_rosetta::show(spoton *parent)
 		       settings.value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
-  populateContacts();
 }
 
 void spoton_rosetta::showMessage
