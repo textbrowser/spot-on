@@ -54,6 +54,7 @@ class spoton_rosetta: public QMainWindow
   spoton_rosetta(void);
   ~spoton_rosetta();
   void setName(const QString &text);
+  void setParent(spoton *parent);
   void show(spoton *parent);
 
  private:

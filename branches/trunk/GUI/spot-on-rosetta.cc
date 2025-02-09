@@ -946,6 +946,11 @@ void spoton_rosetta::setName(const QString &text)
   slotSaveName();
 }
 
+void spoton_rosetta::setParent(spoton *parent)
+{
+  m_parent = parent;
+}
+
 void spoton_rosetta::show(spoton *parent)
 {
   QSettings settings;
@@ -954,7 +959,7 @@ void spoton_rosetta::show(spoton *parent)
     if(settings.contains("gui/rosettaGeometry"))
       restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
 
-  m_parent = parent;
+  setParent(parent);
   showNormal();
   activateWindow();
   raise();

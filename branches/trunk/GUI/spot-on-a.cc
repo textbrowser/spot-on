@@ -3680,6 +3680,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     if(!lineEdit->isReadOnly() && !lineEdit->objectName().contains("spinbox"))
       lineEdit->setClearButtonEnabled(true);
 
+  m_rosetta.setParent(this);
 #ifdef Q_OS_MACOS
   spoton_utilities::enableTabDocumentMode(this);
 #endif
