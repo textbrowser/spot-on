@@ -113,7 +113,7 @@ else
 	fi
 
 	echo "Committing new data."
-	git commit -m "New data." 2>&1 1>/dev/null
+	git commit -a -m "New data." 2>&1 1>/dev/null
 
 	rc=$?
 
