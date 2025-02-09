@@ -786,9 +786,8 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 void spoton_rosetta::prisonBluesProcess(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  showMessage(tr("Launching a GIT script process."), 5000);
-
   if(m_parent == nullptr ||
+     m_parent->isKernelActive() ||
      m_parent->m_prisonBluesProcess.state() == QProcess::Running)
     {
       if(m_parent == nullptr)

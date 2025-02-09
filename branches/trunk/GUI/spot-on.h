@@ -444,9 +444,10 @@ class spoton: public QMainWindow
   QProcess m_prisonBluesProcess;
   static char s_keyDelimiter;
   QHash<QString, spoton_crypt *> crypts(void) const;
-  QMap<QString, QByteArray> SMPWindowStreams(const QStringList &keyTypes) const;
-  QList<QByteArray> retrieveForwardSecrecyInformation(const QString &oid,
-						      bool *ok) const;
+  QMap<QString, QByteArray> SMPWindowStreams
+    (const QStringList &keyTypes) const;
+  QList<QByteArray> retrieveForwardSecrecyInformation
+    (const QString &oid, bool *ok) const;
   QSqlDatabase urlDatabase(void) const;
 
   QSslSocket *kernelSocket(void)
@@ -456,6 +457,7 @@ class spoton: public QMainWindow
 
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
+  bool isKernelActive(void) const;
   qint64 selectedHumanProxyOID(void) const;
   spoton_crypt *urlCommonCrypt(void) const;
   static QHash<QString, QStringList> s_publicKeySizes;
@@ -594,7 +596,6 @@ class spoton: public QMainWindow
 		     const QString &type,
 		     QWidget *parent);
   bool deleteAllUrls(void);
-  bool isKernelActive(void) const;
   bool listenerSupportsSslTls(void) const;
   bool neighborSpecialClient(void) const;
   bool neighborSupportsSslTls(void) const;
