@@ -45,7 +45,7 @@
          <x>0</x>
          <y>-756</y>
          <width>769</width>
-         <height>5138</height>
+         <height>5158</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -709,7 +709,7 @@
               <item>
                <widget class="QLabel" name="label_38">
                 <property name="text">
-                 <string>Please also prepare GIT_LOCAL_DIRECTORY, GIT_SITE_CLONE and GIT_SITE_PUSH in Miscellaneous. An empty GIT_A or GIT_T disables Prison Blues.</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please also prepare &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_LOCAL_DIRECTORY&lt;/span&gt;, &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_SITE_CLONE&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_SITE_PUSH&lt;/span&gt; in the &lt;span style=&quot; font-weight:600;&quot;&gt;Miscellaneous&lt;/span&gt; section. An empty GIT_A or GIT_T disables Prison Blues. The variables GIT_A and GIT_T are recorded in encrypted containers within the INI file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>

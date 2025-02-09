@@ -252,12 +252,14 @@ void spoton_kernel::readPrisonBlues(void)
   if(!ok)
     return;
 
+  /*
+  ** Discover all files. Ignore permissions.
+  */
+
   auto const dir = QDir
     (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
 
-  foreach(auto const &fileInfo,
-	  dir.entryInfoList(QDir::Files | QDir::Readable | QDir::Writable,
-			    QDir::Time))
+  foreach(auto const &fileInfo, dir.entryInfoList(QDir::Files, QDir::Time))
     {
       if(m_readPrisonBluesFuture.isCanceled())
 	break;

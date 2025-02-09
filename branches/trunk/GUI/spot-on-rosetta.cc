@@ -859,12 +859,12 @@ void spoton_rosetta::readPrisonBlues
 
   while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
     {
-      QDir const fileInfo
+      QDir const dir
 	(directory.absoluteFilePath() + QDir::separator() + it.next());
 
-      if(fileInfo.isReadable())
+      if(dir.isReadable())
 	{
-	  foreach(auto const &i, fileInfo.entryInfoList(QDir::Files))
+	  foreach(auto const &i, dir.entryInfoList(QDir::Files, QDir::Time))
 	    {
 	      QFile file(i.absoluteFilePath());
 
