@@ -62,7 +62,7 @@ fi
 
 # GPG-ME
 
-gpgme=mingw-w64-x86_64-gpgme-1.23.2-8-any.pkg.tar.zst
+gpgme=mingw-w64-x86_64-gpgme-1.23.2-11-any.pkg.tar.zst
 
 rm -f $gpgme
 wget --output-document=$gpgme \
