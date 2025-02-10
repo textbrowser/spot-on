@@ -505,6 +505,7 @@ void spoton_smpwindow::slotExecute(void)
 	QSqlQuery query(db);
 	auto ok = true;
 
+	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
 	query.addBindValue(list.value(0).data().toString());
@@ -752,6 +753,7 @@ void spoton_smpwindow::slotGenerateData(void)
 	QSqlQuery query(db);
 	auto ok = true;
 
+	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
 	query.addBindValue(oid);
@@ -925,6 +927,7 @@ void spoton_smpwindow::slotPrepareSMPObject(void)
 	QSqlQuery query(db);
 	auto ok = true;
 
+	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM friends_public_keys "
 		      "WHERE OID = ?");
 	query.addBindValue(list.value(0).data().toString());

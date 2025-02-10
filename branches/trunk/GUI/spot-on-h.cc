@@ -288,6 +288,7 @@ bool spoton::nodeExists(const QSqlDatabase &db,
 
   QSqlQuery query(db);
 
+  query.setForwardOnly(true);
   query.prepare
     (QString("SELECT EXISTS(SELECT 1 FROM %1 WHERE hash = ?)").arg(table));
   query.addBindValue(hash.toBase64());
@@ -674,6 +675,8 @@ void spoton::retrieveNeighbors(void)
 	auto query = new QSqlQuery(*db);
 	int size = 0;
 
+	// Must not be a forward-only query.
+
 	if(query->exec("SELECT COUNT(*) FROM neighbors "
 		       "WHERE status_control <> 'deleted'"))
 	  if(query->next())
@@ -780,6 +783,8 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
       {
 	auto ok = true;
 	auto query = new QSqlQuery(*db);
+
+	// Must not be a forward-only query.
 
 	query->prepare("SELECT "
 		       "name, "               // 0

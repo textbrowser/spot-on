@@ -505,8 +505,7 @@ void spoton::populateMOTD(const QString &listenerOid)
 	QSqlQuery query(db);
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT motd FROM listeners "
-		      "WHERE OID = ?");
+	query.prepare("SELECT motd FROM listeners WHERE OID = ?");
 	query.bindValue(0, listenerOid);
 
 	if(query.exec())

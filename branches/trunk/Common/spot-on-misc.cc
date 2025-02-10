@@ -1800,10 +1800,11 @@ bool spoton_misc::importUrl(const QByteArray &c, // Content
 
   QSqlQuery query(db);
 
+  query.setForwardOnly(true);
+
   if(db.driverName() == "QSQLITE")
     query.exec("PRAGMA journal_mode = WAL");
 
-  query.setForwardOnly(true);
   query.prepare
     (QString("SELECT content FROM spot_on_urls_%1 WHERE url_hash = ?").
      arg(urlHash.mid(0, 2).constData()));
@@ -4122,6 +4123,8 @@ void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
     if(db.open())
       {
 	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
 
 	if(!query.exec("SELECT EXISTS (SELECT signatures_required FROM "
 		       "echo_key_sharing_secrets)"))

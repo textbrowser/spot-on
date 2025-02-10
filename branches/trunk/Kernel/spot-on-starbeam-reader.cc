@@ -279,8 +279,8 @@ void spoton_starbeam_reader::populateMagnets(const QSqlDatabase &db)
   QSqlQuery query(db);
 
   query.setForwardOnly(true);
-  query.prepare("SELECT magnet FROM transmitted_magnets WHERE "
-		"transmitted_oid = ?");
+  query.prepare
+    ("SELECT magnet FROM transmitted_magnets WHERE transmitted_oid = ?");
   query.bindValue(0, m_id);
 
   if(query.exec())
