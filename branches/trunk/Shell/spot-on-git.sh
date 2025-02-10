@@ -102,7 +102,7 @@ else
 	fi
 
 	echo "Adding local text files."
-	git add --all . 2>&1 1>/dev/null
+	git add --all */*.txt 2>&1 1>/dev/null
 
 	rc=$?
 
