@@ -3054,6 +3054,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #else
   m_optionsUi.ontopChatDialogs->setChecked(false);
   m_optionsUi.ontopChatDialogs->setEnabled(false);
+  m_optionsUi.ontopChatDialogs->setToolTip
+    (tr("Enabled on MacOS and Windows."));
   settings.setValue("gui/ontopChatDialogs", false);
 #endif
   m_optionsUi.urlSignMessages->setChecked
