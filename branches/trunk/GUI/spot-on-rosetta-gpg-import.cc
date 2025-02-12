@@ -108,7 +108,7 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 	      QString name("");
 
 	      if(key->uids && key->uids->email)
-		email = key->uids->email;
+		email = QString(key->uids->email).trimmed();
 
 	      if(key->fpr)
 		fingerprint = key->fpr;
@@ -233,7 +233,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
 	      publicKey = crypt->decryptedAfterAuthenticated(publicKey, &ok);
 
-	      if(!(email = this->email(publicKey)).isEmpty())
+	      if(!(email = this->email(publicKey).trimmed()).isEmpty())
 		map[email] = publicKey;
 
 	      spoton_crypt::memzero(publicKey);
@@ -393,21 +393,22 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
     }
 
   QMessageBox mb(this);
-  auto const email(this->email(publicKey));
+  auto const email(this->email(publicKey).trimmed());
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setDefaultButton(QMessageBox::No);
 
   if(!email.isEmpty())
     mb.setText
       (tr("Are you sure that you wish to remove the GPG keys "
-	  "for %1? The keys will not be removed from the GPG ring.").
+	  "for %1? The keys will not be removed from the GPG key ring.").
        arg(email));
   else
     mb.setText
       (tr("Are you sure that you wish to remove the GPG keys "
 	  "for the selected e-mail address? The keys will not be removed "
-	  "from the GPG ring."));
+	  "from the GPG key ring."));
 
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
@@ -471,8 +472,9 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setDefaultButton(QMessageBox::No);
   mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
-		"The keys will not be removed from the GPG ring."));
+		"The keys will not be removed from the GPG key ring."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
