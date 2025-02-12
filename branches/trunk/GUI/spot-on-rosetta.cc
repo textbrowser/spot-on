@@ -78,7 +78,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     this,
 			     SLOT(slotCopyMyGPGKeys(void)));
 #else
-  auto action = ui.copy->menu()->addAction(tr("Copy My &GPG Public Keys"));
+  auto action = ui.copy->menu()->addAction
+    (tr("Copy My &GPG Public Keys (Missing GPGME)"));
 
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
@@ -2033,11 +2034,11 @@ void spoton_rosetta::slotCopyMyGPGKeys(void)
 	if(query.exec())
 	  while(query.next())
 	    {
+	      auto ok = true;
 	      auto const publicKey = eCrypt->decryptedAfterAuthenticated
-		(QByteArray::fromBase64(query.value(0).toByteArray()),
-		 nullptr);
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-	      if(!publicKey.isEmpty())
+	      if(ok && publicKey.isEmpty() == false)
 		{
 		  bytes.append(publicKey);
 		  bytes.append("\r\n");
@@ -2118,7 +2119,7 @@ void spoton_rosetta::slotCopyOrPaste(void)
 	qobject_cast<QTextEdit *> (widget)->copy();
       else
 	{
-	  qobject_cast<QTextEdit *> (widget)->paste();
+	  qobject_cast<QTextEdit *> (widget)->clear();
 	  qobject_cast<QTextEdit *> (widget)->paste();
 	}
     }

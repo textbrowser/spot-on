@@ -39,7 +39,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>&amp;Name</string>
+         <string>Spot-On Name</string>
         </property>
         <property name="buddy">
          <cstring>name</cstring>
@@ -48,6 +48,9 @@
       </item>
       <item>
        <widget class="QLineEdit" name="name">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The name field is not affiliated with GPG.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="placeholderText">
          <string>Your Name</string>
         </property>
@@ -753,8 +756,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>377</width>
-                    <height>418</height>
+                    <width>1048</width>
+                    <height>613</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -804,6 +807,13 @@
                           <number>5</number>
                          </property>
                          <item>
+                          <widget class="QLabel" name="label_7">
+                           <property name="text">
+                            <string>Messages will arrive in some order.</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_30">
                            <property name="spacing">
                             <number>5</number>
@@ -837,9 +847,6 @@
                            </property>
                            <property name="textInteractionFlags">
                             <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-                           </property>
-                           <property name="openExternalLinks">
-                            <bool>true</bool>
                            </property>
                            <property name="openLinks">
                             <bool>false</bool>
@@ -971,7 +978,7 @@
                            </column>
                            <column>
                             <property name="text">
-                             <string>Fingerprint</string>
+                             <string>GPG Fingerprint</string>
                             </property>
                            </column>
                            <column>
@@ -1055,7 +1062,7 @@
                <bool>true</bool>
               </property>
               <property name="placeholderText">
-               <string>Contact Bundle</string>
+               <string>GPG / Spot-On Contact Bundle</string>
               </property>
              </widget>
             </item>
@@ -1163,7 +1170,7 @@
   </action>
   <action name="action_Copy">
    <property name="text">
-    <string>&amp;Copy</string>
+    <string>&amp;Copy Focus Widget</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
