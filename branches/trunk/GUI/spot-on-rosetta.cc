@@ -2529,10 +2529,10 @@ void spoton_rosetta::slotPublishGPG(void)
     (m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
      trimmed());
 
-  if(!directory.exists())
+  if(!directory.isWritable())
     {
       showMessage
-	(tr("The directory %1 is not readable.").
+	(tr("The directory %1 is not writable.").
 	 arg(directory.absoluteFilePath()), 5000);
       return;
     }

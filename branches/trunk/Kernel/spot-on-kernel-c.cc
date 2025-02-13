@@ -654,16 +654,16 @@ void spoton_kernel::writePrisonBluesChat
   QFileInfo const directory
     (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
 
-  if(!directory.exists())
+  if(!directory.isWritable())
     /*
     ** Clone the special GIT repository.
     */
 
     slotPrisonBluesTimeout();
 
-  if(!directory.exists())
+  if(!directory.isWritable())
     /*
-    ** The GIT local directory does not exist. This is a problem!
+    ** The GIT local directory is not writable. This is a problem!
     */
 
     return;
