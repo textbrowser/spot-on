@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+
 # Alexis Megas.
 
 # We will not correct GIT errors.
@@ -60,13 +61,24 @@ then
 fi
 
 echo "Setting $local_directory as the current directory."
-cd $local_directory
+cd "$local_directory"
 
 if [ ! $? -eq 0 ]
 then
     echo "[Cannot set current directory! Bye!]"
     exit 1
 else
+    # Remove files older than five minutes.
+
+    echo "Removing files older than five minutes."
+    find "$local_directory" \
+	 ! -path "*.git*" \
+	 -daystart \
+	 -mmin +5 \
+	 -name "*Smoke*.txt" \
+	 -type f \
+	 -exec rm -f {} \;
+
     # Merge.
 
     echo "Instructing GIT to avoid the rebase strategy. " \
@@ -96,7 +108,6 @@ else
 
 	if [ $rc -lt 1 ]
 	then
-	    git clean -df . 2>&1 1>/dev/null
 	    echo "[All set! Bye!]"
 	    exit 0
 	fi
