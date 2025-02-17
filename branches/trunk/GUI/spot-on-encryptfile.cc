@@ -170,6 +170,6 @@ void spoton_encryptfile::slotSetIcons(void)
 
 void spoton_encryptfile::slotStatus(const QString &status)
 {
-  statusBar()->showMessage(status);
+  statusBar()->showMessage(status.trimmed());
   statusBar()->repaint();
 }
