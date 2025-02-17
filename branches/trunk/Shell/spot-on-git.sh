@@ -108,6 +108,16 @@ else
 	if [ $rc -lt 1 ]
 	then
 	    echo "[All set! Bye!]"
+
+	    if [ ! -z "$(git status | grep 'git push' 2>/dev/null)" ]
+	    then
+		echo "A git-push is required!"
+
+		site=$(eval "echo ${GIT_SITE_PUSH}")
+
+		git push "$site" 2>&1 1>/dev/null
+	    fi
+
 	    git clean -df . 2>&1 1>/dev/null
 	    exit 0
 	fi
