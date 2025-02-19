@@ -54,7 +54,8 @@ QList<QFileInfo> spoton::prisonBluesDirectories(void) const
       it.next();
 
       if(it.value().value("git-site-checked") == "1")
-	m_prisonBluesDirectoriesCache << it.value().value("local-directory");
+	m_prisonBluesDirectoriesCache <<
+	  QFileInfo(it.value().value("local-directory"));
     }
 
   return m_prisonBluesDirectoriesCache;
