@@ -2443,6 +2443,14 @@ void spoton_rosetta::slotPublishGPG(void)
       return;
     }
 
+  auto const list(m_parent->prisonBluesDirectories());
+
+  if(list.isEmpty())
+    {
+      showMessage(tr("Please configure GIT. Options -> GIT."), 5000);
+      return;
+    }
+
   auto const destinationType = DestinationTypes
     (ui.contacts->currentData(Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
@@ -2469,7 +2477,7 @@ void spoton_rosetta::slotPublishGPG(void)
 
   slotConvertEncrypt();
 
-  foreach(auto const &directory, m_parent->prisonBluesDirectories())
+  foreach(auto const &directory, list)
     if(directory.isWritable())
       {
 	QDir().mkpath
@@ -2712,6 +2720,14 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
+  auto const list(m_parent->prisonBluesDirectories());
+
+  if(list.isEmpty())
+    {
+      showMessage(tr("Please configure GIT. Options -> GIT."), 5000);
+      return;
+    }
+
   auto crypt = m_parent->crypts().value("chat", nullptr);
 
   if(!crypt)
@@ -2775,7 +2791,7 @@ void spoton_rosetta::slotWriteGPG(void)
     (ui.gpg_participants->selectionModel()->selectedRows(2));
   auto const sign = ui.gpg_sign_messages->isChecked();
 
-  foreach(auto const &directory, m_parent->prisonBluesDirectories())
+  foreach(auto const &directory, list)
     for(int i = 0; i < fingerprints.size(); i++)
       {
 	if(!(directory.isWritable()) ||
