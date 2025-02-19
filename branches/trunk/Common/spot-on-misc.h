@@ -34,6 +34,7 @@
 #endif
 #include <QHostAddress>
 #include <QPair>
+#include <QProcess>
 #include <QReadWriteLock>
 #include <QSqlDatabase>
 #include <QString>
@@ -54,7 +55,8 @@ extern "C"
 #endif
 
 /*
-** Please read https://gcc.gnu.org/onlinedocs/gcc-4.4.1/gcc/Optimize-Options.html#Type_002dpunning.
+** Please read https://gcc.gnu.org/onlinedocs/gcc-4.4.1/gcc/
+**             Optimize-Options.html#Type_002dpunning.
 */
 
 typedef union spoton_type_punning_sockaddr
@@ -79,9 +81,8 @@ class spoton_misc
 					       spoton_crypt *crypt);
   static QByteArray forwardSecrecyMagnetFromList
     (const QList<QByteArray> &list);
-  static QByteArray publicKeyFromHash(const QByteArray &publicKeyHash,
-				      const bool gpg,
-				      spoton_crypt *crypt);
+  static QByteArray publicKeyFromHash
+    (const QByteArray &publicKeyHash, const bool gpg, spoton_crypt *crypt);
   static QByteArray publicKeyFromOID(const qint64 oid, spoton_crypt *crypt);
   static QByteArray publicKeyFromSignaturePublicKeyHash
     (const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt);
@@ -92,6 +93,8 @@ class spoton_misc
   static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);
   static QHash<QString, QByteArray> retrieveEchoShareInformation
     (const QString &communityName, spoton_crypt *crypt);
+  static QHash<int, QHash<QString, QString> > gitInformation
+    (spoton_crypt *crypt);
   static QHostAddress localAddressIPv4(void);
   static QHostAddress peerAddressAndPort(
 #if defined(Q_OS_WINDOWS)
@@ -226,6 +229,10 @@ class spoton_misc
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void deregisterKernel(const pid_t pid);
   static void enableLog(const bool state);
+  static void launchPrisonBluesProcesses
+    (QObject *parent,
+     QVector<QPointer<QProcess> > &prisonBluesProcesses,
+     spoton_crypt *crypt);
   static void logError(const QString &error);
   static void prepareAuthenticationHint(spoton_crypt *crypt);
   static void prepareDatabases(void);

@@ -441,7 +441,7 @@ class spoton: public QMainWindow
   QHash<QString, QPair<QQueue<QString>, QQueue<QByteArray> > > m_chatQueues;
   QHash<QString, QVariant> m_settings;
   QHash<QString, quint64> m_chatSequenceNumbers;
-  QProcess m_prisonBluesProcess;
+  QList<QFileInfo> prisonBluesDirectories(void) const;
   static char s_keyDelimiter;
   QHash<QString, spoton_crypt *> crypts(void) const;
   QMap<QString, QByteArray> SMPWindowStreams
@@ -470,6 +470,7 @@ class spoton: public QMainWindow
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
+  void launchPrisonBluesProcesses(void);
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;
@@ -545,6 +546,7 @@ class spoton: public QMainWindow
   QTimer m_updateChatWindowsTimer;
   QTimer m_webServerInformationTimer;
   QTimer m_webServerValueChangedTimer;
+  QVector<QPointer<QProcess> > m_prisonBluesProcesses;
   QWidget *m_sbWidget;
   Ui_spoton_mainwindow m_ui;
   Ui_spoton_notifications_window m_notificationsUi;
@@ -555,6 +557,7 @@ class spoton: public QMainWindow
   Ui_spoton_wizard *m_wizardUi;
   bool m_locked;
   bool m_quit;
+  mutable QList<QFileInfo> m_prisonBluesDirectoriesCache;
   quint64 m_urlCurrentPage;
   quint64 m_urlLimit;
   quint64 m_urlOffset;
@@ -652,6 +655,7 @@ class spoton: public QMainWindow
   void popForwardSecrecyRequest(const QByteArray &publicKeyHash);
   void populateAETokens(void);
   void populateAccounts(const QString &listenerOid);
+  void populateGITTable(void);
   void populateListenerIps(const QString &listenerOid);
   void populateMOTD(const QString &listenerOid);
   void populateMail(void);
@@ -828,7 +832,6 @@ class spoton: public QMainWindow
   void slotEnabledPostOffice(bool state);
   void slotEncryptionKeyTypeChanged(int index);
   void slotEstablishForwardSecrecy(void);
-  void slotExecuteGITScript(void);
   void slotExportListeners(void);
   void slotExportPublicKeys(void);
   void slotExternalIp(int index);
@@ -954,7 +957,6 @@ class spoton: public QMainWindow
   void slotPurgeEphemeralKeyPair(void);
   void slotPurgeEphemeralKeys(void);
   void slotQuit(void);
-  void slotReadPrisonBluesProcess(void);
   void slotReceivedKernelMessage(void);
   void slotReceiversChanged(QTableWidgetItem *item);
   void slotReceiversClicked(bool state);
@@ -1018,7 +1020,6 @@ class spoton: public QMainWindow
   void slotSecureMemoryPoolChanged(int value);
   void slotSelectCAPath(void);
   void slotSelectDestination(void);
-  void slotSelectGITPath(void);
   void slotSelectGeoIPPath(void);
   void slotSelectKernelPath(void);
   void slotSelectTransmitFile(void);

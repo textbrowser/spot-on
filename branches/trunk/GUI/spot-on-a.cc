@@ -414,6 +414,9 @@ int main(int argc, char *argv[])
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);
 
+  settings.remove("gui/git_a");
+  settings.remove("gui/git_script");
+  settings.remove("gui/git_t");
   splash.showMessage
     (QObject::tr("Initializing cryptographic containers."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -457,6 +460,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   splash->repaint();
   m_defaultStyleSheet = qobject_cast<QApplication *>
     (QApplication::instance())->styleSheet();
+  m_prisonBluesProcesses.resize(spoton_common::PRISON_BLUES_PROCESSES);
   m_urlCurrentPage = 1;
   m_urlLimit = 10;
   m_urlOffset = 0;
@@ -1258,6 +1262,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  m_optionsWindow,
 	  SLOT(close(void)));
+  connect(m_optionsUi.apply_git,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSaveGITEnvironment(void)));
   connect(m_optionsUi.apply_other,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1358,10 +1366,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotEnableChatEmoticons(bool)));
-  connect(m_optionsUi.execute_git_script,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotExecuteGITScript(void)));
   connect(m_optionsUi.external_ip_url,
 	  SIGNAL(editingFinished(void)),
 	  this,
@@ -1378,14 +1382,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGeoIPPath(void)));
-  connect(m_optionsUi.git_a,
-	  SIGNAL(editingFinished(void)),
-	  this,
-	  SLOT(slotSaveGITEnvironment(void)));
-  connect(m_optionsUi.git_t,
-	  SIGNAL(editingFinished(void)),
-	  this,
-	  SLOT(slotSaveGITEnvironment(void)));
   connect(m_optionsUi.guiExternalIpFetch,
 	  SIGNAL(activated(int)),
 	  this,
@@ -1530,10 +1526,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
-  connect(m_optionsUi.select_git_script,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotSelectGITPath(void)));
   connect(m_optionsUi.sharePrivateKeys,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2637,8 +2629,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/participantsUpdateTimer", 3.50).toDouble());
   m_optionsUi.chat_maximum_lines->setValue
     (m_settings.value("gui/chat_maximum_lines", -1).toInt());
-  m_optionsUi.git_script->setText
-    (m_settings.value("gui/git_script").toString().trimmed());
   m_optionsUi.kernelCacheInterval->setValue
     (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue
@@ -3874,8 +3864,6 @@ void spoton::cleanup(void)
   m_listenersUpdateTimer.stop();
   m_neighborsUpdateTimer.stop();
   m_participantsUpdateTimer.stop();
-  m_prisonBluesProcess.kill();
-  m_prisonBluesProcess.waitForFinished();
   m_starbeamUpdateTimer.stop();
   m_tableTimer.stop();
   m_updateChatWindowsTimer.stop();
@@ -3895,6 +3883,13 @@ void spoton::cleanup(void)
   m_pqUrlDatabaseFuture.cancel();
   m_pqUrlDatabaseFuture.waitForFinished();
   m_starbeamDigestInterrupt.fetchAndStoreOrdered(1);
+
+  for(int i = 0; i < m_prisonBluesProcesses.size(); i++)
+    if(m_prisonBluesProcesses[i])
+      {
+	m_prisonBluesProcesses[i]->kill();
+	m_prisonBluesProcesses[i]->waitForFinished();
+      }
 
   for(int i = 0; i < m_starbeamDigestFutures.size(); i++)
     {
@@ -11331,28 +11326,6 @@ void spoton::slotValidatePassphrase(void)
 
 		bytes = crypt->decryptedAfterAuthenticated
 		  (QByteArray::
-		   fromBase64(settings.value("gui/git_a").
-			      toByteArray()), &ok).trimmed();
-
-		if(ok)
-		  {
-		    m_optionsUi.git_a->setText(bytes.trimmed());
-		    m_settings["gui/git_a"] = bytes.trimmed();
-		  }
-
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::
-		   fromBase64(settings.value("gui/git_t").
-			      toByteArray()), &ok).trimmed();
-
-		if(ok)
-		  {
-		    m_optionsUi.git_t->setText(bytes.trimmed());
-		    m_settings["gui/git_t"] = bytes.trimmed();
-		  }
-
-		bytes = crypt->decryptedAfterAuthenticated
-		  (QByteArray::
 		   fromBase64(settings.value("gui/poptasticName").
 			      toByteArray()), &ok).trimmed();
 
@@ -11366,6 +11339,8 @@ void spoton::slotValidatePassphrase(void)
 
 		if(ok)
 		  nameEmail = bytes;
+
+		populateGITTable();
 	      }
 
 	    if(name.isEmpty())

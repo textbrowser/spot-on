@@ -2802,26 +2802,14 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
     settings.remove("gui/authenticationHint");
 
   bytes = oldCrypt->decryptedAfterAuthenticated
-    (QByteArray::
-     fromBase64(settings.value("gui/git_a", "").toByteArray()), &ok);
+    (settings.value("gui/git_table").toByteArray(), &ok);
 
   if(ok)
     settings.setValue
-      ("gui/git_a", newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
+      ("gui/git_table", newCrypt->encryptedThenHashed(bytes, &ok));
 
   if(!ok)
-    settings.remove("gui/git_a");
-
-  bytes = oldCrypt->decryptedAfterAuthenticated
-    (QByteArray::
-     fromBase64(settings.value("gui/git_t", "").toByteArray()), &ok);
-
-  if(ok)
-    settings.setValue
-      ("gui/git_t", newCrypt->encryptedThenHashed(bytes, &ok).toBase64());
-
-  if(!ok)
-    settings.remove("gui/git_t");
+    settings.remove("gui/git_table");
 
   settings.remove("gui/gpg_passphrase");
   bytes = oldCrypt->decryptedAfterAuthenticated

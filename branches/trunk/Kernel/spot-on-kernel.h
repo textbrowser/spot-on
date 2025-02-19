@@ -152,7 +152,6 @@ class spoton_kernel: public QObject
   QPointer<spoton_starbeam_writer> m_starbeamWriter;
   QPointer<spoton_urldistribution> m_urlDistribution;
   QPointer<spoton_web_server> m_webServer;
-  QProcess m_prisonBluesProcess;
   QQueue<QHash<QString, QVariant> > m_poptasticCache;
   QReadWriteLock m_droppedPacketsMutex;
   QReadWriteLock m_forwardSecrecyKeysMutex;
@@ -175,6 +174,7 @@ class spoton_kernel: public QObject
   QTimer m_statusTimer;
   QTimer m_urlImportTimer;
   QVector<QFuture<void > > m_urlImportFutures;
+  QVector<QPointer<QProcess> > m_prisonBluesProcesses;
   bool m_initialized;
   int m_activeListeners;
   int m_activeNeighbors;

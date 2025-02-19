@@ -510,6 +510,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
   m_activeStarbeams = 0;
   m_initialized = false;
   m_lastPoptasticStatus = QDateTime::currentDateTime();
+  m_prisonBluesProcesses.resize(spoton_common::PRISON_BLUES_PROCESSES);
   m_urlImportFutureInterrupt = 0;
   m_urlsProcessed = 0;
   s_institutionLastModificationTime = QDateTime();
@@ -1049,9 +1050,15 @@ spoton_kernel::~spoton_kernel()
   m_poptasticPopTimer.stop();
   m_poptasticPostTimer.stop();
   m_prepareTimer.stop();
-  m_prisonBluesProcess.kill();
-  m_prisonBluesProcess.waitForFinished();
   m_prisonBluesTimer.stop();
+
+  for(int i = 0; i < m_prisonBluesProcesses.size(); i++)
+    if(m_prisonBluesProcesses[i])
+      {
+	m_prisonBluesProcesses[i]->kill();
+	m_prisonBluesProcesses[i]->waitForFinished();
+      }
+
   m_readPrisonBluesFuture.cancel();
   m_readPrisonBluesFuture.waitForFinished();
   m_readPrisonBluesTimer.stop();

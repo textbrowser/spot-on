@@ -102,7 +102,7 @@ class spoton_rosetta: public QMainWindow
   void populateGPGEmailAddresses(void);
   void prisonBluesProcess(void);
   void readPrisonBlues
-    (const QFileInfo &directory, const QVector<QByteArray> &vector);
+    (const QList<QFileInfo> &directories, const QVector<QByteArray> &vector);
   void resizeEvent(QResizeEvent *event);
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showMessage(const QString &message, const int milliseconds = 0);
@@ -131,7 +131,6 @@ class spoton_rosetta: public QMainWindow
   void slotPrisonBluesTimeout(void);
   void slotProcessGPGMessage(const QByteArray &message);
   void slotPublishGPG(void);
-  void slotReadPrisonBluesProcess(void);
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);

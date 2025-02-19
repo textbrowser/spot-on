@@ -521,49 +521,8 @@ void spoton_kernel::slotPrepareObjects(void)
 
 void spoton_kernel::slotPrisonBluesTimeout(void)
 {
-  if(m_prisonBluesProcess.state() == QProcess::Running)
-    return;
-
-  auto s_crypt = crypt("chat");
-
-  if(!s_crypt)
-    return;
-
-  QFileInfo const fileInfo(setting("gui/git_script", "").toString().trimmed());
-
-  if(!fileInfo.isExecutable())
-    return;
-
-  auto gitA(setting("gui/git_a", "").toByteArray());
-
-  gitA = s_crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitA), nullptr).trimmed();
-
-  if(gitA.isEmpty())
-    return;
-
-  auto gitT(setting("gui/git_t", "").toByteArray());
-
-  gitT = s_crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(gitT), nullptr).trimmed();
-
-  if(gitT.isEmpty())
-    return;
-
-  auto const gitLocalDirectory
-    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
-  auto const gitSiteClone(setting("GIT_SITE_CLONE", "").toString().trimmed());
-  auto const gitSitePush(setting("GIT_SITE_PUSH", "").toString().trimmed());
-  auto environment(QProcessEnvironment::systemEnvironment());
-
-  environment.insert("GIT_A", gitA);
-  environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
-  environment.insert("GIT_SITE_CLONE", gitSiteClone);
-  environment.insert("GIT_SITE_PUSH", gitSitePush);
-  environment.insert("GIT_T", gitT);
-  m_prisonBluesProcess.setProcessEnvironment(environment);
-  m_prisonBluesProcess.start(fileInfo.absoluteFilePath(), QStringList());
-  m_prisonBluesProcess.waitForStarted();
+  spoton_misc::launchPrisonBluesProcesses
+    (this, m_prisonBluesProcesses, crypt("chat"));
 }
 
 void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)

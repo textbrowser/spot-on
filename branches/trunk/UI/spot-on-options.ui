@@ -45,7 +45,7 @@
          <x>0</x>
          <y>-756</y>
          <width>769</width>
-         <height>5158</height>
+         <height>5050</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -709,7 +709,7 @@
               <item>
                <widget class="QLabel" name="label_38">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please also prepare &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_LOCAL_DIRECTORY&lt;/span&gt;, &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_SITE_CLONE&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;GIT_SITE_PUSH&lt;/span&gt; in the &lt;span style=&quot; font-weight:600;&quot;&gt;Miscellaneous&lt;/span&gt; section. An empty GIT_A or GIT_T disables Prison Blues. The variables GIT_A and GIT_T are recorded in encrypted containers within the INI file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The contents of the below table are recorded in an encrypted container within the INI file. A maximum of five sites are allowed. Please avoid duplicating GIT Site and Local Directory. Values will be trimmed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -717,103 +717,210 @@
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_24">
-                <item>
-                 <widget class="QLabel" name="label_37">
-                  <property name="text">
-                   <string>GIT_A</string>
-                  </property>
-                 </widget>
+               <widget class="QTableWidget" name="git_table">
+                <property name="alternatingRowColors">
+                 <bool>true</bool>
+                </property>
+                <property name="selectionMode">
+                 <enum>QAbstractItemView::NoSelection</enum>
+                </property>
+                <property name="selectionBehavior">
+                 <enum>QAbstractItemView::SelectRows</enum>
+                </property>
+                <property name="verticalScrollMode">
+                 <enum>QAbstractItemView::ScrollPerPixel</enum>
+                </property>
+                <property name="horizontalScrollMode">
+                 <enum>QAbstractItemView::ScrollPerPixel</enum>
+                </property>
+                <attribute name="horizontalHeaderMinimumSectionSize">
+                 <number>150</number>
+                </attribute>
+                <attribute name="horizontalHeaderDefaultSectionSize">
+                 <number>150</number>
+                </attribute>
+                <attribute name="horizontalHeaderStretchLastSection">
+                 <bool>true</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="verticalHeaderHighlightSections">
+                 <bool>false</bool>
+                </attribute>
+                <row>
+                 <property name="text">
+                  <string>1</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>2</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>3</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>4</string>
+                 </property>
+                </row>
+                <row>
+                 <property name="text">
+                  <string>5</string>
+                 </property>
+                </row>
+                <column>
+                 <property name="text">
+                  <string>GIT Site</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Local Directory</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Script</string>
+                 </property>
+                </column>
+                <item row="0" column="0">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checkState">
+                  <enum>Checked</enum>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
                 </item>
-                <item>
-                 <widget class="QLineEdit" name="git_a">
-                  <property name="toolTip">
-                   <string>Press the Enter key to save.</string>
-                  </property>
-                  <property name="placeholderText">
-                   <string>GIT_A Account Environment Variable</string>
-                  </property>
-                  <property name="clearButtonEnabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
+                <item row="0" column="1">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
                 </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_22">
-                <item>
-                 <widget class="QLabel" name="label_36">
-                  <property name="text">
-                   <string>GIT_T</string>
-                  </property>
-                 </widget>
+                <item row="0" column="2">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
                 </item>
-                <item>
-                 <widget class="QLineEdit" name="git_t">
-                  <property name="toolTip">
-                   <string>Press the Enter key to save.</string>
-                  </property>
-                  <property name="placeholderText">
-                   <string>GIT_T Token Environment Variable</string>
-                  </property>
-                  <property name="clearButtonEnabled">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
+                <item row="1" column="0">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checkState">
+                  <enum>Checked</enum>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
                 </item>
-               </layout>
+                <item row="1" column="1">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="1" column="2">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="2" column="0">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checkState">
+                  <enum>Checked</enum>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="2" column="1">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="2" column="2">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="3" column="0">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checkState">
+                  <enum>Checked</enum>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="3" column="1">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="3" column="2">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="4" column="0">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="checkState">
+                  <enum>Checked</enum>
+                 </property>
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsUserCheckable|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="4" column="1">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+                <item row="4" column="2">
+                 <property name="flags">
+                  <set>ItemIsSelectable|ItemIsEditable|ItemIsDropEnabled|ItemIsEnabled</set>
+                 </property>
+                </item>
+               </widget>
               </item>
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_21">
                 <item>
-                 <widget class="QLabel" name="label_35">
-                  <property name="text">
-                   <string>Script</string>
+                 <spacer name="horizontalSpacer_12">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
                   </property>
-                 </widget>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="git_script">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please provide the absolute path of an executable script.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="readOnly">
-                   <bool>true</bool>
-                  </property>
-                  <property name="placeholderText">
-                   <string>Executable Script</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="execute_git_script">
+                 <widget class="QPushButton" name="apply_git">
                   <property name="text">
-                   <string>Execute</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="select_git_script">
-                  <property name="text">
-                   <string>Select</string>
+                   <string>Apply</string>
                   </property>
                  </widget>
                 </item>
                </layout>
-              </item>
-              <item>
-               <widget class="QPlainTextEdit" name="git_script_results">
-                <property name="tabChangesFocus">
-                 <bool>true</bool>
-                </property>
-                <property name="readOnly">
-                 <bool>true</bool>
-                </property>
-                <property name="placeholderText">
-                 <string>GIT Script Results</string>
-                </property>
-               </widget>
               </item>
              </layout>
             </widget>
@@ -3037,12 +3144,8 @@ with the kernel process.</string>
   <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
-  <tabstop>git_a</tabstop>
-  <tabstop>git_t</tabstop>
-  <tabstop>git_script</tabstop>
-  <tabstop>execute_git_script</tabstop>
-  <tabstop>select_git_script</tabstop>
-  <tabstop>git_script_results</tabstop>
+  <tabstop>git_table</tabstop>
+  <tabstop>apply_git</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>

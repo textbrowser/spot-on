@@ -10,41 +10,23 @@
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory!
 
-if [ -z ${GIT_A} ]
-then
-    echo "Please export GIT_A. Bye!"
-    exit 1
-fi
-
 if [ -z ${GIT_LOCAL_DIRECTORY} ]
 then
     echo "Please export GIT_LOCAL_DIRECTORY. Bye!"
     exit 1
 fi
 
-if [ -z ${GIT_SITE_CLONE} ]
+if [ -z ${GIT_SITE} ]
 then
-    echo "Please export GIT_SITE_CLONE. Bye!"
-    exit 1
-fi
-
-if [ -z ${GIT_SITE_PUSH} ]
-then
-    echo "Please export GIT_SITE_PUSH. Bye!"
-    exit 1
-fi
-
-if [ -z ${GIT_T} ]
-then
-    echo "Please export GIT_T. Bye!"
+    echo "Please export GIT_SITE. Bye!"
     exit 1
 fi
 
 local_directory="${GIT_LOCAL_DIRECTORY}"
 
-if [ ! -r "$local_directory" ]
+if [ ! -e "$local_directory" ]
 then
-    site=$(eval "echo ${GIT_SITE_CLONE}")
+    site=$(eval "echo ${GIT_SITE}")
 
     echo "Cloning $site into $local_directory."
     git clone -q "$site" "$local_directory" 2>&1 1>/dev/null
@@ -70,7 +52,7 @@ then
 else
     # Remove files older than five minutes.
 
-    echo "Removing files older than one minute."
+    echo "Removing Smoke files older than one minute."
     find "$local_directory" \
 	 ! -path "*.git*" \
 	 -mmin +1 \
@@ -113,7 +95,7 @@ else
 	    then
 		echo "A git-push is required!"
 
-		site=$(eval "echo ${GIT_SITE_PUSH}")
+		site=$(eval "echo ${GIT_SITE}")
 
 		git push "$site" 2>&1 1>/dev/null
 	    fi
@@ -156,7 +138,7 @@ else
 	    echo "[Great!]"
 	fi
 
-	site=$(eval "echo ${GIT_SITE_PUSH}")
+	site=$(eval "echo ${GIT_SITE}")
 
 	echo "Issuing a GIT-PUSH request."
 	git push "$site" 2>&1 1>/dev/null

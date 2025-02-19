@@ -507,6 +507,32 @@ QHash<QString, QByteArray> spoton_misc::retrieveEchoShareInformation
   return hash;
 }
 
+QHash<int, QHash<QString, QString> > spoton_misc::gitInformation
+(spoton_crypt *crypt)
+{
+  QHash<int, QHash<QString, QString> > hash;
+
+  if(!crypt)
+    return hash;
+
+  QByteArray bytes(QSettings().value("gui/git_table").toByteArray());
+  auto ok = true;
+
+  bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);
+
+  if(ok)
+    {
+      QDataStream stream(&bytes, QIODevice::ReadOnly);
+
+      stream >> hash;
+
+      if(stream.status() != QDataStream::Ok)
+	hash.clear();
+    }
+
+  return hash;
+}
+
 QHostAddress spoton_misc::localAddressIPv4(void)
 {
   auto const interfaces(QNetworkInterface::allInterfaces());
@@ -4687,6 +4713,51 @@ void spoton_misc::deregisterKernel(const pid_t pid)
 void spoton_misc::enableLog(const bool state)
 {
   s_enableLog.fetchAndStoreOrdered(state ? 1 : 0);
+}
+
+void spoton_misc::launchPrisonBluesProcesses
+(QObject *parent,
+ QVector<QPointer<QProcess> > &prisonBluesProcesses,
+ spoton_crypt *crypt)
+{
+  if(crypt == nullptr || prisonBluesProcesses.isEmpty())
+    return;
+
+  QHashIterator<int, QHash<QString, QString> > it(gitInformation(crypt));
+  auto const size = prisonBluesProcesses.size();
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value().value("git-site-checked") == "1")
+	{
+	  auto const script(it.value().value("script"));
+
+	  if(QFileInfo(script).isExecutable() == false)
+	    continue;
+
+	  auto process(prisonBluesProcesses.value(it.key() % size));
+
+	  if(!process)
+	    {
+	      process = new QProcess(parent);
+	      prisonBluesProcesses[it.key() % size] = process;
+	    }
+
+	  if(process->state() == QProcess::Running)
+	    continue;
+
+	  auto environment(QProcessEnvironment::systemEnvironment());
+
+	  environment.insert
+	    ("GIT_LOCAL_DIRECTORY", it.value().value("local-directory"));
+	  environment.insert("GIT_SITE", it.value().value("git-site"));
+	  process->setProcessEnvironment(environment);
+	  process->start(script, QStringList());
+	  process->waitForStarted();
+	}
+    }
 }
 
 void spoton_misc::logError(const QString &error)

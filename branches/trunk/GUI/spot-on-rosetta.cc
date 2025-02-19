@@ -787,96 +787,49 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 void spoton_rosetta::prisonBluesProcess(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  if(m_parent == nullptr ||
-     m_parent->isKernelActive() ||
-     m_parent->m_prisonBluesProcess.state() == QProcess::Running)
-    {
-      if(m_parent == nullptr)
-	showMessage(tr("Invalid parent object."), 5000);
-
-      return;
-    }
-
-  auto crypt = m_parent->crypts().value("chat", nullptr);
-
-  if(!crypt)
-    {
-      showMessage(tr("Invalid spoton_crypt object."), 5000);
-      return;
-    }
-
-  QFileInfo const fileInfo
-    (m_parent->m_settings.value("gui/git_script", "").toString().trimmed());
-
-  if(!fileInfo.isExecutable())
-    {
-      showMessage(tr("The configured GIT script is not executable."), 5000);
-      return;
-    }
-
-  auto const gitA(m_parent->m_settings.value("gui/git_a", "").toByteArray());
-
-  if(gitA.isEmpty())
-    {
-      showMessage(tr("The option GIT_A is empty."), 5000);
-      return;
-    }
-
-  auto const gitT(m_parent->m_settings.value("gui/git_t", "").toByteArray());
-
-  if(gitT.isEmpty())
-    {
-      showMessage(tr("The option GIT_T is empty."), 5000);
-      return;
-    }
-
-  auto const gitLocalDirectory
-    (m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-     trimmed());
-  auto const gitSiteClone
-    (m_parent->m_settings.value("GIT_SITE_CLONE", "").toString().trimmed());
-  auto const gitSitePush
-    (m_parent->m_settings.value("GIT_SITE_PUSH", "").toString().trimmed());
-  auto environment(QProcessEnvironment::systemEnvironment());
-
-  environment.insert("GIT_A", gitA);
-  environment.insert("GIT_LOCAL_DIRECTORY", gitLocalDirectory);
-  environment.insert("GIT_SITE_CLONE", gitSiteClone);
-  environment.insert("GIT_SITE_PUSH", gitSitePush);
-  environment.insert("GIT_T", gitT);
-  m_parent->m_prisonBluesProcess.setProcessEnvironment(environment);
-  m_parent->m_prisonBluesProcess.start
-    (fileInfo.absoluteFilePath(), QStringList());
-  m_parent->m_prisonBluesProcess.waitForStarted();
-  showMessage
-    (tr("The script %1 was started.").arg(fileInfo.absoluteFilePath()), 2500);
+  if(m_parent == nullptr)
+    showMessage(tr("Invalid parent object."), 5000);
+  else
+    m_parent->launchPrisonBluesProcesses();
 #endif
 }
 
 void spoton_rosetta::readPrisonBlues
-(const QFileInfo &directory, const QVector<QByteArray> &vector)
+(const QList<QFileInfo> &directories, const QVector<QByteArray> &vector)
 {
-  QVectorIterator<QByteArray> it(vector);
-
-  while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
+  for(int i = 0; i < directories.size(); i++)
     {
-      QDir const dir
-	(directory.absoluteFilePath() + QDir::separator() + it.next());
+      if(m_readPrisonBluesFuture.isCanceled())
+	return;
 
-      if(dir.isReadable())
+      QVectorIterator<QByteArray> it(vector);
+
+      while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
 	{
-	  foreach(auto const &i, dir.entryInfoList(QDir::Files, QDir::Time))
+	  QDir const dir
+	    (directories[i].absoluteFilePath() +
+	     QDir::separator() +
+	     it.next());
+
+	  if(dir.isReadable())
 	    {
-	      QFile file(i.absoluteFilePath());
-
-	      if(file.open(QIODevice::ReadOnly))
+	      foreach(auto const &entry,
+		      dir.entryInfoList(QDir::Files, QDir::Time))
 		{
-		  auto const bytes(file.readAll().trimmed());
+		  if(m_readPrisonBluesFuture.isCanceled())
+		    return;
 
-		  emit processGPGMessage(bytes);
+		  QFile file(entry.absoluteFilePath());
 
-		  if(bytes.startsWith("-----BEGIN PGP MESSAGE-----"))
-		    file.remove();
+		  if(file.open(QIODevice::ReadOnly))
+		    {
+		      auto const bytes(file.readAll().trimmed());
+
+		      emit processGPGMessage(bytes);
+
+		      if(bytes.startsWith("-----BEGIN PGP MESSAGE-----"))
+			file.remove();
+		    }
 		}
 	    }
 	}
@@ -886,19 +839,13 @@ void spoton_rosetta::readPrisonBlues
 void spoton_rosetta::resizeEvent(QResizeEvent *event)
 {
   if(!isFullScreen())
-    {
-      QSettings settings;
-
-      settings.setValue("gui/rosettaGeometry", saveGeometry());
-    }
+    QSettings().setValue("gui/rosettaGeometry", saveGeometry());
 
   QWidget::resizeEvent(event);
 }
 
 void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
 {
-  return; // Not yet.
-
   QString connectionName("");
 
   {
@@ -2334,27 +2281,22 @@ void spoton_rosetta::slotPopulateGPGEmailAddresses(void)
 
 void spoton_rosetta::slotPrisonBluesTimeout(void)
 {
-  if(m_parent)
-    {
-      QFileInfo const directory
-	(m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-	 trimmed());
+  if(!m_parent)
+    return;
 
-      if(directory.isDir())
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	m_readPrisonBluesFuture = QtConcurrent::run
-	  (&spoton_rosetta::readPrisonBlues,
-	   this,
-	   directory,
-	   m_gpgFingerprints);
+  m_readPrisonBluesFuture = QtConcurrent::run
+    (&spoton_rosetta::readPrisonBlues,
+     this,
+     m_parent->prisonBluesDirectories(),
+     m_gpgFingerprints);
 #else
-        m_readPrisonBluesFuture = QtConcurrent::run
-	  (this,
-	   &spoton_rosetta::readPrisonBlues,
-	   directory,
-	   m_gpgFingerprints);
+  m_readPrisonBluesFuture = QtConcurrent::run
+    (this,
+     &spoton_rosetta::readPrisonBlues,
+     m_parent->prisonBluesDirectories(),
+     m_gpgFingerprints);
 #endif
-    }
 
   prisonBluesProcess();
 }
@@ -2495,91 +2437,64 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
 void spoton_rosetta::slotPublishGPG(void)
 {
-  auto const destinationType = DestinationTypes
-    (ui.contacts->currentData(Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
-
-  if(destinationType != DestinationTypes::GPG)
-    {
-      showMessage(tr("GPG recipient only."), 5000);
-      return;
-    }
-
   if(!m_parent)
     {
       showMessage(tr("Invalid parent object."), 5000);
       return;
     }
 
-  auto crypt = m_parent->crypts().value("chat", nullptr);
+  auto const destinationType = DestinationTypes
+    (ui.contacts->currentData(Qt::ItemDataRole(Qt::UserRole + 1)).toInt());
 
-  if(!crypt)
+  if(destinationType != DestinationTypes::GPG)
     {
-      showMessage(tr("Invalid spoton_crypt object."), 5000);
+      showMessage(tr("GPG recipient only!"), 5000);
       return;
     }
 
-  if(m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-     trimmed().isEmpty())
-    {
-      showMessage(tr("GIT_LOCAL_DIRECTORY is empty."), 5000);
-      return;
-    }
+  auto const fingerprint = spoton_crypt::fingerprint
+    (spoton_misc::
+     publicKeyFromHash(QByteArray::
+		       fromBase64(ui.contacts->
+				  itemData(ui.contacts->currentIndex()).
+				  toByteArray()),
+		       true,
+		       m_parent->crypts().value("chat", nullptr)));
 
-  QFileInfo const directory
-    (m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-     trimmed());
-
-  if(!directory.isWritable())
+  if(fingerprint.trimmed().isEmpty())
     {
-      showMessage
-	(tr("The directory %1 is not writable.").
-	 arg(directory.absoluteFilePath()), 5000);
+      showMessage(tr("Empty destination fingerprint."), 5000);
       return;
     }
 
   slotConvertEncrypt();
 
-  QString fingerprint("");
-  auto const publicKey = spoton_misc::publicKeyFromHash
-    (QByteArray::
-     fromBase64(ui.contacts->itemData(ui.contacts->currentIndex()).
-		toByteArray()),
-     true,
-     crypt);
+  foreach(auto const &directory, m_parent->prisonBluesDirectories())
+    if(directory.isWritable())
+      {
+	QDir().mkpath
+	  (directory.absoluteFilePath() + QDir::separator() + fingerprint);
 
-  fingerprint = spoton_crypt::fingerprint(publicKey);
-  QDir().mkpath
-    (directory.absoluteFilePath() + QDir::separator() + fingerprint);
+	QTemporaryFile file
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   fingerprint +
+	   QDir::separator() +
+	   "PrisonBluesXXXXXXXXXX.txt");
 
-  QTemporaryFile file
-    (directory.absoluteFilePath() +
-     QDir::separator() +
-     fingerprint +
-     QDir::separator() +
-     "PrisonBluesXXXXXXXXXX.txt");
-
-  if(file.open())
-    {
-      QMap<GPGMessage, QVariant> map;
-
-      map[GPGMessage::Destination] = crypt->encryptedThenHashed
-	(ui.contacts->currentText().toUtf8(), nullptr).toBase64();
-      map[GPGMessage::Message] = ui.outputEncrypt->toPlainText().trimmed();
-      map[GPGMessage::Origin] = crypt->encryptedThenHashed
-	(ui.gpg_email_addresses->currentText().toUtf8(), nullptr).toBase64();
-
-      saveGPGMessage(map);
-
-      QTextStream stream(&file);
-
-      Q_UNUSED(file.fileName()); // Prevents removal of file.
-      file.setAutoRemove(false);
-      stream << ui.outputEncrypt->toPlainText();
-    }
-}
-
-void spoton_rosetta::slotReadPrisonBluesProcess(void)
-{
+	if(file.open())
+	  {
+	    Q_UNUSED(file.fileName()); // Prevents removal of file.
+	    file.setAutoRemove(false);
+	    file.write(ui.outputEncrypt->toPlainText().toUtf8());
+	  }
+	else
+	  showMessage(tr("Error creating a temporary file."), 5000);
+      }
+    else
+      showMessage
+	(tr("The directory %1 is not writable.").
+	 arg(directory.absoluteFilePath()), 5000);
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
@@ -2805,25 +2720,6 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
-  if(m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-     trimmed().isEmpty())
-    {
-      showMessage(tr("GIT_LOCAL_DIRECTORY is empty."), 5000);
-      return;
-    }
-
-  QFileInfo const directory
-    (m_parent->m_settings.value("GIT_LOCAL_DIRECTORY", "").toString().
-     trimmed());
-
-  if(!directory.exists())
-    {
-      showMessage
-	(tr("The directory %1 is not readable.").
-	 arg(directory.absoluteFilePath()), 5000);
-      return;
-    }
-
   auto const message(ui.gpg_message->toPlainText().trimmed());
 
   if(message.isEmpty())
@@ -2879,49 +2775,48 @@ void spoton_rosetta::slotWriteGPG(void)
     (ui.gpg_participants->selectionModel()->selectedRows(2));
   auto const sign = ui.gpg_sign_messages->isChecked();
 
-  for(int i = 0; i < fingerprints.size(); i++)
-    {
-      if(!(fingerprints[i].isValid() && publicKeyHashes[i].isValid()))
-	continue;
+  foreach(auto const &directory, m_parent->prisonBluesDirectories())
+    for(int i = 0; i < fingerprints.size(); i++)
+      {
+	if(!(directory.isWritable()) ||
+	   !(fingerprints[i].isValid() && publicKeyHashes[i].isValid()))
+	  continue;
 
-      auto const publicKey = spoton_misc::publicKeyFromHash
-	(QByteArray::fromBase64(publicKeyHashes[i].data().toByteArray()),
-	 true,
-	 crypt);
+	auto const publicKey = spoton_misc::publicKeyFromHash
+	  (QByteArray::fromBase64(publicKeyHashes[i].data().toByteArray()),
+	   true,
+	   crypt);
 
-      QDir().mkpath
-	(directory.absoluteFilePath() +
-	 QDir::separator() +
-	 fingerprints[i].data().toString());
+	QDir().mkpath
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   fingerprints[i].data().toString());
 
-      QTemporaryFile file
-	(directory.absoluteFilePath() +
-	 QDir::separator() +
-	 fingerprints[i].data().toString() +
-	 QDir::separator() +
-	 "PrisonBluesXXXXXXXXXX.txt");
+	QTemporaryFile file
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   fingerprints[i].data().toString() +
+	   QDir::separator() +
+	   "PrisonBluesXXXXXXXXXX.txt");
 
-      if(file.open())
-	{
-	  auto ok = true;
-	  auto const output
-	    (gpgEncrypt(ok, message.toUtf8(), publicKey, QByteArray(), sign));
+	if(file.open())
+	  {
+	    auto ok = true;
+	    auto const output
+	      (gpgEncrypt(ok, message.toUtf8(), publicKey, QByteArray(), sign));
 
-	  if(ok)
-	    {
-	      Q_UNUSED(file.fileName()); // Prevents removal of file.
-	      file.setAutoRemove(false);
-
-	      QTextStream stream(&file);
-
-	      stream << output;
-	    }
-	  else
-	    showMessage(output, 5000);
-	}
-      else
-	showMessage(tr("Could not create a temporary file."), 5000);
-    }
+	    if(ok)
+	      {
+		Q_UNUSED(file.fileName()); // Prevents removal of file.
+		file.setAutoRemove(false);
+		file.write(output);
+	      }
+	    else
+	      showMessage(output, 5000);
+	  }
+	else
+	  showMessage(tr("Could not create a temporary file."), 5000);
+      }
 
   ui.gpg_message->clear();
   QApplication::restoreOverrideCursor();
