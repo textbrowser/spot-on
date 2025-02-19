@@ -2491,7 +2491,7 @@ void spoton_rosetta::slotPublishGPG(void)
 	else
 	  showMessage(tr("Error creating a temporary file."), 5000);
       }
-    else
+    else if(directory.absoluteFilePath().trimmed().isEmpty() == false)
       showMessage
 	(tr("The directory %1 is not writable.").
 	 arg(directory.absoluteFilePath()), 5000);
@@ -2779,29 +2779,30 @@ void spoton_rosetta::slotWriteGPG(void)
     for(int i = 0; i < fingerprints.size(); i++)
       {
 	if(!(directory.isWritable()) ||
-	   !(fingerprints[i].isValid() && publicKeyHashes[i].isValid()))
+	   !(fingerprints.value(i).isValid() &&
+	     publicKeyHashes.value(i).isValid()))
 	  continue;
-
-	auto const publicKey = spoton_misc::publicKeyFromHash
-	  (QByteArray::fromBase64(publicKeyHashes[i].data().toByteArray()),
-	   true,
-	   crypt);
 
 	QDir().mkpath
 	  (directory.absoluteFilePath() +
 	   QDir::separator() +
-	   fingerprints[i].data().toString());
+	   fingerprints.value(i).data().toString());
 
 	QTemporaryFile file
 	  (directory.absoluteFilePath() +
 	   QDir::separator() +
-	   fingerprints[i].data().toString() +
+	   fingerprints.value(i).data().toString() +
 	   QDir::separator() +
 	   "PrisonBluesXXXXXXXXXX.txt");
 
 	if(file.open())
 	  {
 	    auto ok = true;
+	    auto const publicKey = spoton_misc::publicKeyFromHash
+	      (QByteArray::fromBase64(publicKeyHashes.value(i).data().
+				      toByteArray()),
+	       true,
+	       crypt);
 	    auto const output
 	      (gpgEncrypt(ok, message.toUtf8(), publicKey, QByteArray(), sign));
 
