@@ -243,11 +243,10 @@ int main(int argc, char *argv[])
   QApplication::addLibraryPath("plugins");
 #endif
   qInstallMessageHandler(qt_message_handler);
-#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
+  QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
   QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
   QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-#endif
 #endif
 
   QApplication qapplication(argc, argv);
@@ -1526,6 +1525,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGeoIPPath(void)));
+  connect(m_optionsUi.select_git,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectGIT(void)));
   connect(m_optionsUi.sharePrivateKeys,
 	  SIGNAL(toggled(bool)),
 	  this,

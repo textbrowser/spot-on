@@ -736,9 +736,9 @@ class spoton: public QMainWindow
   void slotAuthenticationRequestButtonClicked(void);
   void slotAutoAddSharedSBMagnets(bool state);
   void slotAutoRetrieveEmail(bool state);
+  void slotBehaveAsHumanProxy(bool state);
   void slotBlockNeighbor(void);
   void slotBluetoothSecurityChanged(int index);
-  void slotBehaveAsHumanProxy(bool state);
   void slotBuzzActionsActivated(int index);
   void slotBuzzChanged(void);
   void slotBuzzInvite(void);
@@ -1020,6 +1020,7 @@ class spoton: public QMainWindow
   void slotSecureMemoryPoolChanged(int value);
   void slotSelectCAPath(void);
   void slotSelectDestination(void);
+  void slotSelectGIT(void);
   void slotSelectGeoIPPath(void);
   void slotSelectKernelPath(void);
   void slotSelectTransmitFile(void);

@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-756</y>
+         <y>-834</y>
          <width>769</width>
          <height>5050</height>
         </rect>
@@ -722,10 +722,10 @@
                  <bool>true</bool>
                 </property>
                 <property name="selectionMode">
-                 <enum>QAbstractItemView::NoSelection</enum>
+                 <enum>QAbstractItemView::SingleSelection</enum>
                 </property>
                 <property name="selectionBehavior">
-                 <enum>QAbstractItemView::SelectRows</enum>
+                 <enum>QAbstractItemView::SelectItems</enum>
                 </property>
                 <property name="verticalScrollMode">
                  <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -917,6 +917,13 @@
                  <widget class="QPushButton" name="apply_git">
                   <property name="text">
                    <string>Apply</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="select_git">
+                  <property name="text">
+                   <string>Select...</string>
                   </property>
                  </widget>
                 </item>
@@ -3146,6 +3153,7 @@ with the kernel process.</string>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>git_table</tabstop>
   <tabstop>apply_git</tabstop>
+  <tabstop>select_git</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>
   <tabstop>neighborsUpdateInterval</tabstop>

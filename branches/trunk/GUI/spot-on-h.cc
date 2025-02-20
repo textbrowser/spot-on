@@ -1490,6 +1490,33 @@ void spoton::slotSaveLineLimits(int value)
     }
 }
 
+void spoton::slotSelectGIT(void)
+{
+  auto item = m_optionsUi.git_table->currentItem();
+
+  if(item == nullptr || item->column() == 0) // GIT Site
+    return;
+
+  QFileDialog dialog(m_optionsWindow);
+
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QFileInfo(item->text()).dir());
+  dialog.setFileMode
+    (item->column() == 1 ? QFileDialog::Directory : QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle
+    (tr("%1: Select GIT Directory / Script").arg(SPOTON_APPLICATION_NAME));
+  dialog.selectFile(item->text().trimmed());
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::processEvents();
+      item->setText(dialog.selectedFiles().value(0).trimmed());
+    }
+
+  QApplication::processEvents();
+}
+
 void spoton::slotSetCongestionMaxPageCount(int value)
 {
   m_settings["gui/congestion_control_max_page_count"] = value;
