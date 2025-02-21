@@ -185,6 +185,9 @@
                    <property name="placeholderText">
                     <string>Your Name</string>
                    </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -257,6 +260,9 @@
                    <property name="placeholderText">
                     <string>Buzz Magnet</string>
                    </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -313,6 +319,9 @@
                    <property name="placeholderText">
                     <string>Buzz Channel Key</string>
                    </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -349,6 +358,9 @@
                   <widget class="QLineEdit" name="channelSalt">
                    <property name="placeholderText">
                     <string>Buzz Salt</string>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -393,6 +405,9 @@
                   <widget class="QLineEdit" name="buzzHashKey">
                    <property name="placeholderText">
                     <string>Buzz Hash Key</string>
+                   </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>
@@ -655,6 +670,9 @@
                         <widget class="QLineEdit" name="nodeName">
                          <property name="placeholderText">
                           <string>Your Name</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -1460,6 +1478,9 @@
                         <property name="placeholderText">
                          <string>Subject</string>
                         </property>
+                        <property name="clearButtonEnabled">
+                         <bool>true</bool>
+                        </property>
                        </widget>
                       </item>
                       <item row="3" column="0">
@@ -1673,10 +1694,13 @@
                         <item>
                          <widget class="QLineEdit" name="goldbug">
                           <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of authentication and encryption. The first ninety-six characters will be consumed. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bundle the e-mail components in an additional layer of authentication and encryption. The &lt;span style=&quot; font-weight:600;&quot;&gt;first ninety-six characters will be consumed&lt;/span&gt;. Do remember to notify all recipients of the Gold Bug.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="placeholderText">
                            <string>Optional Secret</string>
+                          </property>
+                          <property name="clearButtonEnabled">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </item>
@@ -2186,6 +2210,9 @@
                           <property name="placeholderText">
                            <string>Post Office Magnet</string>
                           </property>
+                          <property name="clearButtonEnabled">
+                           <bool>true</bool>
+                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -2241,6 +2268,9 @@
                              <property name="placeholderText">
                               <string>Post Office Name</string>
                              </property>
+                             <property name="clearButtonEnabled">
+                              <bool>true</bool>
+                             </property>
                             </widget>
                            </item>
                            <item row="1" column="0">
@@ -2257,6 +2287,9 @@
                             <widget class="QLineEdit" name="institutionPostalAddress">
                              <property name="placeholderText">
                               <string>Post Office Address</string>
+                             </property>
+                             <property name="clearButtonEnabled">
+                              <bool>true</bool>
                              </property>
                             </widget>
                            </item>
@@ -2381,8 +2414,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>729</width>
-             <height>461</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -2710,6 +2743,9 @@
                        <property name="placeholderText">
                         <string>Listener IP Address</string>
                        </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item row="0" column="3">
@@ -2761,6 +2797,9 @@
                       <widget class="QLineEdit" name="listenerScopeId">
                        <property name="placeholderText">
                         <string>Listener Scope ID</string>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -3129,9 +3168,9 @@
                   <widget class="QWidget" name="scrollAreaWidgetContents_3">
                    <property name="geometry">
                     <rect>
-                     <x>0</x>
-                     <y>0</y>
-                     <width>374</width>
+                     <x>-137</x>
+                     <y>-961</y>
+                     <width>363</width>
                      <height>1602</height>
                     </rect>
                    </property>
@@ -3228,6 +3267,9 @@
                            <property name="placeholderText">
                             <string>Account Name</string>
                            </property>
+                           <property name="clearButtonEnabled">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item row="1" column="1">
@@ -3237,6 +3279,9 @@
                            </property>
                            <property name="placeholderText">
                             <string>Account Password</string>
+                           </property>
+                           <property name="clearButtonEnabled">
+                            <bool>true</bool>
                            </property>
                           </widget>
                          </item>
@@ -3395,6 +3440,9 @@
                            <property name="placeholderText">
                             <string>Adaptive Echo Token</string>
                            </property>
+                           <property name="clearButtonEnabled">
+                            <bool>true</bool>
+                           </property>
                           </widget>
                          </item>
                          <item row="0" column="0">
@@ -3546,6 +3594,9 @@
                          </property>
                          <property name="placeholderText">
                           <string>Allowed IP Address</string>
+                         </property>
+                         <property name="clearButtonEnabled">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -3702,8 +3753,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>234</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4115,7 +4166,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>811</width>
+                  <width>835</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -4275,6 +4326,9 @@
                             <property name="placeholderText">
                              <string>Neighbor Scope ID</string>
                             </property>
+                            <property name="clearButtonEnabled">
+                             <bool>true</bool>
+                            </property>
                            </widget>
                           </item>
                           <item row="2" column="5">
@@ -4297,6 +4351,9 @@
                            <widget class="QLineEdit" name="neighborIP">
                             <property name="placeholderText">
                              <string>Neighbor IP Address</string>
+                            </property>
+                            <property name="clearButtonEnabled">
+                             <bool>true</bool>
                             </property>
                            </widget>
                           </item>
@@ -4398,6 +4455,9 @@
                             </property>
                             <property name="placeholderText">
                              <string>TCP Bind IP Address</string>
+                            </property>
+                            <property name="clearButtonEnabled">
+                             <bool>true</bool>
                             </property>
                            </widget>
                           </item>
@@ -4520,6 +4580,9 @@
                             </property>
                             <property name="placeholderText">
                              <string>Neighbor SSL Control String</string>
+                            </property>
+                            <property name="clearButtonEnabled">
+                             <bool>true</bool>
                             </property>
                            </widget>
                           </item>
@@ -4698,6 +4761,9 @@
                                 <property name="placeholderText">
                                  <string>Hostname</string>
                                 </property>
+                                <property name="clearButtonEnabled">
+                                 <bool>true</bool>
+                                </property>
                                </widget>
                               </item>
                               <item row="0" column="0">
@@ -4735,6 +4801,9 @@
                                 <property name="placeholderText">
                                  <string>Username</string>
                                 </property>
+                                <property name="clearButtonEnabled">
+                                 <bool>true</bool>
+                                </property>
                                </widget>
                               </item>
                               <item row="2" column="2">
@@ -4757,6 +4826,9 @@
                                 </property>
                                 <property name="placeholderText">
                                  <string>Password</string>
+                                </property>
+                                <property name="clearButtonEnabled">
+                                 <bool>true</bool>
                                 </property>
                                </widget>
                               </item>
@@ -4985,8 +5057,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>714</width>
-             <height>426</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5071,8 +5143,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>906</width>
-                 <height>749</height>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -5339,6 +5411,9 @@
                        <property name="placeholderText">
                         <string>Common Credentials Secret</string>
                        </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item>
@@ -5355,6 +5430,9 @@
                       <widget class="QLineEdit" name="commonUrlPin">
                        <property name="placeholderText">
                         <string>Common Credentials PIN</string>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -5524,6 +5602,9 @@
                        <property name="placeholderText">
                         <string>Not Used</string>
                        </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item>
@@ -5670,6 +5751,9 @@
                        <property name="placeholderText">
                         <string>Not Used</string>
                        </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -5694,6 +5778,9 @@
                        <property name="placeholderText">
                         <string>Not Used</string>
                        </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
                       </widget>
                      </item>
                      <item>
@@ -5710,6 +5797,9 @@
                       <widget class="QLineEdit" name="urlSalt">
                        <property name="placeholderText">
                         <string>Not Used</string>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -5901,6 +5991,9 @@
                    <property name="placeholderText">
                     <string>Search</string>
                    </property>
+                   <property name="clearButtonEnabled">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -6049,6 +6142,9 @@
                     <property name="placeholderText">
                      <string>Find</string>
                     </property>
+                    <property name="clearButtonEnabled">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                  </layout>
@@ -6099,8 +6195,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1062</width>
-             <height>1359</height>
+             <width>1029</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6245,6 +6341,9 @@
                     <widget class="QLineEdit" name="kernelPath">
                      <property name="placeholderText">
                       <string>Spot-On-Kernel File Path</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -6753,6 +6852,9 @@
                      <property name="placeholderText">
                       <string>Passphrase Confirmation</string>
                      </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item row="1" column="0">
@@ -6779,6 +6881,9 @@
                     <widget class="QLineEdit" name="username">
                      <property name="placeholderText">
                       <string>Your Name</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -6807,6 +6912,9 @@
                      <property name="placeholderText">
                       <string>Question</string>
                      </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item row="8" column="0">
@@ -6826,6 +6934,9 @@
                      </property>
                      <property name="placeholderText">
                       <string>Answer</string>
+                     </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -6851,6 +6962,9 @@
                        </property>
                        <property name="placeholderText">
                         <string>Passphrase</string>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -7350,8 +7464,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>672</width>
-             <height>732</height>
+             <width>851</width>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -7689,6 +7803,9 @@
                           <property name="placeholderText">
                            <string>StarBeam Encryption Key</string>
                           </property>
+                          <property name="clearButtonEnabled">
+                           <bool>true</bool>
+                          </property>
                          </widget>
                         </item>
                         <item row="0" column="2">
@@ -7705,6 +7822,9 @@
                          <widget class="QLineEdit" name="etpMacKey">
                           <property name="placeholderText">
                            <string>StarBeam Hash Key</string>
+                          </property>
+                          <property name="clearButtonEnabled">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </item>
@@ -7848,6 +7968,9 @@
                       <property name="placeholderText">
                        <string>Nova</string>
                       </property>
+                      <property name="clearButtonEnabled">
+                       <bool>true</bool>
+                      </property>
                      </widget>
                     </item>
                     <item>
@@ -7925,6 +8048,9 @@
                        <widget class="QLineEdit" name="destination">
                         <property name="placeholderText">
                          <string>Absolute Directory Name</string>
+                        </property>
+                        <property name="clearButtonEnabled">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -8399,7 +8525,7 @@
                     <item>
                      <widget class="QLabel" name="label_91">
                       <property name="text">
-                       <string>Novas must contain at least forty-eight characters.</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Novas must &lt;span style=&quot; font-weight:600;&quot;&gt;contain at least forty-eight characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                      </widget>
                     </item>
@@ -8412,6 +8538,9 @@
                        <widget class="QLineEdit" name="transmitNova">
                         <property name="placeholderText">
                          <string>Nova</string>
+                        </property>
+                        <property name="clearButtonEnabled">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -8446,6 +8575,9 @@
                        <widget class="QLineEdit" name="transmittedFile">
                         <property name="placeholderText">
                          <string>Absolute File Path</string>
+                        </property>
+                        <property name="clearButtonEnabled">
+                         <bool>true</bool>
                         </property>
                        </widget>
                       </item>
@@ -8557,7 +8689,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>840</width>
+             <width>851</width>
              <height>833</height>
             </rect>
            </property>
@@ -8788,6 +8920,9 @@
                    <widget class="QLineEdit" name="urlName">
                     <property name="placeholderText">
                      <string>Your Name</string>
+                    </property>
+                    <property name="clearButtonEnabled">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -9201,6 +9336,9 @@
                      <property name="placeholderText">
                       <string>Domain Name</string>
                      </property>
+                     <property name="clearButtonEnabled">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item>
@@ -9345,8 +9483,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>308</width>
-             <height>179</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9467,6 +9605,9 @@
                   <property name="placeholderText">
                    <string>Passphrase</string>
                   </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -9514,6 +9655,9 @@
                   <property name="placeholderText">
                    <string>Question</string>
                   </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
@@ -9530,6 +9674,9 @@
                  <widget class="spoton_lineedit" name="answer_authenticate">
                   <property name="placeholderText">
                    <string>Answer</string>
+                  </property>
+                  <property name="clearButtonEnabled">
+                   <bool>true</bool>
                   </property>
                  </widget>
                 </item>

@@ -33,7 +33,7 @@
    <item>
     <widget class="QLabel" name="message">
      <property name="text">
-      <string>Please provide the following information. The token must contain at least ninety-six characters.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please provide the following information. The &lt;span style=&quot; font-weight:600;&quot;&gt;token must contain at least ninety-six characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
