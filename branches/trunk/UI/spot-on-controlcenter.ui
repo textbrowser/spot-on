@@ -3168,10 +3168,10 @@
                   <widget class="QWidget" name="scrollAreaWidgetContents_3">
                    <property name="geometry">
                     <rect>
-                     <x>-137</x>
-                     <y>-961</y>
+                     <x>0</x>
+                     <y>-154</y>
                      <width>363</width>
-                     <height>1602</height>
+                     <height>1622</height>
                     </rect>
                    </property>
                    <layout class="QVBoxLayout" name="verticalLayout_38">
@@ -3230,7 +3230,7 @@
                        <item>
                         <widget class="QLabel" name="label_88">
                          <property name="text">
-                          <string>The account name and the account password must contain at least thirty-two characters each.</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600;&quot;&gt;account name and the account password must contain at least thirty-two characters&lt;/span&gt; each.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="wordWrap">
                           <bool>true</bool>
@@ -3423,7 +3423,7 @@
                        <item>
                         <widget class="QLabel" name="label_89">
                          <property name="text">
-                          <string>The token must contain at least ninety-six characters.</string>
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &lt;span style=&quot; font-weight:600;&quot;&gt;token must contain at least ninety-six characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="wordWrap">
                           <bool>true</bool>
@@ -7463,7 +7463,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-48</y>
              <width>851</width>
              <height>730</height>
             </rect>
@@ -7959,7 +7959,7 @@
                     <item>
                      <widget class="QLabel" name="label_90">
                       <property name="text">
-                       <string>Novas must contain at least forty-eight characters.</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Novas must contain at least forty-eight characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                      </widget>
                     </item>
@@ -8525,7 +8525,7 @@
                     <item>
                      <widget class="QLabel" name="label_91">
                       <property name="text">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Novas must &lt;span style=&quot; font-weight:600;&quot;&gt;contain at least forty-eight characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Novas must contain at least forty-eight characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                      </widget>
                     </item>
