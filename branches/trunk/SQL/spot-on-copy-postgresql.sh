@@ -14,6 +14,7 @@ rc=$?
 if [ ! $rc -eq 0 ]
 then
     echo "Failure with pg_dump."
+    exit $rc
 fi
 
 pg_dumpall -U postgres \
@@ -26,6 +27,7 @@ rc=$?
 if [ ! $rc -eq 0 ]
 then
     echo "Failure with pg_dumpall."
+    exit $rc
 fi
 
 gzip --force --keep spot-on-user-db.$date.sql 2>/dev/null 1>&2
@@ -35,6 +37,7 @@ rc=$?
 if [ ! $rc -eq 0 ]
 then
     echo "Failure with gzip."
+    exit $rc
 fi
 
 chmod -rw globals.$date.sql spot-on-user-db.$date.sql 2>/dev/null 1>&2
@@ -44,6 +47,7 @@ rc=$?
 if [ ! $rc -eq 0 ]
 then
     echo "Failure with chmod."
+    exit $rc
 fi
 
 exit $rc
