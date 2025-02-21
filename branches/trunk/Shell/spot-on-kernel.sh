@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+
 # Alexis Megas.
 
 os=$(uname -o 2>/dev/null)

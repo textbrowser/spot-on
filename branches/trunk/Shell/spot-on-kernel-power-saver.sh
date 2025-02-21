@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+
 # Alexis Megas.
 
 if [ -r /opt/spot-on/Spot-On-Kernel ] && [ -x /opt/spot-on/Spot-On-Kernel ]
