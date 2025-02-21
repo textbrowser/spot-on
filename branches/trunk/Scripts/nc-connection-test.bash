@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Alexis Megas.
+
 # A test script.
 
 for i in {1..100};

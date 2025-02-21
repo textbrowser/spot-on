@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Alexis Megas.
+
 # A test script.
 
 cat Spot-On Spot-On Spot-On Spot-On Spot-On \
