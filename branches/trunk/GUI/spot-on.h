@@ -361,7 +361,7 @@ class spoton_lineedit: public QLineEdit
  public:
   spoton_lineedit(QWidget *parent):QLineEdit(parent)
   {
-    m_dialog = new spoton_virtual_keyboard(this);
+    m_dialog = new spoton_virtual_keyboard(parent);
   }
 
   ~spoton_lineedit()
