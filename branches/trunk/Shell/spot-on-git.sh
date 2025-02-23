@@ -29,7 +29,7 @@ then
     site=$(eval "echo ${GIT_SITE}")
 
     echo "Cloning $site into $local_directory."
-    git clone -q "$site" "$local_directory" 2>&1 1>/dev/null
+    git clone -q "$site" "$local_directory" 1>/dev/null 2>/dev/null
 
     rc=$?
 
@@ -64,7 +64,7 @@ else
 
     echo "Instructing GIT to avoid the rebase strategy. " \
 	 "Merge changes instead."
-    git config pull.rebase false 2>&1 1>/dev/null
+    git config pull.rebase false 1>/dev/null 2>/dev/null
 
     if [ ! $? eq 0 ]
     then
@@ -76,7 +76,7 @@ else
     # Pull?
 
     echo "Issuing a GIT-PULL request."
-    git pull 2>&1 1>/dev/null
+    git pull 1>/dev/null 2>/dev/null
 
     rc=$?
 
@@ -97,15 +97,15 @@ else
 
 		site=$(eval "echo ${GIT_SITE}")
 
-		git push "$site" 2>&1 1>/dev/null
+		git push "$site" 1>/dev/null 2>/dev/null
 	    fi
 
-	    git clean -df . 2>&1 1>/dev/null
+	    git clean -df . 1>/dev/null 2>/dev/null
 	    exit 0
 	fi
 
 	echo "Adding local text files."
-	git add --all */*.txt 2>&1 1>/dev/null
+	git add --all */*.txt 1>/dev/null 2>/dev/null
 
 	rc=$?
 
@@ -116,7 +116,7 @@ else
 	fi
 
 	echo "Committing new data."
-	git commit -a -m "New data." 2>&1 1>/dev/null
+	git commit -a -m "New data." 1>/dev/null 2>/dev/null
 
 	rc=$?
 
@@ -129,7 +129,7 @@ else
 	fi
 
 	echo "Issuing a GIT-PULL request."
-	git pull --no-log 2>&1 1>/dev/null
+	git pull --no-log 1>/dev/null 2>/dev/null
 
 	if [ ! $? -eq 0 ]
 	then
@@ -141,7 +141,7 @@ else
 	site=$(eval "echo ${GIT_SITE}")
 
 	echo "Issuing a GIT-PUSH request."
-	git push "$site" 2>&1 1>/dev/null
+	git push "$site" 1>/dev/null 2>/dev/null
 
 	rc=$?
 
