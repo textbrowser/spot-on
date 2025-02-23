@@ -2582,8 +2582,7 @@ void spoton::slotSharePoptasticPublicKey(void)
   publicKey = m_crypts.value("poptastic")->publicKey(&ok);
 
   if(ok)
-    signature = m_crypts.value("poptastic")->digitalSignature
-      (publicKey, &ok);
+    signature = m_crypts.value("poptastic")->digitalSignature(publicKey, &ok);
 
   QByteArray sPublicKey;
   QByteArray sSignature;
@@ -2592,8 +2591,8 @@ void spoton::slotSharePoptasticPublicKey(void)
     sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("poptastic-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("poptastic-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     {

@@ -67,8 +67,8 @@ QByteArray spoton::copyMyChatPublicKey(void) const
     sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("chat-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("chat-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("chat").toBase64() + "@" +
@@ -102,8 +102,8 @@ QByteArray spoton::copyMyEmailPublicKey(void) const
     sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("email-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("email-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("email").toBase64() + "@" +
@@ -142,8 +142,8 @@ QByteArray spoton::copyMyPoptasticPublicKey(void) const
     sPublicKey = m_crypts.value("poptastic-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("poptastic-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("poptastic-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("poptastic").toBase64() + "@" +
@@ -177,8 +177,8 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
     sPublicKey = m_crypts.value("rosetta-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("rosetta-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("rosetta-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("rosetta").toBase64() + "@" +
@@ -212,8 +212,8 @@ QByteArray spoton::copyMyUrlPublicKey(void) const
     sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("url-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("url-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     return "K" + QByteArray("url").toBase64() + "@" +
@@ -3087,8 +3087,8 @@ void spoton::slotCopyFriendshipBundle(void)
     }
 
   auto const mySSignature
-    (m_crypts.value(QString("%1-signature").arg(keyType))->
-     digitalSignature(mySPublicKey, &ok));
+    (m_crypts.value(QString("%1-signature").arg(keyType))->digitalSignature
+     (mySPublicKey, &ok));
 
   if(!ok)
     {
@@ -6985,8 +6985,8 @@ void spoton::slotShareChatPublicKey(void)
     sPublicKey = m_crypts.value("chat-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("chat-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("chat-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     {
@@ -7085,8 +7085,8 @@ void spoton::slotShareEmailPublicKey(void)
     sPublicKey = m_crypts.value("email-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("email-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("email-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     {
@@ -7185,8 +7185,8 @@ void spoton::slotShareURLPublicKey(void)
     sPublicKey = m_crypts.value("url-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("url-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("url-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
     {

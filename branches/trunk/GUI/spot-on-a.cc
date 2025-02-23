@@ -5845,8 +5845,8 @@ void spoton::slotCopyEmailFriendshipBundle(void)
     }
 
   auto const mySSignature
-    (m_crypts.value(QString("%1-signature").arg(keyType))->
-     digitalSignature(mySPublicKey, &ok));
+    (m_crypts.value(QString("%1-signature").arg(keyType))->digitalSignature
+     (mySPublicKey, &ok));
 
   if(!ok)
     {

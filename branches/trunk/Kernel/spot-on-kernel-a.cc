@@ -5058,24 +5058,26 @@ void spoton_kernel::slotRetrieveMail(void)
 		   &ok);
 
 	      if(ok)
-		institutionPostalAddress = s_crypt->
-		  decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.value(3).toByteArray()),
-		   &ok);
+		institutionPostalAddress = s_crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
 
 	      if(ok)
 		requesterHashInformation = spoton_crypt::keyedHash
 		  (message1 + publicKey,
-		   institutionPostalAddress, hashType, &ok);
+		   institutionPostalAddress,
+		   hashType,
+		   &ok);
 
 	      auto const dateTime(QDateTime::currentDateTime());
 
 	      if(ok)
 		signature = s_crypt->digitalSignature
 		  (QByteArray("0002b") +
-		   message1 + requesterHashInformation + message2 +
-		   dateTime.toUTC().toString("MMddyyyyhhmmss").
-		   toLatin1(), &ok);
+		   message1 +
+		   requesterHashInformation +
+		   message2 +
+		   dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+		   &ok);
 
 	      if(!ok)
 		continue;
@@ -5825,13 +5827,15 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		       cipherType +
 		       hashType +
 		       myPublicKeyHash +
-		       recipientHash, &ok);
+		       recipientHash,
+		       &ok);
 
 		  if(ok)
 		    data1 = crypt.encrypted
 		      (myPublicKeyHash.toBase64() + "\n" +
 		       recipientHash.toBase64() + "\n" +
-		       signature.toBase64(), &ok);
+		       signature.toBase64(),
+		       &ok);
 		}
 
 	      if(!ok)

@@ -670,14 +670,12 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
 		(QString("spoton_crypt::digitalSignature(): "
-			 "gcry_mpi_scan() "
-			 "failure (%1).").arg(buffer.constData()));
+			 "gcry_mpi_scan() failure (%1).").
+		 arg(buffer.constData()));
 	    }
 	  else
 	    spoton_misc::logError
-	      ("spoton_crypt::digitalSignature(): "
-	       "gcry_mpi_scan() "
-	       "failure.");
+	      ("spoton_crypt::digitalSignature(): gcry_mpi_scan() failure.");
 
 	  goto done_label;
 	}
@@ -761,8 +759,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 		    *ok = false;
 
 		  spoton_misc::logError
-		    ("spoton_crypt::digitalSignature(): malloc() "
-		     "failure.");
+		    ("spoton_crypt::digitalSignature(): malloc() failure.");
 		}
 
 	      if(buffer)
@@ -794,8 +791,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
-		(QString("spoton_crypt::digitalSignature(): "
-			 "gcry_pk_sign() "
+		(QString("spoton_crypt::digitalSignature(): gcry_pk_sign() "
 			 "failure (%1).").arg(buffer.constData()));
 	    }
 	  else
@@ -819,14 +815,12 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 			 buffer.data(),
 			 static_cast<size_t> (buffer.length()));
 	  spoton_misc::logError
-	    (QString("spoton_crypt::digitalSignature(): "
-		     "gcry_sexp_build() "
+	    (QString("spoton_crypt::digitalSignature(): gcry_sexp_build() "
 		     "failure (%1).").arg(buffer.constData()));
 	}
       else
 	spoton_misc::logError
-	  ("spoton_crypt::digitalSignature(): gcry_sexp_build() "
-	   "failure.");
+	  ("spoton_crypt::digitalSignature(): gcry_sexp_build() failure.");
 
       goto done_label;
     }
