@@ -58,7 +58,14 @@ else
 	 -mmin +1 \
 	 -name "*Smoke*.txt" \
 	 -type f \
-	 -exec rm -f {} \;
+	 -exec rm -f {} 2>/dev/null \;
+    echo "Removing files older than fifteen days."
+    find "$local_directory" \
+	 ! -path "*.git*" \
+	 -mtime +15 \
+	 -name "PrisonBlues*.txt" \
+	 -type f \
+	 -exec rm -f {} 2>/dev/null \;
 
     # Merge.
 

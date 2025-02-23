@@ -341,6 +341,7 @@ Completed Items
 237.   WebEngine and local directories. Remove.
 238.   Multiple proxies. Local machine and local network.
 239.   Congestion control and Prison Blues. GIT servers and duplicates.
+240.   Remove expired files via spot-on-git.sh. Perhaps 15 days?
 
 Remaining Items
 
@@ -352,5 +353,4 @@ Remaining Items
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
 5.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
-6.     Remove expired files via spot-on-git.sh. Perhaps 15 days?
-7.     GPG congestion.
+6.     GPG congestion.

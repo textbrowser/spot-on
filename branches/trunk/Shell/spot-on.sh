@@ -25,6 +25,7 @@ then
     # Disable https://en.wikipedia.org/wiki/MIT-SHM.
 
     export QT_X11_NO_MITSHM=1
+
     kde=$(env | grep -ci kde 2>/dev/null)
 
     if [ $kde -gt 0 ]
