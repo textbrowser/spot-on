@@ -288,12 +288,9 @@
                        </widget>
                       </item>
                       <item>
-                       <widget class="QLabel" name="from">
-                        <property name="wordWrap">
+                       <widget class="QLineEdit" name="from">
+                        <property name="readOnly">
                          <bool>true</bool>
-                        </property>
-                        <property name="textInteractionFlags">
-                         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                         </property>
                        </widget>
                       </item>
@@ -1227,6 +1224,7 @@
   <tabstop>inputDecrypt</tabstop>
   <tabstop>decryptClear</tabstop>
   <tabstop>copyDecrypt</tabstop>
+  <tabstop>from</tabstop>
   <tabstop>outputDecrypt</tabstop>
   <tabstop>contacts</tabstop>
   <tabstop>deleteContact</tabstop>

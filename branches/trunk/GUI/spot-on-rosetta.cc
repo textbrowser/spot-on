@@ -1516,7 +1516,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 #endif
 
   auto eCrypt = m_parent ?
-    m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!eCrypt)
     {
@@ -1538,7 +1538,6 @@ void spoton_rosetta::slotConvertDecrypt(void)
   QByteArray publicKeyHash;
   QByteArray signature;
   QColor signatureColor;
-  QDataStream stream(&keyInformation, QIODevice::ReadOnly);
   QList<QByteArray> list;
   QScopedPointer<spoton_crypt> crypt;
   QString error("");
@@ -1613,8 +1612,9 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
   if(ok)
     {
-      if(computedHash.isEmpty() || messageCode.isEmpty() ||
-	 !spoton_crypt::memcmp(computedHash, messageCode))
+      if(computedHash.isEmpty() ||
+	 messageCode.isEmpty() ||
+	 spoton_crypt::memcmp(computedHash, messageCode) == false)
 	{
 	  error = tr("The computed hash does not match the provided hash.");
 	  goto done_label;
@@ -1654,9 +1654,9 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
       if(list.size() == 4)
 	{
-	  publicKeyHash = list.value(0);
-	  name = list.value(1);
 	  data = list.value(2);
+	  name = list.value(1);
+	  publicKeyHash = list.value(0);
 	  signature = list.value(3);
 	}
       else
@@ -1670,15 +1670,23 @@ void spoton_rosetta::slotConvertDecrypt(void)
 
   if(ok)
     {
+      auto const myPublicKeyHash
+	(spoton_crypt::preferredHash(eCrypt->publicKey(nullptr)));
+      auto sCrypt = m_parent ?
+	m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
+
       if(signature.isEmpty())
 	{
 	  signatureColor = QColor(240, 128, 128); // Light coral!
 	  signedMessage = tr("Empty signature.");
 	}
-      else if(!spoton_misc::isValidSignature(publicKeyHash + name + data,
-					     publicKeyHash,
-					     signature,
-					     eCrypt))
+      else if(spoton_misc::isValidSignature(publicKeyHash +   // Sender
+					    name +            // Sender's Name
+					    myPublicKeyHash + // Recipient
+					    data,             // Message
+					    publicKeyHash,    // Sender
+					    signature,        // Signature
+					    sCrypt) == false)
 	{
 	  signatureColor = QColor(240, 128, 128); // Light coral!
 	  signedMessage = tr
@@ -1701,6 +1709,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
   else
     {
       ui.from->setText(QString::fromUtf8(name.constData(), name.length()));
+      ui.from->setCursorPosition(0);
       ui.outputDecrypt->setText
 	(QString::fromUtf8(data.constData(), data.length()));
 
@@ -1714,7 +1723,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
       ui.signedMessage->setText(signedMessage);
     }
 
-  done_label:
+ done_label:
 
   if(!error.isEmpty())
     {
@@ -1767,14 +1776,19 @@ void spoton_rosetta::slotConvertEncrypt(void)
       return;
     }
 
-  auto sCrypt = m_parent ?
-    m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
+  spoton_crypt *sCrypt = nullptr;
 
-  if(!sCrypt)
+  if(ui.sign->isChecked())
     {
-      showMessage
-	(tr("Invalid spoton_crypt object. This is a fatal flaw."), 5000);
-      return;
+      sCrypt = m_parent ?
+	m_parent->crypts().value("rosetta-signature", nullptr) : nullptr;
+
+      if(!sCrypt)
+	{
+	  showMessage
+	    (tr("Invalid spoton_crypt object. This is a fatal flaw."), 5000);
+	  return;
+	}
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1871,7 +1885,10 @@ void spoton_rosetta::slotConvertEncrypt(void)
 
       if(ok)
 	signature = sCrypt->digitalSignature
-	  (myPublicKeyHash + name + ui.inputEncrypt->toPlainText().toUtf8(),
+	  (myPublicKeyHash +                        // Sender
+	   name +                                   // Sender's Name
+	   spoton_crypt::preferredHash(publicKey) + // Recipient
+	   ui.inputEncrypt->toPlainText().toUtf8(), // Message
 	   &ok);
     }
 
@@ -1917,7 +1934,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
   else
     ui.outputEncrypt->clear();
 
-  done_label:
+ done_label:
 
   if(!error.isEmpty())
     {
