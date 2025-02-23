@@ -2123,7 +2123,9 @@ void spoton_rosetta::slotDelete(void)
 
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons
-    (QMessageBox::No | QMessageBox::Yes | QMessageBox::YesAll);
+    (destinationType != DestinationTypes::GPG ?
+     QMessageBox::No | QMessageBox::Yes :
+     QMessageBox::No | QMessageBox::Yes | QMessageBox::YesAll);
   mb.setDefaultButton(QMessageBox::No);
 
   if(destinationType == DestinationTypes::GPG)
