@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-834</y>
+         <y>-733</y>
          <width>769</width>
-         <height>5050</height>
+         <height>5090</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -709,7 +709,7 @@
               <item>
                <widget class="QLabel" name="label_38">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The contents of the below table are recorded in an encrypted container within the INI file. A maximum of five sites are allowed. Please avoid duplicating GIT Site and Local Directory. Values will be trimmed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The contents of the below table are recorded in an encrypted container within the INI file. A maximum of five sites are allowed. Please avoid duplicating GIT Site and Local Directory. Values will be trimmed. Directories and files may be assigned by clicking on an appropriate cell and pressing the Select button. A file-selection dialog will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
