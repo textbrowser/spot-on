@@ -379,20 +379,16 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
 	auto ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT public_key "
-		      "FROM friends_public_keys WHERE "
-		      "public_key_hash = (SELECT signature_public_key_hash "
-		      "FROM "
-		      "relationships_with_signatures WHERE "
-		      "public_key_hash = ?)");
-	query.bindValue(0, publicKeyHash.toBase64());
+	query.prepare
+	  ("SELECT public_key "
+	   "FROM friends_public_keys WHERE "
+	   "public_key_hash = (SELECT signature_public_key_hash "
+	   "FROM relationships_with_signatures WHERE public_key_hash = ?)");
+	query.addBindValue(publicKeyHash.toBase64());
 
-	if(query.exec())
-	  if(query.next())
-	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
+	if(query.exec() && query.next())
+	  publicKey = crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
       }
 
     db.close();
