@@ -354,3 +354,4 @@ Remaining Items
        Snap-Call. More details later. Only a reminder.
 5.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
 6.     GPG congestion.
+7.     Include destination and origin in all digital signatures.
