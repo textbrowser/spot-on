@@ -357,3 +357,4 @@ Remaining Items
 7.     Include destination and origin digests in all digital signatures.
        (spot-on-fireshare)
        (spot-on-urldistribution)
+8.     Include destination and origin digests in credential bundles.

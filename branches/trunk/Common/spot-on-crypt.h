@@ -92,6 +92,7 @@ class spoton_crypt
   static QByteArray hash(const QByteArray &algorithm,
 			 const QByteArray &data,
 			 bool *ok);
+  static QByteArray identity(spoton_crypt *eCrypt, spoton_crypt *sCrypt);
   static QByteArray keyedHash(const QByteArray &data,
 			      const QByteArray &key,
 			      const QByteArray &hashType,

@@ -924,8 +924,7 @@ QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 	      if((err =
 		  gcry_cipher_encrypt(m_cipherHandle,
 				      encrypted.data(),
-				      static_cast<size_t> (encrypted.
-							   length()),
+				      static_cast<size_t> (encrypted.length()),
 				      nullptr,
 				      0)) == 0)
 		{
@@ -1069,6 +1068,25 @@ QByteArray spoton_crypt::hashKey(void)
     return QByteArray(m_hashKey, static_cast<int> (m_hashKeyLength));
   else
     return QByteArray();
+}
+
+QByteArray spoton_crypt::identity(spoton_crypt *eCrypt, spoton_crypt *sCrypt)
+{
+  if(!eCrypt || !sCrypt)
+    return QByteArray();
+
+  auto ok = false;
+  auto const hash1(preferredHash(eCrypt->publicKey(&ok)));
+
+  if(!ok)
+    return QByteArray();
+
+  auto const hash2(preferredHash(sCrypt->publicKey(&ok)));
+
+  if(!ok)
+    return QByteArray();
+
+  return hash1 + hash2;
 }
 
 QByteArray spoton_crypt::keyedHash(const QByteArray &data,
@@ -1312,8 +1330,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
   return hash;
 }
 
-QByteArray spoton_crypt::preferredHMAC(const QByteArray &data,
-				       const QByteArray &key)
+QByteArray spoton_crypt::preferredHMAC
+(const QByteArray &data, const QByteArray &key)
 {
   QMessageAuthenticationCode hd(qt_preferred_hash_algorithm);
 

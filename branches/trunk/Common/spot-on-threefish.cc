@@ -181,7 +181,7 @@ static void threefish_decrypt(char *D,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(Q_UNLIKELY(!C || C_size == 0 || !D || !K || !T || block_size == 0))
+  if(Q_UNLIKELY(!C || !D || !K || !T || C_size == 0 || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -200,7 +200,7 @@ static void threefish_decrypt_implementation(char *D,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(Q_UNLIKELY(!C || C_size == 0 || !D || !K || !T || block_size == 0))
+  if(Q_UNLIKELY(!C || !D || !K || !T || C_size == 0 || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -723,17 +723,16 @@ QByteArray spoton_threefish::encrypted(const QByteArray &bytes, bool *ok) const
 
   plaintext.replace
     (plaintext.length() - static_cast<int> (sizeof(int)),
-     static_cast<int> (sizeof(int)), originalLength);
+     static_cast<int> (sizeof(int)),
+     originalLength);
 
   auto const iterations = plaintext.length() / static_cast<int> (m_blockSize);
 
   for(int i = 0; i < iterations; i++)
     {
-      QByteArray p;
       auto const position = i * static_cast<int> (m_blockSize);
+      auto const p(plaintext.mid(position, static_cast<int> (m_blockSize)));
       auto ok = true;
-
-      p = plaintext.mid(position, static_cast<int> (m_blockSize));
 
       if(i == 0)
 	block = spoton_misc::xor_arrays(iv, p);
