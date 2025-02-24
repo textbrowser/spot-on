@@ -4281,14 +4281,14 @@ void spoton::slotRemoveUrlParticipants(void)
 
 void spoton::slotRenameParticipant(void)
 {
-  auto crypt = m_crypts.value("chat", nullptr);
-
-  if(!crypt)
-    return;
-
   auto action = qobject_cast<QAction *> (sender());
 
   if(!action)
+    return;
+
+  auto crypt = m_crypts.value("chat", nullptr);
+
+  if(!crypt)
     return;
 
   auto const type(action->property("type").toString().toLower());
@@ -4338,10 +4338,9 @@ void spoton::slotRenameParticipant(void)
      tr("&Name"),
      QLineEdit::Normal,
      list.value(0).data().toString(),
-     &ok);
-  name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
+     &ok).mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
-  if(name.isEmpty() || !ok)
+  if(name.isEmpty() || ok == false)
     return;
 
   ok = false;
@@ -4364,10 +4363,9 @@ void spoton::slotRenameParticipant(void)
 			  "SET name = ?, "
 			  "name_changed_by_user = 1 "
 			  "WHERE OID = ?");
-	    query.bindValue
-	      (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).
-	       toBase64());
-	    query.bindValue(1, data.toString());
+	    query.addBindValue
+	      (crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
+	    query.addBindValue(data.toString());
 
 	    if(ok)
 	      ok = query.exec();
@@ -4435,10 +4433,9 @@ void spoton::slotResetCertificate(void)
   if(!crypt)
     return;
 
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
+  auto const list
+    (m_ui.neighbors->selectionModel()->
+     selectedRows(m_ui.neighbors->columnCount() - 1)); // OID
 
   if(list.isEmpty())
     return;
@@ -4460,9 +4457,9 @@ void spoton::slotResetCertificate(void)
 		      "certificate = ? "
 		      "WHERE OID = ? AND "
 		      "user_defined = 1");
-	query.bindValue
-	  (0, crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
-	query.bindValue(1, list.at(0).data());
+	query.addBindValue
+	  (crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
+	query.addBindValue(list.at(0).data());
 
 	if(ok)
 	  query.exec();
