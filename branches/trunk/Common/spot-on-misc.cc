@@ -166,14 +166,14 @@ QByteArray spoton_misc::findPublicKeyHashGivenHash
 	      if(ok)
 		{
 		  auto const computedHash
-		    (spoton_crypt::
-		     keyedHash(randomBytes + publicKey,
-			       hashKey,
-			       hashType,
-			       &ok));
+		    (spoton_crypt::keyedHash(randomBytes + publicKey,
+					     hashKey,
+					     hashType,
+					     &ok));
 
 		  if(ok)
-		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
+		    if(!computedHash.isEmpty() &&
+		       !hash.isEmpty() &&
 		       spoton_crypt::memcmp(computedHash, hash))
 		      {
 			publicKeyHash = QByteArray::fromBase64
@@ -238,9 +238,9 @@ QByteArray spoton_misc::publicKeyFromHash(const QByteArray &publicKeyHash,
 	  query.prepare
 	    ("SELECT public_keys FROM gpg WHERE public_keys_hash = ?");
 	else
-	  query.prepare("SELECT public_key "
-			"FROM friends_public_keys WHERE "
-			"public_key_hash = ?");
+	  query.prepare
+	    ("SELECT public_key FROM friends_public_keys "
+	     "WHERE public_key_hash = ?");
 
 	query.bindValue(0, publicKeyHash.toBase64());
 
@@ -337,9 +337,7 @@ QByteArray spoton_misc::publicKeyFromSignaturePublicKeyHash
 	if(query.exec())
 	  if(query.next())
 	    publicKey = crypt->decryptedAfterAuthenticated
-	      (QByteArray::fromBase64(query.value(0).
-				      toByteArray()),
-	       &ok);
+	      (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
       }
 
     db.close();
