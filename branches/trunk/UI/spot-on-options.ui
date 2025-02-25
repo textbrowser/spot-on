@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-733</y>
+         <y>-2268</y>
          <width>769</width>
          <height>5090</height>
         </rect>
@@ -1846,7 +1846,7 @@
            <item>
             <widget class="QLabel" name="label_34">
              <property name="text">
-              <string>Clear and Apply to reset.</string>
+              <string>Clear and Apply to reset. Keys and values are trimmed.</string>
              </property>
             </widget>
            </item>

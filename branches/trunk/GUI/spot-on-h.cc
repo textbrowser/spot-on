@@ -586,13 +586,18 @@ void spoton::prepareOtherOptions(void)
     {
       it.next();
 
-      if(it.key().trimmed().startsWith('#'))
-	m_optionsUi.other_options->appendPlainText(it.key().trimmed());
+      auto const key(it.key().trimmed());
+      auto const value(it.value().toString().trimmed());
+
+      if(key.startsWith('#'))
+	m_optionsUi.other_options->appendPlainText(key);
       else
 	{
-	  m_settings[it.key()] = it.value();
-	  m_optionsUi.other_options->appendPlainText
-	    (it.key() + " := " + it.value().toString());
+	  m_settings[key] = value;
+	  m_optionsUi.other_options->appendPlainText(key + " := " + value);
+
+	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
+	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
 	}
     }
 
@@ -601,11 +606,11 @@ void spoton::prepareOtherOptions(void)
   if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
     {
       m_optionsUi.other_options->appendPlainText
-	("DIGITAL_SIGNATURE_HASH_ALGORITHM_STRING := sha512");
-      m_optionsUi.other_options->appendPlainText
 	("FORTUNA_QUERY_INTERVAL_MSECS := 0");
       m_optionsUi.other_options->appendPlainText
 	("FORTUNA_URL := http://127.0.0.1:5000");
+      m_optionsUi.other_options->appendPlainText
+	("GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING := sha512");
       m_optionsUi.other_options->appendPlainText
 	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
 	 QString::number(spoton_common::

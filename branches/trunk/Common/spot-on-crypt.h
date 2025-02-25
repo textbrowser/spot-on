@@ -228,6 +228,7 @@ class spoton_crypt
      const QString &id,
      QString &error);
   static void removeFlawedEntries(spoton_crypt *crypt);
+  static void setGcrySexpBuildHashAlgorithm(const QByteArray &algorithm);
   static void setSslCiphers(const QList<QSslCipher> &ciphers,
 			    const QString &sslControlString,
 			    QSslConfiguration &configuration);
@@ -310,9 +311,9 @@ class spoton_crypt
 #endif
   spoton_threefish *m_threefish;
   static QAtomicInt s_hasSecureMemory;
+  static QPointer<fortunate_q> s_fortuna;
   static QReadWriteLock s_fortunaMutex;
   static bool s_cbc_cts_enabled;
-  static fortunate_q *s_fortuna;
   unsigned long int m_iterationCount;
   QByteArray publicKeyDecryptMcEliece(const QByteArray &data, bool *ok);
   QByteArray publicKeyDecryptNTRU(const QByteArray &data, bool *ok);
