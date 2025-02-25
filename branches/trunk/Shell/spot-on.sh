@@ -9,7 +9,7 @@ then
     if [ -x ./Spot-On.app/Contents/MacOS/Spot-On ]
     then
 	export DYLD_LIBRARY_PATH=../../libNTRU
-	exec ./Spot-On.app/Contents/MacOS/Spot-On "$@"
+	./Spot-On.app/Contents/MacOS/Spot-On "$@"
 	exit $?
     else
 	echo "Could not locate ./Spot-On.app/Contents/MacOS/Spot-On."
@@ -36,7 +36,7 @@ then
 	style="-style=Fusion"
     fi
 
-    cd /opt/spot-on && exec ./Spot-On "$style" "$@"
+    cd /opt/spot-on && ./Spot-On "$style" "$@"
     exit $?
 else
     echo "Could not locate /opt/spot-on/Spot-On."
