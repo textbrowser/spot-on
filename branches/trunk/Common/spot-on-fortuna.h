@@ -648,7 +648,7 @@ class counter_q
     QByteArray value(16, 0);
 
     memcpy(value.data(), &m_l, 8);
-    memcpy(value.data() + 8, &m_r, 8);
+    memcpy(8 + value.data(), &m_r, 8);
     return value;
   }
 
@@ -697,21 +697,32 @@ class fortunate_q: public QObject
 
   void set_file_peer(const QString &file_name)
   {
+    if(file_name.trimmed().isEmpty())
+      return;
+
     m_file.close();
     m_file.setFileName(file_name);
-    m_file.open(QIODevice::ReadOnly | QIODevice::Unbuffered);
-    m_file_notifier = m_file_notifier ?
-      (m_file_notifier->deleteLater(),
-       new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this)) :
-      (new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this));
-    connect(m_file_notifier,
-	    SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
-	    this,
-	    SLOT(slot_file_ready_read(void)));
+
+    if(m_file.open(QIODevice::ReadOnly | QIODevice::Unbuffered))
+      {
+	m_file_notifier = m_file_notifier ?
+	  (m_file_notifier->deleteLater(),
+	   new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this)) :
+	  (new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this));
+	connect(m_file_notifier,
+		SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+		this,
+		SLOT(slot_file_ready_read(void)));
+      }
+    else
+      qDebug() << tr("Cannot open '%1'.").arg(file_name);
   }
 
   void set_send_byte(const char byte, const int interval)
   {
+    if(interval <= 0)
+      return;
+
     /*
     ** Some devices require periodic data.
     */
@@ -727,6 +738,12 @@ class fortunate_q: public QObject
 
   void set_tcp_peer(const QString &address, const bool tls, const quint16 port)
   {
+    if(address.trimmed().isEmpty())
+      return;
+
+    m_tcp_address = address.trimmed();
+    m_tcp_port = port;
+    m_tcp_socket_tls = tls;
     connect(&m_tcp_socket,
 	    &QSslSocket::connected,
 	    this,
@@ -752,10 +769,7 @@ class fortunate_q: public QObject
 	    this,
 	    &fortunate_q::slot_tcp_socket_disconnected,
 	    Qt::UniqueConnection);
-    m_tcp_address = address;
-    m_tcp_port = port;
     m_tcp_socket.abort();
-    m_tcp_socket_tls = tls;
     m_tcp_socket_connection_timer.start();
   }
 
@@ -842,7 +856,7 @@ class fortunate_q: public QObject
 	  if(R.m_reseedCnt % static_cast<quint64> (qPow(2.0, i)) == 0)
 	    {
 	      s = s + QCryptographicHash::hash
-		(R.m_P[i], QCryptographicHash::Sha256);
+		(R.m_P[i], QCryptographicHash::Sha3_256);
 	      R.m_P[i].clear();
 	    }
 
@@ -879,7 +893,7 @@ class fortunate_q: public QObject
   {
     G.m_counter.increment();
     G.m_key = QCryptographicHash::hash
-      (G.m_key + s, QCryptographicHash::Sha256);
+      (G.m_key + s, QCryptographicHash::Sha3_256);
   }
 
   void process_device(QIODevice *device, const int i, const int s)
