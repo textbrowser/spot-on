@@ -159,7 +159,7 @@
         <item>
          <widget class="QLabel" name="label_5">
           <property name="text">
-           <string>Minimum of 16 characters.</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Minimum of sixteen characters&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
