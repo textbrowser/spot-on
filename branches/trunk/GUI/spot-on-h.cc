@@ -1987,13 +1987,19 @@ void spoton::slotWebServerInformationTimeout(void)
     }
   else
     {
-      m_ui.web_server_information_label->setText
-	(tr("The Spot-On Search Engine may be accessed via "
-	    "<a href=\"http://%1:%2\">http://%1:%2</a> and "
-	    "<a href=\"https://%1:%3\">https://%1:%3</a>.").
-	 arg(spoton_misc::localAddressIPv4().toString()).
-	 arg(m_ui.web_server_port->value()).
-	 arg(m_ui.web_server_port->value() + 5));
+      if(isKernelActive())
+	m_ui.web_server_information_label->setText
+	  (tr("The Spot-On Search Engine may be accessed via "
+	      "<a href=\"http://%1:%2\">http://%1:%2</a> and "
+	      "<a href=\"https://%1:%3\">https://%1:%3</a>.").
+	   arg(spoton_misc::localAddressIPv4().toString()).
+	   arg(m_ui.web_server_port->value()).
+	   arg(m_ui.web_server_port->value() + 5));
+      else
+	m_ui.web_server_information_label->setText
+	  (tr("The Spot-On Search Engine requires an accessible and "
+	      "active kernel."));
+
       m_ui.web_server_information_label->setVisible(true);
     }
 }
