@@ -46,18 +46,8 @@ QList<QFileInfo> spoton::prisonBluesDirectories(void) const
   if(m_prisonBluesDirectoriesCache.isEmpty() == false)
     return m_prisonBluesDirectoriesCache;
 
-  QHashIterator<int, QHash<QString, QString> > it
-    (spoton_misc::gitInformation(m_crypts.value("chat", nullptr)));
-
-  while(it.hasNext())
-    {
-      it.next();
-
-      if(it.value().value("git-site-checked") == "1")
-	m_prisonBluesDirectoriesCache <<
-	  QFileInfo(it.value().value("local-directory"));
-    }
-
+  m_prisonBluesDirectoriesCache = spoton_misc::prisonBluesDirectories
+    (m_crypts.value("chat", nullptr));
   return m_prisonBluesDirectoriesCache;
 }
 

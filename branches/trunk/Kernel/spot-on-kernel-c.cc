@@ -605,46 +605,34 @@ void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
 void spoton_kernel::writePrisonBluesChat
 (const QByteArray &message, const QByteArray &publicKeyHash)
 {
-  if(message.trimmed().isEmpty() ||
-     publicKeyHash.toHex().trimmed().isEmpty() ||
-     setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed().isEmpty())
+  if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
     return;
 
-  QFileInfo const directory
-    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
-
-  if(!directory.isWritable())
-    /*
-    ** Clone the special GIT repository.
-    */
-
-    slotPrisonBluesTimeout();
-
-  if(!directory.isWritable())
-    /*
-    ** The GIT local directory is not writable. This is a problem!
-    */
-
-    return;
-
+  auto const list(spoton_misc::prisonBluesDirectories(crypt("chat")));
   auto const publicKeyHashHex(publicKeyHash.toHex());
 
-  QDir().mkpath
-    (directory.absoluteFilePath() + QDir::separator() + publicKeyHashHex);
+  foreach(auto const &directory, list)
+    if(directory.isWritable())
+      {
+	QDir().mkpath
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   publicKeyHashHex);
 
-  QTemporaryFile file
-    (directory.absoluteFilePath() +
-     QDir::separator() +
-     publicKeyHashHex +
-     QDir::separator() +
-     "PrisonBluesXXXXXXXXXX.txt");
+	QTemporaryFile file
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   publicKeyHashHex +
+	   QDir::separator() +
+	   "PrisonBluesXXXXXXXXXX.txt");
 
-  if(file.open())
-    {
-      QTextStream stream(&file);
+	if(file.open())
+	  {
+	    QTextStream stream(&file);
 
-      Q_UNUSED(file.fileName()); // Prevents removal of file.
-      file.setAutoRemove(false);
-      stream << message << Qt::endl;
-    }
+	    Q_UNUSED(file.fileName()); // Prevents removal of file.
+	    file.setAutoRemove(false);
+	    stream << message << Qt::endl;
+	  }
+      }
 }

@@ -32,6 +32,7 @@
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 #include <QBluetoothAddress>
 #endif
+#include <QFileInfo>
 #include <QHostAddress>
 #include <QPair>
 #include <QProcess>
@@ -111,6 +112,7 @@ class spoton_misc
 						  const QByteArray &bytes2,
 						  QString &messageType,
 						  spoton_crypt *crypt);
+  static QList<QFileInfo> prisonBluesDirectories(spoton_crypt *crypt);
   static QList<QHash<QString, QVariant> > poptasticSettings
     (const QString &in_username, spoton_crypt *crypt, bool *ok);
   static QMap<QString, QVariant> otherOptions(const QByteArray &bytes);

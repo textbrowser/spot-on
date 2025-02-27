@@ -864,6 +864,22 @@ QList<QByteArray> spoton_misc::findForwardSecrecyKeys(const QByteArray &bytes1,
   return forwardSecrecyKeys;
 }
 
+QList<QFileInfo> spoton_misc::prisonBluesDirectories(spoton_crypt *crypt)
+{
+  QHashIterator<int, QHash<QString, QString> > it(gitInformation(crypt));
+  QList<QFileInfo> list;
+
+  while(it.hasNext())
+    {
+      it.next();
+
+      if(it.value().value("git-site-checked") == "1")
+	list << QFileInfo(it.value().value("local-directory"));
+    }
+
+  return list;
+}
+
 QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 (const QString &in_username, spoton_crypt *crypt, bool *ok)
 {
