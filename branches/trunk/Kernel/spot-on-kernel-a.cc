@@ -6177,8 +6177,16 @@ void spoton_kernel::slotUpdateSettings(void)
     {
       it.next();
 
-      if(!it.key().trimmed().startsWith('#'))
-	s_settings[it.key()] = it.value();
+      auto const key(it.key().trimmed());
+      auto const value(it.value().toString().trimmed());
+
+      if(!key.startsWith('#'))
+	{
+	  s_settings[key] = value;
+
+	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
+	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
+	}
     }
 
   spoton_misc::correctSettingsContainer(s_settings);

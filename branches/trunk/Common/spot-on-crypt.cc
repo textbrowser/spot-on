@@ -5262,6 +5262,8 @@ void spoton_crypt::setGcrySexpBuildHashAlgorithm(const QByteArray &algorithm)
 {
   if(hashTypes().contains(algorithm))
     gcry_sexp_build_hash_algorithm_string = algorithm.toLower();
+  else
+    gcry_sexp_build_hash_algorithm_string = "sha512";
 }
 
 void spoton_crypt::setHashKey(const QByteArray &hashKey)
