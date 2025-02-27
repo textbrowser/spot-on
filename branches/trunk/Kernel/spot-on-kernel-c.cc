@@ -608,10 +608,10 @@ void spoton_kernel::writePrisonBluesChat
   if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
     return;
 
-  auto const list(spoton_misc::prisonBluesDirectories(crypt("chat")));
   auto const publicKeyHashHex(publicKeyHash.toHex());
 
-  foreach(auto const &directory, list)
+  foreach(auto const &directory,
+	  spoton_misc::prisonBluesDirectories(crypt("chat")))
     if(directory.isWritable())
       {
 	QDir().mkpath

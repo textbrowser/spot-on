@@ -2834,12 +2834,15 @@ void spoton_rosetta::slotWriteGPG(void)
 	  {
 	    auto ok = true;
 	    auto const publicKey = spoton_misc::publicKeyFromHash
-	      (QByteArray::fromBase64(publicKeyHashes.value(i).data().
-				      toByteArray()),
+	      (QByteArray::
+	       fromBase64(publicKeyHashes.value(i).data().toByteArray()),
 	       true,
 	       crypt);
-	    auto const output
-	      (gpgEncrypt(ok, message.toUtf8(), publicKey, QByteArray(), sign));
+	    auto const output(gpgEncrypt(ok,
+					 message.toUtf8(),
+					 publicKey,
+					 QByteArray(),
+					 sign));
 
 	    if(ok)
 	      {
@@ -2925,6 +2928,8 @@ void spoton_rosetta::toDesktop(void) const
 
   if(file.open(QIODevice::Truncate | QIODevice::WriteOnly))
     file.write(ui.outputEncrypt->toPlainText().toUtf8());
+  else
+    showMessage(tr("Error creating the file %1.").arg(fileName), 5000);
 
   file.close();
 }
