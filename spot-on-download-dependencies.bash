@@ -33,12 +33,14 @@ then
     mv mingw64/include/*.h libGCrypt/Include.win64/.
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-    rm -f $gcrypt
 elif [ $rc -eq 0 ]
 then
     echo "Cannot read $gcrypt."
+
     rc=1
 fi
+
+rm -f $gcrypt
 
 # GPG-Error
 
@@ -60,12 +62,14 @@ then
     mv mingw64/include/gpg-error.h libGCrypt/Include.win64/.
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-    rm -f $gpgerror
 elif [ $rc -eq 0 ]
 then
     echo "Cannot read $gpgerror."
+
     rc=1
 fi
+
+rm -f $gpgerror
 
 # GPG-ME
 
@@ -88,12 +92,14 @@ then
     mv mingw64/include/gpgme.h libGPGME/Include.win64/.
     chmod +w,-x libGPGME/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-    rm -f $gpgme
 elif [ $rc -eq 0 ]
 then
     echo "Cannot read $gpgme."
+
     rc=1
 fi
+
+rm -f $gpgme
 
 # OpenSSL
 
@@ -116,12 +122,13 @@ then
     mv openssl.d/x64/bin/libssl-3-x64.dll libOpenSSL/Libraries.win64/.
     mv openssl.d/x64/include/openssl libOpenSSL/Include.win64/.
     chmod +w,-x libOpenSSL/Libraries.win64/*.dll
-    rm -f $openssl
     rm -fr openssl.d
 elif [ $rc -eq 0 ]
 then
     echo "Cannot read $openssl."
+
     rc=1
 fi
 
+rm -f $openssl
 exit $rc
