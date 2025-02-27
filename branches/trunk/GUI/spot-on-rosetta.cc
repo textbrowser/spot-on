@@ -2911,7 +2911,7 @@ void spoton_rosetta::sortContacts(void)
   QApplication::restoreOverrideCursor();
 }
 
-void spoton_rosetta::toDesktop(void) const
+void spoton_rosetta::toDesktop(void)
 {
   if(!ui.desktop->isChecked())
     return;

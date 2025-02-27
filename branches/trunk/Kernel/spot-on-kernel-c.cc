@@ -239,12 +239,6 @@ void spoton_kernel::readPrisonBlues(void)
   if(!s_crypt)
     return;
 
-  QFileInfo const directory
-    (setting("GIT_LOCAL_DIRECTORY", "").toString().trimmed());
-
-  if(!directory.isReadable())
-    return;
-
   auto ok = false;
   auto const myPublicKeyHash = spoton_crypt::sha512Hash
     (qCompress(s_crypt->publicKey(nullptr)), &ok).toHex();
@@ -252,56 +246,62 @@ void spoton_kernel::readPrisonBlues(void)
   if(!ok)
     return;
 
-  /*
-  ** Discover all files. Ignore permissions.
-  */
-
-  auto const dir = QDir
-    (directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
-
-  foreach(auto const &fileInfo, dir.entryInfoList(QDir::Files, QDir::Time))
+  foreach(auto const &directory,
+	  spoton_misc::prisonBluesDirectories(crypt("chat")))
     {
       if(m_readPrisonBluesFuture.isCanceled())
 	break;
 
-      QFile file(fileInfo.absoluteFilePath());
+      QDir const dir
+	(directory.absoluteFilePath() + QDir::separator() + myPublicKeyHash);
 
-      if(file.open(QIODevice::ReadOnly))
+      if(!dir.isReadable())
+	continue;
+
+      foreach(auto const &entry, dir.entryInfoList(QDir::Files, QDir::Time))
 	{
-	  auto data(file.readAll());
+	  if(m_readPrisonBluesFuture.isCanceled())
+	    break;
 
-	  if(spoton_kernel::messagingCacheContains(data))
-	    /*
-	    ** Should the file be removed?
-	    */
+	  QFile file(entry.absoluteFilePath());
 
-	    continue;
-	  else
-	    spoton_kernel::messagingCacheAdd(data);
-
-	  data = data.mid
-	    (data.indexOf("content=") + static_cast<int> (qstrlen("content=")));
-	  data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
-
-	  auto const list
-	    (spoton_receive::
-	     process0000
-	     (data.length(),
-	      data,
-	      QList<QByteArray> (),
-	      setting("gui/chatAcceptSignedMessagesOnly", true).toBool(),
-	      "127.0.0.1",
-	      0,
-	      s_crypt));
-
-	  if(!list.isEmpty())
+	  if(file.open(QIODevice::ReadOnly))
 	    {
+	      auto data(file.readAll());
+
+	      if(spoton_kernel::messagingCacheContains(data))
+		{
+		  file.remove();
+		  continue;
+		}
+	      else
+		spoton_kernel::messagingCacheAdd(data);
+
+	      data = data.mid
+		(data.indexOf("content=") +
+		 static_cast<int> (qstrlen("content=")));
+	      data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
+
+	      auto const list
+		(spoton_receive::
+		 process0000(data.length(),
+			     data,
+			     QList<QByteArray> (),
+			     setting("gui/chatAcceptSignedMessagesOnly",
+				     true).toBool(),
+			     "127.0.0.1",
+			     0,
+			     s_crypt));
+
+	      if(list.isEmpty())
+		continue;
+
 	      spoton_misc::saveParticipantStatus
 		(list.value(1), // Name
 		 list.value(0), // Public Key Hash
 		 QByteArray(), // Status
-		 QDateTime::currentDateTimeUtc().
-		 toString("MMddyyyyhhmmss").toLatin1(), // Timestamp
+		 QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
+		 toLatin1(), // Timestamp
 		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
 		 s_crypt);
 	      emit receivedChatMessage

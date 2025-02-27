@@ -107,7 +107,7 @@ class spoton_rosetta: public QMainWindow
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showMessage(const QString &message, const int milliseconds = 0);
   void sortContacts(void);
-  void toDesktop(void) const;
+  void toDesktop(void);
 
  private slots:
   void slotAddContact(void);
