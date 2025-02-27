@@ -22,7 +22,9 @@ wget --output-document=$gcrypt \
      --progress=bar \
      https://repo.msys2.org/mingw/mingw64/$gcrypt
 
-if [ -r "$gcrypt" ]
+rc=$?
+
+if [ $rc -eq 0 ] && [ -r "$gcrypt" ]
 then
     tar -I zstd -vxf $gcrypt
     mkdir -p libGCrypt/Include.win64
@@ -32,7 +34,8 @@ then
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gcrypt
-else
+elif [ $rc -eq 0 ]
+then
     echo "Cannot read $gcrypt."
     rc=1
 fi
@@ -46,7 +49,9 @@ wget --output-document=$gpgerror \
      --progress=bar \
      https://repo.msys2.org/mingw/mingw64/$gpgerror
 
-if [ -r "$gpgerror" ]
+rc=$?
+
+if [ $rc -eq 0 ] && [ -r "$gpgerror" ]
 then
     tar -I zstd -vxf $gpgerror
     mkdir -p libGCrypt/Include.win64
@@ -56,7 +61,8 @@ then
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gpgerror
-else
+elif [ $rc -eq 0 ]
+then
     echo "Cannot read $gpgerror."
     rc=1
 fi
@@ -70,7 +76,9 @@ wget --output-document=$gpgme \
      --progress=bar \
      https://repo.msys2.org/mingw/mingw64/$gpgme
 
-if [ -r "$gpgme" ]
+rc=$?
+
+if [ $rc -eq 0 ] && [ -r "$gpgme" ]
 then
     tar -I zstd -vxf $gpgme
     mkdir -p libGPGME/Include.win64
@@ -81,7 +89,8 @@ then
     chmod +w,-x libGPGME/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
     rm -f $gpgme
-else
+elif [ $rc -eq 0 ]
+then
     echo "Cannot read $gpgme."
     rc=1
 fi
@@ -95,7 +104,9 @@ wget --output-document=$openssl \
      --progress=bar \
      https://www.firedaemon.com/download-firedaemon-$openssl
 
-if [ -r "$openssl" ]
+rc=$?
+
+if [ $rc -eq 0 ] && [ -r "$openssl" ]
 then
     unzip $openssl -d openssl.d
     mkdir -p libOpenSSL/Include.win64
@@ -107,9 +118,10 @@ then
     chmod +w,-x libOpenSSL/Libraries.win64/*.dll
     rm -f $openssl
     rm -fr openssl.d
-else
+elif [ $rc -eq 0 ]
+then
     echo "Cannot read $openssl."
     rc=1
 fi
 
-echo $rc
+exit $rc
