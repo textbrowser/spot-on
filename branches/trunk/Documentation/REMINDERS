@@ -358,3 +358,5 @@ Remaining Items
        (spot-on-fireshare)
        (spot-on-urldistribution)
 8.     Include destination and origin digests in credential bundles.
+9.     Increase GIT query interval.
+10.    Fortunate-Q and MacOS /dev/urandom.
