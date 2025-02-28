@@ -621,7 +621,6 @@ class aes256
 #include <QFile>
 #include <QHostAddress>
 #include <QPointer>
-#include <QSocketNotifier>
 #include <QSslSocket>
 #include <QTimer>
 #include <QtDebug>
@@ -685,6 +684,7 @@ class fortunate_q: public QObject
   ~fortunate_q()
   {
     m_file.close();
+    m_file_timer.stop();
     m_periodic_write_timer.stop();
     m_tcp_socket.abort();
     m_tcp_socket_connection_timer.stop();
@@ -702,17 +702,15 @@ class fortunate_q: public QObject
 
     m_file.close();
     m_file.setFileName(file_name);
+    m_file_timer.stop();
 
     if(m_file.open(QIODevice::ReadOnly | QIODevice::Unbuffered))
       {
-	m_file_notifier = m_file_notifier ?
-	  (m_file_notifier->deleteLater(),
-	   new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this)) :
-	  (new QSocketNotifier(m_file.handle(), QSocketNotifier::Read, this));
-	connect(m_file_notifier,
-		SIGNAL(activated(QSocketDescriptor, QSocketNotifier::Type)),
+	connect(&m_file_timer,
+		&QTimer::timeout,
 		this,
-		SLOT(slot_file_ready_read(void)));
+		&fortunate_q::slot_file_ready_read);
+	m_file_timer.start(10);
       }
     else
       qDebug() << tr("Cannot open '%1'.").arg(file_name);
@@ -795,9 +793,9 @@ class fortunate_q: public QObject
   };
 
   QFile m_file;
-  QPointer<QSocketNotifier> m_file_notifier;
   QSslSocket m_tcp_socket;
   QString m_tcp_address;
+  QTimer m_file_timer;
   QTimer m_periodic_write_timer;
   QTimer m_tcp_socket_connection_timer;
   QVector<int> m_source_indices;
