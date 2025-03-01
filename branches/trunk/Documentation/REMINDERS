@@ -342,6 +342,8 @@ Completed Items
 238.   Multiple proxies. Local machine and local network.
 239.   Congestion control and Prison Blues. GIT servers and duplicates.
 240.   Remove expired files via spot-on-git.sh. Perhaps 15 days?
+241.   Fortunate-Q and MacOS /dev/urandom. Timely reads.
+242.   Increase GIT query interval.
 
 Remaining Items
 
@@ -358,5 +360,3 @@ Remaining Items
        (spot-on-fireshare)
        (spot-on-urldistribution)
 8.     Include destination and origin digests in credential bundles.
-9.     Increase GIT query interval.
-10.    Fortunate-Q and MacOS /dev/urandom.
