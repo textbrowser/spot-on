@@ -46,6 +46,52 @@
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2025.03.01</u></h4>
+	  Welcome to the 2025.03.01 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>Added GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING to
+		Options -> Miscellaneous. The algorithms allowed are
+		BLAKE2B_512, SHA3-512, SHA512, STRIBOG512, WHIRLPOOL.
+		Participants must specify common values which are supported
+		on all systems.</li>
+	      <li>Decreased frequency of spot-on-git.sh processes.</li>
+	      <li>Default buttons of No in Rosetta prompts: removal of
+		GPG keys, removal of contacts.</li>
+	      <li>Disable native dialogs.</li>
+	      <li>Fortuna and SHA3-256.</li>
+	      <li>Forward-only SQL queries. Conserve resources.</li>
+	      <li>GIT and congestion control within the kernel.</li>
+	      <li>Icons here and there.</li>
+	      <li>Ignore file permissions during the processing of local
+		Prison Blues files.</li>
+	      <li>Keys and values in Options -> Miscellaneous are now
+		trimmed.</li>
+	      <li>OpenSSL 3.4.1; Windows.</li>
+	      <li>Optional removal of participant GPG keys from the key ring
+		via Rosetta.</li>
+	      <li>Populate Rosetta -> GPG Messaging contacts after a
+		participant is removed.</li>
+	      <li>Prison Blues now supports five sites. Please see Options.
+		Previous settings will be removed. Apologies.</li>
+	      <li>Process all errors in
+		spoton_crypt::decryptedAfterAuthenticated().
+		A keyed-hash failure was not observed.</li>
+	      <li>Qt 6.8 LTS.</li>
+	      <li>Replaced file socket notifier with timer in Fortuna.</li>
+	      <li>Rosetta: include the recipient's public-key digest
+		in the digital signature.</li>
+	      <li>Set the parent of spoton_virtual_keyboard created in a
+		spoton_lineedit to the provided parent instead of the
+		spoton_lineedit object. Otherwise, the clear-button will not
+		be shown.</li>
+	      <li>Single-set spot-on-git.sh process(es). If a kernel process is
+		active, the interface will not launch separate spot-on-git.sh
+		process(es) automatically.</li>
+	      <li>The function gcry_cipher_reset() may fail.</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2025.02.05</u></h4>
 	  Welcome to the 2025.02.05 release of Spot-On. Corrections and
 	  new features are detailed below.
