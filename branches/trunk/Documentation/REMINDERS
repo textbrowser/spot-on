@@ -21,6 +21,14 @@ Archived Items
 17.    IMAP and optional removal of messages; retrieve latest.
 18.    Optional GCRYPT. Android and OpenSSL.
 19.    Single Rosetta attachments.
+20.    Replace OpenSSL with executable. Create and remove local files
+       via the openssl executable. Library becoming stale.
+21     Shift operators and types.
+22.    Spectral human proxy.
+23.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
+       A QR has a text capacity of 4296 characters. This is also good.
+       Snap-Call. More details later. Only a reminder.
+24.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
 
 Completed Items
 
@@ -347,16 +355,8 @@ Completed Items
 
 Remaining Items
 
-1.     Replace OpenSSL with executable. Create and remove local files
-       via the openssl executable. Library becoming stale.
-2.     Shift operators and types.
-3.     Spectral human proxy.
-4.     A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
-       A QR has a text capacity of 4296 characters. This is also good.
-       Snap-Call. More details later. Only a reminder.
-5.     Bypass via GPGME_ENCRYPT_SYMMETRIC.
-6.     GPG congestion.
-7.     Include destination and origin digests in all digital signatures.
+1.     GPG congestion.
+2.     Include destination and origin digests in all digital signatures.
        (spot-on-fireshare)
        (spot-on-urldistribution)
-8.     Include destination and origin digests in credential bundles.
+3.     Include destination and origin digests in credential bundles.
