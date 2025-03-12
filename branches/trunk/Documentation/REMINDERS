@@ -29,6 +29,7 @@ Archived Items
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
 24.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
+25.    GPG congestion.
 
 Completed Items
 
@@ -355,8 +356,7 @@ Completed Items
 
 Remaining Items
 
-1.     GPG congestion.
-2.     Include destination and origin digests in all digital signatures.
+1.     Include destination and origin digests in all digital signatures.
        (spot-on-fireshare)
        (spot-on-urldistribution)
-3.     Include destination and origin digests in credential bundles.
+2.     Include destination and origin digests in credential bundles.
