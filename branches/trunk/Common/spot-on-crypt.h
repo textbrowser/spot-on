@@ -49,6 +49,7 @@ extern "C"
 
 #include <QAtomicInt>
 #include <QByteArray>
+#include <QFileInfo>
 #include <QHostAddress>
 #include <QMutex>
 #include <QReadWriteLock>
@@ -204,7 +205,8 @@ class spoton_crypt
   static void memzero(QString &str);
 
   static void prepareFortuna
-    (const QString &ipAddress,
+    (const QFileInfo &fileInfo,
+     const QString &ipAddress,
      const bool tls,
      const int interval,
      const quint16 port)
@@ -216,6 +218,7 @@ class spoton_crypt
        s_fortuna == nullptr)
       {
 	s_fortuna = new fortunate_q(nullptr);
+	s_fortuna->set_file_peer(fileInfo.absoluteFilePath());
 	s_fortuna->set_send_byte(0, interval);
 	s_fortuna->set_tcp_peer(ipAddress, tls, port);
       }

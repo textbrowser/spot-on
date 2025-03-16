@@ -6274,20 +6274,21 @@ void spoton_kernel::slotUpdateSettings(void)
   if(integer != m_messagingCachePurgeTimer.interval())
     m_messagingCachePurgeTimer.start(integer);
 
+  QFileInfo const fileInfo(setting("FORTUNA_FILE", "").toString().trimmed());
   auto const url
     (QUrl::fromUserInput(setting("FORTUNA_URL", "").toString().trimmed()));
 
-  if(url.isEmpty() == false && url.isValid())
+  if((fileInfo.isReadable()) || (url.isEmpty() == false && url.isValid()))
     {
       auto const address(url.host());
       auto const interval = setting("FORTUNA_QUERY_INTERVAL_MSECS", 0).toInt();
       auto const port = static_cast<quint16> (url.port());
       auto const tls = (url.scheme() == "https");
 
-      if(interval <= 0)
+      if(fileInfo.isReadable() == false && interval <= 0)
 	spoton_crypt::destroyFortuna();
       else
-	spoton_crypt::prepareFortuna(address, tls, interval, port);
+	spoton_crypt::prepareFortuna(fileInfo, address, tls, interval, port);
     }
   else
     spoton_crypt::destroyFortuna();
