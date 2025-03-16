@@ -213,9 +213,11 @@ class spoton_crypt
   {
     QWriteLocker locker(&s_fortunaMutex);
 
-    if(interval > 0 &&
-       ipAddress.trimmed().isEmpty() == false &&
-       s_fortuna == nullptr)
+    if(s_fortuna)
+      return;
+
+    if((fileInfo.isReadable()) ||
+       (interval > 0 && ipAddress.trimmed().isEmpty() == false))
       {
 	s_fortuna = new fortunate_q(nullptr);
 	s_fortuna->set_file_peer(fileInfo.absoluteFilePath());
