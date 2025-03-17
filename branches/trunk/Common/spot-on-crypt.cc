@@ -136,7 +136,7 @@ struct gcry_thread_cbs gcry_threads_qt =
 #endif
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
-QPointer<fortunate_q> spoton_crypt::s_fortuna;
+QPointer<fortunate_q> spoton_crypt::s_fortuna = nullptr;
 QReadWriteLock spoton_crypt::s_fortunaMutex;
 bool spoton_crypt::s_cbc_cts_enabled = true;
 static QByteArray gcry_sexp_build_hash_algorithm_string = "sha512";

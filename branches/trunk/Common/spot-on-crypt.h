@@ -213,17 +213,12 @@ class spoton_crypt
   {
     QWriteLocker locker(&s_fortunaMutex);
 
-    if(s_fortuna)
-      return;
+    if(!s_fortuna)
+      s_fortuna = new fortunate_q(nullptr);
 
-    if((fileInfo.isReadable()) ||
-       (interval > 0 && ipAddress.trimmed().isEmpty() == false))
-      {
-	s_fortuna = new fortunate_q(nullptr);
-	s_fortuna->set_file_peer(fileInfo.absoluteFilePath());
-	s_fortuna->set_send_byte(0, interval);
-	s_fortuna->set_tcp_peer(ipAddress, tls, port);
-      }
+    s_fortuna->set_file_peer(fileInfo.absoluteFilePath());
+    s_fortuna->set_send_byte(0, interval);
+    s_fortuna->set_tcp_peer(ipAddress, tls, port);
   }
 
   static void purgeDatabases(void);

@@ -677,6 +677,8 @@ class fortunate_q: public QObject
   fortunate_q(QObject *parent):QObject(parent)
   {
     m_R = initialize_prng();
+    m_periodic_write_timer.setInterval(500);
+    m_send_byte[0] = 0;
     m_source_indices.resize(POOLS);
     m_tcp_socket_connection_timer.setInterval(500);
   }
@@ -697,7 +699,7 @@ class fortunate_q: public QObject
 
   void set_file_peer(const QString &file_name)
   {
-    if(file_name.trimmed().isEmpty())
+    if(file_name == m_file_name || file_name.trimmed().isEmpty())
       return;
 
     m_file.close();
@@ -710,6 +712,7 @@ class fortunate_q: public QObject
 		&QTimer::timeout,
 		this,
 		&fortunate_q::slot_file_ready_read);
+	m_file_name = file_name;
 	m_file_timer.start(10);
       }
     else
@@ -718,7 +721,9 @@ class fortunate_q: public QObject
 
   void set_send_byte(const char byte, const int interval)
   {
-    if(interval <= 0)
+    if(byte == m_send_byte[0] && interval == m_periodic_write_timer.interval())
+      return;
+    else if(interval <= 0)
       return;
 
     /*
@@ -737,6 +742,10 @@ class fortunate_q: public QObject
   void set_tcp_peer(const QString &address, const bool tls, const quint16 port)
   {
     if(address.trimmed().isEmpty())
+      return;
+    else if(address.trimmed() == m_tcp_address &&
+	    m_tcp_port == port &&
+	    m_tcp_socket_tls == tls)
       return;
 
     m_tcp_address = address.trimmed();
@@ -794,6 +803,7 @@ class fortunate_q: public QObject
 
   QFile m_file;
   QSslSocket m_tcp_socket;
+  QString m_file_name;
   QString m_tcp_address;
   QTimer m_file_timer;
   QTimer m_periodic_write_timer;
