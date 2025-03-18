@@ -2006,7 +2006,9 @@ void spoton::populateMail(void)
 	QList<int> rows;
 	QSqlQuery query(db);
 	QStringList oids;
-	auto const html(m_ui.mailMessage->toPlainText());
+	auto const html
+	  (m_ui.email_plain->isChecked() ?
+	   m_ui.mailMessage->toPlainText() : m_ui.mailMessage->toHtml());
 	auto const list
 	  (m_ui.mail->selectionModel()->
 	   selectedRows(m_ui.mail->columnCount() - 1)); // OID
@@ -2316,7 +2318,12 @@ void spoton::populateMail(void)
 	m_ui.mail->setSelectionMode(QAbstractItemView::MultiSelection);
 
 	if(cRow.values().value(0))
-	  m_ui.mailMessage->setPlainText(html);
+	  {
+	    if(m_ui.email_plain->isChecked())
+	      m_ui.mailMessage->setPlainText(html);
+	    else
+	      m_ui.mailMessage->setHtml(html);
+	  }
 
 	for(int i = 0; i < rows.size(); i++)
 	  m_ui.mail->selectRow(rows.at(i));
@@ -4487,7 +4494,8 @@ void spoton::slotMailSelected(QTableWidgetItem *item)
     }
 
   m_ui.mailMessage->clear();
-  m_ui.mailMessage->setPlainText(text);
+  m_ui.email_plain->isChecked() ?
+    m_ui.mailMessage->setPlainText(text) : m_ui.mailMessage->setHtml(text);
   m_ui.mailMessage->horizontalScrollBar()->setValue(0);
   m_ui.mailMessage->verticalScrollBar()->setValue(0);
 }

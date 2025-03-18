@@ -1930,6 +1930,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotEmailLettersPerPageChanged(int)));
+  connect(m_ui.email_plain,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotShowEmailTextAsPlainOrRich(bool)));
   connect(m_ui.emailNameEditable,
 	  SIGNAL(returnPressed(void)),
 	  this,

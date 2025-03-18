@@ -1903,6 +1903,12 @@ void spoton::slotSetSocketOptions(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotShowEmailTextAsPlainOrRich(bool state)
+{
+  Q_UNUSED(state);
+  slotMailSelected();
+}
+
 void spoton::slotShowErrorMessage(void)
 {
   auto timer = qobject_cast<QTimer *> (sender());

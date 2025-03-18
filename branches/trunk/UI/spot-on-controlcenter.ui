@@ -536,8 +536,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>591</width>
-                <height>547</height>
+                <width>473</width>
+                <height>580</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -792,32 +792,6 @@
                          </widget>
                         </item>
                         <item>
-                         <widget class="QCheckBox" name="humanProxy">
-                          <property name="sizePolicy">
-                           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                           </sizepolicy>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, deciphered messages intended for other participants will be echoed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
-                          <property name="text">
-                           <string>Enable proxy behavior.</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QCheckBox" name="git_chat">
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place the messages in a curious folder. A separate process will transfer the messages towards a curious GIT server. Curious. May be compatible with participant proxies in the future.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
-                          <property name="text">
-                           <string>GIT message(s).</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <spacer name="horizontalSpacer_70">
                           <property name="orientation">
                            <enum>Qt::Horizontal</enum>
@@ -832,6 +806,49 @@
                         </item>
                        </layout>
                       </widget>
+                     </item>
+                     <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_50">
+                       <item>
+                        <widget class="QCheckBox" name="humanProxy">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If enabled, deciphered messages intended for other participants will be echoed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string>Enable proxy behavior.</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QCheckBox" name="git_chat">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place the messages in a curious folder. A separate process will transfer the messages towards a curious GIT server. Curious. May be compatible with participant proxies in the future.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string>GIT message(s).</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <spacer name="horizontalSpacer_24">
+                         <property name="orientation">
+                          <enum>Qt::Horizontal</enum>
+                         </property>
+                         <property name="sizeHint" stdset="0">
+                          <size>
+                           <width>40</width>
+                           <height>20</height>
+                          </size>
+                         </property>
+                        </spacer>
+                       </item>
+                      </layout>
                      </item>
                      <item>
                       <widget class="QLabel" name="label_123">
@@ -1049,7 +1066,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1184</width>
+             <width>994</width>
              <height>729</height>
             </rect>
            </property>
@@ -1218,16 +1235,13 @@
                       <item>
                        <widget class="QSpinBox" name="email_pages">
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please refresh after changing. Valid values lie in the interval [25, 999999999].&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="suffix">
-                         <string> Letters Per Page</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of letters per page. Please refresh after changing. Valid values lie in the interval [25, 999999999].&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="minimum">
                          <number>25</number>
                         </property>
                         <property name="maximum">
-                         <number>999999999</number>
+                         <number>25000</number>
                         </property>
                         <property name="value">
                          <number>500</number>
@@ -1381,8 +1395,22 @@
                         </property>
                        </column>
                       </widget>
-                      <widget class="QPlainTextEdit" name="mailMessage">
-                       <property name="tabChangesFocus">
+                      <widget class="QTextBrowser" name="mailMessage">
+                       <property name="textInteractionFlags">
+                        <set>Qt::TextSelectableByMouse</set>
+                       </property>
+                       <property name="openLinks">
+                        <bool>false</bool>
+                       </property>
+                      </widget>
+                      <widget class="QCheckBox" name="email_plain">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The value of this setting is not retained in the INI file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="text">
+                        <string>Plain</string>
+                       </property>
+                       <property name="checked">
                         <bool>true</bool>
                        </property>
                       </widget>
@@ -1560,9 +1588,6 @@
                           </property>
                           <property name="sizeAdjustPolicy">
                            <enum>QComboBox::AdjustToContents</enum>
-                          </property>
-                          <property name="minimumContentsLength">
-                           <number>25</number>
                           </property>
                          </widget>
                         </item>
@@ -6193,10 +6218,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-178</x>
-             <y>-57</y>
-             <width>1029</width>
-             <height>1379</height>
+             <x>0</x>
+             <y>0</y>
+             <width>1062</width>
+             <height>1359</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -10162,6 +10187,7 @@
   <tabstop>saveAttachment</tabstop>
   <tabstop>mail</tabstop>
   <tabstop>mailMessage</tabstop>
+  <tabstop>email_plain</tabstop>
   <tabstop>clearOutgoing</tabstop>
   <tabstop>emailWriteActionMenu</tabstop>
   <tabstop>emailName</tabstop>
