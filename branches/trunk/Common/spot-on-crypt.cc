@@ -1337,9 +1337,8 @@ QByteArray spoton_crypt::keyedHash(const QByteArray &data, bool *ok)
 QByteArray spoton_crypt::preferredHMAC
 (const QByteArray &data, const QByteArray &key)
 {
-  QMessageAuthenticationCode hd(qt_preferred_hash_algorithm);
+  QMessageAuthenticationCode hd(qt_preferred_hash_algorithm, key);
 
-  hd.setKey(key);
   hd.addData(data);
   return hd.result();
 }
