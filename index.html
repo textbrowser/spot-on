@@ -56,7 +56,11 @@
 		or rich-text e-mail display. The new widget is positioned
 		below the e-mail message and may require interaction with the
 		parent splitter before it's visible.</li>
-	      <li>New FORTUNA_FILE option.</li>
+	      <li>New FORTUNA_FILE option. Initialized as none. On Unix
+		systems, /dev/urandom is a possibility.</li>
+	      <li>Reset s_kernel as nullptr after deletion.</li>
+	      <li>The method spoton_kernel::interfaces() is now lock-less.
+		Super fast and super safe.</li>
 	    </ul>
 	  </p>
 	  <h4><u>Spot-On 2025.03.01</u></h4>
