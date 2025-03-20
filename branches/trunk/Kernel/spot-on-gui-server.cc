@@ -37,6 +37,19 @@
 #include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 
+spoton_gui_server_tcp_server::~spoton_gui_server_tcp_server()
+{
+  while(!m_queue.isEmpty())
+    {
+      QPointer<QSslSocket> socket = m_queue.dequeue();
+
+      if(socket)
+	socket->deleteLater();
+    }
+
+  spoton_kernel::s_interfaces.fetchAndStoreOrdered(0);
+}
+
 void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 {
   QByteArray certificate;
@@ -71,6 +84,10 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 	      ** Disable Nagle?
 	      */
 
+	      connect(socket,
+		      SIGNAL(destroyed(QObject *)),
+		      this,
+		      SLOT(slotSocketDestroyed(QObject *)));
 	      socket->setSocketOption
 		(QAbstractSocket::LowDelayOption,
 		 spoton_kernel::setting("gui/tcp_nodelay", 1).toInt());
@@ -130,6 +147,7 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 		}
 
 	      m_queue.enqueue(socket);
+	      spoton_kernel::s_interfaces.fetchAndAddOrdered(1);
 	      emit newConnection();
 	    }
 	  else
@@ -142,7 +160,8 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 	}
       catch(...)
 	{
-	  m_queue.removeOne(socket);
+	  if(m_queue.removeOne(socket))
+	    spoton_kernel::s_interfaces.fetchAndSubOrdered(1);
 
 	  if(socket)
 	    socket->deleteLater();
@@ -160,6 +179,16 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 		 "incomingConnection(): "
 		 "generateSslKeys() failure (%1).").arg(error));
     }
+}
+
+void spoton_gui_server_tcp_server::slotSocketDestroyed(QObject *object)
+{
+  Q_UNUSED(object);
+
+  auto const value =
+    qMax(0, -1 + spoton_kernel::s_interfaces.fetchAndAddOrdered(0));
+
+  spoton_kernel::s_interfaces.fetchAndStoreOrdered(value);
 }
 
 spoton_gui_server::spoton_gui_server(QObject *parent):
@@ -447,10 +476,8 @@ void spoton_gui_server::slotNewEMailArrived(void)
 void spoton_gui_server::slotNotification(const QString &text)
 {
   if(spoton_kernel::interfaces() == 0 ||
-     !spoton_kernel::setting("gui/monitorEvents", true).toBool())
-    return;
-
-  if(text.trimmed().isEmpty())
+     spoton_kernel::setting("gui/monitorEvents", true).toBool() == false ||
+     text.trimmed().isEmpty())
     return;
 
   QByteArray message("notification_");

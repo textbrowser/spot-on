@@ -77,6 +77,7 @@ extern "C"
 #endif
 
 QAtomicInt spoton_kernel::s_congestionControlSecondaryStorage = 0;
+QAtomicInt spoton_kernel::s_interfaces = 0;
 QAtomicInt spoton_kernel::s_sendInitialStatus = 0;
 QAtomicInteger<quint64> spoton_kernel::s_prisonBluesSequence = 0;
 QByteArray spoton_kernel::s_messagingCacheKey;
@@ -1658,24 +1659,7 @@ int spoton_kernel::buzzKeyCount(void)
 
 int spoton_kernel::interfaces(void)
 {
-  auto instance = spoton_kernel::instance();
-
-  if(Q_LIKELY(instance))
-    {
-      if(!instance->m_guiServer)
-	return 0;
-
-      auto const kernelKeySize = setting("gui/kernelKeySize", 2048).toInt();
-      int count = 0;
-
-      foreach(auto socket,
-	      instance->m_guiServer->findChildren<QSslSocket *> ())
-	count += kernelKeySize == 0 || socket->isEncrypted();
-
-      return count;
-    }
-  else
-    return 0;
+  return s_interfaces.fetchAndAddOrdered(0);
 }
 
 void spoton_kernel::addBuzzKey(const QByteArray &key,

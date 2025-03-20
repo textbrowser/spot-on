@@ -2698,8 +2698,7 @@ void spoton_neighbor::process0080(int length,
 	{
 	  spoton_misc::logError
 	    (QString("spoton_neighbor::process0080(): "
-		     "received irregular data. Expecting 4 "
-		     "entries, "
+		     "received irregular data. Expecting 4 entries, "
 		     "received %1.").arg(list.size()));
 	  return;
 	}
@@ -2717,13 +2716,16 @@ void spoton_neighbor::process0080(int length,
 
       computedHash = spoton_crypt::keyedHash
 	(list.value(0) + list.value(1),
-	 symmetricKeys.value(2), symmetricKeys.value(3), &ok);
+	 symmetricKeys.value(2),
+	 symmetricKeys.value(3),
+	 &ok);
 
       if(ok)
 	{
 	  auto const messageCode(list.value(2));
 
-	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	  if(!computedHash.isEmpty() &&
+	     !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      auto data(list.value(1));

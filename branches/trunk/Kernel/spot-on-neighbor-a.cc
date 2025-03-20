@@ -3236,8 +3236,7 @@ void spoton_neighbor::slotWriteURLs(const QByteArray &data)
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
-      (QString("spoton_neighbor::slotWriteURLs(): write() error "
-	       "for %1:%2.").
+      (QString("spoton_neighbor::slotWriteURLs(): write() error for %1:%2.").
        arg(m_address).
        arg(m_port));
   else

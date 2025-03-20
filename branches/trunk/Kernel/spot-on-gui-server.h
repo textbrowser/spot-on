@@ -44,16 +44,7 @@ class spoton_gui_server_tcp_server: public QTcpServer
   {
   }
 
-  ~spoton_gui_server_tcp_server()
-  {
-    while(!m_queue.isEmpty())
-      {
-	QPointer<QSslSocket> socket = m_queue.dequeue();
-
-	if(socket)
-	  socket->deleteLater();
-      }
-  }
+  ~spoton_gui_server_tcp_server();
 
   QSslSocket *nextPendingConnection(void)
   {
@@ -67,6 +58,9 @@ class spoton_gui_server_tcp_server: public QTcpServer
 
  private:
   QQueue<QPointer<QSslSocket> > m_queue;
+
+ private slots:
+  void slotSocketDestroyed(QObject *object);
 
  signals:
   void modeChanged(QSslSocket::SslMode mode);

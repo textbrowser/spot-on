@@ -75,6 +75,7 @@ class spoton_kernel: public QObject
  public:
   spoton_kernel(void);
   ~spoton_kernel();
+  static QAtomicInt s_interfaces;
   static QAtomicInt s_sendInitialStatus;
   static QMultiHash<qint64, QPointer<spoton_neighbor> > s_connectionCounts;
   static QPair<quint64, quint64> s_totalNeighborsBytesReadWritten;
