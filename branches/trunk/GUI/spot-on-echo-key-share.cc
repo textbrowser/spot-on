@@ -472,8 +472,7 @@ void spoton_echo_key_share::deleteSelected(void)
 
 	if(!item->parent())
 	  {
-	    query.prepare("DELETE FROM categories "
-			  "WHERE OID = ?");
+	    query.prepare("DELETE FROM categories WHERE OID = ?");
 	    query.bindValue(0, item->data(0, Qt::UserRole));
 	    query.exec();
 	  }

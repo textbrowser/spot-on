@@ -475,6 +475,7 @@ int main(int argc, char *argv[])
 	rc = EXIT_FAILURE;
 
       delete s_kernel;
+      s_kernel = nullptr;
 #ifdef SPOTON_POPTASTIC_SUPPORTED
       curl_global_cleanup();
 #endif
