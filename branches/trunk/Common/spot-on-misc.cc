@@ -509,7 +509,7 @@ QHash<int, QHash<QString, QString> > spoton_misc::gitInformation
   if(!crypt)
     return hash;
 
-  QByteArray bytes(QSettings().value("gui/git_table").toByteArray());
+  auto bytes(QSettings().value("gui/git_table").toByteArray());
   auto ok = true;
 
   bytes = crypt->decryptedAfterAuthenticated(bytes, &ok);

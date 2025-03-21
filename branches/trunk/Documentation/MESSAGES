@@ -34,7 +34,7 @@ Encryption Key (Base-64)
 	2 - Message
 	3 - Sequence Number
 	4 - UTC Date
-	5 - Recipient's Digest (Not Distributed)
+	5 - Recipient's Digest (Digital Signature Only)
 	6 - Signature (First Group Items and Previous Six Items)
 }
 EOL
@@ -67,7 +67,7 @@ Encryption Key (Base-64)
 	1 - Gemini Encryption Key
 	2 - Gemini Digest Key
 	3 - UTC Date
-	4 - Recipient's Digest (Not Distributed)
+	4 - Recipient's Digest (Digital Signature Only)
 	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
@@ -90,7 +90,7 @@ Gemini Encryption Key (Base-64)
 	2 - Gemini Encryption Key
 	3 - Gemini Digest Key
 	4 - UTC Date
-	5 - Recipient's Digest (Not Distributed)
+	5 - Recipient's Digest (Digital Signature Only)
 	6 - Signature (Previous Six Items)
 }
 EOL
@@ -178,7 +178,7 @@ Encryption Key 2
 	EOL
 	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Recipient's Digest (Not Distributed)
+	7 - Recipient's Digest (Digital Signature Only)
 	EOL
 	8 - Signature (0001b Group Items and Previous Eight Items)
 	    (Optional Gold Bug) (Base-64)
@@ -229,7 +229,7 @@ Encryption Key
 	EOL
 	6 - Gold Bug Used? (Base-64)
 	EOL
-	7 - Recipient's Digest (Not Distributed)
+	7 - Recipient's Digest (Digital Signature Only)
 	EOL
 	8 - Signature (First Group Items and Previous Eight Items)
 	    (Optional Gold Bug) (Base-64)
@@ -396,7 +396,7 @@ Encryption Key (Base-64)
 	1 - Name
 	2 - Status
 	3 - UTC Date
-	4 - Recipient's Digest (Not Distributed)
+	4 - Recipient's Digest (Digital Signature Only)
 	5 - Signature (First Group Items and Previous Five Items)
 }
 EOL
@@ -591,7 +591,7 @@ Encryption Key (Base-64)
 	i + 3 - Content
 	...
 	n - 2 - UTC Date
-	n - 1 - Recipient's Digest (Not Distributed)
+	n - 1 - Recipient's Digest (Digital Signature Only)
 	n - Signature (First Group Items and Previous n - 1 Items)
 }
 EOL
@@ -647,7 +647,7 @@ Encryption Key (Base-64)
 	0 - Dispatcher's Digest
 	1 - Dispatcher's Ephemeral Public Key
 	2 - UTC Date
-	3 - Recipient's Digest (Not Distributed)
+	3 - Recipient's Digest (Digital Signature Only)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
@@ -682,7 +682,7 @@ Encryption Key (Base-64)
 		3 - Forward Secrecy Encryption Key
 	}
 	2 - UTC Date
-	3 - Recipient's Digest (Not Distributed)
+	3 - Recipient's Digest (Digital Signature Only)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
@@ -713,7 +713,7 @@ Encryption Key (Base-64)
 	0 - Dispatcher's Digest
 	1 - Data
 	2 - UTC Date
-	3 - Recipient's Digest (Not Distributed)
+	3 - Recipient's Digest (Digital Signature Only)
 	4 - Signature (First Group Items and Previous Four Items)
 }
 EOL
