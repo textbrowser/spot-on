@@ -26,17 +26,7 @@ then
 
     export QT_X11_NO_MITSHM=1
 
-    kde=$(env | grep -ci kde 2>/dev/null)
-
-    if [ $kde -gt 0 ]
-    then
-	echo "KDE!"
-	style="-style=Breeze"
-    else
-	style="-style=Fusion"
-    fi
-
-    cd /opt/spot-on && ./Spot-On "$style" "$@"
+    cd /opt/spot-on && ./Spot-On "$@"
     exit $?
 else
     echo "Could not locate /opt/spot-on/Spot-On."

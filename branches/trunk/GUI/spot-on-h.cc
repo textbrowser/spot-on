@@ -563,6 +563,14 @@ void spoton::populateGITTable(void)
   m_optionsUi.git_table->resizeColumnsToContents();
 }
 
+void spoton::prepareEnvironmentVariables(void)
+{
+  auto const variable
+    (QSettings().value("gui/theme_override").toByteArray().trimmed());
+
+  qputenv("QT_STYLE_OVERRIDE", variable);
+}
+
 void spoton::prepareOtherOptions(void)
 {
   QMapIterator<QString, QVariant> it
@@ -631,52 +639,6 @@ void spoton::prepareOtherOptions(void)
 	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
       m_optionsUi.other_options->appendPlainText("");
     }
-}
-
-void spoton::prepareStyleSheet(void)
-{
-  QApplication::processEvents();
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  auto const index = m_settings.value("gui/theme", -1).toInt();
-  auto ok = true;
-
-  if(index == 0 || index == 1 || index == 2)
-    {
-      QFile file;
-
-      if(index == 0)
-	file.setFileName(":qdarkstyle/qdarkstyle.qss");
-      else if(index == 1)
-	file.setFileName(":darkstyle/darkstyle.qss");
-      else if(index == 2)
-	file.setFileName(":darkorange/darkorange.qss");
-
-      if((ok = file.open(QFile::ReadOnly | QFile::Text)))
-	{
-	  QTextStream textStream(&file);
-
-	  qobject_cast<QApplication *> (QApplication::instance())->
-	    setStyleSheet(textStream.readAll());
-	  setStyleSheet
-	    (qobject_cast<QApplication *> (QApplication::instance())->
-	     styleSheet());
-
-	  if(textStream.status() != QTextStream::Ok)
-	    ok = false;
-	}
-    }
-  else
-    ok = false;
-
-  if(!ok)
-    {
-      qobject_cast<QApplication *> (QApplication::instance())->setStyleSheet
-	(m_defaultStyleSheet);
-      setStyleSheet(m_defaultStyleSheet);
-    }
-
-  QApplication::restoreOverrideCursor();
 }
 
 void spoton::prepareTearOffMenus(void)
@@ -1902,6 +1864,12 @@ void spoton::slotSetSocketOptions(void)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotSetThemeOverride(void)
+{
+  QSettings().setValue
+    ("gui/theme_override", m_optionsUi.theme_override->text().trimmed());
+}
+
 void spoton::slotShowEmailTextAsPlainOrRich(bool state)
 {
   Q_UNUSED(state);
@@ -1935,16 +1903,6 @@ void spoton::slotShowReleaseNotes(void)
   m_releaseNotes->showNormal();
   m_releaseNotes->activateWindow();
   m_releaseNotes->raise();
-}
-
-void spoton::slotStyleSheetChanged(int index)
-{
-  m_settings["gui/theme"] = index;
-
-  QSettings settings;
-
-  settings.setValue("gui/theme", index);
-  prepareStyleSheet();
 }
 
 void spoton::slotTearOffMenusEnabled(bool state)

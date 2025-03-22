@@ -42,9 +42,6 @@ extern "C"
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-private-application-credentials.h"
-#if SPOTON_GOLDBUG == 0
-#include "ui_spot-on-stylesheet.h"
-#endif
 
 QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
 {
@@ -843,29 +840,6 @@ void spoton::slotCopyPrivateApplicationMagnet(void)
   clipboard->setText(item->text());
 }
 
-void spoton::slotCopyStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  auto action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  auto widget = findChild<QWidget *> (action->property("widget_name").
-				      toString());
-
-  if(!widget)
-    return;
-
-  auto clipboard = QApplication::clipboard();
-
-  if(!clipboard)
-    return;
-
-  clipboard->setText(widget->styleSheet());
-#endif
-}
-
 void spoton::slotCopyUrlKeys(void)
 {
   auto clipboard = QApplication::clipboard();
@@ -1393,47 +1367,6 @@ void spoton::slotPrepareAndShowInstallationWizard(void)
   m_wizardHash["shown"] = false;
 }
 
-void spoton::slotPreviewStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  auto pushButton = qobject_cast<QPushButton *> (sender());
-
-  if(!pushButton)
-    return;
-
-  auto widget = findChild<QWidget *> (pushButton->property("widget_name").
-				      toString());
-
-  if(!widget)
-    return;
-
-  auto parent = pushButton->parentWidget();
-
-  if(!parent)
-    return;
-
-  do
-    {
-      if(qobject_cast<QDialog *> (parent))
-	break;
-
-      if(parent)
-	parent = parent->parentWidget();
-    }
-  while(parent != nullptr);
-
-  if(!parent)
-    return;
-
-  auto textEdit = parent->findChild<QTextEdit *> ();
-
-  if(!textEdit)
-    return;
-
-  widget->setStyleSheet(textEdit->toPlainText());
-#endif
-}
-
 void spoton::slotRemoveAttachment(const QUrl &url)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -1457,48 +1390,6 @@ void spoton::slotRemoveAttachment(const QUrl &url)
     }
 
   QApplication::restoreOverrideCursor();
-}
-
-void spoton::slotResetAllStyleSheets(void)
-{
-#if SPOTON_GOLDBUG == 0
-  QMessageBox mb(this);
-
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setText(tr("Are you sure that you wish to reset all custom widget "
-		"style sheets?"));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::ApplicationModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    {
-      QApplication::processEvents();
-      return;
-    }
-
-  QApplication::processEvents();
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QSettings settings;
-
-  foreach(auto widget, findChildren<QWidget *> ())
-    if(widget->property("original_style_sheet").isValid())
-      {
-	widget->setStyleSheet
-	  (widget->property("original_style_sheet").toString());
-
-	auto const str(widget->styleSheet().trimmed());
-
-	m_settings[QString("gui/widget_stylesheet_%1").
-		   arg(widget->objectName())] = str;
-	settings.setValue
-	  (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
-      }
-
-  QApplication::restoreOverrideCursor();
-#endif
 }
 
 void spoton::slotResetPrivateApplicationInformation(void)
@@ -1553,32 +1444,6 @@ void spoton::slotResetPrivateApplicationInformation(void)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
-}
-
-void spoton::slotResetStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  auto action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  auto widget = findChild<QWidget *> (action->property("widget_name").
-					  toString());
-
-  if(!widget)
-    return;
-
-  widget->setStyleSheet(widget->property("original_style_sheet").toString());
-
-  QSettings settings;
-  auto const str(widget->styleSheet().trimmed());
-
-  m_settings[QString("gui/widget_stylesheet_%1").arg(widget->objectName())] =
-    str;
-  settings.setValue
-    (QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
-#endif
 }
 
 void spoton::slotSeparateBuzzPage(void)
@@ -1835,92 +1700,6 @@ void spoton::slotSetPrivateApplicationInformation(void)
     }
 
   QApplication::processEvents();
-}
-
-void spoton::slotSetStyleSheet(void)
-{
-#if SPOTON_GOLDBUG == 0
-  auto action = qobject_cast<QAction *> (sender());
-
-  if(!action)
-    return;
-
-  auto widget = findChild<QWidget *>
-    (action->property("widget_name").toString());
-
-  if(!widget)
-    return;
-
-  QDialog dialog(this);
-  Ui_spoton_stylesheet ui;
-  auto const str(widget->styleSheet());
-
-  ui.setupUi(&dialog);
-  ui.preview->setProperty("widget_name", widget->objectName());
-  ui.textEdit->setText(action->property("widget_stylesheet").toString());
-  dialog.setWindowTitle
-    (tr("Spot-On: Widget Style Sheet (%1)").arg(widget->objectName()));
-  connect(ui.preview,
-	  SIGNAL(clicked(void)),
-	  this,
-	  SLOT(slotPreviewStyleSheet(void)));
-
-  if(dialog.exec() == QDialog::Accepted)
-    {
-      QApplication::processEvents();
-
-      auto const str(ui.textEdit->toPlainText().trimmed());
-
-      widget->setStyleSheet(str);
-
-      QSettings settings;
-
-      m_settings[QString("gui/widget_stylesheet_%1").
-		 arg(widget->objectName())] = str;
-      settings.setValue
-	(QString("gui/widget_stylesheet_%1").arg(widget->objectName()), str);
-    }
-  else
-    {
-      QApplication::processEvents();
-      widget->setStyleSheet(str);
-    }
-
-#endif
-}
-
-void spoton::slotSetWidgetStyleSheet(const QPoint &point)
-{
-#if SPOTON_GOLDBUG == 0
-  auto widget = qobject_cast<QWidget *> (sender());
-
-  if(!widget)
-    return;
-
-  QAction *action = nullptr;
-  QMenu menu(this);
-
-  action = menu.addAction(tr("&Copy Style Sheet"),
-			  this,
-			  SLOT(slotCopyStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("&Reset Widget Style Sheet"),
-			  this,
-			  SLOT(slotResetStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action = menu.addAction(tr("Set Widget &Style Sheet..."),
-			  this,
-			  SLOT(slotSetStyleSheet(void)));
-  action->setProperty("widget_name", widget->objectName());
-  action->setProperty("widget_stylesheet", widget->styleSheet());
-  menu.addSeparator();
-  menu.addAction(tr("Reset &All Widget Style Sheets"),
-		 this,
-		 SLOT(slotResetAllStyleSheets(void)));
-  menu.exec(widget->mapToGlobal(point));
-#else
-  Q_UNUSED(point);
-#endif
 }
 
 void spoton::slotShareOpenLibraryPublicKey(void)

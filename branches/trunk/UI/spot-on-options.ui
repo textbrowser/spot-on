@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-2268</y>
+         <y>0</y>
          <width>769</width>
          <height>5090</height>
         </rect>
@@ -280,52 +280,22 @@
              <item>
               <widget class="QLabel" name="label_33">
                <property name="text">
-                <string>Theme</string>
+                <string>Theme Override</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="theme">
-               <property name="currentIndex">
-                <number>3</number>
+              <widget class="QLineEdit" name="theme_override">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please restart Spot-On if this value is modified.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
-               <property name="sizeAdjustPolicy">
-                <enum>QComboBox::AdjustToContents</enum>
+               <property name="placeholderText">
+                <string>QT_STYLE_OVERRIDE</string>
                </property>
-               <item>
-                <property name="text">
-                 <string>Dark</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Dark Fusion</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Dark Orange</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Default</string>
-                </property>
-               </item>
+               <property name="clearButtonEnabled">
+                <bool>true</bool>
+               </property>
               </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_11">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
              </item>
             </layout>
            </item>
@@ -3136,7 +3106,7 @@ with the kernel process.</string>
   <tabstop>iconsize</tabstop>
   <tabstop>position</tabstop>
   <tabstop>tear_off_menus</tabstop>
-  <tabstop>theme</tabstop>
+  <tabstop>theme_override</tabstop>
   <tabstop>buzzAutoJoin</tabstop>
   <tabstop>buzz_maximum_lines</tabstop>
   <tabstop>chatAlternatingRowColors</tabstop>

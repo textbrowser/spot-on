@@ -243,7 +243,15 @@ int main(int argc, char *argv[])
   QApplication::addLibraryPath("plugins");
 #endif
   qInstallMessageHandler(qt_message_handler);
+  QCoreApplication::setApplicationName("SpotOn");
+  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
   QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+  QCoreApplication::setOrganizationDomain("spot-on.sf.net");
+  QCoreApplication::setOrganizationName("SpotOn");
+  QSettings::setDefaultFormat(QSettings::IniFormat);
+  QSettings::setPath
+    (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
+  spoton::prepareEnvironmentVariables();
 
   QApplication qapplication(argc, argv);
   QTranslator translator1;
@@ -365,13 +373,6 @@ int main(int argc, char *argv[])
   CocoaInitializer ci;
 #endif
 
-  QCoreApplication::setApplicationName("SpotOn");
-  QCoreApplication::setOrganizationName("SpotOn");
-  QCoreApplication::setOrganizationDomain("spot-on.sf.net");
-  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
-  QSettings::setDefaultFormat(QSettings::IniFormat);
-  QSettings::setPath
-    (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
   splash.showMessage
     (QObject::tr("Processing INI values."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -409,9 +410,17 @@ int main(int argc, char *argv[])
   if(!settings.contains("gui/tcp_nodelay"))
     settings.setValue("gui/tcp_nodelay", 1);
 
+  settings.beginGroup("gui");
+
+  foreach(auto const &str, settings.allKeys())
+    if(str.startsWith("widget_stylesheet"))
+      settings.remove(str);
+
+  settings.endGroup();
   settings.remove("gui/git_a");
   settings.remove("gui/git_script");
   settings.remove("gui/git_t");
+  settings.remove("gui/theme");
   splash.showMessage
     (QObject::tr("Initializing cryptographic containers."),
      Qt::AlignBottom | Qt::AlignHCenter,
@@ -453,8 +462,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash->repaint();
-  m_defaultStyleSheet = qobject_cast<QApplication *>
-    (QApplication::instance())->styleSheet();
   m_prisonBluesProcesses.resize(spoton_common::PRISON_BLUES_PROCESSES);
   m_urlCurrentPage = 1;
   m_urlLimit = 10;
@@ -603,43 +610,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.urlParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
-
-  QSettings settings;
-
-#if SPOTON_GOLDBUG == 0
-  splash->showMessage
-    (tr("Preparing style sheets."),
-     Qt::AlignBottom | Qt::AlignHCenter,
-     QColor(Qt::white));
-  splash->repaint();
-
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  foreach(auto widget, findChildren<QWidget *> ())
-    {
-      widget->setProperty("original_style_sheet", widget->styleSheet());
-
-      if(widget->contextMenuPolicy() == Qt::CustomContextMenu ||
-	 widget->inherits("QLineEdit") ||
-	 widget->inherits("QTextEdit"))
-	continue;
-
-      widget->setContextMenuPolicy(Qt::CustomContextMenu);
-
-      if(settings.contains(QString("gui/widget_stylesheet_%1").
-			   arg(widget->objectName())))
-	widget->setStyleSheet
-	  (settings.value(QString("gui/widget_stylesheet_%1").
-			  arg(widget->objectName())).toString());
-
-      connect(widget,
-	      SIGNAL(customContextMenuRequested(const QPoint &)),
-	      this,
-	      SLOT(slotSetWidgetStyleSheet(const QPoint &)));
-    }
-
-  QApplication::restoreOverrideCursor();
-#endif
   m_ui.buzz_frame->setVisible(m_ui.buzz_details->isChecked());
 #if SPOTON_GOLDBUG == 0
   m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
@@ -1066,10 +1036,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(smpMessageReceivedFromKernel(const QByteArrayList &)),
 	  m_smpWindow,
 	  SLOT(slotSMPMessageReceivedFromKernel(const QByteArrayList &)));
-  m_optionsUi.guiSecureMemoryPool->setProperty
-    ("original_stylesheet", m_optionsUi.guiSecureMemoryPool->styleSheet());
-  m_ui.kernelSecureMemoryPool->setProperty
-    ("original_stylesheet", m_ui.kernelSecureMemoryPool->styleSheet());
   statusBar()->addPermanentWidget(m_sbWidget, 100);
   statusBar()->setStyleSheet("QStatusBar::item {"
 			     "border: none; "
@@ -1557,10 +1523,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotTestSslControlString(void)));
-  connect(m_optionsUi.theme,
-	  SIGNAL(currentIndexChanged(int)),
+  connect(m_optionsUi.theme_override,
+	  SIGNAL(editingFinished(void)),
 	  this,
-	  SLOT(slotStyleSheetChanged(int)));
+	  SLOT(slotSetThemeOverride(void)));
   connect(m_optionsUi.urlAcceptSigned,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2547,6 +2513,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
      QColor(Qt::white));
   splash->repaint();
 
+  QSettings settings;
+
   if(!settings.contains("gui/saveCopy"))
     settings.setValue("gui/saveCopy", true);
 
@@ -2974,14 +2942,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/enableChatEmoticons", false).toBool());
   m_optionsUi.forceRegistration->setChecked
     (m_settings.value("gui/forceKernelRegistration", true).toBool());
-  m_optionsUi.launchKernel->setChecked
-    (m_settings.value("gui/launchKernelAfterAuth", false).toBool());
-  m_ui.hideOfflineParticipants->setChecked
-    (m_settings.value("gui/hideOfflineParticipants", false).toBool());
   m_optionsUi.keepOnlyUserDefinedNeighbors->setChecked
     (m_settings.value("gui/keepOnlyUserDefinedNeighbors", true).toBool());
-  m_ui.kernelLogEvents->setChecked
-    (m_settings.value("gui/kernelLogEvents", false).toBool());
+  m_optionsUi.launchKernel->setChecked
+    (m_settings.value("gui/launchKernelAfterAuth", false).toBool());
   m_optionsUi.limitConnections->setValue
     (m_settings.value("gui/limitConnections", 10).toInt());
   m_optionsUi.monitor->setChecked
@@ -2990,8 +2954,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/automaticNotifications", false).toBool());
   m_optionsUi.openlinks->setChecked
     (m_settings.value("gui/openLinks", false).toBool());
-  m_ui.postofficeCheckBox->setChecked
-    (m_settings.value("gui/postoffice_enabled", false).toBool());
   m_optionsUi.publishPeriodically->setChecked
     (m_settings.value("gui/publishPeriodically", false).toBool());
   m_optionsUi.refreshEmail->setChecked
@@ -3004,9 +2966,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/urlsAlternatingRowColors", true).toBool());
   m_optionsUi.saveCopy->setChecked
     (m_settings.value("gui/saveCopy", true).toBool());
-  m_ui.secondary_storage->setChecked
-    (m_settings.value("gui/secondary_storage_congestion_control",
-		      false).toBool());
   m_optionsUi.scrambler->setChecked
     (m_settings.value("gui/scramblerEnabled", false).toBool());
   m_optionsUi.starbeamAutoVerify->setChecked
@@ -3074,6 +3033,15 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.play_sounds->setToolTip
     (tr("<html>Please place the Sounds directory in the directory which "
 	"houses the %1 executable.</html>").arg(SPOTON_APPLICATION_NAME));
+  m_ui.hideOfflineParticipants->setChecked
+    (m_settings.value("gui/hideOfflineParticipants", false).toBool());
+  m_ui.kernelLogEvents->setChecked
+    (m_settings.value("gui/kernelLogEvents", false).toBool());
+  m_ui.postofficeCheckBox->setChecked
+    (m_settings.value("gui/postoffice_enabled", false).toBool());
+  m_ui.secondary_storage->setChecked
+    (m_settings.value("gui/secondary_storage_congestion_control", false).
+     toBool());
 
   /*
   ** Please don't translate n/a.
@@ -3555,6 +3523,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
     }
 
+  m_optionsUi.theme_override->setText
+    (m_settings.value("gui/theme_override").toString().trimmed());
   m_ui.tab->setIconSize(size);
   splash->showMessage
     (tr("Preparing widget states."),
@@ -3662,10 +3632,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
        "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
 #endif
-  m_optionsUi.theme->setCurrentIndex(m_settings.value("gui/theme", -1).toInt());
-
-  if(m_optionsUi.theme->currentIndex() < 0)
-    m_optionsUi.theme->setCurrentIndex(3); // Default theme.
 
   launchKernel ?
     QTimer::singleShot(1500, this, SLOT(slotActivateKernel(void))) : (void) 0;
@@ -6467,9 +6433,7 @@ void spoton::slotGeneralTimerTimeout(void)
 	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
       else
 	{
-	  m_ui.kernelSecureMemoryPool->setStyleSheet
-	    (m_ui.kernelSecureMemoryPool->
-	     property("original_stylesheet").toString());
+	  m_ui.kernelSecureMemoryPool->setStyleSheet("");
 
 	  if(m_ui.kernelSecureMemoryPool->value() <
 	     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
@@ -6508,9 +6472,7 @@ void spoton::slotGeneralTimerTimeout(void)
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
   else
     {
-      m_optionsUi.guiSecureMemoryPool->setStyleSheet
-	(m_optionsUi.guiSecureMemoryPool->
-	 property("original_stylesheet").toString());
+      m_optionsUi.guiSecureMemoryPool->setStyleSheet("");
 
       if(m_optionsUi.guiSecureMemoryPool->value() <
 	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)

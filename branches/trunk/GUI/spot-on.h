@@ -467,6 +467,7 @@ class spoton: public QMainWindow
   static QString mapIconToEmoticon(const QString &content);
   static QString optionsEnabled(void);
   static void prepareDatabasesFromUI(void);
+  static void prepareEnvironmentVariables(void);
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
@@ -529,7 +530,6 @@ class spoton: public QMainWindow
   QSslSocket m_kernelSocket;
   QStandardItemModel *m_starbeamReceivedModel;
   QStandardItemModel *m_statisticsModel;
-  QString m_defaultStyleSheet;
   QString m_emailAddressAdded;
   QString m_urlQuery;
   QTimer m_buzzStatusTimer;
@@ -668,7 +668,6 @@ class spoton: public QMainWindow
   void prepareListenerIPCombo(void);
   void prepareOtherOptions(void);
   void prepareSMP(const QString &hash);
-  void prepareStyleSheet(void);
   void prepareTabIcons(void);
   void prepareTearOffMenus(void);
   void prepareTimeWidgets(void);
@@ -779,7 +778,6 @@ class spoton: public QMainWindow
   void slotCopyMyURLPublicKey(void);
   void slotCopyOrPaste(void);
   void slotCopyPrivateApplicationMagnet(void);
-  void slotCopyStyleSheet(void);
   void slotCopyTransmittedMagnet(void);
   void slotCopyUrlFriendshipBundle(void);
   void slotCopyUrlKeys(void);
@@ -946,7 +944,6 @@ class spoton: public QMainWindow
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
-  void slotPreviewStyleSheet(void);
   void slotProtocolRadioToggled(bool state);
   void slotProxyChecked(bool state);
   void slotProxyTypeChanged(int index);
@@ -979,12 +976,10 @@ class spoton: public QMainWindow
   void slotResetAddListener(void);
   void slotResetAddNeighbor(void);
   void slotResetAll(void);
-  void slotResetAllStyleSheets(void);
   void slotResetCertificate(void);
   void slotResetForwardSecrecyInformation(void);
   void slotResetPrivateApplicationInformation(void);
   void slotResetSearch(void);
-  void slotResetStyleSheet(void);
   void slotRespondToForwardSecrecy(void);
   void slotRetrieveMail(void);
   void slotRewindFile(void);
@@ -1040,9 +1035,8 @@ class spoton: public QMainWindow
   void slotSetSBPulseSize(void);
   void slotSetSBReadInterval(void);
   void slotSetSocketOptions(void);
-  void slotSetStyleSheet(void);
+  void slotSetThemeOverride(void);
   void slotSetUrlIniPath(void);
-  void slotSetWidgetStyleSheet(const QPoint &point);
   void slotShareBuzzMagnet(void);
   void slotShareChatPublicKey(void);
   void slotShareChatPublicKeyWithParticipant(void);
@@ -1082,7 +1076,6 @@ class spoton: public QMainWindow
   void slotStatisticsGathered(void);
   void slotStatusButtonClicked(void);
   void slotStatusChanged(int index);
-  void slotStyleSheetChanged(int index);
   void slotSuperEcho(int index);
   void slotTabChanged(int index);
   void slotTearOffMenusEnabled(bool state);

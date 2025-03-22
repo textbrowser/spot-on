@@ -27,7 +27,6 @@ FORMS           = UI\\spot-on-adaptive-echo-prompt.ui \
 		  UI\\spot-on-socket-options.ui \
 		  UI\\spot-on-statisticswindow.ui \
 		  UI\\spot-on-statusbar.ui \
-		  UI\\spot-on-stylesheet.ui \
 		  UI\\spot-on-unlock.ui \
 		  UI\\spot-on-wizard.ui
 
@@ -57,9 +56,6 @@ HEADERS		= Common\\spot-on-external-address.h \
 
 RESOURCES	= Documentation\\documentation.qrc \
                   Icons\\icons.qrc \
-                  Styles\\darkorange\\darkorange.qrc \
-                  Styles\\darkstyle\\darkstyle.qrc \
-                  Styles\\qdarkstyle\\qdarkstyle.qrc \
                   Translations\\translations.qrc
 
 SOURCES		= Common\\spot-on-crypt.cc \
