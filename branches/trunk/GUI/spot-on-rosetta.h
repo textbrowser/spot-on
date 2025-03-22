@@ -98,6 +98,7 @@ class spoton_rosetta: public QMainWindow
 				     int fd);
 #endif
   void keyPressEvent(QKeyEvent *event);
+  void launchPrisonBluesProcessesIfNecessary(void);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
   void prisonBluesProcess(void);

@@ -608,6 +608,14 @@ void spoton_rosetta::keyPressEvent(QKeyEvent *event)
   QMainWindow::keyPressEvent(event);
 }
 
+void spoton_rosetta::launchPrisonBluesProcessesIfNecessary(void)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  if(m_prisonBluesTimer.remainingTime() >= 5500)
+    prisonBluesProcess();
+#endif
+}
+
 void spoton_rosetta::populateContacts(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -788,7 +796,9 @@ void spoton_rosetta::prisonBluesProcess(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(m_parent == nullptr)
-    showMessage(tr("Invalid parent object."), 5000);
+    showMessage
+      (tr("Invalid parent object. Cannot launch Prison Blues process(es)."),
+       5000);
   else
     m_parent->launchPrisonBluesProcesses();
 #endif
@@ -2303,18 +2313,19 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
   if(!m_parent)
     return;
 
+  if(m_readPrisonBluesFuture.isFinished())
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-  m_readPrisonBluesFuture = QtConcurrent::run
-    (&spoton_rosetta::readPrisonBlues,
-     this,
-     m_parent->prisonBluesDirectories(),
-     m_gpgFingerprints);
+    m_readPrisonBluesFuture = QtConcurrent::run
+      (&spoton_rosetta::readPrisonBlues,
+       this,
+       m_parent->prisonBluesDirectories(),
+       m_gpgFingerprints);
 #else
-  m_readPrisonBluesFuture = QtConcurrent::run
-    (this,
-     &spoton_rosetta::readPrisonBlues,
-     m_parent->prisonBluesDirectories(),
-     m_gpgFingerprints);
+    m_readPrisonBluesFuture = QtConcurrent::run
+      (this,
+       &spoton_rosetta::readPrisonBlues,
+       m_parent->prisonBluesDirectories(),
+       m_gpgFingerprints);
 #endif
 
   prisonBluesProcess();
@@ -2514,6 +2525,7 @@ void spoton_rosetta::slotPublishGPG(void)
 	    Q_UNUSED(file.fileName()); // Prevents removal of file.
 	    file.setAutoRemove(false);
 	    file.write(ui.outputEncrypt->toPlainText().toUtf8());
+	    launchPrisonBluesProcessesIfNecessary();
 	  }
 	else
 	  showMessage(tr("Error creating a temporary file."), 5000);
@@ -2832,12 +2844,12 @@ void spoton_rosetta::slotWriteGPG(void)
 
 	if(file.open())
 	  {
-	    auto ok = true;
 	    auto const publicKey = spoton_misc::publicKeyFromHash
 	      (QByteArray::
 	       fromBase64(publicKeyHashes.value(i).data().toByteArray()),
 	       true,
 	       crypt);
+	    auto ok = true;
 	    auto const output(gpgEncrypt(ok,
 					 message.toUtf8(),
 					 publicKey,
@@ -2849,6 +2861,7 @@ void spoton_rosetta::slotWriteGPG(void)
 		Q_UNUSED(file.fileName()); // Prevents removal of file.
 		file.setAutoRemove(false);
 		file.write(output);
+		launchPrisonBluesProcessesIfNecessary();
 	      }
 	    else
 	      showMessage(output, 5000);
