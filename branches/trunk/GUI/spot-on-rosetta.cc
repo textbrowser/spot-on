@@ -53,7 +53,7 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
 #ifdef SPOTON_GPGME_ENABLED
-  m_prisonBluesTimer.start(30000);
+  m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
   ui.setupUi(this);
   setWindowTitle(tr("%1: Rosetta").arg(SPOTON_APPLICATION_NAME));
