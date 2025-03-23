@@ -135,6 +135,9 @@ QString spoton::optionsEnabled(void)
   list << "PostgreSQL";
 #endif
 
+  if(list.isEmpty())
+    return "None";
+
   std::sort(list.begin(), list.end());
 
   foreach(auto const &str, list)
