@@ -138,9 +138,9 @@ QString spoton::optionsEnabled(void)
   std::sort(list.begin(), list.end());
 
   foreach(auto const &str, list)
-    options += str + " ";
+    options += str + ", ";
 
-  return options.trimmed();
+  return options.left(options.length() - 2);
 }
 
 QString spoton::participantKeyType(QTableWidget *table) const

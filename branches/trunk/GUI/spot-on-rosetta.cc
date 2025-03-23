@@ -2507,6 +2507,8 @@ void spoton_rosetta::slotPublishGPG(void)
 
   slotConvertEncrypt();
 
+  auto state = false;
+
   foreach(auto const &directory, list)
     if(directory.isWritable())
       {
@@ -2525,7 +2527,7 @@ void spoton_rosetta::slotPublishGPG(void)
 	    Q_UNUSED(file.fileName()); // Prevents removal of file.
 	    file.setAutoRemove(false);
 	    file.write(ui.outputEncrypt->toPlainText().toUtf8());
-	    launchPrisonBluesProcessesIfNecessary();
+	    state = true;
 	  }
 	else
 	  showMessage(tr("Error creating a temporary file."), 5000);
@@ -2534,6 +2536,8 @@ void spoton_rosetta::slotPublishGPG(void)
       showMessage
 	(tr("The directory %1 is not writable.").
 	 arg(directory.absoluteFilePath()), 5000);
+
+  state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
@@ -2821,6 +2825,7 @@ void spoton_rosetta::slotWriteGPG(void)
   auto const publicKeyHashes
     (ui.gpg_participants->selectionModel()->selectedRows(2));
   auto const sign = ui.gpg_sign_messages->isChecked();
+  auto state = false;
 
   foreach(auto const &directory, list)
     for(int i = 0; i < fingerprints.size(); i++)
@@ -2861,7 +2866,7 @@ void spoton_rosetta::slotWriteGPG(void)
 		Q_UNUSED(file.fileName()); // Prevents removal of file.
 		file.setAutoRemove(false);
 		file.write(output);
-		launchPrisonBluesProcessesIfNecessary();
+		state = true;
 	      }
 	    else
 	      showMessage(output, 5000);
@@ -2870,6 +2875,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	  showMessage(tr("Could not create a temporary file."), 5000);
       }
 
+  state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
   ui.gpg_message->clear();
   QApplication::restoreOverrideCursor();
 #endif
