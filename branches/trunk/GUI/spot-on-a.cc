@@ -9901,6 +9901,7 @@ void spoton::slotSetPassphrase(void)
 	      progress.setMaximum(list.size());
 	      progress.setMinimum(0);
 	      progress.setModal(true);
+	      progress.setWindowModality(Qt::ApplicationModal);
 	      progress.setWindowTitle
 		(tr("%1: Generating Key Pairs").arg(SPOTON_APPLICATION_NAME));
 	      progress.show();

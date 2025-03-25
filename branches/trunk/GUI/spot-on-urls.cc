@@ -49,6 +49,7 @@ bool spoton::deleteAllUrls(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting URL Data").arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -606,6 +607,7 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting Orphaned URL Keywords").arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -893,6 +895,7 @@ void spoton::slotDropUrlTables(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Dropping URL Tables").arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -983,6 +986,7 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Gathering URL Statistics").arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -1188,6 +1192,7 @@ void spoton::slotImportUrls(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Importing URLs").arg(SPOTON_APPLICATION_NAME));
   progress.show();
@@ -1605,6 +1610,7 @@ void spoton::slotPrepareUrlDatabases(void)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Creating URL Databases").arg(SPOTON_APPLICATION_NAME));
   spoton_utilities::centerWidget(&progress, this);
@@ -2432,6 +2438,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.setMaximum(0);
   progress.setMinimum(0);
   progress.setModal(true);
+  progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting URL Keywords").arg(SPOTON_APPLICATION_NAME));
   progress.show();
