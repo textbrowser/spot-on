@@ -1364,6 +1364,13 @@ void spoton::slotDeriveGeminiPairViaSMP(void)
   auto smp = m_smps.value(item2->text(), nullptr);
 
   if(!smp)
+    {
+      smp = new spoton_smp(this);
+      smp->setGuess(smpSecret(item2->text()));
+      m_smps[item2->text()] = smp;
+    }
+
+  if(!smp)
     return;
 
   repaint();
