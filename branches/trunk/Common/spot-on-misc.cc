@@ -5390,7 +5390,6 @@ void spoton_misc::prepareDatabases(void)
 	   arg(spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_MAXIMUM).
 	   arg(spoton_common::SSL_CONTROL_STRING).
 	   arg(999999999));
-	query.exec("ALTER TABLE neighbors ADD ssl_configuration TEXT");
       }
 
     db.close();
