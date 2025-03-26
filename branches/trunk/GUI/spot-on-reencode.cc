@@ -635,13 +635,17 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT gemini, gemini_hash_key, "
+	if(query.exec("SELECT gemini, "
+		      "gemini_hash_key, "
 		      "public_key_hash, "
-		      "public_key, key_type, name, "
+		      "public_key, "
+		      "key_type, "
+		      "name, "
 		      "forward_secrecy_authentication_algorithm, "
 		      "forward_secrecy_authentication_key, "
 		      "forward_secrecy_encryption_algorithm, "
-		      "forward_secrecy_encryption_key "
+		      "forward_secrecy_encryption_key, "
+		      "smp_secret, "
 		      "FROM "
 		      "friends_public_keys WHERE neighbor_oid = -1"))
 	  while(query.next())
@@ -655,6 +659,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      QByteArray keyType;
 	      QByteArray name;
 	      QByteArray publicKey;
+	      QByteArray smpSecret;
 	      QSqlQuery updateQuery(db);
 	      auto ok = true;
 
@@ -669,7 +674,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		 "forward_secrecy_authentication_algorithm = ?, "
 		 "forward_secrecy_authentication_key = ?, "
 		 "forward_secrecy_encryption_algorithm = ?, "
-		 "forward_secrecy_encryption_key = ? "
+		 "forward_secrecy_encryption_key = ?, "
+		 "smp_secret = ? "
 		 "WHERE public_key_hash = ?");
 
 	      if(!query.isNull(0))
@@ -720,6 +726,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		if(!query.isNull(9))
 		  fsEncKey = oldCrypt->decryptedAfterAuthenticated
 		    (QByteArray::fromBase64(query.value(9).toByteArray()),
+		     &ok);
+
+	      if(ok)
+		if(!query.isNull(10))
+		  smpSecret = oldCrypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(10).toByteArray()),
 		     &ok);
 
 	      if(ok)
@@ -834,8 +846,23 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		       toBase64());
 		}
 
-	      updateQuery.bindValue
-		(10, query.value(2));
+	      if(ok)
+		{
+		  if(query.isNull(10))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+		    updateQuery.bindValue
+		      (10, QVariant(QMetaType(QMetaType::QString)));
+#else
+		    updateQuery.bindValue(10, QVariant::String);
+#endif
+		  else
+		    updateQuery.bindValue
+		      (10,
+		       newCrypt->encryptedThenHashed(smpSecret, &ok).
+		       toBase64());
+		}
+
+	      updateQuery.bindValue(11, query.value(2));
 
 	      if(ok)
 		updateQuery.exec();

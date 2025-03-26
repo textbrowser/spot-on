@@ -682,6 +682,7 @@ class spoton: public QMainWindow
   void saveDestination(const QString &path);
   void saveGeoIPPath(const int version, const QString &path);
   void saveKernelPath(const QString &path);
+  void saveSMPSecret(const QString &hash, const QString &secret);
   void saveSettings(void);
   void saveUrlIniPath(const QString &path);
   void sendBuzzKeysToKernel(void);

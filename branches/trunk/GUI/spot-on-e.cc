@@ -713,7 +713,10 @@ void spoton::prepareSMP(const QString &hash)
     }
 
   if(smp)
-    smp->setGuess(guess);
+    {
+      saveSMPSecret(hash, guess);
+      smp->setGuess(guess);
+    }
   else
     spoton_misc::logError("spoton::prepareSMP(): smp is zero!");
 

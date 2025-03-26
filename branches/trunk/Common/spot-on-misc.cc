@@ -5049,7 +5049,9 @@ void spoton_misc::prepareDatabases(void)
 	   "forward_secrecy_authentication_algorithm TEXT, "
 	   "forward_secrecy_authentication_key TEXT, "
 	   "forward_secrecy_encryption_algorithm TEXT, "
-	   "forward_secrecy_encryption_key TEXT)");
+	   "forward_secrecy_encryption_key TEXT, "
+	   "smp_secret TEXT)");
+	query.exec("ALTER TABLE friends_public_keys ADD smp_secret TEXT");
 	query.exec
 	  ("CREATE TABLE IF NOT EXISTS relationships_with_signatures ("
 	   "public_key_hash TEXT PRIMARY KEY NOT NULL, " /*

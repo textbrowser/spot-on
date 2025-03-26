@@ -848,6 +848,40 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::saveSMPSecret(const QString &hash, const QString &secret)
+{
+  auto crypt = m_crypts.value("chat", nullptr);
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    auto db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("UPDATE friends_public_keys SET smp_secret = ? WHERE "
+	   "public_key_hash = ?");
+	query.addBindValue
+	  (crypt->encryptedThenHashed(secret.toUtf8(), nullptr).toBase64());
+	query.addBindValue(hash.toLatin1());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);  
+}
+
 void spoton::slotApplyOtherOptions(void)
 {
   m_settings["gui/other_options"] = m_optionsUi.other_options->
@@ -1855,7 +1889,8 @@ void spoton::slotSetSocketOptions(void)
 	QSqlQuery query(db);
 
 	query.prepare
-	  (QString("UPDATE %1 SET socket_options = ? WHERE OID = ?").arg(type));
+	  (QString("UPDATE %1 SET socket_options = ? WHERE OID = ?").
+	   arg(type));
 	query.addBindValue(socketOptions);
 	query.addBindValue(oid);
 	query.exec();
@@ -2071,9 +2106,20 @@ void spoton::slotWebServerValueChangedTimeout(void)
 			      "VALUES (?, ?)");
 		query.addBindValue
 		  (crypt->encryptedThenHashed(certificate, &ok).toBase64());
-		query.addBindValue
-		  (crypt->encryptedThenHashed(privateKey, &ok).toBase64());
-		query.exec();
+
+		if(ok)
+		  query.addBindValue
+		    (crypt->encryptedThenHashed(privateKey, &ok).toBase64());
+
+		if(ok)
+		  ok = query.exec();
+
+		if(!ok)
+		  {
+		    m_sb.status->setText
+		      (tr("Error recording Web Server credentials."));
+		    QTimer::singleShot(5000, m_sb.status, SLOT(clear(void)));
+		  }
 	      }
 
 	    db.close();
