@@ -2658,8 +2658,8 @@ void spoton::slotVerifySMPSecret(const QString &hash,
     {
       if(!hash.trimmed().isEmpty())
 	appendItalicChatMessage
-	  (tr("Cannot send the SMP container via the kernel for "
-	      "public-key-hash %1. Inactive kernel.").arg(hash.trimmed()));
+	  (tr("Cannot send the SMP container via an inactive kernel for "
+	      "public-key-hash %1.").arg(hash.trimmed()));
 
       return;
     }
@@ -2772,7 +2772,8 @@ void spoton::verifySMPSecret(const QString &hash,
       if(!sendSMPLinkToKernel(list, keyType, oid))
 	appendItalicChatMessage
 	  (tr("Cannot send the SMP container via the kernel for "
-	      "public-key-hash %1.").arg(hash.trimmed()));
+	      "public-key-hash %1. The method sendSMPLinkToKernel() "
+	      "failed.").arg(hash.trimmed()));
       else
 	appendItalicChatMessage
 	  (tr("Sent an SMP container via the kernel for public-key-hash %1.").
