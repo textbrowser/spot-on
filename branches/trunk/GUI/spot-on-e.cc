@@ -1313,6 +1313,13 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
   auto smp = m_smps.value(publicKeyHash, nullptr);
 
   if(!smp)
+    {
+      smp = new spoton_smp(this);
+      smp->setGuess(smpSecret(publicKeyHash));
+      m_smps[publicKeyHash] = smp;
+    }
+
+  if(!smp)
     return;
 
   repaint();
