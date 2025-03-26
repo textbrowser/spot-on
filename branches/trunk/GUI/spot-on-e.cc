@@ -46,6 +46,21 @@ extern "C"
 #include "spot-on.h"
 #include "ui_spot-on-keyboard.h"
 
+static QStringList curl_protocols(void)
+{
+  QStringList list;
+#ifdef SPOTON_POPTASTIC_SUPPORTED
+  auto data = curl_version_info(CURLVERSION_NOW);
+
+  if(!data)
+    return list;
+
+  for(int i = 0; data->protocols[i] != nullptr; i++)
+    list << QString(data->protocols[i]).toLower();
+#endif
+  return list;
+}
+
 QByteArray spoton::poptasticName(void) const
 {
   return m_settings.value("gui/poptasticName").toByteArray();
@@ -306,16 +321,77 @@ QString spoton::savePoptasticAccount(void)
   return error;
 }
 
-static QStringList curl_protocols(void)
+bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
+				 const QString &keyType,
+				 const QString &oid)
 {
-  QStringList list;
-#ifdef SPOTON_POPTASTIC_SUPPORTED
-  auto data = curl_version_info(CURLVERSION_NOW);
+  if(keyType.isEmpty())
+    return false;
+  else if(list.isEmpty())
+    return false;
+  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
+    return false;
+  else if(m_kernelSocket.isEncrypted() == false &&
+	  m_ui.kernelKeySize->currentText().toInt() > 0)
+    return false;
+  else if(oid.isEmpty())
+    return false;
 
-  for(int i = 0; data->protocols[i] != nullptr; i++)
-    list << QString(data->protocols[i]).toLower();
-#endif
-  return list;
+  QString magnet("magnet:?");
+
+  for(int i = 0; i < list.size(); i++)
+    magnet.append
+      (QString("value=%2&").arg(list.at(i).toBase64().constData()));
+
+  magnet.append("xt=urn:smp");
+
+  QByteArray message;
+  QByteArray name;
+
+  if(keyType.toLower() == "chat")
+    message.append("message_");
+  else
+    message.append("poptasticmessage_");
+
+  message.append(QString("%1_").arg(oid).toUtf8());
+
+  if(keyType.toLower() == "chat")
+    name = m_settings.value("gui/nodeName", "unknown").toByteArray();
+  else
+    name = m_settings.value("gui/poptasticName",
+			    "unknown@unknown.org").toByteArray();
+
+  if(name.isEmpty())
+    {
+      if(keyType.toLower() == "chat")
+	name = "unknown";
+      else
+	name = "unknown@unknown.org";
+    }
+
+  message.append(name.toBase64());
+  message.append("_");
+  message.append(magnet.toLatin1().toBase64());
+  message.append("_");
+  message.append(QByteArray("1").toBase64()); // Artificial sequence number.
+  message.append("_");
+  message.append(QDateTime::currentDateTimeUtc().
+		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+  message.append("_");
+  message.append(QByteArray::number(selectedHumanProxyOID()));
+  message.append("\n");
+
+  if(!writeKernelSocketData(message))
+    {
+      spoton_misc::logError
+	(QString("spoton::sendSMPLinkToKernel(): write() failure for "
+		 "%1:%2.").
+	 arg(m_kernelSocket.peerAddress().toString()).
+	 arg(m_kernelSocket.peerPort()));
+      return false;
+    }
+  else
+    return true;
 }
 
 void spoton::computeFileDigests(const QString &fileName,
@@ -367,10 +443,14 @@ void spoton::initializeSMP(const QString &hash)
   if(hash.isEmpty())
     return;
 
-  spoton_smp *smp = nullptr;
+  auto smp = m_smps.value(hash, nullptr);
 
-  if(m_smps.contains(hash))
-    smp = m_smps.value(hash, nullptr);
+  if(!smp)
+    {
+      smp = new spoton_smp(this);
+      smp->setGuess(smpSecret(hash));
+      m_smps[hash] = smp;
+    }
 
   if(smp)
     smp->initialize();
@@ -681,10 +761,7 @@ void spoton::prepareSMP(const QString &hash)
   if(hash.isEmpty())
     return;
 
-  spoton_smp *smp = nullptr;
-
-  if(m_smps.contains(hash))
-    smp = m_smps.value(hash, nullptr);
+  auto smp = m_smps.value(hash, nullptr);
 
   QString guess("");
   spoton_virtual_keyboard dialog(QApplication::activeWindow());
@@ -692,6 +769,11 @@ void spoton::prepareSMP(const QString &hash)
   if(smp)
     {
       dialog.m_ui.passphrase->setText(smp->guessString());
+      dialog.m_ui.passphrase->setCursorPosition(0);
+    }
+  else
+    {
+      dialog.m_ui.passphrase->setText(smpSecret(hash));
       dialog.m_ui.passphrase->setCursorPosition(0);
     }
 
@@ -724,74 +806,6 @@ void spoton::prepareSMP(const QString &hash)
 
   if(chat)
     chat->setSMPVerified(false);
-}
-
-void spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
-				 const QString &keyType,
-				 const QString &oid)
-{
-  if(keyType.isEmpty())
-    return;
-  else if(list.isEmpty())
-    return;
-  else if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
-  else if(m_kernelSocket.isEncrypted() == false &&
-	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
-  else if(oid.isEmpty())
-    return;
-
-  QString magnet("magnet:?");
-
-  for(int i = 0; i < list.size(); i++)
-    magnet.append
-      (QString("value=%2&").arg(list.at(i).toBase64().constData()));
-
-  magnet.append("xt=urn:smp");
-
-  QByteArray message;
-  QByteArray name;
-
-  if(keyType.toLower() == "chat")
-    message.append("message_");
-  else
-    message.append("poptasticmessage_");
-
-  message.append(QString("%1_").arg(oid).toUtf8());
-
-  if(keyType.toLower() == "chat")
-    name = m_settings.value("gui/nodeName", "unknown").toByteArray();
-  else
-    name = m_settings.value("gui/poptasticName",
-			    "unknown@unknown.org").toByteArray();
-
-  if(name.isEmpty())
-    {
-      if(keyType.toLower() == "chat")
-	name = "unknown";
-      else
-	name = "unknown@unknown.org";
-    }
-
-  message.append(name.toBase64());
-  message.append("_");
-  message.append(magnet.toLatin1().toBase64());
-  message.append("_");
-  message.append(QByteArray("1").toBase64()); // Artificial sequence number.
-  message.append("_");
-  message.append(QDateTime::currentDateTimeUtc().
-		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
-  message.append("_");
-  message.append(QByteArray::number(selectedHumanProxyOID()));
-  message.append("\n");
-
-  if(!writeKernelSocketData(message))
-    spoton_misc::logError
-      (QString("spoton::sendSMPLinkToKernel(): write() failure for "
-	       "%1:%2.").
-       arg(m_kernelSocket.peerAddress().toString()).
-       arg(m_kernelSocket.peerPort()));
 }
 
 void spoton::setSBField(const QString &oid,
@@ -2641,21 +2655,45 @@ void spoton::slotVerifySMPSecret(const QString &hash,
   */
 
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
+    {
+      if(!hash.trimmed().isEmpty())
+	appendItalicChatMessage
+	  (tr("Cannot send the SMP container via the kernel for "
+	      "public-key-hash %1. Inactive kernel.").arg(hash.trimmed()));
+
+      return;
+    }
   else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
+    {
+      if(!hash.trimmed().isEmpty())
+	appendItalicChatMessage
+	  (tr("Cannot send the SMP container via the kernel for "
+	      "public-key-hash %1. Communications are not encrypted.").
+	   arg(hash.trimmed()));
 
-  verifySMPSecret(hash, keyType, oid);
+      return;
+    }
+
+  verifySMPSecret(hash, keyType, oid, smpSecret(hash));
 }
 
 void spoton::slotVerifySMPSecret(void)
 {
   if(m_kernelSocket.state() != QAbstractSocket::ConnectedState)
-    return;
+    {
+      appendItalicChatMessage
+	(tr("Cannot verify an SMP secret via an inactive kernel."));
+      return;
+    }
   else if(m_kernelSocket.isEncrypted() == false &&
 	  m_ui.kernelKeySize->currentText().toInt() > 0)
-    return;
+    {
+      appendItalicChatMessage
+	(tr("Cannot send an SMP container via the kernel. "
+	    "Communications are not encrypted."));
+      return;
+    }
 
   QString hash("");
   QString keyType("");
@@ -2690,7 +2728,7 @@ void spoton::slotVerifySMPSecret(void)
   else if(temporary) // Temporary friend?
     return; // Not allowed!
 
-  verifySMPSecret(hash, keyType, oid);
+  verifySMPSecret(hash, keyType, oid, smpSecret(hash));
 }
 
 void spoton::slotViewEchoKeyShare(void)
@@ -2700,17 +2738,20 @@ void spoton::slotViewEchoKeyShare(void)
 
 void spoton::verifySMPSecret(const QString &hash,
 			     const QString &keyType,
-			     const QString &oid)
+			     const QString &oid,
+			     const QString &secret)
 {
-  if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty())
+  if(hash.trimmed().isEmpty() || keyType.isEmpty() || oid.isEmpty())
     return;
 
-  spoton_smp *smp = nullptr;
+  auto smp = m_smps.value(hash, nullptr);
 
-  if(!m_smps.contains(hash))
-    return;
-  else
-    smp = m_smps.value(hash, nullptr);
+  if(!smp)
+    {
+      smp = new spoton_smp(this);
+      smp->setGuess(secret);
+      m_smps[hash] = smp;
+    }
 
   QList<QByteArray> list;
   auto ok = true;
@@ -2727,5 +2768,18 @@ void spoton::verifySMPSecret(const QString &hash,
     }
 
   if(ok)
-    sendSMPLinkToKernel(list, keyType, oid);
+    {
+      if(!sendSMPLinkToKernel(list, keyType, oid))
+	appendItalicChatMessage
+	  (tr("Cannot send the SMP container via the kernel for "
+	      "public-key-hash %1.").arg(hash.trimmed()));
+      else
+	appendItalicChatMessage
+	  (tr("Sent an SMP container via the kernel for public-key-hash %1.").
+	   arg(hash.trimmed()));
+    }
+  else
+    appendItalicChatMessage
+      (tr("Cannot send the SMP container via the kernel for "
+	  "public-key-hash %1.").arg(hash.trimmed()));
 }

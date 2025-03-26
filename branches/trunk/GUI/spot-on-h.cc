@@ -165,6 +165,44 @@ QString spoton::participantKeyType(QTableWidget *table) const
   return "";
 }
 
+QString spoton::smpSecret(const QString &hash) const
+{
+  auto crypt = m_crypts.value("chat", nullptr);
+
+  if(!crypt)
+    return "";
+
+  QString connectionName("");
+  QString string("");
+
+  {
+    auto db = spoton_misc::database(connectionName);
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.prepare
+	  ("SELECT smp_secret FROM friends_public_keys WHERE "
+	   "public_key_hash = ?");
+	query.addBindValue(hash.toLatin1());
+
+	if(query.exec() && query.next())
+	  string = QString::fromUtf8
+	    (crypt->decryptedAfterAuthenticated
+	    (QByteArray::fromBase64(query.value(0).toByteArray()), nullptr));
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  return string;
+}
+
 QThread::Priority spoton::neighborThreadPriority(void) const
 {
   int row = -1;
@@ -329,6 +367,28 @@ qint64 spoton::selectedHumanProxyOID(void) const
       return m_ui.participants->item(i, 1)->text().toLongLong();
 
   return -1;
+}
+
+void spoton::appendItalicChatMessage(const QString &t)
+{
+  auto const text(t.trimmed());
+
+  if(text.isEmpty())
+    return;
+
+  QString message("");
+  auto const now(QDateTime::currentDateTime());
+
+  message.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  message.append(QString("<i>%1</li>").arg(text));
+  m_ui.messages->append(message);
 }
 
 void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
@@ -879,7 +939,7 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
     db.close();
   }
 
-  QSqlDatabase::removeDatabase(connectionName);  
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton::slotApplyOtherOptions(void)

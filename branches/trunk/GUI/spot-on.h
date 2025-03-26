@@ -592,6 +592,7 @@ class spoton: public QMainWindow
 				   const QString &hashType,
 				   spoton_crypt *crypt) const;
   QString savePoptasticAccount(void);
+  QString smpSecret(const QString &hash) const;
   QStringList parseAEMagnet(const QString &magnet) const;
   QThread::Priority neighborThreadPriority(void) const;
   QWidget *combinationBoxForTable(void) const;
@@ -608,11 +609,15 @@ class spoton: public QMainWindow
   bool promptBeforeExit(void);
   bool saveGemini(const QPair<QByteArray, QByteArray> &gemini,
 		  const QString &oid);
+  bool sendSMPLinkToKernel(const QList<QByteArray> &list,
+			   const QString &keyType,
+			   const QString &oid);
   bool updateMailStatus(const QString &oid, const QString &status);
   bool verifyInitializationPassphrase(QWidget *parent);
   bool writeKernelSocketData(const QByteArray &bytes);
   int applyGoldBugToLetter(const QByteArray &goldbug, const int row);
   int tabIndexFromName(const QString &name) const;
+  void appendItalicChatMessage(const QString &t);
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
 				 int *count,
@@ -688,9 +693,6 @@ class spoton: public QMainWindow
   void sendBuzzKeysToKernel(void);
   void sendKeysToKernel(void);
   void sendMessage(bool *ok);
-  void sendSMPLinkToKernel(const QList<QByteArray> &list,
-			   const QString &keyType,
-			   const QString &oid);
   void setSBField(const QString &oid,
 		  const QVariant &value,
 		  const QString &field);
@@ -700,7 +702,10 @@ class spoton: public QMainWindow
   void updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt);
   void updatePublicKeysLabel(void);
   void verifySMPSecret
-    (const QString &hash, const QString &keyType, const QString &oid);
+    (const QString &hash,
+     const QString &keyType,
+     const QString &oid,
+     const QString &secret);
 
  private slots:
   void slotAbout(void);
