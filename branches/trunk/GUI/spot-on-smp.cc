@@ -27,7 +27,7 @@
 
 /*
 ** The following is adapted from
-** https://otr.cypherpunks.ca/Protocol-v3-4.0.0.html.
+** https://otr.cypherpunks.ca/Protocol-v3-4.1.1.html.
 */
 
 #include <QtDebug>
