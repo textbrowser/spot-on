@@ -2014,6 +2014,8 @@ QByteArray spoton_crypt::randomBytes
 
 	if(random.size() == static_cast<int> (size))
 	  return random;
+	else
+	  random.clear();
       }
   }
 
