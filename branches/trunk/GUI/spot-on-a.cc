@@ -3909,6 +3909,7 @@ void spoton::cleanup(void)
       it.remove();
     }
 
+  spoton_crypt::destroyFortuna();
   QApplication::instance()->quit();
 }
 

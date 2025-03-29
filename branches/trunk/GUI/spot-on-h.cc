@@ -702,6 +702,28 @@ void spoton::prepareOtherOptions(void)
 	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
       m_optionsUi.other_options->appendPlainText("");
     }
+
+  QFileInfo const fileInfo
+    (m_settings.value("FORTUNA_FILE", "").toString().trimmed());
+  auto const url
+    (QUrl::fromUserInput(m_settings.value("FORTUNA_URL", "").
+			 toString().trimmed()));
+
+  if((fileInfo.isReadable()) || (url.isEmpty() == false && url.isValid()))
+    {
+      auto const address(url.host());
+      auto const interval = m_settings.value
+	("FORTUNA_QUERY_INTERVAL_MSECS", 0).toInt();
+      auto const port = static_cast<quint16> (url.port());
+      auto const tls = (url.scheme() == "https");
+
+      if(fileInfo.isReadable() == false && interval <= 0)
+	spoton_crypt::destroyFortuna();
+      else
+	spoton_crypt::prepareFortuna(fileInfo, address, tls, interval, port);
+    }
+  else
+    spoton_crypt::destroyFortuna();
 }
 
 void spoton::prepareTearOffMenus(void)
