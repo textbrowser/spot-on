@@ -13,6 +13,7 @@
 git_site="https://account:token@github.com/acount/prison-blues"
 ip_address="192.168.178.50"
 local_directory="/var/tmp/prison-blues.d"
+port=4710
 
 if [ -z "$ip_address" ]
 then
@@ -52,8 +53,8 @@ then
 fi
 
 while
-    echo "Listening on $ip_address:4710."
-    nc -dkl "$ip_address" 4710 &
+    echo "Listening on $ip_address:$port."
+    nc -dkl "$ip_address" $port &
 
     rc=$?
 
