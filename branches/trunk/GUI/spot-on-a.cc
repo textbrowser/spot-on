@@ -297,7 +297,6 @@ int main(int argc, char *argv[])
      Qt::AlignBottom | Qt::AlignHCenter,
      QColor(Qt::white));
   splash.repaint();
-  QDir().mkdir(spoton_misc::homePath() + QDir::separator() + "WebEngineCache");
   QWebEngineProfile::defaultProfile()->setCachePath("/dev/null");
   QWebEngineProfile::defaultProfile()->setDownloadPath("/dev/null");
   QWebEngineProfile::defaultProfile()->
