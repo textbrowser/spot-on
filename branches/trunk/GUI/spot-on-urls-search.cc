@@ -557,15 +557,16 @@ void spoton::showUrls(const QString &link, const QString &querystr)
 void spoton::slotDiscover(void)
 {
   m_ui.searchfor->clear();
-  m_ui.urls->clear();
   m_ui.url_pages->setText("| 1 |");
+  m_ui.urls->clear();
 
   if(!m_urlCommonCrypt)
     {
+      m_ui.showUrlSettings->setChecked(true);
       QMessageBox::critical
 	(this,
 	 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
-	 tr("Did you prepare common credentials?"));
+	 tr("Please prepare URL common credentials."));
       QApplication::processEvents();
       return;
     }

@@ -339,14 +339,14 @@ void spoton::prepareUrlLabels(void)
       (tr("Import credentials have been prepared."));
   else
     m_ui.importCredentialsLabel->setText
-      (tr("Import credentials have not been set."));
+      (tr("Import credentials have not been prepared."));
 
   if(remoteCount > 0)
     m_ui.commonCredentialsLabel->setText
       (tr("Common credentials have been prepared."));
   else
     m_ui.commonCredentialsLabel->setText
-      (tr("Common credentials have not been set."));
+      (tr("Common credentials have not been prepared."));
 }
 
 void spoton::saveUrlIniPath(const QString &path)
