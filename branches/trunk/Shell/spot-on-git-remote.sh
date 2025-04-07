@@ -10,10 +10,10 @@
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory!
 
-git_site="https://account:token@github.com/acount/prison-blues"
-ip_address="192.168.178.50"
+git_site="https://account:token@github.com/account/prison-blues"
+ip_address="192.168.178.15"
 local_directory="/var/tmp/prison-blues.d"
-port=4710
+port=5710
 
 if [ -z "$ip_address" ]
 then
@@ -60,8 +60,8 @@ while
 
     if [ ! $rc -eq 0 ]
     then
-	echo "[Listen failure.]"
-	sleep 15
+	echo "[Listen failure. Sleeping for 10 seconds.]"
+	sleep 10
     else
 	break
     fi

@@ -680,6 +680,8 @@ void spoton::prepareOtherOptions(void)
       m_optionsUi.other_options->appendPlainText
 	("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
       m_optionsUi.other_options->appendPlainText
+	("PRISON_BLUES_REMOTE_SERVER := 192.168.178.15:5710");
+      m_optionsUi.other_options->appendPlainText
 	("# PUBLISHED_PAGES "
 	 "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
       m_optionsUi.other_options->appendPlainText
