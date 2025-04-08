@@ -2357,6 +2357,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(valueChanged(int)),
 	  this,
 	  SLOT(slotSOSSMaximumClientsChanged(int)));
+  connect(m_ui.soss_generate_certificate,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotGenerateSOSSCertificate(void)));
   connect(m_ui.sslListener,
 	  SIGNAL(toggled(bool)),
 	  m_ui.days_valid,
@@ -2586,6 +2590,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   else
     m_ui.urls_db_type->setCurrentIndex(1);
 
+  m_ui.soss_generate_certificate->setEnabled
+    (m_ui.web_server_port->value() > 0);
   slotPostgreSQLDisconnect(m_ui.urls_db_type->currentIndex());
 
   if(m_ui.urls_db_type->currentIndex() == 1)

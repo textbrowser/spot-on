@@ -6220,8 +6220,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1062</width>
-             <height>1359</height>
+             <width>1029</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -8714,7 +8714,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>840</width>
+             <width>934</width>
              <height>833</height>
             </rect>
            </property>
@@ -8811,7 +8811,7 @@
               <item>
                <widget class="QSpinBox" name="web_server_port">
                 <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A positive port value will enable the Spot-On Search Server (SOSS); an active kernel is also required. Please modify the current port or press the Enter key while keyboard focus is on the Web Server Port widget for new credentials. A port value of zero will deactivate the Spot-On Search Server (SOSS).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A positive port value will enable the Spot-On Search Server (SOSS); an active kernel is also required. Please modify the current port or press the Enter key while keyboard focus is on the Web Server Port widget for new credentials. A port value of zero will deactivate the Spot-On Search Server (SOSS) and remove recorded credentials.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
@@ -8840,7 +8840,7 @@
                  <number>1</number>
                 </property>
                 <property name="maximum">
-                 <number>999999999</number>
+                 <number>500</number>
                 </property>
                 <property name="value">
                  <number>10</number>
@@ -8861,6 +8861,16 @@
                <widget class="QPushButton" name="postgresql_credentials">
                 <property name="text">
                  <string>&amp;PostgreSQL Credentials</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="soss_generate_certificate">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate a new certificate. Disabled if Web Server Port is zero.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Renew Certificate</string>
                 </property>
                </widget>
               </item>
@@ -10406,6 +10416,7 @@
   <tabstop>soss_maximum_clients</tabstop>
   <tabstop>web_server_serve_local_content</tabstop>
   <tabstop>postgresql_credentials</tabstop>
+  <tabstop>soss_generate_certificate</tabstop>
   <tabstop>urlName</tabstop>
   <tabstop>saveUrlName</tabstop>
   <tabstop>urlActionMenu</tabstop>

@@ -358,6 +358,7 @@ Completed Items
 244.   Include destination and origin digests in all digital
        signatures: spot-on-urldistribution. Was included.
 245.   Fortuna in the main interface.
+246.   Simple renewal of Web search certificate.
 
 Remaining Items
 
@@ -365,4 +366,3 @@ Remaining Items
 2.     Prison Blues remote server for non-Unix.
 3.     Detect expired Web search certificate.
 4.     Detect expired listener certificates.
-5.     Simple renewal of Web search certificate.
