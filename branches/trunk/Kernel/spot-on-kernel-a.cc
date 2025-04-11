@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
 #else
 		__DATE__, __TIME__,
 #endif
-		SPOTON_VERSION_STR);
+		SPOTON_VERSION_STRING);
 	exit(EXIT_SUCCESS);
       }
 
@@ -355,12 +355,12 @@ int main(int argc, char *argv[])
 #endif
 
   QCoreApplication::setApplicationName("SpotOn");
-  QCoreApplication::setOrganizationName("SpotOn");
+  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STRING);
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
-  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
+  QCoreApplication::setOrganizationName("SpotOn");
+  QSettings::setDefaultFormat(QSettings::IniFormat);
   QSettings::setPath
     (QSettings::IniFormat, QSettings::UserScope, spoton_misc::homePath());
-  QSettings::setDefaultFormat(QSettings::IniFormat);
   auto const separator(QDir::separator());
 
   for(int i = 1; i < argc; i++)

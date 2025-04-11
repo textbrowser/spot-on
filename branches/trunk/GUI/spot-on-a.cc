@@ -244,7 +244,7 @@ int main(int argc, char *argv[])
 #endif
   qInstallMessageHandler(qt_message_handler);
   QCoreApplication::setApplicationName("SpotOn");
-  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STR);
+  QCoreApplication::setApplicationVersion(SPOTON_VERSION_STRING);
   QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setOrganizationName("SpotOn");
@@ -654,7 +654,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
 	     "%1 Version %2</span></a></p></body></html>").
      arg(SPOTON_APPLICATION_NAME).
-     arg(SPOTON_VERSION_STR));
+     arg(SPOTON_VERSION_STRING));
   setWindowTitle(tr("%1").arg(SPOTON_APPLICATION_NAME));
   m_ui.menu_Tools->setWindowTitle
     (tr("%1: Tools").arg(SPOTON_APPLICATION_NAME));
@@ -728,7 +728,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #else
      arg("0.0").
 #endif
-     arg(SPOTON_VERSION_STR).
+     arg(SPOTON_VERSION_STRING).
      arg(spoton_misc::homePath()).
      arg(qversion).
 #ifdef SPOTON_GPGME_ENABLED
@@ -4349,7 +4349,7 @@ void spoton::slotAbout(void)
 	 "Made with love by textbrowser.<br>"
 	 "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
 	 "https://textbrowser.github.io/spot-on</a> for more information.").
-	arg(SPOTON_VERSION_STR);
+	arg(SPOTON_VERSION_STRING);
       mb->setIconPixmap(pixmap);
 #else
       QPixmap pixmap(":/Logo/goldbug-neuland.png");
@@ -4362,7 +4362,7 @@ void spoton::slotAbout(void)
 		    "Made with love by textbrowser.<br>"
 		    "Please visit <a href=\"https://goldbug.sourceforge.io\">"
 		    "https://goldbug.sourceforge.io</a> for more information.").
-	arg(SPOTON_VERSION_STR);
+	arg(SPOTON_VERSION_STRING);
       mb->setIconPixmap(pixmap);
 #endif
       str.append("</html>");
