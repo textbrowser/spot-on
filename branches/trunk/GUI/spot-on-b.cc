@@ -6036,8 +6036,6 @@ void spoton::slotResetAll(void)
   for(int i = settings.allKeys().size() - 1; i >= 0; i--)
     settings.remove(settings.allKeys().at(i));
 
-  QApplication::instance()->exit(0);
-
 #if defined(Q_OS_WINDOWS)
   auto const program(QCoreApplication::applicationDirPath() +
 		     QDir::separator() +
@@ -6061,6 +6059,7 @@ void spoton::slotResetAll(void)
 			  SPOTON_APPLICATION_NAME);
 #endif
 #endif
+  QApplication::instance()->quit();
 }
 
 void spoton::slotRetrieveMail(void)
