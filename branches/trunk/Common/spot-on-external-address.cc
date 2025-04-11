@@ -36,25 +36,8 @@ spoton_external_address::spoton_external_address(const QUrl &url,
   m_address = QHostAddress();
   m_url = url;
 
-  if(m_url.isEmpty() || !m_url.isValid())
+  if(m_url.isEmpty() || m_url.isValid() == false)
     m_url = QUrl::fromUserInput("https://api.ipify.org");
-}
-
-spoton_external_address::spoton_external_address(const QUrl &url):
-  QNetworkAccessManager(nullptr)
-{
-  m_address = QHostAddress();
-  m_url = url;
-
-  if(m_url.isEmpty() || !m_url.isValid())
-    m_url = QUrl::fromUserInput("https://api.ipify.org");
-}
-
-spoton_external_address::spoton_external_address(void):
-  QNetworkAccessManager(nullptr)
-{
-  m_address = QHostAddress();
-  m_url = QUrl::fromUserInput("https://api.ipify.org");
 }
 
 QHostAddress spoton_external_address::address(void) const

@@ -858,10 +858,10 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 void spoton_echo_key_share::show(QWidget *parent)
 {
   populate();
+  spoton_utilities::centerWidget(this, parent);
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_echo_key_share::showError(const QString &error)

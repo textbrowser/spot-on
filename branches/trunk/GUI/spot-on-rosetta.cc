@@ -919,10 +919,10 @@ void spoton_rosetta::show(spoton *parent)
       restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
 
   setParent(parent);
+  spoton_utilities::centerWidget(this, m_parent);
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, m_parent);
   ui.name->setText
     (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),

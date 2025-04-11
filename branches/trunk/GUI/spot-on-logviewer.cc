@@ -89,10 +89,10 @@ void spoton_logviewer::show(QWidget *parent)
 {
   m_lastModificationTime = QDateTime();
   m_timer.start();
+  spoton_utilities::centerWidget(this, parent);
   showNormal();
   activateWindow();
   raise();
-  spoton_utilities::centerWidget(this, parent);
 }
 
 void spoton_logviewer::slotClear(void)

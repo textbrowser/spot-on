@@ -41,49 +41,21 @@ class spoton_utilities_private: public QObject
  public:
   spoton_utilities_private(void):QObject()
   {
-    m_centerTimer.setInterval(0);
-    m_centerTimer.setSingleShot(true);
-    connect(&m_centerTimer,
-	    SIGNAL(timeout(void)),
-	    this,
-	    SLOT(slotCenterChildren(void)));
   }
 
   ~spoton_utilities_private()
   {
-    m_centerTimer.stop();
   }
 
   void centerWidget(QWidget *child, QWidget *parent)
   {
-    m_widgetsToCenter << QPair<QPointer<QWidget>, QPointer<QWidget> >
-      (child, parent);
+    if(!child || !parent)
+      return;
 
-    if(!m_centerTimer.isActive())
-      m_centerTimer.start();
-  }
+    auto c(child->geometry());
 
- private:
-  QTimer m_centerTimer;
-  QVector<QPair<QPointer<QWidget>, QPointer<QWidget> > > m_widgetsToCenter;
-
- private slots:
-  void slotCenterChildren(void)
-  {
-    for(int i = 0; i < m_widgetsToCenter.size(); i++)
-      {
-	auto const pair(m_widgetsToCenter.at(i));
-
-	if(!pair.first || !pair.second)
-	  continue;
-
-	auto child(pair.first->geometry());
-
-	child.moveCenter(pair.second->geometry().center());
-	pair.first->setGeometry(child);
-      }
-
-    m_widgetsToCenter.clear();
+    c.moveCenter(parent->geometry().center());
+    child->setGeometry(c);
   }
 };
 

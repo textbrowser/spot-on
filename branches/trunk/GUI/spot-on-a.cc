@@ -790,7 +790,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 
   m_addParticipantWindow = nullptr;
 #endif
-  m_externalAddress = new spoton_external_address();
+  m_externalAddress = new spoton_external_address(QUrl(), this);
   m_notificationsWindow = new QMainWindow(nullptr);
   m_optionsWindow = new QMainWindow(nullptr);
   m_statisticsWindow = new QMainWindow(nullptr);
@@ -3467,8 +3467,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  this,
 	  SLOT(slotDiscoverExternalAddress(void)));
 
-  if(m_optionsUi.guiExternalIpFetch->currentIndex() !=
-     m_optionsUi.guiExternalIpFetch->count() - 1)
+  if(m_optionsUi.guiExternalIpFetch->count() - 1 !=
+     m_optionsUi.guiExternalIpFetch->currentIndex())
     {
       m_externalAddress->discover();
 
