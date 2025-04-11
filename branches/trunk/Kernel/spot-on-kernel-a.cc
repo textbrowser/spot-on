@@ -6137,7 +6137,7 @@ void spoton_kernel::slotTerminate(const bool registered)
 	    starbeam->deleteLater();
 	}
 
-      QCoreApplication::instance()->quit();
+      QCoreApplication::quit();
     }
 }
 

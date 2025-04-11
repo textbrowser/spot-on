@@ -3915,7 +3915,7 @@ void spoton::cleanup(void)
     }
 
   spoton_crypt::destroyFortuna();
-  QApplication::instance()->quit();
+  QCoreApplication::quit();
 }
 
 void spoton::closeEvent(QCloseEvent *event)
@@ -3928,9 +3928,42 @@ void spoton::closeEvent(QCloseEvent *event)
       return;
     }
 
-  QMainWindow::closeEvent(event);
   m_quit = true;
-  slotQuit();
+
+  if(m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
+    {
+      QString connectionName("");
+      int count = 0; // Terminate the kernel on database errors.
+
+      {
+	auto db = spoton_misc::database(connectionName);
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+
+	    if(query.exec("SELECT value FROM kernel_statistics "
+			  "WHERE statistic = 'Attached User Interfaces'") &&
+	       query.next())
+	      count = query.value(0).toInt();
+	  }
+
+	db.close();
+      }
+
+      QSqlDatabase::removeDatabase(connectionName);
+
+      if(count <= 1)
+	slotDeactivateKernel();
+    }
+
+  QMainWindow::closeEvent(event);
+  cleanup();
 }
 
 void spoton::demagnetize(void)
@@ -9472,48 +9505,7 @@ void spoton::slotProxyTypeChanged(int index)
 
 void spoton::slotQuit(void)
 {
-  /*
-  ** closeEvent() calls slotQuit().
-  */
-
-  if(!m_quit && sender())
-    if(promptBeforeExit())
-      return;
-
-  if(m_optionsUi.terminate_kernel_on_ui_exit->isChecked())
-    {
-      QString connectionName("");
-      int count = 0; // Terminate the kernel on database errors.
-
-      {
-	auto db = spoton_misc::database(connectionName);
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() + QDir::separator() + "kernel.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.setForwardOnly(true);
-
-	    if(query.exec("SELECT value FROM kernel_statistics "
-			  "WHERE statistic = 'Attached User Interfaces'") &&
-	       query.next())
-	      count = query.value(0).toInt();
-	  }
-
-	db.close();
-      }
-
-      QSqlDatabase::removeDatabase(connectionName);
-
-      if(count <= 1)
-	slotDeactivateKernel();
-    }
-
-  m_quit = true;
-  cleanup();
+  close();
 }
 
 void spoton::slotResetAccountInformation(void)

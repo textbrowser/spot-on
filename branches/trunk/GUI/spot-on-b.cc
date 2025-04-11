@@ -6059,7 +6059,7 @@ void spoton::slotResetAll(void)
 			  SPOTON_APPLICATION_NAME);
 #endif
 #endif
-  QApplication::instance()->quit();
+  QCoreApplication::quit();
 }
 
 void spoton::slotRetrieveMail(void)
