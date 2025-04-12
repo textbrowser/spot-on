@@ -143,10 +143,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on IP_TOS.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success on IP_TOS (%1)!").arg(v));
 	    }
 #endif
 	}
@@ -196,10 +192,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on NODELAY.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success on NODELAY (%1)!").arg(v));
 	    }
 	}
       else if(string.startsWith("so_keepalive=") && (transport == "sctp" ||
@@ -238,11 +230,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on SO_KEEPALIVE.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success on SO_KEEPALIVE (%1)!").
-		   arg(v));
 	    }
 	}
       else if(string.startsWith("so_linger="))
@@ -289,10 +276,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on SO_LINGER.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success on SO_LINGER (%1)!").arg(v));
 	    }
 	}
       else if((string.startsWith("so_rcvbuf=") ||
@@ -335,12 +318,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on SO_RCVBUF / SO_SNDBUF.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success (%1) "
-			   "on SO_RCVBUF / SO_SNDBUF!").
-		   arg(v));
 	    }
 	}
       else if(string.
@@ -393,11 +370,6 @@ void spoton_socket_options::setSocketOptions(const QString &options,
 		    ("spoton_socket_options::setSocketOptions(): "
 		     "setsockopt() failure on SO_TIMESTAMPING.");
 		}
-	      else
-		spoton_misc::logError
-		  (QString("spoton_socket_options::setSocketOptions(): "
-			   "setsockopt() success on SO_TIMESTAMPING (%1)!").
-		   arg(so_timestamping_flags));
 	    }
 #endif
 	}
