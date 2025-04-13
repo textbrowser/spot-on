@@ -3375,6 +3375,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
 	  SLOT(slotShowContextMenu(const QPoint &)));
+  m_optionsUi.other_options->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
   m_ui.ae_tokens->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);

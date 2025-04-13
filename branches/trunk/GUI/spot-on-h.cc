@@ -637,73 +637,93 @@ void spoton::prepareEnvironmentVariables(void)
 void spoton::prepareOtherOptions(void)
 {
   QMapIterator<QString, QVariant> it
-    (spoton_misc::otherOptions(QByteArray::
-			       fromBase64(m_settings.value("gui/other_options").
-					  toByteArray())));
+    (spoton_misc::
+     otherOptions(QByteArray::
+		  fromBase64(m_settings.value("gui/other_options").
+			     toByteArray())));
+  int i = -1;
 
-  m_optionsUi.other_options->clear();
+  m_optionsUi.other_options->setRowCount(0);
+  m_optionsUi.other_options->setSortingEnabled(false);
 
   while(it.hasNext())
     {
       it.next();
 
       auto const key(it.key().trimmed());
-      auto const value(it.value().toString().trimmed());
 
       if(key.startsWith('#'))
-	m_optionsUi.other_options->appendPlainText(key);
+	continue;
+
+      m_optionsUi.other_options->setRowCount
+	(m_optionsUi.other_options->rowCount() + 1);
+
+      auto const value(it.value().toString().trimmed());
+      auto item1 = new QTableWidgetItem(key);
+      auto item2 = new QTableWidgetItem(value);
+
+      i += 1;
+      item1->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      item2->setFlags
+	(Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      m_optionsUi.other_options->setItem(i, 0, item1);
+      m_optionsUi.other_options->setItem(i, 1, item2);
+
+      if(key.startsWith('#'))
+	{
+	}
       else
 	{
 	  m_settings[key] = value;
-	  m_optionsUi.other_options->appendPlainText(key + " := " + value);
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
 	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
 	}
     }
 
-  m_optionsUi.other_options->appendPlainText("");
+  m_optionsUi.other_options->resizeColumnToContents(0);
+  m_optionsUi.other_options->resizeColumnToContents(1);
+  m_optionsUi.other_options->setSortingEnabled(true);
 
-  if(m_optionsUi.other_options->toPlainText().trimmed().isEmpty())
+  QMap<QString, QString> defaults;
+  QStringList list;
+
+  list.append("FORTUNA_FILE := none");
+  list.append("FORTUNA_QUERY_INTERVAL_MSECS := 0");
+  list.append("FORTUNA_URL := http://127.0.0.1:5000");
+  list.append("GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING := sha512");
+  list.append
+    ("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
+     QString::number(spoton_common::
+		     MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
+  list.append("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
+  list.append("PRISON_BLUES_REMOTE_SERVER := 192.168.178.15:5710");
+  list.append
+    ("# PUBLISHED_PAGES "
+     "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
+  list.append("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
+  list.append("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
+  list.append("WEB_PAGES_SHARED_DIRECTORY := /dev/null");
+  list.append
+    ("WEB_SERVER_CERTIFICATE_LIFETIME := " +
+     QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
+  list.append("WEB_SERVER_HTTP_SO_LINGER := -1");
+  list.append("WEB_SERVER_HTTPS_SO_LINGER := -1");
+  list.append
+    ("WEB_SERVER_KEY_SIZE := " +
+     QString::number(spoton_common::WEB_SERVER_KEY_SIZE));
+  list.append("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
+
+  foreach(auto const &str, list)
     {
-      m_optionsUi.other_options->appendPlainText("FORTUNA_FILE := none");
-      m_optionsUi.other_options->appendPlainText
-	("FORTUNA_QUERY_INTERVAL_MSECS := 0");
-      m_optionsUi.other_options->appendPlainText
-	("FORTUNA_URL := http://127.0.0.1:5000");
-      m_optionsUi.other_options->appendPlainText
-	("GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING := sha512");
-      m_optionsUi.other_options->appendPlainText
-	("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
-	 QString::number(spoton_common::
-			 MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
-      m_optionsUi.other_options->appendPlainText
-	("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
-      m_optionsUi.other_options->appendPlainText
-	("PRISON_BLUES_REMOTE_SERVER := 192.168.178.15:5710");
-      m_optionsUi.other_options->appendPlainText
-	("# PUBLISHED_PAGES "
-	 "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
-      m_optionsUi.other_options->appendPlainText
-	("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
-      m_optionsUi.other_options->appendPlainText
-	("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
-      m_optionsUi.other_options->appendPlainText
-	("WEB_PAGES_SHARED_DIRECTORY := /dev/null");
-      m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_CERTIFICATE_LIFETIME := " +
-	 QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
-      m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_HTTP_SO_LINGER := -1");
-      m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_HTTPS_SO_LINGER := -1");
-      m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_KEY_SIZE := " +
-	 QString::number(spoton_common::WEB_SERVER_KEY_SIZE));
-      m_optionsUi.other_options->appendPlainText
-	("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
-      m_optionsUi.other_options->appendPlainText("");
+      auto const key(str.split(":=").value(0).trimmed());
+      auto const value(str.split(":=").value(1).trimmed());
+
+      defaults[key] = value;
     }
+
+  m_optionsUi.other_options->sortByColumn
+    (0, m_optionsUi.other_options->horizontalHeader()->sortIndicatorOrder());
 
   QFileInfo const fileInfo
     (m_settings.value("FORTUNA_FILE", "").toString().trimmed());
@@ -968,14 +988,25 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
 
 void spoton::slotApplyOtherOptions(void)
 {
-  m_settings["gui/other_options"] = m_optionsUi.other_options->
-    toPlainText().trimmed().toLatin1().toBase64();
+  QString str("");
+
+  for(int i = 0; i < m_optionsUi.other_options->rowCount(); i++)
+    {
+      auto item1 = m_optionsUi.other_options->item(i, 0);
+      auto item2 = m_optionsUi.other_options->item(i, 1);
+
+      if(!item1 || !item2)
+	continue;
+
+      str.append(QString("%1 := %2\n").arg(item1->text()).arg(item2->text()));
+    }
+
+  m_settings["gui/other_options"] = str.trimmed().toLatin1().toBase64();
 
   QSettings settings;
 
   settings.setValue
-    ("gui/other_options",
-     m_optionsUi.other_options->toPlainText().trimmed().toLatin1().toBase64());
+    ("gui/other_options", str.trimmed().toLatin1().toBase64());
   prepareOtherOptions();
 }
 
