@@ -136,6 +136,7 @@ struct gcry_thread_cbs gcry_threads_qt =
 #endif
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
+QAtomicInteger<quint64> spoton_crypt::s_openSSLIdentifier = 0;
 QPointer<fortunate_q> spoton_crypt::s_fortuna = nullptr;
 QReadWriteLock spoton_crypt::s_fortunaMutex;
 bool spoton_crypt::s_cbc_cts_enabled = true;
@@ -4339,6 +4340,129 @@ void spoton_crypt::generateSslKeys(const int keySize,
 				   const long int days,
 				   QString &error)
 {
+  QFileInfo const fileInfo
+    (QSettings().value("gui/openssl").toString().trimmed());
+
+  if(fileInfo.isExecutable())
+    {
+      QStringList parameters;
+
+      if(keySize == 256)
+	parameters << "req"
+		   << "-days"
+		   << "%2"
+		   << "-keyout"
+		   << "%3"
+		   << "-newkey ec:<(%1 ecparam -name prime256v1)"
+		   << "-nodes"
+		   << "-out"
+		   << "%4"
+		   << "-sha512"
+		   << "-subj"
+		   << "/CN=%5/O=Spot-On"
+		   << "-x509";
+      else if(keySize == 384)
+	parameters << "req"
+		   << "-days"
+		   << "%2"
+		   << "-keyout"
+		   << "%3"
+		   << "-newkey ec:<(%1 ecparam -name secp384r1)"
+		   << "-nodes"
+		   << "-out"
+		   << "%4"
+		   << "-sha512"
+		   << "-subj"
+		   << "/CN=%5/O=Spot-On"
+		   << "-x509";
+      else if(keySize < 1024)
+	parameters << "req"
+		   << "-days"
+		   << "%2"
+		   << "-keyout"
+		   << "%3"
+		   << "-newkey ec:<(%1 ecparam -name secp521r1)"
+		   << "-nodes"
+		   << "-out"
+		   << "%4"
+		   << "-sha512"
+		   << "-subj"
+		   << "/CN=%5/O=Spot-On"
+		   << "-x509";
+      else if(keySize <= 4096)
+	parameters << "req"
+		   << "-days"
+		   << "%2"
+		   << "-keyout"
+		   << "%3"
+		   << "-newkey"
+		   << "rsa:" + QString::number(keySize)
+		   << "-nodes"
+		   << "-out"
+		   << "%4"
+		   << "-sha512"
+		   << "-subj"
+		   << "/CN=%5/O=Spot-On"
+		   << "-x509";
+      else
+	goto raw_openssl_label;
+
+      auto const identifier = s_openSSLIdentifier.fetchAndAddOrdered(0);
+      auto const path1
+	(spoton_misc::homePath() +
+	 QDir::separator() +
+	 QString("key.%1").arg(identifier));
+      auto const path2
+	(spoton_misc::homePath() +
+	 QDir::separator() +
+	 QString("certificate.%1").arg(identifier));
+
+      for(int i = 0; i < parameters.size(); i++)
+	{
+	  auto str(parameters[i]);
+
+	  str.replace("%1", fileInfo.absoluteFilePath());
+	  str.replace
+	    ("%2",
+	     QString::
+	     number(qBound(60L,
+			   days / 86400L, // We arrive in seconds.
+			   std::numeric_limits<long int>::max())));
+	  str.replace("%3", path1);
+	  str.replace("%4", path2);
+	  str.replace("%5", address.toString());
+	  parameters.replace(i, str);
+	}
+
+      QProcess process;
+
+      process.start(fileInfo.absoluteFilePath(), parameters);
+      process.waitForFinished();
+
+      QFile file(path1);
+
+      if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+	privateKey = file.readAll();
+
+      file.close();
+      file.remove();
+      file.setFileName(path2);
+
+      if(file.open(QIODevice::ReadOnly | QIODevice::Text))
+	certificate = file.readAll();
+
+      file.close();
+      file.remove();
+      s_openSSLIdentifier.fetchAndAddOrdered(1);
+
+      if(certificate.isEmpty() || privateKey.isEmpty())
+	goto raw_openssl_label;
+      else
+	return;
+    }
+
+ raw_openssl_label:
+
   if(!ssl_library_initialized)
     {
       error = QObject::tr("OpenSSL is not initialized (generateSslKeys()).");

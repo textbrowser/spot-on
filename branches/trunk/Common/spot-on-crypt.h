@@ -311,6 +311,7 @@ class spoton_crypt
 #endif
   spoton_threefish *m_threefish;
   static QAtomicInt s_hasSecureMemory;
+  static QAtomicInteger<quint64> s_openSSLIdentifier;
   static QPointer<fortunate_q> s_fortuna;
   static QReadWriteLock s_fortunaMutex;
   static bool s_cbc_cts_enabled;

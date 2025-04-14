@@ -22,8 +22,6 @@ Archived Items
 17.    IMAP and optional removal of messages; retrieve latest.
 18.    Optional GCRYPT. Android and OpenSSL.
 19.    Single Rosetta attachments.
-20.    Replace OpenSSL with executable. Create and remove local files
-       via the openssl executable. Library becoming stale.
 21     Shift operators and types.
 22.    Spectral human proxy.
 23.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
@@ -359,6 +357,8 @@ Completed Items
        signatures: spot-on-urldistribution. Was included.
 245.   Fortuna in the main interface.
 246.   Simple renewal of Web search certificate.
+247.   Replace OpenSSL with executable. Create and remove local files
+       via the openssl executable. Library becoming stale.
 
 Remaining Items
 
