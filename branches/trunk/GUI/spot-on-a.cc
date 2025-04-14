@@ -1434,6 +1434,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveOpenLinks(bool)));
+  connect(m_optionsUi.openssl,
+	  SIGNAL(editingFinished(void)),
+	  this,
+	  SLOT(slotSaveOption(void)));
   connect(m_optionsUi.play_sounds,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -1490,6 +1494,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectGIT(void)));
+  connect(m_optionsUi.select_openssl,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectOpenSSL(void)));
   connect(m_optionsUi.sharePrivateKeys,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2710,6 +2718,9 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.geoipPath6->setCursorPosition(0);
 #endif
 #endif
+  m_optionsUi.openssl->setText
+    (m_settings.value("gui/openssl").toString().trimmed());
+  m_optionsUi.openssl->setCursorPosition(0);
   m_ui.urlIniPath->setText
     (m_settings.value("gui/urlIniPath", "").toString());
   m_ui.urlIniPath->setCursorPosition(0);

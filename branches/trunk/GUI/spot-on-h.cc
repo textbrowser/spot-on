@@ -1695,6 +1695,16 @@ void spoton::slotSaveLineLimits(int value)
     }
 }
 
+void spoton::slotSaveOption(void)
+{
+  if(m_optionsUi.openssl == sender())
+    {
+      QSettings().setValue
+	("gui/openssl", m_optionsUi.openssl->text().trimmed());
+      m_settings["gui/openssl"] = m_optionsUi.openssl->text().trimmed();
+    }
+}
+
 void spoton::slotSelectGIT(void)
 {
   auto item = m_optionsUi.git_table->currentItem();
@@ -1717,6 +1727,29 @@ void spoton::slotSelectGIT(void)
     {
       QApplication::processEvents();
       item->setText(dialog.selectedFiles().value(0).trimmed());
+    }
+
+  QApplication::processEvents();
+}
+
+void spoton::slotSelectOpenSSL(void)
+{
+  QFileDialog dialog(m_optionsWindow);
+
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setFileMode(QFileDialog::ExistingFile);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle
+    (tr("%1: Select OpenSSL").arg(SPOTON_APPLICATION_NAME));
+  dialog.selectFile(m_optionsUi.openssl->text().trimmed());
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::processEvents();
+      QSettings().setValue
+	("gui/openssl", dialog.selectedFiles().value(0).trimmed());
+      m_optionsUi.openssl->setText(dialog.selectedFiles().value(0).trimmed());
+      m_settings["gui/openssl"] = dialog.selectedFiles().value(0).trimmed();
     }
 
   QApplication::processEvents();
