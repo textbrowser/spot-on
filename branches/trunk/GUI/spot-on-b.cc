@@ -1669,78 +1669,82 @@ void spoton::authenticationRequested(const QByteArray &data)
 
 void spoton::highlightPaths(void)
 {
-  QColor color;
-  QFileInfo fileInfo;
-  QPalette palette;
+  QList<QLineEdit *> list;
 
-  fileInfo.setFile(m_poptasticRetroPhoneSettingsUi.capath->text());
+  list << m_optionsUi.geoipPath4
+       << m_optionsUi.geoipPath6
+       << m_optionsUi.openssl
+       << m_poptasticRetroPhoneSettingsUi.capath
+       << m_ui.destination
+       << m_ui.kernelPath
+       << m_ui.urlIniPath;
 
-  if(fileInfo.isReadable())
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
+  foreach(auto widget, list)
+    {
+      QColor color;
+      QFileInfo const fileInfo(widget->text());
+      QPalette palette;
 
-  palette.setColor(m_poptasticRetroPhoneSettingsUi.
-		   capath->backgroundRole(), color);
-  m_poptasticRetroPhoneSettingsUi.capath->setPalette(palette);
-  fileInfo.setFile(m_ui.destination->text());
-
-  if(fileInfo.isReadable() && fileInfo.isWritable())
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_ui.destination->backgroundRole(), color);
-  m_ui.destination->setPalette(palette);
+      if(m_optionsUi.geoipPath4 == widget || m_optionsUi.geoipPath6 == widget)
+	{
 #ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_optionsUi.geoipPath4->text());
+	  fileInfo.setFile(widget->text());
 
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
+	  if(fileInfo.isReadable() && fileInfo.size() > 0)
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
 #else
-  color = QColor(240, 128, 128); // Light coral!
+	  color = QColor(240, 128, 128); // Light coral!
 #endif
-
-  palette.setColor(m_optionsUi.geoipPath4->backgroundRole(), color);
-  m_optionsUi.geoipPath4->setPalette(palette);
-#ifdef SPOTON_LINKED_WITH_LIBGEOIP
-  fileInfo.setFile(m_optionsUi.geoipPath6->text());
-
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-#else
-  color = QColor(240, 128, 128); // Light coral!
-#endif
-  palette.setColor(m_optionsUi.geoipPath6->backgroundRole(), color);
-  m_optionsUi.geoipPath6->setPalette(palette);
-  fileInfo.setFile(m_ui.kernelPath->text());
-
+	}
+      else if(m_optionsUi.openssl == widget)
+	{
+	  if(fileInfo.isExecutable())
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
+      else if(m_poptasticRetroPhoneSettingsUi.capath == widget)
+	{
+	  if(fileInfo.isReadable())
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
+      else if(m_ui.destination == widget)
+	{
+	  if(fileInfo.isReadable() && fileInfo.isWritable())
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
+      else if(m_ui.kernelPath == widget)
+	{
 #if defined(Q_OS_MACOS)
-  if((fileInfo.isBundle() || fileInfo.isExecutable()) && fileInfo.size() > 0)
+	  if((fileInfo.isBundle() ||
+	      fileInfo.isExecutable()) &&
+	     (fileInfo.size() > 0))
 #elif defined(Q_OS_WINDOWS)
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
+	  if(fileInfo.isReadable() && fileInfo.size() > 0)
 #else
-  if(fileInfo.isExecutable() && fileInfo.size() > 0)
+	  if(fileInfo.isExecutable() && fileInfo.size() > 0)
 #endif
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
+      else if(m_ui.urlIniPath == widget)
+	{
+	  if(fileInfo.isReadable() && fileInfo.size() > 0)
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
 
-  palette.setColor(m_ui.kernelPath->backgroundRole(), color);
-  m_ui.kernelPath->setPalette(palette);
-  fileInfo.setFile(m_ui.urlIniPath->text());
-
-  if(fileInfo.isReadable() && fileInfo.size() > 0)
-    color = QColor(144, 238, 144);
-  else
-    color = QColor(240, 128, 128); // Light coral!
-
-  palette.setColor(m_ui.urlIniPath->backgroundRole(), color);
-  m_ui.urlIniPath->setPalette(palette);
+      palette.setColor(widget->backgroundRole(), color);
+      widget->setPalette(palette);
+    }
 }
 
 void spoton::initializeKernelSocket(void)
