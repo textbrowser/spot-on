@@ -114,12 +114,15 @@ rc=$?
 
 if [ $rc -eq 0 ] && [ -r "$openssl" ]
 then
+    rm -fr openssl.d
     unzip $openssl -d openssl.d
+    mkdir -p libOpenSSL/Executables.win64
     mkdir -p libOpenSSL/Include.win64
     mkdir -p libOpenSSL/Libraries.win64
     rm -rf libOpenSSL/Include.win64/openssl
     mv openssl.d/x64/bin/libcrypto-3-x64.dll libOpenSSL/Libraries.win64/.
     mv openssl.d/x64/bin/libssl-3-x64.dll libOpenSSL/Libraries.win64/.
+    mv openssl.d/x64/bin/openssl.exe libOpenSSL/Executables.win64/.
     mv openssl.d/x64/include/openssl libOpenSSL/Include.win64/.
     chmod +w,-x libOpenSSL/Libraries.win64/*.dll
     rm -fr openssl.d
