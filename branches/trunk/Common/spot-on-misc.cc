@@ -4696,6 +4696,28 @@ void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
     }
 }
 
+void spoton_misc::createOpenSSLSupportFiles(void)
+{
+  QStringList list;
+
+  list << "ECC.prime256v1"
+       << "ECC.secp384r1"
+       << "ECC.secp521r1";
+
+  foreach(auto const &str, list)
+    {
+      QFile file1(":/" + str);
+      QFile file2(homePath() + QDir::separator() + str);
+
+      if(file1.open(QIODevice::ReadOnly | QIODevice::Text) &&
+	 file2.open(QIODevice::Text | QIODevice::WriteOnly))
+	file2.write(file1.readAll());
+
+      file1.close();
+      file2.close();
+    }
+}
+
 void spoton_misc::deregisterKernel(const pid_t pid)
 {
   QString connectionName("");

@@ -229,6 +229,7 @@ class spoton_misc
   static void cleanupDatabases(spoton_crypt *crypt);
   static void closeSocket(const qintptr socketDescriptor);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
+  static void createOpenSSLSupportFiles(void);
   static void deregisterKernel(const pid_t pid);
   static void enableLog(const bool state);
   static void launchPrisonBluesProcesses

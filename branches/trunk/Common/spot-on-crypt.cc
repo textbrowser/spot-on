@@ -4345,6 +4345,8 @@ void spoton_crypt::generateSslKeys(const int keySize,
 
   if(fileInfo.isExecutable())
     {
+      spoton_misc::createOpenSSLSupportFiles();
+
       QStringList parameters;
 
       if(keySize == 256)
@@ -4353,7 +4355,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%2"
 		   << "-keyout"
 		   << "%3"
-		   << "-newkey ec:<(%1 ecparam -name prime256v1)"
+		   << "-newkey ec:ECC.prime256v1"
 		   << "-nodes"
 		   << "-out"
 		   << "%4"
@@ -4367,7 +4369,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%2"
 		   << "-keyout"
 		   << "%3"
-		   << "-newkey ec:<(%1 ecparam -name secp384r1)"
+		   << "-newkey ec:ECC.secp384r1"
 		   << "-nodes"
 		   << "-out"
 		   << "%4"
@@ -4381,7 +4383,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%2"
 		   << "-keyout"
 		   << "%3"
-		   << "-newkey ec:<(%1 ecparam -name secp521r1)"
+		   << "-newkey ec:ECC.secp521r1"
 		   << "-nodes"
 		   << "-out"
 		   << "%4"
@@ -4436,6 +4438,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 
       QProcess process;
 
+      process.setWorkingDirectory(spoton_misc::homePath());
       process.start(fileInfo.absoluteFilePath(), parameters);
       process.waitForFinished();
 

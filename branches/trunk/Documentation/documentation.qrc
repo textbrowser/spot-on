@@ -2,6 +2,9 @@
     <qresource prefix="/">
 	<file>../../Documentation/ReleaseNotes.html</file>
 	<file>../Data/spot-on-neighbors.txt</file>
+	<file>ECC.prime256v1</file>
+	<file>ECC.secp384r1</file>
+	<file>ECC.secp521r1</file>
 	<file>Spot-On.html</file>
     </qresource>
 </RCC>
