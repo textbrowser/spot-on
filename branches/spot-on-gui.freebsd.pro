@@ -1,6 +1,6 @@
 cache()
 include(spot-on-gui-source.pro)
-libntru.commands = gmake -C ../../libNTRU
+libntru.commands = gmake -C ../libNTRU
 libntru.depends =
 libntru.target = libntru.so
 
@@ -34,9 +34,9 @@ DEFINES	+= SPOTON_DATELESS_COMPILATION \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../libNTRU/*.so \
-                          ../../libNTRU/src/*.o \
-                          ../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../libNTRU/*.so \
+                          ../libNTRU/src/*.o \
+                          ../libNTRU/src/*.s \
                           Spot-On
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -59,10 +59,10 @@ QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
-                   ../../. \
+                   ../. \
                    /usr/local/include/postgresql \
                    GUI
-LIBS		+= -L../../libNTRU \
+LIBS		+= -L../libNTRU \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \

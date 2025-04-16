@@ -1,6 +1,6 @@
 cache()
 include(spot-on-gui-source.windows.pro)
-libntru.commands = $(MAKE) -C ..\\..\\libNTRU
+libntru.commands = $(MAKE) -C ..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
 mceliece_supported = "false"
@@ -32,9 +32,9 @@ DEFINES         += SPOTON_MCELIECE_ENABLED
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ..\\..\\libNTRU\\libntru.dll \
-                          ..\\..\\libNTRU\\src\\*.o \
-                          ..\\..\\libNTRU\\src\\*.s \
+QMAKE_CLEAN            += ..\\libNTRU\\libntru.dll \
+                          ..\\libNTRU\\src\\*.o \
+                          ..\\libNTRU\\src\\*.s \
                           Spot-On
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
@@ -58,19 +58,19 @@ QMAKE_DISTCLEAN        += -r debug \
 QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
-                   ..\\..\\. \
-                   ..\\..\\libGCrypt\\Include.win64 \
-                   ..\\..\\libOpenSSL\\Include.win64 \
+                   ..\\. \
+                   ..\\libGCrypt\\Include.win64 \
+                   ..\\libOpenSSL\\Include.win64 \
                    GUI
 
 equals(mceliece_supported, "true") {
-INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
+INCLUDEPATH     += ..\\libNTL\\windows.d\\include
 }
 
-LIBS		+= -L..\\..\\libNTRU \
-                   -L..\\..\\libGCrypt\\Libraries.win64 \
-                   -L..\\..\\libGPGME\\Libraries.win64 \
-		   -L..\\..\\libOpenSSL\\Libraries.win64 \
+LIBS		+= -L..\\libNTRU \
+                   -L..\\libGCrypt\\Libraries.win64 \
+                   -L..\\libGPGME\\Libraries.win64 \
+		   -L..\\libOpenSSL\\Libraries.win64 \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
@@ -81,7 +81,7 @@ LIBS		+= -L..\\..\\libNTRU \
                    -lws2_32
 
 equals(mceliece_supported, "true") {
-LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
+LIBS            += -L..\\libNTL\\windows.d\\libraries.d -lntl
 }
 
 PRE_TARGETDEPS  = libntru.dll
@@ -94,19 +94,19 @@ data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
-libgcrypt.files = ..\\..\\libGCrypt\\Libraries.win64\\*.dll
+libgcrypt.files = ..\\libGCrypt\\Libraries.win64\\*.dll
 libgcrypt.path = release\\.
-libgpgme.files = ..\\..\\libGPGME\\Libraries.win64\\*
+libgpgme.files = ..\\libGPGME\\Libraries.win64\\*
 libgpgme.path = release\\.
 
 equals(mceliece_supported, "true") {
-libntl.files = ..\\..\\libNTL\\windows.d\\libraries.d\\*.dll
+libntl.files = ..\\libNTL\\windows.d\\libraries.d\\*.dll
 libntl.path = release\\.
 }
 
-libntrudll.files = ..\\..\\libNTRU\\*.dll
+libntrudll.files = ..\\libNTRU\\*.dll
 libntrudll.path = release\\.
-libopenssl.files = ..\\..\\libOpenSSL\\Libraries.win64\\*.dll
+libopenssl.files = ..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
 plugins.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins.path = release\\plugins\\.

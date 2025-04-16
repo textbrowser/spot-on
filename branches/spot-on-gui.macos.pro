@@ -1,7 +1,7 @@
 cache()
 include(spot-on-gui-source.pro)
 
-libntru.commands = $(MAKE) -C ../../libNTRU
+libntru.commands = $(MAKE) -C ../libNTRU
 libntru.depends =
 libntru.target = libntru.dylib
 
@@ -31,9 +31,9 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../libNTRU/*.dylib \
-                          ../../libNTRU/src/*.o \
-                          ../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../libNTRU/*.dylib \
+                          ../libNTRU/src/*.o \
+                          ../libNTRU/src/*.s \
                           Spot-On
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -59,7 +59,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 INCLUDEPATH	  += . \
-                     ../../. \
+                     ../. \
                      GUI
 
 exists(/opt/homebrew) {
@@ -71,7 +71,7 @@ LIBS              += -L/usr/local/lib
 }
 
 ICON		  = Icons/Logo/spot-on-logo.icns
-LIBS		  += -L../../libNTRU \
+LIBS		  += -L../libNTRU \
                      -framework AppKit \
                      -framework Cocoa \
                      -lcrypto \
@@ -99,9 +99,9 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra   = cp -r ./Spot-On.app ./Spot-On.d/.
 copyspoton.path    = ./Spot-On.d
-libntru.extra      = cp ../../libNTRU/libntru.dylib \
- ./Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib \
- && install_name_tool -change libntru.dylib \
+libntru.extra      = cp ../libNTRU/libntru.dylib \
+ ./Spot-On.d/Spot-On.app/Contents/Frameworks/libntru.dylib && \
+ install_name_tool -change libntru.dylib \
  @executable_path/../Frameworks/libntru.dylib \
  ./Spot-On.d/Spot-On.app/Contents/MacOS/Spot-On
 libntru.path       = .

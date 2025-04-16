@@ -1,6 +1,6 @@
 cache()
 include(spot-on-gui-source.pro)
-libntru.commands = $(MAKE) -C ../../libNTRU
+libntru.commands = $(MAKE) -C ../libNTRU
 libntru.depends =
 libntru.target = libntru.so
 
@@ -37,9 +37,9 @@ DEFINES	+= SPOTON_DATELESS_COMPILATION \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../libNTRU/*.so \
-                          ../../libNTRU/src/*.o \
-                          ../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../libNTRU/*.so \
+                          ../libNTRU/src/*.o \
+                          ../libNTRU/src/*.s \
                           Spot-On
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -69,10 +69,10 @@ QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
-                   ../../. \
+                   ../. \
                    /usr/include/postgresql \
                    GUI
-LIBS		+= -L../../libNTRU \
+LIBS		+= -L../libNTRU \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \
