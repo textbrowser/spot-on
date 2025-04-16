@@ -3016,16 +3016,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/limit_sqlite_synchronization", false).toBool());
   m_optionsUi.sharePrivateKeys->setChecked
     (m_settings.value("gui/sharePrivateKeysWithKernel", true).toBool());
-#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
   m_optionsUi.ontopChatDialogs->setChecked
     (m_settings.value("gui/ontopChatDialogs", false).toBool());
-#else
-  m_optionsUi.ontopChatDialogs->setChecked(false);
-  m_optionsUi.ontopChatDialogs->setEnabled(false);
-  m_optionsUi.ontopChatDialogs->setToolTip
-    (tr("Enabled on MacOS and Windows."));
-  settings.setValue("gui/ontopChatDialogs", false);
-#endif
   m_optionsUi.urlSignMessages->setChecked
     (m_settings.value("gui/urlSignMessages", true).toBool());
   m_optionsUi.remove_otm->setChecked

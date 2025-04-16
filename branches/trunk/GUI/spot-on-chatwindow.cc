@@ -62,14 +62,11 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
 
-#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
-  QSettings settings;
-
-  if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+  if(QSettings().value("gui/ontopChatDialogs", false).toBool())
+    setWindowFlags(Qt::WindowFlags(Qt::WindowStaysOnTopHint | windowFlags()));
   else
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-#endif
+    setWindowFlags(Qt::WindowFlags(~Qt::WindowStaysOnTopHint & windowFlags()));
+
   connect(ui.action_Close,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -455,14 +452,11 @@ void spoton_chatwindow::showError(const QString &error)
 
 void spoton_chatwindow::showNormal(void)
 {
-#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
-  QSettings settings;
-
-  if(settings.value("gui/ontopChatDialogs", false).toBool())
-    setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+  if(QSettings().value("gui/ontopChatDialogs", false).toBool())
+    setWindowFlags(Qt::WindowFlags(Qt::WindowStaysOnTopHint | windowFlags()));
   else
-    setWindowFlags(windowFlags() & ~Qt::WindowStaysOnTopHint);
-#endif
+    setWindowFlags(Qt::WindowFlags(~Qt::WindowStaysOnTopHint & windowFlags()));
+
   QMainWindow::showNormal();
   ui.message->setFocus();
 }
