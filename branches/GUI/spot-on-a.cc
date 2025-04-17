@@ -650,7 +650,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
   m_ui.version->setText
     (QString("<html><head/><body><p><a href=\"https://github.com/textbrowser/"
-	     "spot-on/blob/master/branches/Documentation/ReleaseNotes.html\">"
+	     "spot-on/blob/master/branches/ReleaseNotes/ReleaseNotes.html\">"
 	     "<span style=\" text-decoration: underline; color:#0000ff;\">"
 	     "%1 Version %2</span></a></p></body></html>").
      arg(SPOTON_APPLICATION_NAME).

@@ -1,10 +1,5 @@
 Spot-On is a software carnival.
 
-As of now, MacOS and Windows bundles will be manufactured.
-Everyone else should delegate themselves in the source.
-There are far too many variations of Debian distributions.
-For YOU!
-
 All operating systems require Qt LTS. Have fun!
 
 <ul>
@@ -36,7 +31,14 @@ All operating systems require Qt LTS. Have fun!
 <li>Messaging.</li>
 <li>Multitasking kernel.</li>
 <li>Native virtual keyboard.</li>
-<li>Natively compiled on ARM, Alpha, Apple Silicon, PowerPC, Sparc64, X86, X86-64.</li>
+<li>Natively compiled on
+    ARM,
+    Alpha,
+    Apple Silicon,
+    PowerPC,
+    Sparc64,
+    X86,
+    X86-64.</li>
 <li>Optional SSL/TLS client and server roles: ECC, RSA.</li>
 <li>P2P TCP server-less (without accept()) connections.
     SSL/TLS is supported!</li>
@@ -59,7 +61,5 @@ All operating systems require Qt LTS. Have fun!
 <li>WebSockets.</li>
 <li>Windows portable.</li>
 </ul>
-
-Please visit https://github.com/textbrowser/spot-on/tree/master/branches/trunk/Documentation for more information.
 
 ![Spot-On](https://github.com/textbrowser/spot-on/blob/master/Wiki/spot-on-android.png)

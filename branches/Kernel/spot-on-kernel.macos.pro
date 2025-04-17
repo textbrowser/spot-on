@@ -1,6 +1,6 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntru.commands = $(MAKE) -C ../../../libNTRU
+libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.dylib
 purge.commands = rm -f *~
@@ -22,9 +22,9 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../../libNTRU/*.dylib \
-                          ../../../libNTRU/src/*.o \
-                          ../../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../../libNTRU/*.dylib \
+                          ../../libNTRU/src/*.o \
+                          ../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -50,8 +50,7 @@ QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 ICON		  =
-INCLUDEPATH	  += . \
-                     ../. ../../../.
+INCLUDEPATH	  += . ../. ../../.
 
 exists(/opt/homebrew) {
 INCLUDEPATH       += /opt/homebrew/include
@@ -61,7 +60,7 @@ INCLUDEPATH       += /usr/local/include
 LIBS              += -L/usr/local/lib
 }
 
-LIBS		  += -L../../../libNTRU \
+LIBS		  += -L../../libNTRU \
                      -framework Cocoa \
                      -lcrypto \
                      -lgcrypt \
@@ -89,7 +88,7 @@ QMAKE_STRIP	= echo
 
 copyspoton.extra  = cp -r ../Spot-On-Kernel.app ../Spot-On.d/.
 copyspoton.path   = ../Spot-On.d
-libntru.extra = cp ../../../libNTRU/libntru.dylib \
+libntru.extra = cp ../../libNTRU/libntru.dylib \
  ../Spot-On.d/Spot-On-Kernel.app/Contents/Frameworks/libntru.dylib && \
  install_name_tool -change libntru.dylib \
  @executable_path/../Frameworks/libntru.dylib \

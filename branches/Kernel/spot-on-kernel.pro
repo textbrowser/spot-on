@@ -1,6 +1,6 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntru.commands = $(MAKE) -C ../../../libNTRU
+libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
 purge.commands = rm -f *~
@@ -52,9 +52,9 @@ DEFINES += SPOTON_POPTASTIC_SUPPORTED
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../../libNTRU/*.so \
-                          ../../../libNTRU/src/*.o \
-                          ../../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../../libNTRU/*.so \
+                          ../../libNTRU/src/*.o \
+                          ../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -97,8 +97,8 @@ QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
 QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 }
 
-INCLUDEPATH	+= . ../. ../../../.
-LIBS		+= -L../../../libNTRU \
+INCLUDEPATH	+= . ../. ../../.
+LIBS		+= -L../../libNTRU \
                    -lcrypto \
                    -lgcrypt \
                    -lgpg-error \

@@ -3,7 +3,7 @@ include(spot-on-kernel-source.pro)
 libntl.commands = echo
 libntl.depends =
 libntl.target = libntl.so
-libntru.commands = $(MAKE) -C ../../../libNTRU
+libntru.commands = $(MAKE) -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
 purge.commands = rm -f *~
@@ -25,11 +25,11 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTL and libNTRU.
 
-QMAKE_CLEAN            += ../../../libNTL/unix.d/src/*.lo \
-                          ../../../libNTL/unix.d/src/*.o \
-                          ../../../libNTRU/*.so \
-                          ../../../libNTRU/src/*.o \
-                          ../../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../../libNTL/unix.d/src/*.lo \
+                          ../../libNTL/unix.d/src/*.o \
+                          ../../libNTRU/*.so \
+                          ../../libNTRU/src/*.o \
+                          ../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -61,11 +61,11 @@ QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
                    ../. \
-                   ../../../. \
-                   ../../../libNTL/unix.d/include \
+                   ../../. \
+                   ../../libNTL/unix.d/include \
                    /usr/include/postgresql
-LIBS		+= -L../../../libNTL/unix.d/src/.libs \
-                   -L../../../libNTRU \
+LIBS		+= -L../../libNTL/unix.d/src/.libs \
+                   -L../../libNTRU \
                    -lcrypto \
                    -lcurl \
                    -lgcrypt \

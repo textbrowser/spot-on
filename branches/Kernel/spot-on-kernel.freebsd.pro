@@ -1,6 +1,6 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntru.commands = gmake -C ../../../libNTRU
+libntru.commands = gmake -C ../../libNTRU
 libntru.depends =
 libntru.target = libntru.so
 purge.commands = rm -f *~
@@ -30,9 +30,9 @@ DEFINES += SPOTON_DATELESS_COMPILATION \
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
 
-QMAKE_CLEAN            += ../../../libNTRU/*.so \
-                          ../../../libNTRU/src/*.o \
-                          ../../../libNTRU/src/*.s \
+QMAKE_CLEAN            += ../../libNTRU/*.so \
+                          ../../libNTRU/src/*.o \
+                          ../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
@@ -56,9 +56,9 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
                    ../. \
-                   ../../../. \
+                   ../../. \
                    /usr/local/include/postgresql
-LIBS		+= -L../../../libNTRU \
+LIBS		+= -L../../libNTRU \
                    -L/usr/local/lib \
                    -lcrypto \
                    -lcurl \

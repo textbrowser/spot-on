@@ -12,10 +12,10 @@ sudo apt-get install libtool-bin. Please ignore on FreeBSD, MacOS,
 and Windows.
 
 2. Create a special libntl target. Please note that a kernel's
-project file will reference different libNTL paths (../../../libNTL).
+project file will reference different libNTL paths (../../libNTL).
 Please ignore on FreeBSD, MacOS, and Windows.
 
-libntl.commands = cd ../../libNTL/unix.d/src && $(MAKE)
+libntl.commands = cd ../libNTL/unix.d/src && $(MAKE)
 libntl.depends =
 libntl.target = libntl.so
 
@@ -25,8 +25,8 @@ DEFINES	+= SPOTON_MCELIECE_ENABLED
 
 4. Modify INCLUDEPATH and LIBS.
 
-INCLUDEPATH += ../../libNTL/unix.d/include
-LIBS += -L../../libNTL/unix.d/src/.libs -lntl
+INCLUDEPATH += ../libNTL/unix.d/include
+LIBS += -L../libNTL/unix.d/src/.libs -lntl
 
 On FreeBSD, NTL may require GMP.
 
@@ -38,7 +38,7 @@ LIBS += -lgmp -lntl
 
 5. Modify QMAKE_CLEAN. FreeBSD, MacOS, and Windows, please ignore.
 
-QMAKE_CLEAN += ../../libNTL/unix.d/src/*.o ../../libNTL/unix.d/src/*.lo
+QMAKE_CLEAN += ../libNTL/unix.d/src/*.o ../libNTL/unix.d/src/*.lo
 
 6. Modify PRE_TARGETDEPS and QMAKE_EXTRA_TARGETS.
 Please ignore on FreeBSD, MacOS, and Windows.
