@@ -39,13 +39,55 @@
           <h2>Echo Communications Software</h2>
         </header>
         <section class="clearfix">
-	  <a href="https://github.com/textbrowser/spot-on/tree/master/branches/trunk/Documentation" id="view-on-github" class="button"><span>Documentation</span></a>
+	  <a href="https://github.com/textbrowser/spot-on/tree/master/Source/Documentation" id="view-on-github" class="button"><span>Documentation</span></a>
 	  <a href="https://github.com/textbrowser/spot-on/releases" id="download-zip" class="button"><span>Download</span></a>
         </section>
 	<hr>
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2025.04.18</u></h4>
+	  Welcome to the 2025.04.18 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>Allow renewal of the Web Server's certificate.</li>
+	      <li>Application-modal progress dialogs.</li>
+	      <li>Center child windows before displaying these windows.</li>
+	      <li>Define QT_QPA_PLATFORMTHEME as qt6ct in spot-on.sh if qt6ct
+		is discovered.</li>
+	      <li>Display a warning in the status bar if Web Server credentials
+		cannot be recorded.</li>
+	      <li>Exit once and only once. Closing a program is a serious
+		calamity.</li>
+	      <li>Fortuna in the main interface.</li>
+	      <li>If Fortuna cannot provide the requested number of random
+		bytes, query GCrypt.</li>
+	      <li>New Options -> Settings -> OpenSSL.</li>
+	      <li>New PRISON_BLUES_REMOTE_SERVER Options -> Miscellaneous.
+		Incomplete.</li>
+	      <li>On Spot-On reset, launch a new process before exiting the
+		current process.</li>
+	      <li>On-top chat dialogs are now available everywhere.</li>
+	      <li>OpenSSL credentials will now be generated via the defined
+		OpenSSL executable. The new approach will replace the
+		monumental effort of maintaining correct and current
+		OpenSSL library processes. Temporary files will be temporarily
+		housed in the Spot-On directory. If the new process fails,
+		the traditional process will resume.</li>
+	      <li>Participant SMP secrets are now recorded in
+		friends_public_keys.db and will be available in future
+		sessions.</li>
+	      <li>Removed creation of the WebEngineCache directory.</li>
+	      <li>Removed database alter statements
+		(ALTER TABLE neighbors ADD ssl_configuration TEXT).</li>
+	      <li>Replaced Options -> Miscellaneous text widget with a lovely
+		table widget.</li>
+	      <li>Super OpenSSL 3.5; Windows. The new version includes PQC.
+	      </li>
+	      <li>The Blue-Balloon-Papa release!</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2025.03.23</u></h4>
 	  Welcome to the 2025.03.23 release of Spot-On. Corrections and
 	  new features are detailed below.
