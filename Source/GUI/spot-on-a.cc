@@ -4350,7 +4350,7 @@ void spoton::slotAbout(void)
       pixmap = pixmap.scaled
 	(QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
       str = QString
-	("<html>Spot-On Version %1<br>"
+	("<html><b>Spot-On Version %1</b><br>"
 	 "Made with love by textbrowser.<br>"
 	 "Please visit <a href=\"https://textbrowser.github.io/spot-on\">"
 	 "https://textbrowser.github.io/spot-on</a> for more information.").
@@ -4362,7 +4362,7 @@ void spoton::slotAbout(void)
       pixmap = pixmap.scaled
 	(QSize(256, 256), Qt::KeepAspectRatio, Qt::SmoothTransformation);
       str = QString("<html>GoldBug, version %1, is an open-source "
-		    "application published under "
+		    "application published within "
 		    "the Revised BSD License.<br>"
 		    "Made with love by textbrowser.<br>"
 		    "Please visit <a href=\"https://goldbug.sourceforge.io\">"
@@ -4376,7 +4376,7 @@ void spoton::slotAbout(void)
       mb->setTextFormat(Qt::RichText);
       mb->setWindowIcon(windowIcon());
       mb->setWindowModality(Qt::NonModal);
-      mb->setWindowTitle(SPOTON_APPLICATION_NAME);
+      mb->setWindowTitle(tr("%1: About").arg(SPOTON_APPLICATION_NAME));
       mb->button(QMessageBox::Close)->setShortcut(tr("Ctrl+W"));
     }
 
