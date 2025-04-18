@@ -8,7 +8,7 @@ if [ "$os" = "Darwin" ]
 then
     if [ -x ./Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel ]
     then
-	export DYLD_LIBRARY_PATH=../../libNTRU
+	export DYLD_LIBRARY_PATH=../libNTRU
 	./Spot-On-Kernel.app/Contents/MacOS/Spot-On-Kernel "$@"
 	exit $?
     else
