@@ -557,7 +557,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_listenersLastModificationTime = QDateTime();
   m_pqUrlFaultyCounter = 0;
   m_releaseNotes = new spoton_documentation
-    (QUrl("qrc:/Documentation/ReleaseNotes.html"), nullptr);
+    (QUrl("qrc:/ReleaseNotes/ReleaseNotes.html"), nullptr);
   m_releaseNotes->setWindowTitle
     (tr("%1: Release Notes").arg(SPOTON_APPLICATION_NAME));
   m_rss = new spoton_rss(this);
