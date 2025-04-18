@@ -46,7 +46,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
-QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 ICON		  =
@@ -71,16 +71,16 @@ LIBS		  += -L../../libNTRU \
 		     -lpthread \
                      -lssl
 
-MOC_DIR           = temp/moc
+MOC_DIR           = Temporary/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += ../Common/CocoaInitializer.mm
-OBJECTS_DIR       = temp/obj
+OBJECTS_DIR       = Temporary/obj
 PRE_TARGETDEPS    = libntru.dylib
 PROJECTNAME	  = Spot-On-Kernel
-RCC_DIR           = temp/rcc
+RCC_DIR           = Temporary/rcc
 TARGET		  = ../Spot-On-Kernel
 TEMPLATE          = app
-UI_DIR            = temp/ui
+UI_DIR            = Temporary/ui
 
 # Prevent qmake from stripping everything.
 

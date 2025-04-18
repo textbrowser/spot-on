@@ -51,7 +51,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
-QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH	+= . \
@@ -70,14 +70,14 @@ LIBS		+= -L../../libNTRU \
                    -lpq \
                    -lpthread \
                    -lssl
-MOC_DIR         = temp/moc
-OBJECTS_DIR     = temp/obj
+MOC_DIR         = Temporary/moc
+OBJECTS_DIR     = Temporary/obj
 PRE_TARGETDEPS  = libntru.so
 PROJECTNAME	= Spot-On-Kernel
-RCC_DIR         = temp/rcc
+RCC_DIR         = Temporary/rcc
 TARGET		= ../Spot-On-Kernel
 TEMPLATE        = app
-UI_DIR          = temp/ui
+UI_DIR          = Temporary/ui
 
 # Prevent qmake from stripping everything.
 

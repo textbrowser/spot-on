@@ -37,7 +37,7 @@ QMAKE_CLEAN            += ../libNTRU/*.dylib \
                           Spot-On
 QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
@@ -82,16 +82,16 @@ LIBS		  += -L../libNTRU \
                      -lntru \
                      -lpthread \
                      -lssl
-MOC_DIR           = temp/moc
+MOC_DIR           = Temporary/moc
 OBJECTIVE_HEADERS += Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += Common/CocoaInitializer.mm
-OBJECTS_DIR       = temp/obj
+OBJECTS_DIR       = Temporary/obj
 PRE_TARGETDEPS    = libntru.dylib
 PROJECTNAME	  = Spot-On
-RCC_DIR           = temp/rcc
+RCC_DIR           = Temporary/rcc
 TARGET		  = Spot-On
 TEMPLATE          = app
-UI_DIR            = temp/ui
+UI_DIR            = Temporary/ui
 
 # Prevent qmake from stripping everything.
 

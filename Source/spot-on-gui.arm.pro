@@ -63,7 +63,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -pie \
                           -std=c++17
-QMAKE_DISTCLEAN        += -r temp .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
@@ -82,14 +82,14 @@ LIBS		+= -L../libNTRU \
                    -lpq \
                    -lpthread \
                    -lssl
-MOC_DIR         = temp/moc
-OBJECTS_DIR     = temp/obj
+MOC_DIR         = Temporary/moc
+OBJECTS_DIR     = Temporary/obj
 PRE_TARGETDEPS  = libntru.so
 PROJECTNAME	= Spot-On
-RCC_DIR         = temp/rcc
+RCC_DIR         = Temporary/rcc
 TARGET		= Spot-On
 TEMPLATE	= app
-UI_DIR          = temp/ui
+UI_DIR          = Temporary/ui
 
 # Prevent qmake from stripping everything.
 
