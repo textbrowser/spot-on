@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1512</y>
+         <y>-4259</y>
          <width>769</width>
-         <height>5135</height>
+         <height>5015</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -2055,17 +2055,14 @@
               <item>
                <widget class="QCheckBox" name="chatOpenLinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser
-as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QCheckBox" name="chatSignMessages">
                 <property name="text">
-                 <string>&amp;Sign forward secrecy replies
-and requests, geminis, messages,
-and status bulletins.</string>
+                 <string>&amp;Sign forward secrecy replies and requests, geminis, messages, and status bulletins.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -2190,8 +2187,7 @@ and status bulletins.</string>
               <item>
                <widget class="QCheckBox" name="coAcceptSigned">
                 <property name="text">
-                 <string>&amp;Reject C/O letters without signatures. The setting
-does not apply to data destined for institutions.</string>
+                 <string>&amp;Reject C/O letters without signatures. The setting does not apply to data destined for institutions.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -2514,8 +2510,7 @@ does not apply to data destined for institutions.</string>
               <item>
                <widget class="QCheckBox" name="openlinks">
                 <property name="text">
-                 <string>&amp;Open clicked links in the appropriate Web browser
-as defined by the user's environment.</string>
+                 <string>&amp;Open clicked links in the appropriate Web browser as defined by the user's environment.</string>
                 </property>
                </widget>
               </item>
@@ -2591,8 +2586,7 @@ as defined by the user's environment.</string>
                  <string>Automatically share the private authentication and encryption keys with a kernel process. If this option is disabled, the user interface will provide reminders.</string>
                 </property>
                 <property name="text">
-                 <string>&amp;Share private authentication and encryption keys
-with the kernel process.</string>
+                 <string>&amp;Share private authentication and encryption keys with the kernel process.</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
