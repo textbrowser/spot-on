@@ -8,7 +8,7 @@
 # We will not remove the lock.
 
 # If the local directory already exists, a git-clone will fail.
-# We will not remove the local directory!
+# We will not remove the local directory.
 
 if [ -z ${GIT_LOCAL_DIRECTORY} ]
 then

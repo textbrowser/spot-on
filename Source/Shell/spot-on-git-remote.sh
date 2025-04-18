@@ -8,7 +8,7 @@
 # We will not remove the lock.
 
 # If the local directory already exists, a git-clone will fail.
-# We will not remove the local directory!
+# We will not remove the local directory.
 
 git_site="https://account:token@github.com/account/prison-blues"
 ip_address="192.168.178.15"
