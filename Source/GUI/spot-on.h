@@ -692,9 +692,8 @@ class spoton: public QMainWindow
   void sendBuzzKeysToKernel(void);
   void sendKeysToKernel(void);
   void sendMessage(bool *ok);
-  void setSBField(const QString &oid,
-		  const QVariant &value,
-		  const QString &field);
+  void setSBField
+    (const QString &oid, const QVariant &value, const QString &field);
   void sharePublicKeyWithParticipant(const QString &keyType);
   void showError(const QString &error);
   void showUrls(const QString &link, const QString &querystr);

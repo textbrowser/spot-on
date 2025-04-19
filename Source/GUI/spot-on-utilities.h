@@ -54,6 +54,12 @@ class spoton_utilities_private: public QObject
 
     auto c(child->geometry());
 
+    if(c.isNull())
+      {
+	child->show();
+	c = parent->geometry();
+      }
+
     c.moveCenter(parent->geometry().center());
     child->setGeometry(c);
   }
