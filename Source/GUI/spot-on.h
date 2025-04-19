@@ -668,7 +668,6 @@ class spoton: public QMainWindow
   void populatePoptasticWidgets(const QHash<QString, QVariant> &hash);
   void populateStatistics(const QList<QPair<QString, QVariant> > &list);
   void populateUrlDistillers();
-  void prepareAndShowInstallationWizard(void);
   void prepareContextMenuMirrors(void);
   void prepareListenerIPCombo(void);
   void prepareOtherOptions(void);
