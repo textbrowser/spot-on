@@ -73,7 +73,7 @@ else
 	 "Merge changes instead."
     git config pull.rebase false 1>/dev/null 2>/dev/null
 
-    if [ ! $? eq 0 ]
+    if [ ! $? -eq 0 ]
     then
 	echo "[GIT-CONFIG failed!]"
     else
