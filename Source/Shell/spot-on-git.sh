@@ -35,7 +35,7 @@ then
     site=$(eval "echo ${GIT_SITE}")
 
     echo "Cloning $site into $local_directory."
-    git clone -q "$site" "$local_directory" 1>/dev/null 2>/dev/null
+    git clone --depth 1 -q "$site" "$local_directory" 1>/dev/null 2>/dev/null
 
     rc=$?
 
