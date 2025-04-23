@@ -10,6 +10,12 @@
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory.
 
+if [ -z "$(which git)" ]
+then
+    echo "[Please install git.]"
+    exit 1
+fi
+
 if [ -z ${GIT_LOCAL_DIRECTORY} ]
 then
     echo "Please export GIT_LOCAL_DIRECTORY. Bye!"

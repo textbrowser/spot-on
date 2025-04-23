@@ -416,6 +416,7 @@ class spoton_lineedit: public QLineEdit
 
 class QProgressDialog;
 class QSplashScreen;
+class QStatusBar;
 class spoton_documentation;
 class spoton_echo_key_share;
 class spoton_rss;
@@ -471,7 +472,7 @@ class spoton: public QMainWindow
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
-  void launchPrisonBluesProcesses(void);
+  void launchPrisonBluesProcesses(QStatusBar *statusBar);
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;

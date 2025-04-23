@@ -10,6 +10,12 @@
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory.
 
+if [ -z "$(which git)" ]
+then
+    echo "[Please install git.]"
+    exit 1
+fi
+
 git_site="https://account:token@github.com/account/prison-blues"
 ip_address="192.168.178.15"
 local_directory="/var/tmp/prison-blues.d"
@@ -93,7 +99,7 @@ while
 	 "Merge changes instead."
     git config pull.rebase false 1>/dev/null 2>/dev/null
 
-    if [ ! $? eq 0 ]
+    if [ ! $? -eq 0 ]
     then
 	echo "[GIT-CONFIG failed!]"
     else

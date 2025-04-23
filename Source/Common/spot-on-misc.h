@@ -69,6 +69,7 @@ typedef union spoton_type_punning_sockaddr
 }
 spoton_type_punning_sockaddr_t;
 
+class QStatusBar;
 class QTcpSocket;
 class spoton_crypt;
 
@@ -234,6 +235,7 @@ class spoton_misc
   static void enableLog(const bool state);
   static void launchPrisonBluesProcesses
     (QObject *parent,
+     QStatusBar *statusBar,
      QVector<QPointer<QProcess> > &prisonBluesProcesses,
      spoton_crypt *crypt);
   static void logError(const QString &error);

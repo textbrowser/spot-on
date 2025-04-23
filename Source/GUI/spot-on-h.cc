@@ -589,11 +589,14 @@ void spoton::inspectPQUrlDatabase
   QSqlDatabase::removeDatabase(connectionName);
 }
 
-void spoton::launchPrisonBluesProcesses(void)
+void spoton::launchPrisonBluesProcesses(QStatusBar *statusBar)
 {
   if(!isKernelActive())
     spoton_misc::launchPrisonBluesProcesses
-      (this, m_prisonBluesProcesses, m_crypts.value("chat", nullptr));
+      (this,
+       statusBar,
+       m_prisonBluesProcesses,
+       m_crypts.value("chat", nullptr));
 }
 
 void spoton::populateGITTable(void)

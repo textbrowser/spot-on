@@ -800,7 +800,7 @@ void spoton_rosetta::prisonBluesProcess(void)
       (tr("Invalid parent object. Cannot launch Prison Blues process(es)."),
        5000);
   else
-    m_parent->launchPrisonBluesProcesses();
+    m_parent->launchPrisonBluesProcesses(statusBar());
 #endif
 }
 

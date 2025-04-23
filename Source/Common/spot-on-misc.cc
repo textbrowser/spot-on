@@ -83,6 +83,7 @@ extern "C"
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStatusBar>
 #include <QString>
 #include <QTcpSocket>
 #include <QUrl>
@@ -4749,6 +4750,7 @@ void spoton_misc::enableLog(const bool state)
 
 void spoton_misc::launchPrisonBluesProcesses
 (QObject *parent,
+ QStatusBar *statusBar,
  QVector<QPointer<QProcess> > &prisonBluesProcesses,
  spoton_crypt *crypt)
 {
@@ -4767,7 +4769,19 @@ void spoton_misc::launchPrisonBluesProcesses
 	  auto const script(it.value().value("script"));
 
 	  if(QFileInfo(script).isExecutable() == false)
-	    continue;
+	    {
+	      if(statusBar)
+		{
+		  if(script.trimmed().isEmpty())
+		    statusBar->showMessage
+		      (QObject::tr("The GIT script is not executable."), 5000);
+		  else
+		    statusBar->showMessage
+		      (QObject::tr("The script %1 is not executable."), 5000);
+		}
+
+	      continue;
+	    }
 
 	  auto process(prisonBluesProcesses.value(it.key() % size));
 
@@ -4778,7 +4792,16 @@ void spoton_misc::launchPrisonBluesProcesses
 	    }
 
 	  if(process->state() == QProcess::Running)
-	    continue;
+	    {
+	      if(statusBar)
+		statusBar->showMessage
+		  (QObject::
+		   tr("The program %1 is already active. Ignoring.").
+		   arg(process->program()),
+		   5000);
+
+	      continue;
+	    }
 
 	  auto environment(QProcessEnvironment::systemEnvironment());
 
@@ -4787,7 +4810,23 @@ void spoton_misc::launchPrisonBluesProcesses
 	  environment.insert("GIT_SITE", it.value().value("git-site"));
 	  process->setProcessEnvironment(environment);
 	  process->start(script, QStringList());
-	  process->waitForStarted();
+
+	  if(process->waitForStarted(5000))
+	    {
+	      if(statusBar)
+		statusBar->showMessage
+		  (QObject::
+		   tr("The program %1 was started.").arg(process->program()),
+		   5000);
+	    }
+	  else
+	    {
+	      if(statusBar)
+		statusBar->showMessage
+		  (QObject::tr("The program %1 did not start.").
+		   arg(process->program()),
+		   5000);
+	    }
 	}
     }
 }

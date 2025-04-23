@@ -10,8 +10,7 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= bluetooth concurrent network sql websockets
-QT              -= gui
+QT		+= bluetooth concurrent network sql websockets widgets
 
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \

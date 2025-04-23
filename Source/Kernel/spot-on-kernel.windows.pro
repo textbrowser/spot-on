@@ -9,8 +9,7 @@ purge.commands = del /F *~
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
 LANGUAGE	= C++
-QT		+= concurrent network sql websockets
-QT              -= gui
+QT		+= concurrent network sql websockets widgets
 
 DEFINES         += SPOTON_DATELESS_COMPILATION \
                    SPOTON_LINKED_WITH_LIBNTRU \

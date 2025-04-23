@@ -7,8 +7,7 @@ purge.commands = rm -f *~
 
 CONFIG		+= qt release warn_on
 LANGUAGE	= C++
-QT		+= concurrent network sql
-QT              -= gui
+QT		+= concurrent network sql widgets
 
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
