@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.51"
-#define GPGRT_VERSION     "1.51"
+#define GPG_ERROR_VERSION "1.53"
+#define GPGRT_VERSION     "1.53"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013300
-#define GPGRT_VERSION_NUMBER     0x013300
+#define GPG_ERROR_VERSION_NUMBER 0x013500
+#define GPGRT_VERSION_NUMBER     0x013500
 
 
 #ifdef __GNUC__
@@ -1132,6 +1132,9 @@ char *gpgrt_w32_reg_query_string (const char *root,
                                   const char *dir,
                                   const char *name);
 
+/* Query a string in the registry using a unified key representation.  */
+char *gpgrt_w32_reg_get_string (const char *key);
+
 
 /* Self-documenting convenience functions.  */
 
@@ -1690,6 +1693,161 @@ gpg_err_code_t   gpgrt_b64dec_proc (gpgrt_b64state_t state,
                                     void *buffer, size_t length,
                                     size_t *r_nbytes);
 gpg_err_code_t   gpgrt_b64dec_finish (gpgrt_b64state_t state);
+
+
+
+/*
+ * Simple string list
+ */
+struct _gpgrt_strlist_s
+{
+  struct _gpgrt_strlist_s *next;
+  unsigned int flags;
+  unsigned char _private_flags;  /* Not of your business.  */
+  char d[1];
+};
+typedef struct _gpgrt_strlist_s *gpgrt_strlist_t;
+
+
+#define GPGRT_STRLIST_APPEND  1  /* Append and not prepend to the list. */
+#define GPGRT_STRLIST_WIPE    2  /* Wipe the string on free.  */
+
+
+/* Free the string list SL.  */
+void gpgrt_strlist_free (gpgrt_strlist_t sl);
+
+/* Add STRING to the LIST.  This function returns NULL and sets ERRNO
+ * on memory shortage.  If STRING is NULL an empty string is stored
+ * instead.  FLAGS */
+gpgrt_strlist_t gpgrt_strlist_add (gpgrt_strlist_t *list, const char *string,
+                                   unsigned int flags);
+
+/* Tokenize STRING using the delimiters from DELIM and append each
+ * token to the string list LIST.  On success a pointer into LIST with
+ * the first new token is returned.  Returns NULL on error and sets
+ * ERRNO.  Take care, an error with ENOENT set mean that no tokens
+ * were found in STRING.  */
+gpgrt_strlist_t gpgrt_strlist_tokenize (gpgrt_strlist_t *list,
+                                        const char *string,
+                                        const char *delim, unsigned int flags);
+
+/* Return a copy of LIST.  On error ERRNO is set and NULL
+ * returned.  */
+gpgrt_strlist_t gpgrt_strlist_copy (gpgrt_strlist_t list);
+
+/* Reverse the list *LIST in place.  Will not fail. */
+gpgrt_strlist_t gpgrt_strlist_rev (gpgrt_strlist_t *list);
+
+/* In the list starting with HEAD return the item previous to NODE.
+ * Returns NULL if no previous item exists.  */
+gpgrt_strlist_t gpgrt_strlist_prev (gpgrt_strlist_t head, gpgrt_strlist_t node);
+
+/* Return the last item in the list starting at NODE.  */
+gpgrt_strlist_t gpgrt_strlist_last (gpgrt_strlist_t node);
+
+/* Remove the first item from LIST and return its content in an
+ * allocated buffer.  This function returns NULl and sets ERRNO on
+ * error.  */
+char *gpgrt_strlist_pop (gpgrt_strlist_t *list);
+
+/* Return the first item of the string list HAYSTACK whose value
+ * matches NEEDLE.  If no items match, return NULL.  */
+gpgrt_strlist_t gpgrt_strlist_find (gpgrt_strlist_t haystack,
+                                    const char *needle);
+
+/* Return the number of items in LIST.  */
+static GPG_ERR_INLINE unsigned int
+gpgrt_strlist_count (gpgrt_strlist_t list)
+{
+  unsigned int i = 0;
+
+  for (i = 0; list; list = list->next)
+    i++;
+
+  return i;
+}
+
+
+/*
+ * Name-value parser and writer
+ */
+
+struct _gpgrt_name_value_container;
+typedef struct _gpgrt_name_value_container *gpgrt_nvc_t;
+
+struct _gpgrt_name_value_entry;
+typedef struct _gpgrt_name_value_entry *gpgrt_nve_t;
+
+#define GPGRT_NVC_WIPE       2  /* Wipe the values on free.  */
+#define GPGRT_NVC_PRIVKEY    4  /* Enable private key mode.  */
+#define GPGRT_NVC_SECTION    8  /* Enable section mode.      */
+#define GPGRT_NVC_MODIFIED 256  /* Return the modified flag. */
+
+/* Return a name-value container according to the given flags.
+ * Returns NULL and sets ERRNO on error.  */
+gpgrt_nvc_t gpgrt_nvc_new (unsigned int flags);
+
+/* Release a name-value container.  */
+void gpgrt_nvc_release (gpgrt_nvc_t cont);
+
+/* Return the specified container FLAG. For the GPGRT_NVC_MODIFIED
+ * flag the CLEAR arg resets the flag after retrieval.  */
+int gpgrt_nvc_get_flag (gpgrt_nvc_t cont, unsigned int flag, int clear);
+
+/* Add (NAME, VALUE) to CONT.  If an entry with NAME already exists, a
+ * new entry with that name is appended.  */
+gpg_err_code_t gpgrt_nvc_add (gpgrt_nvc_t cont,
+                              const char *name, const char *value);
+
+/* Add (NAME, VALUE) to CONT.  If an entry with NAME already exists,
+ * it is updated by VALUE.  If multiple entries with NAME exist, only
+ * the first entry is updated.  */
+gpg_err_code_t gpgrt_nvc_set (gpgrt_nvc_t cont,
+                              const char *name, const char *value);
+
+/* Update entry E to VALUE.  CONT is required to update the internal
+ * modified flag and to pass container flags to the entry.  */
+gpg_err_code_t gpgrt_nve_set (gpgrt_nvc_t cont, gpgrt_nve_t e,
+                              const char *value);
+
+/* Delete entries from the container CONT.  Either ENTRY or NAME must
+ * be given.  If ENTRY is given only this entry is deleted; if NAME is
+ * given all entries with this name are deleted.  */
+void gpgrt_nvc_delete (gpgrt_nvc_t cont, gpgrt_nve_t entry, const char *name);
+
+/* Get the first entry with the given name.  Return NULL if it does
+ * not exist.  If NAME is NULL the first non-comment entry is
+ * returned.  */
+gpgrt_nve_t gpgrt_nvc_lookup (gpgrt_nvc_t cont, const char *name);
+
+/* Parse STREAM and return a newly allocated container structure at
+ * RESULT.  If ERRLINEP is given, the line number the parser was last
+ * considering is stored there.  FLAGS are used to allocate the
+ * container.  */
+gpg_err_code_t gpgrt_nvc_parse (gpgrt_nvc_t *result, int *errlinep,
+                                gpgrt_stream_t stream, unsigned int flags);
+
+/* Write a representation of the container CONT to STREAM.  */
+gpg_err_code_t gpgrt_nvc_write (gpgrt_nvc_t cont, gpgrt_stream_t stream);
+
+/* Return the next non-comment entry after ENTRY.  If NAME is given
+ * the next entry with that name is returned.  */
+gpgrt_nve_t gpgrt_nve_next (gpgrt_nve_t entry, const char *name);
+
+/* Return the name of the entry.  */
+const char *gpgrt_nve_name (gpgrt_nve_t entry);
+
+/* Return the value of the entry.  */
+const char *gpgrt_nve_value (gpgrt_nve_t entry);
+
+/* Convenience function to return the string for the first entry of
+ * CONT with NAME.  If no such entry is found or its value is the
+ * empty string NULL is returned.  */
+const char *gpgrt_nvc_get_string (gpgrt_nvc_t cont, const char *name);
+
+/* Convenience function to return true if NAME exists and its value is
+ * true; that is either "yes", "true", or a decimal value != 0.  */
+int gpgrt_nvc_get_bool (gpgrt_nvc_t nvc, const char *name);
 
 
 
