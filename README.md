@@ -61,5 +61,3 @@ All operating systems require Qt LTS. Have fun!
 <li>WebSockets.</li>
 <li>Windows portable.</li>
 </ul>
-
-![Spot-On](https://github.com/textbrowser/spot-on/blob/master/Wiki/spot-on-android.png)
