@@ -1,6 +1,6 @@
 /* gcrypt.h -  GNU Cryptographic Library Interface              -*- c -*-
  * Copyright (C) 1998-2018 Free Software Foundation, Inc.
- * Copyright (C) 2012-2024 g10 Code GmbH
+ * Copyright (C) 2012-2025 g10 Code GmbH
  *
  * This file is part of Libgcrypt.
  *
@@ -54,11 +54,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.11.0-unknown"
+#define GCRYPT_VERSION "1.11.1-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010b00
+#define GCRYPT_VERSION_NUMBER 0x010b01
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -336,6 +336,11 @@ enum gcry_ctl_cmds
     GCRYCTL_FIPS_SERVICE_INDICATOR_MD = 86,
     GCRYCTL_FIPS_SERVICE_INDICATOR_PK_FLAGS = 87,
     GCRYCTL_MD_CUSTOMIZE = 88
+#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
+    ,
+    GCRYCTL_FIPS_SERVICE_INDICATOR = 89,
+    GCRYCTL_FIPS_REJECT_NON_FIPS = 90
+#endif /*_GCRYPT_IN_LIBGCRYPT*/
   };
 
 /* Perform various operations defined by CMD. */
@@ -1753,6 +1758,13 @@ enum gcry_kem_algos
 #define GCRY_KEM_CM6688128F_CIPHER_LEN  GCRY_KEM_CM6688128F_ENCAPS_LEN
 #define GCRY_KEM_CM6688128F_SHARED_LEN  32
 
+#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
+#define GCRY_KEM_MLKEM_RANDOM_LEN       32
+#define GCRY_KEM_MLKEM512_RANDOM_LEN    GCRY_KEM_MLKEM_RANDOM_LEN
+#define GCRY_KEM_MLKEM768_RANDOM_LEN    GCRY_KEM_MLKEM_RANDOM_LEN
+#define GCRY_KEM_MLKEM1024_RANDOM_LEN   GCRY_KEM_MLKEM_RANDOM_LEN
+#endif /*_GCRYPT_IN_LIBGCRYPT*/
+
 #define GCRY_KEM_MLKEM512_SECKEY_LEN    (2*384+2*384+32+2*32)  /* 1632 */
 #define GCRY_KEM_MLKEM512_PUBKEY_LEN    (2*384+32)             /*  800 */
 #define GCRY_KEM_MLKEM512_ENCAPS_LEN    (128+2*320)            /*  768 */
@@ -1963,6 +1975,45 @@ void gcry_log_debugpnt (const char *text,
 void gcry_log_debugsxp (const char *text, gcry_sexp_t sexp);
 
 char *gcry_get_config (int mode, const char *what);
+
+/* Convinience macro to access the FIPS service indicator.  */
+#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
+
+#define gcry_get_fips_service_indicator()       \
+  gcry_control (GCRYCTL_FIPS_SERVICE_INDICATOR)
+
+#define GCRY_FIPS_FLAG_REJECT_KDF           (1 << 0)
+#define GCRY_FIPS_FLAG_REJECT_MD_MD5        (1 << 1)
+#define GCRY_FIPS_FLAG_REJECT_MD_OTHERS     (1 << 2)
+#define GCRY_FIPS_FLAG_REJECT_MAC           (1 << 3)
+#define GCRY_FIPS_FLAG_REJECT_CIPHER        (1 << 4)
+#define GCRY_FIPS_FLAG_REJECT_PK            (1 << 5)
+#define GCRY_FIPS_FLAG_REJECT_PK_MD         (1 << 6)
+#define GCRY_FIPS_FLAG_REJECT_PK_GOST_SM2   (1 << 7)
+#define GCRY_FIPS_FLAG_REJECT_CIPHER_MODE   (1 << 8)
+/**/
+#define GCRY_FIPS_FLAG_REJECT_MD_SHA1       (1 << 9)
+#define GCRY_FIPS_FLAG_REJECT_PK_ECC_K      (1 << 10)
+#define GCRY_FIPS_FLAG_REJECT_PK_FLAGS      (1 << 11)
+
+#define GCRY_FIPS_FLAG_REJECT_MD                                \
+  (GCRY_FIPS_FLAG_REJECT_MD_MD5 | GCRY_FIPS_FLAG_REJECT_MD_SHA1 \
+   | GCRY_FIPS_FLAG_REJECT_MD_OTHERS)
+
+/* Note: Don't reject MD5, PK MD, PK GOST, PK SM2,
+                      SHA1, PK ECC K, and PK FLAGS */
+#define GCRY_FIPS_FLAG_REJECT_COMPAT110 \
+  (GCRY_FIPS_FLAG_REJECT_MD_OTHERS      \
+   | GCRY_FIPS_FLAG_REJECT_MAC          \
+   | GCRY_FIPS_FLAG_REJECT_CIPHER       \
+   | GCRY_FIPS_FLAG_REJECT_KDF          \
+   | GCRY_FIPS_FLAG_REJECT_PK)
+
+#define GCRY_FIPS_FLAG_REJECT_DEFAULT \
+  GCRY_FIPS_FLAG_REJECT_COMPAT110
+
+#endif /*_GCRYPT_IN_LIBGCRYPT*/
+
 
 /* Log levels used by the internal logging facility. */
 enum gcry_log_levels

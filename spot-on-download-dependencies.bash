@@ -15,7 +15,7 @@ rc=0
 
 # GCrypt
 
-gcrypt=mingw-w64-x86_64-libgcrypt-1.11.0-2-any.pkg.tar.zst
+gcrypt=mingw-w64-x86_64-libgcrypt-1.11.1-1-any.pkg.tar.zst
 
 rm -f $gcrypt
 wget --output-document=$gcrypt \
@@ -44,7 +44,7 @@ rm -f $gcrypt
 
 # GPG-Error
 
-gpgerror=mingw-w64-x86_64-libgpg-error-1.53-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86_64-libgpg-error-1.55-1-any.pkg.tar.zst
 
 rm -f $gpgerror
 wget --output-document=$gpgerror \

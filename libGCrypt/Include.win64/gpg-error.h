@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.53"
-#define GPGRT_VERSION     "1.53"
+#define GPG_ERROR_VERSION "1.55"
+#define GPGRT_VERSION     "1.55"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013500
-#define GPGRT_VERSION_NUMBER     0x013500
+#define GPG_ERROR_VERSION_NUMBER 0x013700
+#define GPGRT_VERSION_NUMBER     0x013700
 
 
 #ifdef __GNUC__
@@ -852,6 +852,12 @@ typedef unsigned int gpg_error_t;
 # define GPGRT_ATTR_MALLOC  __attribute__ ((__malloc__))
 #else
 # define GPGRT_ATTR_MALLOC
+#endif
+
+#if _GPG_ERR_GCC_VERSION >= 80000
+# define GPGRT_ATTR_NONSTRING __attribute__((__nonstring__))
+#else
+# define GPGRT_ATTR_NONSTRING
 #endif
 
 /* A macro defined if a GCC style __FUNCTION__ macro is available.  */
