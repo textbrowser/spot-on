@@ -40,20 +40,16 @@ static bool lengthGreaterThan(const QString &string1, const QString &string2)
 QString spoton::currentTabName(void) const
 {
   QMapIterator<int, QWidget *> it(m_tabWidgets);
-  QString name("");
 
   while(it.hasNext())
     {
       it.next();
 
       if(it.value() == m_ui.tab->currentWidget())
-	{
-	  name = m_tabWidgetsProperties[it.key()].value("name").toString();
-	  break;
-	}
+	return m_tabWidgetsProperties[it.key()].value("name").toString();
     }
 
-  return name;
+  return "";
 }
 
 QString spoton::mapIconToEmoticon(const QString &content)
@@ -2714,11 +2710,6 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.urlDistributionModel->setVisible(!state);
 #else
   m_settings["gui/minimal"] = state;
-  m_ui.action_Listeners->setChecked(!state);
-  m_ui.action_Neighbors->setChecked(!state);
-  m_ui.action_Search->setChecked(!state);
-  m_ui.action_Settings->setChecked(!state);
-  m_ui.action_Urls->setChecked(!state);
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);
 

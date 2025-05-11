@@ -2896,11 +2896,11 @@ void spoton::slotAuthenticationRequestButtonClicked(void)
 
   if(m_neighborToOidMap.contains(m_sb.authentication_request->
 				 property("data").toByteArray()))
-    authenticate(m_crypts.value("chat", nullptr),
-		 m_neighborToOidMap.
-		 value(m_sb.authentication_request->
-		       property("data").toByteArray()),
-		 m_sb.authentication_request->toolTip());
+    authenticate
+      (m_crypts.value("chat", nullptr),
+       m_neighborToOidMap.value(m_sb.authentication_request->
+				property("data").toByteArray()),
+       m_sb.authentication_request->toolTip());
 
   m_sb.authentication_request->setProperty("data", QVariant());
 }
@@ -7262,15 +7262,9 @@ void spoton::slotStatusButtonClicked(void)
       slotRefreshMail();
     }
   else if(toolButton == m_sb.listeners)
-    {
-      m_ui.action_Listeners->setChecked(true);
-      m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
-    }
+    m_ui.tab->setCurrentIndex(tabIndexFromName("listeners"));
   else if(toolButton == m_sb.neighbors)
-    {
-      m_ui.action_Neighbors->setChecked(true);
-      m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
-    }
+    m_ui.tab->setCurrentIndex(tabIndexFromName("neighbors"));
 }
 
 void spoton::slotStatusChanged(int index)

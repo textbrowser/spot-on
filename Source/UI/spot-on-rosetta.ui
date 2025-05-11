@@ -753,8 +753,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1048</width>
-                    <height>613</height>
+                    <width>532</width>
+                    <height>418</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1129,12 +1129,6 @@
      <height>34</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="action_Close"/>
-   </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
      <string>&amp;Edit</string>
@@ -1152,19 +1146,10 @@
     </property>
     <addaction name="action_Import_GPG_Keys"/>
    </widget>
-   <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Tools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_Close">
-   <property name="text">
-    <string>&amp;Close</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
-   </property>
-  </action>
   <action name="action_Copy">
    <property name="text">
     <string>&amp;Copy Focus Widget</string>

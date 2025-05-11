@@ -248,20 +248,16 @@ int spoton::tabIndexFromName(const QString &name) const
   */
 
   QMapIterator<int, QHash<QString, QVariant> > it(m_tabWidgetsProperties);
-  int index = -1;
 
   while(it.hasNext())
     {
       it.next();
 
       if(it.value().value("name").toString() == name)
-	{
-	  index = m_ui.tab->indexOf(m_tabWidgets[it.key()]);
-	  break;
-	}
+	return m_ui.tab->indexOf(m_tabWidgets[it.key()]);
     }
 
-  return index;
+  return -1;
 }
 
 spoton_crypt *spoton::urlCommonCrypt(void) const
@@ -410,73 +406,6 @@ void spoton::prepareDatabasesFromUI(void)
     QApplication::restoreOverrideCursor();
 }
 
-void spoton::prepareVisiblePages(void)
-{
-  QMap<QString, QAction *> actions;
-  QMap<QString, int> pages;
-
-  actions["buzz"] = m_ui.action_Buzz;
-  actions["listeners"] = m_ui.action_Listeners;
-  actions["neighbors"] = m_ui.action_Neighbors;
-  actions["search"] = m_ui.action_Search;
-#if SPOTON_GOLDBUG == 0
-  actions["settings"] = m_ui.action_Settings;
-#endif
-  actions["starbeam"] = m_ui.action_StarBeam;
-  actions["urls"] = m_ui.action_Urls;
-  pages["buzz"] = 0;
-  pages["chat"] = 1;
-  pages["email"] = 2;
-  pages["listeners"] = 3;
-  pages["neighbors"] = 4;
-  pages["search"] = 5;
-  pages["settings"] = 6;
-  pages["starbeam"] = 7;
-  pages["urls"] = 8;
-#if SPOTON_GOLDBUG == 1
-  pages["x_add_friend"] = 9; // Sorted keys.
-  pages["y_about"] = 10; // Sorted keys.
-#else
-  pages["x_about"] = 9; // Sorted keys.
-#endif
-
-  {
-    QMapIterator<QString, QAction *> it(actions);
-
-    while(it.hasNext())
-      {
-	it.next();
-
-	if(!it.value()->isChecked())
-	  pages.remove(it.key());
-      }
-  }
-
-  auto const count = m_ui.tab->count();
-
-  for(int i = 0; i < count; i++)
-    m_ui.tab->removeTab(0);
-
-  {
-    QMapIterator<QString, int> it(pages);
-
-    while(it.hasNext())
-      {
-	it.next();
-
-	auto widget = m_tabWidgets.value(it.value());
-
-	if(!widget)
-	  continue;
-
-	auto const hash(m_tabWidgetsProperties.value(it.value()));
-	auto const icon(hash.value("icon").value<QIcon> ());
-
-	m_ui.tab->addTab(widget, icon, hash.value("label").toString());
-      }
-  }
-}
-
 void spoton::prepareTabIcons(void)
 {
   QStringList list;
@@ -488,6 +417,7 @@ void spoton::prepareTabIcons(void)
        << "email.png"
        << "add-listener.png"
        << "neighbors.png"
+       << "lock.png"
        << "search.png"
        << "settings.png"
        << "starbeam.png"
@@ -499,6 +429,7 @@ void spoton::prepareTabIcons(void)
        << "email.png"
        << "server.png"
        << "connect.png"
+       << "lock.png"
        << "search.png"
        << "settings.png"
        << "starbeam.png"
@@ -1472,7 +1403,6 @@ void spoton::slotLock(void)
   m_notificationsWindow->close();
   m_optionsWindow->close();
   m_releaseNotes->close();
-  m_rosetta.close();
   m_rss->close();
   m_smpWindow->close();
   m_statisticsWindow->close();
@@ -2081,39 +2011,6 @@ void spoton::slotSaveSecondaryStorage(bool state)
   QSettings settings;
 
   settings.setValue("gui/secondary_storage_congestion_control", state);
-}
-
-void spoton::slotShowPage(bool state)
-{
-  QString str("");
-  auto action = qobject_cast<QAction *> (sender());
-
-  if(action == m_ui.action_Buzz)
-    str = "gui/showBuzzPage";
-  else if(action == m_ui.action_Listeners)
-    str = "gui/showListenersPage";
-  else if(action == m_ui.action_Neighbors)
-    str = "gui/showNeighborsPage";
-  else if(action == m_ui.action_Search)
-    str = "gui/showSearchPage";
-#if SPOTON_GOLDBUG == 0
-  else if(action == m_ui.action_Settings)
-    str = "gui/showSettingsPage";
-#endif
-  else if(action == m_ui.action_StarBeam)
-    str = "gui/showStarBeamPage";
-  else if(action == m_ui.action_Urls)
-    str = "gui/showUrlsPage";
-
-  if(!str.isEmpty())
-    {
-      m_settings[str] = state;
-
-      QSettings settings;
-
-      settings.setValue(str, state);
-      prepareVisiblePages();
-    }
 }
 
 void spoton::slotShowRss(void)

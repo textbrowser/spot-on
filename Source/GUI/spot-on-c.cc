@@ -5274,10 +5274,8 @@ void spoton::slotTransportChanged(int index)
 
 void spoton::slotViewRosetta(void)
 {
-  menuBar()->repaint();
-  repaint();
-  QApplication::processEvents();
-  m_rosetta.show(this);
+  m_rosetta->show(this);
+  m_ui.tab->setCurrentIndex(m_ui.tab->indexOf(m_rosetta));
 }
 
 void spoton::updatePublicKeysLabel(void)

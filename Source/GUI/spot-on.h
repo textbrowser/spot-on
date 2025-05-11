@@ -520,11 +520,9 @@ class spoton: public QMainWindow
   QMainWindow *m_optionsWindow;
   QMainWindow *m_statisticsWindow;
   QMap<int, QHash<QString, QVariant> > m_tabWidgetsProperties;
-  QMap<int, QWidget *> m_tabWidgets; /*
-				     ** QTabWidget does not provide
-				     ** a method for hiding individual pages.
-				     */
+  QMap<int, QWidget *> m_tabWidgets;
   QPointer<QWidget> m_careOfPage;
+  QPointer<spoton_rosetta> m_rosetta;
   QPointer<spoton_status_activity> m_statusActivity;
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
@@ -570,7 +568,6 @@ class spoton: public QMainWindow
   spoton_encryptfile m_encryptFile;
   spoton_external_address *m_externalAddress;
   spoton_logviewer m_logViewer;
-  spoton_rosetta m_rosetta;
   spoton_rss *m_rss;
   spoton_smpwindow *m_smpWindow;
   QByteArray copiedPublicKeyPairToMagnet(const QByteArray &data) const;
@@ -678,7 +675,6 @@ class spoton: public QMainWindow
   void prepareTimeWidgets(void);
   void prepareUrlContainers(void);
   void prepareUrlLabels(void);
-  void prepareVisiblePages(void);
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void resizeEvent(QResizeEvent *event);
@@ -761,7 +757,6 @@ class spoton: public QMainWindow
   void slotClearClipboardBuffer(void);
   void slotClearOutgoingMessage(void);
   void slotCloseBuzzTab(int index);
-  void slotCloseTab(void);
   void slotCommonBuzzChannelsActivated(int index);
   void slotComputeFileHash(void);
   void slotConfigurePoptastic(void);
@@ -1065,12 +1060,10 @@ class spoton: public QMainWindow
   void slotShowEncryptFile(void);
   void slotShowErrorMessage(void);
   void slotShowEtpMagnetsMenu(const QPoint &point);
-  void slotShowMainTabContextMenu(const QPoint &point);
   void slotShowMinimalDisplay(bool state);
   void slotShowNeighborStatistics(void);
   void slotShowNotificationsWindow(void);
   void slotShowOptions(void);
-  void slotShowPage(bool state);
   void slotShowReleaseNotes(void);
   void slotShowRss(void);
   void slotShowSMPWindow(void);

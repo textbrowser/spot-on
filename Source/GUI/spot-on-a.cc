@@ -419,6 +419,14 @@ int main(int argc, char *argv[])
   settings.remove("gui/git_a");
   settings.remove("gui/git_script");
   settings.remove("gui/git_t");
+  settings.remove("gui/rosettaGeometry");
+  settings.remove("gui/showBuzzPage");
+  settings.remove("gui/showListenersPage");
+  settings.remove("gui/showNeighborsPage");
+  settings.remove("gui/showSearchPage");
+  settings.remove("gui/showSettingsPage");
+  settings.remove("gui/showStarBeamPage");
+  settings.remove("gui/showUrlsPage");
   settings.remove("gui/theme");
   splash.showMessage
     (QObject::tr("Initializing cryptographic containers."),
@@ -605,7 +613,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_ui.participants->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.received->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.tab->setSpotOn(this);
-  m_ui.tab->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_ui.tab->insertTab(5, m_rosetta = new spoton_rosetta(), tr("Rosetta"));
   m_ui.transmitted->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.transmittedMagnets->setContextMenuPolicy(Qt::CustomContextMenu);
   m_ui.urlParticipants->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -618,6 +626,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
        << "email"
        << "listeners"
        << "neighbors"
+       << "rosetta"
        << "search"
        << "settings"
        << "starbeam"
@@ -989,7 +998,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SLOT(slotSetIcons(void)));
   connect(this,
 	  SIGNAL(iconsChanged(void)),
-	  &m_rosetta,
+	  m_rosetta,
 	  SLOT(slotSetIcons(void)));
   connect(this,
 	  SIGNAL(neighborsQueryReady(QSqlDatabase *,
@@ -1003,7 +1012,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 				     const int &)));
   connect(this,
 	  SIGNAL(participantAdded(const QString &)),
-	  &m_rosetta,
+	  m_rosetta,
 	  SLOT(slotParticipantAdded(const QString &)));
   connect(this,
 	  SIGNAL(participantAdded(const QString &)),
@@ -1122,20 +1131,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotPopulateParticipants(void)));
-  connect(&m_rosetta,
-	  SIGNAL(participantAdded(const QString &)),
-	  m_smpWindow,
-	  SLOT(slotRefresh(void)));
-  connect(&m_rosetta,
-	  SIGNAL(participantDeleted(const QString &, const QString &)),
-	  m_smpWindow,
-	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
-  connect(&m_rosetta,
-	  SIGNAL(participantNameChanged(const QByteArray &,
-					const QString &)),
-	  m_smpWindow,
-	  SLOT(slotParticipantNameChanged(const QByteArray &,
-					  const QString &)));
   connect(&m_starbeamUpdateTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -1546,6 +1541,20 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveAlternatingColors(bool)));
+  connect(m_rosetta,
+	  SIGNAL(participantAdded(const QString &)),
+	  m_smpWindow,
+	  SLOT(slotRefresh(void)));
+  connect(m_rosetta,
+	  SIGNAL(participantDeleted(const QString &, const QString &)),
+	  m_smpWindow,
+	  SLOT(slotParticipantDeleted(const QString &, const QString &)));
+  connect(m_rosetta,
+	  SIGNAL(participantNameChanged(const QByteArray &,
+					const QString &)),
+	  m_smpWindow,
+	  SLOT(slotParticipantNameChanged(const QByteArray &,
+					  const QString &)));
 
   /*
   ** Connect m_ui's items.
@@ -1565,10 +1574,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  this,
 	  SLOT(slotShowAddParticipant(void)));
 #endif
-  connect(m_ui.action_Buzz,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1605,10 +1610,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotImportPublicKeys(void)));
-  connect(m_ui.action_Listeners,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Log_Viewer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1617,10 +1618,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotShowMinimalDisplay(bool)));
-  connect(m_ui.action_Neighbors,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_New_Global_Name,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1669,28 +1666,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowSMPWindow(void)));
-  connect(m_ui.action_Search,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-#if SPOTON_GOLDBUG == 0
-  connect(m_ui.action_Settings,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
-#endif
-  connect(m_ui.action_StarBeam,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Statistics_Window,
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotShowStatisticsWindow(void)));
-  connect(m_ui.action_Urls,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotShowPage(bool)));
   connect(m_ui.action_Vacuum_Databases,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2556,18 +2535,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (QUrl::fromUserInput(m_settings.value("gui/external_ip_url").toString()));
   m_ui.activeUrlDistribution->setChecked
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
-  m_ui.action_Buzz->setChecked
-    (m_settings.value("gui/showBuzzPage", true).toBool());
-  m_ui.action_Listeners->setChecked
-    (m_settings.value("gui/showListenersPage", true).toBool());
-  m_ui.action_Neighbors->setChecked
-    (m_settings.value("gui/showNeighborsPage", true).toBool());
-  m_ui.action_Search->setChecked
-    (m_settings.value("gui/showSearchPage", true).toBool());
-  m_ui.action_StarBeam->setChecked
-    (m_settings.value("gui/showStarBeamPage", true).toBool());
-  m_ui.action_Urls->setChecked
-    (m_settings.value("gui/showUrlsPage", true).toBool());
   m_ui.email_pages->setValue
     (m_settings.value("gui/email_letters_per_page", 500).toInt());
   m_ui.git_chat->setChecked(m_settings.value("gui/git_chat", false).toBool());
@@ -3187,7 +3154,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
       m_ui.encryptionKeySize->setEnabled(false);
       m_ui.encryptionKeyType->setEnabled(false);
       m_ui.keys->setEnabled(true);
-      m_ui.menu_Pages->setEnabled(false);
       m_ui.regenerate->setEnabled(true);
       m_ui.signatureKeySize->setEnabled(false);
       m_ui.signatureKeyType->setEnabled(false);
@@ -3239,7 +3205,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
       m_ui.kernelBox->setEnabled(false);
       m_ui.kernelBox->setVisible(false);
       m_ui.keys->setEnabled(false);
-      m_ui.menu_Pages->setEnabled(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase->setEnabled(false);
       m_ui.passphraseButton->setEnabled(false);
@@ -3251,7 +3216,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
       m_ui.signatureKeyType->setEnabled(false);
 
       for(int i = 0; i < m_ui.tab->count(); i++)
-	if(i == 6) // Settings
+	if(i == 7) // Settings
 	  {
 	    m_ui.tab->blockSignals(true);
 	    m_ui.tab->setCurrentIndex(i);
@@ -3362,10 +3327,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRegenerateKey(void)));
-  connect(m_ui.tab->tabBar(),
-	  SIGNAL(customContextMenuRequested(const QPoint &)),
-	  this,
-	  SLOT(slotShowMainTabContextMenu(const QPoint &)));
   connect(m_ui.transmitted,
 	  SIGNAL(customContextMenuRequested(const QPoint &)),
 	  this,
@@ -10115,7 +10076,7 @@ void spoton::slotSetPassphrase(void)
 	    }
 
 	  QApplication::setOverrideCursor(Qt::WaitCursor);
-	  m_rosetta.setParent(this);
+	  m_rosetta->setParent(this);
 	  m_smpWindow->populateSecrets();
 	  sendKeysToKernel();
 	  askKernelToReadStarBeamKeys();
@@ -10167,7 +10128,6 @@ void spoton::slotSetPassphrase(void)
       m_ui.kernelBox->setEnabled(true);
       m_ui.kernelBox->setVisible(true);
       m_ui.keys->setEnabled(true);
-      m_ui.menu_Pages->setEnabled(true);
       m_ui.newKeys->setChecked(false);
       m_ui.newKeys->setEnabled(true);
       m_ui.passphrase1->clear();
@@ -11187,6 +11147,7 @@ void spoton::slotValidatePassphrase(void)
 	    if(m_optionsUi.launchKernel->isChecked())
 	      slotActivateKernel();
 
+	    m_rosetta->setParent(this);
 	    m_sb.frame->setEnabled(true);
 	    m_sb.lock->setEnabled(true);
 #ifdef SPOTON_POPTASTIC_SUPPORTED
@@ -11221,7 +11182,6 @@ void spoton::slotValidatePassphrase(void)
 	    m_ui.kernelBox->setEnabled(true);
 	    m_ui.kernelBox->setVisible(true);
 	    m_ui.keys->setEnabled(true);
-	    m_ui.menu_Pages->setEnabled(true);
 	    m_ui.newKeys->setEnabled(true);
 	    m_ui.passphrase->clear();
 	    m_ui.passphrase->clear();
@@ -11278,7 +11238,6 @@ void spoton::slotValidatePassphrase(void)
 	    populateUrlDistillers();
 	    prepareUrlContainers();
 	    prepareUrlLabels();
-	    prepareVisiblePages();
 	    sendBuzzKeysToKernel();
 	    QApplication::restoreOverrideCursor();
 	    m_rss->prepareAfterAuthentication();

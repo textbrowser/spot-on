@@ -536,8 +536,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>473</width>
-                <height>580</height>
+                <width>862</width>
+                <height>672</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -2439,8 +2439,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>729</width>
-             <height>461</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3195,7 +3195,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>374</width>
+                     <width>363</width>
                      <height>1622</height>
                     </rect>
                    </property>
@@ -3778,8 +3778,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>234</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4191,7 +4191,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>811</width>
+                  <width>835</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -5082,8 +5082,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>714</width>
-             <height>426</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5168,8 +5168,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>906</width>
-                 <height>749</height>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6220,8 +6220,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1029</width>
-             <height>1379</height>
+             <width>1062</width>
+             <height>1359</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7489,8 +7489,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>672</width>
-             <height>732</height>
+             <width>851</width>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9518,8 +9518,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>308</width>
-             <height>179</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -9799,18 +9799,6 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <widget class="QMenu" name="menu_Pages">
-     <property name="title">
-      <string>&amp;Pages</string>
-     </property>
-     <addaction name="action_Buzz"/>
-     <addaction name="action_Listeners"/>
-     <addaction name="action_Neighbors"/>
-     <addaction name="action_Search"/>
-     <addaction name="action_Settings"/>
-     <addaction name="action_StarBeam"/>
-     <addaction name="action_Urls"/>
-    </widget>
     <addaction name="action_About"/>
     <addaction name="action_Documentation"/>
     <addaction name="action_Release_Notes"/>
@@ -9819,7 +9807,6 @@
     <addaction name="action_Minimal_Display"/>
     <addaction name="action_Notifications_Window"/>
     <addaction name="action_Options"/>
-    <addaction name="menu_Pages"/>
     <addaction name="action_Poptastic_Settings"/>
     <addaction name="action_RSS"/>
     <addaction name="action_Statistics_Window"/>
@@ -10010,72 +9997,6 @@
     <string>&amp;RSS...</string>
    </property>
   </action>
-  <action name="action_Buzz">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Buzz</string>
-   </property>
-  </action>
-  <action name="action_Listeners">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Listeners</string>
-   </property>
-  </action>
-  <action name="action_Neighbors">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Neighbors</string>
-   </property>
-  </action>
-  <action name="action_Search">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;Search</string>
-   </property>
-  </action>
-  <action name="action_StarBeam">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>S&amp;tarBeam</string>
-   </property>
-  </action>
-  <action name="action_Urls">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>&amp;URLs</string>
-   </property>
-  </action>
   <action name="action_Vacuum_Databases">
    <property name="text">
     <string>&amp;Vacuum SQLite Databases</string>
@@ -10112,17 +10033,6 @@
   <action name="action_Release_Notes">
    <property name="text">
     <string>R&amp;elease Notes...</string>
-   </property>
-  </action>
-  <action name="action_Settings">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Settin&amp;gs</string>
    </property>
   </action>
  </widget>

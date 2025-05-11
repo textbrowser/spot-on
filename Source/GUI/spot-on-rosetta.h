@@ -114,7 +114,6 @@ class spoton_rosetta: public QMainWindow
   void slotAddContact(void);
   void slotClear(void);
   void slotClearClipboardBuffer(void);
-  void slotClose(void);
   void slotContactsChanged(int index);
   void slotConvertDecrypt(void);
   void slotConvertEncrypt(void);

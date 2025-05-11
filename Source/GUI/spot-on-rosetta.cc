@@ -111,10 +111,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotClearClipboardBuffer(void)));
-  connect(ui.action_Close,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotClose(void)));
   connect(ui.action_Copy,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -329,10 +325,9 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   QByteArray mSignature;
   QByteArray sPublicKey;
   QByteArray sSignature;
-  QSettings settings;
   auto ok = true;
 
-  name = settings.value("gui/rosettaName", "unknown").toByteArray();
+  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
   mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
@@ -848,9 +843,6 @@ void spoton_rosetta::readPrisonBlues
 
 void spoton_rosetta::resizeEvent(QResizeEvent *event)
 {
-  if(!isFullScreen())
-    QSettings().setValue("gui/rosettaGeometry", saveGeometry());
-
   QWidget::resizeEvent(event);
 }
 
@@ -912,21 +904,11 @@ void spoton_rosetta::setParent(spoton *parent)
 
 void spoton_rosetta::show(spoton *parent)
 {
-  QSettings settings;
-
-  if(!isVisible())
-    if(settings.contains("gui/rosettaGeometry"))
-      restoreGeometry(settings.value("gui/rosettaGeometry").toByteArray());
-
   setParent(parent);
-  spoton_utilities::centerWidget(this, m_parent);
-  showNormal();
-  activateWindow();
-  raise();
   ui.name->setText
-    (QString::fromUtf8(settings.value("gui/rosettaName", "unknown").
+    (QString::fromUtf8(QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
-		       settings.value("gui/rosettaName", "unknown").
+		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
 }
@@ -1324,15 +1306,6 @@ void spoton_rosetta::slotClearClipboardBuffer(void)
       clipboard->clear();
       QApplication::restoreOverrideCursor();
     }
-}
-
-void spoton_rosetta::slotClose(void)
-{
-#ifdef SPOTON_GPGME_ENABLED
-  if(m_gpgImport)
-    m_gpgImport->close();
-#endif
-  close();
 }
 
 void spoton_rosetta::slotContactsChanged(int index)
@@ -1814,7 +1787,6 @@ void spoton_rosetta::slotConvertEncrypt(void)
   QByteArray signature;
   QDataStream stream(&keyInformation, QIODevice::WriteOnly);
   QScopedPointer<spoton_crypt> crypt;
-  QSettings settings;
   QString error("");
   auto data(ui.inputEncrypt->toPlainText().toUtf8());
   auto ok = true;
@@ -1850,7 +1822,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
   hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::veryStrongRandomBytes
     (static_cast<size_t> (hashKey.length()));
-  name = settings.value("gui/rosettaName", "unknown").toByteArray();
+  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
   publicKey = spoton_misc::publicKeyFromHash
     (QByteArray::fromBase64(ui.contacts->
 			    itemData(ui.contacts->
@@ -1905,7 +1877,6 @@ void spoton_rosetta::slotConvertEncrypt(void)
   if(ok)
     {
       QDataStream stream(&data, QIODevice::WriteOnly);
-      QSettings settings;
 
       stream << myPublicKeyHash
 	     << name
@@ -2290,7 +2261,7 @@ void spoton_rosetta::slotImportGPGKeys(void)
 	      SLOT(slotGPGKeysRemoved(void)));
     }
 
-  spoton_utilities::centerWidget(m_gpgImport, this);
+  spoton_utilities::centerWidget(m_gpgImport, m_parent);
   m_gpgImport->showNormal();
   m_gpgImport->activateWindow();
   m_gpgImport->raise();
@@ -2690,18 +2661,14 @@ void spoton_rosetta::slotSaveName(void)
   else
     ui.name->setText(str.trimmed());
 
+  QSettings().setValue("gui/rosettaName", str.toUtf8());
   ui.name->setCursorPosition(0);
-
-  QSettings settings;
-
-  settings.setValue("gui/rosettaName", str.toUtf8());
   ui.name->selectAll();
 }
 
 void spoton_rosetta::slotSetIcons(void)
 {
-  QSettings settings;
-  auto iconSet(settings.value("gui/iconSet", "nuove").toString().toLower());
+  auto iconSet(QSettings().value("gui/iconSet", "nuove").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||
@@ -2731,7 +2698,6 @@ void spoton_rosetta::slotSplitterMoved(int pos, int index)
   if(!splitter)
     return;
 
-  QSettings settings;
   QString key("");
 
   if(splitter == ui.chatHorizontalSplitter)
@@ -2743,7 +2709,7 @@ void spoton_rosetta::slotSplitterMoved(int pos, int index)
   else
     key = "gui/rosettaMainHorizontalSplitter";
 
-  settings.setValue(key, splitter->saveState());
+  QSettings().setValue(key, splitter->saveState());
 }
 
 void spoton_rosetta::slotWriteGPG(void)
