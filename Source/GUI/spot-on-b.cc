@@ -6740,6 +6740,8 @@ void spoton::slotSetIcons(int index)
   m_ui.action_Quit->setIcon
     (QIcon(QString(":/%1/quit.png").arg(iconSet)));
 #endif
+  m_ui.action_Rosetta->setIcon
+    (QIcon(QString(":/%1/lock.png").arg(iconSet)));
 
   QStringList list;
 
