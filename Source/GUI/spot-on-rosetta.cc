@@ -2294,7 +2294,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
   completer->setCompletionRole(QFileSystemModel::FileNameRole);
   completer->setFilterMode(Qt::MatchContains);
   completer->setModel(model);
-  model->setRootPath(QDir::homePath());
+  model->setRootPath(QDir::rootPath());
   ui.setupUi(&dialog);
   ui.gpg->setCompleter(completer);
   ui.gpg->setText(QSettings().value("gui/gpgPath", "").toString());
@@ -2603,7 +2603,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setDefaultButton(QMessageBox::No);
-  mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
+  mb.setText(tr("Remove all of your local GPG keys? "
 		"The keys will not be removed from the GPG key ring."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
