@@ -41,14 +41,28 @@
      <item row="0" column="0">
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>GPG Executable (Not Saved)</string>
-       </property>
-       <property name="buddy">
-        <cstring>gpg</cstring>
+        <string>GPG Executable</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>GPG Executable Results</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QTextBrowser" name="gpg_results">
+       <property name="tabChangesFocus">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>GPG Directives</string>
@@ -58,31 +72,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QLineEdit" name="gpg">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="placeholderText">
-          <string>GPG Executable Absolute Path</string>
-         </property>
-         <property name="clearButtonEnabled">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Select...</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="1">
+     <item row="2" column="1">
       <widget class="QPlainTextEdit" name="gpg_directives">
        <property name="tabChangesFocus">
         <bool>true</bool>
@@ -101,19 +91,15 @@ Subkey-Type: 1
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="gpg">
        <property name="text">
-        <string>GPG Executable Results</string>
+        <string/>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+       <property name="placeholderText">
+        <string>GPG Executable Absolute Path</string>
        </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QTextBrowser" name="gpg_results">
-       <property name="tabChangesFocus">
+       <property name="clearButtonEnabled">
         <bool>true</bool>
        </property>
       </widget>

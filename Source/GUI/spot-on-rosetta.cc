@@ -26,7 +26,9 @@
 */
 
 #include <QClipboard>
+#include <QCompleter>
 #include <QDir>
+#include <QFileSystemModel>
 #include <QInputDialog>
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -45,6 +47,7 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-gpg-passphrase.h"
+#include "ui_spot-on-rosetta-gpg-new-keys.h"
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
@@ -119,6 +122,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotImportGPGKeys(void)));
+  connect(ui.action_New_GPG_Keys,
+	  SIGNAL(triggered(void)),
+	  this,
+	  SLOT(slotNewGPGKeys(void)));
   connect(ui.action_Paste,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -2244,6 +2251,10 @@ void spoton_rosetta::slotDelete(void)
 void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
+  menuBar()->repaint();
+  repaint();
+  QApplication::processEvents();
+
   if(!m_gpgImport)
     {
       m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
@@ -2266,6 +2277,34 @@ void spoton_rosetta::slotImportGPGKeys(void)
   m_gpgImport->activateWindow();
   m_gpgImport->raise();
 #endif
+}
+
+void spoton_rosetta::slotNewGPGKeys(void)
+{
+  menuBar()->repaint();
+  repaint();
+  QApplication::processEvents();
+
+  QDialog dialog(this);
+  Ui_spoton_gpg_new_keys ui;
+  auto completer = new QCompleter(this);
+  auto model = new QFileSystemModel(this);
+
+  completer->setCaseSensitivity(Qt::CaseInsensitive);
+  completer->setCompletionRole(QFileSystemModel::FileNameRole);
+  completer->setFilterMode(Qt::MatchContains);
+  completer->setModel(model);
+  model->setRootPath(QDir::homePath());
+  ui.setupUi(&dialog);
+  ui.gpg->setCompleter(completer);
+  ui.gpg->setText(QSettings().value("gui/gpgPath", "").toString());
+  ui.gpg->selectAll();
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::processEvents();
+      QSettings().setValue("gui/gpgPath", ui.gpg->text());
+    }
 }
 
 void spoton_rosetta::slotParticipantAdded(const QString &type)

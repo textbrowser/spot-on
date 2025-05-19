@@ -126,6 +126,7 @@ class spoton_rosetta: public QMainWindow
   void slotDecryptReset(void);
   void slotDelete(void);
   void slotImportGPGKeys(void);
+  void slotNewGPGKeys(void);
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
   void slotPrisonBluesTimeout(void);
