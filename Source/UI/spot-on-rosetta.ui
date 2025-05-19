@@ -1145,6 +1145,7 @@
      <string>&amp;Tools</string>
     </property>
     <addaction name="action_Import_GPG_Keys"/>
+    <addaction name="action_New_GPG_Keys"/>
    </widget>
    <addaction name="menu_Edit"/>
    <addaction name="menu_Tools"/>
@@ -1187,6 +1188,11 @@
   <action name="action_Remove_Stored_INI_GPG_Passphrase">
    <property name="text">
     <string>Remove Stored INI GPG Passphrase</string>
+   </property>
+  </action>
+  <action name="action_New_GPG_Keys">
+   <property name="text">
+    <string>&amp;New GPG Keys...</string>
    </property>
   </action>
  </widget>

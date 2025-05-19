@@ -548,10 +548,7 @@ void spoton_web_server_thread::process(QSslSocket *socket,
   for(int i = 0; i < list.size(); i++)
     list.replace
       (i,
-       QString(list.at(i)).
-       remove("link=").
-       remove("pages=").
-       remove("search="));
+       QString(list.at(i)).remove("link=").remove("pages=").remove("search="));
 
   current = list.value(0).toULongLong();
   offset = current * s_urlLimit;
