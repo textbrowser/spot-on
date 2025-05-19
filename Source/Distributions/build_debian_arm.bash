@@ -46,7 +46,7 @@ chmod -x ./opt/spot-on/Lib/lib*
 find ./opt/spot-on -type f -exec chmod g+w {} \;
 rm ./opt/spot-on/Documentation/*.qrc
 
-# Preparing Spot-On-2024.12.25_$architecture.deb:
+# Preparing Spot-On-2025.05.31_$architecture.deb:
 
 architecture="$(dpkg --print-architecture)"
 
@@ -61,7 +61,7 @@ else
 fi
 
 cp -r ./opt/spot-on spot-on-debian/opt/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2024.12.25_$architecture.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2025.05.31_$architecture.deb
 make distclean
 rm -fr ./opt
 rm -fr ./spot-on-debian

@@ -2303,7 +2303,53 @@ void spoton_rosetta::slotNewGPGKeys(void)
   if(dialog.exec() == QDialog::Accepted)
     {
       QApplication::processEvents();
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       QSettings().setValue("gui/gpgPath", ui.gpg->text());
+      dialog.open();
+      dialog.setEnabled(false);
+
+      QFileInfo const fileInfo(ui.gpg->text());
+
+      if(fileInfo.isExecutable())
+	{
+	  QFile file;
+
+	  file.setFileName
+	    (spoton_misc::homePath() + QDir::separator() + "gpg.txt");
+
+	  if(file.open(QIODevice::Text | QIODevice::WriteOnly))
+	    {
+	      file.write(ui.gpg_directives->toPlainText().toUtf8());
+	      file.close();
+
+	      QProcess process;
+	      QStringList parameters;
+
+	      parameters << "--batch"
+			 << "--gen-key"
+			 << file.fileName();
+	      process.setWorkingDirectory(spoton_misc::homePath());
+	      process.start(fileInfo.absoluteFilePath(), parameters);
+
+	      do
+		{
+		  ui.gpg_results->append(process.readAllStandardError());
+		  ui.gpg_results->append(process.readAllStandardOutput());
+		  process.waitForFinished(150);
+		  QApplication::processEvents();
+		}
+	      while(process.state() == QProcess::Running);
+
+	      file.remove();
+	    }
+	  else
+	    ui.gpg_results->append
+	      (tr("Could not create %1.").arg(file.fileName()));
+	}
+      else
+	ui.gpg_results->append(tr("Please select an executable GPG program."));
+
+      QApplication::restoreOverrideCursor();
     }
 }
 

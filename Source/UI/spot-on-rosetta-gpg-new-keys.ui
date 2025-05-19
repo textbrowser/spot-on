@@ -80,13 +80,13 @@
        <property name="plainText">
         <string># https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
-Expire-Date: 0
-Key-Length: 4096
 Key-Type: 1
-Name-Email: spot-on@wonder.org
-Name-Real: Spot-On
-Subkey-Length: 4096
+Key-Length: 4096
 Subkey-Type: 1
+Subkey-Length: 4096
+Name-Real: Spot-On
+Name-Email: spot-on@wonder.org
+Expire-Date: 0
 </string>
        </property>
       </widget>
