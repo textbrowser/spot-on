@@ -4423,7 +4423,6 @@ void spoton_crypt::generateSslKeys(const int keySize,
 	{
 	  auto str(parameters[i]);
 
-	  str.replace("%1", fileInfo.absoluteFilePath());
 	  str.replace
 	    ("%2",
 	     QString::
