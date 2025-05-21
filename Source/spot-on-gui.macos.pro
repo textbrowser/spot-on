@@ -35,7 +35,6 @@ QMAKE_CLEAN            += ../libNTRU/*.dylib \
                           ../libNTRU/src/*.o \
                           ../libNTRU/src/*.s \
                           Spot-On
-QMAKE_CXX              = clang++
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_CXXFLAGS_RELEASE += -O3 \
@@ -58,9 +57,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -std=c++17
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
-INCLUDEPATH	  += . \
-                     ../. \
-                     GUI
+INCLUDEPATH	  += . ../. GUI
 
 exists(/opt/homebrew) {
 INCLUDEPATH       += /opt/homebrew/include
@@ -72,7 +69,6 @@ LIBS              += -L/usr/local/lib
 
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../libNTRU \
-                     -framework AppKit \
                      -framework Cocoa \
                      -lcrypto \
                      -lgcrypt \
