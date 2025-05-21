@@ -1,7 +1,10 @@
+exists(/opt/homebrew/include) {
+INCLUDEPATH += /opt/homebrew/include
+}
+
 exists(/opt/homebrew/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
 LIBS += -L /opt/homebrew/lib -lgpgme
-INCLUDEPATH += /opt/homebrew/include
 message("GPGME enabled!")
 }
 

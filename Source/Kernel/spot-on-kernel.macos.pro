@@ -5,7 +5,7 @@ libntru.depends =
 libntru.target = libntru.dylib
 purge.commands = rm -f *~
 
-CONFIG		+= qt release warn_on app_bundle
+CONFIG		+= app_bundle qt release warn_on
 LANGUAGE	= C++
 QT		+= bluetooth concurrent network sql websockets widgets
 
@@ -25,8 +25,6 @@ QMAKE_CLEAN            += ../../libNTRU/*.dylib \
                           ../../libNTRU/src/*.o \
                           ../../libNTRU/src/*.s \
                           ../Spot-On-Kernel
-QMAKE_CXX              = clang++
-QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-qual \
@@ -45,20 +43,13 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -fwrapv \
                           -pedantic \
                           -std=c++17
+QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 ICON		  =
+
 INCLUDEPATH	  += . ../. ../../.
-
-exists(/opt/homebrew) {
-INCLUDEPATH       += /opt/homebrew/include
-LIBS              += -L/opt/homebrew/lib
-} else {
-INCLUDEPATH       += /usr/local/include
-LIBS              += -L/usr/local/lib
-}
-
 LIBS		  += -L../../libNTRU \
                      -framework Cocoa \
                      -lcrypto \
@@ -69,6 +60,10 @@ LIBS		  += -L../../libNTRU \
                      -lntru \
 		     -lpthread \
                      -lssl
+
+exists(/opt/homebrew/include) {
+INCLUDEPATH += /opt/homebrew/include
+}
 
 MOC_DIR           = Temporary/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
