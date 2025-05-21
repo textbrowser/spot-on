@@ -1,6 +1,6 @@
 exists(/opt/homebrew/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
-LIBS += -lgpgme
+LIBS += -L /opt/homebrew/lib -lgpgme
 message("GPGME enabled!")
 }
 

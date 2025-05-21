@@ -57,18 +57,11 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -std=c++17
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
+
 INCLUDEPATH	  += . ../. GUI
-
-exists(/opt/homebrew) {
-INCLUDEPATH       += /opt/homebrew/include
-LIBS              += -L/opt/homebrew/lib
-} else {
-INCLUDEPATH       += /usr/local/include
-LIBS              += -L/usr/local/lib
-}
-
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../libNTRU \
+                     -framework AppKit \
                      -framework Cocoa \
                      -lcrypto \
                      -lgcrypt \
