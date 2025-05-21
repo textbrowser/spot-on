@@ -65,6 +65,10 @@ exists(/opt/homebrew/include) {
 INCLUDEPATH += /opt/homebrew/include
 }
 
+exists(/opt/homebrew/opt/openssl/lib) {
+LIBS += -L/opt/homebrew/opt/openssl/lib
+}
+
 MOC_DIR           = Temporary/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
 OBJECTIVE_SOURCES += ../Common/CocoaInitializer.mm

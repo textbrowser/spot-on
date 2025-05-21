@@ -58,6 +58,14 @@ QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 
+exists(/opt/homebrew/include) {
+INCLUDEPATH += /opt/homebrew/include
+}
+
+exists(/opt/homebrew/opt/openssl/lib) {
+LIBS += -L/opt/homebrew/opt/openssl/lib
+}
+
 INCLUDEPATH	  += . ../. GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../libNTRU \
