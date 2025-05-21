@@ -4427,7 +4427,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 	  str.replace
 	    ("%2",
 	     QString::
-	     number(qBound(60L,
+	     number(qBound(1L,
 			   days / 86400L, // We arrive in seconds.
 			   std::numeric_limits<long int>::max())));
 	  str.replace("%3", path1);
