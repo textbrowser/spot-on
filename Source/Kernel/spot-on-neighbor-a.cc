@@ -349,7 +349,7 @@ spoton_neighbor::spoton_neighbor
   m_waitforbyteswritten_msecs = 0;
 
   if(m_useSsl)
-    prepareSslConfiguration(certificate, privateKey, false);
+    prepareSslConfiguration(certificate, privateKey, false, m_keySize);
 
   if(!m_useSsl)
     m_sslControlString = "N/A";
@@ -769,7 +769,7 @@ spoton_neighbor::spoton_neighbor
     }
 
   if(m_bindIpAddress.isEmpty())
-    prepareSslConfiguration(QByteArray(), QByteArray(), true);
+    prepareSslConfiguration(QByteArray(), QByteArray(), true, m_keySize);
 
   if(m_transport != "bluetooth")
     if(m_address.isEmpty())

@@ -388,7 +388,8 @@ class spoton_neighbor: public QThread
 #endif
   void prepareSslConfiguration(const QByteArray &certificate,
 			       const QByteArray &privateKey,
-			       const bool client);
+			       const bool client,
+			       const int keySize);
   void process0000(int length,
 		   const QByteArray &data,
 		   const QList<QByteArray> &symmetricKeys);

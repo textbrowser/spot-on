@@ -50,7 +50,8 @@ QSslConfiguration spoton_neighbor::sslConfiguration(void) const
 
 void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 					      const QByteArray &privateKey,
-					      const bool client)
+					      const bool client,
+					      const int keySize)
 {
   if(!((m_tcpSocket || m_udpSocket || m_webSocket) && m_useSsl))
     return;
@@ -97,9 +98,11 @@ void spoton_neighbor::prepareSslConfiguration(const QByteArray &certificate,
 
       if(!configuration.localCertificate().isNull())
 	{
-	  QSslKey key(privateKey, QSsl::Ec);
+	  QSslKey key;
 
-	  if(key.isNull())
+	  if(keySize < 1024)
+	    key = QSslKey(privateKey, QSsl::Ec);
+	  else
 	    key = QSslKey(privateKey, QSsl::Rsa);
 
 	  configuration.setPrivateKey(key);
@@ -208,7 +211,7 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
   if(!error.isEmpty())
     return;
 
-  prepareSslConfiguration(certificate, privateKey, client);
+  prepareSslConfiguration(certificate, privateKey, client, m_keySize);
 
   if(client)
     m_tcpSocket->startClientEncryption();

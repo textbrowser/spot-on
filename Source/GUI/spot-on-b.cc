@@ -1752,19 +1752,20 @@ void spoton::initializeKernelSocket(void)
   if(m_kernelSocket.state() != QAbstractSocket::UnconnectedState)
     return;
 
-  if(m_ui.kernelKeySize->currentText().toInt() > 0)
+  auto const keySize = m_ui.kernelKeySize->currentText().toInt();
+
+  if(keySize > 0)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
       m_sb.status->setText
 	(tr("Generating SSL/TLS %1-bit kernel socket credentials.").
-	 arg(m_ui.kernelKeySize->currentText()));
+	 arg(keySize));
       m_sb.status->repaint();
 
       QByteArray certificate;
       QByteArray privateKey;
       QByteArray publicKey;
       QString error("");
-      auto const keySize = m_ui.kernelKeySize->currentText().toInt();
 
       spoton_crypt::generateSslKeys
 	(keySize,
