@@ -65,8 +65,8 @@ exists(/opt/homebrew/include) {
 INCLUDEPATH += /opt/homebrew/include
 }
 
-exists(/opt/homebrew/opt/openssl/lib) {
-LIBS += -L/opt/homebrew/opt/openssl/lib
+exists(/opt/homebrew/lib) {
+LIBS += -L/opt/homebrew/lib
 }
 
 MOC_DIR           = Temporary/moc
