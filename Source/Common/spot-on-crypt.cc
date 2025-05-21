@@ -4457,8 +4457,14 @@ void spoton_crypt::generateSslKeys(const int keySize,
       file.remove();
       s_openSSLIdentifier.fetchAndAddOrdered(1);
 
-      if(certificate.isEmpty() || privateKey.isEmpty())
-	goto raw_openssl_label;
+      if(certificate.isEmpty() ||
+	 privateKey.isEmpty() ||
+	 process.exitCode() != 0)
+	{
+	  certificate.clear();
+	  privateKey.clear();
+	  goto raw_openssl_label;
+	}
       else
 	return;
     }
