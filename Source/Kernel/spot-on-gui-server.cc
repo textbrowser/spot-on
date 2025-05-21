@@ -113,9 +113,11 @@ void spoton_gui_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 		    (QSslCertificate(certificate));
 		  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-		  QSslKey key(privateKey, QSsl::Ec);
+		  QSslKey key;
 
-		  if(key.isNull())
+		  if(kernelKeySize < 1024)
+		    key = QSslKey(privateKey, QSsl::Ec);
+		  else
 		    key = QSslKey(privateKey, QSsl::Rsa);
 
 		  configuration.setPrivateKey(key);

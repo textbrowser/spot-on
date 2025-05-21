@@ -1764,9 +1764,10 @@ void spoton::initializeKernelSocket(void)
       QByteArray privateKey;
       QByteArray publicKey;
       QString error("");
+      auto const keySize = m_ui.kernelKeySize->currentText().toInt();
 
       spoton_crypt::generateSslKeys
-	(m_ui.kernelKeySize->currentText().toInt(),
+	(keySize,
 	 certificate,
 	 privateKey,
 	 publicKey,
@@ -1778,6 +1779,7 @@ void spoton::initializeKernelSocket(void)
 
       if(error.isEmpty())
 	{
+	  QSslKey key;
 	  QSslConfiguration configuration;
 	  QString sslCS
 	    (m_settings.value("gui/sslControlString",
@@ -1785,9 +1787,9 @@ void spoton::initializeKernelSocket(void)
 
 	  configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-	  QSslKey key(privateKey, QSsl::Ec);
-
-	  if(key.isNull())
+	  if(keySize < 1024)
+	    key = QSslKey(privateKey, QSsl::Ec);
+	  else
 	    key = QSslKey(privateKey, QSsl::Rsa);
 
 	  configuration.setPrivateKey(key);

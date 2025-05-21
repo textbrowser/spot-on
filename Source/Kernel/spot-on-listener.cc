@@ -680,9 +680,11 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 
 	  if(!configuration.localCertificate().isNull())
 	    {
-	      QSslKey key(m_privateKey, QSsl::Ec);
+	      QSslKey key;
 
-	      if(key.isNull())
+	      if(m_keySize < 1024)
+		key = QSslKey(m_privateKey, QSsl::Ec);
+	      else
 		key = QSslKey(m_privateKey, QSsl::Rsa);
 
 	      configuration.setPrivateKey(key);
