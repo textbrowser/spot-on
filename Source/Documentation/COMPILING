@@ -22,7 +22,8 @@ make
 
 MacOS
 
-Homebrew is required for MacOS.
+Homebrew and Qt LTS are required for MacOS.
+Qt LTS must be installed from Qt and not from Homebrew.
 
 qmake -o Makefile spot-on.macos.pro
 make
