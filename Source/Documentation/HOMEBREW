@@ -1,0 +1,6 @@
+Please install Homebrew as described by https://brew.sh.
+
+> brew install gmp
+> brew install gpgme
+> brew install libgcrypt
+> brew install ntl
