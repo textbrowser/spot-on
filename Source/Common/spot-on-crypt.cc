@@ -4361,7 +4361,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
-		   << "/CN=%5/O=Spot-On"
+		   << "\"/CN=%5/O=Spot-On\""
 		   << "-x509";
       else if(keySize == 384)
 	parameters << "req"
@@ -4375,7 +4375,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
-		   << "/CN=%5/O=Spot-On"
+		   << "\"/CN=%5/O=Spot-On\""
 		   << "-x509";
       else if(keySize < 1024)
 	parameters << "req"
@@ -4389,7 +4389,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
-		   << "/CN=%5/O=Spot-On"
+		   << "\"/CN=%5/O=Spot-On\""
 		   << "-x509";
       else if(keySize <= 4096)
 	parameters << "req"
