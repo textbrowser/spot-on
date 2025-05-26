@@ -40,6 +40,7 @@ extern "C"
 }
 #endif
 
+#include "ui_spot-on-rosetta-gpg-new-keys.h"
 #include "ui_spot-on-rosetta.h"
 
 class QKeyEvent;
@@ -81,6 +82,7 @@ class spoton_rosetta: public QMainWindow
 #endif
   QTimer m_prisonBluesTimer;
   QVector<QByteArray> m_gpgFingerprints;
+  Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
   QByteArray gpgEncrypt(bool &ok,

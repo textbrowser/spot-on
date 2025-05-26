@@ -82,11 +82,11 @@
 
 Key-Type: 1
 Key-Length: 4096
-Subkey-Type: 1
-Subkey-Length: 4096
-Name-Real: Spot-On
-Name-Email: spot-on@wonder.org
 Expire-Date: 0
+Name-Email: spot-on@wonder.org
+Name-Real: Spot-On
+Subkey-Length: 4096
+Subkey-Type: 1
 </string>
        </property>
       </widget>

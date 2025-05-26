@@ -47,7 +47,6 @@
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-gpg-passphrase.h"
-#include "ui_spot-on-rosetta-gpg-new-keys.h"
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
@@ -2285,30 +2284,38 @@ void spoton_rosetta::slotNewGPGKeys(void)
   repaint();
   QApplication::processEvents();
 
-  QDialog dialog(this);
-  Ui_spoton_gpg_new_keys ui;
-  auto completer = new QCompleter(this);
-  auto model = new QFileSystemModel(this);
+  auto dialog = findChild<QDialog *> ("new-gpg-keys-dialog");
 
-  completer->setCaseSensitivity(Qt::CaseInsensitive);
-  completer->setCompletionRole(QFileSystemModel::FileNameRole);
-  completer->setFilterMode(Qt::MatchContains);
-  completer->setModel(model);
-  model->setRootPath(QDir::rootPath());
-  ui.setupUi(&dialog);
-  ui.gpg->setCompleter(completer);
-  ui.gpg->setText(QSettings().value("gui/gpgPath", "").toString());
-  ui.gpg->selectAll();
+  if(!dialog)
+    {
+      auto completer = new QCompleter(this);
+      auto model = new QFileSystemModel(this);
 
-  if(dialog.exec() == QDialog::Accepted)
+      completer->setCaseSensitivity(Qt::CaseInsensitive);
+      completer->setCompletionRole(QFileSystemModel::FileNameRole);
+      completer->setFilterMode(Qt::MatchContains);
+      completer->setModel(model);
+      dialog = new QDialog(this);
+      dialog->setObjectName("new-gpg-keys-dialog");
+      m_gpgNewKeysUi.setupUi(dialog);
+      m_gpgNewKeysUi.gpg->setCompleter(completer);
+      model->setRootPath(QDir::rootPath());
+    }
+
+  m_gpgNewKeysUi.gpg->setText(QSettings().value("gui/gpgPath", "").toString());
+  m_gpgNewKeysUi.gpg->selectAll();
+  m_gpgNewKeysUi.gpg_results->clear();
+
+ repeat_label:
+
+  if(dialog->exec() == QDialog::Accepted)
     {
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      QSettings().setValue("gui/gpgPath", ui.gpg->text());
-      dialog.open();
-      dialog.setEnabled(false);
+      QSettings().setValue("gui/gpgPath", m_gpgNewKeysUi.gpg->text());
+      dialog->open();
 
-      QFileInfo const fileInfo(ui.gpg->text());
+      QFileInfo const fileInfo(m_gpgNewKeysUi.gpg->text());
 
       if(fileInfo.isExecutable())
 	{
@@ -2319,7 +2326,8 @@ void spoton_rosetta::slotNewGPGKeys(void)
 
 	  if(file.open(QIODevice::Text | QIODevice::WriteOnly))
 	    {
-	      file.write(ui.gpg_directives->toPlainText().toUtf8());
+	      file.write
+		(m_gpgNewKeysUi.gpg_directives->toPlainText().toUtf8());
 	      file.close();
 
 	      QProcess process;
@@ -2333,23 +2341,38 @@ void spoton_rosetta::slotNewGPGKeys(void)
 
 	      do
 		{
-		  ui.gpg_results->append(process.readAllStandardError());
-		  ui.gpg_results->append(process.readAllStandardOutput());
 		  process.waitForFinished(150);
 		  QApplication::processEvents();
 		}
 	      while(process.state() == QProcess::Running);
 
 	      file.remove();
+	      m_gpgNewKeysUi.gpg_results->append
+		(process.readAllStandardError().trimmed());
+	      m_gpgNewKeysUi.gpg_results->append
+		(process.readAllStandardOutput().trimmed());
+	      QApplication::restoreOverrideCursor();
+
+	      if(process.exitCode() != 0)
+		goto repeat_label;
+	      else
+		dialog->close();
 	    }
 	  else
-	    ui.gpg_results->append
-	      (tr("Could not create %1.").arg(file.fileName()));
+	    {
+	      m_gpgNewKeysUi.gpg_results->append
+		(tr("Could not create %1.").arg(file.fileName()));
+	      QApplication::restoreOverrideCursor();
+	      goto repeat_label;
+	    }
 	}
       else
-	ui.gpg_results->append(tr("Please select an executable GPG program."));
-
-      QApplication::restoreOverrideCursor();
+	{
+	  m_gpgNewKeysUi.gpg_results->append
+	    (tr("Please select an executable GPG program."));
+	  QApplication::restoreOverrideCursor();
+	  goto repeat_label;
+	}
     }
 }
 
