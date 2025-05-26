@@ -101,6 +101,13 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.tool_bar->addAction(ui.action_Clear_Clipboard_Buffer);
+  ui.tool_bar->addAction(ui.action_Copy);
+  ui.tool_bar->addAction(ui.action_Import_GPG_Keys);
+  ui.tool_bar->addAction(ui.action_New_GPG_Keys);
+  ui.tool_bar->addAction(ui.action_Paste);
+  ui.tool_bar->addAction(ui.action_Remove_GPG_Keys);
+  ui.tool_bar->addAction(ui.action_Remove_Stored_INI_GPG_Passphrase);
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
