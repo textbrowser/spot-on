@@ -359,6 +359,7 @@ Completed Items
 246.   Simple renewal of Web search certificate.
 247.   Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
+248.   GPG executable for creating credentials from Rosetta.
 
 Remaining Items
 
@@ -366,4 +367,3 @@ Remaining Items
 2.     Prison Blues remote server for non-Unix.
 3.     Detect expired Web Server certificate.
 4.     Detect expired listener certificates.
-5.     GPG executable for creating credentials from Rosetta.
