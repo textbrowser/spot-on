@@ -108,6 +108,7 @@ class spoton_rosetta: public QMainWindow
     (const QList<QFileInfo> &directories, const QVector<QByteArray> &vector);
   void resizeEvent(QResizeEvent *event);
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
+  void showInformationMessage(const QString &message);
   void showMessage(const QString &message, const int milliseconds = 0);
   void sortContacts(void);
   void toDesktop(void);

@@ -926,6 +926,28 @@ void spoton_rosetta::show(spoton *parent)
   ui.name->setCursorPosition(0);
 }
 
+void spoton_rosetta::showInformationMessage(const QString &m)
+{
+  if(m.trimmed().isEmpty())
+    return;
+
+  QString message("");
+  auto const now(QDateTime::currentDateTime());
+
+  message.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  message.append(QString("<i>%1</i>").arg(m.trimmed()));
+  ui.gpg_messages->append(message);
+  ui.gpg_messages->verticalScrollBar()->setValue
+    (ui.gpg_messages->verticalScrollBar()->maximum());
+}
+
 void spoton_rosetta::showMessage
 (const QString &message, const int milliseconds)
 {
@@ -2903,6 +2925,8 @@ void spoton_rosetta::slotWriteGPG(void)
 
   auto const fingerprints
     (ui.gpg_participants->selectionModel()->selectedRows(1));
+  auto const participants
+    (ui.gpg_participants->selectionModel()->selectedRows(0));
   auto const publicKeyHashes
     (ui.gpg_participants->selectionModel()->selectedRows(2));
   auto const sign = ui.gpg_sign_messages->isChecked();
@@ -2947,6 +2971,9 @@ void spoton_rosetta::slotWriteGPG(void)
 		Q_UNUSED(file.fileName()); // Prevents removal of file.
 		file.setAutoRemove(false);
 		file.write(output);
+		showInformationMessage
+		  (tr("A temporary message file was generated for %1.").
+		   arg(participants.value(i).data().toString()));
 		state = true;
 	      }
 	    else
