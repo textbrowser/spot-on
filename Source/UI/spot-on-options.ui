@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-4259</y>
+         <y>-1512</y>
          <width>769</width>
-         <height>5015</height>
+         <height>5079</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1393,7 +1393,7 @@
                 <item>
                  <widget class="QLabel" name="label_82">
                   <property name="text">
-                   <string>&amp;OpenSSL</string>
+                   <string>&amp;OpenSSL Program</string>
                   </property>
                   <property name="buddy">
                    <cstring>openssl</cstring>
@@ -1403,9 +1403,19 @@
                 <item>
                  <widget class="QLineEdit" name="openssl">
                   <property name="placeholderText">
-                   <string>OpenSSL Absolute Path</string>
+                   <string>OpenSSL Program Absolute Path</string>
                   </property>
                   <property name="clearButtonEnabled">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="label_35">
+                  <property name="text">
+                   <string>If a proper OpenSSL program is specified, Spot-On shall utilize it for generating SSL / TLS credentials. If the process fails, Spot-On shall generate SSL / TLS credentials via the embedded OpenSSL processes.</string>
+                  </property>
+                  <property name="wordWrap">
                    <bool>true</bool>
                   </property>
                  </widget>
