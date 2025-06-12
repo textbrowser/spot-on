@@ -2970,11 +2970,20 @@ void spoton_rosetta::slotWriteGPG(void)
 	      {
 		Q_UNUSED(file.fileName()); // Prevents removal of file.
 		file.setAutoRemove(false);
-		file.write(output);
-		showInformationMessage
-		  (tr("A temporary message file was generated for %1.").
-		   arg(participants.value(i).data().toString()));
-		state = true;
+
+		if(file.write(output) ==
+		   static_cast<qint64> (output.length()))
+		  {
+		    showInformationMessage
+		      (tr("A temporary message file was generated for %1.").
+		       arg(participants.value(i).data().toString()));
+		    state = true;
+		  }
+		else
+		  showMessage
+		    (tr("Incorrect number of bytes written (%1).").
+		     arg(file.fileName()),
+		     5000);
 	      }
 	    else
 	      showMessage(output, 5000);
