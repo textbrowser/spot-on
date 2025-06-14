@@ -108,6 +108,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.tool_bar->addAction(ui.action_Paste);
   ui.tool_bar->addAction(ui.action_Remove_GPG_Keys);
   ui.tool_bar->addAction(ui.action_Remove_Stored_INI_GPG_Passphrase);
+  connect(&m_gpgReadMessagesTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotGPGPMessagesReadTimer(void)));
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -2276,6 +2280,16 @@ void spoton_rosetta::slotDelete(void)
     }
 }
 
+void spoton_rosetta::slotGPGPMessagesReadTimer(void)
+{
+  QMutableMapIterator<QString, QString> it(m_gpgMessages);
+
+  while(it.hasNext())
+    {
+      it.next();
+    }
+}
+
 void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -2974,8 +2988,12 @@ void spoton_rosetta::slotWriteGPG(void)
 		if(file.write(output) ==
 		   static_cast<qint64> (output.length()))
 		  {
+		    m_gpgMessages[file.fileName()] =
+		      participants.value(i).data().toString();
 		    showInformationMessage
-		      (tr("A temporary message file was generated for %1.").
+		      (tr("A temporary message file (%1) "
+			  "was generated for <b>%2</b>.").
+		       arg(file.fileName()).
 		       arg(participants.value(i).data().toString()));
 		    state = true;
 		  }

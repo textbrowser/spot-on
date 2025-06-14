@@ -76,10 +76,12 @@ class spoton_rosetta: public QMainWindow
   };
 
   QFuture<void> m_readPrisonBluesFuture;
+  QMap<QString, QString> m_gpgMessages;
   QPointer<spoton> m_parent;
 #ifdef SPOTON_GPGME_ENABLED
   QPointer<spoton_rosetta_gpg_import> m_gpgImport;
 #endif
+  QTimer m_gpgReadMessagesTimer;
   QTimer m_prisonBluesTimer;
   QVector<QByteArray> m_gpgFingerprints;
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
@@ -128,6 +130,7 @@ class spoton_rosetta: public QMainWindow
   void slotDecryptClear(void);
   void slotDecryptReset(void);
   void slotDelete(void);
+  void slotGPGPMessagesReadTimer(void);
   void slotImportGPGKeys(void);
   void slotNewGPGKeys(void);
   void slotParticipantAdded(const QString &type);
