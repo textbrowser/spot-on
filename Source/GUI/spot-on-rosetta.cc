@@ -54,6 +54,7 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
+  m_gpgReadMessagesTimer.start(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
@@ -320,6 +321,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 spoton_rosetta::~spoton_rosetta()
 {
+  m_gpgReadMessagesTimer.stop();
   m_prisonBluesTimer.stop();
   m_readPrisonBluesFuture.cancel();
   m_readPrisonBluesFuture.waitForFinished();
@@ -2287,6 +2289,14 @@ void spoton_rosetta::slotGPGPMessagesReadTimer(void)
   while(it.hasNext())
     {
       it.next();
+
+      if(!QFileInfo::exists(it.key()))
+	{
+	  showInformationMessage
+	    (tr("The message file <b>%1</b> was read by <b>%2</b>.").
+	     arg(QFileInfo(it.key()).fileName()).arg(it.value()));
+	  it.remove();
+	}
     }
 }
 
@@ -2991,9 +3001,9 @@ void spoton_rosetta::slotWriteGPG(void)
 		    m_gpgMessages[file.fileName()] =
 		      participants.value(i).data().toString();
 		    showInformationMessage
-		      (tr("A temporary message file (%1) "
+		      (tr("The message file <b>%1</b> "
 			  "was generated for <b>%2</b>.").
-		       arg(file.fileName()).
+		       arg(QFileInfo(file.fileName()).fileName()).
 		       arg(participants.value(i).data().toString()));
 		    state = true;
 		  }
