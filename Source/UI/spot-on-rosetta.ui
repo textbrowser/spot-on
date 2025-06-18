@@ -753,8 +753,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>532</width>
-                    <height>418</height>
+                    <width>1048</width>
+                    <height>591</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -981,6 +981,11 @@
                            <column>
                             <property name="text">
                              <string>Public Key Hash</string>
+                            </property>
+                           </column>
+                           <column>
+                            <property name="text">
+                             <string>Key Information</string>
                             </property>
                            </column>
                           </widget>

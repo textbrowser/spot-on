@@ -1032,6 +1032,67 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
 #endif
 }
 
+QByteArray spoton_crypt::gpgInformation(const QByteArray &publicKey)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  if(publicKey.trimmed().isEmpty())
+    return QByteArray();
+
+  gpgme_check_version(nullptr);
+
+  QByteArray information;
+  gpgme_ctx_t ctx = nullptr;
+
+  if(gpgme_new(&ctx) == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = nullptr;
+      auto err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata,
+	 publicKey.constData(),
+	 static_cast<size_t> (publicKey.length()),
+	 1);
+
+      if(err == GPG_ERR_NO_ERROR && keydata)
+	{
+	  err = gpgme_op_keylist_from_data_start(ctx, keydata, 0);
+
+	  while(err == GPG_ERR_NO_ERROR)
+	    {
+	      gpgme_key_t key = nullptr;
+
+	      if(gpgme_op_keylist_next(ctx, &key) != GPG_ERR_NO_ERROR)
+		break;
+
+	      auto subkey = key->subkeys;
+
+	      if(subkey)
+		{
+		  auto curve = subkey->curve;
+		  auto name = gpgme_pubkey_algo_string(subkey);
+
+		  if(curve)
+		    information.append(curve);
+		  else if(name)
+		    information.append(name);
+		}
+
+	      gpgme_key_unref(key);
+	      break;
+	    }
+	}
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+  return information;
+#else
+  Q_UNUSED(publicKey);
+  return QByteArray();
+#endif
+}
+
 QByteArray spoton_crypt::hash(const QByteArray &algorithm,
 			      const QByteArray &data,
 			      bool *ok)

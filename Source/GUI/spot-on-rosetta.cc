@@ -682,6 +682,7 @@ void spoton_rosetta::populateContacts(void)
 	    }
 
 	QMap<QString, QString> fingerprints;
+	QMap<QString, QString> gpgInformation;
 
 	query.prepare("SELECT email, public_keys, public_keys_hash FROM gpg");
 
@@ -708,6 +709,8 @@ void spoton_rosetta::populateContacts(void)
 		    (publicKey, nullptr);
 		  fingerprints.insert
 		    (name, spoton_crypt::fingerprint(publicKey));
+		  gpgInformation.insert
+		    (name, spoton_crypt::gpgInformation(publicKey));
 		  names.insert(name, pair);
 		}
 	    }
@@ -754,6 +757,10 @@ void spoton_rosetta::populateContacts(void)
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 2, item);
+	    item = new QTableWidgetItem(gpgInformation.value(str));
+	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	    item->setToolTip(item->text());
+	    ui.gpg_participants->setItem(i, 3, item);
 	    i += 1;
 	  }
 

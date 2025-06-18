@@ -72,24 +72,8 @@ class spoton_crypt
      const QString &passphrase,
      const int hashKeySize,
      const unsigned long int iterationCount);
-  static QPair<QByteArray, QByteArray> derivedKeys
-    (const QString &cipherType,
-     const QString &hashType,
-     const unsigned long int iterationCount,
-     const QString &passphrase,
-     const QByteArray &salt,
-     const bool singleIteration,
-     QString &error);
-  static QPair<QByteArray, QByteArray> derivedKeys
-    (const QString &cipherType,
-     const QString &hashType,
-     const unsigned long int iterationCount,
-     const QString &passphrase,
-     const QByteArray &salt,
-     const int hashKeySize,
-     const bool singleIteration,
-     QString &error);
   static QByteArray fingerprint(const QByteArray &publicKey);
+  static QByteArray gpgInformation(const QByteArray &publicKey);
   static QByteArray hash(const QByteArray &algorithm,
 			 const QByteArray &data,
 			 bool *ok);
@@ -130,6 +114,23 @@ class spoton_crypt
   static QByteArray weakRandomBytes(const size_t size);
   static QByteArray whirlpoolHash(const QByteArray &data, bool *ok);
   static QList<QSslCipher> defaultSslCiphers(const QString &sslControlString);
+  static QPair<QByteArray, QByteArray> derivedKeys
+    (const QString &cipherType,
+     const QString &hashType,
+     const unsigned long int iterationCount,
+     const QString &passphrase,
+     const QByteArray &salt,
+     const bool singleIteration,
+     QString &error);
+  static QPair<QByteArray, QByteArray> derivedKeys
+    (const QString &cipherType,
+     const QString &hashType,
+     const unsigned long int iterationCount,
+     const QString &passphrase,
+     const QByteArray &salt,
+     const int hashKeySize,
+     const bool singleIteration,
+     QString &error);
   static QString publicKeyAlgorithm(const QByteArray &data);
   static QString publicKeySize(const QByteArray &data);
   static QString publicKeySizeMcEliece(const QByteArray &data);
