@@ -1068,12 +1068,9 @@ QByteArray spoton_crypt::gpgInformation(const QByteArray &publicKey)
 
 	      if(subkey)
 		{
-		  auto curve = subkey->curve;
 		  auto name = gpgme_pubkey_algo_string(subkey);
 
-		  if(curve)
-		    information.append(curve);
-		  else if(name)
+		  if(name)
 		    information.append(name);
 		}
 
