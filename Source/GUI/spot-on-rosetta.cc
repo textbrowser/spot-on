@@ -2729,6 +2729,23 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
 void spoton_rosetta::slotRemoveStoredINIGPGPassphrase(void)
 {
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText
+    (tr("Are you sure that you wish to remove the GPG passphrase from "
+	"the INI file?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::ApplicationModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    {
+      QApplication::processEvents();
+      return;
+    }
+
   QSettings().remove("gui/gpg_passphrase");
 }
 
