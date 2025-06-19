@@ -1066,12 +1066,36 @@ QByteArray spoton_crypt::gpgInformation(const QByteArray &publicKey)
 
 	      auto subkey = key->subkeys;
 
-	      if(subkey)
+	      while(subkey)
 		{
+		  if(!information.isEmpty())
+		    information.append(" ; ");
+
 		  auto name = gpgme_pubkey_algo_string(subkey);
 
 		  if(name)
-		    information.append(name);
+		    {
+		      information.append(QByteArray(name).toUpper()).
+			append(" ");
+		      gpgme_free(name);
+		    }
+
+		  if(subkey->can_authenticate)
+		    information.append(" [Can Authenticate] ");
+
+		  if(subkey->can_certify)
+		    information.append(" [Can Certify] ");
+
+		  if(subkey->can_encrypt)
+		    information.append(" [Can Encrypt] ");
+
+		  if(subkey->can_sign)
+		    information.append(" [Can Sign] ");
+
+		  if(subkey->expired)
+		    information.append(" [Expired] ");
+
+		  subkey = subkey->next;
 		}
 
 	      gpgme_key_unref(key);

@@ -749,7 +749,7 @@ void spoton_rosetta::populateContacts(void)
 
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    ui.gpg_participants->setItem(i, 0, item);
-	    item = new QTableWidgetItem(fingerprints.value(str));
+	    item = new QTableWidgetItem(fingerprints.value(str).trimmed());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 1, item);
@@ -757,13 +757,15 @@ void spoton_rosetta::populateContacts(void)
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 2, item);
-	    item = new QTableWidgetItem(gpgInformation.value(str));
+	    item = new QTableWidgetItem
+	      (gpgInformation.value(str).simplified().trimmed());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 3, item);
 	    i += 1;
 	  }
 
+	ui.gpg_participants->resizeColumnsToContents();
 	ui.gpg_participants->scrollToTop();
       }
 
