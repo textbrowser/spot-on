@@ -950,14 +950,14 @@ void spoton_rosetta::showInformationMessage(const QString &m)
   auto const now(QDateTime::currentDateTime());
 
   message.append
-    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+    (QString("<font size=2>[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  message.append(QString("<i>%1</i>").arg(m.trimmed()));
+  message.append(QString("<i>%1</i></font>").arg(m.trimmed()));
   ui.gpg_messages->append(message);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());
