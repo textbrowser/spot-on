@@ -440,7 +440,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 		 GPGME_ENCRYPT_NO_COMPRESS |
 		 GPGME_ENCRYPT_THROW_KEYIDS);
 
-		if(sign)
+	      if(sign)
 		{
 		  err = gpgme_set_pinentry_mode
 		    (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
@@ -449,22 +449,14 @@ QByteArray spoton_rosetta::gpgEncrypt
 		    {
 		      gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
 		      err = gpgme_op_encrypt_sign
-			(ctx,
-			 keys,
-			 flags,
-			 plaintext,
-			 ciphertext);
+			(ctx, keys, flags, plaintext, ciphertext);
 		    }
 		}
 	      else
 		{
 		  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
 		  err = gpgme_op_encrypt
-		    (ctx,
-		     keys,
-		     flags,
-		     plaintext,
-		     ciphertext);
+		    (ctx, keys, flags, plaintext, ciphertext);
 		}
 	    }
 
@@ -950,14 +942,14 @@ void spoton_rosetta::showInformationMessage(const QString &m)
   auto const now(QDateTime::currentDateTime());
 
   message.append
-    (QString("<font size=2>[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
      arg(now.toString("dd")).
      arg(now.toString("yyyy")).
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  message.append(QString("<i>%1</i></font>").arg(m.trimmed()));
+  message.append(QString("<i>%1</i>").arg(m.trimmed()));
   ui.gpg_messages->append(message);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());
