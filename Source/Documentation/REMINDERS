@@ -368,3 +368,4 @@ Remaining Items
 3.     Detect expired Web Server certificate.
 4.     Detect expired listener certificates.
 5.     Optional Chat GIT per participant.
+6.     Log translated errors in spoton_crypt.

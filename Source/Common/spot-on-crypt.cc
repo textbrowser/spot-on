@@ -4545,6 +4545,14 @@ void spoton_crypt::generateSslKeys(const int keySize,
 	{
 	  certificate.clear();
 	  privateKey.clear();
+
+	  auto const error(process.readAllStandardError().trimmed());
+
+	  if(!error.isEmpty())
+	    spoton_misc::logError
+	      (QObject::tr("The OpenSSL program failed (%1).").
+	       arg(error.constData()));
+
 	  goto raw_openssl_label;
 	}
       else
