@@ -346,6 +346,8 @@ void spoton_web_server_thread::process
   if(!credentials.first.isEmpty())
     {
       QSslConfiguration configuration;
+      auto const keySize = spoton_kernel::setting
+	("WEB_SERVER_KEY_SIZE", 3072).toInt();
       auto const sslCS
 	(spoton_kernel::setting("gui/sslControlString",
 				spoton_common::SSL_CONTROL_STRING).toString());
@@ -353,9 +355,11 @@ void spoton_web_server_thread::process
       configuration.setLocalCertificate(QSslCertificate(credentials.first));
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);
 
-      QSslKey key(credentials.second, QSsl::Ec);
+      QSslKey key;
 
-      if(key.isNull())
+      if(keySize < 1024)
+	key = QSslKey(credentials.second, QSsl::Ec);
+      else
 	key = QSslKey(credentials.second, QSsl::Rsa);
 
       configuration.setPrivateKey(key);
