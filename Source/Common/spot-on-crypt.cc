@@ -4443,7 +4443,11 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
+#ifdef Q_OS_MACOS
 		   << "\"/CN=%5/O=Spot-On\""
+#else
+		   << "/CN=%5/O=Spot-On"
+#endif
 		   << "-x509";
       else if(keySize == 384)
 	parameters << "req"
@@ -4457,7 +4461,11 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
+#ifdef Q_OS_MACOS
 		   << "\"/CN=%5/O=Spot-On\""
+#else
+		   << "/CN=%5/O=Spot-On"
+#endif
 		   << "-x509";
       else if(keySize < 1024)
 	parameters << "req"
@@ -4471,7 +4479,11 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
+#ifdef Q_OS_MACOS
 		   << "\"/CN=%5/O=Spot-On\""
+#else
+		   << "/CN=%5/O=Spot-On"
+#endif
 		   << "-x509";
       else if(keySize <= 4096)
 	parameters << "req"
@@ -4486,7 +4498,11 @@ void spoton_crypt::generateSslKeys(const int keySize,
 		   << "%4"
 		   << "-sha512"
 		   << "-subj"
+#ifdef Q_OS_MACOS
+		   << "\"/CN=%5/O=Spot-On\""
+#else
 		   << "/CN=%5/O=Spot-On"
+#endif
 		   << "-x509";
       else
 	goto raw_openssl_label;
@@ -4539,9 +4555,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
       file.remove();
       s_openSSLIdentifier.fetchAndAddOrdered(1);
 
-      if(certificate.isEmpty() ||
-	 privateKey.isEmpty() ||
-	 process.exitCode() != 0)
+      if(certificate.isEmpty() || privateKey.isEmpty())
 	{
 	  certificate.clear();
 	  privateKey.clear();
@@ -4552,6 +4566,8 @@ void spoton_crypt::generateSslKeys(const int keySize,
 	    spoton_misc::logError
 	      (QObject::tr("The OpenSSL program failed (%1).").
 	       arg(error.constData()));
+	  else
+	    spoton_misc::logError(QObject::tr("The OpenSSL program failed."));
 
 	  goto raw_openssl_label;
 	}
