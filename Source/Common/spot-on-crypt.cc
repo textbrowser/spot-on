@@ -4527,9 +4527,9 @@ void spoton_crypt::generateSslKeys(const int keySize,
 	     number(qBound(1L,
 			   days / 86400L, // We arrive in seconds.
 			   std::numeric_limits<long int>::max())));
-	  str.replace("%3", path1);
-	  str.replace("%4", path2);
-	  str.replace("%5", address.toString());
+	  str.replace("%3", path1); // Key file.
+	  str.replace("%5", path2); // Certificate file.
+	  str.replace("%6", address.toString()); // Subject IP address.
 	  parameters.replace(i, str);
 	}
 
