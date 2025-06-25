@@ -5,6 +5,7 @@
 	<file>ECC.prime256v1</file>
 	<file>ECC.secp384r1</file>
 	<file>ECC.secp521r1</file>
+	<file>OpenSSLArguments</file>
 	<file>Spot-On.html</file>
     </qresource>
 </RCC>

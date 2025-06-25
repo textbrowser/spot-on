@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1512</y>
+         <y>-1899</y>
          <width>769</width>
-         <height>5079</height>
+         <height>5318</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -1413,7 +1413,7 @@
                 <item>
                  <widget class="QLabel" name="label_35">
                   <property name="text">
-                   <string>If a proper OpenSSL program is specified, Spot-On shall utilize it for generating SSL / TLS credentials. If the process fails, Spot-On shall generate SSL / TLS credentials via the embedded OpenSSL processes.</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If a proper OpenSSL program is specified, Spot-On shall utilize it for generating SSL / TLS credentials. If the OpenSSL program fails, Spot-On shall generate SSL / TLS credentials via the embedded OpenSSL processes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -1424,6 +1424,27 @@
                  <widget class="QPushButton" name="select_openssl">
                   <property name="text">
                    <string>Select...</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_22">
+                <item>
+                 <widget class="QLabel" name="label_36">
+                  <property name="text">
+                   <string>OpenSSL Program Arguments</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPlainTextEdit" name="openssl_arguments">
+                  <property name="tabChangesFocus">
+                   <bool>true</bool>
+                  </property>
+                  <property name="placeholderText">
+                   <string>OpenSSL Program Arguments</string>
                   </property>
                  </widget>
                 </item>
@@ -3209,6 +3230,7 @@
   <tabstop>limit_sqlite_synchronization</tabstop>
   <tabstop>openssl</tabstop>
   <tabstop>select_openssl</tabstop>
+  <tabstop>openssl_arguments</tabstop>
   <tabstop>kernelUpdateInterval</tabstop>
   <tabstop>kernelCacheInterval</tabstop>
   <tabstop>sslControlString</tabstop>
