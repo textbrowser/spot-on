@@ -2446,13 +2446,9 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
   int index = 0;
 
   if(controlString.isEmpty())
-    {
-      QSettings settings;
-
-      controlString = settings.value
-	("gui/sslControlString",
-	 spoton_common::SSL_CONTROL_STRING).toString().trimmed();
-    }
+    controlString = QSettings().value
+      ("gui/sslControlString",
+       spoton_common::SSL_CONTROL_STRING).toString().trimmed();
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
   protocols << "TlsV1_2"
@@ -4429,82 +4425,54 @@ void spoton_crypt::generateSslKeys(const int keySize,
     {
       spoton_misc::createOpenSSLSupportFiles();
 
-      QStringList parameters;
+      QString keyInformation("");
+      QString type("");
 
       if(keySize == 256)
-	parameters << "req"
-		   << "-days"
-		   << "%2"
-		   << "-keyout"
-		   << "%3"
-		   << "-newkey ec:ECC.prime256v1"
-		   << "-nodes"
-		   << "-out"
-		   << "%4"
-		   << "-sha512"
-		   << "-subj"
-#ifdef Q_OS_MACOS
-		   << "\"/CN=%5/O=Spot-On\""
-#else
-		   << "/CN=%5/O=Spot-On"
-#endif
-		   << "-x509";
+	{
+	  keyInformation = "ECC.prime256v1";
+	  type = "ECC.PRIME256V1";
+	}
       else if(keySize == 384)
-	parameters << "req"
-		   << "-days"
-		   << "%2"
-		   << "-keyout"
-		   << "%3"
-		   << "-newkey ec:ECC.secp384r1"
-		   << "-nodes"
-		   << "-out"
-		   << "%4"
-		   << "-sha512"
-		   << "-subj"
-#ifdef Q_OS_MACOS
-		   << "\"/CN=%5/O=Spot-On\""
-#else
-		   << "/CN=%5/O=Spot-On"
-#endif
-		   << "-x509";
+	{
+	  keyInformation = "ECC.secp384r1";
+	  type = "ECC.SECP384R1";
+	}
       else if(keySize < 1024)
-	parameters << "req"
-		   << "-days"
-		   << "%2"
-		   << "-keyout"
-		   << "%3"
-		   << "-newkey ec:ECC.secp521r1"
-		   << "-nodes"
-		   << "-out"
-		   << "%4"
-		   << "-sha512"
-		   << "-subj"
-#ifdef Q_OS_MACOS
-		   << "\"/CN=%5/O=Spot-On\""
-#else
-		   << "/CN=%5/O=Spot-On"
-#endif
-		   << "-x509";
+	{
+	  keyInformation = "ECC.secp521r1";
+	  type = "ECC.SECP521R1";
+	}
       else if(keySize <= 4096)
-	parameters << "req"
-		   << "-days"
-		   << "%2"
-		   << "-keyout"
-		   << "%3"
-		   << "-newkey"
-		   << "rsa:" + QString::number(keySize)
-		   << "-nodes"
-		   << "-out"
-		   << "%4"
-		   << "-sha512"
-		   << "-subj"
-#ifdef Q_OS_MACOS
-		   << "\"/CN=%5/O=Spot-On\""
-#else
-		   << "/CN=%5/O=Spot-On"
-#endif
-		   << "-x509";
+	{
+	  keyInformation = QString::number(keySize);
+	  type = "RSA";
+	}
       else
+	goto raw_openssl_label;
+
+      auto opensslArguments
+	(QSettings().value("gui/openssl_arguments").toString().trimmed());
+
+      opensslArguments = opensslArguments.mid
+	(opensslArguments.indexOf(type) + type.length());
+
+      QStringList parameters;
+
+      foreach(auto const &s, opensslArguments.split('\n'))
+	{
+	  auto const str(s.mid(0, s.indexOf('#')).trimmed());
+
+	  if(str.startsWith('#'))
+	    continue;
+
+	  if(str.contains('"'))
+	    parameters << str.mid(1, str.length() - 2);
+	  else if(str.length() > 0)
+	    break;
+	}
+
+      if(parameters.isEmpty())
 	goto raw_openssl_label;
 
       auto const identifier = s_openSSLIdentifier.fetchAndAddOrdered(0);
@@ -4528,6 +4496,7 @@ void spoton_crypt::generateSslKeys(const int keySize,
 			   days / 86400L, // We arrive in seconds.
 			   std::numeric_limits<long int>::max())));
 	  str.replace("%3", path1); // Key file.
+	  str.replace("%4", keyInformation);
 	  str.replace("%5", path2); // Certificate file.
 	  str.replace("%6", address.toString()); // Subject IP address.
 	  parameters.replace(i, str);
@@ -4555,7 +4524,9 @@ void spoton_crypt::generateSslKeys(const int keySize,
       file.remove();
       s_openSSLIdentifier.fetchAndAddOrdered(1);
 
-      if(certificate.isEmpty() || privateKey.isEmpty())
+      if(certificate.isEmpty() ||
+	 privateKey.isEmpty() ||
+	 process.exitCode() != 0)
 	{
 	  certificate.clear();
 	  privateKey.clear();
