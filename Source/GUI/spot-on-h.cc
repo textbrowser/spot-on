@@ -57,6 +57,32 @@ QMap<QString, QByteArray> spoton::SMPWindowStreams
   return m_smpWindow->streams(keyTypes);
 }
 
+QMap<QString, QString> spoton::defaultMiscellaneousOptions(void)
+{
+  QMap<QString, QString> map;
+
+  map["FORTUNA_FILE"] = "none";
+  map["FORTUNA_QUERY_INTERVAL_MSECS"] = "0";
+  map["FORTUNA_URL"] = "http://127.0.0.1:5000";
+  map["GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING"] = "sha512";
+  map["MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE"] = QString::number
+    (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE);
+  map["P2P_SERVERLESS_CONNECT_INTERVAL_MSECS"] = "1";
+  map["PREFERRED_HASH_ALGORITHM"] = "sha512";
+  map["PRISON_BLUES_REMOTE_SERVER"] = "192.168.178.15:5710";
+  map["PUBLISHED_PAGES"] = "/dev/null, Title-Line, URL-Line";
+  map["SMP_PREFERRED_HASH_ALGORITHM"] = "sha3-512";
+  map["WEB_PAGES_SHARED_DIRECTORY"] = "/dev/null";
+  map["WEB_SERVER_CERTIFICATE_LIFETIME"] = QString::number
+    (spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME);
+  map["WEB_SERVER_HTTP_SO_LINGER"] = "-1";
+  map["WEB_SERVER_HTTPS_SO_LINGER"] = "-1";
+  map["WEB_SERVER_KEY_SIZE"] = QString::number
+    (spoton_common::WEB_SERVER_KEY_SIZE);
+  map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = "true";
+  return map;
+}
+
 QString spoton::listenerTransport(void) const
 {
   int row = -1;
@@ -687,45 +713,6 @@ void spoton::prepareOtherOptions(void)
   m_optionsUi.other_options->resizeColumnToContents(0);
   m_optionsUi.other_options->resizeColumnToContents(1);
   m_optionsUi.other_options->setSortingEnabled(true);
-
-  QMap<QString, QString> defaults;
-  QStringList list;
-
-  list.append("FORTUNA_FILE := none");
-  list.append("FORTUNA_QUERY_INTERVAL_MSECS := 0");
-  list.append("FORTUNA_URL := http://127.0.0.1:5000");
-  list.append("GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING := sha512");
-  list.append
-    ("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE := " +
-     QString::number(spoton_common::
-		     MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
-  list.append("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
-  list.append("PREFERRED_HASH_ALGORITHM := sha512");
-  list.append("PRISON_BLUES_REMOTE_SERVER := 192.168.178.15:5710");
-  list.append
-    ("# PUBLISHED_PAGES "
-     "Absolute-Directory-Path, Title-Line-Number, URL-Line-Number");
-  list.append("PUBLISHED_PAGES := /dev/null, Title-Line, URL-Line");
-  list.append("SMP_PREFERRED_HASH_ALGORITHM := sha3-512");
-  list.append("WEB_PAGES_SHARED_DIRECTORY := /dev/null");
-  list.append
-    ("WEB_SERVER_CERTIFICATE_LIFETIME := " +
-     QString::number(spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME));
-  list.append("WEB_SERVER_HTTP_SO_LINGER := -1");
-  list.append("WEB_SERVER_HTTPS_SO_LINGER := -1");
-  list.append
-    ("WEB_SERVER_KEY_SIZE := " +
-     QString::number(spoton_common::WEB_SERVER_KEY_SIZE));
-  list.append("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS := true");
-
-  foreach(auto const &str, list)
-    {
-      auto const key(str.split(":=").value(0).trimmed());
-      auto const value(str.split(":=").value(1).trimmed());
-
-      defaults[key] = value;
-    }
-
   m_optionsUi.other_options->sortByColumn
     (0, m_optionsUi.other_options->horizontalHeader()->sortIndicatorOrder());
 
@@ -1002,17 +989,18 @@ void spoton::slotApplyOtherOptions(void)
       if(!item1 || !item2)
 	continue;
 
+      if(item2->text().trimmed().isEmpty())
+	item2->setText
+	  (defaultMiscellaneousOptions().value(item1->text().trimmed()));
+
       str.append(QString("%1 := %2\n").
 		 arg(item1->text().trimmed()).
 		 arg(item2->text().trimmed()));
     }
 
-  m_settings["gui/other_options"] = str.trimmed().toLatin1().toBase64();
-
-  QSettings settings;
-
-  settings.setValue
+  QSettings().setValue
     ("gui/other_options", str.trimmed().toLatin1().toBase64());
+  m_settings["gui/other_options"] = str.trimmed().toLatin1().toBase64();
   prepareOtherOptions();
 }
 

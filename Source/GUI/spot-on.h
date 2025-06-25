@@ -615,6 +615,7 @@ class spoton: public QMainWindow
   bool writeKernelSocketData(const QByteArray &bytes);
   int applyGoldBugToLetter(const QByteArray &goldbug, const int row);
   int tabIndexFromName(const QString &name) const;
+  static QMap<QString, QString> defaultMiscellaneousOptions(void);
   void appendItalicChatMessage(const QString &t);
   void applyGoldBugToAttachments(const QString &folderOid,
 				 const QSqlDatabase &db,
