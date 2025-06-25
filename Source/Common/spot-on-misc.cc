@@ -1027,6 +1027,9 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 	map[pair.value(0).trimmed()] = pair.value(1).trimmed();
     }
 
+  if(!map.contains("PREFERRED_HASH_ALGORITHM"))
+    map["PREFERRED_HASH_ALGORITHM"] = "sha512";
+
   return map;
 }
 

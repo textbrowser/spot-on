@@ -700,6 +700,7 @@ void spoton::prepareOtherOptions(void)
      QString::number(spoton_common::
 		     MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE));
   list.append("P2P_SERVERLESS_CONNECT_INTERVAL_MSECS := 1");
+  list.append("PREFERRED_HASH_ALGORITHM := sha512");
   list.append("PRISON_BLUES_REMOTE_SERVER := 192.168.178.15:5710");
   list.append
     ("# PUBLISHED_PAGES "
@@ -1001,7 +1002,9 @@ void spoton::slotApplyOtherOptions(void)
       if(!item1 || !item2)
 	continue;
 
-      str.append(QString("%1 := %2\n").arg(item1->text()).arg(item2->text()));
+      str.append(QString("%1 := %2\n").
+		 arg(item1->text().trimmed()).
+		 arg(item2->text().trimmed()));
     }
 
   m_settings["gui/other_options"] = str.trimmed().toLatin1().toBase64();
