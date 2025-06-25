@@ -90,6 +90,7 @@ class spoton_misc
     (const QByteArray &signaturePublicKeyHash, spoton_crypt *crypt);
   static QByteArray signaturePublicKeyFromPublicKeyHash
     (const QByteArray &publicKeyHash, spoton_crypt *crypt);
+  static QByteArray stringFromDocument(const QString &document);
   static QByteArray urlToEncoded(const QUrl &url);
   static QByteArray wrap(const QByteArray &data, const int c = 80);
   static QByteArray xor_arrays(const QByteArray &a, const QByteArray &b);

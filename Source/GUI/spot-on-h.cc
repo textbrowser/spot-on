@@ -1706,6 +1706,14 @@ void spoton::slotSaveOption(void)
 	("gui/openssl", m_optionsUi.openssl->text().trimmed());
       m_settings["gui/openssl"] = m_optionsUi.openssl->text().trimmed();
     }
+  else if(m_optionsUi.openssl_arguments == sender())
+    {
+      QSettings().setValue
+	("gui/openssl_arguments",
+	 m_optionsUi.openssl_arguments->toPlainText().trimmed());
+      m_settings["gui/openssl_arguments"] =
+	m_optionsUi.openssl_arguments->toPlainText().trimmed();
+    }
 }
 
 void spoton::slotSelectGIT(void)

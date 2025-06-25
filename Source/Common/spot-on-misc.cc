@@ -397,6 +397,19 @@ QByteArray spoton_misc::signaturePublicKeyFromPublicKeyHash
   return publicKey;
 }
 
+QByteArray spoton_misc::stringFromDocument(const QString &document)
+{
+  if(document.trimmed().isEmpty())
+    return QByteArray();
+
+  QFile file(document.trimmed());
+
+  if(file.open(QIODevice::ReadOnly))
+    return file.readAll();
+  else
+    return QByteArray();
+}
+
 QByteArray spoton_misc::urlToEncoded(const QUrl &url)
 {
   return url.toEncoded();
