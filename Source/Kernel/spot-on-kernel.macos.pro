@@ -49,6 +49,14 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
 ICON		  =
 
+exists(/opt/homebrew/include) {
+INCLUDEPATH += /opt/homebrew/include
+}
+
+exists(/opt/homebrew/lib) {
+LIBS += -L/opt/homebrew/lib
+}
+
 INCLUDEPATH	  += . ../. ../../.
 LIBS		  += -L../../libNTRU \
                      -framework Cocoa \
@@ -60,14 +68,6 @@ LIBS		  += -L../../libNTRU \
                      -lntru \
 		     -lpthread \
                      -lssl
-
-exists(/opt/homebrew/include) {
-INCLUDEPATH += /opt/homebrew/include
-}
-
-exists(/opt/homebrew/lib) {
-LIBS += -L/opt/homebrew/lib
-}
 
 MOC_DIR           = Temporary/moc
 OBJECTIVE_HEADERS += ../Common/CocoaInitializer.h
