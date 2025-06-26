@@ -707,6 +707,8 @@ void spoton::prepareOtherOptions(void)
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
 	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
+	  else if(key == "PREFERRED_HASH_ALGORITHM")
+	    spoton_crypt::setPreferredHashAlgorithm(value.toLatin1());
 	}
     }
 

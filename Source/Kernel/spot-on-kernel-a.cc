@@ -6147,10 +6147,10 @@ void spoton_kernel::slotUpdateSettings(void)
   QWriteLocker locker(&s_settingsMutex);
 
   for(int i = 0; i < settings.allKeys().size(); i++)
-    if(settings.value(settings.allKeys().at(i)) !=
-       s_settings.value(settings.allKeys().at(i)))
-      s_settings.insert(settings.allKeys().at(i),
-			settings.value(settings.allKeys().at(i)));
+    if(s_settings.value(settings.allKeys().at(i)) !=
+       settings.value(settings.allKeys().at(i)))
+      s_settings.insert
+	(settings.allKeys().at(i), settings.value(settings.allKeys().at(i)));
 
   QMapIterator<QString, QVariant> it
     (spoton_misc::
@@ -6171,6 +6171,8 @@ void spoton_kernel::slotUpdateSettings(void)
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
 	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
+	  else if(key == "PREFERRED_HASH_ALGORITHM")
+	    spoton_crypt::setPreferredHashAlgorithm(value.toLatin1());
 	}
     }
 

@@ -230,6 +230,16 @@ class spoton_crypt
      QString &error);
   static void removeFlawedEntries(spoton_crypt *crypt);
   static void setGcrySexpBuildHashAlgorithm(const QByteArray &algorithm);
+
+  static void setPreferredHashAlgorithm(const char *algorithm)
+  {
+    if(algorithm)
+      s_preferredHashAlgorithm = algorithm;
+
+    if(!hashTypes().contains(s_preferredHashAlgorithm))
+      s_preferredHashAlgorithm = "sha512";
+  }
+
   static void setSslCiphers(const QList<QSslCipher> &ciphers,
 			    const QString &sslControlString,
 			    QSslConfiguration &configuration);
