@@ -268,14 +268,10 @@ spoton_crypt::~spoton_crypt()
 #endif
   delete m_threefish;
   freeHashKey();
+  freePrivateKey();
   freeSymmetricKey();
   gcry_cipher_close(m_cipherHandle);
   m_publicKey.clear();
-
-  if(s_hasSecureMemory.fetchAndAddOrdered(0))
-    gcry_free(m_privateKey);
-  else
-    freePrivateKey();
 }
 
 QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
@@ -3905,7 +3901,11 @@ void spoton_crypt::freePrivateKey(void)
   for(size_t i = 0; i < m_privateKeyLength; i++)
     m_privateKey[i] = 0;
 
-  free(m_privateKey);
+  if(s_hasSecureMemory.fetchAndAddOrdered(0))
+    gcry_free(m_privateKey);
+  else
+    free(m_privateKey);
+
   m_privateKey = nullptr;
 
   if(locked)
@@ -4923,13 +4923,11 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
       else
 	{
 	  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
-#ifdef Q_OS_FREEBSD
-	  gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize), 0);
-	  s_hasSecureMemory.fetchAndStoreOrdered(1);
-#else
+
 	  gcry_error_t err = 0;
 
-	  if((err = gcry_control(GCRYCTL_INIT_SECMEM, qAbs(secureMemorySize),
+	  if((err = gcry_control(GCRYCTL_INIT_SECMEM,
+				 qAbs(secureMemorySize),
 				 0)) != 0)
 	    {
 	      QByteArray buffer(error_buffer_size, 0);
@@ -4944,7 +4942,6 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 	    }
 	  else
 	    s_hasSecureMemory.fetchAndStoreOrdered(1);
-#endif
 
 	  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
 	  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
@@ -5082,7 +5079,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 	  if(ok)
 	    *ok = false;
 
-	  m_isMcEliece.fetchAndAddOrdered(0);
+	  m_isMcEliece.fetchAndStoreOrdered(0);
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
 	    (QString("spoton_crypt::initializePrivateKeyContainer(): "
