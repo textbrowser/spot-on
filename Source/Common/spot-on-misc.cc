@@ -1001,10 +1001,8 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 
 QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 {
-  QList<QByteArray> list;
   QMap<QString, QVariant> map;
-
-  list = bytes.split('\n');
+  auto const list(bytes.split('\n'));
 
   for(int i = 0; i < list.size(); i++)
     {

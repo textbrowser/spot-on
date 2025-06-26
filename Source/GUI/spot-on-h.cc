@@ -1006,20 +1006,14 @@ void spoton::slotApplyOtherOptions(void)
 
 void spoton::slotBehaveAsHumanProxy(bool state)
 {
+  QSettings().setValue("gui/human_proxy", state);
   m_settings["gui/human_proxy"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/human_proxy", state);
 }
 
 void spoton::slotEmailLettersPerPageChanged(int value)
 {
+  QSettings().setValue("gui/email_letters_per_page", value);
   m_settings["gui/email_letters_per_page"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/email_letters_per_page", value);
 }
 
 void spoton::slotEmailPageChanged(int value)
@@ -1233,11 +1227,8 @@ void spoton::slotKeysIndexChanged(int index)
 
 void spoton::slotLimitSqliteSynchronization(bool state)
 {
+  QSettings().setValue("gui/limit_sqlite_synchronization", state);
   m_settings["gui/limit_sqlite_synchronization"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/limit_sqlite_synchronization", state);
 }
 
 void spoton::slotMailContextMenu(const QPoint &point)
@@ -1281,11 +1272,8 @@ void spoton::slotMailContextMenu(const QPoint &point)
 
 void spoton::slotMonitorEvents(bool state)
 {
+  QSettings().setValue("gui/monitorEvents", state);
   m_settings["gui/monitorEvents"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/monitorEvents", state);
 }
 
 void spoton::slotNewEmailWindow(void)
@@ -1377,11 +1365,9 @@ void spoton::slotPopulateParticipants(void)
 
 void spoton::slotPostgreSQLKernelUrlDistributionTimeout(int value)
 {
+  QSettings().setValue
+    ("gui/postgresql_kernel_url_distribution_timeout", value);
   m_settings["gui/postgresql_kernel_url_distribution_timeout"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/postgresql_kernel_url_distribution_timeout", value);
 }
 
 void spoton::slotPostgreSQLWebServerCredentials(void)
@@ -1606,10 +1592,8 @@ void spoton::slotResetSearch(void)
 
 void spoton::slotSOSSMaximumClientsChanged(int value)
 {
-  QSettings settings;
-
+  QSettings().setValue("gui/soss_maximum_clients", value);
   m_settings["gui/soss_maximum_clients"] = value;
-  settings.setValue("gui/soss_maximum_clients", value);
 }
 
 void spoton::slotSaveExternalIPUrl(void)
@@ -1619,10 +1603,7 @@ void spoton::slotSaveExternalIPUrl(void)
   m_optionsUi.external_ip_url->setCursorPosition(0);
   m_optionsUi.external_ip_url->selectAll();
   m_settings["gui/external_ip_url"] = m_optionsUi.external_ip_url->text();
-
-  QSettings settings;
-
-  settings.setValue
+  QSettings().setValue
     ("gui/external_ip_url", m_optionsUi.external_ip_url->text());
 }
 
@@ -1675,17 +1656,15 @@ void spoton::slotSaveGITEnvironment(void)
 
 void spoton::slotSaveLineLimits(int value)
 {
-  QSettings settings;
-
   if(m_optionsUi.buzz_maximum_lines == sender())
     {
+      QSettings().setValue("gui/buzz_maximum_lines", value);
       m_settings["gui/buzz_maximum_lines"] = value;
-      settings.setValue("gui/buzz_maximum_lines", value);
     }
   else
     {
+      QSettings().setValue("gui/chat_maximum_lines", value);
       m_settings["gui/chat_maximum_lines"] = value;
-      settings.setValue("gui/chat_maximum_lines", value);
     }
 }
 
@@ -1759,11 +1738,8 @@ void spoton::slotSelectOpenSSL(void)
 
 void spoton::slotSetCongestionMaxPageCount(int value)
 {
+  QSettings().setValue("gui/congestion_control_max_page_count", value);
   m_settings["gui/congestion_control_max_page_count"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/congestion_control_max_page_count", value);
 }
 
 void spoton::slotSetSocketOptions(void)
@@ -2188,30 +2164,21 @@ void spoton::slotShowReleaseNotes(void)
 
 void spoton::slotTearOffMenusEnabled(bool state)
 {
+  QSettings().setValue("gui/tear_off_menus", state);
   m_settings["gui/tear_off_menus"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/tear_off_menus", state);
   prepareTearOffMenus();
 }
 
 void spoton::slotTerminateKernelOnUIExit(bool state)
 {
+  QSettings().setValue("gui/terminate_kernel_on_ui_exit", state);
   m_settings["gui/terminate_kernel_on_ui_exit"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/terminate_kernel_on_ui_exit", state);
 }
 
 void spoton::slotWebServerAllowServingLocalContent(bool state)
 {
+  QSettings().setValue("gui/web_server_serve_local_content", state);
   m_settings["gui/web_server_serve_local_content"] = state;
-
-  QSettings settings;
-
-  settings.setValue("gui/web_server_serve_local_content", state);
 }
 
 void spoton::slotWebServerInformationTimeout(void)
@@ -2256,11 +2223,8 @@ void spoton::slotWebServerValueChangedTimeout(void)
 {
   auto const value = m_ui.web_server_port->value();
 
+  QSettings().setValue("gui/web_server_port", value);
   m_settings["gui/web_server_port"] = value;
-
-  QSettings settings;
-
-  settings.setValue("gui/web_server_port", value);
 
   if(value == 0)
     {
@@ -2269,7 +2233,7 @@ void spoton::slotWebServerValueChangedTimeout(void)
       QString connectionName("");
 
       {
-	auto  db = spoton_misc::database(connectionName);
+	auto db = spoton_misc::database(connectionName);
 
 	db.setDatabaseName
 	  (spoton_misc::homePath() +
