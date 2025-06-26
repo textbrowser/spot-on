@@ -527,14 +527,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = false;
 
+      freePrivateKey();
+
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      if(s_hasSecureMemory.fetchAndAddOrdered(0))
-	gcry_free(m_privateKey);
-      else
-	freePrivateKey();
-
-      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -576,15 +572,10 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
       spoton_misc::logError
 	(QString("spoton_crypt::digitalSignature(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
+      freePrivateKey();
 
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      if(s_hasSecureMemory.fetchAndAddOrdered(0))
-	gcry_free(m_privateKey);
-      else
-	freePrivateKey();
-
-      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -1623,14 +1614,10 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       if(ok)
 	*ok = false;
 
+      freePrivateKey();
+
       QWriteLocker locker2(&m_privateKeyMutex);
 
-      if(s_hasSecureMemory.fetchAndAddOrdered(0))
-	gcry_free(m_privateKey);
-      else
-	freePrivateKey();
-
-      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker2.unlock();
 
@@ -1672,15 +1659,10 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
       spoton_misc::logError
 	(QString("spoton_crypt::publicKeyDecrypt(): gcry_pk_testkey() "
 		 "failure (%1).").arg(buffer.constData()));
+      freePrivateKey();
 
       QWriteLocker locker1(&m_privateKeyMutex);
 
-      if(s_hasSecureMemory.fetchAndAddOrdered(0))
-	gcry_free(m_privateKey);
-      else
-	freePrivateKey();
-
-      m_privateKey = nullptr;
       m_privateKeyLength = 0;
       locker1.unlock();
 
@@ -2795,6 +2777,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
   gcry_sexp_t parameters_t = nullptr;
   size_t length = 0;
 
+  freePrivateKey();
   m_isMcEliece.fetchAndStoreOrdered(0);
 
   /*
@@ -2803,12 +2786,6 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
   QWriteLocker locker1(&m_privateKeyMutex);
 
-  if(s_hasSecureMemory.fetchAndAddOrdered(0))
-    gcry_free(m_privateKey);
-  else
-    freePrivateKey();
-
-  m_privateKey = nullptr;
   m_privateKeyLength = 0;
   locker1.unlock();
 
@@ -5175,16 +5152,11 @@ void spoton_crypt::purgeDatabases(void)
 
 void spoton_crypt::purgePrivatePublicKeys(void)
 {
+  freePrivateKey();
   m_isMcEliece.fetchAndStoreOrdered(0);
 
   QWriteLocker locker1(&m_privateKeyMutex);
 
-  if(s_hasSecureMemory.fetchAndAddOrdered(0))
-    gcry_free(m_privateKey);
-  else
-    freePrivateKey();
-
-  m_privateKey = nullptr;
   m_privateKeyLength = 0;
   locker1.unlock();
 
@@ -5474,10 +5446,10 @@ void spoton_crypt::setGcrySexpBuildHashAlgorithm(const QByteArray &algorithm)
 
 void spoton_crypt::setHashKey(const QByteArray &hashKey)
 {
+  freeHashKey();
+
   QWriteLocker locker(&m_hashKeyMutex);
 
-  freeHashKey();
-  m_hashKey = nullptr;
   m_hashKeyLength = static_cast<size_t> (hashKey.length());
 
   if(m_hashKeyLength > 0 &&
