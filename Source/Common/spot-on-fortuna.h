@@ -919,6 +919,9 @@ class fortunate_q: public QObject
 		e;
 	      emit pool_filled(i, s);
 	    }
+
+	  if(qobject_cast<QFile *> (device))
+	    break;
 	}
       while(device->bytesAvailable() > 0);
   }
