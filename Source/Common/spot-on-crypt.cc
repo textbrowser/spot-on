@@ -137,6 +137,7 @@ struct gcry_thread_cbs gcry_threads_qt =
 
 QAtomicInt spoton_crypt::s_hasSecureMemory = 0;
 QAtomicInteger<quint64> spoton_crypt::s_openSSLIdentifier = 0;
+QByteArray spoton_crypt::s_preferredHashAlgorithm = "sha512";
 QPointer<fortunate_q> spoton_crypt::s_fortuna = nullptr;
 QReadWriteLock spoton_crypt::s_fortunaMutex;
 bool spoton_crypt::s_cbc_cts_enabled = true;
@@ -3804,7 +3805,7 @@ const char *spoton_crypt::preferredCipherAlgorithm(void)
 
 const char *spoton_crypt::preferredHashAlgorithm(void)
 {
-  return "sha512";
+  return s_preferredHashAlgorithm.constData();
 }
 
 qint64 spoton_crypt::publicKeyCount(void)
@@ -3824,8 +3825,7 @@ qint64 spoton_crypt::publicKeyCount(void)
 	auto ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*) "
-		      "FROM idiotes WHERE id_hash = ?");
+	query.prepare("SELECT COUNT(*) FROM idiotes WHERE id_hash = ?");
 	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
 
 	if(ok && query.exec())
@@ -3850,8 +3850,7 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
     {
       if((keyLength = gcry_cipher_get_algo_keylen(cipherAlgorithm)) == 0)
 	spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
-			      "gcry_cipher_get_algo_keylen() "
-			      "failed.");
+			      "gcry_cipher_get_algo_keylen() failed.");
     }
   else if(cipherType == "threefish")
     keyLength = 32;
