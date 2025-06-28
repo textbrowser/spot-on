@@ -132,6 +132,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
 			     const QByteArray &sequenceNumber,
 			     const QByteArray &utcDate,
 			     const qint64 hpOid,
+			     const bool gitMessage,
 			     const QString &keyType);
   void poptasticPop(void);
   void populateStarBeamKeys(void);

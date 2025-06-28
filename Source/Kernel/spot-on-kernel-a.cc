@@ -865,6 +865,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
 					   const QByteArray &,
 					   const QByteArray &,
 					   const qint64,
+					   const bool,
 					   const QString &)),
 	      this,
 	      SLOT(slotMessageReceivedFromUI(const qint64,
@@ -873,6 +874,7 @@ spoton_kernel::spoton_kernel(void):QObject(nullptr)
 					     const QByteArray &,
 					     const QByteArray &,
 					     const qint64,
+					     const bool,
 					     const QString &)));
       connect
 	(m_guiServer,
@@ -4454,6 +4456,7 @@ void spoton_kernel::slotMessageReceivedFromUI
  const QByteArray &sequenceNumber,
  const QByteArray &utcDate,
  const qint64 hpOid,
+ const bool gitMessage,
  const QString &keyType)
 {
   auto s_crypt1 = crypt(keyType);
@@ -4684,7 +4687,7 @@ void spoton_kernel::slotMessageReceivedFromUI
 		    }
 		}
 
-	      if(keyType == "chat" && setting("gui/git_chat", false).toBool())
+	      if(gitMessage && keyType == "chat")
 		writePrisonBluesChat
 		  (spoton_send::message0000(data),
 		   spoton_crypt::sha512Hash(publicKey, nullptr));

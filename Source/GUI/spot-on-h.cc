@@ -1048,12 +1048,6 @@ void spoton::slotFindInSearchInitialize(void)
 #endif
 }
 
-void spoton::slotGITChat(bool state)
-{
-  QSettings().setValue("gui/git_chat", state);
-  m_settings["gui/git_chat"] = state;
-}
-
 void spoton::slotGenerateInstitutionKeyPair(void)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));

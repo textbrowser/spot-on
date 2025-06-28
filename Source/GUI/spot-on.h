@@ -609,7 +609,8 @@ class spoton: public QMainWindow
 		  const QString &oid);
   bool sendSMPLinkToKernel(const QList<QByteArray> &list,
 			   const QString &keyType,
-			   const QString &oid);
+			   const QString &oid,
+			   const bool gitMessage);
   bool updateMailStatus(const QString &oid, const QString &status);
   bool verifyInitializationPassphrase(QWidget *parent);
   bool writeKernelSocketData(const QByteArray &bytes);
@@ -839,7 +840,6 @@ class spoton: public QMainWindow
   void slotFindInSearchInitialize(void);
   void slotForceKernelRegistration(bool state);
   void slotForwardSecrecyEncryptionKeyChanged(int index);
-  void slotGITChat(bool state);
   void slotGatherStatistics(void);
   void slotGatherUrlStatistics(void);
   void slotGeneralTimerTimeout(void);

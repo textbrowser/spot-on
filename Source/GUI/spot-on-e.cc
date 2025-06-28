@@ -323,7 +323,8 @@ QString spoton::savePoptasticAccount(void)
 
 bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 				 const QString &keyType,
-				 const QString &oid)
+				 const QString &oid,
+				 const bool gitMessage)
 {
   if(keyType.isEmpty())
     return false;
@@ -358,8 +359,8 @@ bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
   if(keyType.toLower() == "chat")
     name = m_settings.value("gui/nodeName", "unknown").toByteArray();
   else
-    name = m_settings.value("gui/poptasticName",
-			    "unknown@unknown.org").toByteArray();
+    name = m_settings.value
+      ("gui/poptasticName", "unknown@unknown.org").toByteArray();
 
   if(name.isEmpty())
     {
@@ -379,6 +380,8 @@ bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
   message.append("_");
   message.append(QByteArray::number(selectedHumanProxyOID()));
+  message.append("_");
+  message.append(QByteArray::number(gitMessage));
   message.append("\n");
 
   if(!writeKernelSocketData(message))
@@ -2783,7 +2786,7 @@ void spoton::verifySMPSecret(const QString &hash,
 
   if(ok)
     {
-      if(!sendSMPLinkToKernel(list, keyType, oid))
+      if(!sendSMPLinkToKernel(list, keyType, oid, true))
 	appendItalicChatMessage
 	  (tr("Cannot send the SMP container via the kernel for "
 	      "public-key-hash %1. The method sendSMPLinkToKernel() "

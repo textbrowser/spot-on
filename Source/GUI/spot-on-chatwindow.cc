@@ -114,6 +114,10 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     setWindowTitle(participant.trimmed());
 
+  ui.git->setEnabled(m_keyType == "chat");
+  ui.git->setToolTip
+    (ui.git->isEnabled() ?
+     ui.git->toolTip() : tr("Poptastic is not supported."));
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
 
   if(!status.trimmed().isEmpty())
@@ -323,6 +327,8 @@ void spoton_chatwindow::sendMessage(bool *ok)
   else
     message.append("-1");
 
+  message.append("_");
+  message.append(QByteArray::number(ui.git->isChecked()));
   message.append("\n");
 
   if(m_parent)

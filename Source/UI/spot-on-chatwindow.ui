@@ -74,6 +74,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="git">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Place the messages in a curious folder. A separate process will transfer the messages towards a curious GIT server. Curious. May be compatible with participant proxies in the future. SMP messages will always be placed within GIT, if possible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>GIT</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_23">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -287,6 +297,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>smp</tabstop>
+  <tabstop>git</tabstop>
   <tabstop>clearMessages</tabstop>
   <tabstop>messages</tabstop>
   <tabstop>message</tabstop>

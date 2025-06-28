@@ -293,6 +293,7 @@ class spoton_kernel: public QObject
 				 const QByteArray &sequenceNumber,
 				 const QByteArray &utcDate,
 				 const qint64 hpOid,
+				 const bool gitMessage,
 				 const QString &keyType);
   void slotMessagingCachePurge(void);
   void slotNewNeighbor(const QPointer<spoton_neighbor> &neighbor);

@@ -417,6 +417,7 @@ int main(int argc, char *argv[])
 
   settings.endGroup();
   settings.remove("gui/git_a");
+  settings.remove("gui/git_chat");
   settings.remove("gui/git_script");
   settings.remove("gui/git_t");
   settings.remove("gui/rosettaGeometry");
@@ -1956,10 +1957,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotGenerateInstitutionKeyPair(void)));
-  connect(m_ui.git_chat,
-	  SIGNAL(toggled(bool)),
-	  this,
-	  SLOT(slotGITChat(bool)));
   connect(m_ui.hideOfflineParticipants,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2541,7 +2538,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/activeUrlDistribution", false).toBool());
   m_ui.email_pages->setValue
     (m_settings.value("gui/email_letters_per_page", 500).toInt());
-  m_ui.git_chat->setChecked(m_settings.value("gui/git_chat", false).toBool());
   m_ui.humanProxy->setChecked
     (m_settings.value("gui/human_proxy", false).toBool());
   m_ui.secondary_storage_maximum_page_count->setValue

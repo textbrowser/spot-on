@@ -2447,9 +2447,13 @@ void spoton::prepareListenerIPCombo(void)
 
 void spoton::sendMessage(bool *ok)
 {
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
   QString error("");
   QString msg("");
   QString to("");
+  auto const gitMessages
+    (m_ui.participants->selectionModel()->selectedRows(9)); // GIT Messages
   auto const list
     (m_ui.participants->selectionModel()->selectedRows(1)); // OID
   auto const names
@@ -2486,8 +2490,6 @@ void spoton::sendMessage(bool *ok)
       goto done_label;
     }
 
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
   for(int i = 0; i < names.size(); i++)
     to.append(names.at(i).data().toString()).append(", ");
 
@@ -2515,6 +2517,7 @@ void spoton::sendMessage(bool *ok)
   for(int i = 0; i < list.size(); i++)
     {
       auto const data(list.at(i).data());
+      auto const gitMessage(gitMessages.value(i).data());
       auto const keyType
 	(list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
       auto const publicKeyHash(publicKeyHashes.value(i).data().toString());
@@ -2561,6 +2564,8 @@ void spoton::sendMessage(bool *ok)
 			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
 	  message.append("_");
 	  message.append(QByteArray::number(selectedHumanProxyOID()));
+	  message.append("_");
+	  message.append(QByteArray::number(gitMessage.toBool()));
 	  message.append("\n");
 	  addMessageToReplayQueue(msg, message, publicKeyHash);
 
@@ -2580,9 +2585,10 @@ void spoton::sendMessage(bool *ok)
     }
 
   m_ui.message->clear();
-  QApplication::restoreOverrideCursor();
 
  done_label:
+
+  QApplication::restoreOverrideCursor();
 
   if(error.isEmpty())
     playSound("send.wav");
@@ -5326,7 +5332,7 @@ void spoton::slotReceivedKernelMessage(void)
 			}
 
 		      if(ok)
-			sendSMPLinkToKernel(values, keyType, oid);
+			sendSMPLinkToKernel(values, keyType, oid, true);
 
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
