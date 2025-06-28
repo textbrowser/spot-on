@@ -8798,10 +8798,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
     focusWidget->setFocus();
 
   delete query;
-
-  if(db)
-    db->close();
-
+  db->close();
   delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
@@ -9053,32 +9050,32 @@ void spoton::slotPopulateParticipants
 			item->setIcon
 			  (QIcon(QString(":/%1/away.png").
 				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
+						      "nouve").toString().
+				     toLower())));
 		      else if(status == "busy")
 			item->setIcon
 			  (QIcon(QString(":/%1/busy.png").
 				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
+						      "nouve").toString().
+				     toLower())));
 		      else if(status == "offline")
 			item->setIcon
 			  (QIcon(QString(":/%1/offline.png").
 				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
+						      "nouve").toString().
+				     toLower())));
 		      else if(status == "online")
 			item->setIcon
 			  (QIcon(QString(":/%1/online.png").
 				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
+						      "nouve").toString().
+				     toLower())));
 		      else
 			item->setIcon
 			  (QIcon(QString(":/%1/chat.png").
 				 arg(m_settings.value("gui/iconSet",
-						      "nouve").
-				     toString().toLower())));
+						      "nouve").toString().
+				     toLower())));
 
 		      item->setToolTip
 			(query->value(3).toString().mid(0, 16) +
@@ -9112,10 +9109,9 @@ void spoton::slotPopulateParticipants
 		      ** Forward Secrecy Information
 		      */
 
-		      QList<QByteArray> list;
 		      auto ok = true;
-
-		      list = retrieveForwardSecrecyInformation(oid, &ok);
+		      auto const list
+			(retrieveForwardSecrecyInformation(oid, &ok));
 
 		      if(ok)
 			item->setText
@@ -9124,7 +9120,7 @@ void spoton::slotPopulateParticipants
 			item->setText(tr("error"));
 		    }
 		}
-	      else if(i == 9) // GIT Messages
+	      else if(i == 9) // GIT Messages (Boolean)
 		{
 		  if(!temporary)
 		    {
@@ -9156,7 +9152,7 @@ void spoton::slotPopulateParticipants
 
 	      if((m_ui.hideOfflineParticipants->isChecked() &&
 		  status == "offline") ||
-		 publicKeyContainsPoptastic)
+		 (publicKeyContainsPoptastic))
 		{
 		  /*
 		  ** This may be a plain Poptastic participant.
@@ -9193,9 +9189,8 @@ void spoton::slotPopulateParticipants
 		  if(keyType == "email")
 		    item->setIcon
 		      (QIcon(QString(":/%1/key.png").
-			     arg(m_settings.
-				 value("gui/iconSet",
-				       "nouve").toString())));
+			     arg(m_settings.value("gui/iconSet", "nouve").
+				 toString())));
 		  else if(keyType == "poptastic")
 		    {
 		      if(publicKeyContainsPoptastic)
@@ -9213,8 +9208,8 @@ void spoton::slotPopulateParticipants
 			  item->setIcon
 			    (QIcon(QString(":/%1/key.png").
 				   arg(m_settings.
-				       value("gui/iconSet",
-					     "nouve").toString())));
+				       value("gui/iconSet", "nouve").
+				       toString())));
 			}
 		    }
 		}
@@ -9226,10 +9221,9 @@ void spoton::slotPopulateParticipants
 		    item = new QTableWidgetItem("");
 		  else
 		    {
-		      QList<QByteArray> list;
 		      auto ok = true;
-
-		      list = retrieveForwardSecrecyInformation(oid, &ok);
+		      auto const list
+			(retrieveForwardSecrecyInformation(oid, &ok));
 
 		      if(ok)
 			item = new QTableWidgetItem
@@ -9249,8 +9243,8 @@ void spoton::slotPopulateParticipants
 			  item->setIcon
 			    (QIcon(QString(":/%1/add.png").
 				   arg(m_settings.value("gui/iconSet",
-							"nouve").
-				       toString().toLower())));
+							"nouve").toString().
+				       toLower())));
 			  item->setToolTip
 			    (tr("User %1 requests your friendship.").
 			     arg(item->text()));
@@ -9267,8 +9261,7 @@ void spoton::slotPopulateParticipants
 		    (Qt::ItemDataRole(Qt::UserRole + 1), keyType);
 		  item->setFlags
 		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  m_ui.emailParticipants->setItem
-		    (rowE - 1, i, item);
+		  m_ui.emailParticipants->setItem(rowE - 1, i, item);
 		}
 	    }
 	  else if(keyType == "url")
@@ -9287,8 +9280,7 @@ void spoton::slotPopulateParticipants
 		  item = new QTableWidgetItem(name);
 		}
 	      else if(i == 1 || i == 2 || i == 3)
-		item = new QTableWidgetItem
-		  (query->value(i).toString());
+		item = new QTableWidgetItem(query->value(i).toString());
 
 	      if(item)
 		{
@@ -9299,8 +9291,8 @@ void spoton::slotPopulateParticipants
 			  item->setIcon
 			    (QIcon(QString(":/%1/add.png").
 				   arg(m_settings.value("gui/iconSet",
-							"nouve").
-				       toString().toLower())));
+							"nouve").toString().
+				       toLower())));
 			  item->setToolTip
 			    (tr("User %1 requests your friendship.").
 			     arg(item->text()));
@@ -9313,10 +9305,8 @@ void spoton::slotPopulateParticipants
 		    }
 
 		  item->setData(Qt::UserRole, temporary);
-		  item->setFlags
-		    (Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-		  m_ui.urlParticipants->setItem
-		    (rowU - 1, i, item);
+		  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+		  m_ui.urlParticipants->setItem(rowU - 1, i, item);
 		}
 	    }
 
@@ -9368,36 +9358,33 @@ void spoton::slotPopulateParticipants
   for(int i = 0; i < rowsU.size(); i++)
     m_ui.urlParticipants->selectRow(rowsU.at(i));
 
+  m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
+  m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
+  m_ui.emailParticipants->resizeColumnToContents(0);
   m_ui.emailParticipants->setSelectionMode
     (QAbstractItemView::ExtendedSelection);
   m_ui.emailParticipants->setSortingEnabled(true);
-  m_ui.emailParticipants->resizeColumnToContents(0);
-  m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
-  m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
+  m_ui.participants->horizontalHeader()->setStretchLastSection(true);
+  m_ui.participants->horizontalScrollBar()->setValue(hval);
   m_ui.participants->resizeColumnToContents(0); // Participant
   m_ui.participants->resizeColumnToContents(6); // Gemini Encryption Key
   m_ui.participants->resizeColumnToContents(7); // Gemini Hash Key
   m_ui.participants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.participants->setSortingEnabled(true);
-  m_ui.participants->horizontalHeader()->setStretchLastSection(true);
-  m_ui.participants->horizontalScrollBar()->setValue(hval);
   m_ui.participants->verticalScrollBar()->setValue(vval);
-  m_ui.urlParticipants->setSelectionMode(QAbstractItemView::ExtendedSelection);
-  m_ui.urlParticipants->setSortingEnabled(true);
-  m_ui.urlParticipants->resizeColumnToContents(0);
   m_ui.urlParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
+  m_ui.urlParticipants->resizeColumnToContents(0);
+  m_ui.urlParticipants->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  m_ui.urlParticipants->setSortingEnabled(true);
   m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
 
   if(focusWidget)
     focusWidget->setFocus();
 
   delete query;
-
-  if(db)
-    db->close();
-
+  db->close();
   delete db;
   QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();

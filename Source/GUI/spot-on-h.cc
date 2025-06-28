@@ -847,9 +847,9 @@ void spoton::retrieveNeighbors(void)
 	    return;
 	  }
 
+	delete query;
 	db->close();
 	delete db;
-	delete query;
       }
     else
       delete db;
@@ -935,9 +935,9 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 	    return;
 	  }
 
+	delete query;
 	db->close();
 	delete db;
-	delete query;
       }
     else
       delete db;
