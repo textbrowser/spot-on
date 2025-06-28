@@ -906,23 +906,24 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 		       "gemini, "             // 6
 		       "gemini_hash_key, "    // 7
 		       "key_type, "           // 8
-		       "public_key "          // 9
+		       "0, "                  // 9 (GIT Messages)
+		       "public_key "          // 10
 		       "FROM friends_public_keys "
 		       "WHERE key_type_hash IN (?, ?, ?, ?)");
-	query->bindValue
-	  (0, crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+	query->addBindValue
+	  (crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
 
 	if(ok)
-	  query->bindValue
-	    (1, crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+	  query->addBindValue
+	    (crypt->keyedHash(QByteArray("email"), &ok).toBase64());
 
 	if(ok)
-	  query->bindValue
-	    (2, crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
+	  query->addBindValue
+	    (crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
 
 	if(ok)
-	  query->bindValue
-	    (3, crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+	  query->addBindValue
+	    (crypt->keyedHash(QByteArray("url"), &ok).toBase64());
 
 	if(ok && query->exec())
 	  {

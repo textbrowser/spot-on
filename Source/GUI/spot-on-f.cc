@@ -1584,8 +1584,7 @@ void spoton::slotPurgeEphemeralKeyPair(void)
 
   if(type == "chat")
     publicKeyHashes =
-      m_ui.participants->selectionModel()->
-      selectedRows(3); // public_key_hash
+      m_ui.participants->selectionModel()->selectedRows(3); // public_key_hash
   else
     publicKeyHashes =
       m_ui.emailParticipants->selectionModel()->
@@ -1717,8 +1716,7 @@ void spoton::slotResetForwardSecrecyInformation(void)
 
   if(type == "chat")
     publicKeyHashes =
-      m_ui.participants->selectionModel()->
-      selectedRows(3); // public_key_hash
+      m_ui.participants->selectionModel()->selectedRows(3); // public_key_hash
   else
     publicKeyHashes =
       m_ui.emailParticipants->selectionModel()->

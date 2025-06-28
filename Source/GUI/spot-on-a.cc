@@ -5135,7 +5135,7 @@ void spoton::slotAddNeighbor(void)
 	    (4, crypt->
 	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
 
-	query.bindValue(5, 1); // Sticky.
+	query.bindValue(5, 1); // Sticky
 
 	if(ok)
 	  query.bindValue
@@ -8807,9 +8807,8 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
   QApplication::restoreOverrideCursor();
 }
 
-void spoton::slotPopulateParticipants(QSqlDatabase *db,
-				      QSqlQuery *query,
-				      const QString &connectionName)
+void spoton::slotPopulateParticipants
+(QSqlDatabase *db, QSqlQuery *query, const QString &connectionName)
 {
   auto crypt = m_crypts.value("chat", nullptr);
 
@@ -8828,6 +8827,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   query->seek(-1);
 
+  QHash<QString, Qt::CheckState> gitMessages;
   QList<int> rows;  // Chat
   QList<int> rowsE; // E-Mail
   QList<int> rowsU; // URLs
@@ -8839,8 +8839,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   auto const hvalE = m_ui.emailParticipants->horizontalScrollBar()->value();
   auto const hvalU = m_ui.urlParticipants->horizontalScrollBar()->value();
   auto const list
-    (m_ui.participants->selectionModel()->
-     selectedRows(3)); // public_key_hash
+    (m_ui.participants->selectionModel()->selectedRows(3)); // public_key_hash
   auto const listE
     (m_ui.emailParticipants->selectionModel()->
      selectedRows(3)); // public_key_hash
@@ -8879,20 +8878,21 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
     }
 
   for(int i = 0; i < m_ui.participants->rowCount(); i++)
-    if(m_ui.participants->item(i, 0) &&
+    if(hpData.isEmpty() &&
+       m_ui.participants->item(i, 0) &&
        m_ui.participants->item(i, 0)->checkState() == Qt::Checked &&
        m_ui.participants->item(i, 3))
-      {
-	hpData = m_ui.participants->item(i, 3)->text();
-	break;
-      }
+      hpData = m_ui.participants->item(i, 3)->text();
+    else if(m_ui.participants->item(i, 1) && m_ui.participants->item(i, 9))
+      gitMessages[m_ui.participants->item(i, 1)->text()] =
+	m_ui.participants->item(i, 9)->checkState();
 
-  m_ui.emailParticipants->setSortingEnabled(false);
   m_ui.emailParticipants->setRowCount(0);
-  m_ui.participants->setSortingEnabled(false);
+  m_ui.emailParticipants->setSortingEnabled(false);
   m_ui.participants->setRowCount(0);
-  m_ui.urlParticipants->setSortingEnabled(false);
+  m_ui.participants->setSortingEnabled(false);
   m_ui.urlParticipants->setRowCount(0);
+  m_ui.urlParticipants->setSortingEnabled(false);
   disconnect(m_ui.participants,
 	     SIGNAL(itemChanged(QTableWidgetItem *)),
 	     this,
@@ -8920,8 +8920,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 	  auto const bytes
 	    (crypt->
 	     decryptedAfterAuthenticated(QByteArray::
-					 fromBase64(query->
-						    value(0).
+					 fromBase64(query->value(0).
 						    toByteArray()),
 					 &ok));
 
@@ -8932,13 +8931,13 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
       if(!ok)
 	name = "";
 
-      if(query->value(9).toByteArray().length() < 1024 * 1024)
+      if(query->value(10).toByteArray().length() < 1024 * 1024)
 	/*
 	** Avoid McEliece keys!
 	*/
 
 	publicKeyContainsPoptastic = crypt->decryptedAfterAuthenticated
-	  (QByteArray::fromBase64(query->value(9).toByteArray()), &ok).
+	  (QByteArray::fromBase64(query->value(10).toByteArray()), &ok).
 	  contains("-poptastic");
 
       if(!isKernelActive())
@@ -9020,8 +9019,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		    {
 		      item = new QTableWidgetItem
 			(QString(crypt->decryptedAfterAuthenticated
-				 (QByteArray::fromBase64(query->
-							 value(i).
+				 (QByteArray::fromBase64(query->value(i).
 							 toByteArray()),
 				  &ok).toBase64()));
 
@@ -9092,8 +9090,7 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 		      item->setIcon
 			(QIcon(QString(":/%1/add.png").
 			       arg(m_settings.value("gui/iconSet",
-						    "nouve").
-				   toString())));
+						    "nouve").toString())));
 		      item->setToolTip
 			(tr("User %1 requests your friendship.").
 			 arg(item->text()));
@@ -9101,15 +9098,11 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 
 		  icon = item->icon();
 		}
-	      else if(i == 6 ||
-		      i == 7) /*
-			      ** Gemini Encryption Key
-			      ** Gemini Hash Key
-			      */
+	      else if(i == 6 || // Gemini Encryption Key
+		      i == 7)   // Gemini Hash Key
 		{
 		  if(!temporary)
-		    item->setFlags
-		      (item->flags() | Qt::ItemIsEditable);
+		    item->setFlags(Qt::ItemIsEditable | item->flags());
 		}
 	      else if(i == 8)
 		{
@@ -9129,6 +9122,25 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
 			  (spoton_misc::forwardSecrecyMagnetFromList(list));
 		      else
 			item->setText(tr("error"));
+		    }
+		}
+	      else if(i == 9) // GIT Messages
+		{
+		  if(!temporary)
+		    {
+		      item->setCheckState
+			(gitMessages.value(oid, Qt::Unchecked));
+
+		      if(keyType == "chat")
+			item->setFlags
+			  (Qt::ItemIsEnabled |
+			   Qt::ItemIsSelectable |
+			   Qt::ItemIsUserCheckable);
+		      else
+			item->setFlags(Qt::ItemIsSelectable);
+
+		      item->setText("");
+		      item->setToolTip("");
 		    }
 		}
 
@@ -9363,11 +9375,9 @@ void spoton::slotPopulateParticipants(QSqlDatabase *db,
   m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
-  m_ui.participants->resizeColumnToContents(0); // Participant.
-  m_ui.participants->resizeColumnToContents
-    (m_ui.participants->columnCount() - 3); // Gemini Encryption Key.
-  m_ui.participants->resizeColumnToContents
-    (m_ui.participants->columnCount() - 2); // Gemini Hash Key.
+  m_ui.participants->resizeColumnToContents(0); // Participant
+  m_ui.participants->resizeColumnToContents(6); // Gemini Encryption Key
+  m_ui.participants->resizeColumnToContents(7); // Gemini Hash Key
   m_ui.participants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.participants->setSortingEnabled(true);
   m_ui.participants->horizontalHeader()->setStretchLastSection(true);
