@@ -53,12 +53,9 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     spoton *parent):QMainWindow(parent)
 {
   m_id = id;
-  m_keyType = keyType.toLower();
-
-  if(m_keyType.isEmpty())
-    m_keyType = "chat";
-
   m_kernelSocket = kernelSocket;
+  m_keyType = keyType.toLower().trimmed();
+  m_keyType = m_keyType.isEmpty() ? "chat" : m_keyType;
   m_parent = parent;
   m_publicKeyHash = publicKeyHash;
   ui.setupUi(this);
@@ -116,10 +113,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
     setWindowTitle(participant.trimmed());
 
   ui.git->setChecked(gitMessage);
-  ui.git->setEnabled(m_keyType == "chat");
-  ui.git->setToolTip
-    (ui.git->isEnabled() ?
-     ui.git->toolTip() : tr("Poptastic is not supported."));
+  ui.git->setEnabled(false);
   ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));
 
   if(!status.trimmed().isEmpty())

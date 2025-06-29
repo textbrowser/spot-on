@@ -2453,7 +2453,8 @@ void spoton::sendMessage(bool *ok)
   QString msg("");
   QString to("");
   auto const gitMessages
-    (m_ui.participants->selectionModel()->selectedRows(9)); // GIT Messages
+    (m_ui.participants->selectionModel()->
+     selectedRows(9)); // GIT Messages (Boolean)
   auto const list
     (m_ui.participants->selectionModel()->selectedRows(1)); // OID
   auto const names

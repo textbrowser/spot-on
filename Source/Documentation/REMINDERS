@@ -360,6 +360,8 @@ Completed Items
 247.   Replace OpenSSL with executable. Create and remove local files
        via the openssl executable. Library becoming stale.
 248.   GPG executable for creating credentials from Rosetta.
+249.   Optional Chat GIT per participant. See GIT Messages column in the
+       Chat page.
 
 Remaining Items
 
@@ -367,5 +369,4 @@ Remaining Items
 2.     Prison Blues remote server for non-Unix.
 3.     Detect expired Web Server certificate.
 4.     Detect expired listener certificates.
-5.     Optional Chat GIT per participant.
-6.     Log translated errors in spoton_crypt.
+5.     Log translated errors in spoton_crypt.
