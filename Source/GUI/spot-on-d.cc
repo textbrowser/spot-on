@@ -2789,6 +2789,7 @@ void spoton::slotUpdateChatWindows(void)
 	QString publicKeyHash("");
 	QString status("");
 	QTableWidgetItem *item = nullptr;
+	auto gitMessage = false;
 
 	item = m_ui.participants->item(i, 0);
 
@@ -2808,12 +2809,17 @@ void spoton::slotUpdateChatWindows(void)
 	if(item)
 	  status = item->text();
 
+	item = m_ui.participants->item(i, 9);
+
+	if(item)
+	  gitMessage = item->checkState() == Qt::Checked;
+
 	if(!oid.isEmpty())
 	  {
 	    if(!m_chatWindows.contains(oid))
 	      m_chatWindows.remove(oid);
 
-	    emit statusChanged(icon, name, oid, status);
+	    emit statusChanged(icon, name, oid, status, gitMessage);
 	  }
 
 	item = m_ui.participants->item(i, 3);
@@ -2826,8 +2832,7 @@ void spoton::slotUpdateChatWindows(void)
       }
 
   /*
-  ** Remove chat windows that do not have corresponding participant
-  ** entries.
+  ** Remove chat windows that do not have corresponding participant entries.
   */
 
   it.toFront();

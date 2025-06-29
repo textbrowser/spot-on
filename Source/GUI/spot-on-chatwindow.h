@@ -47,6 +47,7 @@ class spoton_chatwindow: public QMainWindow
 		    const QString &participant,
 		    const QString &publicKeyHash,
 		    const QString &status,
+		    const bool gitMessage,
 		    QSslSocket *kernelSocket,
 		    spoton *parent);
   ~spoton_chatwindow();
@@ -79,7 +80,8 @@ class spoton_chatwindow: public QMainWindow
   void slotSetStatus(const QIcon &icon,
 		     const QString &name,
 		     const QString &id,
-		     const QString &status);
+		     const QString &status,
+		     const bool gitMessage);
   void slotShareStarBeam(void);
   void slotVerifySMPSecret(void);
 

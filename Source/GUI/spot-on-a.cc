@@ -8901,6 +8901,7 @@ void spoton::slotPopulateParticipants
       QString statusText("");
       auto const oid(query->value(1).toString());
       auto const temporary = query->value(2).toLongLong() == -1 ? false : true;
+      auto gitMessage = gitMessages.value(oid, Qt::Unchecked);
       auto ok = true;
       auto publicKeyContainsPoptastic = false;
       auto status(query->value(4).toString().toLower());
@@ -9319,7 +9320,7 @@ void spoton::slotPopulateParticipants
 	}
 
       if(keyType == "chat" || keyType == "poptastic")
-	emit statusChanged(icon, name, oid, statusText);
+	emit statusChanged(icon, name, oid, statusText, gitMessage);
 
       if(hashes.contains(query->value(3).toString()))
 	rows.append(row - 1);

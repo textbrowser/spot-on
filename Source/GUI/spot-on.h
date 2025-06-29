@@ -1137,7 +1137,8 @@ class spoton: public QMainWindow
   void statusChanged(const QIcon &icon,
 		     const QString &name,
 		     const QString &id,
-		     const QString &toolTip);
+		     const QString &toolTip,
+		     const bool gitMessage);
   void updateEmailWindows(void);
 };
 

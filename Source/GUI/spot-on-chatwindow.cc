@@ -48,6 +48,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
 				     const QString &participant,
 				     const QString &publicKeyHash,
 				     const QString &status,
+				     const bool gitMessage,
 				     QSslSocket *kernelSocket,
 				     spoton *parent):QMainWindow(parent)
 {
@@ -114,6 +115,7 @@ spoton_chatwindow::spoton_chatwindow(const QIcon &icon,
   else
     setWindowTitle(participant.trimmed());
 
+  ui.git->setChecked(gitMessage);
   ui.git->setEnabled(m_keyType == "chat");
   ui.git->setToolTip
     (ui.git->isEnabled() ?
@@ -541,10 +543,13 @@ void spoton_chatwindow::slotSetIcons(void)
 void spoton_chatwindow::slotSetStatus(const QIcon &icon,
 				      const QString &name,
 				      const QString &id,
-				      const QString &status)
+				      const QString &status,
+				      const bool gitMessage)
 {
   if(id == m_id)
     {
+      ui.git->setChecked(gitMessage);
+
       if(!icon.isNull())
 	{
 	  ui.icon->setPixmap(icon.pixmap(QSize(16, 16)));

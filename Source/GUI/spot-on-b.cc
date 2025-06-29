@@ -4552,6 +4552,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   QString participant("");
   QString publicKeyHash("");
   QString status("");
+  auto gitMessage = false;
   auto const row = item->row();
 
   item = m_ui.participants->item(row, 0); // Participant
@@ -4608,6 +4609,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
      participant,
      publicKeyHash,
      status,
+     gitMessage,
      &m_kernelSocket,
      this);
 
@@ -4652,12 +4654,14 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 	  SIGNAL(statusChanged(const QIcon &,
 			       const QString &,
 			       const QString &,
-			       const QString &)),
+			       const QString &,
+			       const bool)),
 	  chat,
 	  SLOT(slotSetStatus(const QIcon &,
 			     const QString &,
 			     const QString &,
-			     const QString &)));
+			     const QString &,
+			     const bool)));
   m_chatWindows[publicKeyHash] = chat;
   m_starsLastModificationTime = QDateTime();
   chat->center(this);
