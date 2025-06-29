@@ -191,12 +191,10 @@ QString spoton_chatwindow::id(void) const
 
 void spoton_chatwindow::append(const QString &text)
 {
-  QSettings settings;
-  auto const lines = settings.value("gui/chat_maximum_lines", -1).toInt();
+  auto const lines = QSettings().value("gui/chat_maximum_lines", -1).toInt();
 
-  if(lines >= 0)
-    if(lines <= ui.messages->document()->blockCount())
-      ui.messages->clear();
+  if(lines >= 0 && lines <= ui.messages->document()->blockCount())
+    ui.messages->clear();
 
   ui.messages->append(text);
   ui.messages->verticalScrollBar()->setValue
@@ -230,11 +228,10 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
   QByteArray message;
   QByteArray name;
-  QSettings settings;
   QString error("");
   QString msg("");
-  auto const to(ui.name->text());
   auto const now(QDateTime::currentDateTime());
+  auto const to(ui.name->text());
 
   if(m_kernelSocket->state() != QAbstractSocket::ConnectedState)
     {
@@ -272,7 +269,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
      arg(now.toString("ss")));
   msg.append(tr("<b>me</b> (<font color=gray>%1</font>)<b>:</b> ").arg(to));
 
-  if(settings.value("gui/enableChatEmoticons", false).toBool())
+  if(QSettings().value("gui/enableChatEmoticons", false).toBool())
     msg.append
       (spoton::mapIconToEmoticon(ui.message->toPlainText().trimmed()));
   else
@@ -486,9 +483,7 @@ void spoton_chatwindow::slotLinkClicked(const QUrl &url)
   if(!(scheme == "ftp" || scheme == "http" || scheme == "https"))
     return;
 
-  QSettings settings;
-
-  if(!settings.value("gui/openChatUrl", false).toBool())
+  if(!QSettings().value("gui/openChatUrl", false).toBool())
     return;
 
   QMessageBox mb(this);
@@ -526,8 +521,7 @@ void spoton_chatwindow::slotSendMessage(void)
 
 void spoton_chatwindow::slotSetIcons(void)
 {
-  QSettings settings;
-  auto iconSet(settings.value("gui/iconSet", "nouve").toString().toLower());
+  auto iconSet(QSettings().value("gui/iconSet", "nouve").toString().toLower());
 
   if(!(iconSet == "everaldo" ||
        iconSet == "meego" ||

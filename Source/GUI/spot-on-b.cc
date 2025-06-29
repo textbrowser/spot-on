@@ -4552,8 +4552,8 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   QString participant("");
   QString publicKeyHash("");
   QString status("");
-  auto gitMessage = false;
   auto const row = item->row();
+  auto gitMessage = false;
 
   item = m_ui.participants->item(row, 0); // Participant
 
@@ -4579,6 +4579,11 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
 
   if(item)
     status = item->text();
+
+  item = m_ui.participants->item(row, 9); // GIT Messages (Boolean)
+
+  if(item)
+    gitMessage = item->checkState() == Qt::Checked;
 
   auto smp = m_smps.value(publicKeyHash, nullptr);
 
