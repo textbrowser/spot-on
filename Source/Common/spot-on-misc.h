@@ -117,6 +117,7 @@ class spoton_misc
   static QList<QFileInfo> prisonBluesDirectories(spoton_crypt *crypt);
   static QList<QHash<QString, QVariant> > poptasticSettings
     (const QString &in_username, spoton_crypt *crypt, bool *ok);
+  static QMap<QString, QVariant> defaultOtherOptions(void);
   static QMap<QString, QVariant> otherOptions(const QByteArray &bytes);
   static QPair<QByteArray, QByteArray> decryptedAdaptiveEchoPair
     (const QPair<QByteArray, QByteArray> &pair, spoton_crypt *crypt);

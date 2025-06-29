@@ -57,32 +57,6 @@ QMap<QString, QByteArray> spoton::SMPWindowStreams
   return m_smpWindow->streams(keyTypes);
 }
 
-QMap<QString, QString> spoton::defaultMiscellaneousOptions(void)
-{
-  QMap<QString, QString> map;
-
-  map["FORTUNA_FILE"] = "none";
-  map["FORTUNA_QUERY_INTERVAL_MSECS"] = "0";
-  map["FORTUNA_URL"] = "http://127.0.0.1:5000";
-  map["GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING"] = "sha512";
-  map["MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE"] = QString::number
-    (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE);
-  map["P2P_SERVERLESS_CONNECT_INTERVAL_MSECS"] = "1";
-  map["PREFERRED_HASH_ALGORITHM"] = "sha512";
-  map["PRISON_BLUES_REMOTE_SERVER"] = "192.168.178.15:5710";
-  map["PUBLISHED_PAGES"] = "/dev/null, Title-Line, URL-Line";
-  map["SMP_PREFERRED_HASH_ALGORITHM"] = "sha3-512";
-  map["WEB_PAGES_SHARED_DIRECTORY"] = "/dev/null";
-  map["WEB_SERVER_CERTIFICATE_LIFETIME"] = QString::number
-    (spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME);
-  map["WEB_SERVER_HTTP_SO_LINGER"] = "-1";
-  map["WEB_SERVER_HTTPS_SO_LINGER"] = "-1";
-  map["WEB_SERVER_KEY_SIZE"] = QString::number
-    (spoton_common::WEB_SERVER_KEY_SIZE);
-  map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = "true";
-  return map;
-}
-
 QString spoton::listenerTransport(void) const
 {
   int row = -1;
@@ -721,8 +695,8 @@ void spoton::prepareOtherOptions(void)
   QFileInfo const fileInfo
     (m_settings.value("FORTUNA_FILE", "").toString().trimmed());
   auto const url
-    (QUrl::fromUserInput(m_settings.value("FORTUNA_URL", "").
-			 toString().trimmed()));
+    (QUrl::fromUserInput(m_settings.value("FORTUNA_URL", "").toString().
+			 trimmed()));
 
   if((fileInfo.isReadable()) || (url.isEmpty() == false && url.isValid()))
     {
@@ -994,7 +968,8 @@ void spoton::slotApplyOtherOptions(void)
 
       if(item2->text().trimmed().isEmpty())
 	item2->setText
-	  (defaultMiscellaneousOptions().value(item1->text().trimmed()));
+	  (spoton_misc::defaultOtherOptions().
+	   value(item1->text().trimmed()).toString().trimmed());
 
       str.append(QString("%1 := %2\n").
 		 arg(item1->text().trimmed()).
