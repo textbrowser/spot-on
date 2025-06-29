@@ -5271,7 +5271,7 @@ void spoton::slotReceivedKernelMessage(void)
 				msg.append
 				  (tr("<font color=green>"
 				      "<i>SMP verification with "
-				      "%1 (%2...%3) "
+				      "<b>%1</b> (%2...%3) "
 				      "has succeeded.</i></font>").
 				   arg(smpName).
 				   arg(hash.toBase64().mid(0, 16).
@@ -5282,7 +5282,7 @@ void spoton::slotReceivedKernelMessage(void)
 				msg.append
 				  (tr("<font color=red>"
 				      "<i>SMP verification with "
-				      "%1 (%2...%3) "
+				      "<b>%1</b> (%2...%3) "
 				      "has failed.</i></font>").
 				   arg(smpName).
 				   arg(hash.toBase64().mid(0, 16).constData()).
@@ -5300,7 +5300,7 @@ void spoton::slotReceivedKernelMessage(void)
 			    msg.append
 			      (tr("<font color=red>"
 				  "<i>SMP verification with "
-				  "%1 (%2...%3) has "
+				  "<b>%1</b> (%2...%3) has "
 				  "experienced a protocol failure. "
 				  "The respective state machine has been reset."
 				  "</i></font>").
