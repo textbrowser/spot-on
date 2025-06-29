@@ -1481,7 +1481,7 @@ QString spoton_misc::nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 	    }
 
 	if(!ok)
-	  name.clear();
+	  name = "unknown";
       }
 
     db.close();

@@ -2517,7 +2517,7 @@ void spoton::sendMessage(bool *ok)
   for(int i = 0; i < list.size(); i++)
     {
       auto const data(list.at(i).data());
-      auto const gitMessage(gitMessages.value(i).data());
+      auto const gitMessage(gitMessages.value(i).data(Qt::CheckStateRole));
       auto const keyType
 	(list.at(i).data(Qt::ItemDataRole(Qt::UserRole + 1)).toString());
       auto const publicKeyHash(publicKeyHashes.value(i).data().toString());

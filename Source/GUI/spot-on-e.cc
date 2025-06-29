@@ -2792,9 +2792,22 @@ void spoton::verifySMPSecret(const QString &hash,
 	      "public-key-hash %1. The method sendSMPLinkToKernel() "
 	      "failed.").arg(hash.trimmed()));
       else
-	appendItalicChatMessage
-	  (tr("Sent an SMP container via the kernel for public-key-hash %1.").
-	   arg(hash.trimmed()));
+	{
+	  auto const name
+	    (spoton_misc::
+	     nameFromPublicKeyHash(QByteArray::fromBase64(hash.toLatin1()),
+				   m_crypts.value("chat")));
+
+	  if(name.isEmpty())
+	    appendItalicChatMessage
+	      (tr("Sent an SMP container via the kernel for "
+		  "public-key-hash %1.").
+	       arg(hash.trimmed()));
+	  else
+	    appendItalicChatMessage
+	      (tr("Sent an SMP container via the kernel for "
+		  "<b>%1</b> (%2).").arg(name).arg(hash.trimmed()));
+	}
     }
   else
     appendItalicChatMessage
