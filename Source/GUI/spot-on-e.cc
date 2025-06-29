@@ -443,7 +443,11 @@ void spoton::computeFileDigests(const QString &fileName,
 
 void spoton::initializeSMP(const QString &hash)
 {
-  if(hash.isEmpty())
+  /*
+  ** The variable hash contains a Base-64 representation.
+  */
+
+  if(hash.trimmed().isEmpty())
     return;
 
   auto smp = m_smps.value(hash, nullptr);
@@ -761,7 +765,11 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
 
 void spoton::prepareSMP(const QString &hash)
 {
-  if(hash.isEmpty())
+  /*
+  ** The variable hash contains a Base-64 representation.
+  */
+
+  if(hash.trimmed().isEmpty())
     return;
 
   auto smp = m_smps.value(hash, nullptr);
@@ -1312,6 +1320,10 @@ void spoton::slotDeriveGeminiPairViaSMP(const QString &publicKeyHash,
     return;
   else if(item->data(Qt::UserRole).toBool()) // Temporary friend?
     return; // Temporary!
+
+  /*
+  ** The variable publicKeyHash contains a Base-64 representation.
+  */
 
   auto smp = m_smps.value(publicKeyHash, nullptr);
 
@@ -2760,6 +2772,10 @@ void spoton::verifySMPSecret(const QString &hash,
 {
   if(hash.trimmed().isEmpty() || keyType.isEmpty() || oid.isEmpty())
     return;
+
+  /*
+  ** The variable hash contains a Base-64 representation.
+  */
 
   auto smp = m_smps.value(hash, nullptr);
 
