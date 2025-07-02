@@ -1358,7 +1358,7 @@ void spoton::slotRemoveAttachment(const QUrl &url)
 
   for(int i = 0; i < list.size(); i++)
     {
-      auto const str(list.at(i).trimmed());
+      auto const str(list.at(i));
 
       if(str != url.toString() && str.length() > 0)
 	m_ui.attachment->append(QString("<a href=\"%1\">%1</a>").arg(str));

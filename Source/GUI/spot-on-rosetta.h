@@ -117,6 +117,7 @@ class spoton_rosetta: public QMainWindow
 
  private slots:
   void slotAddContact(void);
+  void slotAttachForGPG(void);
   void slotClear(void);
   void slotClearClipboardBuffer(void);
   void slotContactsChanged(int index);
@@ -138,6 +139,7 @@ class spoton_rosetta: public QMainWindow
   void slotPrisonBluesTimeout(void);
   void slotProcessGPGMessage(const QByteArray &message);
   void slotPublishGPG(void);
+  void slotRemoveGPGAttachment(const QUrl &url);
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);

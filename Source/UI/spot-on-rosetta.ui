@@ -995,6 +995,46 @@
                       </widget>
                      </item>
                      <item>
+                      <layout class="QHBoxLayout" name="horizontalLayout_51">
+                       <property name="spacing">
+                        <number>5</number>
+                       </property>
+                       <item>
+                        <widget class="QLabel" name="label_8">
+                         <property name="text">
+                          <string>Attachments</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QTextBrowser" name="attachments">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
+                         <property name="toolTip">
+                          <string>Click an attachment to remove it.</string>
+                         </property>
+                         <property name="tabChangesFocus">
+                          <bool>true</bool>
+                         </property>
+                         <property name="openLinks">
+                          <bool>false</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QPushButton" name="attach">
+                         <property name="text">
+                          <string>Attach...</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                     <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_31">
                        <property name="spacing">
                         <number>5</number>
@@ -1255,6 +1295,8 @@
   <tabstop>gpg_address</tabstop>
   <tabstop>gpg_sign_messages</tabstop>
   <tabstop>gpg_participants</tabstop>
+  <tabstop>attachments</tabstop>
+  <tabstop>attach</tabstop>
   <tabstop>gpg_message</tabstop>
   <tabstop>gpg_send</tabstop>
   <tabstop>newContact</tabstop>

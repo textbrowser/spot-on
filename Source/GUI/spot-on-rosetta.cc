@@ -153,6 +153,14 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddContact(void)));
+  connect(ui.attach,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAttachForGPG(void)));
+  connect(ui.attachments,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotRemoveGPGAttachment(const QUrl &)));
   connect(ui.chatHorizontalSplitter,
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
@@ -1296,6 +1304,42 @@ void spoton_rosetta::slotAddContact(void)
       emit participantAdded("rosetta");
       populateContacts();
     }
+}
+
+void spoton_rosetta::slotAttachForGPG(void)
+{
+  QFileDialog dialog(this);
+
+  dialog.setAcceptMode(QFileDialog::AcceptOpen);
+  dialog.setDirectory(QDir::homePath());
+  dialog.setFileMode(QFileDialog::ExistingFiles);
+  dialog.setLabelText(QFileDialog::Accept, tr("Select"));
+  dialog.setWindowTitle
+    (tr("%1: Select Attachment").arg(SPOTON_APPLICATION_NAME));
+
+  if(dialog.exec() == QDialog::Accepted)
+    {
+      QApplication::processEvents();
+      QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+      auto list(dialog.selectedFiles());
+
+      std::sort(list.begin(), list.end());
+
+      for(int i = 0; i < list.size(); i++)
+	{
+	  QFileInfo const fileInfo(list.at(i));
+
+	  ui.attachments->append
+	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
+	     arg(fileInfo.absoluteFilePath()).
+	     arg(spoton_misc::prettyFileSize(fileInfo.size())));
+	}
+
+      QApplication::restoreOverrideCursor();
+    }
+
+  QApplication::processEvents();
 }
 
 void spoton_rosetta::slotClear(void)
@@ -2671,6 +2715,31 @@ void spoton_rosetta::slotPublishGPG(void)
 	 arg(directory.absoluteFilePath()), 5000);
 
   state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
+}
+
+void spoton_rosetta::slotRemoveGPGAttachment(const QUrl &url)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+  auto const list
+    (ui.attachments->toPlainText().split('\n', Qt::SkipEmptyParts));
+#else
+  auto const list
+    (ui.attachments->toPlainText().split('\n', QString::SkipEmptyParts));
+#endif
+
+  ui.attachments->clear();
+
+  for(int i = 0; i < list.size(); i++)
+    {
+      auto const str(list.at(i));
+
+      if(str != url.toString() && str.length() > 0)
+	ui.attachments->append(QString("<a href=\"%1\">%1</a>").arg(str));
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta::slotRemoveGPGKeys(void)
