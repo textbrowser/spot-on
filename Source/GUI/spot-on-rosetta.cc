@@ -177,6 +177,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotClear(void)));
+  connect(ui.clear_gpg,
+	  SIGNAL(clicked(void)),
+	  ui.gpg_messages,
+	  SLOT(clear(void)));
   connect(ui.contacts,
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
@@ -237,10 +241,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
 	  SLOT(slotSplitterMoved(int, int)));
-  connect(ui.clear_gpg,
-	  SIGNAL(clicked(void)),
-	  ui.gpg_messages,
-	  SLOT(clear(void)));
+  connect(ui.gpg,
+	  SIGNAL(editingFinished(void)),
+	  this,
+	  SLOT(slotSaveGPGAttachmentProgram(void)));
   connect(ui.gpg_message,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -269,6 +273,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveName(void)));
+  prepareGPGAttachmentsProgramCompleter();
   slotSetIcons();
   ui.cipher->addItems(spoton_crypt::cipherTypes());
   ui.hash->addItems(spoton_crypt::hashTypes());
@@ -308,6 +313,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 
   slotDecryptClear();
+  ui.gpg->setText(settings.value("gui/rosetta_gpg", "").toString());
+
 #if defined(Q_OS_MACOS)
   foreach(auto toolButton, findChildren<QToolButton *> ())
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
@@ -354,7 +361,7 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   QByteArray sSignature;
   auto ok = true;
 
-  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
+  name = QSettings().value("gui/rosetta_name", "unknown").toByteArray();
   mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
@@ -815,6 +822,22 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
     ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
 }
 
+void spoton_rosetta::prepareGPGAttachmentsProgramCompleter(void)
+{
+  if(ui.gpg->completer())
+    return;
+
+  auto completer = new QCompleter(this);
+  auto model = new QFileSystemModel(this);
+
+  completer->setCaseSensitivity(Qt::CaseInsensitive);
+  completer->setCompletionRole(QFileSystemModel::FileNameRole);
+  completer->setFilterMode(Qt::MatchContains);
+  completer->setModel(model);
+  model->setRootPath(QDir::rootPath());
+  ui.gpg->setCompleter(completer);
+}
+
 void spoton_rosetta::prisonBluesProcess(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -934,9 +957,9 @@ void spoton_rosetta::show(spoton *parent)
 {
   setParent(parent);
   ui.name->setText
-    (QString::fromUtf8(QSettings().value("gui/rosettaName", "unknown").
+    (QString::fromUtf8(QSettings().value("gui/rosetta_name", "unknown").
 		       toByteArray().constData(),
-		       QSettings().value("gui/rosettaName", "unknown").
+		       QSettings().value("gui/rosetta_name", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
 }
@@ -1908,7 +1931,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
   hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::veryStrongRandomBytes
     (static_cast<size_t> (hashKey.length()));
-  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
+  name = QSettings().value("gui/rosetta_name", "unknown").toByteArray();
   publicKey = spoton_misc::publicKeyFromHash
     (QByteArray::fromBase64(ui.contacts->
 			    itemData(ui.contacts->
@@ -2400,7 +2423,8 @@ void spoton_rosetta::slotNewGPGKeys(void)
       model->setRootPath(QDir::rootPath());
     }
 
-  m_gpgNewKeysUi.gpg->setText(QSettings().value("gui/gpgPath", "").toString());
+  m_gpgNewKeysUi.gpg->setText
+    (QSettings().value("gui/gpg_path", "").toString());
   m_gpgNewKeysUi.gpg->selectAll();
   m_gpgNewKeysUi.gpg_results->clear();
 
@@ -2410,7 +2434,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
     {
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      QSettings().setValue("gui/gpgPath", m_gpgNewKeysUi.gpg->text());
+      QSettings().setValue("gui/gpg_path", m_gpgNewKeysUi.gpg->text());
       dialog->open();
 
       QFileInfo const fileInfo(m_gpgNewKeysUi.gpg->text());
@@ -2897,6 +2921,12 @@ void spoton_rosetta::slotRename(void)
     }
 }
 
+void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
+{
+  QSettings().setValue("gui/rosetta_gpg", ui.gpg->text().trimmed());
+  ui.gpg->selectAll();
+}
+
 void spoton_rosetta::slotSaveName(void)
 {
   auto str(ui.name->text());
@@ -2909,8 +2939,7 @@ void spoton_rosetta::slotSaveName(void)
   else
     ui.name->setText(str.trimmed());
 
-  QSettings().setValue("gui/rosettaName", str.toUtf8());
-  ui.name->setCursorPosition(0);
+  QSettings().setValue("gui/rosetta_name", str.toUtf8());
   ui.name->selectAll();
 }
 

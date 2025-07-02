@@ -995,6 +995,16 @@
                       </widget>
                      </item>
                      <item>
+                      <widget class="QLineEdit" name="gpg">
+                       <property name="placeholderText">
+                        <string>GPG Executable Absolute Path (Attachments)</string>
+                       </property>
+                       <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_51">
                        <property name="spacing">
                         <number>5</number>

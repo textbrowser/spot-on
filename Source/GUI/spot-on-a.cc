@@ -421,6 +421,7 @@ int main(int argc, char *argv[])
   settings.remove("gui/git_script");
   settings.remove("gui/git_t");
   settings.remove("gui/rosettaGeometry");
+  settings.remove("gui/rosettaName");
   settings.remove("gui/showBuzzPage");
   settings.remove("gui/showListenersPage");
   settings.remove("gui/showNeighborsPage");

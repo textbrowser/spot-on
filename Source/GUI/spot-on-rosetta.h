@@ -105,6 +105,7 @@ class spoton_rosetta: public QMainWindow
   void launchPrisonBluesProcessesIfNecessary(void);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
+  void prepareGPGAttachmentsProgramCompleter(void);
   void prisonBluesProcess(void);
   void readPrisonBlues
     (const QList<QFileInfo> &directories, const QVector<QByteArray> &vector);
@@ -143,6 +144,7 @@ class spoton_rosetta: public QMainWindow
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);
+  void slotSaveGPGAttachmentProgram(void);
   void slotSaveName(void);
   void slotSetIcons(void);
   void slotSplitterMoved(int pox, int index);
