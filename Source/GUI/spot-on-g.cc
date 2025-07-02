@@ -1203,7 +1203,7 @@ void spoton::slotNewGlobalName(void)
     text = "unknown";
 
   m_rosetta->setName(text);
-  m_settings["gui/rosettaName"] = text.toUtf8();
+  m_settings["gui/rosetta_name"] = text.toUtf8();
   m_ui.buzzName->setText(text);
   m_ui.buzzName->setCursorPosition(0);
   m_ui.emailNameEditable->setText(text);
