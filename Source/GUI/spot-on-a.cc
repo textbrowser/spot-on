@@ -421,7 +421,6 @@ int main(int argc, char *argv[])
   settings.remove("gui/git_script");
   settings.remove("gui/git_t");
   settings.remove("gui/rosettaGeometry");
-  settings.remove("gui/rosettaName");
   settings.remove("gui/showBuzzPage");
   settings.remove("gui/showListenersPage");
   settings.remove("gui/showNeighborsPage");
@@ -10173,7 +10172,7 @@ void spoton::slotSetPassphrase(void)
       m_settings["gui/kernelHashType"] =
 	m_ui.kernelHashType->currentText();
       m_settings["gui/nodeName"] = str3.toUtf8();
-      m_settings["gui/rosetta_name"] = str3.toUtf8();
+      m_settings["gui/rosettaName"] = str3.toUtf8();
       m_settings["gui/salt"] = salt;
       m_settings["gui/saltLength"] = m_ui.saltLength->value();
       m_settings["gui/saltedPassphraseHash"] = saltedPassphraseHash;
@@ -10192,7 +10191,7 @@ void spoton::slotSetPassphrase(void)
       settings.setValue
 	("gui/kernelHashType", m_settings["gui/kernelHashType"]);
       settings.setValue("gui/nodeName", m_settings["gui/nodeName"]);
-      settings.setValue("gui/rosetta_name", m_settings["gui/rosetta_name"]);
+      settings.setValue("gui/rosettaName", m_settings["gui/rosettaName"]);
       settings.setValue("gui/salt", m_settings["gui/salt"]);
       settings.setValue("gui/saltLength", m_settings["gui/saltLength"]);
       settings.setValue

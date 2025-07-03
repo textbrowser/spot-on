@@ -313,7 +313,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 
   slotDecryptClear();
-  ui.gpg->setText(settings.value("gui/rosetta_gpg", "").toString());
+  ui.gpg->setText(settings.value("gui/rosettaGPG", "").toString());
 
 #if defined(Q_OS_MACOS)
   foreach(auto toolButton, findChildren<QToolButton *> ())
@@ -361,7 +361,7 @@ QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
   QByteArray sSignature;
   auto ok = true;
 
-  name = QSettings().value("gui/rosetta_name", "unknown").toByteArray();
+  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
   mPublicKey = eCrypt->publicKey(&ok);
 
   if(ok)
@@ -587,7 +587,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
   if(!crypt)
     return GPG_ERR_CANCELED;
 
-  auto passphrase(QSettings().value("gui/gpg_passphrase").toByteArray());
+  auto passphrase(QSettings().value("gui/gpgPassphrase").toByteArray());
 
   passphrase = crypt->decryptedAfterAuthenticated
     (passphrase, nullptr).trimmed();
@@ -609,7 +609,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 
       if(ui.retain->isChecked())
 	QSettings().setValue
-	  ("gui/gpg_passphrase",
+	  ("gui/gpgPassphrase",
 	   crypt->encryptedThenHashed(ui.passphrase->text().trimmed().toUtf8(),
 				      nullptr));
     }
@@ -957,9 +957,9 @@ void spoton_rosetta::show(spoton *parent)
 {
   setParent(parent);
   ui.name->setText
-    (QString::fromUtf8(QSettings().value("gui/rosetta_name", "unknown").
+    (QString::fromUtf8(QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
-		       QSettings().value("gui/rosetta_name", "unknown").
+		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
 }
@@ -1931,7 +1931,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
   hashKey.resize(spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES);
   hashKey = spoton_crypt::veryStrongRandomBytes
     (static_cast<size_t> (hashKey.length()));
-  name = QSettings().value("gui/rosetta_name", "unknown").toByteArray();
+  name = QSettings().value("gui/rosettaName", "unknown").toByteArray();
   publicKey = spoton_misc::publicKeyFromHash
     (QByteArray::fromBase64(ui.contacts->
 			    itemData(ui.contacts->
@@ -2424,7 +2424,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
     }
 
   m_gpgNewKeysUi.gpg->setText
-    (QSettings().value("gui/gpg_path", "").toString());
+    (QSettings().value("gui/gpgPath", "").toString());
   m_gpgNewKeysUi.gpg->selectAll();
   m_gpgNewKeysUi.gpg_results->clear();
 
@@ -2434,7 +2434,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
     {
       QApplication::processEvents();
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-      QSettings().setValue("gui/gpg_path", m_gpgNewKeysUi.gpg->text());
+      QSettings().setValue("gui/gpgPath", m_gpgNewKeysUi.gpg->text());
       dialog->open();
 
       QFileInfo const fileInfo(m_gpgNewKeysUi.gpg->text());
@@ -2831,7 +2831,7 @@ void spoton_rosetta::slotRemoveStoredINIGPGPassphrase(void)
       return;
     }
 
-  QSettings().remove("gui/gpg_passphrase");
+  QSettings().remove("gui/gpgPassphrase");
 }
 
 void spoton_rosetta::slotRename(void)
@@ -2923,7 +2923,7 @@ void spoton_rosetta::slotRename(void)
 
 void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
 {
-  QSettings().setValue("gui/rosetta_gpg", ui.gpg->text().trimmed());
+  QSettings().setValue("gui/rosettaGPG", ui.gpg->text().trimmed());
   ui.gpg->selectAll();
 }
 
@@ -2939,7 +2939,7 @@ void spoton_rosetta::slotSaveName(void)
   else
     ui.name->setText(str.trimmed());
 
-  QSettings().setValue("gui/rosetta_name", str.toUtf8());
+  QSettings().setValue("gui/rosettaName", str.toUtf8());
   ui.name->selectAll();
 }
 

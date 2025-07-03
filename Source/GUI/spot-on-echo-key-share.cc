@@ -777,7 +777,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 						 "unknown@unknown.org").
       toByteArray() : "unknown@unknown.org";
   else if(keyType == "rosetta")
-    name = settings.value("gui/rosetta_name", "unknown").toByteArray();
+    name = settings.value("gui/rosettaName", "unknown").toByteArray();
   else if(keyType == "url")
     name = settings.value("gui/urlName", "unknown").toByteArray();
 

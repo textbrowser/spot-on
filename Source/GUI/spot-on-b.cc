@@ -167,7 +167,7 @@ QByteArray spoton::copyMyRosettaPublicKey(void) const
   QByteArray sSignature;
   auto ok = true;
 
-  name = m_settings.value("gui/rosetta_name", "unknown").toByteArray();
+  name = m_settings.value("gui/rosettaName", "unknown").toByteArray();
   mPublicKey = m_crypts.value("rosetta")->publicKey(&ok);
 
   if(ok)
