@@ -65,7 +65,6 @@ class spoton_common
   static const int CHAT_MAXIMUM_REPLAY_QUEUE_SIZE = 15;
   static const int CHAT_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int ELEGANT_STARBEAM_SIZE = 30000;
-  static const int EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024; // MiB!
   static const int EPKS_TIME_DELTA = 30;
   static const int FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC = 30;
   static const int GEMINI_TIME_DELTA_MAXIMUM_STATIC = 90;
@@ -131,6 +130,8 @@ class spoton_common
   static const int WEB_SERVER_KEY_SIZE = 3072;
   static const long int WEB_SERVER_CERTIFICATE_LIFETIME =
     24L * 60L * 60L * 365L;
+  static const qint64 EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024; // MiB!
+  static const qint64 GPG_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024; // MiB!
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;
 
   /*

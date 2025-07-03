@@ -54,6 +54,7 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
+  QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
   m_gpgReadMessagesTimer.start(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
@@ -87,6 +88,9 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
+  ui.attachments_label->setText
+    (tr("An attachment larger than %1 bytes will be ignored.").
+     arg(QLocale().toString(spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)));
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
 			     this,
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
@@ -850,8 +854,56 @@ void spoton_rosetta::prisonBluesProcess(void)
 #endif
 }
 
+void spoton_rosetta::publishAttachments
+(const QString &destination,
+ const QString &participant,
+ const QStringList &attachments)
+{
+  QFileInfo const fileInfo
+    (QSettings().value("gui/rosettaGPG").toString().trimmed());
+
+  if(!fileInfo.isExecutable())
+    return;
+
+  for(int i = 0; i < attachments.size(); i++)
+    {
+      auto attachment(attachments.at(i));
+
+      attachment = attachment.mid(0, attachment.lastIndexOf(' '));
+      attachment = attachment.mid(0, attachment.lastIndexOf(' '));
+
+      if(QFileInfo(attachment).isReadable() == false ||
+	 QFileInfo(attachment).size() >
+	 spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)
+	continue;
+
+      QTemporaryFile file
+	(destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.gpg");
+
+      if(!file.open())
+	continue;
+
+      QStringList parameters;
+
+      parameters << "--armor"
+		 << "--encrypt"
+		 << "--output"
+		 << file.fileName()
+		 << "--recipient"
+		 << participant
+		 << "--sign"
+		 << "--trust-model"
+		 << "always"
+		 << attachment;
+      QProcess::startDetached
+	(fileInfo.absoluteFilePath(), parameters, spoton_misc::homePath());
+    }
+}
+
 void spoton_rosetta::readPrisonBlues
-(const QList<QFileInfo> &directories, const QVector<QByteArray> &vector)
+(const QList<QFileInfo> &directories,
+ const QString &gpgProgram,
+ const QVector<QByteArray> &vector)
 {
   for(int i = 0; i < directories.size(); i++)
     {
@@ -874,6 +926,30 @@ void spoton_rosetta::readPrisonBlues
 		{
 		  if(m_readPrisonBluesFuture.isCanceled())
 		    return;
+
+		  if(entry.suffix().toLower() == "gpg")
+		    {
+		      if(QFileInfo(gpgProgram).isExecutable())
+			{
+			  QProcess process;
+
+			  process.setArguments
+			    (QStringList() << "--decrypt"
+			                   << "--trust-model"
+			                   << "always"
+			                   << "--use-embedded-filename"
+			                   << entry.absoluteFilePath());
+			  process.setProgram(gpgProgram);
+			  process.setWorkingDirectory
+			    (spoton_misc::homePath() +
+			     QDir::separator() +
+			     "Rosetta-GPG");
+			  process.startDetached();
+			}
+
+		      QFile::remove(entry.absoluteFilePath());
+		      continue;
+		    }
 
 		  QFile file(entry.absoluteFilePath());
 
@@ -2520,12 +2596,14 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
       (&spoton_rosetta::readPrisonBlues,
        this,
        m_parent->prisonBluesDirectories(),
+       QSettings().value("gui/rosettaGPG").toString().trimmed(),
        m_gpgFingerprints);
 #else
     m_readPrisonBluesFuture = QtConcurrent::run
       (this,
        &spoton_rosetta::readPrisonBlues,
        m_parent->prisonBluesDirectories(),
+       QSettings().value("gui/rosettaGPG").toString().trimmed(),
        m_gpgFingerprints);
 #endif
 
@@ -2654,7 +2732,8 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
       content.append
 	(QString("<font color=blue>%1 <b>%2</b>: </font>").
 	 arg(from).arg(signedMessage));
-      content.append(QString::fromUtf8(msg.constData(), msg.length()));
+      content.append
+	(qUtf8Printable(QString::fromUtf8(msg.constData(), msg.length())));
       content = m_parent &&
 	m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool() ?
 	m_parent->mapIconToEmoticon(content) :
@@ -3080,17 +3159,20 @@ void spoton_rosetta::slotWriteGPG(void)
 	     publicKeyHashes.value(i).isValid()))
 	  continue;
 
-	QDir().mkpath
+	auto const destination
 	  (directory.absoluteFilePath() +
 	   QDir::separator() +
 	   fingerprints.value(i).data().toString());
 
+	QDir().mkpath(destination);
+
+	publishAttachments
+	  (destination,
+	   participants.value(i).data().toString(),
+	   ui.attachments->toPlainText().split('\n'));
+
 	QTemporaryFile file
-	  (directory.absoluteFilePath() +
-	   QDir::separator() +
-	   fingerprints.value(i).data().toString() +
-	   QDir::separator() +
-	   "PrisonBluesXXXXXXXXXX.txt");
+	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
 
 	if(file.open())
 	  {

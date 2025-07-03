@@ -107,8 +107,14 @@ class spoton_rosetta: public QMainWindow
   void populateGPGEmailAddresses(void);
   void prepareGPGAttachmentsProgramCompleter(void);
   void prisonBluesProcess(void);
+  void publishAttachments
+    (const QString &destination,
+     const QString &participant,
+     const QStringList &attachments);
   void readPrisonBlues
-    (const QList<QFileInfo> &directories, const QVector<QByteArray> &vector);
+    (const QList<QFileInfo> &directories,
+     const QString &gpgProgram,
+     const QVector<QByteArray> &vector);
   void resizeEvent(QResizeEvent *event);
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showInformationMessage(const QString &message);

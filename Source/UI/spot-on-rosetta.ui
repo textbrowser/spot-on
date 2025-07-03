@@ -753,8 +753,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1048</width>
-                    <height>591</height>
+                    <width>1027</width>
+                    <height>685</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1000,6 +1000,22 @@
                         <string>GPG Executable Absolute Path (Attachments)</string>
                        </property>
                        <property name="clearButtonEnabled">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLabel" name="attachments_label">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="text">
+                        <string>Attachments Label</string>
+                       </property>
+                       <property name="wordWrap">
                         <bool>true</bool>
                        </property>
                       </widget>
