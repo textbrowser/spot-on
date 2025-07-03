@@ -416,6 +416,7 @@ int main(int argc, char *argv[])
       settings.remove(str);
 
   settings.endGroup();
+  settings.remove("gui/chat_time_delta");
   settings.remove("gui/git_a");
   settings.remove("gui/git_chat");
   settings.remove("gui/git_script");

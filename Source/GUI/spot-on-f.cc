@@ -2073,7 +2073,7 @@ void spoton::slotTimeSliderDefaults(void)
     << spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC
     << spoton_common::MAIL_TIME_DELTA_MAXIMUM_STATIC;
-  keys << "gui/chat_time_delta"
+  keys << "gui/chatTimeDelta"
        << "gui/forward_secrecy_time_delta"
        << "gui/gemini_time_delta"
        << "gui/kernel_cache_object_lifetime"
@@ -2129,7 +2129,7 @@ void spoton::slotTimeSliderValueChanged(int value)
   if(m_optionsUi.chat_time_delta == slider)
     {
       m_optionsUi.chat_time_delta_current->setText(QString::number(value));
-      str = "gui/chat_time_delta";
+      str = "gui/chatTimeDelta";
     }
   else if(m_optionsUi.forward_secrecy_time_delta == slider)
     {
