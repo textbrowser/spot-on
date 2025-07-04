@@ -55,6 +55,9 @@
     </item>
     <item>
      <widget class="QTextBrowser" name="textBrowser">
+      <property name="placeholderText">
+       <string>Notifications</string>
+      </property>
       <property name="openLinks">
        <bool>false</bool>
       </property>
@@ -68,7 +71,7 @@
      <x>0</x>
      <y>0</y>
      <width>550</width>
-     <height>24</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">

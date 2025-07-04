@@ -1060,7 +1060,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-68</y>
              <width>994</width>
              <height>729</height>
             </rect>
@@ -1393,6 +1393,9 @@
                       <widget class="QTextBrowser" name="mailMessage">
                        <property name="textInteractionFlags">
                         <set>Qt::TextSelectableByMouse</set>
+                       </property>
+                       <property name="placeholderText">
+                        <string>Message</string>
                        </property>
                        <property name="openLinks">
                         <bool>false</bool>
@@ -1827,6 +1830,9 @@
                               </property>
                               <property name="tabChangesFocus">
                                <bool>true</bool>
+                              </property>
+                              <property name="placeholderText">
+                               <string>E-Mail Attachments</string>
                               </property>
                               <property name="openLinks">
                                <bool>false</bool>
@@ -2434,8 +2440,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>729</width>
-             <height>461</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3189,8 +3195,8 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>0</y>
-                     <width>374</width>
+                     <y>-981</y>
+                     <width>363</width>
                      <height>1622</height>
                     </rect>
                    </property>
@@ -3773,8 +3779,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>765</width>
-             <height>234</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4186,7 +4192,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>811</width>
+                  <width>835</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -5077,8 +5083,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>714</width>
-             <height>426</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5163,8 +5169,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>906</width>
-                 <height>749</height>
+                 <width>873</width>
+                 <height>769</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -6070,6 +6076,9 @@
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
                  </property>
+                 <property name="placeholderText">
+                  <string>Search Text</string>
+                 </property>
                  <property name="openLinks">
                   <bool>false</bool>
                  </property>
@@ -6087,6 +6096,9 @@
                  </property>
                  <property name="textInteractionFlags">
                   <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Search Results</string>
                  </property>
                  <property name="openLinks">
                   <bool>false</bool>
@@ -6215,8 +6227,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>1062</width>
-             <height>1359</height>
+             <width>1029</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -6408,6 +6420,9 @@
                      </property>
                      <property name="readOnly">
                       <bool>true</bool>
+                     </property>
+                     <property name="placeholderText">
+                      <string>Kernel PID</string>
                      </property>
                     </widget>
                    </item>
@@ -7484,8 +7499,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>672</width>
-             <height>732</height>
+             <width>851</width>
+             <height>730</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -9513,8 +9528,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>308</width>
-             <height>179</height>
+             <width>872</width>
+             <height>682</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">

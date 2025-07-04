@@ -38,7 +38,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
+             <y>-137</y>
              <width>922</width>
              <height>982</height>
             </rect>
@@ -126,7 +126,11 @@
                    </property>
                   </column>
                  </widget>
-                 <widget class="QTextBrowser" name="output"/>
+                 <widget class="QTextBrowser" name="output">
+                  <property name="placeholderText">
+                   <string>SMP Status Results</string>
+                  </property>
+                 </widget>
                 </widget>
                </item>
                <item>

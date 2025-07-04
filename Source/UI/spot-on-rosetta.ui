@@ -339,6 +339,9 @@
                       <property name="tabChangesFocus">
                        <bool>true</bool>
                       </property>
+                      <property name="placeholderText">
+                       <string>Decrypt Output</string>
+                      </property>
                       <property name="openLinks">
                        <bool>false</bool>
                       </property>
@@ -696,6 +699,9 @@
                       <property name="tabChangesFocus">
                        <bool>true</bool>
                       </property>
+                      <property name="placeholderText">
+                       <string>Encrypt Output</string>
+                      </property>
                       <property name="openLinks">
                        <bool>false</bool>
                       </property>
@@ -1045,6 +1051,9 @@
                          </property>
                          <property name="tabChangesFocus">
                           <bool>true</bool>
+                         </property>
+                         <property name="placeholderText">
+                          <string>GPG Attachments</string>
                          </property>
                          <property name="openLinks">
                           <bool>false</bool>
