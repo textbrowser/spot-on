@@ -954,8 +954,8 @@ void spoton_rosetta::readPrisonBlues
 			                   << "--trust-model"
 			                   << "always"
 			                   << "--use-embedded-filename"
-			                   << entry.absoluteFilePath()
-					   << "--yes");
+			                   << "--yes"
+			                   << entry.absoluteFilePath());
 			  process.setProgram(gpgProgram);
 			  process.setWorkingDirectory
 			    (spoton_misc::homePath() +
