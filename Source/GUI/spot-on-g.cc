@@ -1914,7 +1914,8 @@ void spoton::slotWizardButtonClicked(void)
 	m_wizardUi->next->setEnabled(true);
 	m_wizardUi->previous->setEnabled(false);
 #if defined(Q_OS_WINDOWS)
-	auto const tmp(qEnvironmentVariable("USERNAME").mid(0, 256).trimmed());
+	auto const tmp
+	  (QString::fromLocal8Bit(qgetenv("USERNAME")).mid(0, 256).trimmed());
 
 	if(!tmp.isEmpty())
 	  {
