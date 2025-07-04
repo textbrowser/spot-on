@@ -966,9 +966,14 @@ void spoton_rosetta::readPrisonBlues
 			     QDir::separator() +
 			     "Rosetta-GPG");
 			  process.start();
-			  process.waitForFinished();
 
-			  if(process.exitCode() == 0)
+			  do
+			    {
+			      process.waitForFinished(150);
+			    }
+			  while(process.state() == QProcess::Running);
+
+			  if(process.exitStatus() == QProcess::NormalExit)
 			    emit gpgFileProcessed();
 			}
 
