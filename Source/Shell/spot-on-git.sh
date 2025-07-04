@@ -69,7 +69,7 @@ else
     find "$local_directory" \
 	 ! -path "*.git*" \
 	 -mtime +15 \
-	 -name "PrisonBlues*.txt" \
+	 -name "PrisonBlues*.*" \
 	 -type f \
 	 -exec rm -f {} 2>/dev/null \;
 
@@ -117,6 +117,8 @@ else
 	    exit 0
 	fi
 
+	echo "Adding local GPG files."
+	git add --all */*.gpg 1>/dev/null 2>/dev/null
 	echo "Adding local text files."
 	git add --all */*.txt 1>/dev/null 2>/dev/null
 
