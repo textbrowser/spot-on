@@ -593,8 +593,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 
   auto passphrase(QSettings().value("gui/gpgPassphrase").toByteArray());
 
-  passphrase = crypt->decryptedAfterAuthenticated
-    (passphrase, nullptr).trimmed();
+  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
 
   if(passphrase.isEmpty() || prev_was_bad)
     {
@@ -609,13 +608,12 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 	  return GPG_ERR_CANCELED;
 	}
 
-      passphrase = ui.passphrase->text().trimmed().toUtf8();
+      passphrase = ui.passphrase->text().toUtf8();
 
       if(ui.retain->isChecked())
 	QSettings().setValue
 	  ("gui/gpgPassphrase",
-	   crypt->encryptedThenHashed(ui.passphrase->text().trimmed().toUtf8(),
-				      nullptr));
+	   crypt->encryptedThenHashed(passphrase, nullptr));
     }
 
   Q_UNUSED
@@ -865,6 +863,15 @@ void spoton_rosetta::publishAttachments
   if(!fileInfo.isExecutable())
     return;
 
+  auto crypt = m_parent->crypts().value("chat", nullptr);
+
+  if(!crypt)
+    return;
+
+  auto passphrase(QSettings().value("gui/gpgPassphrase").toByteArray());
+
+  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
+
   for(int i = 0; i < attachments.size(); i++)
     {
       auto attachment(attachments.at(i));
@@ -889,6 +896,8 @@ void spoton_rosetta::publishAttachments
 		 << "--encrypt"
 		 << "--output"
 		 << file.fileName()
+		 << "--passphrase"
+		 << passphrase.constData()
 		 << "--recipient"
 		 << participant
 		 << "--sign"
@@ -944,7 +953,8 @@ void spoton_rosetta::readPrisonBlues
 			    (spoton_misc::homePath() +
 			     QDir::separator() +
 			     "Rosetta-GPG");
-			  process.startDetached();
+			  process.start();
+			  process.waitForFinished();
 			}
 
 		      QFile::remove(entry.absoluteFilePath());
