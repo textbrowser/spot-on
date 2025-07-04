@@ -902,6 +902,8 @@ void spoton_rosetta::publishAttachments
 		 << file.fileName()
 		 << "--passphrase"
 		 << passphrase.constData()
+		 << "--pinentry-mode"
+		 << "loopback"
 		 << "--recipient"
 		 << participant
 		 << "--sign"
