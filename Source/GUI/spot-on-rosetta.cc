@@ -949,11 +949,13 @@ void spoton_rosetta::readPrisonBlues
 			  QProcess process;
 
 			  process.setArguments
-			    (QStringList() << "--decrypt"
+			    (QStringList() << "--batch"
+					   << "--decrypt"
 			                   << "--trust-model"
 			                   << "always"
 			                   << "--use-embedded-filename"
-			                   << entry.absoluteFilePath());
+			                   << entry.absoluteFilePath()
+					   << "--yes");
 			  process.setProgram(gpgProgram);
 			  process.setWorkingDirectory
 			    (spoton_misc::homePath() +
