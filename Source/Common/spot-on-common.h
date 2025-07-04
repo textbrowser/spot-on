@@ -131,7 +131,7 @@ class spoton_common
   static const long int WEB_SERVER_CERTIFICATE_LIFETIME =
     24L * 60L * 60L * 365L;
   static const qint64 EMAIL_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024; // MiB!
-  static const qint64 GPG_ATTACHMENT_MAXIMUM_SIZE = 10 * 1024 * 1024; // MiB!
+  static const qint64 GPG_ATTACHMENT_MAXIMUM_SIZE = 35 * 1024 * 1024; // MiB!
   static const qint64 MAXIMUM_BLUETOOTH_PACKET_SIZE = 1000;
 
   /*
