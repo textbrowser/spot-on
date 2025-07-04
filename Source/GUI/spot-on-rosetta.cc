@@ -857,6 +857,9 @@ void spoton_rosetta::publishAttachments
  const QString &participant,
  const QStringList &attachments)
 {
+  if(attachments.isEmpty() || destination.isEmpty() || participant.isEmpty())
+    return;
+
   QFileInfo const fileInfo
     (QSettings().value("gui/rosettaGPG").toString().trimmed());
 
@@ -893,6 +896,7 @@ void spoton_rosetta::publishAttachments
       QStringList parameters;
 
       parameters << "--armor"
+		 << "--batch"
 		 << "--encrypt"
 		 << "--output"
 		 << file.fileName()
