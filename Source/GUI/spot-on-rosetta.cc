@@ -899,8 +899,7 @@ void spoton_rosetta::publishAttachments
 
       QStringList parameters;
 
-      parameters << "--armor"
-		 << "--batch"
+      parameters << "--batch"
 		 << "--encrypt"
 		 << "--output"
 		 << file.fileName()
@@ -924,6 +923,9 @@ void spoton_rosetta::readPrisonBlues
  const QString &gpgProgram,
  const QVector<QByteArray> &vector)
 {
+  auto const maximumFileSize = static_cast<qint64>
+    (qCeil(1.5 * spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE));
+
   for(int i = 0; i < directories.size(); i++)
     {
       if(m_readPrisonBluesFuture.isCanceled())
@@ -948,7 +950,8 @@ void spoton_rosetta::readPrisonBlues
 
 		  if(entry.suffix().toLower() == "gpg")
 		    {
-		      if(QFileInfo(gpgProgram).isExecutable())
+		      if(QFileInfo(gpgProgram).isExecutable() &&
+			 entry.size() <= maximumFileSize)
 			{
 			  QProcess process;
 
@@ -969,7 +972,7 @@ void spoton_rosetta::readPrisonBlues
 
 			  do
 			    {
-			      process.waitForFinished(150);
+			      process.waitForFinished(50);
 			    }
 			  while(process.state() == QProcess::Running);
 

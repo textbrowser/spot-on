@@ -1341,7 +1341,7 @@ QString spoton_misc::formattedSize(const double size)
 
 QString spoton_misc::homePath(void)
 {
-  QString homePath(qgetenv("SPOTON_HOME").trimmed());
+  auto homePath(qEnvironmentVariable("SPOTON_HOME").trimmed());
 
   if(homePath.isEmpty())
 #if defined(Q_OS_WINDOWS)
