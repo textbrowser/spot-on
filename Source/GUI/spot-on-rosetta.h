@@ -138,6 +138,7 @@ class spoton_rosetta: public QMainWindow
   void slotDecryptClear(void);
   void slotDecryptReset(void);
   void slotDelete(void);
+  void slotGPGFileProcessed(void);
   void slotGPGPMessagesReadTimer(void);
   void slotImportGPGKeys(void);
   void slotNewGPGKeys(void);
@@ -157,6 +158,7 @@ class spoton_rosetta: public QMainWindow
   void slotWriteGPG(void);
 
  signals:
+  void gpgFileProcessed(void);
   void gpgKeysRemoved(void);
   void participantAdded(const QString &type);
   void participantDeleted(const QString &oid, const QString &type);

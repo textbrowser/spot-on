@@ -122,6 +122,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  this,
 	  SLOT(slotPrisonBluesTimeout(void)));
   connect(this,
+	  SIGNAL(gpgFileProcessed(void)),
+	  this,
+	  SLOT(slotGPGFileProcessed(void)));
+  connect(this,
 	  SIGNAL(processGPGMessage(const QByteArray &)),
 	  this,
 	  SLOT(slotProcessGPGMessage(const QByteArray &)));
@@ -963,6 +967,9 @@ void spoton_rosetta::readPrisonBlues
 			     "Rosetta-GPG");
 			  process.start();
 			  process.waitForFinished();
+
+			  if(process.exitCode() == 0)
+			    emit gpgFileProcessed();
 			}
 
 		      QFile::remove(entry.absoluteFilePath());
@@ -2442,6 +2449,13 @@ void spoton_rosetta::slotDelete(void)
 
       populateContacts();
     }
+}
+
+void spoton_rosetta::slotGPGFileProcessed(void)
+{
+  showInformationMessage
+    (tr("A GPG file was processed. Please see <b>%1</b>.").
+     arg(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG"));
 }
 
 void spoton_rosetta::slotGPGPMessagesReadTimer(void)
