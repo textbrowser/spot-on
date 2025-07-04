@@ -1045,17 +1045,17 @@ void spoton_rosetta::setParent(spoton *parent)
 {
   m_parent = parent;
   populateContacts();
-}
-
-void spoton_rosetta::show(spoton *parent)
-{
-  setParent(parent);
   ui.name->setText
     (QString::fromUtf8(QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
+}
+
+void spoton_rosetta::show(spoton *parent)
+{
+  setParent(parent);
 }
 
 void spoton_rosetta::showInformationMessage(const QString &m)
