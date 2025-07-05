@@ -112,7 +112,8 @@ class spoton_rosetta: public QMainWindow
      const QString &participant,
      const QStringList &attachments);
   void readPrisonBlues
-    (const QList<QFileInfo> &directories,
+    (const QByteArray &passphrase,
+     const QList<QFileInfo> &directories,
      const QString &gpgProgram,
      const QVector<QByteArray> &vector);
   void resizeEvent(QResizeEvent *event);

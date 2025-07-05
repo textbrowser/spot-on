@@ -920,7 +920,8 @@ void spoton_rosetta::publishAttachments
 }
 
 void spoton_rosetta::readPrisonBlues
-(const QList<QFileInfo> &directories,
+(const QByteArray &passphrase,
+ const QList<QFileInfo> &directories,
  const QString &gpgProgram,
  const QVector<QByteArray> &vector)
 {
@@ -958,7 +959,11 @@ void spoton_rosetta::readPrisonBlues
 
 			  process.setArguments
 			    (QStringList() << "--batch"
-					   << "--decrypt"
+			                   << "--decrypt"
+			                   << "--passphrase"
+			                   << passphrase.constData()
+			                   << "--pinentry-mode"
+			                   << "loopback"
 			                   << "--trust-model"
 			                   << "always"
 			                   << "--use-embedded-filename"
@@ -2632,21 +2637,34 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
     return;
 
   if(m_readPrisonBluesFuture.isFinished())
+    {
+      QByteArray passphrase;
+      auto crypt = m_parent->crypts().value("chat", nullptr);
+
+      if(crypt)
+	{
+	  passphrase = QSettings().value("gui/gpgPassphrase").toByteArray();
+	  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
+	}
+
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    m_readPrisonBluesFuture = QtConcurrent::run
-      (&spoton_rosetta::readPrisonBlues,
-       this,
-       m_parent->prisonBluesDirectories(),
-       QSettings().value("gui/rosettaGPG").toString().trimmed(),
-       m_gpgFingerprints);
+      m_readPrisonBluesFuture = QtConcurrent::run
+	(&spoton_rosetta::readPrisonBlues,
+	 this,
+	 passphrase,
+	 m_parent->prisonBluesDirectories(),
+	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
+	 m_gpgFingerprints);
 #else
-    m_readPrisonBluesFuture = QtConcurrent::run
-      (this,
-       &spoton_rosetta::readPrisonBlues,
-       m_parent->prisonBluesDirectories(),
-       QSettings().value("gui/rosettaGPG").toString().trimmed(),
-       m_gpgFingerprints);
+      m_readPrisonBluesFuture = QtConcurrent::run
+	(this,
+	 &spoton_rosetta::readPrisonBlues,
+	 passphrase,
+	 m_parent->prisonBluesDirectories(),
+	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
+	 m_gpgFingerprints);
 #endif
+    }
 
   prisonBluesProcess();
 }
