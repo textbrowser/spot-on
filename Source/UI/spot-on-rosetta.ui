@@ -1002,6 +1002,9 @@
                      </item>
                      <item>
                       <widget class="QLineEdit" name="gpg">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The minimum version of GPG must be 2.1!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="placeholderText">
                         <string>GPG Executable Absolute Path (Attachments)</string>
                        </property>
