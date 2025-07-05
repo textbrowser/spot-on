@@ -44,6 +44,7 @@ All operating systems require Qt LTS. Have fun!
     SSL/TLS is supported!</li>
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
+<li>Prison Blues paraphernalia.</li>
 <li>Qt 5.5.1 (PowerPC).</li>
 <li>Qt LTS.</li>
 <li>Private applications. Stream through Spot-On.</li>
