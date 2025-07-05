@@ -524,6 +524,7 @@ QByteArray spoton_rosetta::gpgEncrypt
   Q_UNUSED(receiver);
   Q_UNUSED(sender);
   Q_UNUSED(sign);
+  ok = false;
   return QByteArray();
 #endif
 }
@@ -3205,7 +3206,6 @@ void spoton_rosetta::slotWriteGPG(void)
 	   fingerprints.value(i).data().toString());
 
 	QDir().mkpath(destination);
-
 	publishAttachments
 	  (destination,
 	   participants.value(i).data().toString(),
