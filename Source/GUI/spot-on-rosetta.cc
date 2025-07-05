@@ -1325,9 +1325,9 @@ void spoton_rosetta::slotAddContact(void)
 
       mb.setIcon(QMessageBox::Question);
       mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-      mb.setText(tr("Unable to retrieve your %1 "
-		    "public key for comparison. Continue?").
-		 arg(keyType.constData()));
+      mb.setText
+	(tr("Unable to retrieve your %1 public key for comparison. Continue?").
+	 arg(keyType.constData()));
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::ApplicationModal);
       mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
@@ -1493,7 +1493,7 @@ void spoton_rosetta::slotClear(void)
 	  mb.setIcon(QMessageBox::Question);
 	  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 	  mb.setText
-	    (tr("Are you sure that you wish to clear the text?"));
+	    (tr("Are you sure that you wish to clear the input text?"));
 	  mb.setWindowIcon(windowIcon());
 	  mb.setWindowModality(Qt::ApplicationModal);
 	  mb.setWindowTitle
@@ -2336,8 +2336,8 @@ void spoton_rosetta::slotDelete(void)
   if(destinationType == DestinationTypes::GPG)
     mb.setText
       (tr("Are you sure that you wish to remove the selected contact? "
-	  "The key will also be removed from the GPG key ring if Yes to All "
-	  "is selected."));
+	  "The contact will also be removed from the GPG key ring "
+	  "if Yes to All is selected."));
   else
     mb.setText
       (tr("Are you sure that you wish to remove the selected contact?"));
@@ -2958,7 +2958,8 @@ void spoton_rosetta::slotRemoveStoredINIGPGPassphrase(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setText
     (tr("Are you sure that you wish to remove the GPG passphrase from "
-	"the INI file?"));
+	"the INI file? If the GPG passphrase is removed, some GPG functions "
+	"will fail silently."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
   mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
