@@ -1699,6 +1699,12 @@ void spoton::slotPrepareUrlDatabases(void)
 				       "url_hash TEXT PRIMARY KEY NOT NULL)").
 			       arg(c1).arg(c2)))
 		  created = false;
+		else
+		  query.exec
+		    (QString("CREATE INDEX IF NOT EXISTS "
+			     "spot_on_urls_index_%1%2 ON "
+			     "spot_on_urls_%1%2 (date_time_inserted)").
+		     arg(c1).arg(c2));
 
 		if(!query.exec(QString("GRANT INSERT, SELECT, UPDATE ON "
 				       "spot_on_urls_%1%2 TO "
