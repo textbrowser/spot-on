@@ -1707,17 +1707,25 @@ void spoton::slotPrepareUrlDatabases(void)
 		  created = false;
 	      }
 	    else
-	      if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
-				     "spot_on_urls_%1%2 ("
-				     "content BLOB NOT NULL, "
-				     "date_time_inserted TEXT NOT NULL, "
-				     "description BLOB, "
-				     "title BLOB NOT NULL, "
-				     "unique_id INTEGER NOT NULL, "
-				     "url BLOB NOT NULL, "
-				     "url_hash TEXT PRIMARY KEY NOT NULL)").
-			     arg(c1).arg(c2)))
-		created = false;
+	      {
+		if(!query.exec(QString("CREATE TABLE IF NOT EXISTS "
+				       "spot_on_urls_%1%2 ("
+				       "content BLOB NOT NULL, "
+				       "date_time_inserted TEXT NOT NULL, "
+				       "description BLOB, "
+				       "title BLOB NOT NULL, "
+				       "unique_id INTEGER NOT NULL, "
+				       "url BLOB NOT NULL, "
+				       "url_hash TEXT PRIMARY KEY NOT NULL)").
+			       arg(c1).arg(c2)))
+		  created = false;
+		else
+		  query.exec
+		    (QString("CREATE INDEX IF NOT EXISTS "
+			     "spot_on_urls_index_%1%2 ON "
+			     "spot_on_urls_%1%2 (date_time_inserted)").
+		     arg(c1).arg(c2));
+	      }
 
 	    progress.setLabelText
 	      (tr("Creating spot_on_urls_revisions_%1%2. "
