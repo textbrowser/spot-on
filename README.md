@@ -45,10 +45,10 @@ All operating systems require Qt LTS. Have fun!
 <li>Poptastic, or, communications through e-mail. IMAP, POP3, SMTP.</li>
 <li>Portable.</li>
 <li>Prison Blues paraphernalia.</li>
-<li>Qt 5.5.1 (PowerPC).</li>
-<li>Qt LTS.</li>
 <li>Private applications. Stream through Spot-On.</li>
 <li>Private group communications.</li>
+<li>Qt 5.5.1 (PowerPC).</li>
+<li>Qt LTS.</li>
 <li>RSS feeder.</li>
 <li>Record e-mail of offline destinations.</li>
 <li>Remote accounts.</li>
