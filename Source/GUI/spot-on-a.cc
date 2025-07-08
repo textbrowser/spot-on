@@ -3815,6 +3815,7 @@ void spoton::cleanup(void)
   m_tableTimer.stop();
   m_updateChatWindowsTimer.stop();
   m_webServerInformationTimer.stop();
+  m_webServerValueChangedTimer.stop();
 
   /*
   ** Abort threads.
