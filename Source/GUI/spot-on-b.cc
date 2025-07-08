@@ -1675,6 +1675,7 @@ void spoton::highlightPaths(void)
        << m_optionsUi.geoipPath6
        << m_optionsUi.openssl
        << m_poptasticRetroPhoneSettingsUi.capath
+       << m_rosetta->attachmentsGPGPath()
        << m_ui.destination
        << m_ui.kernelPath
        << m_ui.urlIniPath;
@@ -1683,7 +1684,6 @@ void spoton::highlightPaths(void)
     {
       QColor color;
       QFileInfo const fileInfo(widget->text());
-      QPalette palette;
 
       if(m_optionsUi.geoipPath4 == widget || m_optionsUi.geoipPath6 == widget)
 	{
@@ -1708,6 +1708,13 @@ void spoton::highlightPaths(void)
       else if(m_poptasticRetroPhoneSettingsUi.capath == widget)
 	{
 	  if(fileInfo.isReadable())
+	    color = QColor(144, 238, 144);
+	  else
+	    color = QColor(240, 128, 128); // Light coral!
+	}
+      else if(m_rosetta->attachmentsGPGPath() == widget)
+	{
+	  if(fileInfo.isExecutable())
 	    color = QColor(144, 238, 144);
 	  else
 	    color = QColor(240, 128, 128); // Light coral!
@@ -1741,6 +1748,8 @@ void spoton::highlightPaths(void)
 	  else
 	    color = QColor(240, 128, 128); // Light coral!
 	}
+
+      auto palette(widget->palette());
 
       palette.setColor(widget->backgroundRole(), color);
       widget->setPalette(palette);

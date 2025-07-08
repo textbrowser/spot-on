@@ -529,6 +529,11 @@ QByteArray spoton_rosetta::gpgEncrypt
 #endif
 }
 
+QLineEdit *spoton_rosetta::attachmentsGPGPath(void) const
+{
+  return ui.gpg;
+}
+
 QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
 {
   QMap<QString, QByteArray> map;
