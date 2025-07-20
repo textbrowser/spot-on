@@ -3622,6 +3622,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #ifdef Q_OS_MACOS
   spoton_utilities::enableTabDocumentMode(this);
 #endif
+  QTimer::singleShot(250, this, SLOT(slotDisableOptionsWheelEvents(void)));
   QApplication::restoreOverrideCursor();
 }
 

@@ -635,7 +635,6 @@ class spoton: public QMainWindow
 			  const QString &oid,
 			  spoton_crypt *crypt);
   void demagnetize(void);
-  void derivativeUpdates(void);
   void discoverUrls(void);
   void displayUrlImportResults(const QDateTime &then,
 			       const quint64 imported,
@@ -812,6 +811,7 @@ class spoton: public QMainWindow
 				  const QString &oid);
   void slotDeriveGeminiPairViaSMP(void);
   void slotDetachListenerNeighbors(void);
+  void slotDisableOptionsWheelEvents(void);
   void slotDisableSynchronousUrlImport(bool state);
   void slotDisconnectAllNeighbors(void);
   void slotDisconnectListenerNeighbors(void);

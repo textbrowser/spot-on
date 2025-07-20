@@ -68,7 +68,8 @@ HEADERS		= Common/spot-on-external-address.h \
 		  GUI/spot-on-pageviewer.h \
 		  GUI/spot-on-rosetta.h \
 		  GUI/spot-on-rosetta-gpg-import.h \
-		  GUI/spot-on-rss.h \
+                  GUI/spot-on-rss.h \
+                  GUI/spot-on-scroll-filter.h \
                   GUI/spot-on-smpwindow.h \
                   GUI/spot-on-status-activity.h \
                   GUI/spot-on-tabwidget.h \

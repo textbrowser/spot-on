@@ -36,6 +36,7 @@
 #if SPOTON_GOLDBUG == 0
 #include "spot-on-emailwindow.h"
 #endif
+#include "spot-on-scroll-filter.h"
 #include "spot-on-utilities.h"
 #include "spot-on.h"
 #include "ui_spot-on-postgresql-connect.h"
@@ -986,6 +987,16 @@ void spoton::slotBehaveAsHumanProxy(bool state)
 {
   QSettings().setValue("gui/human_proxy", state);
   m_settings["gui/human_proxy"] = state;
+}
+
+void spoton::slotDisableOptionsWheelEvents(void)
+{
+  foreach(auto widget, m_optionsWindow->findChildren<QWidget *> ())
+    if(qobject_cast<QComboBox *> (widget) ||
+       qobject_cast<QDoubleSpinBox *> (widget) ||
+       qobject_cast<QSlider *> (widget) ||
+       qobject_cast<QSpinBox *> (widget))
+      widget->installEventFilter(new spoton_scroll_filter(this));
 }
 
 void spoton::slotEmailLettersPerPageChanged(int value)
