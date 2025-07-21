@@ -59,7 +59,6 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
   m_ui.feeds->setIconSize(QSize(16, 16));
   m_ui.feeds->verticalHeader()->setSectionResizeMode
     (QHeaderView::ResizeToContents);
-  m_ui.proxy_frame->setVisible(m_ui.proxy->isChecked());
   m_ui.verified->setVisible(false);
   connect(&m_downloadContentTimer,
 	  SIGNAL(timeout(void)),
@@ -1373,7 +1372,6 @@ void spoton_rss::prepareAfterAuthentication(void)
 		      m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
 		      m_ui.proxyType->setCurrentIndex(0);
 		      m_ui.proxyUsername->clear();
-		      m_ui.proxy_frame->setVisible(false);
 		    }
 		  else
 		    {
@@ -1429,7 +1427,6 @@ void spoton_rss::prepareAfterAuthentication(void)
 			(QString::fromUtf8(list.value(5).constData(),
 					   list.value(5).length()));
 		      m_ui.proxyUsername->setCursorPosition(0);
-		      m_ui.proxy_frame->setVisible(true);
 
 		      if(proxy.type() != QNetworkProxy::NoProxy)
 			{
@@ -2691,12 +2688,12 @@ void spoton_rss::slotPopulateFeeds(void)
 
 void spoton_rss::slotProxyClicked(bool state)
 {
+  Q_UNUSED(state);
   m_ui.proxyHostname->clear();
   m_ui.proxyPassword->clear();
   m_ui.proxyPort->setValue(m_ui.proxyPort->minimum());
   m_ui.proxyType->setCurrentIndex(0);
   m_ui.proxyUsername->clear();
-  m_ui.proxy_frame->setVisible(state);
 }
 
 void spoton_rss::slotPurge(void)
