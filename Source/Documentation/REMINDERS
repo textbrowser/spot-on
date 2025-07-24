@@ -21,13 +21,12 @@ Archived Items
 16.    Open Library.
 17.    IMAP and optional removal of messages; retrieve latest.
 18.    Optional GCRYPT. Android and OpenSSL.
-19.    Single Rosetta attachments.
-21     Shift operators and types.
-22.    Spectral human proxy.
-23.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
+20     Shift operators and types.
+21.    Spectral human proxy.
+22.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
-24.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
+23.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
 
 Completed Items
 
