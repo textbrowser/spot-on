@@ -175,6 +175,12 @@ void spoton_emailwindow::slotAddAttachment(void)
 	{
 	  QFileInfo const fileInfo(list.at(i));
 
+	  if(m_ui.attachment->toPlainText().
+	     contains(QString("%1 (%2)").
+		      arg(fileInfo.absoluteFilePath()).
+		      arg(spoton_misc::prettyFileSize(fileInfo.size()))))
+	    continue;
+
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
 	     arg(fileInfo.absoluteFilePath()).
@@ -554,7 +560,6 @@ void spoton_emailwindow::slotSendMail(void)
     {
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-      QLocale locale;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
       auto const files
 	(m_ui.attachment->toPlainText().split('\n', Qt::SkipEmptyParts));
@@ -592,8 +597,8 @@ void spoton_emailwindow::slotSendMail(void)
 		 tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 		 tr("The attachment %1 is too large. The maximum size "
 		    "of an attachment is %2 byte(s).").arg(fileName).
-		 arg(locale.toString(spoton_common::
-				     EMAIL_ATTACHMENT_MAXIMUM_SIZE)));
+		 arg(QLocale().toString(spoton_common::
+					EMAIL_ATTACHMENT_MAXIMUM_SIZE)));
 	      QApplication::processEvents();
 	      return;
 	    }

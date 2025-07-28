@@ -772,6 +772,12 @@ void spoton::slotAddAttachment(void)
 	{
 	  QFileInfo const fileInfo(list.at(i));
 
+	  if(m_ui.attachment->toPlainText().
+	     contains(QString("%1 (%2)").
+		      arg(fileInfo.absoluteFilePath()).
+		      arg(spoton_misc::prettyFileSize(fileInfo.size()))))
+	    continue;
+
 	  m_ui.attachment->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
 	     arg(fileInfo.absoluteFilePath()).
@@ -2863,52 +2869,40 @@ void spoton::slotUpdateSpinBoxChanged(double value)
 
   if(doubleSpinBox == m_optionsUi.chatUpdateInterval)
     {
-      QSettings settings;
-
+      QSettings().setValue("gui/participantsUpdateTimer", value);
       m_participantsUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/participantsUpdateTimer"] = value;
-      settings.setValue("gui/participantsUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.kernelCacheInterval)
     {
-      QSettings settings;
-
       if(value < 5.00)
 	value = 15.00;
 
+      QSettings().setValue("kernel/cachePurgeInterval", value);
       m_settings["kernel/cachePurgeInterval"] = value;
-      settings.setValue("kernel/cachePurgeInterval", value);
     }
   else if(doubleSpinBox == m_optionsUi.kernelUpdateInterval)
     {
-      QSettings settings;
-
+      QSettings().setValue("gui/kernelUpdateTimer", value);
       m_kernelUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/kernelUpdateTimer"] = value;
-      settings.setValue("gui/kernelUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.listenersUpdateInterval)
     {
-      QSettings settings;
-
+      QSettings().setValue("gui/listenersUpdateTimer", value);
       m_listenersUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/listenersUpdateTimer"] = value;
-      settings.setValue("gui/listenersUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.neighborsUpdateInterval)
     {
-      QSettings settings;
-
+      QSettings().setValue("gui/neighborsUpdateTimer", value);
       m_neighborsUpdateTimer.setInterval(static_cast<int> (1000 * value));
       m_settings["gui/neighborsUpdateTimer"] = value;
-      settings.setValue("gui/neighborsUpdateTimer", value);
     }
   else if(doubleSpinBox == m_optionsUi.starbeamUpdateInterval)
     {
-      QSettings settings;
-
-      m_starbeamUpdateTimer.setInterval(static_cast<int> (1000 * value));
+      QSettings().setValue("gui/starbeamUpdateTimer", value);
       m_settings["gui/starbeamUpdateTimer"] = value;
-      settings.setValue("gui/starbeamUpdateTimer", value);
+      m_starbeamUpdateTimer.setInterval(static_cast<int> (1000 * value));
     }
 }
