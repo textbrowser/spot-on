@@ -66,7 +66,6 @@ extern "C"
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
-#include <QLocale>
 #ifdef Q_OS_WINDOWS
 #include <qt_windows.h>
 #include <QNetworkInterface>

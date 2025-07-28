@@ -6297,7 +6297,7 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 
     if(db.open())
       {
-	QLocale locale;
+	QLocale const locale;
 	QSqlQuery query(db);
 	int size = 0;
 	qint64 v1 = 0;

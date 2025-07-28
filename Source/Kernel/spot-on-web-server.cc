@@ -428,7 +428,7 @@ void spoton_web_server_thread::process
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /about"))
     {
-      QLocale locale;
+      QLocale const locale;
       QString about("");
 
       about.append("<p><font size=3>");

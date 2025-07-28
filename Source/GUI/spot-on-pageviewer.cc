@@ -168,7 +168,7 @@ void spoton_pageviewer::setPage(const QByteArray &data,
   ** was he?
   */
 
-  QLocale locale;
+  QLocale const locale;
 
   m_ui.size->setText
     (tr("%1 KiB, Compressed %2 KiB").
@@ -410,7 +410,7 @@ void spoton_pageviewer::slotRevisionChanged(int index)
 		m_webView->setHtml(m_content);
 	      }
 
-	    QLocale locale;
+	    QLocale const locale;
 
 	    m_ui.size->setText
 	      (tr("%1 KiB, Compressed %2 KiB").

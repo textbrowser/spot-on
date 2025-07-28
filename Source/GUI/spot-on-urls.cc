@@ -135,8 +135,6 @@ void spoton::displayUrlImportResults(const QDateTime &then,
 				     const quint64 not_imported,
 				     const quint64 declined)
 {
-  QLocale locale;
-
   QMessageBox::information
     (this,
      tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
@@ -145,7 +143,7 @@ void spoton::displayUrlImportResults(const QDateTime &then,
 	"URLs which were not imported will remain in shared.db. "
 	"The process completed in %4 second(s).").
      arg(imported).arg(not_imported).arg(declined).
-     arg(locale.toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
+     arg(QLocale().toString(qAbs(QDateTime::currentDateTime().secsTo(then)))));
   QApplication::processEvents();
 }
 
@@ -707,14 +705,11 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.close();
   repaint();
   QApplication::processEvents();
-
-  QLocale locale;
-
   QMessageBox::information
     (this,
      tr("%1: Information").arg(SPOTON_APPLICATION_NAME),
      tr("Approximate orphaned keyword entries deleted: %1.").
-     arg(locale.toString(deleted)));
+     arg(QLocale().toString(deleted)));
   QApplication::processEvents();
 }
 
@@ -1047,7 +1042,7 @@ void spoton::slotGatherUrlStatistics(void)
   repaint();
   QApplication::processEvents();
 
-  QLocale locale;
+  QLocale const locale;
   QString units("KiB");
 
   if(size >= 1024.0 * 1024.0)

@@ -7314,7 +7314,7 @@ void spoton::slotPopulateListeners(void)
 		      "OID "                              // 25
 		      "FROM listeners WHERE status_control <> 'deleted'"))
 	  {
-	    QLocale locale;
+	    QLocale const locale;
 
 	    row = 0;
 
@@ -8047,7 +8047,7 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
      size :
      qMin(m_ui.neighbors_maximum_items_displayed->currentText().toInt(), size));
 
-  QLocale locale;
+  QLocale const locale;
   int row = 0;
   int totalRows = 0;
 

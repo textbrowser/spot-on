@@ -77,7 +77,6 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 
 	if(db.open())
 	  {
-	    QLocale locale;
 	    QSqlQuery query(db);
 
 	    query.setForwardOnly(true);
@@ -208,7 +207,7 @@ QList<QPair<QString, QString> > spoton_neighborstatistics::query(void)
 		     pair.first.contains("size") ||
 		     pair.first.contains("uptime") ||
 		     pair.first.contains("width"))
-		    text = locale.toString(text.toULongLong());
+		    text = QLocale().toString(text.toULongLong());
 
 		  pair.second = text;
 		  list << pair;

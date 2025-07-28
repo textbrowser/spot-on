@@ -629,7 +629,7 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
   totalRows += 4; // Display statistics!
   m_statisticsModel->setRowCount(totalRows);
 
-  QLocale locale;
+  QLocale const locale;
   auto item = new QStandardItem("Display Forward Secrecy Requests");
 
   item->setEditable(false);
@@ -3437,7 +3437,7 @@ void spoton::slotPopulateStars(void)
 
     if(db.open())
       {
-	QLocale locale;
+	QLocale const locale;
 	QModelIndexList list;
 	QSqlQuery query(db);
 	QString mosaic("");

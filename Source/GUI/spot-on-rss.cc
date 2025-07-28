@@ -3352,7 +3352,7 @@ void spoton_rss::slotStatisticsTimeout(void)
 	  while(query.next())
 	    counts << query.value(0).toLongLong();
 
-	QLocale locale;
+	QLocale const locale;
 
 	str = tr("%1 RSS Feeds | "         // a
 		 "%2 Failed Imports | "    // b
