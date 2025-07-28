@@ -1473,6 +1473,12 @@ void spoton_rosetta::slotAttachForGPG(void)
 	{
 	  QFileInfo const fileInfo(list.at(i));
 
+	  if(ui.attachments->toPlainText().
+	     contains(QString("%1 (%2)").
+		      arg(fileInfo.absoluteFilePath()).
+		      arg(spoton_misc::prettyFileSize(fileInfo.size()))))
+	    continue;
+
 	  ui.attachments->append
 	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
 	     arg(fileInfo.absoluteFilePath()).
