@@ -17,7 +17,7 @@ Archived Items
 13.    Which key types to export and import? A new selection dialog.
 14.    There is some redundant deciphering of data: findMessageType()
        followed by process() routines.
-15.    GPG congestion.
+15.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
 16.    Open Library.
 17.    IMAP and optional removal of messages; retrieve latest.
 18.    Optional GCRYPT. Android and OpenSSL.
@@ -26,7 +26,6 @@ Archived Items
 22.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
        A QR has a text capacity of 4296 characters. This is also good.
        Snap-Call. More details later. Only a reminder.
-23.    Bypass via GPGME_ENCRYPT_SYMMETRIC.
 
 Completed Items
 
@@ -363,6 +362,8 @@ Completed Items
        Chat page.
 250.   Remove HTML tags from local Web results without QTextDocument.
        QTextDocument is safe on the main thread.
+251.   GPG congestion. This is not possible because we do not retain
+       digital digests across sessions.
 
 Remaining Items
 
