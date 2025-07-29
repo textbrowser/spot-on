@@ -362,6 +362,7 @@ Completed Items
 249.   Optional Chat GIT per participant. See GIT Messages column in the
        Chat page.
 250.   Remove HTML tags from local Web results without QTextDocument.
+       QTextDocument is safe on the main thread.
 
 Remaining Items
 
