@@ -15,7 +15,7 @@ then
 	    --disable-starbeam \
 	    --disable-ui-server \
 	    --passphrase \
-	    "@"
+	    "$@"
 	exit $?
     else
 	echo "Could not locate ./Spot-On-Kernel.app/" \
