@@ -329,6 +329,10 @@ void spoton_web_server::slotTimeout(void)
 void spoton_web_server::slotWriteHtmlContent
 (QSslSocket *socket, const QByteArray &data)
 {
+  /*
+  ** We are responsible for deleting socket.
+  */
+
   if(!socket)
     return;
 
@@ -537,7 +541,7 @@ void spoton_web_server_thread::process
 	{
 	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
 	  data = data.mid(0, data.indexOf(' '));
-	  processLocal(socket.take(), data);
+	  processLocal(socket.take(), data); // Delete socket later!
 	}
       else
 	writeDefaultPage(socket.data(), true);
@@ -1056,6 +1060,10 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 void spoton_web_server_thread::processLocal
 (QSslSocket *socket, const QByteArray &data)
 {
+  /*
+  ** We are responsible for deleting socket.
+  */
+
   if(!socket)
     return;
 
