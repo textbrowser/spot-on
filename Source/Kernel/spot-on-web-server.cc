@@ -31,7 +31,6 @@
 #include <QSslKey>
 #include <QSslSocket>
 #include <QSysInfo>
-#include <QTextDocument>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
@@ -1065,15 +1064,15 @@ void spoton_web_server_thread::processLocal
 
 	      if(!content.isEmpty())
 		{
-		  QTextDocument document;
-
-		  document.setHtml(content);
-		  document.setUndoRedoEnabled(false);
-		  content = document.toPlainText().toUtf8();
+		  content.replace("&#13;", "\n");
+		  content.replace("<br>", "\n");
+		  content = spoton_misc::removeSpecialHtmlTags
+		    (content).toUtf8();
+		  content = content.replace("\n", "<br>").trimmed();
 		  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
 		    QByteArray::number(content.length()) +
 		    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
-		  html.append(content.replace("\n", "<br>"));
+		  html.append(content);
 		}
 	    }
 	}

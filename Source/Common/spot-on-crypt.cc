@@ -175,9 +175,10 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
-	    (QString("spoton_crypt::spoton_crypt(): "
-		     "gcry_calloc_secure() "
-		     "failure or m_privateKeyLength is zero (%1).").arg(m_id));
+	    (QObject::tr("spoton_crypt::spoton_crypt(): "
+			 "gcry_calloc_secure() "
+			 "failure or m_privateKeyLength is zero (%1).").
+	     arg(m_id));
 	}
     }
   else
@@ -188,8 +189,9 @@ spoton_crypt::spoton_crypt(const QByteArray &privateKey,
 	{
 	  m_privateKeyLength = 0;
 	  spoton_misc::logError
-	    (QString("spoton_crypt::spoton_crypt(): calloc() "
-		     "failure or m_privateKeyLength is zero (%1).").arg(m_id));
+	    (QObject::tr("spoton_crypt::spoton_crypt(): calloc() "
+			 "failure or m_privateKeyLength is zero (%1).").
+	     arg(m_id));
 	}
     }
 
@@ -293,7 +295,7 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 	*ok = false;
 
       spoton_misc::logError
-	("spoton_crypt::decrypted(): m_cipherAlgorithm is zero.");
+	(QObject::tr("spoton_crypt::decrypted(): m_cipherAlgorithm is zero."));
       return QByteArray();
     }
 
@@ -303,7 +305,7 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 	*ok = false;
 
       spoton_misc::logError
-	("spoton_crypt::decrypted(): m_cipherHandle is zero.");
+	(QObject::tr("spoton_crypt::decrypted(): m_cipherHandle is zero."));
       return QByteArray();
     }
 

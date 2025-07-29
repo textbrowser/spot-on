@@ -361,6 +361,7 @@ Completed Items
 248.   GPG executable for creating credentials from Rosetta.
 249.   Optional Chat GIT per participant. See GIT Messages column in the
        Chat page.
+250.   Remove HTML tags from local Web results without QTextDocument.
 
 Remaining Items
 
@@ -369,4 +370,3 @@ Remaining Items
 3.     Detect expired Web Server certificate.
 4.     Detect expired listener certificates.
 5.     Log translated errors in spoton_crypt.
-6.     Remove HTML tags from local Web results without QTextDocument.
