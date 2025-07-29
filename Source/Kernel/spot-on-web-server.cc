@@ -198,9 +198,18 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 				    m_https->privateKey()),
      socketDescriptor);
 
-  connect
-    (thread, SIGNAL(finished(void)), this, SLOT(slotHttpsThreadFinished(void)));
-  connect(thread, SIGNAL(finished(void)), thread, SLOT(deleteLater(void)));
+  connect(thread,
+	  SIGNAL(finished(void)),
+	  this,
+	  SLOT(slotHttpsThreadFinished(void)));
+  connect(thread,
+	  SIGNAL(finished(void)),
+	  thread,
+	  SLOT(deleteLater(void)));
+  connect(thread,
+	  SIGNAL(writeHtmlContent(QSslSocket *, const QByteArray &)),
+	  this,
+	  SLOT(slotWriteHtmlContent(QSslSocket *, const QByteArray &)));
   m_httpsClientCount->fetchAndAddOrdered(1);
   thread->start();
 }
@@ -341,13 +350,14 @@ void spoton_web_server::slotWriteHtmlContent
   QTextDocument document;
 
   document.setHtml(data);
+  document.setLayoutEnabled(false);
   document.setUndoRedoEnabled(false);
   content = document.toPlainText().replace("\n", "<br>").toUtf8();
   html = "HTTP/1.1 200 OK\r\nContent-Length: " +
     QByteArray::number(content.length()) +
     "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
   html.append(content);
-  spoton_web_server_thread::write(m_abort, socket, data);
+  spoton_web_server_thread::write(m_abort, socket, html);
   delete socket;
 }
 
