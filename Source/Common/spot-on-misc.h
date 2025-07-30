@@ -280,7 +280,7 @@ class spoton_misc
   static void setTimeVariables(const QHash<QString, QVariant> &settings);
   static void vacuumAllDatabases(void);
 
-  template<typename T> static T readSharedResource(T *resource,
+  template<typename T> static T readSharedResource(const T *resource,
 						   QReadWriteLock &mutex)
   {
     QReadLocker locker(&mutex);

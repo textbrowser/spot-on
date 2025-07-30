@@ -268,7 +268,7 @@ bool spoton_sctp_server::listen(const QHostAddress &address,
 	(reinterpret_cast<LPSTR> (address.toString().toLatin1().data()),
 	 AF_INET,
 	 0,
-	 reinterpret_cast<LPSOCKADDR> (&serveraddr(,
+	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
 	 &length);
 #else
       rc = inet_pton(AF_INET,
