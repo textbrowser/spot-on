@@ -31,7 +31,6 @@
 #include <QSslKey>
 #include <QSslSocket>
 #include <QSysInfo>
-#include <QTextDocument>
 
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-crypt.h"
