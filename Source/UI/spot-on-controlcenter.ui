@@ -851,6 +851,16 @@
                       </widget>
                      </item>
                      <item>
+                      <widget class="QLabel" name="label_124">
+                       <property name="text">
+                        <string>Please notice the GIT Messages column at the end of the table. The column values are not retained for new sessions.</string>
+                       </property>
+                       <property name="wordWrap">
+                        <bool>true</bool>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
                       <widget class="QTableWidget" name="participants">
                        <property name="verticalScrollBarPolicy">
                         <enum>Qt::ScrollBarAlwaysOn</enum>
@@ -1060,7 +1070,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-68</y>
+             <y>0</y>
              <width>994</width>
              <height>729</height>
             </rect>
@@ -3195,7 +3205,7 @@
                    <property name="geometry">
                     <rect>
                      <x>0</x>
-                     <y>-981</y>
+                     <y>0</y>
                      <width>363</width>
                      <height>1622</height>
                     </rect>
