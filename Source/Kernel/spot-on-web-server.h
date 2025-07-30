@@ -110,7 +110,6 @@ class spoton_web_server: public QObject
   void slotHttpsClientConnected(const qint64 socketDescriptor);
   void slotHttpsThreadFinished(void);
   void slotTimeout(void);
-  void slotWriteHtmlContent(QSslSocket *socket, const QByteArray &data);
 };
 
 class spoton_web_server_thread: public QThread
@@ -128,9 +127,6 @@ class spoton_web_server_thread: public QThread
     m_socketDescriptor = socketDescriptor;
   }
 
-  static void write
-    (QAtomicInt *abort, QSslSocket *socket, const QByteArray &data);
-
  protected:
   void run(void);
 
@@ -144,10 +140,8 @@ class spoton_web_server_thread: public QThread
 	       const QByteArray &data,
 	       const QPair<QString, QString> &address);
   void processLocal(QSslSocket *socket, const QByteArray &data);
+  void write(QSslSocket *socket, const QByteArray &data);
   void writeDefaultPage(QSslSocket *socket, const bool redirect = false);
-
- signals:
-  void writeHtmlContent(QSslSocket *socket, const QByteArray &content);
 };
 
 #endif

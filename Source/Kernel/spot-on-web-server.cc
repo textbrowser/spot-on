@@ -166,10 +166,6 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 	  SIGNAL(finished(void)),
 	  thread,
 	  SLOT(deleteLater(void)));
-  connect(thread,
-	  SIGNAL(writeHtmlContent(QSslSocket *, const QByteArray &)),
-	  this,
-	  SLOT(slotWriteHtmlContent(QSslSocket *, const QByteArray &)));
   m_httpClientCount->fetchAndAddOrdered(1);
   thread->start();
 }
@@ -206,10 +202,6 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 	  SIGNAL(finished(void)),
 	  thread,
 	  SLOT(deleteLater(void)));
-  connect(thread,
-	  SIGNAL(writeHtmlContent(QSslSocket *, const QByteArray &)),
-	  this,
-	  SLOT(slotWriteHtmlContent(QSslSocket *, const QByteArray &)));
   m_httpsClientCount->fetchAndAddOrdered(1);
   thread->start();
 }
@@ -333,32 +325,6 @@ void spoton_web_server::slotTimeout(void)
 	 m_https->socketDescriptor(),
 	 nullptr);
     }
-}
-
-void spoton_web_server::slotWriteHtmlContent
-(QSslSocket *socket, const QByteArray &data)
-{
-  /*
-  ** We are responsible for deleting socket.
-  */
-
-  if(!socket)
-    return;
-
-  QByteArray content;
-  QByteArray html;
-  QTextDocument document;
-
-  document.setHtml(data);
-  document.setLayoutEnabled(false);
-  document.setUndoRedoEnabled(false);
-  content = document.toPlainText().replace("\n", "<br>").toUtf8();
-  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
-    QByteArray::number(content.length()) +
-    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
-  html.append(content);
-  spoton_web_server_thread::write(m_abort, socket, html);
-  delete socket;
 }
 
 void spoton_web_server_thread::process
@@ -524,12 +490,11 @@ void spoton_web_server_thread::process
       html.remove("</html>");
       html.append(about);
       html.append("</html>");
-      write(m_abort,
-	    socket.data(),
+      write(socket.data(),
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
 	    QByteArray::number(html.toUtf8().length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(m_abort, socket.data(), html.toUtf8());
+      write(socket.data(), html.toUtf8());
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
@@ -551,7 +516,7 @@ void spoton_web_server_thread::process
 	{
 	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
 	  data = data.mid(0, data.indexOf(' '));
-	  processLocal(socket.take(), data); // Delete socket later!
+	  processLocal(socket.data(), data);
 	}
       else
 	writeDefaultPage(socket.data(), true);
@@ -1049,31 +1014,25 @@ void spoton_web_server_thread::process(QSslSocket *socket,
 
   if(html.isEmpty())
     {
-      write(m_abort,
-	    socket,
+      write(socket,
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
 	    QByteArray::number(s_search.length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(m_abort, socket, s_search);
+      write(socket, s_search);
     }
   else
     {
-      write(m_abort,
-	    socket,
+      write(socket,
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
 	    QByteArray::number(html.toUtf8().length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(m_abort, socket, html.toUtf8());
+      write(socket, html.toUtf8());
     }
 }
 
 void spoton_web_server_thread::processLocal
 (QSslSocket *socket, const QByteArray &data)
 {
-  /*
-  ** We are responsible for deleting socket.
-  */
-
   if(!socket)
     return;
 
@@ -1083,11 +1042,10 @@ void spoton_web_server_thread::processLocal
   if(!crypt)
     {
       writeDefaultPage(socket, true);
-      delete socket;
       return;
     }
 
-  QByteArray content;
+  QByteArray html;
   QString connectionName("");
   auto db(spoton_kernel::urlDatabase(connectionName));
 
@@ -1105,6 +1063,7 @@ void spoton_web_server_thread::processLocal
 
       if(query.exec() && query.next())
 	{
+	  QByteArray content;
 	  auto ok = true;
 
 	  content = crypt->decryptedAfterAuthenticated
@@ -1115,7 +1074,12 @@ void spoton_web_server_thread::processLocal
 	      content = qUncompress(content);
 
 	      if(!content.isEmpty())
-		emit writeHtmlContent(socket, content);
+		{
+		  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
+		    QByteArray::number(content.length()) +
+		    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
+		  html.append(content);
+		}
 	    }
 	}
     }
@@ -1124,11 +1088,10 @@ void spoton_web_server_thread::processLocal
   db = QSqlDatabase();
   QSqlDatabase::removeDatabase(connectionName);
 
-  if(content.isEmpty())
-    {
-      writeDefaultPage(socket, true);
-      delete socket;
-    }
+  if(html.isEmpty())
+    writeDefaultPage(socket, true);
+  else
+    write(socket, html);
 }
 
 void spoton_web_server_thread::run(void)
@@ -1137,15 +1100,15 @@ void spoton_web_server_thread::run(void)
 }
 
 void spoton_web_server_thread::write
-(QAtomicInt *abort, QSslSocket *socket, const QByteArray &data)
+(QSslSocket *socket, const QByteArray &data)
 {
-  if(!abort || !socket || data.isEmpty())
+  if(!socket || data.isEmpty())
     return;
 
   for(int i = 0;;)
     {
-      if(abort->fetchAndAddOrdered(0) ||
-	 i >= data.length() ||
+      if(i >= data.length() ||
+	 m_abort->fetchAndAddOrdered(0) ||
 	 socket->state() != QAbstractSocket::ConnectedState)
 	break;
 
@@ -1183,8 +1146,7 @@ void spoton_web_server_thread::writeDefaultPage
       location.append(socket->localAddress().toString().toUtf8() +
 		      ":" +
 		      QByteArray::number(socket->localPort()));
-      write(m_abort,
-	    socket,
+      write(socket,
 	    "HTTP/1.1 301 Moved Permanently\r\nContent-Length: " +
 	    QByteArray::number(s_search.length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n"
@@ -1193,11 +1155,10 @@ void spoton_web_server_thread::writeDefaultPage
 	    "\r\n\r\n");
     }
   else
-    write(m_abort,
-	  socket,
+    write(socket,
 	  "HTTP/1.1 200 OK\r\nContent-Length: " +
 	  QByteArray::number(s_search.length()) +
 	  "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
 
-  write(m_abort, socket, s_search);
+  write(socket, s_search);
 }
