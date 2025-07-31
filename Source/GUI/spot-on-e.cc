@@ -33,9 +33,6 @@ extern "C"
 #endif
 
 #include <QApplication>
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#include <QAudioOutput>
-#endif
 #include <QCoreApplication>
 #include <QSettings>
 
@@ -613,8 +610,13 @@ void spoton::playSound(const QString &name)
 {
   auto player = findChild<QMediaPlayer *> ();
 
-  if(player)
-    player->deleteLater();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  if(player && player->playbackState() == QMediaPlayer::PlayingState)
+    return;
+#else
+  if(player && player->state() == QMediaPlayer::PlayingState)
+    return;
+#endif
 
   if(m_locked)
     return;
@@ -623,12 +625,11 @@ void spoton::playSound(const QString &name)
     return;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-  auto output = new QAudioOutput();
-
-  output->setVolume(100);
+  m_audioOutput.reset(new QAudioOutput());
+  m_audioOutput->setVolume(100);
   player = new QMediaPlayer(this);
-  player->setAudioOutput(output);
-  player->setSource(QUrl(name));
+  player->setAudioOutput(m_audioOutput.data());
+  player->setSource(QUrl::fromUserInput(name));
   connect(player,
 	  SIGNAL(errorOccurred(QMediaPlayer::Error, const QString &)),
 	  this,
@@ -639,7 +640,7 @@ void spoton::playSound(const QString &name)
 	  SIGNAL(error(QMediaPlayer::Error)),
 	  this,
 	  SLOT(slotMediaError(QMediaPlayer::Error)));
-  player->setMedia(QUrl(name));
+  player->setMedia(QUrl::fromUserInput(name));
   player->setVolume(100);
 #endif
   connect(player,
@@ -1453,8 +1454,8 @@ void spoton::slotMediaError(QMediaPlayer::Error error)
     player->deleteLater();
 }
 
-void spoton::slotMediaError(QMediaPlayer::Error error,
-			    const QString &errorString)
+void spoton::slotMediaError
+(QMediaPlayer::Error error, const QString &errorString)
 {
   Q_UNUSED(errorString);
 

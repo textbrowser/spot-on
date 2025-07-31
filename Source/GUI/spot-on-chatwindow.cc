@@ -26,9 +26,6 @@
 */
 
 #include <QApplication>
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-#include <QAudioOutput>
-#endif
 #include <QDateTime>
 #include <QMediaPlayer>
 #include <QMessageBox>
@@ -358,11 +355,10 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	 m_parent->m_settings.value("gui/play_sounds", false).toBool() : false)
 	{
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	  auto output = new QAudioOutput();
-
-	  output->setVolume(100);
+	  m_audioOutput.reset(new QAudioOutput());
+	  m_audioOutput->setVolume(100);
 	  player = new QMediaPlayer(this);
-	  player->setAudioOutput(output);
+	  player->setAudioOutput(m_audioOutput.data());
 	  player->setSource(QUrl("qrc:/Sounds/send.wav"));
 #else
 	  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);

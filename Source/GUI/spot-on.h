@@ -29,6 +29,9 @@
 #define _spoton_h_
 
 #include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QAudioOutput>
+#endif
 #include <QCheckBox>
 #include <QClipboard>
 #include <QDateTime>
@@ -524,6 +527,9 @@ class spoton: public QMainWindow
   QPointer<QWidget> m_careOfPage;
   QPointer<spoton_rosetta> m_rosetta;
   QPointer<spoton_status_activity> m_statusActivity;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  QScopedPointer<QAudioOutput> m_audioOutput;
+#endif
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
   QSslSocket m_kernelSocket;

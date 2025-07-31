@@ -28,6 +28,10 @@
 #ifndef _spoton_chatwindow_h_
 #define _spoton_chatwindow_h_
 
+#include <QApplication>
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#include <QAudioOutput>
+#endif
 #include <QIcon>
 #include <QPointer>
 
@@ -61,6 +65,9 @@ class spoton_chatwindow: public QMainWindow
  private:
   QPointer<QSslSocket> m_kernelSocket;
   QPointer<spoton> m_parent;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  QScopedPointer<QAudioOutput> m_audioOutput;
+#endif
   QString m_id;
   QString m_keyType;
   QString m_publicKeyHash;
