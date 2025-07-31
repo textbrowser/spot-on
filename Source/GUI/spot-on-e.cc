@@ -610,13 +610,8 @@ void spoton::playSound(const QString &name)
 {
   auto player = findChild<QMediaPlayer *> ();
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-  if(player && player->playbackState() == QMediaPlayer::PlayingState)
-    return;
-#else
-  if(player && player->state() == QMediaPlayer::PlayingState)
-    return;
-#endif
+  if(player)
+    player->deleteLater();
 
   if(m_locked)
     return;

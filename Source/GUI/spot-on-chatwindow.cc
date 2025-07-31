@@ -359,10 +359,10 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	  m_audioOutput->setVolume(100);
 	  player = new QMediaPlayer(this);
 	  player->setAudioOutput(m_audioOutput.data());
-	  player->setSource(QUrl("qrc:/Sounds/send.wav"));
+	  player->setSource(QUrl::fromUserInput("qrc:/Sounds/send.wav"));
 #else
 	  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
-	  player->setMedia(QUrl("qrc:/Sounds/send.wav"));
+	  player->setMedia(QUrl::fromUserInput("qrc:/Sounds/send.wav"));
 	  player->setVolume(100);
 #endif
 	  player->play();
