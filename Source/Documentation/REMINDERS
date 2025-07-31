@@ -12,7 +12,9 @@ Archived Items
 8.     Database entries containing hashes can be maliciously twisted. Encrypt?
 9.     Rosetta: Inbox, Drafts, Sent, Trash.
 10.    Colorful HTTP headers. Custom protocol messages for rapid redeployment.
-11.    Remote kernel termination.
+11.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
+       A QR has a text capacity of 4296 characters. This is also good.
+       Snap-Call. More details later. Only a reminder.
 12.    E-mail GPG.
 13.    Which key types to export and import? A new selection dialog.
 14.    There is some redundant deciphering of data: findMessageType()
@@ -23,9 +25,6 @@ Archived Items
 18.    Optional GCRYPT. Android and OpenSSL.
 20     Shift operators and types.
 21.    Spectral human proxy.
-22.    A call message in Spot-On as Base-64 is about 3000 bytes. This is good.
-       A QR has a text capacity of 4296 characters. This is also good.
-       Snap-Call. More details later. Only a reminder.
 
 Completed Items
 
