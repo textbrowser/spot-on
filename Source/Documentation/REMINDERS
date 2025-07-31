@@ -371,3 +371,4 @@ Remaining Items
 3.     Detect expired Web Server certificate.
 4.     Detect expired listener certificates.
 5.     Log translated errors in spoton_crypt.
+6.     Qt 6 and audio songs may die.
