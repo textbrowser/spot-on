@@ -543,6 +543,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	m_urlPrefixes << QString("%1%2").arg(c1).arg(c2);
       }
 
+  m_kernelLaunched = false;
   m_locked = false;
   m_quit = false;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
@@ -4396,7 +4397,6 @@ void spoton::slotActivateKernel(void)
   m_sb.status->repaint();
 
   auto const program(m_ui.kernelPath->text());
-  auto status = false;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #ifdef Q_OS_MACOS
@@ -4405,15 +4405,14 @@ void spoton::slotActivateKernel(void)
       QStringList list;
 
       list << "-a" << program << "-g";
-      status = QProcess::startDetached("open", list);
+      QProcess::startDetached("open", list);
     }
   else
-    status = QProcess::startDetached(program, QStringList());
+    QProcess::startDetached(program, QStringList());
 #elif defined(Q_OS_WINDOWS)
-  status = QProcess::startDetached
-    (QString("\"%1\"").arg(program), QStringList());
+  QProcess::startDetached(QString("\"%1\"").arg(program), QStringList());
 #else
-  status = QProcess::startDetached(program, QStringList());
+  QProcess::startDetached(program, QStringList());
 #endif
 #else
 #ifdef Q_OS_MACOS
@@ -4422,30 +4421,36 @@ void spoton::slotActivateKernel(void)
       QStringList list;
 
       list << "-a" << program << "-g";
-      status = QProcess::startDetached("open", list);
+      QProcess::startDetached("open", list);
     }
   else
-    status = QProcess::startDetached(program);
+    QProcess::startDetached(program);
 #elif defined(Q_OS_WINDOWS)
-  status = QProcess::startDetached(QString("\"%1\"").arg(program));
+  QProcess::startDetached(QString("\"%1\"").arg(program));
 #else
-  status = QProcess::startDetached(program);
+  QProcess::startDetached(program);
 #endif
 #endif
 
   QElapsedTimer time;
+  auto status = false;
 
   time.start();
 
   do
     {
       QApplication::processEvents();
+      status = false;
 
       if(spoton_misc::kernelPid() > 0 || time.hasExpired(10000))
-	break;
+	{
+	  status = true;
+	  break;
+	}
     }
   while(true);
 
+  m_kernelLaunched = status;
   m_sb.status->clear();
   m_sb.status->repaint();
   QApplication::restoreOverrideCursor();
@@ -5949,6 +5954,7 @@ void spoton::slotDeactivateKernel(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   spoton_misc::deregisterKernel(spoton_misc::kernelPid());
+  m_kernelLaunched = false;
   m_kernelSocket.close();
 #if SPOTON_GOLDBUG == 1
   m_ui.activateKernel->setStyleSheet("background-color: #ff717e;"
@@ -6606,6 +6612,9 @@ void spoton::slotGeneralTimerTimeout(void)
     }
 
   popForwardSecrecyRequest(QByteArray());
+
+  if(!isKernelActive && m_kernelLaunched)
+    slotActivateKernel();
 }
 
 void spoton::slotHideOfflineParticipants(bool state)

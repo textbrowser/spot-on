@@ -1484,7 +1484,7 @@
                 <item>
                  <widget class="QLabel" name="label_13">
                   <property name="text">
-                   <string>Increasing the timer value will impede current display statistics.</string>
+                   <string>Increasing the timer value will impede display statistics.</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>

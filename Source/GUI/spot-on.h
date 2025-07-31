@@ -560,6 +560,7 @@ class spoton: public QMainWindow
   Ui_spoton_statistics_window m_statisticsUi;
   Ui_spoton_statusbar m_sb;
   Ui_spoton_wizard *m_wizardUi;
+  bool m_kernelLaunched;
   bool m_locked;
   bool m_quit;
   mutable QList<QFileInfo> m_prisonBluesDirectoriesCache;
