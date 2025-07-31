@@ -85,10 +85,11 @@ rc=$?
 if [ $rc -eq 0 ] && [ -r "$gpgme" ]
 then
     tar -I zstd -vxf $gpgme
+    mkdir -p libGPGME/Executables.win64
     mkdir -p libGPGME/Include.win64
     mkdir -p libGPGME/Libraries.win64
     mv mingw64/bin/*.dll libGPGME/Libraries.win64/.
-    mv mingw64/bin/*.exe libGPGME/Libraries.win64/.
+    mv mingw64/bin/*.exe libGPGME/Executables.win64/.
     mv mingw64/include/gpgme.h libGPGME/Include.win64/.
     chmod +w,-x libGPGME/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
