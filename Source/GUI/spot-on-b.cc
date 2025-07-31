@@ -2601,7 +2601,7 @@ void spoton::sendMessage(bool *ok)
   QApplication::restoreOverrideCursor();
 
   if(error.isEmpty())
-    playSound("send.wav");
+    playSound("qrc:/Sounds/send.wav");
 
   if(!error.isEmpty())
     {
@@ -2929,7 +2929,7 @@ void spoton::slotBuzzChanged(void)
   if(currentTabName() != "buzz")
     m_sb.buzz->setVisible(true);
 
-  playSound("buzz.wav");
+  playSound("qrc:/Sounds/buzz.wav");
 }
 
 void spoton::slotChatInactivityTimeout(void)
@@ -4980,7 +4980,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSound("receive.wav");
+		  playSound("qrc:/Sounds/receive.wav");
 		}
 	    }
 	  else if(data.startsWith("forward_secrecy_request_"))
@@ -5106,7 +5106,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSound("receive.wav");
+		      playSound("qrc:/Sounds/receive.wav");
 		      continue;
 		    }
 		  else if(spoton_misc::isValidSMPMagnet(list.value(2), values))
@@ -5197,7 +5197,7 @@ void spoton::slotReceivedKernelMessage(void)
 			  if(currentTabName() != "chat")
 			    m_sb.chat->setVisible(true);
 
-			  playSound("receive.wav");
+			  playSound("qrc:/Sounds/receive.wav");
 			  continue;
 			}
 
@@ -5362,7 +5362,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);
 
-		      playSound("receive.wav");
+		      playSound("qrc:/Sounds/receive.wav");
 		      continue;
 		    }
 
@@ -5560,7 +5560,7 @@ void spoton::slotReceivedKernelMessage(void)
 		  if(currentTabName() != "chat")
 		    m_sb.chat->setVisible(true);
 
-		  playSound("receive.wav");
+		  playSound("qrc:/Sounds/receive.wav");
 		}
 	    }
 	  else if(data == "newmail")
@@ -5569,7 +5569,7 @@ void spoton::slotReceivedKernelMessage(void)
 #if SPOTON_GOLDBUG == 1
 	      populateMail();
 #endif
-	      playSound("echo.wav");
+	      playSound("qrc:/Sounds/echo.wav");
 	    }
 	  else if(data.startsWith("notification_"))
 	    {

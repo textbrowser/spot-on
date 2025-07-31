@@ -3012,9 +3012,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/chatTimestamps", true).toBool());
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
-  m_optionsUi.play_sounds->setToolTip
-    (tr("<html>Please place the Sounds directory in the directory which "
-	"houses the %1 executable.</html>").arg(SPOTON_APPLICATION_NAME));
   m_ui.hideOfflineParticipants->setChecked
     (m_settings.value("gui/hideOfflineParticipants", false).toBool());
   m_ui.kernelLogEvents->setChecked
@@ -10288,7 +10285,7 @@ void spoton::slotSetPassphrase(void)
 #if SPOTON_GOLDBUG == 1
       slotConnectAllNeighbors();
 #endif
-      playSound("login.wav");
+      playSound("qrc:/Sounds/login.wav");
 
 #if SPOTON_GOLDBUG == 0
       if(m_settings.contains("gui/minimal"))
@@ -11346,7 +11343,7 @@ void spoton::slotValidatePassphrase(void)
 #if SPOTON_GOLDBUG == 1
       slotConnectAllNeighbors();
 #endif
-      playSound("login.wav");
+      playSound("qrc:/Sounds/login.wav");
       updatePublicKeysLabel();
 
 #if SPOTON_GOLDBUG == 0

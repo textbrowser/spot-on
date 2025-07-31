@@ -622,26 +622,13 @@ void spoton::playSound(const QString &name)
   if(!m_optionsUi.play_sounds->isChecked())
     return;
 
-  QFileInfo fileInfo;
-  auto const str
-    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
-		     QDir::separator() +
-		     "Sounds" +
-		     QDir::separator() +
-		     name));
-
-  fileInfo.setFile(str);
-
-  if(!fileInfo.isReadable() || fileInfo.size() < 8192)
-    return;
-
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
   auto output = new QAudioOutput();
 
   output->setVolume(100);
   player = new QMediaPlayer(this);
   player->setAudioOutput(output);
-  player->setSource(QUrl::fromLocalFile(str));
+  player->setSource(QUrl(name));
   connect(player,
 	  SIGNAL(errorOccurred(QMediaPlayer::Error, const QString &)),
 	  this,
@@ -652,7 +639,7 @@ void spoton::playSound(const QString &name)
 	  SIGNAL(error(QMediaPlayer::Error)),
 	  this,
 	  SLOT(slotMediaError(QMediaPlayer::Error)));
-  player->setMedia(QUrl::fromLocalFile(str));
+  player->setMedia(QUrl(name));
   player->setVolume(100);
 #endif
   connect(player,
@@ -667,9 +654,7 @@ void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
   if(hash.isEmpty())
     return;
 
-  int index = -1;
-
-  index = m_poptasticRetroPhoneSettingsUi.in_method->findText
+  auto index = m_poptasticRetroPhoneSettingsUi.in_method->findText
     (hash.value("in_method").toString());
 
   if(index >= 0)

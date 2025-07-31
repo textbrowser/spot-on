@@ -354,33 +354,22 @@ void spoton_chatwindow::sendMessage(bool *ok)
       if(player)
 	player->deleteLater();
 
-      if(m_parent ? m_parent->m_settings.
-	 value("gui/play_sounds", false).toBool() : false)
+      if(m_parent ?
+	 m_parent->m_settings.value("gui/play_sounds", false).toBool() : false)
 	{
-	  QFileInfo fileInfo;
-	  auto const str
-	    (QDir::cleanPath(QCoreApplication::applicationDirPath() +
-			     QDir::separator() + "Sounds" + QDir::separator() +
-			     "send.wav"));
-
-	  fileInfo.setFile(str);
-
-	  if(!(!fileInfo.isReadable() || fileInfo.size() < 8192))
-	    {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	      auto output = new QAudioOutput();
+	  auto output = new QAudioOutput();
 
-	      output->setVolume(100);
-	      player = new QMediaPlayer(this);
-	      player->setAudioOutput(output);
-	      player->setSource(QUrl::fromLocalFile(str));
+	  output->setVolume(100);
+	  player = new QMediaPlayer(this);
+	  player->setAudioOutput(output);
+	  player->setSource(QUrl("qrc:/Sounds/send.wav"));
 #else
-	      player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
-	      player->setMedia(QUrl::fromLocalFile(str));
-	      player->setVolume(100);
+	  player = new QMediaPlayer(this, QMediaPlayer::LowLatency);
+	  player->setMedia(QUrl("qrc:/Sounds/send.wav"));
+	  player->setVolume(100);
 #endif
-	      player->play();
-	    }
+	  player->play();
 	}
     }
 

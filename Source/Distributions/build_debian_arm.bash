@@ -18,7 +18,6 @@ make distclean 2>/dev/null
 mkdir -p ./opt/spot-on/Documentation
 mkdir -p ./opt/spot-on/Lib
 mkdir -p ./opt/spot-on/SQL
-mkdir -p ./opt/spot-on/Sounds
 mkdir -p ./opt/spot-on/Translations
 
 if [ ! -z "$(which qmake)" ]; then
@@ -37,7 +36,6 @@ cp -p ./SQL/* ./opt/spot-on/SQL/.
 cp -p ./Shell/spot-on-git.sh ./opt/spot-on/.
 cp -p ./Shell/spot-on-kernel.sh ./opt/spot-on/.
 cp -p ./Shell/spot-on.sh ./opt/spot-on/.
-cp -p ./Sounds/* ./opt/spot-on/Sounds/.
 cp -p ./Spot-On ./opt/spot-on/.
 cp -p ./Spot-On-Kernel ./opt/spot-on/.
 cp -p ./Translations/*.qm ./opt/spot-on/Translations/.

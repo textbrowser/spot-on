@@ -78,7 +78,7 @@ HEADERS		= Common/spot-on-external-address.h \
                   GUI/spot-on-utilities.h \
                   GUI/spot-on-woody.h
 
-RESOURCES	= Documentation/documentation.qrc \
+RESOURCES	= Documentation/embedded.qrc \
                   Icons/icons.qrc \
                   Translations/translations.qrc
 

@@ -2,6 +2,11 @@
     <qresource prefix="/">
 	<file>../Data/spot-on-neighbors.txt</file>
 	<file>../ReleaseNotes/ReleaseNotes.html</file>
+	<file>../Sounds/buzz.wav</file>
+	<file>../Sounds/echo.wav</file>
+	<file>../Sounds/login.wav</file>
+	<file>../Sounds/receive.wav</file>
+	<file>../Sounds/send.wav</file>
 	<file>ECC.prime256v1</file>
 	<file>ECC.secp384r1</file>
 	<file>ECC.secp521r1</file>
