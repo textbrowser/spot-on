@@ -5954,7 +5954,7 @@ void spoton::slotDeactivateKernel(void)
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   spoton_misc::deregisterKernel(spoton_misc::kernelPid());
-  m_kernelLaunched = false;
+  m_kernelLaunched = sender() ? false : true;
   m_kernelSocket.close();
 #if SPOTON_GOLDBUG == 1
   m_ui.activateKernel->setStyleSheet("background-color: #ff717e;"
