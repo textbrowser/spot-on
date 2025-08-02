@@ -4756,13 +4756,15 @@ void spoton_crypt::init(const QString &cipherType,
 	      if(s_cbc_cts_enabled)
 		flags |= GCRY_CIPHER_CBC_CTS;
 
-	      err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
+	      err = gcry_cipher_open(&m_cipherHandle,
+				     m_cipherAlgorithm,
 				     GCRY_CIPHER_MODE_CBC,
 				     flags);
 	    }
 #if GCRYPT_VERSION_NUMBER >= 0x010600
 	  else if(modeOfOperation.toLower() == "gcm")
-	    err = gcry_cipher_open(&m_cipherHandle, m_cipherAlgorithm,
+	    err = gcry_cipher_open(&m_cipherHandle,
+				   m_cipherAlgorithm,
 				   GCRY_CIPHER_MODE_GCM,
 				   GCRY_CIPHER_SECURE);
 #endif
@@ -4785,8 +4787,8 @@ void spoton_crypt::init(const QString &cipherType,
 		     arg(buffer.constData()));
 		}
 	      else
-		spoton_misc::logError("spoton_crypt::init(): "
-				      "gcry_cipher_open() failure.");
+		spoton_misc::logError
+		  ("spoton_crypt::init(): gcry_cipher_open() failure.");
 	    }
 	}
       else if(m_cipherType == "threefish")
