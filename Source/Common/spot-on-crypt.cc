@@ -4915,8 +4915,8 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
 			     buffer.data(),
 			     static_cast<size_t> (buffer.length()));
 	      spoton_misc::logError
-		(QString("spoton_crypt::init(): initializing "
-			 "secure memory failure (%1).").
+		(QObject::tr("spoton_crypt::init(): initializing "
+			     "secure memory failure (%1).").
 		 arg(buffer.constData()));
 	    }
 	  else
@@ -4928,7 +4928,7 @@ void spoton_crypt::init(const int secureMemorySize, const bool cbc_cts_enabled)
     }
   else
     spoton_misc::logError
-      ("spoton_crypt::init(): libgcrypt is already initialized.");
+      (QObject::tr("spoton_crypt::init(): libgcrypt is already initialized."));
 
   if(!ssl_library_initialized)
     {

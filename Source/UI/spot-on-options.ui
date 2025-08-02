@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1899</y>
+         <y>-1599</y>
          <width>769</width>
          <height>5318</height>
         </rect>
@@ -1347,7 +1347,7 @@
                 <item>
                  <widget class="QSpinBox" name="guiSecureMemoryPool">
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting a value of zero will disable the secure memory pool. Please restart the application upon changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting a value of zero will disable the secure memory pool. A value of one requests a default size. Please restart the application upon changes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="minimum">
                    <number>0</number>

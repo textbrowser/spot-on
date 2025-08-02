@@ -6336,6 +6336,9 @@ void spoton::slotFavoritesActivated(int index)
 
 void spoton::slotGeneralTimerTimeout(void)
 {
+  if(m_crypts.isEmpty())
+    return;
+
   QColor const color(240, 128, 128); // Light coral!
   QStandardItem *item = nullptr;
   auto const list(m_statisticsModel->findItems("Kernel PID"));
@@ -6453,11 +6456,14 @@ void spoton::slotGeneralTimerTimeout(void)
       if(m_ui.kernelSecureMemoryPool->value() == 0)
 	m_ui.kernelSecureMemoryPool->setStyleSheet
 	  ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+      else if(m_ui.kernelSecureMemoryPool->value() == 1)
+	m_ui.kernelSecureMemoryPool->setStyleSheet("");
       else
 	{
 	  m_ui.kernelSecureMemoryPool->setStyleSheet("");
 
-	  if(m_ui.kernelSecureMemoryPool->value() <
+	  if(m_ui.kernelSecureMemoryPool->hasFocus() == false &&
+	     m_ui.kernelSecureMemoryPool->value() <
 	     spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
 	    m_ui.kernelSecureMemoryPool->setValue
 	      (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);
@@ -6492,11 +6498,14 @@ void spoton::slotGeneralTimerTimeout(void)
   if(m_optionsUi.guiSecureMemoryPool->value() == 0)
     m_optionsUi.guiSecureMemoryPool->setStyleSheet
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
+  else if(m_optionsUi.guiSecureMemoryPool->value() == 1)
+    m_optionsUi.guiSecureMemoryPool->setStyleSheet("");
   else
     {
       m_optionsUi.guiSecureMemoryPool->setStyleSheet("");
 
-      if(m_optionsUi.guiSecureMemoryPool->value() <
+      if(m_optionsUi.guiSecureMemoryPool->hasFocus() == false && 
+	 m_optionsUi.guiSecureMemoryPool->value() <
 	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
 	m_optionsUi.guiSecureMemoryPool->setValue
 	  (spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE);

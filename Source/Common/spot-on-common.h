@@ -96,7 +96,7 @@ class spoton_common
   */
 
   static const int MINIMUM_PASSWORD_LENGTH = 4; // See aforementioned comment!
-  static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 262144;
+  static const int MINIMUM_SECURE_MEMORY_POOL_SIZE = 15000;
   static const int MINIMUM_STARBEAM_PULSE_SIZE = 1024;
   static const int MOSAIC_SIZE = 64;
   static const int NAME_MAXIMUM_LENGTH = 64;
