@@ -3013,6 +3013,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/chatTimestamps", true).toBool());
   m_optionsUi.play_sounds->setChecked
     (m_settings.value("gui/play_sounds", false).toBool());
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  m_optionsUi.play_sounds->setToolTip
+    (tr("Be careful! Qt 6 and newer may cause abnormal terminations."));
+#endif
   m_ui.hideOfflineParticipants->setChecked
     (m_settings.value("gui/hideOfflineParticipants", false).toBool());
   m_ui.kernelLogEvents->setChecked
