@@ -4988,8 +4988,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
 	if(ok && query.exec())
 	  if(query.next())
-	    keyData = QByteArray::fromBase64
-	      (query.value(0).toByteArray());
+	    keyData = QByteArray::fromBase64(query.value(0).toByteArray());
       }
 
     db.close();
@@ -5422,7 +5421,21 @@ void spoton_crypt::removeFlawedEntries(spoton_crypt *crypt)
 	      data = crypt->decryptedAfterAuthenticated
 		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
-	      if(!ok)
+	      if(data.isEmpty() || ok == false)
+		continue;
+
+	      if(!(data == "chat" ||
+		   data == "chat-signature" ||
+		   data == "email" ||
+		   data == "email-signature" ||
+		   data == "open-library" ||
+		   data == "open-library-signature" ||
+		   data == "poptastic" ||
+		   data == "poptastic-signature" ||
+		   data == "rosetta" ||
+		   data == "rosetta-signature" ||
+		   data == "url" ||
+		   data == "url-signature"))
 		{
 		  QSqlQuery deleteQuery(db);
 
