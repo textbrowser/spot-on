@@ -967,7 +967,7 @@ void spoton::slotEstablishForwardSecrecy(void)
     (tr("%1: Forward Secrecy Algorithms Selection").
      arg(SPOTON_APPLICATION_NAME));
   ui.setupUi(dialog.data());
-  ui.encryptionKeySize->setObjectName("encryption_key_size");
+  ui.encryptionKeySize->setObjectName("encryption-key-size");
 #ifndef SPOTON_MCELIECE_ENABLED
   ui.encryptionKeyType->model()->setData
     (ui.encryptionKeyType->model()->index(1, 0), 0, Qt::UserRole - 1);
@@ -1125,7 +1125,7 @@ void spoton::slotForwardSecrecyEncryptionKeyChanged(int index)
   if(!parent)
     return;
 
-  comboBox = parent->findChild<QComboBox *> ("encryption_key_size");
+  comboBox = parent->findChild<QComboBox *> ("encryption-key-size");
 
   if(!comboBox)
     return;

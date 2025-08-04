@@ -4308,7 +4308,7 @@ void spoton::sendKeysToKernel(void)
 
 void spoton::slotAbout(void)
 {
-  auto mb = findChild<QMessageBox *> ("About");
+  auto mb = findChild<QMessageBox *> ("about");
 
   if(!mb)
     {
@@ -4343,7 +4343,7 @@ void spoton::slotAbout(void)
       mb->setIconPixmap(pixmap);
 #endif
       str.append("</html>");
-      mb->setObjectName("About");
+      mb->setObjectName("about");
       mb->setStandardButtons(QMessageBox::Close);
       mb->setText(str);
       mb->setTextFormat(Qt::RichText);
