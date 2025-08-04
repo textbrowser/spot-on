@@ -5321,15 +5321,22 @@ void spoton::updatePublicKeysLabel(void)
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
       if(ok)
-	item->setText(bytes);
+	{
+	  item->setText(bytes);
+	  item->setToolTip(item->text());
+	}
 
       m_ui.personal_public_keys->setItem(i, 3, item);
       item = new QTableWidgetItem();
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-      item->setText(base64);
 
-      if(!base64.isEmpty())
-	item->setToolTip(base64.mid(0, 16) + "..." + base64.right(16));
+      if(ok)
+	{
+	  item->setText(base64);
+
+	  if(!base64.isEmpty())
+	    item->setToolTip(base64.mid(0, 16) + "..." + base64.right(16));
+	}
 
       m_ui.personal_public_keys->setItem(i, 4, item);
     }
