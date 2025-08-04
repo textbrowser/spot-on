@@ -4343,6 +4343,7 @@ void spoton::slotAbout(void)
       mb->setIconPixmap(pixmap);
 #endif
       str.append("</html>");
+      mb->setObjectName("About");
       mb->setStandardButtons(QMessageBox::Close);
       mb->setText(str);
       mb->setTextFormat(Qt::RichText);
