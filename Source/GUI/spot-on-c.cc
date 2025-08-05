@@ -4082,12 +4082,14 @@ void spoton::slotRegenerateKey(void)
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
 
   if(keyType == "chat")
-    mb.setText(tr("Are you sure that you wish to generate the selected "
+    mb.setText(tr("Are you sure that you wish to generate the %1 "
 		  "key pair? StarBeam digest computations will be "
-		  "interrupted. The kernel will also be deactivated."));
+		  "interrupted. The kernel will also be deactivated.").
+	       arg(keyType));
   else
-    mb.setText(tr("Are you sure that you wish to generate the selected "
-		  "key pair? The kernel will be deactivated."));
+    mb.setText(tr("Are you sure that you wish to generate the %1 "
+		  "key pair? The kernel will be deactivated.").
+	       arg(keyType));
 
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
