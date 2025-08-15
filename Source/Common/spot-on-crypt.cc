@@ -1893,8 +1893,10 @@ QByteArray spoton_crypt::publicKeyEncrypt(const QByteArray &data,
 
       if(err == 0 && data_t)
 	{
-	  if((err = gcry_pk_encrypt(&encodedData_t, data_t,
-				    key_t)) == 0 && encodedData_t)
+	  if((err = gcry_pk_encrypt(&encodedData_t,
+				    data_t,
+				    key_t)) == 0 &&
+	     encodedData_t)
 	    {
 	      auto const length = gcry_sexp_sprint
 		(encodedData_t, GCRYSEXP_FMT_ADVANCED, nullptr, 0);
