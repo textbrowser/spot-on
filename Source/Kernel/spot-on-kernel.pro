@@ -16,7 +16,6 @@ QT += bluetooth
 warning("The Bluetooth module is missing!")
 }
 
-
 qtHaveModule(websockets) {
 DEFINES += SPOTON_WEBSOCKETS_ENABLED
 QT += websockets
