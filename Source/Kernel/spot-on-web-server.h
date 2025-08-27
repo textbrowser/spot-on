@@ -112,36 +112,4 @@ class spoton_web_server: public QObject
   void slotTimeout(void);
 };
 
-class spoton_web_server_thread: public QThread
-{
-  Q_OBJECT
-
- public:
-  spoton_web_server_thread(QAtomicInt *atomicInt,
-			   QObject *parent,
-			   const QPair<QByteArray, QByteArray> &credentials,
-			   const qint64 socketDescriptor):QThread(parent)
-  {
-    m_abort = atomicInt;
-    m_credentials = credentials;
-    m_socketDescriptor = socketDescriptor;
-  }
-
- protected:
-  void run(void);
-
- private:
-  QAtomicInt *m_abort;
-  QPair<QByteArray, QByteArray> m_credentials;
-  qint64 m_socketDescriptor;
-  void process(const QPair<QByteArray, QByteArray> &credentials,
-	       const qint64 socketDescriptor);
-  void process(QSslSocket *socket,
-	       const QByteArray &data,
-	       const QPair<QString, QString> &address);
-  void processLocal(QSslSocket *socket, const QByteArray &data);
-  void write(QSslSocket *socket, const QByteArray &data);
-  void writeDefaultPage(QSslSocket *socket, const bool redirect = false);
-};
-
 #endif
