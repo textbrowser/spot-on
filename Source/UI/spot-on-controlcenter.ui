@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>1000</width>
     <height>800</height>
    </rect>
   </property>
@@ -90,7 +90,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>872</width>
+             <width>972</width>
              <height>682</height>
             </rect>
            </property>
@@ -536,7 +536,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>862</width>
+                <width>962</width>
                 <height>672</height>
                </rect>
               </property>
@@ -2450,7 +2450,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>872</width>
+             <width>972</width>
              <height>682</height>
             </rect>
            </property>
@@ -3789,7 +3789,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>872</width>
+             <width>972</width>
              <height>682</height>
             </rect>
            </property>
@@ -4202,7 +4202,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>835</width>
+                  <width>935</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -5093,7 +5093,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>872</width>
+             <width>972</width>
              <height>682</height>
             </rect>
            </property>
@@ -5179,8 +5179,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>873</width>
-                 <height>769</height>
+                 <width>941</width>
+                 <height>749</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_65">
@@ -7509,7 +7509,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>851</width>
+             <width>951</width>
              <height>730</height>
             </rect>
            </property>
@@ -8734,8 +8734,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>934</width>
-             <height>833</height>
+             <width>951</width>
+             <height>878</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_58">
@@ -8816,6 +8816,40 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_62">
+              <property name="spacing">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_125">
+                <property name="text">
+                 <string>Spot-On-Web-Server-Child &amp;Executable Absolute Name</string>
+                </property>
+                <property name="buddy">
+                 <cstring>kernelPath</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="webServerProcessName">
+                <property name="placeholderText">
+                 <string>Spot-On-Web-Server-Child File Path</string>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="selectWebServerProcessName">
+                <property name="text">
+                 <string>Select...</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -9538,7 +9572,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>872</width>
+             <width>972</width>
              <height>682</height>
             </rect>
            </property>
@@ -9800,7 +9834,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>1000</width>
      <height>34</height>
     </rect>
    </property>
@@ -10341,6 +10375,8 @@
   <tabstop>scrollArea_10</tabstop>
   <tabstop>activeUrlDistribution</tabstop>
   <tabstop>urlDistributionModel</tabstop>
+  <tabstop>webServerProcessName</tabstop>
+  <tabstop>selectWebServerProcessName</tabstop>
   <tabstop>web_server_port</tabstop>
   <tabstop>soss_maximum_clients</tabstop>
   <tabstop>web_server_serve_local_content</tabstop>

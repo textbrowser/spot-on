@@ -1678,7 +1678,8 @@ void spoton::highlightPaths(void)
        << m_rosetta->attachmentsGPGPath()
        << m_ui.destination
        << m_ui.kernelPath
-       << m_ui.urlIniPath;
+       << m_ui.urlIniPath
+       << m_ui.webServerProcessName;
 
   foreach(auto widget, list)
     {
@@ -1726,7 +1727,8 @@ void spoton::highlightPaths(void)
 	  else
 	    color = QColor(240, 128, 128); // Light coral!
 	}
-      else if(m_ui.kernelPath == widget)
+      else if(m_ui.kernelPath == widget ||
+	      m_ui.webServerProcessName == widget)
 	{
 #if defined(Q_OS_MACOS)
 	  if((fileInfo.isBundle() ||

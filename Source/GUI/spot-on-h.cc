@@ -1669,6 +1669,17 @@ void spoton::slotSaveOption(void)
     }
 }
 
+void spoton::slotSaveWebServerProcessName(void)
+{
+  QSettings().setValue
+    ("gui/web_server_child_process_name", m_ui.webServerProcessName->text());
+  m_settings["gui/web_server_child_process_name"] =
+    m_ui.webServerProcessName->text();
+  m_ui.webServerProcessName->setCursorPosition(0);
+  m_ui.webServerProcessName->setToolTip(m_ui.webServerProcessName->text());
+  m_ui.webServerProcessName->selectAll();
+}
+
 void spoton::slotSelectGIT(void)
 {
   auto item = m_optionsUi.git_table->currentItem();

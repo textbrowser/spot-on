@@ -1019,6 +1019,7 @@ class spoton: public QMainWindow
   void slotSaveUrlCredentials(void);
   void slotSaveUrlDistribution(int index);
   void slotSaveUrlName(void);
+  void slotSaveWebServerProcessName(void);
   void slotScramble(bool state);
   void slotSearchResultsPerPage(int value);
   void slotSecureMemoryPoolChanged(int value);
@@ -1026,8 +1027,8 @@ class spoton: public QMainWindow
   void slotSelectDestination(void);
   void slotSelectGIT(void);
   void slotSelectGeoIPPath(void);
-  void slotSelectKernelPath(void);
   void slotSelectOpenSSL(void);
+  void slotSelectPath(void);
   void slotSelectTransmitFile(void);
   void slotSelectUrlIniPath(void);
   void slotSendMail(void);

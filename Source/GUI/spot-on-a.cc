@@ -2314,11 +2314,15 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   connect(m_ui.selectKernelPath,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotSelectKernelPath(void)));
+	  SLOT(slotSelectPath(void)));
   connect(m_ui.selectUrlIni,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSelectUrlIniPath(void)));
+  connect(m_ui.selectWebServerProcessName,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotSelectPath(void)));
   connect(m_ui.sendMail,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -2411,6 +2415,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotVerify(void)));
+  connect(m_ui.webServerProcessName,
+	  SIGNAL(returnPressed(void)),
+	  this,
+	  SLOT(slotSaveWebServerProcessName(void)));
   connect(m_ui.web_server_port,
 	  SIGNAL(valueChanged(int)),
 	  this,
@@ -2737,6 +2745,9 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
 
   m_ui.kernelPath->setCursorPosition(0);
+  m_ui.webServerProcessName->setText
+    (m_settings.value("gui/web_server_child_process_name").toString());
+  m_ui.webServerProcessName->setCursorPosition(0);
 
   if(m_settings.value("gui/chatSendMethod", "Artificial_GET").
      toString().toLower() == "artificial_get")
@@ -2838,6 +2849,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (static_cast<int> (spoton_crypt::
 		       cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm())) + 512);
+  m_ui.webServerProcessName->setToolTip(m_ui.webServerProcessName->text());
   m_optionsUi.external_ip_url->setText
     (m_settings.value("gui/external_ip_url",
 		      "https://api.ipify.org").toString());
@@ -9621,7 +9633,7 @@ void spoton::slotSelectGeoIPPath(void)
   QApplication::processEvents();
 }
 
-void spoton::slotSelectKernelPath(void)
+void spoton::slotSelectPath(void)
 {
   QFileDialog dialog(this);
 
@@ -9629,13 +9641,22 @@ void spoton::slotSelectKernelPath(void)
   dialog.setDirectory(QDir::homePath());
   dialog.setFileMode(QFileDialog::ExistingFile);
   dialog.setLabelText(QFileDialog::Accept, tr("Select"));
-  dialog.setWindowTitle
-    (tr("%1: Select Kernel Path").arg(SPOTON_APPLICATION_NAME));
+
+  if(m_ui.selectKernelPath == sender())
+    dialog.setWindowTitle
+      (tr("%1: Select Kernel Path").arg(SPOTON_APPLICATION_NAME));
+  else
+    dialog.setWindowTitle
+      (tr("%1: Select Web Server Child Path").arg(SPOTON_APPLICATION_NAME));
 
   if(dialog.exec() == QDialog::Accepted)
     {
       QApplication::processEvents();
-      saveKernelPath(dialog.selectedFiles().value(0));
+
+      if(m_ui.selectKernelPath == sender())
+	saveKernelPath(dialog.selectedFiles().value(0));
+      else
+	slotSaveWebServerProcessName();
     }
 
   QApplication::processEvents();

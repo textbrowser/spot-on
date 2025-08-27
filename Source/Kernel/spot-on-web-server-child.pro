@@ -47,7 +47,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -pie \
                           -std=c++17
-QMAKE_DISTCLEAN        += -r Temporary .qmake.cache .qmake.stash
+QMAKE_DISTCLEAN        += -r Temporary-Web-Server .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS    = purge
 
 greaterThan(QT_MAJOR_VERSION, 5) {
@@ -62,8 +62,8 @@ LIBS		+= -lcrypto \
                    -lssl
 
 HEADERS         = spot-on-web-server-child-main.h
-MOC_DIR         = Temporary/moc
-OBJECTS_DIR     = Temporary/obj
+MOC_DIR         = Temporary-Web-Server/moc
+OBJECTS_DIR     = Temporary-Web-Server/obj
 PROJECTNAME	= Spot-On-Web-Server-Child
 QMAKE_STRIP	= echo
 RESOURCES	= ../HTML/html.qrc
