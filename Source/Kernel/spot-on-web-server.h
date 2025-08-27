@@ -30,7 +30,6 @@
 
 #include <QPointer>
 #include <QTcpServer>
-#include <QThread>
 #include <QTimer>
 
 class QSslSocket;
@@ -97,7 +96,6 @@ class spoton_web_server: public QObject
   int httpsClientCount(void) const;
 
  private:
-  QAtomicInt *m_abort;
   QAtomicInt *m_httpClientCount;
   QAtomicInt *m_httpsClientCount;
   QPointer<spoton_web_server_tcp_server> m_http;
