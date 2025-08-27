@@ -349,7 +349,8 @@ void spoton_web_server_child_main::process
 	("WEB_SERVER_KEY_SIZE", 3072).toInt();
       auto const sslCS
 	(m_settings.value("gui/sslControlString",
-			  spoton_common::SSL_CONTROL_STRING).toString());
+			  spoton_common::SSL_CONTROL_STRING).
+	 toString().trimmed());
 
       configuration.setLocalCertificate(QSslCertificate(credentials.first));
       configuration.setPeerVerifyMode(QSslSocket::VerifyNone);

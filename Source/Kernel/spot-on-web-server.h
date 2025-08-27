@@ -32,6 +32,7 @@
 #include <QTcpServer>
 #include <QTimer>
 
+class QProcess;
 class QSslSocket;
 
 class spoton_web_server_tcp_server: public QTcpServer
@@ -101,6 +102,8 @@ class spoton_web_server: public QObject
   QPointer<spoton_web_server_tcp_server> m_http;
   QPointer<spoton_web_server_tcp_server> m_https;
   QTimer m_generalTimer;
+  QByteArray settings(void) const;
+  QProcess *process(void);
 
  private slots:
   void slotHttpClientConnected(const qint64 socketDescriptor);

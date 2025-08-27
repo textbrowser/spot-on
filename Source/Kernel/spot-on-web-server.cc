@@ -69,6 +69,89 @@ spoton_web_server::~spoton_web_server()
   delete m_httpsClientCount;
 }
 
+QByteArray spoton_web_server::settings(void) const
+{
+  QMap<QString, QVariant> map;
+
+  map["MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE"] =
+    spoton_kernel::setting
+    ("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE").toInt();
+  map["WEB_SERVER_KEY_SIZE"] = spoton_kernel::setting("WEB_SERVER_KEY_SIZE").
+    toInt();
+  map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = spoton_kernel::setting
+    ("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS").toBool();
+  map["gui/postgresql_database"] = spoton_kernel::setting
+    ("gui/postgresql_database").toString().trimmed();
+  map["gui/postgresql_host"] = spoton_kernel::setting
+    ("gui/postgresql_host").toString().trimmed();
+  map["gui/postgresql_port"] = spoton_kernel::setting("gui/postgresql_port").
+    toInt();
+  map["gui/postgresql_ssltls"] = spoton_kernel::setting
+    ("gui/postgresql_ssltls").toBool();
+  map["gui/postgresql_web_connection_options"] = spoton_kernel::setting
+    ("gui/postgresql_web_connection_options").toString().trimmed();
+  map["gui/postgresql_web_name"] = spoton_kernel::setting
+    ("gui/postgresql_web_name").toByteArray();
+  map["gui/postgresql_web_password"] = spoton_kernel::setting
+    ("gui/postgresql_web_password").toByteArray();
+  map["gui/sqliteSearch"] = spoton_kernel::setting("gui/sqliteSearch").
+    toBool();
+  map["gui/sslControlString"] = spoton_kernel::setting
+    ("gui/sslControlString").toString().trimmed();
+  map["gui/web_server_serve_local_content"] = spoton_kernel::setting
+    ("gui/web_server_serve_local_content").toBool();
+
+  QByteArray bytes;
+  QDataStream stream(&bytes, QIODevice::WriteOnly);
+
+  stream << map;
+  return bytes.toBase64();
+}
+
+QProcess *spoton_web_server::process(void)
+{
+  auto const program
+    (spoton_kernel::setting("gui/web_server_child_process_name").toString());
+  auto process = new QProcess(this);
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+#ifdef Q_OS_MACOS
+  if(QFileInfo(program).isBundle())
+    {
+      QStringList arguments;
+
+      arguments << "-a" << program << "-g" << "-s" << settings();
+      process->startDetached("open", arguments);
+    }
+  else
+    process->startDetached(program, QStringList() << "-s" << settings());
+#elif defined(Q_OS_WINDOWS)
+  process->startDetached
+    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings());
+#else
+  process->startDetached(program, QStringList() << "-s" << settings());
+#endif
+#else
+#ifdef Q_OS_MACOS
+  if(QFileInfo(program).isBundle())
+    {
+      QStringList arguments;
+
+      arguments << "-a" << program << "-g" << "-s" << settings();
+      process->startDetached("open", arguments);
+    }
+  else
+    process->startDetached(program, QStringList() << "-s" << settings());
+#elif defined(Q_OS_WINDOWS)
+  process->startDetached
+    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings());
+#else
+  process->startDetached(program, QStringList() << "-s" << settings());
+#endif
+#endif
+  return process;
+}
+
 int spoton_web_server::httpClientCount(void) const
 {
   return m_httpClientCount->fetchAndAddOrdered(0);
@@ -89,7 +172,7 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  auto process = new QProcess(this);
+  auto process = this->process();
 
   connect(process,
 	  SIGNAL(finished(int, QProcess:ExitStatus)),
@@ -119,7 +202,7 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  auto process = new QProcess(this);
+  auto process = this->process();
 
   connect(process,
 	  SIGNAL(finished(int, QProcess:ExitStatus)),

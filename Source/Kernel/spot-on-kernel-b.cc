@@ -214,8 +214,8 @@ void spoton_kernel::importUrls(void)
 	auto const ssltls = setting("gui/postgresql_ssltls", false).toBool();
 	auto ok = true;
 	auto options
-	  (spoton_kernel::setting("gui/postgresql_connection_options",
-				  spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
+	  (setting("gui/postgresql_connection_options",
+		   spoton_common::POSTGRESQL_CONNECTION_OPTIONS).
 	   toString().trimmed());
 
 	if(!options.contains("connect_timeout="))

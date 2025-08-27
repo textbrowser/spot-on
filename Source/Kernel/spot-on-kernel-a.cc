@@ -1356,8 +1356,15 @@ QPointer<spoton_kernel> spoton_kernel::instance(void)
   return s_kernel;
 }
 
-QVariant spoton_kernel::setting(const QString &name,
-				const QVariant &defaultValue)
+QVariant spoton_kernel::setting(const QString &name)
+{
+  QReadLocker locker(&s_settingsMutex);
+
+  return s_settings.value(name);
+}
+
+QVariant spoton_kernel::setting
+(const QString &name, const QVariant &defaultValue)
 {
   QReadLocker locker(&s_settingsMutex);
 

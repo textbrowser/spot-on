@@ -89,6 +89,7 @@ class spoton_kernel: public QObject
   static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
   static QPointer<spoton_kernel> instance(void);
   static QSqlDatabase urlDatabase(QString &connectionName);
+  static QVariant setting(const QString &name);
   static QVariant setting(const QString &name, const QVariant &defaultValue);
   static bool duplicateEmailRequests(const QByteArray &data);
   static bool duplicateGeminis(const QByteArray &data);
