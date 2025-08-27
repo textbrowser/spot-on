@@ -6517,7 +6517,7 @@ void spoton::slotGeneralTimerTimeout(void)
     {
       m_optionsUi.guiSecureMemoryPool->setStyleSheet("");
 
-      if(m_optionsUi.guiSecureMemoryPool->hasFocus() == false && 
+      if(m_optionsUi.guiSecureMemoryPool->hasFocus() == false &&
 	 m_optionsUi.guiSecureMemoryPool->value() <
 	 spoton_common::MINIMUM_SECURE_MEMORY_POOL_SIZE)
 	m_optionsUi.guiSecureMemoryPool->setValue
@@ -9656,7 +9656,10 @@ void spoton::slotSelectPath(void)
       if(m_ui.selectKernelPath == sender())
 	saveKernelPath(dialog.selectedFiles().value(0));
       else
-	slotSaveWebServerProcessName();
+	{
+	  m_ui.webServerProcessName->setText(dialog.selectedFiles().value(0));
+	  slotSaveWebServerProcessName();
+	}
     }
 
   QApplication::processEvents();

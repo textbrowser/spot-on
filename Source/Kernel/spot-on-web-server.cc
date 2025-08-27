@@ -28,6 +28,15 @@
 #include <QProcess>
 #include <QSqlQuery>
 
+extern "C"
+{
+#if defined(Q_OS_WINDOWS)
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+}
+
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-socket-options.h"
@@ -69,7 +78,7 @@ spoton_web_server::~spoton_web_server()
   delete m_httpsClientCount;
 }
 
-QByteArray spoton_web_server::settings(void) const
+QByteArray spoton_web_server::settings(const int fd) const
 {
   QMap<QString, QVariant> map;
 
@@ -100,6 +109,7 @@ QByteArray spoton_web_server::settings(void) const
     ("gui/sslControlString").toString().trimmed();
   map["gui/web_server_serve_local_content"] = spoton_kernel::setting
     ("gui/web_server_serve_local_content").toBool();
+  map["socketDescriptor"] = fd;
 
   QByteArray bytes;
   QDataStream stream(&bytes, QIODevice::WriteOnly);
@@ -108,10 +118,14 @@ QByteArray spoton_web_server::settings(void) const
   return bytes.toBase64();
 }
 
-QProcess *spoton_web_server::process(void)
+QProcess *spoton_web_server::process(const int fd)
 {
   auto const program
     (spoton_kernel::setting("gui/web_server_child_process_name").toString());
+
+  if(!QFileInfo(program).isExecutable())
+    return nullptr;
+
   auto process = new QProcess(this);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
@@ -120,16 +134,16 @@ QProcess *spoton_web_server::process(void)
     {
       QStringList arguments;
 
-      arguments << "-a" << program << "-g" << "-s" << settings();
+      arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
       process->startDetached("open", arguments);
     }
   else
-    process->startDetached(program, QStringList() << "-s" << settings());
+    process->startDetached(program, QStringList() << "-s" << settings(fd));
 #elif defined(Q_OS_WINDOWS)
   process->startDetached
-    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings());
+    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
 #else
-  process->startDetached(program, QStringList() << "-s" << settings());
+  process->startDetached(program, QStringList() << "-s" << settings(fd));
 #endif
 #else
 #ifdef Q_OS_MACOS
@@ -137,16 +151,16 @@ QProcess *spoton_web_server::process(void)
     {
       QStringList arguments;
 
-      arguments << "-a" << program << "-g" << "-s" << settings();
+      arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
       process->startDetached("open", arguments);
     }
   else
-    process->startDetached(program, QStringList() << "-s" << settings());
+    process->startDetached(program, QStringList() << "-s" << settings(fd));
 #elif defined(Q_OS_WINDOWS)
   process->startDetached
-    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings());
+    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
 #else
-  process->startDetached(program, QStringList() << "-s" << settings());
+  process->startDetached(program, QStringList() << "-s" << settings(fd));
 #endif
 #endif
   return process;
@@ -172,7 +186,24 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  auto process = this->process();
+#if defined(Q_OS_WINDOWS)
+  auto const fd = _dup(static_cast<int> (socketDescriptor));
+#else
+  auto const fd = dup(static_cast<int> (socketDescriptor));
+#endif
+
+  spoton_misc::closeSocket(socketDescriptor);
+
+  if(fd < 0)
+    return;
+
+  auto process = this->process(fd);
+
+  if(!process)
+    {
+      spoton_misc::closeSocket(fd);
+      return;
+    }
 
   connect(process,
 	  SIGNAL(finished(int, QProcess:ExitStatus)),
@@ -202,7 +233,24 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
       return;
     }
 
-  auto process = this->process();
+#if defined(Q_OS_WINDOWS)
+  auto const fd = _dup(static_cast<int> (socketDescriptor));
+#else
+  auto const fd = dup(static_cast<int> (socketDescriptor));
+#endif
+
+  spoton_misc::closeSocket(socketDescriptor);
+
+  if(fd < 0)
+    return;
+
+  auto process = this->process(fd);
+
+  if(!process)
+    {
+      spoton_misc::closeSocket(fd);
+      return;
+    }
 
   connect(process,
 	  SIGNAL(finished(int, QProcess:ExitStatus)),
