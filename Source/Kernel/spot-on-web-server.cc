@@ -129,6 +129,8 @@ QProcess *spoton_web_server::process(const int fd)
 
   auto process = new QProcess(this);
 
+  process->setProperty("fd", fd);
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #ifdef Q_OS_MACOS
   if(QFileInfo(program).isBundle())
@@ -219,6 +221,10 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
 
 void spoton_web_server::slotHttpThreadFinished(void)
 {
+  auto process = qobject_cast<QProcess *> (sender());
+
+  process ?
+    spoton_misc::closeSocket(process->property("fd").toInt()) : (void) 0;
   m_httpClientCount->fetchAndAddOrdered(-1);
 }
 
@@ -266,6 +272,10 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
 
 void spoton_web_server::slotHttpsThreadFinished(void)
 {
+  auto process = qobject_cast<QProcess *> (sender());
+
+  process ?
+    spoton_misc::closeSocket(process->property("fd").toInt()) : (void) 0;
   m_httpsClientCount->fetchAndAddOrdered(-1);
 }
 
