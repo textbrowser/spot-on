@@ -206,7 +206,7 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
     }
 
   connect(process,
-	  SIGNAL(finished(int, QProcess:ExitStatus)),
+	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  this,
 	  SLOT(slotHttpThreadFinished(void)));
   connect(process,
@@ -253,7 +253,7 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
     }
 
   connect(process,
-	  SIGNAL(finished(int, QProcess:ExitStatus)),
+	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  this,
 	  SLOT(slotHttpThreadFinished(void)));
   connect(process,

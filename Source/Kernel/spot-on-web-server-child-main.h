@@ -38,7 +38,7 @@ class spoton_web_server_child_main: public QObject
   Q_OBJECT
 
  public:
-  spoton_web_server_child_main(void);
+  spoton_web_server_child_main(QByteArray &settings);
   ~spoton_web_server_child_main();
 
  private:

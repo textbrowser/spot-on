@@ -26,6 +26,7 @@
 */
 
 #include <QCoreApplication>
+#include <QDataStream>
 #include <QDir>
 #include <QHostInfo>
 #include <QRegularExpression>
@@ -115,19 +116,9 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-
-/*
-** The Web server's special variables.
-*/
-
 static QByteArray s_search;
 static QString s_emptyQuery;
 static int s_bytesPerWrite = 4096;
-
-/*
-** Wait for at least 30 seconds. Be careful!
-*/
-
 static int s_waitForBytesWritten = 250;
 static int s_waitForEncrypted = 1000;
 static int s_waitForReadyRead = 10;
@@ -139,10 +130,26 @@ int main(int argc, char *argv[])
 
   try
     {
-      QCoreApplication qapplication(argc, argv);
-      spoton_web_server_child_main thread;
+      QByteArray settings;
 
-      rc = qapplication.exec();
+      for(int i = 1; i < argc; i++)
+	if(argv && argv[i] && strcmp(argv[i], "-s") == 0)
+	  {
+	    if(argc > i + 1)
+	      settings = QByteArray::fromBase64(argv[i + 1]);
+
+	    break;
+	  }
+
+      if(!settings.isEmpty())
+	{
+	  QCoreApplication qapplication(argc, argv);
+	  spoton_web_server_child_main thread(settings);
+
+	  rc = qapplication.exec();
+	}
+      else
+	rc = EXIT_FAILURE;
     }
   catch(const std::bad_alloc &exception)
     {
@@ -160,8 +167,11 @@ int main(int argc, char *argv[])
   return rc;
 }
 
-spoton_web_server_child_main::spoton_web_server_child_main(void):QObject()
+spoton_web_server_child_main::spoton_web_server_child_main
+(QByteArray &settings):QObject()
 {
+  QTimer::singleShot(10000, QCoreApplication::instance(), SLOT(quit(void)));
+
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
       {
@@ -195,6 +205,10 @@ spoton_web_server_child_main::spoton_web_server_child_main(void):QObject()
 		     "date_time_inserted " // 4
 		     "FROM spot_on_urls_%1%2 UNION ALL ").arg(c1).arg(c2));
       }
+
+  QDataStream stream(&settings, QIODevice::ReadOnly);
+
+  stream >> m_settings;
 
   QFile file(":/search.html");
 
@@ -244,12 +258,14 @@ spoton_web_server_child_main::spoton_web_server_child_main(void):QObject()
       }
     }
 
+  m_socketDescriptor = m_settings.value("socketDescriptor").toLongLong();
+  qDebug() << m_socketDescriptor;
   process(credentials);
-  QCoreApplication::exit(0);
 }
 
 spoton_web_server_child_main::~spoton_web_server_child_main()
 {
+  QCoreApplication::exit(0);
 }
 
 QSqlDatabase spoton_web_server_child_main::urlDatabase
