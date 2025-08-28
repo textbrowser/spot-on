@@ -231,6 +231,7 @@ class spoton_misc
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
   static void closeSocket(const qintptr socketDescriptor);
+  static void closeSocketWithoutShutdown(const qintptr socketDescriptor);
   static void correctSettingsContainer(QHash<QString, QVariant> settings);
   static void createOpenSSLSupportFiles(void);
   static void deregisterKernel(const pid_t pid);

@@ -170,8 +170,6 @@ int main(int argc, char *argv[])
 spoton_web_server_child_main::spoton_web_server_child_main
 (QByteArray &settings):QObject()
 {
-  QTimer::singleShot(10000, QCoreApplication::instance(), SLOT(quit(void)));
-
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
       {
@@ -335,13 +333,19 @@ QSqlDatabase spoton_web_server_child_main::urlDatabase
 void spoton_web_server_child_main::process
 (const QPair<QByteArray, QByteArray> &credentials)
 {
-  QScopedPointer<QSslSocket> socket(new QSslSocket());
+  auto socket = new QSslSocket(this);
 
   if(!socket->setSocketDescriptor(m_socketDescriptor))
     {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
       spoton_misc::closeSocket(m_socketDescriptor);
       return;
     }
+
+  connect(socket,
+	  SIGNAL(disconnected(void)),
+	  QCoreApplication::instance(),
+	  SLOT(quit(void)));
 
   /*
   ** Prepare the socket!
@@ -435,7 +439,7 @@ void spoton_web_server_child_main::process
 
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1."))
-    writeDefaultPage(socket.data());
+    writeDefaultPage(socket);
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /about"))
     {
@@ -491,11 +495,11 @@ void spoton_web_server_child_main::process
       html.remove("</html>");
       html.append(about);
       html.append("</html>");
-      write(socket.data(),
+      write(socket,
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
 	    QByteArray::number(html.toUtf8().length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(socket.data(), html.toUtf8());
+      write(socket, html.toUtf8());
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
@@ -507,7 +511,7 @@ void spoton_web_server_child_main::process
 	(socket->localAddress().toString(),
 	 QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+      process(socket, data, address);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
@@ -516,14 +520,14 @@ void spoton_web_server_child_main::process
 	{
 	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
 	  data = data.mid(0, data.indexOf(' '));
-	  processLocal(socket.data(), data);
+	  processLocal(socket, data);
 	}
       else
-	writeDefaultPage(socket.data(), true);
+	writeDefaultPage(socket, true);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /"))
-    writeDefaultPage(socket.data(), true);
+    writeDefaultPage(socket, true);
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
@@ -535,10 +539,12 @@ void spoton_web_server_child_main::process
 	(socket->localAddress().toString(),
 	 QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+      process(socket, data, address);
     }
   else if(!data.isEmpty())
-    writeDefaultPage(socket.data(), true);
+    writeDefaultPage(socket, true);
+
+  QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
 }
 
 void spoton_web_server_child_main::process

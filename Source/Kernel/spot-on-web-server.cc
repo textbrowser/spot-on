@@ -135,15 +135,15 @@ QProcess *spoton_web_server::process(const int fd)
       QStringList arguments;
 
       arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
-      process->startDetached("open", arguments);
+      process->start("open", arguments);
     }
   else
-    process->startDetached(program, QStringList() << "-s" << settings(fd));
+    process->start(program, QStringList() << "-s" << settings(fd));
 #elif defined(Q_OS_WINDOWS)
-  process->startDetached
+  process->start
     (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
 #else
-  process->startDetached(program, QStringList() << "-s" << settings(fd));
+  process->start(program, QStringList() << "-s" << settings(fd));
 #endif
 #else
 #ifdef Q_OS_MACOS
@@ -152,15 +152,15 @@ QProcess *spoton_web_server::process(const int fd)
       QStringList arguments;
 
       arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
-      process->startDetached("open", arguments);
+      process->start("open", arguments);
     }
   else
-    process->startDetached(program, QStringList() << "-s" << settings(fd));
+    process->start(program, QStringList() << "-s" << settings(fd));
 #elif defined(Q_OS_WINDOWS)
-  process->startDetached
+  process->start
     (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
 #else
-  process->startDetached(program, QStringList() << "-s" << settings(fd));
+  process->start(program, QStringList() << "-s" << settings(fd));
 #endif
 #endif
   return process;
@@ -192,7 +192,7 @@ void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
   auto const fd = dup(static_cast<int> (socketDescriptor));
 #endif
 
-  spoton_misc::closeSocket(socketDescriptor);
+  spoton_misc::closeSocketWithoutShutdown(socketDescriptor);
 
   if(fd < 0)
     return;
@@ -239,7 +239,7 @@ void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
   auto const fd = dup(static_cast<int> (socketDescriptor));
 #endif
 
-  spoton_misc::closeSocket(socketDescriptor);
+  spoton_misc::closeSocketWithoutShutdown(socketDescriptor);
 
   if(fd < 0)
     return;

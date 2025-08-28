@@ -4420,6 +4420,18 @@ void spoton_misc::closeSocket(const qintptr socketDescriptor)
 #endif
 }
 
+void spoton_misc::closeSocketWithoutShutdown(const qintptr socketDescriptor)
+{
+  if(socketDescriptor < 0)
+    return;
+
+#if defined(Q_OS_WINDOWS)
+  closesocket(static_cast<SOCKET> (socketDescriptor));
+#else
+  close(static_cast<int> (socketDescriptor));
+#endif
+}
+
 void spoton_misc::correctSettingsContainer(QHash<QString, QVariant> settings)
 {
   /*
