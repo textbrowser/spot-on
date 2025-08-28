@@ -110,6 +110,7 @@ QByteArray spoton_web_server::settings(const int fd) const
   map["gui/web_server_serve_local_content"] = spoton_kernel::setting
     ("gui/web_server_serve_local_content").toBool();
   map["socketDescriptor"] = fd;
+  map["uptimeMinutes"] = spoton_kernel::uptimeMinutes();
 
   QByteArray bytes;
   QDataStream stream(&bytes, QIODevice::WriteOnly);

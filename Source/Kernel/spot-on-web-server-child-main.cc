@@ -476,7 +476,8 @@ void spoton_web_server_child_main::process
       about.append(QSysInfo::productVersion());
       about.append("<br>");
       about.append("<b>Spot-On Kernel Uptime Minute(s):</b> ");
-      // about.append(locale.toString(spoton_kernel::uptimeMinutes()));
+      about.append
+	(locale.toString(m_settings.value("uptimeMinutes").toLongLong()));
       about.append("<br>");
 
       QString connectionName("");
