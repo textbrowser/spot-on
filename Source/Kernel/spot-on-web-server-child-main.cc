@@ -259,7 +259,6 @@ spoton_web_server_child_main::spoton_web_server_child_main
     }
 
   m_socketDescriptor = m_settings.value("socketDescriptor").toLongLong();
-  qDebug() << m_socketDescriptor;
   process(credentials);
 }
 
