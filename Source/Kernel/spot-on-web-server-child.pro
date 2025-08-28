@@ -15,13 +15,13 @@ DEFINES += QT_DEPRECATED_WARNINGS \
            SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBPTHREAD
 
-unix {
 exists(/usr/include/postgresql/libpq-fe.h) {
 INCLUDEPATH += /usr/include/postgresql
 LIBS        += -lpq
-} else {
-DEFINES += SPOTON_POSTGRESQL_DISABLED
-}
+} else:exists(/usr/local/include/postgresql/libpq-fe.h) {
+INCLUDEPATH += /usr/local/include/postgresql
+LIBS        += -L/usr/local/lib \
+               -lpq
 } else {
 DEFINES += SPOTON_POSTGRESQL_DISABLED
 }
@@ -57,7 +57,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -pie \
                           -std=c++11
-} else linux-* {
+} else:linux-* {
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
@@ -147,10 +147,18 @@ INCLUDEPATH += . \
                ..\\..\\libOpenSSL\\Include.win64
 }
 
-unix {
+linux-* {
 LIBS += -lcrypto \
         -lgcrypt \
         -lgpg-error \
+        -lpthread \
+        -lssl
+} else:freebsd-* {
+LIBS += -L/usr/local/lib \
+        -lcrypto \
+        -lgcrypt \
+        -lgpg-error \
+        -lpthread \
         -lssl
 } else {
 LIBS += -L..\\..\\libGCrypt\\Libraries.win64 \
