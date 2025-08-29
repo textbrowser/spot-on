@@ -54,11 +54,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.11.1-unknown"
+#define GCRYPT_VERSION "1.11.2-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010b01
+#define GCRYPT_VERSION_NUMBER 0x010b02
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -96,6 +96,10 @@ extern "C" {
 #define _GCRY_GCC_ATTR_SENTINEL(a) __attribute__ ((sentinel(a)))
 #endif
 
+#if _GCRY_GCC_VERSION >= 80000
+#define _GCRY_GCC_ATTR_NONSTRING __attribute__((__nonstring__))
+#endif
+
 #endif /*__GNUC__*/
 
 #ifndef _GCRY_GCC_ATTR_DEPRECATED
@@ -112,6 +116,9 @@ extern "C" {
 #endif
 #ifndef _GCRY_GCC_ATTR_SENTINEL
 #define _GCRY_GCC_ATTR_SENTINEL(a)
+#endif
+#ifndef _GCRY_GCC_ATTR_NONSTRING
+#define _GCRY_GCC_ATTR_NONSTRING
 #endif
 
 /* Make up an attribute to mark functions and types as deprecated but
@@ -375,7 +382,7 @@ gcry_error_t gcry_sexp_new (gcry_sexp_t *retsexp,
                             const void *buffer, size_t length,
                             int autodetect);
 
- /* Same as gcry_sexp_new but allows to pass a FREEFNC which has the
+ /* Same as gcry_sexp_new but allows passing a FREEFNC which has the
     effect to transfer ownership of BUFFER to the created object.  */
 gcry_error_t gcry_sexp_create (gcry_sexp_t *retsexp,
                                void *buffer, size_t length,
@@ -1717,24 +1724,44 @@ enum gcry_kem_algos
   {
     GCRY_KEM_NONE = 0,
     GCRY_KEM_SNTRUP761  = 1,
+#define GCRY_KEM_SNTRUP761 GCRY_KEM_SNTRUP761
     GCRY_KEM_CM6688128F = 2,    /* Classic McEliece */
+#define GCRY_KEM_CM6688128F GCRY_KEM_CM6688128F
     GCRY_KEM_MLKEM512   = 3,    /* aka Kyber512  */
+#define GCRY_KEM_RAW_MLKEM512 GCRY_KEM_RAW_MLKEM512
     GCRY_KEM_MLKEM768   = 4,    /* aka Kyber768  */
+#define GCRY_KEM_RAW_MLKEM768 GCRY_KEM_RAW_MLKEM768
     GCRY_KEM_MLKEM1024  = 5,    /* aka Kyber1024 */
+#define GCRY_KEM_RAW_MLKEM1024 GCRY_KEM_RAW_MLKEM1024
     /* From here, ECC KEMs */
     GCRY_KEM_RAW_X25519 =31,    /* Using X25519 with Identity KDF */
+#define GCRY_KEM_RAW_X25519 GCRY_KEM_RAW_X25519
     GCRY_KEM_RAW_X448   =32,    /* Using X448 with Identity KDF */
-    GCRY_KEM_RAW_BP256  =33,
-    GCRY_KEM_RAW_BP384  =34,
-    GCRY_KEM_RAW_BP512  =35,
-    GCRY_KEM_RAW_P256R1 =36,
-    GCRY_KEM_RAW_P384R1 =37,
-    GCRY_KEM_RAW_P521R1 =38,
+#define GCRY_KEM_RAW_X448 GCRY_KEM_RAW_X448
+    GCRY_KEM_RAW_BP256  =33,    /* brainpoolP256r1 */
+#define GCRY_KEM_RAW_BP256 GCRY_KEM_RAW_BP256
+    GCRY_KEM_RAW_BP384  =34,    /* brainpoolP384r1 */
+#define GCRY_KEM_RAW_BP384 GCRY_KEM_RAW_BP384
+    GCRY_KEM_RAW_BP512  =35,    /* brainpoolP512r1 */
+#define GCRY_KEM_RAW_BP512 GCRY_KEM_RAW_BP512
+    GCRY_KEM_RAW_P256R1 =36,    /* NIST P-256, aka SECP256R1 */
+#define GCRY_KEM_RAW_P256R1 GCRY_KEM_RAW_P256R1
+    GCRY_KEM_RAW_P384R1 =37,    /* NIST P-384, aka SECP384R1 */
+#define GCRY_KEM_RAW_P384R1 GCRY_KEM_RAW_P384R1
+    GCRY_KEM_RAW_P521R1 =38,    /* NIST P-521, aka SECP521R1 */
+#define GCRY_KEM_RAW_P521R1 GCRY_KEM_RAW_P521R1
+    GCRY_KEM_RAW_P256K1 =39,    /* SECP256K1 */
+#define GCRY_KEM_RAW_P256K1 GCRY_KEM_RAW_P256K1
     GCRY_KEM_DHKEM25519 =41,    /* DHKEM with X25519, HKDF, and SHA256 */
+#define GCRY_KEM_DHKEM25519 GCRY_KEM_DHKEM25519
     GCRY_KEM_DHKEM448 =  42,    /* DHKEM with X448, HKDF, and SHA512 */
+#define GCRY_KEM_DHKEM448 GCRY_KEM_DHKEM448
     GCRY_KEM_DHKEMP256R1=43,
+#define GCRY_KEM_DHKEMP256R1 GCRY_KEM_DHKEMP256R1
     GCRY_KEM_DHKEMP384R1=44,
+#define GCRY_KEM_DHKEMP384R1 GCRY_KEM_DHKEMP384R1
     GCRY_KEM_DHKEMP521R1=45
+#define GCRY_KEM_DHKEMP521R1 GCRY_KEM_DHKEMP521R1
   };
 
 /*
