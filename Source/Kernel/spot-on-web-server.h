@@ -97,11 +97,11 @@ class spoton_web_server: public QObject
   int httpsClientCount(void) const;
 
  private:
-  QAtomicInt *m_httpClientCount;
-  QAtomicInt *m_httpsClientCount;
   QPointer<spoton_web_server_tcp_server> m_http;
   QPointer<spoton_web_server_tcp_server> m_https;
   QTimer m_generalTimer;
+  mutable QAtomicInt m_httpClientCount;
+  mutable QAtomicInt m_httpsClientCount;
   QByteArray settings(const int fd) const;
   QProcess *process(const int fd);
 
