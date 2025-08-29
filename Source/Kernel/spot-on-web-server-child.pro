@@ -8,12 +8,11 @@ purge.commands = del /F *~
 
 CONFIG	 += qt release warn_on
 CONFIG   -= debug
-LANGUAGE = C++
-QT	 += network sql widgets
-
-DEFINES += QT_DEPRECATED_WARNINGS \
+DEFINES  += QT_DEPRECATED_WARNINGS \
            SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBPTHREAD
+LANGUAGE = C++
+QT	 += network sql widgets
 
 exists(/usr/include/postgresql/libpq-fe.h) {
 INCLUDEPATH += /usr/include/postgresql
@@ -57,6 +56,22 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -pie \
                           -std=c++11
+} else:freebsd-* {
+QMAKE_CXXFLAGS_RELEASE += -O3 \
+                          -Wall \
+                          -Wcast-align \
+                          -Wcast-qual \
+                          -Wextra \
+                          -Woverloaded-virtual \
+                          -Wpointer-arith \
+                          -Wstack-protector \
+                          -Wstrict-overflow=5 \
+                          -fPIE \
+                          -fstack-protector-all \
+                          -funroll-loops \
+                          -fwrapv \
+                          -pedantic \
+                          -std=c++17
 } else:linux-* {
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
@@ -108,7 +123,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -pedantic \
                           -std=c++17
 } else:win32 {
-QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
@@ -125,13 +139,13 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -std=c++17
 }
 
-QMAKE_DISTCLEAN        += -r Temporary-Web-Server \
-                          -r debug \
-                          -r release \
-                          .qmake.cache \
-                          .qmake.stash \
-                          object_script.*
-QMAKE_EXTRA_TARGETS    = purge
+QMAKE_DISTCLEAN    += -r Temporary-Web-Server-Child \
+                      -r debug \
+                      -r release \
+                      .qmake.cache \
+                      .qmake.stash \
+                      object_script.*
+QMAKE_EXTRA_TARGETS = purge
 
 greaterThan(QT_MAJOR_VERSION, 5) {
 QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
@@ -171,24 +185,21 @@ LIBS += -L..\\..\\libGCrypt\\Libraries.win64 \
         -lws2_32
 }
 
-HEADERS = spot-on-web-server-child-main.h
-
 unix {
-MOC_DIR     = Temporary-Web-Server/moc
-OBJECTS_DIR = Temporary-Web-Server/obj
+MOC_DIR     = Temporary-Web-Server-Child/moc
+OBJECTS_DIR = Temporary-Web-Server-Child/obj
 } else {
-MOC_DIR     = Temporary-Web-Server\\moc
-OBJECTS_DIR = Temporary-Web-Server\\obj
+MOC_DIR     = Temporary-Web-Server-Child\\moc
+OBJECTS_DIR = Temporary-Web-Server-Child\\obj
 }
-
-PROJECTNAME = Spot-On-Web-Server-Child
-QMAKE_STRIP = echo
 
 unix {
 RESOURCES = ../HTML/html.qrc
 } else {
 RESOURCES = ..\\HTML\\html.qrc
 }
+
+HEADERS = spot-on-web-server-child-main.h
 
 unix {
 SOURCES = ../Common/spot-on-crypt.cc \
@@ -205,6 +216,9 @@ SOURCES = ..\\Common\\spot-on-crypt.cc \
           ..\\Common\\spot-on-threefish.cc \
           spot-on-web-server-child-main.cc
 }
+
+PROJECTNAME = Spot-On-Web-Server-Child
+QMAKE_STRIP = echo
 
 unix {
 TARGET = ../Spot-On-Web-Server-Child

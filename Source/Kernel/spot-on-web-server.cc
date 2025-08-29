@@ -45,27 +45,27 @@ extern "C"
 
 void spoton_web_server_tcp_server::incomingConnection(qintptr socketDescriptor)
 {
-  emit newConnection(static_cast<qint64> (socketDescriptor));
+  emit newConnection(socketDescriptor);
 }
 
 spoton_web_server::spoton_web_server(QObject *parent):QObject(parent)
 {
   m_http = new spoton_web_server_tcp_server(this);
-  m_httpClientCount = new QAtomicInt(0);
+  m_httpClientCount = 0;
   m_https = new spoton_web_server_tcp_server(this);
-  m_httpsClientCount = new QAtomicInt(0);
+  m_httpsClientCount = 0;
   connect(&m_generalTimer,
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotTimeout(void)));
   connect(m_http,
-	  SIGNAL(newConnection(const qint64)),
+	  SIGNAL(newConnection(const qintptr)),
 	  this,
-	  SLOT(slotHttpClientConnected(const qint64)));
+	  SLOT(slotHttpClientConnected(const qintptr)));
   connect(m_https,
-	  SIGNAL(newConnection(const qint64)),
+	  SIGNAL(newConnection(const qintptr)),
 	  this,
-	  SLOT(slotHttpsClientConnected(const qint64)));
+	  SLOT(slotHttpsClientConnected(const qintptr)));
   m_generalTimer.start(2500);
 }
 
@@ -74,8 +74,6 @@ spoton_web_server::~spoton_web_server()
   m_generalTimer.stop();
   m_http->close();
   m_https->close();
-  delete m_httpClientCount;
-  delete m_httpsClientCount;
 }
 
 QByteArray spoton_web_server::settings(const int fd) const
@@ -171,15 +169,15 @@ QProcess *spoton_web_server::process(const int fd)
 
 int spoton_web_server::httpClientCount(void) const
 {
-  return m_httpClientCount->fetchAndAddOrdered(0);
+  return m_httpClientCount.fetchAndAddOrdered(0);
 }
 
 int spoton_web_server::httpsClientCount(void) const
 {
-  return m_httpsClientCount->fetchAndAddOrdered(0);
+  return m_httpsClientCount.fetchAndAddOrdered(0);
 }
 
-void spoton_web_server::slotHttpClientConnected(const qint64 socketDescriptor)
+void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
 {
   if(m_httpClientCount->fetchAndAddOrdered(0) >=
      spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||
@@ -228,7 +226,8 @@ void spoton_web_server::slotHttpThreadFinished(void)
   m_httpClientCount->fetchAndAddOrdered(-1);
 }
 
-void spoton_web_server::slotHttpsClientConnected(const qint64 socketDescriptor)
+void spoton_web_server::slotHttpsClientConnected
+(const qintptr socketDescriptor)
 {
   if(m_httpsClientCount->fetchAndAddOrdered(0) >=
      spoton_kernel::setting("gui/soss_maximum_clients", 10).toInt() ||

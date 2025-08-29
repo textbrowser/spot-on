@@ -81,7 +81,7 @@ class spoton_web_server_tcp_server: public QTcpServer
   QByteArray m_privateKey;
 
  signals:
-  void newConnection(const qint64 socketDescriptor);
+  void newConnection(const qintptr socketDescriptor);
 };
 
 class spoton_web_server_tcp_server;
@@ -106,9 +106,9 @@ class spoton_web_server: public QObject
   QProcess *process(const int fd);
 
  private slots:
-  void slotHttpClientConnected(const qint64 socketDescriptor);
+  void slotHttpClientConnected(const qintptr socketDescriptor);
   void slotHttpThreadFinished(void);
-  void slotHttpsClientConnected(const qint64 socketDescriptor);
+  void slotHttpsClientConnected(const qintptr socketDescriptor);
   void slotHttpsThreadFinished(void);
   void slotTimeout(void);
 };
