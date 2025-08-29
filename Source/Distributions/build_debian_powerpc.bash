@@ -33,6 +33,7 @@ cp -p ./Shell/spot-on-kernel.sh ./opt/spot-on/.
 cp -p ./Shell/spot-on.sh ./opt/spot-on/.
 cp -p ./Spot-On ./opt/spot-on/.
 cp -p ./Spot-On-Kernel ./opt/spot-on/.
+cp -p ./Spot-On-Web-Server-Child ./opt/spot-on/.
 cp -p ./Translations/*.qm ./opt/spot-on/Translations/.
 cp -pr ./Documentation/* ./opt/spot-on/Documentation/.
 chmod -x ./opt/spot-on/Lib/lib*
