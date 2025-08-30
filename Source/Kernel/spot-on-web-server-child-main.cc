@@ -170,6 +170,13 @@ int main(int argc, char *argv[])
 spoton_web_server_child_main::spoton_web_server_child_main
 (QByteArray &settings):QObject()
 {
+  QDataStream stream(&settings, QIODevice::ReadOnly);
+
+  stream >> m_settings;
+
+  if(stream.status() != QDataStream::Ok)
+    throw std::invalid_argument("Invalid data stream.");
+
   for(int i = 0; i < 10 + 6; i++)
     for(int j = 0; j < 10 + 6; j++)
       {
@@ -203,10 +210,6 @@ spoton_web_server_child_main::spoton_web_server_child_main
 		     "date_time_inserted " // 4
 		     "FROM spot_on_urls_%1%2 UNION ALL ").arg(c1).arg(c2));
       }
-
-  QDataStream stream(&settings, QIODevice::ReadOnly);
-
-  stream >> m_settings;
 
   QFile file(":/search.html");
 

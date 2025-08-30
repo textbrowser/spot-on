@@ -206,6 +206,7 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
       return;
     }
 
+  QTimer::singleShot(30000, process, SLOT(deleteLater(void)));
   connect(process,
 	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  this,
@@ -258,6 +259,7 @@ void spoton_web_server::slotHttpsClientConnected
       return;
     }
 
+  QTimer::singleShot(30000, process, SLOT(deleteLater(void)));
   connect(process,
 	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  this,
