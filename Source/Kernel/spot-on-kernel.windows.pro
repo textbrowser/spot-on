@@ -1,24 +1,24 @@
 cache()
 include(spot-on-kernel-source.windows.pro)
-libntru.commands = $(MAKE) -C ..\\..\\libNTRU
-libntru.depends =
-libntru.target = libntru.dll
+libntru.commands   = $(MAKE) -C ..\\..\\libNTRU
+libntru.depends    =
+libntru.target     = libntru.dll
 mceliece_supported = "false"
-purge.commands = del /F *~
+purge.commands     = del /F *~
 
-CONFIG		+= qt release warn_on
-CONFIG		-= debug
-LANGUAGE	= C++
-QT		+= concurrent network sql websockets widgets
+CONFIG   += qt release warn_on
+CONFIG	 -= debug
+LANGUAGE = C++
+QT	 += concurrent network sql websockets widgets
 
-DEFINES         += SPOTON_DATELESS_COMPILATION \
-                   SPOTON_LINKED_WITH_LIBNTRU \
-                   SPOTON_LINKED_WITH_LIBPTHREAD \
-                   SPOTON_POSTGRESQL_DISABLED \
-		   SPOTON_WEBSOCKETS_ENABLED
+DEFINES += SPOTON_DATELESS_COMPILATION \
+           SPOTON_LINKED_WITH_LIBNTRU \
+           SPOTON_LINKED_WITH_LIBPTHREAD \
+           SPOTON_POSTGRESQL_DISABLED \
+           SPOTON_WEBSOCKETS_ENABLED
 
 equals(mceliece_supported, "true") {
-DEFINES         += SPOTON_MCELIECE_ENABLED
+DEFINES += SPOTON_MCELIECE_ENABLED
 }
 
 # Unfortunately, the clean target assumes too much knowledge
@@ -51,28 +51,28 @@ QMAKE_DISTCLEAN        += -r debug \
                           object_script.Spot-On-Kernel.Release
 QMAKE_EXTRA_TARGETS    = libntru purge
 
-INCLUDEPATH	+= . \
-                   ..\\. \
-                   ..\\..\\. \
-                   ..\\..\\libGCrypt\\Include.win64 \
-                   ..\\..\\libOpenSSL\\Include.win64
-LIBS		+= -L..\\..\\libNTRU \
-		   -L..\\..\\libGCrypt\\Libraries.win64 \
-                   -L..\\..\\libOpenSSL\\Libraries.win64 \
-                   -lcrypto-3-x64 \
-                   -lgcrypt-20 \
-                   -lgpg-error-0 \
-                   -lntru \
-                   -lpthread \
-                   -lssl-3-x64 \
-                   -lws2_32
+INCLUDEPATH += . \
+               ..\\. \
+               ..\\..\\. \
+               ..\\..\\libGCrypt\\Include.win64 \
+               ..\\..\\libOpenSSL\\Include.win64
+LIBS	    += -L..\\..\\libNTRU \
+	       -L..\\..\\libGCrypt\\Libraries.win64 \
+               -L..\\..\\libOpenSSL\\Libraries.win64 \
+               -lcrypto-3-x64 \
+               -lgcrypt-20 \
+               -lgpg-error-0 \
+               -lntru \
+               -lpthread \
+               -lssl-3-x64 \
+               -lws2_32
 
 equals(mceliece_supported, "true") {
-INCLUDEPATH     += ..\\..\\libNTL\\windows.d\\include
-LIBS            += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
+INCLUDEPATH += ..\\..\\libNTL\\windows.d\\include
+LIBS        += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
 }
 
-PRE_TARGETDEPS  = libntru.dll
-PROJECTNAME	= Spot-On-Kernel
-TARGET		= ..\\..\\release\\Spot-On-Kernel
-TEMPLATE        = app
+PRE_TARGETDEPS = libntru.dll
+PROJECTNAME    = Spot-On-Kernel
+TARGET	       = ..\\..\\release\\Spot-On-Kernel
+TEMPLATE       = app

@@ -1,24 +1,24 @@
 cache()
 include(spot-on-kernel-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
-libntru.depends =
-libntru.target = libntru.so
-purge.commands = rm -f *~
+libntru.depends  =
+libntru.target   = libntru.so
+purge.commands   = rm -f *~
 
-CONFIG		+= qt release warn_on
-LANGUAGE	= C++
-QT		+= concurrent network sql widgets
+CONFIG	 += qt release warn_on
+LANGUAGE = C++
+QT	 += concurrent network sql widgets
 
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
-QT += bluetooth
+QT      += bluetooth
 } else {
 warning("The Bluetooth module is missing!")
 }
 
 qtHaveModule(websockets) {
 DEFINES += SPOTON_WEBSOCKETS_ENABLED
-QT += websockets
+QT      += websockets
 }
 
 DEFINES += QT_DEPRECATED_WARNINGS \
@@ -95,38 +95,38 @@ QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
 QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 }
 
-INCLUDEPATH	+= . ../. ../../.
-LIBS		+= -L../../libNTRU \
-                   -lcrypto \
-                   -lgcrypt \
-                   -lgpg-error \
-                   -lntru \
-                   -lpthread \
-                   -lssl
+INCLUDEPATH += . ../. ../../.
+LIBS	    += -L../../libNTRU \
+               -lcrypto \
+               -lgcrypt \
+               -lgpg-error \
+               -lntru \
+               -lpthread \
+               -lssl
 
 exists(/usr/include/GeoIP.h) {
-LIBS            += -lGeoIP
+LIBS += -lGeoIP
 }
 
 exists(/usr/include/NTL) {
-LIBS            += -lntl
+LIBS += -lntl
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
-INCLUDEPATH     += /usr/include/postgresql
-LIBS            += -lpq
+INCLUDEPATH += /usr/include/postgresql
+LIBS        += -lpq
 }
 
 exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
 LIBS            += -lcurl
 }
 
-MOC_DIR         = Temporary/moc
-OBJECTS_DIR     = Temporary/obj
-PRE_TARGETDEPS  = libntru.so
-PROJECTNAME	= Spot-On-Kernel
-QMAKE_STRIP	= echo
-RCC_DIR         = Temporary/rcc
-TARGET		= ../Spot-On-Kernel
-TEMPLATE        = app
-UI_DIR          = Temporary/ui
+MOC_DIR        = Temporary/moc
+OBJECTS_DIR    = Temporary/obj
+PRE_TARGETDEPS = libntru.so
+PROJECTNAME    = Spot-On-Kernel
+QMAKE_STRIP    = echo
+RCC_DIR        = Temporary/rcc
+TARGET	       = ../Spot-On-Kernel
+TEMPLATE       = app
+UI_DIR         = Temporary/ui

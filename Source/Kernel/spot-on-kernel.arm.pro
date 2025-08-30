@@ -1,17 +1,17 @@
 cache()
 include(spot-on-kernel-source.pro)
 libntru.commands = $(MAKE) -C ../../libNTRU
-libntru.depends =
-libntru.target = libntru.so
-purge.commands = rm -f *~
+libntru.depends  =
+libntru.target   = libntru.so
+purge.commands   = rm -f *~
 
-CONFIG		+= qt release warn_on
-LANGUAGE	= C++
-QT		+= concurrent network sql websockets widgets
+CONFIG	 += qt release warn_on
+LANGUAGE = C++
+QT	 += concurrent network sql websockets widgets
 
 qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
-QT += bluetooth
+QT      += bluetooth
 message("Bluetooth enabled!")
 }
 
@@ -57,29 +57,29 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 QMAKE_LFLAGS_RELEASE   = -Wl,-rpath,/opt/spot-on/Lib
 QMAKE_LFLAGS_RPATH     =
 
-INCLUDEPATH	+= . \
+INCLUDEPATH    += . \
                    ../. \
                    ../../. \
                    /usr/include/postgresql
-LIBS		+= -L../../libNTRU \
-                   -lcrypto \
-                   -lcurl \
-                   -lgcrypt \
-                   -lgpg-error \
-                   -lntl \
-                   -lntru \
-                   -lpq \
-                   -lpthread \
-                   -lssl
-MOC_DIR         = Temporary/moc
-OBJECTS_DIR     = Temporary/obj
-PRE_TARGETDEPS  = libntru.so
-PROJECTNAME	= Spot-On-Kernel
-RCC_DIR         = Temporary/rcc
-TARGET		= ../Spot-On-Kernel
-TEMPLATE        = app
-UI_DIR          = Temporary/ui
+LIBS	       += -L../../libNTRU \
+                  -lcrypto \
+                  -lcurl \
+                  -lgcrypt \
+                  -lgpg-error \
+                  -lntl \
+                  -lntru \
+                  -lpq \
+                  -lpthread \
+                  -lssl
+MOC_DIR        = Temporary/moc
+OBJECTS_DIR    = Temporary/obj
+PRE_TARGETDEPS = libntru.so
+PROJECTNAME    = Spot-On-Kernel
+RCC_DIR        = Temporary/rcc
+TARGET	       = ../Spot-On-Kernel
+TEMPLATE       = app
+UI_DIR         = Temporary/ui
 
 # Prevent qmake from stripping everything.
 
-QMAKE_STRIP	= echo
+QMAKE_STRIP = echo

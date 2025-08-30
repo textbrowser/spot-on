@@ -1,16 +1,16 @@
 cache()
 include(spot-on-kernel-source.pro)
-libntl.commands = echo
-libntl.depends =
-libntl.target = libntl.so
+libntl.commands  = echo
+libntl.depends   =
+libntl.target    = libntl.so
 libntru.commands = $(MAKE) -C ../../libNTRU
-libntru.depends =
-libntru.target = libntru.so
-purge.commands = rm -f *~
+libntru.depends  =
+libntru.target   = libntru.so
+purge.commands   = rm -f *~
 
-CONFIG		+= qt release warn_on
-LANGUAGE	= C++
-QT		+= bluetooth concurrent network sql websockets widgets
+CONFIG	 += qt release warn_on
+LANGUAGE = C++
+QT	 += bluetooth concurrent network sql websockets widgets
 
 DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_DATELESS_COMPILATION \
@@ -85,4 +85,4 @@ UI_DIR          = Temporary/ui
 
 # Prevent qmake from stripping everything.
 
-QMAKE_STRIP	= echo
+QMAKE_STRIP = echo
