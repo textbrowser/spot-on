@@ -1017,6 +1017,7 @@ void spoton::slotEstablishForwardSecrecy(void)
   progress->setWindowModality(Qt::ApplicationModal);
   progress->setWindowTitle
     (tr("%1: Generating Key Pairs").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(progress.data(), this);
   progress->show();
   progress->repaint();
   QApplication::processEvents();

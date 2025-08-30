@@ -2790,6 +2790,7 @@ void spoton_rss::slotRefreshTimeline(void)
   progress.setModal(true);
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle(tr("%1: Populating").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.raise();
   progress.activateWindow();

@@ -52,6 +52,7 @@ bool spoton::deleteAllUrls(void)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting URL Data").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -608,6 +609,7 @@ void spoton::slotCorrectUrlDatabases(void)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting Orphaned URL Keywords").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -893,6 +895,7 @@ void spoton::slotDropUrlTables(void)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Dropping URL Tables").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -984,6 +987,7 @@ void spoton::slotGatherUrlStatistics(void)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Gathering URL Statistics").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
@@ -1190,6 +1194,7 @@ void spoton::slotImportUrls(void)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Importing URLs").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.raise();
   progress.activateWindow();
@@ -2450,6 +2455,7 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
   progress.setWindowModality(Qt::ApplicationModal);
   progress.setWindowTitle
     (tr("%1: Deleting URL Keywords").arg(SPOTON_APPLICATION_NAME));
+  spoton_utilities::centerWidget(&progress, this);
   progress.show();
   progress.repaint();
   QApplication::processEvents();
