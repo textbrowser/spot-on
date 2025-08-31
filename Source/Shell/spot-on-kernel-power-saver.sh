@@ -13,7 +13,6 @@ then
 	    --disable-mail \
 	    --disable-poptastic \
 	    --disable-starbeam \
-	    --disable-ui-server \
 	    --passphrase \
 	    "$@"
 	exit $?
@@ -31,7 +30,6 @@ then
 		       --disable-mail \
 		       --disable-poptastic \
 		       --disable-starbeam \
-		       --disable-ui-server \
 		       --passphrase \
 		       "$@"
     exit $?
