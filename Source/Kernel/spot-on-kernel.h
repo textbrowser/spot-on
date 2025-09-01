@@ -97,6 +97,7 @@ class spoton_kernel: public QObject
 				     const QHostAddress &peerAddress);
   static bool duplicateEmailRequests(const QByteArray &data);
   static bool duplicateGeminis(const QByteArray &data);
+  static bool hasStarBeamReaderId(const qint64 id);
   static bool messagingCacheContains(const QByteArray &data,
 				     const bool do_not_hash = false);
   static int buzzKeyCount(void);
@@ -119,16 +120,16 @@ class spoton_kernel: public QObject
 				const int add_msecs = 0);
   static void removeBuzzKey(const QByteArray &key);
   static void setSetting(const QString &key, const QVariant &value);
-  bool hasStarBeamReaderId(const qint64 id) const;
+  static void writeMessage006X
+    (const QByteArray &data,
+     const QString &messageType,
+     int *neighborIndex,
+     bool *ok);
   bool initialized(void) const;
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
   void saveUrls(const QList<QByteArray> &urls);
-  void writeMessage006X(const QByteArray &data,
-			const QString &messageType,
-			int *neighborIndex,
-			bool *ok);
 
  private:
   QAtomicInt m_urlImportFutureInterrupt;

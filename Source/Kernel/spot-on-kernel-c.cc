@@ -103,16 +103,19 @@ QString spoton_kernel::prisonBluesSequence(void)
     (s_prisonBluesSequence.fetchAndAddOrdered(1), 10, 10, QChar('0'));
 }
 
-bool spoton_kernel::hasStarBeamReaderId(const qint64 id) const
+bool spoton_kernel::hasStarBeamReaderId(const qint64 id)
 {
+  if(!instance())
+    return false;
+
   QHashIterator<qint64, QPointer<spoton_starbeam_reader> > it
-    (m_starbeamReaders);
+    (instance()->m_starbeamReaders);
 
   while(it.hasNext())
     {
       it.next();
 
-      if(it.value() && it.value()->id() == id)
+      if(it.value() && id == it.value()->id())
 	return true;
     }
 

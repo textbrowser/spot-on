@@ -6570,12 +6570,16 @@ void spoton_kernel::writeMessage006X(const QByteArray &data,
   if(ok)
     *ok = false;
 
+  if(s_kernel == nullptr)
+    return;
+
   if(neighborIndex)
     {
-      if(m_neighbors.size() <= *neighborIndex)
+      if(*neighborIndex >= s_kernel->m_neighbors.size())
 	*neighborIndex = 0;
 
-      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      QHashIterator<qint64, QPointer<spoton_neighbor> >
+	it(s_kernel->m_neighbors);
       int i = 0;
 
       while(it.hasNext())
@@ -6602,7 +6606,8 @@ void spoton_kernel::writeMessage006X(const QByteArray &data,
     }
   else
     {
-      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      QHashIterator<qint64, QPointer<spoton_neighbor> >
+	it(s_kernel->m_neighbors);
 
       while(it.hasNext())
 	{

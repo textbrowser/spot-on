@@ -397,14 +397,13 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
     data = data.toBase64() + "\n" + messageCode.toBase64();
 
   if(ok)
-    if(spoton_kernel::instance())
-      {
-	spoton_kernel::instance()->writeMessage006X
-	  (data, "0060", m_fragmented ? &m_neighborIndex : nullptr, &ok);
+    {
+      spoton_kernel::writeMessage006X
+	(data, "0060", m_fragmented ? &m_neighborIndex : nullptr, &ok);
 
-	if(ok)
-	  m_expiredResponse.start();
-      }
+      if(ok)
+	m_expiredResponse.start();
+    }
 }
 
 void spoton_starbeam_reader::savePositionAndStatus(const QString &status)

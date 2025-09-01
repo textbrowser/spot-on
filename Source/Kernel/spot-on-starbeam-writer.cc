@@ -416,8 +416,7 @@ void spoton_starbeam_writer::processData(void)
 
   auto const fileId = list.value(9).toLongLong();
 
-  if(spoton_kernel::instance() &&
-     spoton_kernel::instance()->hasStarBeamReaderId(fileId))
+  if(spoton_kernel::hasStarBeamReaderId(fileId))
     goto start_label;
 
   auto const hash(list.value(7));
