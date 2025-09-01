@@ -1357,7 +1357,7 @@ QVariant spoton_kernel::setting
 }
 
 bool spoton_kernel::acceptRemoteBluetoothConnection
-(const QString &localAddress, const QString &peerAddress) const
+(const QString &localAddress, const QString &peerAddress)
 {
   if(peerAddress.trimmed().isEmpty())
     return false;
@@ -1368,9 +1368,10 @@ bool spoton_kernel::acceptRemoteBluetoothConnection
       else
 	return true;
     }
-  else
+  else if(s_kernel)
     {
-      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      QHashIterator<qint64, QPointer<spoton_neighbor> >
+	it(s_kernel->m_neighbors);
       auto const value = setting("gui/limitConnections", 10).toInt();
       int count = 0;
 
@@ -1391,10 +1392,12 @@ bool spoton_kernel::acceptRemoteBluetoothConnection
       else
 	return true;
     }
+  else
+    return false;
 }
 
 bool spoton_kernel::acceptRemoteConnection
-(const QHostAddress &localAddress, const QHostAddress &peerAddress) const
+(const QHostAddress &localAddress, const QHostAddress &peerAddress)
 {
   if(peerAddress.isNull() || peerAddress.toString().isEmpty())
     return false;
@@ -1408,9 +1411,10 @@ bool spoton_kernel::acceptRemoteConnection
       else
 	return false;
     }
-  else
+  else if(s_kernel)
     {
-      QHashIterator<qint64, QPointer<spoton_neighbor> > it(m_neighbors);
+      QHashIterator<qint64, QPointer<spoton_neighbor> > it
+	(s_kernel->m_neighbors);
       auto const value = setting("gui/limitConnections", 10).toInt();
       int count = 0;
 
@@ -1436,6 +1440,8 @@ bool spoton_kernel::acceptRemoteConnection
       else
 	return true;
     }
+  else
+    return false;
 }
 
 bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)

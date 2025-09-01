@@ -555,9 +555,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  address.setAddress(ntohl(clientaddr.sin_addr.s_addr));
 	  port = ntohs(clientaddr.sin_port);
 
-	  if(spoton_kernel::instance() &&
-	     !spoton_kernel::instance()->
-	     acceptRemoteConnection(m_serverAddress, address))
+	  if(!spoton_kernel::acceptRemoteConnection(m_serverAddress, address))
 	    {
 #if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);
@@ -678,9 +676,7 @@ void spoton_sctp_server::slotTimeout(void)
 	  address.setScopeId(QString::number(clientaddr.sin6_scope_id));
 	  port = ntohs(clientaddr.sin6_port);
 
-	  if(spoton_kernel::instance() &&
-	     !spoton_kernel::instance()->
-	     acceptRemoteConnection(m_serverAddress, address))
+	  if(!spoton_kernel::acceptRemoteConnection(m_serverAddress, address))
 	    {
 #if defined(Q_OS_WINDOWS)
 	      closesocket(socketDescriptor);

@@ -63,9 +63,7 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
       peerAddress = spoton_misc::peerAddressAndPort
 	(static_cast<int> (socketDescriptor), &peerPort);
 
-      if(spoton_kernel::instance() &&
-	 !spoton_kernel::instance()->acceptRemoteConnection(serverAddress(),
-							    peerAddress))
+      if(!spoton_kernel::acceptRemoteConnection(serverAddress(), peerAddress))
 	{
 	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
 
@@ -141,9 +139,7 @@ void spoton_listener_udp_server::slotReadyRead(void)
       if(size <= 0)
 	continue;
 
-      if(spoton_kernel::instance() &&
-	 !spoton_kernel::instance()->acceptRemoteConnection(localAddress(),
-							    peerAddress))
+      if(!spoton_kernel::acceptRemoteConnection(localAddress(), peerAddress))
 	{
 	}
       else if(!spoton_misc::
@@ -1450,8 +1446,7 @@ void spoton_listener::slotNewConnection(void)
     }
   else
     {
-      if(spoton_kernel::instance() &&
-	 !spoton_kernel::instance()->
+      if(!spoton_kernel::
 	 acceptRemoteBluetoothConnection(serverAddress(),
 					 socket->peerAddress().toString()))
 	{
@@ -2202,8 +2197,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
     }
   else
     {
-      if(spoton_kernel::instance() &&
-	 !spoton_kernel::instance()->
+      if(!spoton_kernel::
 	 acceptRemoteBluetoothConnection(serverAddress(),
 					 socket->peerAddress().toString()))
 	{

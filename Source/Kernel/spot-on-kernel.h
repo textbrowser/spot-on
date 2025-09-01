@@ -91,6 +91,10 @@ class spoton_kernel: public QObject
   static QSqlDatabase urlDatabase(QString &connectionName);
   static QVariant setting(const QString &name);
   static QVariant setting(const QString &name, const QVariant &defaultValue);
+  static bool acceptRemoteBluetoothConnection(const QString &localAddress,
+					      const QString &peerAddress);
+  static bool acceptRemoteConnection(const QHostAddress &localAddress,
+				     const QHostAddress &peerAddress);
   static bool duplicateEmailRequests(const QByteArray &data);
   static bool duplicateGeminis(const QByteArray &data);
   static bool messagingCacheContains(const QByteArray &data,
@@ -115,10 +119,6 @@ class spoton_kernel: public QObject
 				const int add_msecs = 0);
   static void removeBuzzKey(const QByteArray &key);
   static void setSetting(const QString &key, const QVariant &value);
-  bool acceptRemoteBluetoothConnection(const QString &localAddress,
-				       const QString &peerAddress) const;
-  bool acceptRemoteConnection(const QHostAddress &localAddress,
-			      const QHostAddress &peerAddress) const;
   bool hasStarBeamReaderId(const qint64 id) const;
   bool initialized(void) const;
   bool processPotentialStarBeamData
