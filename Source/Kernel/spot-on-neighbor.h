@@ -615,6 +615,7 @@ class spoton_neighbor: public QThread
 		    const QByteArray &signature,
 		    const QPairByteArrayByteArray &adaptiveEchoPair);
   void saveForwardSecrecySessionKeys(const QByteArrayList &list);
+  void saveUrls(const QList<QByteArray> &urls);
   void scrambleRequest(void);
   void sendMessage
     (const QByteArray &data, const QPairByteArrayByteArray &adaptiveEchoPair);

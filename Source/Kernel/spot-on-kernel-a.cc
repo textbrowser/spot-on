@@ -1827,6 +1827,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotReceivedChatMessage(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
+	  SIGNAL(saveUrls(const QList<QByteArray> &)),
+	  this,
+	  SLOT(slotSaveUrls(const QList<QByteArray> &)),
+	  Qt::UniqueConnection);
+  connect(neighbor,
 	  SIGNAL(smpMessage(const QByteArrayList &)),
 	  m_guiServer,
 	  SLOT(slotSMPMessage(const QByteArrayList &)),

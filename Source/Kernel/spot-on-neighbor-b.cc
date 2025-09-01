@@ -550,8 +550,7 @@ void spoton_neighbor::saveUrlsToShared(const QList<QByteArray> &urls)
   if(urls.isEmpty())
     return;
 
-  if(spoton_kernel::instance())
-    spoton_kernel::instance()->saveUrls(urls);
+  emit saveUrls(urls);
 }
 
 void spoton_neighbor::slotAuthenticationTimerTimeout(void)

@@ -129,7 +129,6 @@ class spoton_kernel: public QObject
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
-  void saveUrls(const QList<QByteArray> &urls);
 
  private:
   QAtomicInt m_urlImportFutureInterrupt;
@@ -257,6 +256,7 @@ class spoton_kernel: public QObject
 			   const QByteArray &timestamp,
 			   const QByteArray &signature,
 			   const QString &messageType);
+  void saveUrls(const QList<QByteArray> &urls);
   void updateStatistics
     (const QElapsedTimer &uptime, const QVector<int> &integers);
   void writePrisonBluesChat
@@ -324,6 +324,7 @@ class spoton_kernel: public QObject
   void slotRetrieveMail(void);
   void slotSMPMessageReceivedFromUI(const QByteArrayList &list);
   void slotSaveForwardSecrecySessionKeys(const QByteArrayList &list);
+  void slotSaveUrls(const QList<QByteArray> &urls);
   void slotScramble(void);
   void slotSendMail(const QByteArray &goldbug,
 		    const QByteArray &message,
