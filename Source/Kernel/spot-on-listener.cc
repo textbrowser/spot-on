@@ -45,16 +45,9 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 {
   auto const maxPendingConnections = this->maxPendingConnections();
 
-  if(maxPendingConnections > -1 &&
-     maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id))
-    {
-      QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-      if(socket.setSocketDescriptor(socketDescriptor))
-	socket.abort();
-      else
-	spoton_misc::closeSocket(socketDescriptor);
-    }
+  if(maxPendingConnections <= spoton_kernel::s_connectionCounts.count(m_id) &&
+     maxPendingConnections > -1)
+    spoton_misc::closeSocket(socketDescriptor);
   else
     {
       QHostAddress peerAddress;
@@ -64,24 +57,11 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
 	(static_cast<int> (socketDescriptor), &peerPort);
 
       if(!spoton_kernel::acceptRemoteConnection(serverAddress(), peerAddress))
-	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-	}
+	spoton_misc::closeSocket(socketDescriptor);
       else if(!spoton_misc::
 	      isAcceptedIP(peerAddress, m_id, spoton_kernel::crypt("chat")))
 	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-
+	  spoton_misc::closeSocket(socketDescriptor);
 	  spoton_misc::logError
 	    (QString("spoton_listener_tcp_server::incomingConnection(): "
 		     "connection from %1 denied for %2:%3.").
@@ -92,28 +72,13 @@ void spoton_listener_tcp_server::incomingConnection(qintptr socketDescriptor)
       else if(spoton_misc::
 	      isIpBlocked(peerAddress, spoton_kernel::crypt("chat")))
 	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
-
+	  spoton_misc::closeSocket(socketDescriptor);
 	  spoton_misc::logError
 	    (QString("spoton_listener_tcp_server::incomingConnection(): "
 		     "connection from %1 blocked for %2:%3.").
 	     arg(peerAddress.toString()).
 	     arg(serverAddress().toString()).
 	     arg(serverPort()));
-	}
-      else if(!spoton_kernel::instance())
-	{
-	  QAbstractSocket socket(QAbstractSocket::TcpSocket, this);
-
-	  if(socket.setSocketDescriptor(socketDescriptor))
-	    socket.abort();
-	  else
-	    spoton_misc::closeSocket(socketDescriptor);
 	}
       else
 	emit newConnection(socketDescriptor, peerAddress, peerPort);
