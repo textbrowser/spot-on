@@ -213,6 +213,7 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 	  this,
 	  SLOT(slotClientConnected(void)));
   m_generalTimer.start(2500);
+  spoton_kernel::setSetting("guiServerPort", serverPort());
 
   QFileInfo const fileInfo
     (spoton_misc::homePath() + QDir::separator() + "kernel.db");
@@ -226,7 +227,6 @@ spoton_gui_server::spoton_gui_server(QObject *parent):
 
 spoton_gui_server::~spoton_gui_server()
 {
-  spoton_misc::logError("The UI server has been terminated.");
   m_generalTimer.stop();
   m_guiIsAuthenticated.clear();
   m_guiSocketData.clear();
@@ -251,6 +251,7 @@ spoton_gui_server::~spoton_gui_server()
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+  spoton_misc::logError("The UI server has been terminated.");
 }
 
 void spoton_gui_server::slotAuthenticationRequested
@@ -1063,6 +1064,8 @@ void spoton_gui_server::slotTimeout(void)
     if(!listen(QHostAddress("127.0.0.1")))
       spoton_misc::logError("spoton_gui_server::slotTimeout(): "
 			    "listen() failure. This is a serious problem!");
+
+  spoton_kernel::setSetting("guiServerPort", serverPort());
 
   QString connectionName("");
 

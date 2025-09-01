@@ -31,7 +31,6 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
-#include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
@@ -209,11 +208,6 @@ qint64 spoton_kernel::uptimeMinutes(void)
   return s_uptime.elapsed() / 60000;
 }
 
-quint16 spoton_kernel::guiServerPort(void) const
-{
-  return m_guiServer->serverPort();
-}
-
 spoton_crypt *spoton_kernel::crypt(const QString &key)
 {
   QReadLocker locker(&s_cryptsMutex);
@@ -323,6 +317,16 @@ void spoton_kernel::readPrisonBlues(void)
 	    }
 	}
     }
+}
+
+void spoton_kernel::setSetting(const QString &key, const QVariant &value)
+{
+  if(key.trimmed().isEmpty())
+    return;
+
+  QWriteLocker locker(&s_settingsMutex);
+
+  s_settings[key.trimmed()] = value;
 }
 
 void spoton_kernel::slotCallParticipantUsingForwardSecrecy

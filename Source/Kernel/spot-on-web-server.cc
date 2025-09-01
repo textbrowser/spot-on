@@ -87,6 +87,8 @@ QByteArray spoton_web_server::settings(const int fd) const
     toInt();
   map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = spoton_kernel::setting
     ("WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS").toBool();
+  map["gui/kernelKeySize"] = spoton_kernel::setting("gui/kernelKeySize").
+    toInt();
   map["gui/postgresql_database"] = spoton_kernel::setting
     ("gui/postgresql_database").toString().trimmed();
   map["gui/postgresql_host"] = spoton_kernel::setting
@@ -107,8 +109,7 @@ QByteArray spoton_web_server::settings(const int fd) const
     ("gui/sslControlString").toString().trimmed();
   map["gui/web_server_serve_local_content"] = spoton_kernel::setting
     ("gui/web_server_serve_local_content").toBool();
-  map["guiServerPort"] = spoton_kernel::instance() ?
-    spoton_kernel::instance()->guiServerPort() : 0;
+  map["guiServerPort"] = spoton_kernel::setting("guiServerPort").toInt();
   map["socketDescriptor"] = fd;
   map["uptimeMinutes"] = spoton_kernel::uptimeMinutes();
 

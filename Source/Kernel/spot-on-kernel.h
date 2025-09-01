@@ -114,6 +114,7 @@ class spoton_kernel: public QObject
 				const bool do_not_hash = false,
 				const int add_msecs = 0);
   static void removeBuzzKey(const QByteArray &key);
+  static void setSetting(const QString &key, const QVariant &value);
   bool acceptRemoteBluetoothConnection(const QString &localAddress,
 				       const QString &peerAddress) const;
   bool acceptRemoteConnection(const QHostAddress &localAddress,
@@ -123,7 +124,6 @@ class spoton_kernel: public QObject
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
-  quint16 guiServerPort(void) const;
   void saveUrls(const QList<QByteArray> &urls);
   void writeMessage006X(const QByteArray &data,
 			const QString &messageType,
