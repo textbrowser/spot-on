@@ -6316,8 +6316,9 @@ void spoton_kernel::updateStatistics(const QElapsedTimer &uptime,
 
 	if(QThreadPool::globalInstance())
 	  query.bindValue
-	    (0, locale.toString(QThreadPool::globalInstance()->
-				activeThreadCount()));
+	    (0,
+	     locale.
+	     toString(QThreadPool::globalInstance()->activeThreadCount()));
 	else
 	  query.bindValue(0, QString::number(-1));
 

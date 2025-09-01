@@ -31,6 +31,7 @@
 #include "Common/spot-on-crypt.h"
 #include "Common/spot-on-misc.h"
 #include "Common/spot-on-receive.h"
+#include "spot-on-gui-server.h"
 #include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 #include "spot-on-starbeam-reader.h"
@@ -206,6 +207,11 @@ bool spoton_kernel::prepareAlmostAnonymousEmail
 qint64 spoton_kernel::uptimeMinutes(void)
 {
   return s_uptime.elapsed() / 60000;
+}
+
+quint16 spoton_kernel::guiServerPort(void) const
+{
+  return m_guiServer->serverPort();
 }
 
 spoton_crypt *spoton_kernel::crypt(const QString &key)

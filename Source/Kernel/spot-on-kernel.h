@@ -123,6 +123,7 @@ class spoton_kernel: public QObject
   bool processPotentialStarBeamData
     (const QByteArray &data,
      QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair);
+  quint16 guiServerPort(void) const;
   void saveUrls(const QList<QByteArray> &urls);
   void writeMessage006X(const QByteArray &data,
 			const QString &messageType,

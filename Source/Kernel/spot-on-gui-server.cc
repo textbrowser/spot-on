@@ -876,8 +876,7 @@ void spoton_gui_server::slotReadyRead(void)
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
-		(0, static_cast<int> (qstrlen("publicize"
-					      "listenerplaintext_")));
+		(0, static_cast<int> (qstrlen("publicizelistenerplaintext_")));
 
 	      auto const list(message.split('_'));
 

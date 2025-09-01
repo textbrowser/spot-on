@@ -107,6 +107,8 @@ QByteArray spoton_web_server::settings(const int fd) const
     ("gui/sslControlString").toString().trimmed();
   map["gui/web_server_serve_local_content"] = spoton_kernel::setting
     ("gui/web_server_serve_local_content").toBool();
+  map["guiServerPort"] = spoton_kernel::instance() ?
+    spoton_kernel::instance()->guiServerPort() : 0;
   map["socketDescriptor"] = fd;
   map["uptimeMinutes"] = spoton_kernel::uptimeMinutes();
 
