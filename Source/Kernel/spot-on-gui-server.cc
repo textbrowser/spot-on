@@ -496,8 +496,8 @@ void spoton_gui_server::slotReadyRead(void)
 
   if(!socket)
     {
-      spoton_misc::logError("spoton_gui_server::"
-			    "slotReadyRead(): empty socket object.");
+      spoton_misc::logError
+	("spoton_gui_server::slotReadyRead(): empty socket object.");
       return;
     }
 
@@ -903,6 +903,14 @@ void spoton_gui_server::slotReadyRead(void)
 	      message.remove
 		(0, static_cast<int> (qstrlen("removebuzz_")));
 	      spoton_kernel::removeBuzzKey(QByteArray::fromBase64(message));
+	    }
+	  else if(message.startsWith("requestkeys"))
+	    {
+	      auto crypt = spoton_kernel::crypt("chat");
+
+	      if(crypt)
+		{
+		}
 	    }
 	  else if(message.startsWith("retrievemail") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))

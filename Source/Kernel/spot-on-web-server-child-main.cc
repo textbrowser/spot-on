@@ -177,90 +177,25 @@ spoton_web_server_child_main::spoton_web_server_child_main
   if(stream.status() != QDataStream::Ok)
     throw std::invalid_argument("Invalid data stream.");
 
-  for(int i = 0; i < 10 + 6; i++)
-    for(int j = 0; j < 10 + 6; j++)
-      {
-	QChar c1;
-	QChar c2;
+  auto keySize = m_settings.value("kernelKeySize").toInt();
+  auto port = static_cast<quint16> (m_settings.value("guiServerPort").toInt());
 
-	if(i <= 9)
-	  c1 = QChar(i + 48);
-	else
-	  c1 = QChar(i + 97 - 10);
-
-	if(j <= 9)
-	  c2 = QChar(j + 48);
-	else
-	  c2 = QChar(j + 97 - 10);
-
-	if(i == 15 && j == 15)
-	  s_emptyQuery.append
-	    (QString("SELECT title, "      // 0
-		     "url, "               // 1
-		     "description, "       // 2
-		     "url_hash, "          // 3
-		     "date_time_inserted " // 4
-		     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
-	else
-	  s_emptyQuery.append
-	    (QString("SELECT title, "      // 0
-		     "url, "               // 1
-		     "description, "       // 2
-		     "url_hash, "          // 3
-		     "date_time_inserted " // 4
-		     "FROM spot_on_urls_%1%2 UNION ALL ").arg(c1).arg(c2));
-      }
-
-  QFile file(":/search.html");
-
-  file.open(QFile::ReadOnly);
-  s_search = file.readAll();
-  file.close();
-
-  QPair<QByteArray, QByteArray> credentials;
-
-  if(m_crypt)
+  if(keySize == 0)
     {
-      QString connectionName("");
-
-      {
-	auto db(spoton_misc::database(connectionName));
-
-	db.setDatabaseName
-	  (spoton_misc::homePath() +
-	   QDir::separator() +
-	   "kernel_web_server.db");
-
-	if(db.open())
-	  {
-	    QSqlQuery query(db);
-
-	    query.setForwardOnly(true);
-
-	    if(query.exec("SELECT certificate, " // 0
-			  "private_key "         // 1
-			  "FROM kernel_web_server"))
-	      while(query.next())
-		{
-		  auto ok = true;
-
-		  credentials.first = m_crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(0).toByteArray()),
-		     &ok);
-		  credentials.second = m_crypt->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.value(1).toByteArray()),
-		     &ok);
-		}
-
-	    db.close();
-	  }
-
-	QSqlDatabase::removeDatabase(connectionName);
-      }
+      connect(&m_kernelSocket,
+	      SIGNAL(connected(void)),
+	      this,
+	      SLOT(slotKernelConnected(void)));
+      m_kernelSocket.connectToHost("127.0.0.1", port);
     }
-
-  m_socketDescriptor = m_settings.value("socketDescriptor").toLongLong();
-  process(credentials);
+  else
+    {
+      connect(&m_kernelSocket,
+	      SIGNAL(connected(void)),
+	      this,
+	      SLOT(slotKernelEncrypted(void)));
+      m_kernelSocket.connectToHostEncrypted("127.0.0.1", port);
+    }
 }
 
 spoton_web_server_child_main::~spoton_web_server_child_main()
@@ -1102,6 +1037,118 @@ void spoton_web_server_child_main::processLocal
     writeDefaultPage(socket, true);
   else
     write(socket, html);
+}
+
+void spoton_web_server_child_main::slotKernelConnected(void)
+{
+  connect(&m_kernelSocket,
+	  SIGNAL(readyRead(void)),
+	  this,
+	  SLOT(slotKernelRead(void)),
+	  Qt::UniqueConnection);
+  m_kernelSocket.write("requestkeys\n");
+}
+
+void spoton_web_server_child_main::slotKernelEncrypted(void)
+{
+  connect(&m_kernelSocket,
+	  SIGNAL(readyRead(void)),
+	  this,
+	  SLOT(slotKernelRead(void)),
+	  Qt::UniqueConnection);
+  m_kernelSocket.write("requestkeys\n");
+}
+
+void spoton_web_server_child_main::slotKernelRead(void)
+{
+}
+
+void spoton_web_server_child_main::slotKeysReceived(void)
+{
+  for(int i = 0; i < 10 + 6; i++)
+    for(int j = 0; j < 10 + 6; j++)
+      {
+	QChar c1;
+	QChar c2;
+
+	if(i <= 9)
+	  c1 = QChar(i + 48);
+	else
+	  c1 = QChar(i + 97 - 10);
+
+	if(j <= 9)
+	  c2 = QChar(j + 48);
+	else
+	  c2 = QChar(j + 97 - 10);
+
+	if(i == 15 && j == 15)
+	  s_emptyQuery.append
+	    (QString("SELECT title, "      // 0
+		     "url, "               // 1
+		     "description, "       // 2
+		     "url_hash, "          // 3
+		     "date_time_inserted " // 4
+		     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
+	else
+	  s_emptyQuery.append
+	    (QString("SELECT title, "      // 0
+		     "url, "               // 1
+		     "description, "       // 2
+		     "url_hash, "          // 3
+		     "date_time_inserted " // 4
+		     "FROM spot_on_urls_%1%2 UNION ALL ").arg(c1).arg(c2));
+      }
+
+  QFile file(":/search.html");
+
+  file.open(QFile::ReadOnly);
+  s_search = file.readAll();
+  file.close();
+
+  QPair<QByteArray, QByteArray> credentials;
+
+  if(m_crypt)
+    {
+      QString connectionName("");
+
+      {
+	auto db(spoton_misc::database(connectionName));
+
+	db.setDatabaseName
+	  (spoton_misc::homePath() +
+	   QDir::separator() +
+	   "kernel_web_server.db");
+
+	if(db.open())
+	  {
+	    QSqlQuery query(db);
+
+	    query.setForwardOnly(true);
+
+	    if(query.exec("SELECT certificate, " // 0
+			  "private_key "         // 1
+			  "FROM kernel_web_server"))
+	      while(query.next())
+		{
+		  auto ok = true;
+
+		  credentials.first = m_crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(0).toByteArray()),
+		     &ok);
+		  credentials.second = m_crypt->decryptedAfterAuthenticated
+		    (QByteArray::fromBase64(query.value(1).toByteArray()),
+		     &ok);
+		}
+
+	    db.close();
+	  }
+
+	QSqlDatabase::removeDatabase(connectionName);
+      }
+    }
+
+  m_socketDescriptor = m_settings.value("socketDescriptor").toLongLong();
+  process(credentials);
 }
 
 void spoton_web_server_child_main::write

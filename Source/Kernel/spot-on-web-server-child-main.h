@@ -44,6 +44,7 @@ class spoton_web_server_child_main: public QObject
  private:
   QMap<QString, QVariant> m_settings;
   QScopedPointer<spoton_crypt> m_crypt;
+  QSslSocket m_kernelSocket;
   qint64 m_socketDescriptor;
   QSqlDatabase urlDatabase(QString &connectionName) const;
   void process(const QPair<QByteArray, QByteArray> &credentials);
@@ -53,6 +54,12 @@ class spoton_web_server_child_main: public QObject
   void processLocal(QSslSocket *socket, const QByteArray &data);
   void write(QSslSocket *socket, const QByteArray &data);
   void writeDefaultPage(QSslSocket *socket, const bool redirect = false);
+
+ private slots:
+  void slotKernelConnected(void);
+  void slotKernelEncrypted(void);
+  void slotKernelRead(void);
+  void slotKeysReceived(void);
 };
 
 #endif
