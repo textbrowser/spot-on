@@ -4422,14 +4422,15 @@ void spoton::slotActivateKernel(void)
       QStringList list;
 
       list << "-a" << program << "-g";
-      QProcess::startDetached("open", list);
+      QProcess::startDetached("open", list, spoton_misc::homePath());
     }
   else
-    QProcess::startDetached(program, QStringList());
+    QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #elif defined(Q_OS_WINDOWS)
-  QProcess::startDetached(QString("\"%1\"").arg(program), QStringList());
+  QProcess::startDetached
+    (QString("\"%1\"").arg(program), QStringList(), spoton_misc::homePath());
 #else
-  QProcess::startDetached(program, QStringList());
+  QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #endif
 #else
 #ifdef Q_OS_MACOS
@@ -4438,14 +4439,15 @@ void spoton::slotActivateKernel(void)
       QStringList list;
 
       list << "-a" << program << "-g";
-      QProcess::startDetached("open", list);
+      QProcess::startDetached("open", list, spoton_misc::homePath());
     }
   else
-    QProcess::startDetached(program);
+    QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #elif defined(Q_OS_WINDOWS)
-  QProcess::startDetached(QString("\"%1\"").arg(program));
+  QProcess::startDetached
+    (QString("\"%1\"").arg(program), QStringList(), spoton_misc::homePath());
 #else
-  QProcess::startDetached(program);
+  QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #endif
 #endif
 
