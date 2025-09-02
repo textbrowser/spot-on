@@ -1141,7 +1141,7 @@ QByteArray spoton_crypt::hashKey(void)
 {
   QReadLocker locker(&m_hashKeyMutex);
 
-  if(m_hashKey)
+  if(m_hashKey && m_hashKeyLength > 0)
     return QByteArray(m_hashKey, static_cast<int> (m_hashKeyLength));
   else
     return QByteArray();

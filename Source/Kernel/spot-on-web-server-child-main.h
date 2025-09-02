@@ -60,6 +60,9 @@ class spoton_web_server_child_main: public QObject
   void slotKernelEncrypted(void);
   void slotKernelRead(void);
   void slotKeysReceived(void);
+
+ signals:
+  void keysReceived(void);
 };
 
 #endif

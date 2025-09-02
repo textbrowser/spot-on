@@ -922,6 +922,10 @@ void spoton_gui_server::slotReadyRead(void)
 		  string += "_";
 		  string += QString::number
 		    (spoton_kernel::setting("gui/iterationCount").toInt());
+		  string += "_";
+		  string += crypt->symmetricKey().toBase64();
+		  string += "_";
+		  string += crypt->hashKey().toBase64();
 		  string += "\n";
 		  socket->write(string.toUtf8());
 		}

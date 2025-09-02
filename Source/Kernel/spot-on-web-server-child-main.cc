@@ -177,6 +177,10 @@ spoton_web_server_child_main::spoton_web_server_child_main
   if(stream.status() != QDataStream::Ok)
     throw std::invalid_argument("Invalid data stream.");
 
+  connect(this,
+	  SIGNAL(keysReceived(void)),
+	  this,
+	  SLOT(slotKeysReceived(void)));
   spoton_misc::enableLog(true);
 
   auto keySize = m_settings.value("gui/kernelKeySize").toInt();
@@ -1078,6 +1082,22 @@ void spoton_web_server_child_main::slotKernelRead(void)
 
       if(list.size() == 6)
 	{
+	  auto const cipherType(QString(list.at(0)));
+	  auto const hashType(QString(list.at(1)));
+	  auto const iterationCount = static_cast<unsigned long int>
+	    (list.at(3).toInt());
+	  auto const saltLength = list.at(2).toInt();
+
+	  m_crypt.reset
+	    (new spoton_crypt(cipherType,
+			      hashType,
+			      QByteArray(),
+			      QByteArray::fromBase64(list.at(4)),
+			      QByteArray::fromBase64(list.at(5)),
+			      saltLength,
+			      iterationCount,
+			      "chat"));
+	  emit keysReceived();
 	}
       else
 	QTimer::singleShot
@@ -1132,7 +1152,7 @@ void spoton_web_server_child_main::slotKeysReceived(void)
 
   QPair<QByteArray, QByteArray> credentials;
 
-  if(m_crypt)
+  if(m_crypt && m_settings.value("https").toBool())
     {
       QString connectionName("");
 

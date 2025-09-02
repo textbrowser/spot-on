@@ -102,8 +102,8 @@ class spoton_web_server: public QObject
   QTimer m_generalTimer;
   mutable QAtomicInt m_httpClientCount;
   mutable QAtomicInt m_httpsClientCount;
-  QByteArray settings(const int fd) const;
-  QProcess *process(const int fd);
+  QByteArray settings(const bool https, const int fd) const;
+  QProcess *process(const bool https, const int fd);
 
  private slots:
   void slotHttpClientConnected(const qintptr socketDescriptor);

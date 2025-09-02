@@ -76,7 +76,7 @@ spoton_web_server::~spoton_web_server()
   m_https->close();
 }
 
-QByteArray spoton_web_server::settings(const int fd) const
+QByteArray spoton_web_server::settings(const bool https, const int fd) const
 {
   QMap<QString, QVariant> map;
 
@@ -110,6 +110,7 @@ QByteArray spoton_web_server::settings(const int fd) const
   map["gui/web_server_serve_local_content"] = spoton_kernel::setting
     ("gui/web_server_serve_local_content").toBool();
   map["guiServerPort"] = spoton_kernel::setting("guiServerPort").toInt();
+  map["https"] = https;
   map["socketDescriptor"] = fd;
   map["uptimeMinutes"] = spoton_kernel::uptimeMinutes();
 
@@ -120,8 +121,11 @@ QByteArray spoton_web_server::settings(const int fd) const
   return bytes.toBase64();
 }
 
-QProcess *spoton_web_server::process(const int fd)
+QProcess *spoton_web_server::process(const bool https, const int fd)
 {
+  if(fd < 0)
+    return nullptr;
+
   auto const program
     (spoton_kernel::setting("gui/web_server_child_process_name").toString());
 
@@ -131,6 +135,7 @@ QProcess *spoton_web_server::process(const int fd)
   auto process = new QProcess(this);
 
   process->setProperty("fd", fd);
+  process->setWorkingDirectory(spoton_misc::homePath());
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #ifdef Q_OS_MACOS
@@ -138,16 +143,17 @@ QProcess *spoton_web_server::process(const int fd)
     {
       QStringList arguments;
 
-      arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
+      arguments << "-a"	<< program << "-g" << "-s" << settings(https, fd);
       process->start("open", arguments);
     }
   else
-    process->start(program, QStringList() << "-s" << settings(fd));
+    process->start(program, QStringList() << "-s" << settings(https, fd));
 #elif defined(Q_OS_WINDOWS)
   process->start
-    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
+    (QString("\"%1\"").arg(program),
+     QStringList() << "-s" << settings(https, fd));
 #else
-  process->start(program, QStringList() << "-s" << settings(fd));
+  process->start(program, QStringList() << "-s" << settings(https, fd));
 #endif
 #else
 #ifdef Q_OS_MACOS
@@ -155,16 +161,17 @@ QProcess *spoton_web_server::process(const int fd)
     {
       QStringList arguments;
 
-      arguments << "-a"	<< program << "-g" << "-s" << settings(fd);
+      arguments << "-a"	<< program << "-g" << "-s" << settings(https, fd);
       process->start("open", arguments);
     }
   else
-    process->start(program, QStringList() << "-s" << settings(fd));
+    process->start(program, QStringList() << "-s" << settings(https, fd));
 #elif defined(Q_OS_WINDOWS)
   process->start
-    (QString("\"%1\"").arg(program), QStringList() << "-s" << settings(fd));
+    (QString("\"%1\"").arg(program),
+     QStringList() << "-s" << settings(https, fd));
 #else
-  process->start(program, QStringList() << "-s" << settings(fd));
+  process->start(program, QStringList() << "-s" << settings(https, fd));
 #endif
 #endif
   return process;
@@ -201,7 +208,7 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
   if(fd < 0)
     return;
 
-  auto process = this->process(fd);
+  auto process = this->process(false, fd);
 
   if(!process)
     {
@@ -227,7 +234,8 @@ void spoton_web_server::slotHttpThreadFinished(void)
 
   process ?
     spoton_misc::closeSocket(process->property("fd").toInt()) : (void) 0;
-  m_httpClientCount.fetchAndAddOrdered(-1);
+  m_httpClientCount.fetchAndStoreOrdered
+    (qMax(0, m_httpClientCount.fetchAndAddOrdered(0) - 1));
 }
 
 void spoton_web_server::slotHttpsClientConnected
@@ -254,7 +262,7 @@ void spoton_web_server::slotHttpsClientConnected
   if(fd < 0)
     return;
 
-  auto process = this->process(fd);
+  auto process = this->process(true, fd);
 
   if(!process)
     {
@@ -266,7 +274,7 @@ void spoton_web_server::slotHttpsClientConnected
   connect(process,
 	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  this,
-	  SLOT(slotHttpThreadFinished(void)));
+	  SLOT(slotHttpsThreadFinished(void)));
   connect(process,
 	  SIGNAL(finished(int, QProcess::ExitStatus)),
 	  process,
@@ -280,7 +288,8 @@ void spoton_web_server::slotHttpsThreadFinished(void)
 
   process ?
     spoton_misc::closeSocket(process->property("fd").toInt()) : (void) 0;
-  m_httpsClientCount.fetchAndAddOrdered(-1);
+  m_httpsClientCount.fetchAndStoreOrdered
+    (qMax(0, m_httpsClientCount.fetchAndAddOrdered(0) - 1));
 }
 
 void spoton_web_server::slotTimeout(void)
