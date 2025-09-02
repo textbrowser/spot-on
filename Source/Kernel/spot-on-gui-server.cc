@@ -402,8 +402,8 @@ void spoton_gui_server::slotForwardSecrecyResponse
 
 void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
 {
-  auto const keySize = spoton_kernel::setting("gui/kernelKeySize", 2048).
-    toInt();
+  auto const keySize = spoton_kernel::setting
+    ("gui/kernelKeySize", 2048).toInt();
 
   foreach(auto socket, findChildren<QSslSocket *> ())
     if(m_guiIsAuthenticated.
@@ -432,9 +432,9 @@ void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
     else
       spoton_misc::logError
 	(QString("spoton_gui_server::sendMessageToUIs(): "
-		 "socket %1:%2 is not encrypted, if required, "
-		 "or the user interface "
-		 "has not been authenticated. Ignoring write() request.").
+		 "socket %1:%2 is not encrypted, if required, or the user "
+		 "interface has not been authenticated. "
+		 "Ignoring write() request.").
 	 arg(socket->peerAddress().toString()).
 	 arg(socket->peerPort()));
 }
@@ -910,6 +910,20 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(crypt)
 		{
+		  QString string("");
+
+		  string += spoton_kernel::setting
+		    ("gui/cipherType").toString();
+		  string += "_";
+		  string += spoton_kernel::setting("gui/hashType").toString();
+		  string += "_";
+		  string += QString::number
+		    (spoton_kernel::setting("gui/saltLength").toInt());
+		  string += "_";
+		  string += QString::number
+		    (spoton_kernel::setting("gui/iterationCount").toInt());
+		  string += "\n";
+		  socket->write(string.toUtf8());
 		}
 	    }
 	  else if(message.startsWith("retrievemail") &&

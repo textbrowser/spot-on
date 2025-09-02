@@ -177,7 +177,9 @@ spoton_web_server_child_main::spoton_web_server_child_main
   if(stream.status() != QDataStream::Ok)
     throw std::invalid_argument("Invalid data stream.");
 
-  auto keySize = m_settings.value("kernelKeySize").toInt();
+  spoton_misc::enableLog(true);
+
+  auto keySize = m_settings.value("gui/kernelKeySize").toInt();
   auto port = static_cast<quint16> (m_settings.value("guiServerPort").toInt());
 
   if(keySize == 0)
@@ -191,9 +193,13 @@ spoton_web_server_child_main::spoton_web_server_child_main
   else
     {
       connect(&m_kernelSocket,
-	      SIGNAL(connected(void)),
+	      SIGNAL(encrypted(void)),
 	      this,
 	      SLOT(slotKernelEncrypted(void)));
+      connect(&m_kernelSocket,
+	      SIGNAL(sslErrors(const QList<QSslError> &)),
+	      &m_kernelSocket,
+	      SLOT(ignoreSslErrors(void)));
       m_kernelSocket.connectToHostEncrypted("127.0.0.1", port);
     }
 }
@@ -1061,6 +1067,16 @@ void spoton_web_server_child_main::slotKernelEncrypted(void)
 
 void spoton_web_server_child_main::slotKernelRead(void)
 {
+  auto bytes(m_kernelSocket.readAll());
+
+  while(m_kernelSocket.bytesAvailable() > 0)
+    bytes.append(m_kernelSocket.readAll());
+
+  if(bytes.endsWith("\n"))
+    {
+      m_kernelSocket.abort();
+      m_kernelSocket.close();
+    }
 }
 
 void spoton_web_server_child_main::slotKeysReceived(void)
