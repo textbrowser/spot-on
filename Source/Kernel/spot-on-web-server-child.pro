@@ -25,6 +25,16 @@ LIBS        += -L/usr/local/lib \
 DEFINES += SPOTON_POSTGRESQL_DISABLED
 }
 
+macx {
+exists(/opt/homebrew/include) {
+INCLUDEPATH += /opt/homebrew/include
+}
+
+exists(/opt/homebrew/lib) {
+LIBS += -L/opt/homebrew/lib
+}
+}
+
 unix {
 QMAKE_CLEAN += ../Spot-On-Web-Server-Child-Main
 } else {
