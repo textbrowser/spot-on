@@ -1069,11 +1069,20 @@ void spoton_web_server_child_main::slotKernelRead(void)
 {
   auto bytes(m_kernelSocket.readAll());
 
-  while(m_kernelSocket.bytesAvailable() > 0)
+  while(bytes.size() < 500 && m_kernelSocket.bytesAvailable() > 0)
     bytes.append(m_kernelSocket.readAll());
 
-  if(bytes.endsWith("\n"))
+  if(bytes.endsWith("\n") || bytes.size() >= 500)
     {
+      auto const list(bytes.trimmed().split('_'));
+
+      if(list.size() == 6)
+	{
+	}
+      else
+	QTimer::singleShot
+	  (1000, QCoreApplication::instance(), SLOT(quit(void)));
+
       m_kernelSocket.abort();
       m_kernelSocket.close();
     }
