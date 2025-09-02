@@ -174,7 +174,13 @@ LIBS += -L/usr/local/lib \
         -lgpg-error \
         -lpthread \
         -lssl
-} else {
+} else:macx {
+LIBS += -lcrypto \
+        -lgcrypt \
+        -lgpg-error \
+        -lpthread \
+        -lssl
+} else:win32 {
 LIBS += -L..\\..\\libGCrypt\\Libraries.win64 \
         -L..\\..\\libOpenSSL\\Libraries.win64 \
         -lcrypto-3-x64 \
