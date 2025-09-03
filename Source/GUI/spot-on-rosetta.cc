@@ -106,6 +106,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.tabWidget->setCurrentIndex
+    (qBound(0,
+	    QSettings().value("gui/rosettaTabIndex").toInt(),
+	    ui.tabWidget->count() - 1));
   ui.tool_bar->addAction(ui.action_Clear_Clipboard_Buffer);
   ui.tool_bar->addAction(ui.action_Copy);
   ui.tool_bar->addAction(ui.action_Import_GPG_Keys);
@@ -281,6 +285,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveName(void)));
+  connect(ui.tabWidget,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotTabChanged(int)));
   prepareGPGAttachmentsProgramCompleter();
   slotSetIcons();
   ui.cipher->addItems(spoton_crypt::cipherTypes());
@@ -3137,6 +3145,11 @@ void spoton_rosetta::slotSplitterMoved(int pos, int index)
     key = "gui/rosettaMainHorizontalSplitter";
 
   QSettings().setValue(key, splitter->saveState());
+}
+
+void spoton_rosetta::slotTabChanged(int index)
+{
+  QSettings().setValue("gui/rosettaTabIndex", index);
 }
 
 void spoton_rosetta::slotWriteGPG(void)

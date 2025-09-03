@@ -157,6 +157,7 @@ class spoton_rosetta: public QMainWindow
   void slotSaveName(void);
   void slotSetIcons(void);
   void slotSplitterMoved(int pox, int index);
+  void slotTabChanged(int index);
   void slotWriteGPG(void);
 
  signals:
