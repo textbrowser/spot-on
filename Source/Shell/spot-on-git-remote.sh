@@ -12,7 +12,7 @@
 
 if [ -z "$(which git)" ]
 then
-    echo "[Please install git.]"
+    echo "Please install git."
     exit 1
 fi
 
@@ -23,13 +23,13 @@ port=5710
 
 if [ -z "$ip_address" ]
 then
-    echo "[Please define ip_address. Bye!]"
+    echo "Please define ip_address. Bye!"
     exit 1
 fi
 
 if [ -z "$git_site" ]
 then
-    echo "[Please define git_site. Bye!]"
+    echo "Please define git_site. Bye!"
     exit 1
 fi
 
@@ -42,10 +42,10 @@ then
 
     if [ ! $rc -eq 0 ]
     then
-	echo "[GIT-CLONE failed! Bye!]"
+	echo "GIT-CLONE failed! Bye!"
 	exit $rc
     else
-	echo "[Great!]"
+	echo "Great!"
     fi
 fi
 
@@ -54,7 +54,7 @@ cd "$local_directory"
 
 if [ ! $? -eq 0 ]
 then
-    echo "[Cannot set current directory! Bye!]"
+    echo "Cannot set current directory! Bye!"
     exit 1
 fi
 
@@ -66,7 +66,7 @@ while
 
     if [ ! $rc -eq 0 ]
     then
-	echo "[Listen failure. Sleeping for 10 seconds.]"
+	echo "Listen failure. Sleeping for 10 seconds."
 	sleep 10
     else
 	break
@@ -101,9 +101,9 @@ while
 
     if [ ! $? -eq 0 ]
     then
-	echo "[GIT-CONFIG failed!]"
+	echo "GIT-CONFIG failed!"
     else
-	echo "[Great!]"
+	echo "Great!"
     fi
 
     # Pull?
@@ -115,14 +115,14 @@ while
 
     if [ $rc -eq 0 ]
     then
-	echo "[Great!]"
+	echo "Great!"
 	echo "Determining if there are local revisions."
 	rc=$(git ls-files --deleted --exclude-standard --others \
 		 2>/dev/null | wc -l)
 
 	if [ $rc -lt 1 ]
 	then
-	    echo "[All set!]"
+	    echo "All set!"
 
 	    if [ ! -z "$(git status | grep 'git push' 2>/dev/null)" ]
 	    then
@@ -141,7 +141,7 @@ while
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[GIT-ADD failed!]"
+	    echo "GIT-ADD failed!"
 	    continue
 	fi
 
@@ -152,10 +152,10 @@ while
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[GIT-COMMIT failed!]"
+	    echo "GIT-COMMIT failed!"
 	    continue
 	else
-	    echo "[Great!]"
+	    echo "Great!"
 	fi
 
 	echo "Issuing a GIT-PULL request."
@@ -163,9 +163,9 @@ while
 
 	if [ ! $? -eq 0 ]
 	then
-	    echo "[GIT-PULL failed!]"
+	    echo "GIT-PULL failed!"
 	else
-	    echo "[Great!]"
+	    echo "Great!"
 	fi
 
 	echo "Issuing a GIT-PUSH request."
@@ -175,12 +175,12 @@ while
 
 	if [ ! $rc -eq 0 ]
 	then
-	    echo "[GIT-PUSH failed!]"
+	    echo "GIT-PUSH failed!"
 	else
-	    echo "[Great!]"
+	    echo "Great!"
 	fi
     else
-	echo "[GIT-PULL failed!]"
+	echo "GIT-PULL failed!"
     fi
 do true
 done
