@@ -50,8 +50,7 @@ void spoton_status_activity::slotDataReceived(const qint64 size)
   if(m_down)
     {
       m_down->setPixmap(QPixmap(":/generic/down_bright.png"));
-      m_down->setToolTip
-	(spoton_misc::prettyFileSize(m_dataReceived));
+      m_down->setToolTip(spoton_misc::prettyFileSize(m_dataReceived));
     }
 
   QTimer::singleShot(10, this, SLOT(slotNormalDown(void)));
@@ -64,8 +63,7 @@ void spoton_status_activity::slotDataSent(const qint64 size)
   if(m_up)
     {
       m_up->setPixmap(QPixmap(":/generic/up_bright.png"));
-      m_up->setToolTip
-	(spoton_misc::prettyFileSize(m_dataSent));
+      m_up->setToolTip(spoton_misc::prettyFileSize(m_dataSent));
     }
 
   QTimer::singleShot(10, this, SLOT(slotNormalUp(void)));
