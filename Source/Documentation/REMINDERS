@@ -373,3 +373,4 @@ Remaining Items
 4.     Qt 6 and audio may die.
 5.     Neighbors as separate processes.
 6.     Optional Rosetta GPG status messages.
+7.     The git script should allow for pulling only.
