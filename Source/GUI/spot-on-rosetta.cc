@@ -99,6 +99,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.from->setText(tr("Empty"));
   ui.gpg_pull->setChecked
     (QSettings().value("gui/gpgRosettaPull", true).toBool());
+  ui.gpg_show_status_messages->setChecked
+    (QSettings().value("gui/gpgRosettaShowStatusMessages", false).toBool());
   ui.inputDecrypt->setLineWrapColumnOrWidth(80);
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::WrapAnywhere);
@@ -276,6 +278,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotWriteGPG(void)));
+  connect(ui.gpg_show_status_messages,
+	  SIGNAL(stateChanged(int)),
+	  this,
+	  SLOT(slotGPGShowStatusMessages(int)));
   connect(ui.mainHorizontalSplitter,
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
@@ -2514,9 +2520,11 @@ void spoton_rosetta::slotGPGMessagesReadTimer(void)
 
       if(!QFileInfo::exists(it.key()))
 	{
-	  showInformationMessage
-	    (tr("The message file <b>%1</b> was read by <b>%2</b>.").
-	     arg(QFileInfo(it.key()).fileName()).arg(it.value()));
+	  if(ui.gpg_show_status_messages->isChecked())
+	    showInformationMessage
+	      (tr("The message file <b>%1</b> was read by <b>%2</b>.").
+	       arg(QFileInfo(it.key()).fileName()).arg(it.value()));
+
 	  it.remove();
 	}
     }
@@ -2525,6 +2533,12 @@ void spoton_rosetta::slotGPGMessagesReadTimer(void)
 void spoton_rosetta::slotGPGPullTimer(void)
 {
   launchPrisonBluesProcessesIfNecessary();
+}
+
+void spoton_rosetta::slotGPGShowStatusMessages(int state)
+{
+  QSettings().setValue
+    ("gui/gpgRosettaShowStatusMessages", QVariant(state).toBool());
 }
 
 void spoton_rosetta::slotImportGPGKeys(void)
@@ -3309,11 +3323,14 @@ void spoton_rosetta::slotWriteGPG(void)
 		  {
 		    m_gpgMessages[file.fileName()] =
 		      participants.value(i).data().toString();
-		    showInformationMessage
-		      (tr("The message file <b>%1</b> "
-			  "was generated for <b>%2</b>.").
-		       arg(QFileInfo(file.fileName()).fileName()).
-		       arg(participants.value(i).data().toString()));
+
+		    if(ui.gpg_show_status_messages->isChecked())
+		      showInformationMessage
+			(tr("The message file <b>%1</b> "
+			    "was generated for <b>%2</b>.").
+			 arg(QFileInfo(file.fileName()).fileName()).
+			 arg(participants.value(i).data().toString()));
+
 		    state = true;
 		  }
 		else

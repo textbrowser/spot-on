@@ -822,6 +822,13 @@
                             <number>5</number>
                            </property>
                            <item>
+                            <widget class="QCheckBox" name="gpg_show_status_messages">
+                             <property name="text">
+                              <string>Show Status Messages</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
                             <spacer name="horizontalSpacer_26">
                              <property name="orientation">
                               <enum>Qt::Horizontal</enum>
@@ -1344,6 +1351,7 @@
   <tabstop>publish</tabstop>
   <tabstop>outputEncrypt</tabstop>
   <tabstop>scrollArea_2</tabstop>
+  <tabstop>gpg_show_status_messages</tabstop>
   <tabstop>clear_gpg</tabstop>
   <tabstop>gpg_pull</tabstop>
   <tabstop>gpg_messages</tabstop>

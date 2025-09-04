@@ -364,6 +364,7 @@ Completed Items
        digital digests across sessions.
 252.   Detect expired Web Server certificate. A local browser suffices.
 253.   Detect expired listener certificates. A local connection suffices.
+254.   Optional Rosetta GPG status messages.
 
 Remaining Items
 
@@ -372,5 +373,4 @@ Remaining Items
 3.     Log translated errors in spoton_crypt.
 4.     Qt 6 and audio may die.
 5.     Neighbors as separate processes.
-6.     Optional Rosetta GPG status messages.
-7.     The git script should allow for pulling only.
+6.     The git script should allow for pulling only.

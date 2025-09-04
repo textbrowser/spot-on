@@ -144,6 +144,7 @@ class spoton_rosetta: public QMainWindow
   void slotGPGFileProcessed(void);
   void slotGPGMessagesReadTimer(void);
   void slotGPGPullTimer(void);
+  void slotGPGShowStatusMessages(int state);
   void slotImportGPGKeys(void);
   void slotNewGPGKeys(void);
   void slotParticipantAdded(const QString &type);
