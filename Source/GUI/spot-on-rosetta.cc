@@ -56,8 +56,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
   m_gpgPullTimer.setInterval(5000);
-  m_gpgReadMessagesTimer.start(5000);
 #ifdef SPOTON_GPGME_ENABLED
+  m_gpgReadMessagesTimer.start(5000);
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
   ui.setupUi(this);
@@ -75,6 +75,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.publish->setEnabled(false);
   ui.publish->setToolTip(tr("The GnuPG Made Easy library is not available."));
   ui.tabWidget->setTabEnabled(1, false);
+  ui.tabWidget->setTabToolTip
+    (1, tr("The GnuPG Made Easy library is not available."));
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
