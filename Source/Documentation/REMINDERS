@@ -372,3 +372,4 @@ Remaining Items
 3.     Log translated errors in spoton_crypt.
 4.     Qt 6 and audio may die.
 5.     Neighbors as separate processes.
+6.     Optional Rosetta GPG status messages.

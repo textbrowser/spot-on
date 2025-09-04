@@ -55,6 +55,7 @@ QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
+  m_gpgPullTimer.setInterval(5000);
   m_gpgReadMessagesTimer.start(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
@@ -96,6 +97,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
   ui.dump->setVisible(false);
   ui.from->setText(tr("Empty"));
+  ui.gpg_pull->setChecked
+    (QSettings().value("gui/gpgRosettaPull", true).toBool());
   ui.inputDecrypt->setLineWrapColumnOrWidth(80);
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::WrapAnywhere);
@@ -117,10 +120,14 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.tool_bar->addAction(ui.action_Paste);
   ui.tool_bar->addAction(ui.action_Remove_GPG_Keys);
   ui.tool_bar->addAction(ui.action_Remove_Stored_INI_GPG_Passphrase);
+  connect(&m_gpgPullTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotGPGPullTimer(void)));
   connect(&m_gpgReadMessagesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
-	  SLOT(slotGPGPMessagesReadTimer(void)));
+	  SLOT(slotGPGMessagesReadTimer(void)));
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -261,6 +268,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotWriteGPG(void)));
+  connect(ui.gpg_pull,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotPullGPG(void)));
   connect(ui.gpg_send,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -348,10 +359,12 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #ifdef Q_OS_MACOS
   spoton_utilities::enableTabDocumentMode(this);
 #endif
+  slotPullGPG();
 }
 
 spoton_rosetta::~spoton_rosetta()
 {
+  m_gpgPullTimer.stop();
   m_gpgReadMessagesTimer.stop();
   m_prisonBluesTimer.stop();
   m_readPrisonBluesFuture.cancel();
@@ -2487,11 +2500,11 @@ void spoton_rosetta::slotDelete(void)
 void spoton_rosetta::slotGPGFileProcessed(void)
 {
   showInformationMessage
-    (tr("A GPG file was processed. Please see <b>%1</b>.").
+    (tr("A GPG file was processed. Please visit <b>%1</b>.").
      arg(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG"));
 }
 
-void spoton_rosetta::slotGPGPMessagesReadTimer(void)
+void spoton_rosetta::slotGPGMessagesReadTimer(void)
 {
   QMutableMapIterator<QString, QString> it(m_gpgMessages);
 
@@ -2507,6 +2520,11 @@ void spoton_rosetta::slotGPGPMessagesReadTimer(void)
 	  it.remove();
 	}
     }
+}
+
+void spoton_rosetta::slotGPGPullTimer(void)
+{
+  launchPrisonBluesProcessesIfNecessary();
 }
 
 void spoton_rosetta::slotImportGPGKeys(void)
@@ -2898,6 +2916,14 @@ void spoton_rosetta::slotPublishGPG(void)
   state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
 }
 
+void spoton_rosetta::slotPullGPG(void)
+{
+  QSettings().setValue("gui/gpgRosettaPull", ui.gpg_pull->isChecked());
+  ui.gpg_pull->isChecked() ?
+    launchPrisonBluesProcessesIfNecessary() : (void) 0;
+  ui.gpg_pull->isChecked() ? m_gpgPullTimer.start() : m_gpgPullTimer.stop();
+}
+
 void spoton_rosetta::slotRemoveGPGAttachment(const QUrl &url)
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -3119,6 +3145,7 @@ void spoton_rosetta::slotSetIcons(void)
   ui.copy->setIcon(QIcon(QString(":/%1/copy.png").arg(iconSet)));
   ui.decryptClear->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.decryptReset->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
+  ui.gpg_pull->setIcon(QIcon(QString(":/%1/down.png").arg(iconSet)));
   ui.gpg_send->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
 }
@@ -3213,7 +3240,8 @@ void spoton_rosetta::slotWriteGPG(void)
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   msg.append
-    (tr("<b>%1</b> (<font color=gray>%2</font>)<b>:</b> ").
+    (tr("<font color=green><b>%1</b></font> "
+	"(<font color=gray>%2</font>)<b>:</b> ").
      arg(ui.gpg_email_addresses->currentText()).
      arg(to.mid(0, to.length() - 2)));
 
