@@ -851,7 +851,7 @@
                            <item>
                             <widget class="QPushButton" name="gpg_pull">
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, automatically pull every five seconds. Please be careful as some GIT servers may decline requests!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, automatically pull every five seconds. Please be careful as some GIT servers may decline requests! If the kernel is active, this function is ignored.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
                               <string>Pull!</string>

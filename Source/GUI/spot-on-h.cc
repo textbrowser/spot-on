@@ -600,6 +600,11 @@ void spoton::launchPrisonBluesProcesses
        m_prisonBluesProcesses,
        pullOnly,
        m_crypts.value("chat", nullptr));
+  else if(statusBar)
+    statusBar->showMessage
+      (tr("The kernel is active and will be launching Prison Blues "
+	  "process(es)."),
+       5000);
 }
 
 void spoton::populateGITTable(void)
