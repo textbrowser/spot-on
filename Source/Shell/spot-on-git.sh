@@ -10,6 +10,13 @@
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory.
 
+pull_only=0
+
+if [ "$1" = "1" ]
+then
+    pull_only=1
+fi
+
 if [ -z "$(which git)" ]
 then
     echo "Please install git."
@@ -92,6 +99,11 @@ else
     git pull 1>/dev/null 2>/dev/null
 
     rc=$?
+
+    if [ $pull_only -eq 1 ]
+    then
+	exit $rc
+    fi
 
     if [ $rc -eq 0 ]
     then
