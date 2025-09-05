@@ -475,7 +475,7 @@ class spoton: public QMainWindow
   void addMessageToReplayQueue(const QString &message1,
 			       const QByteArray &message2,
 			       const QString &publicKeyHash);
-  void launchPrisonBluesProcesses(QStatusBar *statusBar);
+  void launchPrisonBluesProcesses(QStatusBar *statusBar, const bool pullOnly);
 
  private:
   static const int APPLY_GOLDBUG_TO_LETTER_ERROR_ATTACHMENTS = 1;

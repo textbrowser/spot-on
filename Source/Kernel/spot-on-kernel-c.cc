@@ -535,7 +535,7 @@ void spoton_kernel::slotPrepareObjects(void)
 void spoton_kernel::slotPrisonBluesTimeout(void)
 {
   spoton_misc::launchPrisonBluesProcesses
-    (this, nullptr, m_prisonBluesProcesses, crypt("chat"));
+    (this, nullptr, m_prisonBluesProcesses, false, crypt("chat"));
 }
 
 void spoton_kernel::slotPurgeEphemeralKeyPair(const QByteArray &publicKeyHash)

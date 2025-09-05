@@ -102,6 +102,7 @@ else
 
     if [ $pull_only -eq 1 ]
     then
+	echo "Exiting after GIT-PULL!"
 	exit $rc
     fi
 

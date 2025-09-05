@@ -104,11 +104,11 @@ class spoton_rosetta: public QMainWindow
 				     int fd);
 #endif
   void keyPressEvent(QKeyEvent *event);
-  void launchPrisonBluesProcessesIfNecessary(void);
+  void launchPrisonBluesProcessesIfNecessary(const bool pullOnly);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
   void prepareGPGAttachmentsProgramCompleter(void);
-  void prisonBluesProcess(void);
+  void prisonBluesProcess(const bool pullOnly);
   void publishAttachments
     (const QString &destination,
      const QString &participant,

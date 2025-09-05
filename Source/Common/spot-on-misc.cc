@@ -4800,6 +4800,7 @@ void spoton_misc::launchPrisonBluesProcesses
 (QObject *parent,
  QStatusBar *statusBar,
  QVector<QPointer<QProcess> > &prisonBluesProcesses,
+ const bool pullOnly,
  spoton_crypt *crypt)
 {
   if(crypt == nullptr || prisonBluesProcesses.isEmpty())
@@ -4857,14 +4858,15 @@ void spoton_misc::launchPrisonBluesProcesses
 	    ("GIT_LOCAL_DIRECTORY", it.value().value("local-directory"));
 	  environment.insert("GIT_SITE", it.value().value("git-site"));
 	  process->setProcessEnvironment(environment);
-	  process->start(script, QStringList());
+	  process->start(script, QStringList() << QString::number(pullOnly));
 
 	  if(process->waitForStarted(5000))
 	    {
 	      if(statusBar)
 		statusBar->showMessage
 		  (QObject::
-		   tr("The program %1 was started.").arg(process->program()),
+		   tr("The program %1 was started with argument %2.").
+		   arg(process->program()).arg(QString::number(pullOnly)),
 		   5000);
 	    }
 	  else

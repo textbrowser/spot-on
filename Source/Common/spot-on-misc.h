@@ -240,6 +240,7 @@ class spoton_misc
     (QObject *parent,
      QStatusBar *statusBar,
      QVector<QPointer<QProcess> > &prisonBluesProcesses,
+     const bool pullOnly,
      spoton_crypt *crypt);
   static void logError(const QString &error);
   static void prepareAuthenticationHint(spoton_crypt *crypt);

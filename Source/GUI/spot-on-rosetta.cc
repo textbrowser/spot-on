@@ -670,11 +670,13 @@ void spoton_rosetta::keyPressEvent(QKeyEvent *event)
   QMainWindow::keyPressEvent(event);
 }
 
-void spoton_rosetta::launchPrisonBluesProcessesIfNecessary(void)
+void spoton_rosetta::launchPrisonBluesProcessesIfNecessary(const bool pullOnly)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(m_prisonBluesTimer.remainingTime() >= 5500)
-    prisonBluesProcess();
+    prisonBluesProcess(pullOnly);
+#else
+  Q_UNUSED(pullOnly);
 #endif
 }
 
@@ -879,7 +881,7 @@ void spoton_rosetta::prepareGPGAttachmentsProgramCompleter(void)
   ui.gpg->setCompleter(completer);
 }
 
-void spoton_rosetta::prisonBluesProcess(void)
+void spoton_rosetta::prisonBluesProcess(const bool pullOnly)
 {
 #ifdef SPOTON_GPGME_ENABLED
   if(m_parent == nullptr)
@@ -887,7 +889,9 @@ void spoton_rosetta::prisonBluesProcess(void)
       (tr("Invalid parent object. Cannot launch Prison Blues process(es)."),
        5000);
   else
-    m_parent->launchPrisonBluesProcesses(statusBar());
+    m_parent->launchPrisonBluesProcesses(statusBar(), pullOnly);
+#else
+  Q_UNUSED(pullOnly);
 #endif
 }
 
@@ -2534,7 +2538,7 @@ void spoton_rosetta::slotGPGMessagesReadTimer(void)
 
 void spoton_rosetta::slotGPGPullTimer(void)
 {
-  launchPrisonBluesProcessesIfNecessary();
+  launchPrisonBluesProcessesIfNecessary(true);
 }
 
 void spoton_rosetta::slotGPGShowStatusMessages(int state)
@@ -2719,7 +2723,7 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
 #endif
     }
 
-  prisonBluesProcess();
+  prisonBluesProcess(false);
 }
 
 void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
@@ -2929,14 +2933,14 @@ void spoton_rosetta::slotPublishGPG(void)
 	(tr("The directory %1 is not writable.").
 	 arg(directory.absoluteFilePath()), 5000);
 
-  state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
+  state ? launchPrisonBluesProcessesIfNecessary(false) : (void) 0;
 }
 
 void spoton_rosetta::slotPullGPG(void)
 {
   QSettings().setValue("gui/gpgRosettaPull", ui.gpg_pull->isChecked());
   ui.gpg_pull->isChecked() ?
-    launchPrisonBluesProcessesIfNecessary() : (void) 0;
+    launchPrisonBluesProcessesIfNecessary(true) : (void) 0;
   ui.gpg_pull->isChecked() ? m_gpgPullTimer.start() : m_gpgPullTimer.stop();
 }
 
@@ -3348,7 +3352,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	  showMessage(tr("Could not create a temporary file."), 5000);
       }
 
-  state ? launchPrisonBluesProcessesIfNecessary() : (void) 0;
+  state ? launchPrisonBluesProcessesIfNecessary(false) : (void) 0;
   ui.gpg_message->clear();
   QApplication::restoreOverrideCursor();
 #endif
