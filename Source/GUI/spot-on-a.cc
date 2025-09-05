@@ -3383,13 +3383,13 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_ui.transmitted->horizontalHeader()->setSortIndicator(5, Qt::AscendingOrder);
   m_ui.urlParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
+  m_ui.addTransmittedMagnets->setColumnHidden
+    (m_ui.addTransmittedMagnets->columnCount() - 1, true); // OID
   m_ui.emailParticipants->setColumnHidden(1, true); // OID
   m_ui.emailParticipants->setColumnHidden(2, true); // neighbor_oid
   m_ui.emailParticipants->setColumnHidden(3, true); // public_key_hash
-  m_ui.etpMagnets->setColumnHidden(m_ui.etpMagnets->columnCount() - 1,
-				   true); // OID
-  m_ui.addTransmittedMagnets->setColumnHidden
-    (m_ui.addTransmittedMagnets->columnCount() - 1, true); // OID
+  m_ui.etpMagnets->setColumnHidden
+    (m_ui.etpMagnets->columnCount() - 1, true); // OID
   m_ui.mail->setColumnHidden(5, true); // goldbug
   m_ui.mail->setColumnHidden(6, true); // message
   m_ui.mail->setColumnHidden(7, true); // message_code
@@ -9396,25 +9396,25 @@ void spoton::slotPopulateParticipants
 
   m_ui.emailParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.emailParticipants->horizontalScrollBar()->setValue(hvalE);
-  m_ui.emailParticipants->resizeColumnToContents(0);
   m_ui.emailParticipants->setSelectionMode
     (QAbstractItemView::ExtendedSelection);
   m_ui.emailParticipants->setSortingEnabled(true);
   m_ui.emailParticipants->verticalScrollBar()->setValue(vvalE);
+  m_ui.emailParticipants->resizeColumnToContents(0);
   m_ui.participants->horizontalHeader()->setStretchLastSection(true);
   m_ui.participants->horizontalScrollBar()->setValue(hval);
-  m_ui.participants->resizeColumnToContents(0); // Participant
-  m_ui.participants->resizeColumnToContents(6); // Gemini Encryption Key
-  m_ui.participants->resizeColumnToContents(7); // Gemini Hash Key
   m_ui.participants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.participants->setSortingEnabled(true);
   m_ui.participants->verticalScrollBar()->setValue(vval);
+  m_ui.participants->resizeColumnToContents(0); // Participant
+  m_ui.participants->resizeColumnToContents(6); // Gemini Encryption Key
+  m_ui.participants->resizeColumnToContents(7); // Gemini Hash Key
   m_ui.urlParticipants->horizontalHeader()->setStretchLastSection(true);
   m_ui.urlParticipants->horizontalScrollBar()->setValue(hvalU);
-  m_ui.urlParticipants->resizeColumnToContents(0);
   m_ui.urlParticipants->setSelectionMode(QAbstractItemView::ExtendedSelection);
   m_ui.urlParticipants->setSortingEnabled(true);
   m_ui.urlParticipants->verticalScrollBar()->setValue(vvalU);
+  m_ui.urlParticipants->resizeColumnToContents(0);
 
   if(focusWidget)
     focusWidget->setFocus();

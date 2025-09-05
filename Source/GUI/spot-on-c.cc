@@ -664,12 +664,12 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
   item->setEditable(false);
   item->setToolTip(item->text());
   m_statisticsModel->setItem(row, 1, item);
-  m_statisticsUi.view->resizeColumnToContents(0);
   m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
   m_statisticsUi.view->sortByColumn(0, Qt::AscendingOrder);
-  m_ui.statistics->resizeColumnToContents(0);
+  m_statisticsUi.view->resizeColumnToContents(0);
   m_ui.statistics->horizontalHeader()->setStretchLastSection(true);
   m_ui.statistics->sortByColumn(0, Qt::AscendingOrder);
+  m_ui.statistics->resizeColumnToContents(0);
 
   for(int i = 0; i < m_statisticsModel->rowCount(); i++)
     if(m_statisticsModel->item(i, 0) &&

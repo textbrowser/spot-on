@@ -694,11 +694,11 @@ void spoton::prepareOtherOptions(void)
 	}
     }
 
-  m_optionsUi.other_options->resizeColumnToContents(0);
-  m_optionsUi.other_options->resizeColumnToContents(1);
   m_optionsUi.other_options->setSortingEnabled(true);
   m_optionsUi.other_options->sortByColumn
     (0, m_optionsUi.other_options->horizontalHeader()->sortIndicatorOrder());
+  m_optionsUi.other_options->resizeColumnToContents(0);
+  m_optionsUi.other_options->resizeColumnToContents(1);
 
   QFileInfo const fileInfo
     (m_settings.value("FORTUNA_FILE", "").toString().trimmed());
