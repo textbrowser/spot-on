@@ -6235,9 +6235,9 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>1029</width>
+             <x>-78</x>
+             <y>-661</y>
+             <width>1034</width>
              <height>1379</height>
             </rect>
            </property>
@@ -6671,6 +6671,19 @@
                          </property>
                         </item>
                        </widget>
+                      </item>
+                      <item>
+                       <spacer name="horizontalSpacer_25">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                      </layout>
                     </item>
@@ -7121,6 +7134,16 @@
                    <property name="spacing">
                     <number>5</number>
                    </property>
+                   <item row="1" column="9">
+                    <widget class="QLabel" name="label_69">
+                     <property name="text">
+                      <string>Key &amp;Type</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>keys</cstring>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="0" column="1">
                     <widget class="QComboBox" name="encryptionKeySize">
                      <property name="currentIndex">
@@ -7156,129 +7179,10 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="1" column="10">
-                    <widget class="QComboBox" name="keys">
-                     <property name="sizeAdjustPolicy">
-                      <enum>QComboBox::AdjustToContents</enum>
-                     </property>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Chat</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">E-Mail</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Open Library</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Poptastic</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">Rosetta</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string notr="true">URL</string>
-                      </property>
-                     </item>
-                    </widget>
-                   </item>
                    <item row="1" column="12">
                     <widget class="QPushButton" name="delete_key">
                      <property name="text">
                       <string>Delete</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="2">
-                    <widget class="QLabel" name="label_46">
-                     <property name="text">
-                      <string>&amp;Signature</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>signatureKeyType</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="9">
-                    <widget class="QLabel" name="label_69">
-                     <property name="text">
-                      <string>Key &amp;Type</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>keys</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_92">
-                     <property name="text">
-                      <string>&amp;Key Size</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>signatureKeySize</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="3">
-                    <widget class="QComboBox" name="signatureKeyType">
-                     <property name="currentIndex">
-                      <number>4</number>
-                     </property>
-                     <property name="sizeAdjustPolicy">
-                      <enum>QComboBox::AdjustToContents</enum>
-                     </property>
-                     <item>
-                      <property name="text">
-                       <string>DSA</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>ECDSA</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>EdDSA</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>ElGamal</string>
-                      </property>
-                     </item>
-                     <item>
-                      <property name="text">
-                       <string>RSA</string>
-                      </property>
-                     </item>
-                    </widget>
-                   </item>
-                   <item row="0" column="2">
-                    <widget class="QLabel" name="label_45">
-                     <property name="text">
-                      <string>&amp;Encryption</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>encryptionKeyType</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="11">
-                    <widget class="QPushButton" name="regenerate">
-                     <property name="text">
-                      <string>Create</string>
                      </property>
                     </widget>
                    </item>
@@ -7320,6 +7224,131 @@
                      </item>
                     </widget>
                    </item>
+                   <item row="1" column="3">
+                    <widget class="QComboBox" name="signatureKeyType">
+                     <property name="currentIndex">
+                      <number>4</number>
+                     </property>
+                     <property name="sizeAdjustPolicy">
+                      <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>DSA</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>ECDSA</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>EdDSA</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>ElGamal</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>RSA</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="newKeys">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, a confirmation prompt is displayed whenever the passphrase or question/answer is/are updated. If the confirmation prompt is confirmed, new key pairs will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string>&amp;Key Size</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="2">
+                    <widget class="QLabel" name="label_45">
+                     <property name="text">
+                      <string>&amp;Encryption</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>encryptionKeyType</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="10">
+                    <widget class="QComboBox" name="keys">
+                     <property name="sizeAdjustPolicy">
+                      <enum>QComboBox::AdjustToContents</enum>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Chat</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">E-Mail</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Open Library</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Poptastic</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">Rosetta</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string notr="true">URL</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item row="1" column="2">
+                    <widget class="QLabel" name="label_46">
+                     <property name="text">
+                      <string>&amp;Signature</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>signatureKeyType</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_92">
+                     <property name="text">
+                      <string>&amp;Key Size</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>signatureKeySize</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="11">
+                    <widget class="QPushButton" name="regenerate">
+                     <property name="text">
+                      <string>Create</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="0" column="3">
                     <widget class="QComboBox" name="encryptionKeyType">
                      <property name="currentIndex">
@@ -7350,21 +7379,18 @@
                      </item>
                     </widget>
                    </item>
-                   <item row="0" column="0">
-                    <widget class="QCheckBox" name="newKeys">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
+                   <item row="1" column="13">
+                    <spacer name="horizontalSpacer_30">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
                      </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If checked, a confirmation prompt is displayed whenever the passphrase or question/answer is/are updated. If the confirmation prompt is confirmed, new key pairs will be generated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
                      </property>
-                     <property name="text">
-                      <string>&amp;Key Size</string>
-                     </property>
-                    </widget>
+                    </spacer>
                    </item>
                   </layout>
                  </item>
