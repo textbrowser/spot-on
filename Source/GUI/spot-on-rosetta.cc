@@ -733,18 +733,29 @@ void spoton_rosetta::populateContacts(void)
 
 	QMap<QString, QString> fingerprints;
 	QMap<QString, QString> gpgInformation;
+	QMap<QString, QString> states;
 
-	query.prepare("SELECT email, public_keys, public_keys_hash FROM gpg");
+	query.exec("ALTER TABLE gpg ADD state TEXT");
+	query.prepare
+	  ("SELECT email, public_keys, public_keys_hash, state FROM gpg");
 
 	if(query.exec())
 	  while(query.next())
 	    {
 	      QByteArray name;
+	      QByteArray state;
 	      auto ok = true;
 
 	      if(eCrypt)
 		name = eCrypt->decryptedAfterAuthenticated
 		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+	      else
+		ok = false;
+
+	      if(eCrypt)
+		state = eCrypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(3).toByteArray()),
+		   nullptr); // Failures will be ignored.
 	      else
 		ok = false;
 
@@ -762,6 +773,7 @@ void spoton_rosetta::populateContacts(void)
 		  gpgInformation.insert
 		    (name, spoton_crypt::gpgInformation(publicKey));
 		  names.insert(name, pair);
+		  states.insert(name, state);
 		}
 	    }
 
@@ -773,6 +785,10 @@ void spoton_rosetta::populateContacts(void)
 #endif
 	int i = 0;
 
+	disconnect(ui.gpg_participants,
+		   SIGNAL(itemChanged(QTableWidgetItem *)),
+		   this,
+		   SLOT(slotGPGParticipantsChanged(QTableWidgetItem *)));
 	ui.gpg_participants->setRowCount(names.size());
 
 	while(it.hasNext())
@@ -797,7 +813,14 @@ void spoton_rosetta::populateContacts(void)
 
 	    auto item = new QTableWidgetItem(ui.contacts->itemText(i));
 
-	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	    item->setCheckState
+	      (states.value(str).contains("online=true") ?
+	       Qt::Checked : Qt::Unchecked);
+	    item->setData(Qt::UserRole, it.value().second);
+	    item->setFlags
+	      (Qt::ItemIsEnabled |
+	       Qt::ItemIsSelectable |
+	       Qt::ItemIsUserCheckable);
 	    ui.gpg_participants->setItem(i, 0, item);
 	    item = new QTableWidgetItem(fingerprints.value(str).trimmed());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -815,6 +838,10 @@ void spoton_rosetta::populateContacts(void)
 	    i += 1;
 	  }
 
+	connect(ui.gpg_participants,
+		SIGNAL(itemChanged(QTableWidgetItem *)),
+		this,
+		SLOT(slotGPGParticipantsChanged(QTableWidgetItem *)));
 	ui.gpg_participants->resizeColumnsToContents();
 	ui.gpg_participants->scrollToTop();
       }
@@ -1242,10 +1269,12 @@ void spoton_rosetta::slotAddContact(void)
 	      ** GPG public keys are not encrypted in the key ring.
 	      */
 
+	      query.exec("ALTER TABLE gpg ADD state TEXT");
 	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
 			 "email TEXT NOT NULL, "
 			 "public_keys TEXT NOT NULL, "
-			 "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
+			 "public_keys_hash TEXT NOT NULL PRIMARY KEY, "
+			 "state TEXT)");
 
 	      if(fingerprint.isEmpty())
 		{
@@ -1254,8 +1283,8 @@ void spoton_rosetta::slotAddContact(void)
 		}
 
 	      query.prepare("INSERT OR REPLACE INTO gpg "
-			    "(email, public_keys, public_keys_hash) "
-			    "VALUES (?, ?, ?)");
+			    "(email, public_keys, public_keys_hash, state) "
+			    "VALUES (?, ?, ?, ?)");
 
 	      if(ok)
 		query.addBindValue
@@ -1270,6 +1299,10 @@ void spoton_rosetta::slotAddContact(void)
 	      if(ok)
 		query.addBindValue
 		  (eCrypt->keyedHash(fingerprint, &ok).toBase64());
+
+	      if(ok)
+		query.addBindValue
+		  (eCrypt->keyedHash("online=false", &ok).toBase64());
 
 	      if(ok)
 		{
@@ -2534,6 +2567,51 @@ void spoton_rosetta::slotGPGMessagesReadTimer(void)
 	  it.remove();
 	}
     }
+}
+
+void spoton_rosetta::slotGPGParticipantsChanged(QTableWidgetItem *item)
+{
+  if(!item || item->column() != 0)
+    return;
+
+  auto crypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
+
+  if(!crypt)
+    return;
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	auto ok = true;
+
+	query.prepare("UPDATE gpg SET state = ? WHERE public_keys_hash = ?");
+
+	if(item->checkState() != Qt::Checked)
+	  query.addBindValue
+	    (crypt->encryptedThenHashed("online=false", &ok).toBase64());
+	else
+	  query.addBindValue
+	    (crypt->encryptedThenHashed("online=true", &ok).toBase64());
+
+	query.addBindValue(item->data(Qt::UserRole).toByteArray());
+
+	if(ok)
+	  query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rosetta::slotGPGPullTimer(void)

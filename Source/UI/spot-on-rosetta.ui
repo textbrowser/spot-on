@@ -760,7 +760,7 @@
                     <x>0</x>
                     <y>0</y>
                     <width>1027</width>
-                    <height>685</height>
+                    <height>732</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -964,6 +964,16 @@
                             </spacer>
                            </item>
                           </layout>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_9">
+                           <property name="text">
+                            <string>Share online presence with checked participant(s).</string>
+                           </property>
+                           <property name="wordWrap">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
                          </item>
                          <item>
                           <widget class="QTableWidget" name="gpg_participants">
