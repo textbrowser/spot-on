@@ -50,6 +50,7 @@
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
+QString spoton_rosetta::s_status = QString("spoton://status=%1,%2");
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
@@ -58,6 +59,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   m_gpgPullTimer.setInterval(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_gpgReadMessagesTimer.start(5000);
+  m_gpgStatusTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 2);
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
   ui.setupUi(this);
@@ -68,6 +70,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("The GnuPG Made Easy library is not available."));
   ui.action_Remove_GPG_Keys->setEnabled(false);
   ui.action_Remove_GPG_Keys->setToolTip(ui.action_Import_GPG_Keys->toolTip());
+  ui.gpg_address->addItem("Empty"); // Please do not translate Empty.
+  ui.gpg_address->setEnabled(false);
+  ui.gpg_address->setToolTip
+    (tr("The GnuPG Made Easy library is not available."));
   ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
   ui.gpg_email_addresses->setEnabled(false);
   ui.gpg_email_addresses->setToolTip
@@ -132,6 +138,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotGPGMessagesReadTimer(void)));
+  connect(&m_gpgStatusTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotGPGStatusTimerTimeout(void)));
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -374,6 +384,7 @@ spoton_rosetta::~spoton_rosetta()
 {
   m_gpgPullTimer.stop();
   m_gpgReadMessagesTimer.stop();
+  m_gpgStatusTimer.stop();
   m_prisonBluesTimer.stop();
   m_readPrisonBluesFuture.cancel();
   m_readPrisonBluesFuture.waitForFinished();
@@ -979,8 +990,11 @@ void spoton_rosetta::publishAttachments
 		 << "--trust-model"
 		 << "always"
 		 << attachment;
-      QProcess::startDetached
-	(fileInfo.absoluteFilePath(), parameters, spoton_misc::homePath());
+
+      if(!QProcess::startDetached(fileInfo.absoluteFilePath(),
+				  parameters,
+				  spoton_misc::homePath()))
+	file.remove();
     }
 }
 
@@ -2625,6 +2639,96 @@ void spoton_rosetta::slotGPGShowStatusMessages(int state)
     ("gui/gpgRosettaShowStatusMessages", QVariant(state).toBool());
 }
 
+void spoton_rosetta::slotGPGStatusTimerTimeout(void)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  if(!m_parent)
+    return;
+
+  auto const list(m_parent->prisonBluesDirectories());
+
+  if(list.isEmpty())
+    return;
+
+  auto crypt = m_parent->crypts().value("chat", nullptr);
+
+  if(!crypt)
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QList<QByteArray> publicKeyHashes;
+  QStringList fingerprints;
+
+  for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
+    {
+      auto item = ui.gpg_participants->item(i, 0);
+
+      if(item && item->checkState() == Qt::Checked)
+	{
+	  auto item1 = ui.gpg_participants->item(i, 1);
+	  auto item2 = ui.gpg_participants->item(i, 2);
+
+	  if(item1 && item2)
+	    {
+	      fingerprints << item1->text();
+	      publicKeyHashes << item2->text().toUtf8();
+	    }
+	}
+    }
+
+  foreach(auto const &directory, list)
+    for(int i = 0; i < fingerprints.size(); i++)
+      {
+	if(!(directory.isWritable()) ||
+	   !(fingerprints.value(i).isEmpty() == false &&
+	     publicKeyHashes.value(i).isEmpty() == false))
+	  continue;
+
+	auto const destination
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   fingerprints.value(i));
+
+	QDir().mkpath(destination);
+
+	QTemporaryFile file
+	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
+
+	if(file.open())
+	  {
+	    auto const publicKey = spoton_misc::publicKeyFromHash
+	      (QByteArray::fromBase64(publicKeyHashes.value(i)), true, crypt);
+	    auto const status
+	      (QString(s_status).
+	       replace("%1", "").
+	       replace("%2",
+		       QDateTime::currentDateTimeUtc().
+		       toString("MMddyyyyhhmmss")));
+	    auto ok = true;
+	    auto const output
+	      (gpgEncrypt(ok,
+			  status.toUtf8(),
+			  publicKey,
+			  QByteArray(),
+			  true));
+
+	    if(ok)
+	      {
+		Q_UNUSED(file.fileName()); // Prevents removal of file.
+		file.setAutoRemove(false);
+		file.write(output);
+	      }
+	    else
+	      file.remove();
+	  }
+      }
+
+  launchPrisonBluesProcessesIfNecessary(false);
+  QApplication::restoreOverrideCursor();
+#endif
+}
+
 void spoton_rosetta::slotImportGPGKeys(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -3340,7 +3444,7 @@ void spoton_rosetta::slotWriteGPG(void)
   msg.append
     (tr("<font color=green><b>%1</b></font> "
 	"(<font color=gray>%2</font>)<b>:</b> ").
-     arg(ui.gpg_email_addresses->currentText()).
+     arg(ui.gpg_address->currentText()).
      arg(to.mid(0, to.length() - 2)));
 
   if(m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool())
@@ -3424,7 +3528,10 @@ void spoton_rosetta::slotWriteGPG(void)
 		     5000);
 	      }
 	    else
-	      showMessage(output, 5000);
+	      {
+		file.remove();
+		showMessage(output, 5000);
+	      }
 	  }
 	else
 	  showMessage(tr("Could not create a temporary file."), 5000);

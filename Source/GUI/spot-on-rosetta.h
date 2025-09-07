@@ -84,6 +84,7 @@ class spoton_rosetta: public QMainWindow
 #endif
   QTimer m_gpgPullTimer;
   QTimer m_gpgReadMessagesTimer;
+  QTimer m_gpgStatusTimer;
   QTimer m_prisonBluesTimer;
   QVector<QByteArray> m_gpgFingerprints;
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
@@ -97,6 +98,7 @@ class spoton_rosetta: public QMainWindow
   QMap<QString, QByteArray> gpgEmailAddresses(void) const;
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;
+  static QString s_status;
   static gpgme_error_t gpgPassphrase(void *hook,
 				     const char *uid_hint,
 				     const char *passphrase_info,
@@ -146,6 +148,7 @@ class spoton_rosetta: public QMainWindow
   void slotGPGParticipantsChanged(QTableWidgetItem *item);
   void slotGPGPullTimer(void);
   void slotGPGShowStatusMessages(int state);
+  void slotGPGStatusTimerTimeout(void);
   void slotImportGPGKeys(void);
   void slotNewGPGKeys(void);
   void slotParticipantAdded(const QString &type);
