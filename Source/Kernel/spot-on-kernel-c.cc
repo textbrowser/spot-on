@@ -302,9 +302,9 @@ void spoton_kernel::readPrisonBlues(void)
 	      spoton_misc::saveParticipantStatus
 		(list.value(1), // Name
 		 list.value(0), // Public Key Hash
-		 QByteArray(), // Status
+		 QByteArray(),  // Status
 		 QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
-		 toLatin1(), // Timestamp
+		 toLatin1(),    // Timestamp
 		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
 		 s_crypt);
 	      emit receivedChatMessage

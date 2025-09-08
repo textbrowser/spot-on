@@ -1588,6 +1588,10 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   if(!then.isValid())
     return false;
 
+  /*
+  ** The date-time parameter must be in UTC!
+  */
+
   auto const now(QDateTime::currentDateTimeUtc());
 
   return qAbs(now.secsTo(then)) <= static_cast<qint64> (delta);

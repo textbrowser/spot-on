@@ -110,6 +110,7 @@ class spoton_common
   static const int PRISON_BLUES_PROCESS_INTERVAL = 30000;
   static const int PRISON_BLUES_STATUS_INTERVAL = 60;
   static const int REAP_POST_OFFICE_LETTERS_INTERVAL = 60;
+  static const int ROSETTA_GPG_STATUS_TIME_DELTA = 60;
   static const int RSS_IMPORTS_PER_THREAD = 5;
   static const int SEND_QUEUED_EMAIL_INTERVAL = 5;
   static const int SMP_TIME_DELTA_MAXIMUM = 90;

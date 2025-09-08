@@ -95,6 +95,8 @@ class spoton_rosetta: public QMainWindow
 			const QByteArray &receiver,
 			const QByteArray &sender,
 			const bool sign) const;
+  QIcon offlineIcon(void) const;
+  QIcon onlineIcon(void) const;
   QMap<QString, QByteArray> gpgEmailAddresses(void) const;
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;

@@ -50,7 +50,7 @@
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
-QString spoton_rosetta::s_status = QString("spoton://online=%1,%2");
+QString spoton_rosetta::s_status = "spoton://online=";
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
@@ -588,6 +588,28 @@ QByteArray spoton_rosetta::gpgEncrypt
 #endif
 }
 
+QIcon spoton_rosetta::offlineIcon(void) const
+{
+  if(m_parent)
+    return QIcon
+      (QString(":/%1/offline.png").
+       arg(m_parent->m_settings.value("gui/iconSet", "nouve").
+	   toString().toLower()));
+  else
+    return QIcon();
+}
+
+QIcon spoton_rosetta::onlineIcon(void) const
+{
+  if(m_parent)
+    return QIcon
+      (QString(":/%1/online.png").
+       arg(m_parent->m_settings.value("gui/iconSet", "nouve").
+	   toString().toLower()));
+  else
+    return QIcon();
+}
+
 QLineEdit *spoton_rosetta::attachmentsGPGPath(void) const
 {
   return ui.gpg;
@@ -851,10 +873,7 @@ void spoton_rosetta::populateContacts(void)
 	      (Qt::ItemIsEnabled |
 	       Qt::ItemIsSelectable |
 	       Qt::ItemIsUserCheckable);
-	    item->setIcon
-	      (QIcon(QString(":/%1/offline.png").
-		     arg(m_parent->m_settings.value("gui/iconSet", "nouve").
-			 toString().toLower())));
+	    item->setIcon(offlineIcon());
 	    ui.gpg_participants->setItem(i, 0, item);
 	    item = new QTableWidgetItem(fingerprints.value(str).trimmed());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -2749,11 +2768,10 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	    auto const publicKey = spoton_misc::publicKeyFromHash
 	      (QByteArray::fromBase64(publicKeyHashes.value(i)), true, crypt);
 	    auto const status
-	      (QString(s_status).
-	       replace("%1", sender).
-	       replace("%2",
-		       QDateTime::currentDateTimeUtc().
-		       toString("MMddyyyyhhmmss")));
+	      (s_status +
+	       sender +
+	       "," +
+	       QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss"));
 	    auto ok = true;
 	    auto const output
 	      (gpgEncrypt(ok, status.toUtf8(), publicKey, sender, true));
@@ -3062,28 +3080,66 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
   if(err == GPG_ERR_NO_ERROR && msg.length() > 0)
     {
-      QString content("");
-      auto const now(QDateTime::currentDateTime());
+      QString const tmp = qUtf8Printable
+	(QString::fromUtf8(msg.constData(), msg.length()));
 
-      content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]: ").
-	arg(now.toString("MM")).
-	arg(now.toString("dd")).
-	arg(now.toString("yyyy")).
-	arg(now.toString("hh")).
-	arg(now.toString("mm")).
-	arg(now.toString("ss"));
-      content.append
-	(QString("<font color=blue>%1 <b>%2</b>: </font>").
-	 arg(from).arg(signedMessage));
-      content.append
-	(qUtf8Printable(QString::fromUtf8(msg.constData(), msg.length())));
-      content = m_parent &&
-	m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool() ?
-	m_parent->mapIconToEmoticon(content) :
-	content;
-      ui.gpg_messages->append(content);
-      ui.gpg_messages->verticalScrollBar()->setValue
-	(ui.gpg_messages->verticalScrollBar()->maximum());
+      if(tmp.startsWith(s_status))
+	{
+	  auto const list(tmp.mid(s_status.length()).split(','));
+
+	  if(list.size() == 2)
+	    {
+	      for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
+		if(ui.gpg_participants->item(i, 0) &&
+		   ui.gpg_participants->item(i, 1) &&
+		   ui.gpg_participants->item(i, 1)->text() == list.at(0))
+		  {
+		    auto dateTime
+		      (QDateTime::fromString(list.at(1), "MMddyyyyhhmmss"));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+		    dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
+		    dateTime.setTimeSpec(Qt::UTC);
+#endif
+
+		    if(spoton_misc::
+		       acceptableTimeSeconds(dateTime,
+					     spoton_common::
+					     ROSETTA_GPG_STATUS_TIME_DELTA))
+		      ui.gpg_participants->item(i, 0)->setIcon(onlineIcon());
+		    else
+		      ui.gpg_participants->item(i, 0)->setIcon(offlineIcon());
+
+		    break;
+		  }
+	    }
+	}
+      else
+	{
+	  QString content("");
+	  auto const now(QDateTime::currentDateTime());
+
+	  content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]: ").
+	    arg(now.toString("MM")).
+	    arg(now.toString("dd")).
+	    arg(now.toString("yyyy")).
+	    arg(now.toString("hh")).
+	    arg(now.toString("mm")).
+	    arg(now.toString("ss"));
+	  content.append
+	    (QString("<font color=blue>%1 <b>%2</b>: </font>").
+	     arg(from).arg(signedMessage));
+	  content.append(tmp);
+	  content = m_parent &&
+	    m_parent->
+	    m_settings.value("gui/enableChatEmoticons", false).toBool() ?
+	    m_parent->mapIconToEmoticon(content) :
+	    content;
+	  ui.gpg_messages->append(content);
+	  ui.gpg_messages->verticalScrollBar()->setValue
+	    (ui.gpg_messages->verticalScrollBar()->maximum());
+	}
     }
 #endif
 }
