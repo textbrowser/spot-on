@@ -868,6 +868,7 @@ void spoton_rosetta::populateContacts(void)
 	    item->setCheckState
 	      (states.value(str).contains("online=true") ?
 	       Qt::Checked : Qt::Unchecked);
+	    item->setData(Qt::ItemDataRole(Qt::UserRole + 1), QVariant());
 	    item->setData(Qt::UserRole, it.value().second);
 	    item->setFlags
 	      (Qt::ItemIsEnabled |
@@ -2701,19 +2702,6 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
   */
 
 #ifdef SPOTON_GPGME_ENABLED
-  if(!m_parent)
-    return;
-
-  auto const list(m_parent->prisonBluesDirectories());
-
-  if(list.isEmpty())
-    return;
-
-  auto crypt = m_parent->crypts().value("chat", nullptr);
-
-  if(!crypt)
-    return;
-
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QList<QByteArray> publicKeyHashes;
@@ -2722,6 +2710,28 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
   for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
     {
       auto item = ui.gpg_participants->item(i, 0);
+
+      if(item)
+	{
+	  auto dateTime
+	    (QDateTime::
+	     fromString(item->data(Qt::ItemDataRole(Qt::UserRole + 1)).
+			toString(),
+			"MMddyyyyhhmmss"));
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+	  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
+	  dateTime.setTimeSpec(Qt::UTC);
+#endif
+
+	  if(spoton_misc::acceptableTimeSeconds(dateTime,
+						spoton_common::
+						ROSETTA_GPG_STATUS_TIME_DELTA))
+	    item->setIcon(onlineIcon());
+	  else
+	    item->setIcon(offlineIcon());
+	}
 
       if(item && item->checkState() == Qt::Checked)
 	{
@@ -2734,6 +2744,28 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	      publicKeyHashes << item2->text().toLatin1();
 	    }
 	}
+    }
+
+  if(!m_parent)
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  auto const list(m_parent->prisonBluesDirectories());
+
+  if(list.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  auto crypt = m_parent->crypts().value("chat", nullptr);
+
+  if(!crypt)
+    {
+      QApplication::restoreOverrideCursor();
+      return;
     }
 
   if(fingerprints.isEmpty())
@@ -3094,6 +3126,9 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 		   ui.gpg_participants->item(i, 1) &&
 		   ui.gpg_participants->item(i, 1)->text() == list.at(0))
 		  {
+		    ui.gpg_participants->item(i, 0)->setData
+		      (Qt::ItemDataRole(Qt::UserRole + 1), list.at(1));
+
 		    auto dateTime
 		      (QDateTime::fromString(list.at(1), "MMddyyyyhhmmss"));
 
