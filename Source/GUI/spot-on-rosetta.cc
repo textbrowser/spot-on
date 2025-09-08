@@ -455,7 +455,6 @@ QByteArray spoton_rosetta::gpgEncrypt
  const bool sign) const
 {
 #ifdef SPOTON_GPGME_ENABLED
-  Q_UNUSED(sender);
   gpgme_check_version(nullptr);
   ok = false;
 
@@ -465,11 +464,23 @@ QByteArray spoton_rosetta::gpgEncrypt
 
   if(err == GPG_ERR_NO_ERROR)
     {
+      gpgme_key_t key = nullptr;
+
+      err = gpgme_get_key(ctx, sender.constData(), &key, 1);
+      gpgme_signers_clear(ctx);
+
+      if(err == GPG_ERR_NO_ERROR)
+	err = gpgme_signers_add(ctx, key);
+
+      gpgme_key_unref(key);
+
       gpgme_data_t ciphertext = nullptr;
       gpgme_data_t plaintext = nullptr;
 
       gpgme_set_armor(ctx, 1);
-      err = gpgme_data_new(&ciphertext);
+
+      if(err == GPG_ERR_NO_ERROR)
+	err = gpgme_data_new(&ciphertext);
 
       if(err == GPG_ERR_NO_ERROR)
 	err = gpgme_data_new_from_mem
@@ -2069,7 +2080,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
 	(gpgEncrypt(ok,
 		    ui.inputEncrypt->toPlainText().trimmed().toUtf8(),
 		    receiver,
-		    ui.gpg_email_addresses->currentData().toByteArray(),
+		    spoton_crypt::fingerprint(ui.gpg_email_addresses->
+					      currentData().toByteArray()),
 		    ui.sign->isChecked()));
       ui.outputEncrypt->selectAll();
       toDesktop();
@@ -2723,11 +2735,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 		       toString("MMddyyyyhhmmss")));
 	    auto ok = true;
 	    auto const output
-	      (gpgEncrypt(ok,
-			  status.toUtf8(),
-			  publicKey,
-			  ui.gpg_address->currentData().toByteArray(),
-			  true));
+	      (gpgEncrypt(ok, status.toUtf8(), publicKey, sender, true));
 
 	    if(ok)
 	      {
@@ -3478,6 +3486,8 @@ void spoton_rosetta::slotWriteGPG(void)
     (ui.gpg_participants->selectionModel()->selectedRows(0));
   auto const publicKeyHashes
     (ui.gpg_participants->selectionModel()->selectedRows(2));
+  auto const sender
+    (spoton_crypt::fingerprint(ui.gpg_address->currentData().toByteArray()));
   auto const sign = ui.gpg_sign_messages->isChecked();
   auto state = false;
 
@@ -3512,11 +3522,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	       crypt);
 	    auto ok = true;
 	    auto const output
-	      (gpgEncrypt(ok,
-			  message.toUtf8(),
-			  publicKey,
-			  ui.gpg_address->currentData().toByteArray(),
-			  sign));
+	      (gpgEncrypt(ok, message.toUtf8(), publicKey, sender, sign));
 
 	    if(ok)
 	      {
