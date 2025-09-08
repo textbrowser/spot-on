@@ -50,7 +50,7 @@
 
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
-QString spoton_rosetta::s_status = QString("spoton://status=%1,%2");
+QString spoton_rosetta::s_status = QString("spoton://online=%1,%2");
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
@@ -832,6 +832,10 @@ void spoton_rosetta::populateContacts(void)
 	      (Qt::ItemIsEnabled |
 	       Qt::ItemIsSelectable |
 	       Qt::ItemIsUserCheckable);
+	    item->setIcon
+	      (QIcon(QString(":/%1/offline.png").
+		     arg(m_parent->m_settings.value("gui/iconSet", "nouve").
+			 toString().toLower())));
 	    ui.gpg_participants->setItem(i, 0, item);
 	    item = new QTableWidgetItem(fingerprints.value(str).trimmed());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
@@ -1653,8 +1657,8 @@ void spoton_rosetta::slotContactsChanged(int index)
 
       publicKey = spoton_misc::publicKeyFromHash
 	(QByteArray::fromBase64(ui.contacts->
-				itemData(ui.contacts->
-					 currentIndex()).toByteArray()),
+				itemData(ui.contacts->currentIndex()).
+				toByteArray()),
 	 true,
 	 eCrypt);
       ui.dump->setText
@@ -2641,6 +2645,10 @@ void spoton_rosetta::slotGPGShowStatusMessages(int state)
 
 void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 {
+  /*
+  ** We fail silently in this function.
+  */
+
 #ifdef SPOTON_GPGME_ENABLED
   if(!m_parent)
     return;
@@ -2672,10 +2680,19 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	  if(item1 && item2)
 	    {
 	      fingerprints << item1->text();
-	      publicKeyHashes << item2->text().toUtf8();
+	      publicKeyHashes << item2->text().toLatin1();
 	    }
 	}
     }
+
+  if(fingerprints.isEmpty())
+    {
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  auto const sender
+    (spoton_crypt::fingerprint(ui.gpg_address->currentData().toByteArray()));
 
   foreach(auto const &directory, list)
     for(int i = 0; i < fingerprints.size(); i++)
@@ -2701,7 +2718,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	      (QByteArray::fromBase64(publicKeyHashes.value(i)), true, crypt);
 	    auto const status
 	      (QString(s_status).
-	       replace("%1", "").
+	       replace("%1", sender).
 	       replace("%2",
 		       QDateTime::currentDateTimeUtc().
 		       toString("MMddyyyyhhmmss")));
