@@ -760,7 +760,7 @@
                     <x>0</x>
                     <y>0</y>
                     <width>1027</width>
-                    <height>732</height>
+                    <height>772</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -968,7 +968,7 @@
                          <item>
                           <widget class="QLabel" name="label_9">
                            <property name="text">
-                            <string>Share online presence with checked participant(s).</string>
+                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Share online presence with checked participant(s). The status is not shared via the kernel and therefore the Rosetta interface is required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="wordWrap">
                             <bool>true</bool>

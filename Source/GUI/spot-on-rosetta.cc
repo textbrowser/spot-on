@@ -2063,14 +2063,13 @@ void spoton_rosetta::slotConvertEncrypt(void)
 				toByteArray()));
       auto const receiver
 	(spoton_misc::publicKeyFromHash(publicKeyHash, true, eCrypt));
-      auto const sender(ui.gpg_email_addresses->currentData().toByteArray());
       auto ok = true;
 
       ui.outputEncrypt->setText
 	(gpgEncrypt(ok,
 		    ui.inputEncrypt->toPlainText().trimmed().toUtf8(),
 		    receiver,
-		    sender,
+		    ui.gpg_email_addresses->currentData().toByteArray(),
 		    ui.sign->isChecked()));
       ui.outputEncrypt->selectAll();
       toDesktop();
@@ -2727,7 +2726,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	      (gpgEncrypt(ok,
 			  status.toUtf8(),
 			  publicKey,
-			  QByteArray(),
+			  ui.gpg_address->currentData().toByteArray(),
 			  true));
 
 	    if(ok)
@@ -3512,11 +3511,12 @@ void spoton_rosetta::slotWriteGPG(void)
 	       true,
 	       crypt);
 	    auto ok = true;
-	    auto const output(gpgEncrypt(ok,
-					 message.toUtf8(),
-					 publicKey,
-					 QByteArray(),
-					 sign));
+	    auto const output
+	      (gpgEncrypt(ok,
+			  message.toUtf8(),
+			  publicKey,
+			  ui.gpg_address->currentData().toByteArray(),
+			  sign));
 
 	    if(ok)
 	      {
