@@ -278,6 +278,14 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(editingFinished(void)),
 	  this,
 	  SLOT(slotSaveGPGAttachmentProgram(void)));
+  connect(ui.gpg_address,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSaveGPGEmailIndex(int)));
+  connect(ui.gpg_email_addresses,
+	  SIGNAL(currentIndexChanged(int)),
+	  this,
+	  SLOT(slotSaveGPGEmailIndex(int)));
   connect(ui.gpg_message,
 	  SIGNAL(returnPressed(void)),
 	  this,
@@ -894,7 +902,9 @@ void spoton_rosetta::populateContacts(void)
 void spoton_rosetta::populateGPGEmailAddresses(void)
 {
   m_gpgFingerprints.clear();
+  ui.gpg_address->blockSignals(true);
   ui.gpg_address->clear();
+  ui.gpg_email_addresses->blockSignals(true);
   ui.gpg_email_addresses->clear();
 
   QMapIterator<QString, QByteArray> it(gpgEmailAddresses());
@@ -916,6 +926,17 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
     ui.gpg_email_addresses->setCurrentIndex(0);
   else
     ui.gpg_email_addresses->addItem("Empty"); // Please do not translate Empty.
+
+  ui.gpg_address->setCurrentIndex
+    (qBound(0,
+	    QSettings().value("gui/rosettaGPGEmailAddressIndex").toInt(),
+	    ui.gpg_address->count() - 1));
+  ui.gpg_email_addresses->setCurrentIndex
+    (qBound(0,
+	    QSettings().value("gui/rosettaGPGEmailAddressesIndex").toInt(),
+	    ui.gpg_email_addresses->count() - 1));
+  ui.gpg_address->blockSignals(false);
+  ui.gpg_email_addresses->blockSignals(false);
 }
 
 void spoton_rosetta::prepareGPGAttachmentsProgramCompleter(void)
@@ -3335,6 +3356,14 @@ void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
 {
   QSettings().setValue("gui/rosettaGPG", ui.gpg->text().trimmed());
   ui.gpg->selectAll();
+}
+
+void spoton_rosetta::slotSaveGPGEmailIndex(int index)
+{
+  if(ui.gpg_address == sender())
+    QSettings().setValue("gui/rosettaGPGEmailAddressIndex", index);
+  else if(ui.gpg_email_addresses == sender())
+    QSettings().setValue("gui/rosettaGPGEmailAddressesIndex", index);
 }
 
 void spoton_rosetta::slotSaveName(void)

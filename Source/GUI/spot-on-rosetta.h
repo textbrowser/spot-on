@@ -162,6 +162,7 @@ class spoton_rosetta: public QMainWindow
   void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);
   void slotSaveGPGAttachmentProgram(void);
+  void slotSaveGPGEmailIndex(int index);
   void slotSaveName(void);
   void slotSetIcons(void);
   void slotSplitterMoved(int pox, int index);
