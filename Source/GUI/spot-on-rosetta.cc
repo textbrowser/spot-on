@@ -1838,7 +1838,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		      ui.from->setText(tr("Empty"));
 
 		    if((signature && (signature->summary &
-				      GPGME_SIGSUM_GREEN)) ||
+				      GPGME_SIGSUM_VALID)) ||
 		       (signature && !signature->summary))
 		      {
 			signatureColor = QColor(144, 238, 144);
@@ -2719,12 +2719,6 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 			toString(),
 			"MMddyyyyhhmmss"));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
-	  dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
-#else
-	  dateTime.setTimeSpec(Qt::UTC);
-#endif
-
 	  if(spoton_misc::acceptableTimeSeconds(dateTime,
 						spoton_common::
 						ROSETTA_GPG_STATUS_TIME_DELTA))
@@ -3022,6 +3016,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
   QByteArray msg("");
   auto from(tr("(Unknown)"));
   auto signedMessage(tr("(Invalid Signature)"));
+  auto validSignature = false;
   gpgme_ctx_t ctx = nullptr;
   gpgme_error_t err = gpgme_new(&ctx);
 
@@ -3098,9 +3093,12 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 	      else
 		from = tr("(Unknown)");
 
-	      if((signature && (signature->summary & GPGME_SIGSUM_GREEN)) ||
+	      if((signature && (signature->summary & GPGME_SIGSUM_VALID)) ||
 		 (signature && !signature->summary))
-		signedMessage = tr("(Signed)");
+		{
+		  signedMessage = tr("(Signed)");
+		  validSignature = true;
+		}
 	    }
 	}
 
@@ -3115,7 +3113,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
       QString const tmp = qUtf8Printable
 	(QString::fromUtf8(msg.constData(), msg.length()));
 
-      if(tmp.startsWith(s_status))
+      if(tmp.startsWith(s_status) && validSignature)
 	{
 	  auto const list(tmp.mid(s_status.length()).split(','));
 
@@ -3131,12 +3129,6 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
 		    auto dateTime
 		      (QDateTime::fromString(list.at(1), "MMddyyyyhhmmss"));
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
-		    dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
-#else
-		    dateTime.setTimeSpec(Qt::UTC);
-#endif
 
 		    if(spoton_misc::
 		       acceptableTimeSeconds(dateTime,

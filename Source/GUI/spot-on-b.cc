@@ -4897,12 +4897,6 @@ void spoton::slotReceivedKernelMessage(void)
 		(QDateTime::fromString(list.at(list.size() - 1).constData(),
 				       "MMddyyyyhhmmss"));
 
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
-	      dateTime.setTimeZone(QTimeZone(QTimeZone::UTC));
-#else
-	      dateTime.setTimeSpec(Qt::UTC);
-#endif
-
 	      if(!spoton_misc::
 		 acceptableTimeSeconds(dateTime,
 				       spoton_common::BUZZ_TIME_DELTA))

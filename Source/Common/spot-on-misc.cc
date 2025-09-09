@@ -1583,7 +1583,7 @@ QString spoton_misc::wrap(const QString &t, const int c)
   return text;
 }
 
-bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
+bool spoton_misc::acceptableTimeSeconds(QDateTime &then, const int delta)
 {
   if(!then.isValid())
     return false;
@@ -1591,6 +1591,12 @@ bool spoton_misc::acceptableTimeSeconds(const QDateTime &then, const int delta)
   /*
   ** The date-time parameter must be in UTC!
   */
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+  then.setTimeZone(QTimeZone(QTimeZone::UTC));
+#else
+  then.setTimeSpec(Qt::UTC);
+#endif
 
   auto const now(QDateTime::currentDateTimeUtc());
 

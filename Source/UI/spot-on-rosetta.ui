@@ -758,9 +758,9 @@
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>0</y>
+                    <y>-201</y>
                     <width>1027</width>
-                    <height>772</height>
+                    <height>792</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -810,13 +810,6 @@
                           <number>5</number>
                          </property>
                          <item>
-                          <widget class="QLabel" name="label_7">
-                           <property name="text">
-                            <string>Messages will arrive in some order.</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_30">
                            <property name="spacing">
                             <number>5</number>
@@ -865,6 +858,13 @@
                             </widget>
                            </item>
                           </layout>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="label_7">
+                           <property name="text">
+                            <string>Messages will arrive in some order.</string>
+                           </property>
+                          </widget>
                          </item>
                          <item>
                           <widget class="QTextBrowser" name="gpg_messages">
@@ -940,7 +940,7 @@
                            <item>
                             <widget class="QCheckBox" name="gpg_sign_messages">
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Setting is not retained in the INI.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Status messages are always signed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
                               <string>Sign messages.</string>
@@ -968,7 +968,7 @@
                          <item>
                           <widget class="QLabel" name="label_9">
                            <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Share online presence with checked participant(s). The status is not shared via the kernel and therefore the Rosetta interface is required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Share signed online-presence messages with checked participants. Status messages are not shared via the kernel and therefore the Rosetta interface is required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="wordWrap">
                             <bool>true</bool>
@@ -1113,7 +1113,7 @@
                        <item>
                         <widget class="spoton_textedit" name="gpg_message">
                          <property name="sizePolicy">
-                          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                          <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                            <horstretch>0</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
