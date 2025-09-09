@@ -758,7 +758,7 @@
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>-201</y>
+                    <y>0</y>
                     <width>1027</width>
                     <height>792</height>
                    </rect>
@@ -816,6 +816,9 @@
                            </property>
                            <item>
                             <widget class="QCheckBox" name="gpg_show_status_messages">
+                             <property name="toolTip">
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For example, show that a GIT message file was generated correctly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                             </property>
                              <property name="text">
                               <string>Show Status Messages</string>
                              </property>
@@ -940,7 +943,7 @@
                            <item>
                             <widget class="QCheckBox" name="gpg_sign_messages">
                              <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Status messages are always signed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A dialog may be displayed prompting for the password of the key ring. Attachments and status messages are always signed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                              </property>
                              <property name="text">
                               <string>Sign messages.</string>
