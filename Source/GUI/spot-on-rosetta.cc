@@ -2718,10 +2718,14 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
   */
 
 #ifdef SPOTON_GPGME_ENABLED
+  if(!m_parent)
+    return;
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-  QList<QByteArray> publicKeyHashes;
+  QList<QByteArray> publicKeys;
   QStringList fingerprints;
+  auto crypt = m_parent->crypts().value("chat", nullptr);
 
   for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
     {
@@ -2736,14 +2740,14 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 			"MMddyyyyhhmmss"));
 
 	  if(spoton_misc::acceptableTimeSeconds(dateTime,
-						spoton_common::
+						2 * spoton_common::
 						ROSETTA_GPG_STATUS_TIME_DELTA))
 	    item->setIcon(onlineIcon());
 	  else
 	    item->setIcon(offlineIcon());
 	}
 
-      if(item && item->checkState() == Qt::Checked)
+      if(crypt && item && item->checkState() == Qt::Checked)
 	{
 	  auto item1 = ui.gpg_participants->item(i, 1);
 	  auto item2 = ui.gpg_participants->item(i, 2);
@@ -2751,12 +2755,13 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	  if(item1 && item2)
 	    {
 	      fingerprints << item1->text();
-	      publicKeyHashes << item2->text().toLatin1();
+	      publicKeys << spoton_misc::publicKeyFromHash
+		(QByteArray::fromBase64(item2->text().toLatin1()), true, crypt);
 	    }
 	}
     }
 
-  if(!m_parent)
+  if(fingerprints.isEmpty())
     {
       QApplication::restoreOverrideCursor();
       return;
@@ -2770,20 +2775,6 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
       return;
     }
 
-  auto crypt = m_parent->crypts().value("chat", nullptr);
-
-  if(!crypt)
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
-  if(fingerprints.isEmpty())
-    {
-      QApplication::restoreOverrideCursor();
-      return;
-    }
-
   auto const sender
     (spoton_crypt::fingerprint(ui.gpg_address->currentData().toByteArray()));
 
@@ -2791,8 +2782,8 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
     for(int i = 0; i < fingerprints.size(); i++)
       {
 	if(!(directory.isWritable()) ||
-	   !(fingerprints.value(i).isEmpty() == false &&
-	     publicKeyHashes.value(i).isEmpty() == false))
+	   !(fingerprints.at(i).isEmpty() == false &&
+	     publicKeys.at(i).isEmpty() == false))
 	  continue;
 
 	auto const destination
@@ -2807,13 +2798,33 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	** for some time.
 	*/
 
+	QDirIterator it(destination, QDir::Files);
+	auto found = false;
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    auto then(it.fileInfo().lastModified());
+
+	    if(!spoton_misc::
+	       acceptableTimeSeconds(then,
+				     spoton_common::
+				     ROSETTA_GPG_STATUS_TIME_DELTA))
+	      {
+		found = true;
+		break;
+	      }
+	  }
+
+	if(found)
+	  continue;
+
 	QTemporaryFile file
 	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
 
 	if(file.open())
 	  {
-	    auto const publicKey = spoton_misc::publicKeyFromHash
-	      (QByteArray::fromBase64(publicKeyHashes.value(i)), true, crypt);
 	    auto const status
 	      (s_status +
 	       sender +
@@ -2821,7 +2832,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	       QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss"));
 	    auto ok = true;
 	    auto const output
-	      (gpgEncrypt(ok, status.toUtf8(), publicKey, sender, true));
+	      (gpgEncrypt(ok, status.toUtf8(), publicKeys.at(i), sender, true));
 
 	    if(ok)
 	      {
