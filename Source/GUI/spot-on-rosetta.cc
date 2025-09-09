@@ -3143,8 +3143,11 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
       QString const tmp = qUtf8Printable
 	(QString::fromUtf8(msg.constData(), msg.length()));
 
-      if(tmp.startsWith(s_status) && validSignature)
+      if(tmp.startsWith(s_status))
 	{
+	  if(!validSignature)
+	    return;
+
 	  auto const list(tmp.mid(s_status.length()).split(','));
 
 	  if(list.size() == 2)
