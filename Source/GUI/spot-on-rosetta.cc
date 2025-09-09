@@ -64,6 +64,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #ifdef SPOTON_GPGME_ENABLED
   m_gpgReadMessagesTimer.start(5000);
   m_gpgStatusTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 2);
+  m_prisonBluesReadTimer.start
+    (spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 4);
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
   ui.setupUi(this);
@@ -149,6 +151,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(timeout(void)),
 	  this,
 	  SLOT(slotGPGStatusTimerTimeout(void)));
+  connect(&m_prisonBluesReadTimer,
+	  SIGNAL(timeout(void)),
+	  this,
+	  SLOT(slotReadPrisonBluesTimeout(void)));
   connect(&m_prisonBluesTimer,
 	  SIGNAL(timeout(void)),
 	  this,
@@ -404,6 +410,7 @@ spoton_rosetta::~spoton_rosetta()
   m_gpgPullTimer.stop();
   m_gpgReadMessagesTimer.stop();
   m_gpgStatusTimer.stop();
+  m_prisonBluesReadTimer.stop();
   m_prisonBluesTimer.stop();
   m_readPrisonBluesFuture.cancel();
   m_readPrisonBluesFuture.waitForFinished();
@@ -2993,39 +3000,6 @@ void spoton_rosetta::slotPopulateGPGEmailAddresses(void)
 
 void spoton_rosetta::slotPrisonBluesTimeout(void)
 {
-  if(!m_parent)
-    return;
-
-  if(m_readPrisonBluesFuture.isFinished())
-    {
-      QByteArray passphrase;
-      auto crypt = m_parent->crypts().value("chat", nullptr);
-
-      if(crypt)
-	{
-	  passphrase = QSettings().value("gui/gpgPassphrase").toByteArray();
-	  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
-	}
-
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      m_readPrisonBluesFuture = QtConcurrent::run
-	(&spoton_rosetta::readPrisonBlues,
-	 this,
-	 passphrase,
-	 m_parent->prisonBluesDirectories(),
-	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
-	 m_gpgFingerprints);
-#else
-      m_readPrisonBluesFuture = QtConcurrent::run
-	(this,
-	 &spoton_rosetta::readPrisonBlues,
-	 passphrase,
-	 m_parent->prisonBluesDirectories(),
-	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
-	 m_gpgFingerprints);
-#endif
-    }
-
   prisonBluesProcess(false);
 }
 
@@ -3285,6 +3259,39 @@ void spoton_rosetta::slotPullGPG(void)
   ui.gpg_pull->isChecked() ?
     launchPrisonBluesProcessesIfNecessary(true) : (void) 0;
   ui.gpg_pull->isChecked() ? m_gpgPullTimer.start() : m_gpgPullTimer.stop();
+}
+
+void spoton_rosetta::slotReadPrisonBluesTimeout(void)
+{
+  if(m_readPrisonBluesFuture.isFinished() && m_parent)
+    {
+      QByteArray passphrase;
+      auto crypt = m_parent->crypts().value("chat", nullptr);
+
+      if(crypt)
+	{
+	  passphrase = QSettings().value("gui/gpgPassphrase").toByteArray();
+	  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
+	}
+
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+      m_readPrisonBluesFuture = QtConcurrent::run
+	(&spoton_rosetta::readPrisonBlues,
+	 this,
+	 passphrase,
+	 m_parent->prisonBluesDirectories(),
+	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
+	 m_gpgFingerprints);
+#else
+      m_readPrisonBluesFuture = QtConcurrent::run
+	(this,
+	 &spoton_rosetta::readPrisonBlues,
+	 passphrase,
+	 m_parent->prisonBluesDirectories(),
+	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
+	 m_gpgFingerprints);
+#endif
+    }
 }
 
 void spoton_rosetta::slotRemoveGPGAttachment(const QUrl &url)

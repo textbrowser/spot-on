@@ -85,6 +85,7 @@ class spoton_rosetta: public QMainWindow
   QTimer m_gpgPullTimer;
   QTimer m_gpgReadMessagesTimer;
   QTimer m_gpgStatusTimer;
+  QTimer m_prisonBluesReadTimer;
   QTimer m_prisonBluesTimer;
   QVector<QByteArray> m_gpgFingerprints;
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
@@ -158,6 +159,7 @@ class spoton_rosetta: public QMainWindow
   void slotProcessGPGMessage(const QByteArray &message);
   void slotPublishGPG(void);
   void slotPullGPG(void);
+  void slotReadPrisonBluesTimeout(void);
   void slotRemoveGPGAttachment(const QUrl &url);
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
