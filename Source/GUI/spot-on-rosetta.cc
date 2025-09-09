@@ -102,7 +102,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
   ui.attachments_label->setText
-    (tr("An attachment larger than %1 bytes will be ignored.").
+    (tr("An attachment larger than %1 bytes will be ignored. Click an "
+	"attachment to remove it.").
      arg(QLocale().toString(spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)));
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
 			     this,
@@ -113,6 +114,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (QSettings().value("gui/gpgRosettaPull", true).toBool());
   ui.gpg_show_status_messages->setChecked
     (QSettings().value("gui/gpgRosettaShowStatusMessages", false).toBool());
+  ui.gpg_sign_messages->setChecked
+    (QSettings().value("gui/rosettaGPGSignMessages", true).toBool());
   ui.inputDecrypt->setLineWrapColumnOrWidth(80);
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::WrapAnywhere);
@@ -125,7 +128,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
   ui.tabWidget->setCurrentIndex
     (qBound(0,
-	    QSettings().value("gui/rosettaTabIndex").toInt(),
+	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
 	    ui.tabWidget->count() - 1));
   ui.tool_bar->addAction(ui.action_Clear_Clipboard_Buffer);
   ui.tool_bar->addAction(ui.action_Copy);
@@ -305,7 +308,11 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   connect(ui.gpg_show_status_messages,
 	  SIGNAL(stateChanged(int)),
 	  this,
-	  SLOT(slotGPGShowStatusMessages(int)));
+	  SLOT(slotSaveCheckBoxState(int)));
+  connect(ui.gpg_sign_messages,
+	  SIGNAL(stateChanged(int)),
+	  this,
+	  SLOT(slotSaveCheckBoxState(int)));
   connect(ui.mainHorizontalSplitter,
 	  SIGNAL(splitterMoved(int, int)),
 	  this,
@@ -828,11 +835,11 @@ void spoton_rosetta::populateContacts(void)
 		  publicKey = eCrypt->decryptedAfterAuthenticated
 		    (publicKey, nullptr);
 		  fingerprints.insert
-		    (name, spoton_crypt::fingerprint(publicKey));
+		    (name, spoton_crypt::fingerprint(publicKey).trimmed());
 		  gpgInformation.insert
-		    (name, spoton_crypt::gpgInformation(publicKey));
+		    (name, spoton_crypt::gpgInformation(publicKey).trimmed());
 		  names.insert(name, pair);
-		  states.insert(name, state);
+		  states.insert(name, state.trimmed());
 		}
 	    }
 
@@ -882,8 +889,15 @@ void spoton_rosetta::populateContacts(void)
 	       Qt::ItemIsSelectable |
 	       Qt::ItemIsUserCheckable);
 	    item->setIcon(offlineIcon());
+	    item->setToolTip
+	      (QString("<html>"
+		       "<b>Fingerprint: </b>%1<br>"
+		       "<b>Key Information: </b>%2"
+		       "</html>").
+	       arg(fingerprints.value(str)).
+	       arg(gpgInformation.value(str).simplified()));
 	    ui.gpg_participants->setItem(i, 0, item);
-	    item = new QTableWidgetItem(fingerprints.value(str).trimmed());
+	    item = new QTableWidgetItem(fingerprints.value(str));
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 1, item);
@@ -891,8 +905,7 @@ void spoton_rosetta::populateContacts(void)
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 2, item);
-	    item = new QTableWidgetItem
-	      (gpgInformation.value(str).simplified().trimmed());
+	    item = new QTableWidgetItem(gpgInformation.value(str).simplified());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 3, item);
@@ -956,11 +969,11 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 
   ui.gpg_address->setCurrentIndex
     (qBound(0,
-	    QSettings().value("gui/rosettaGPGEmailAddressIndex").toInt(),
+	    QSettings().value("gui/rosettaGPGEmailAddressIndex", 0).toInt(),
 	    ui.gpg_address->count() - 1));
   ui.gpg_email_addresses->setCurrentIndex
     (qBound(0,
-	    QSettings().value("gui/rosettaGPGEmailAddressesIndex").toInt(),
+	    QSettings().value("gui/rosettaGPGEmailAddressesIndex", 0).toInt(),
 	    ui.gpg_email_addresses->count() - 1));
   ui.gpg_address->blockSignals(false);
   ui.gpg_email_addresses->blockSignals(false);
@@ -2696,12 +2709,6 @@ void spoton_rosetta::slotGPGPullTimer(void)
   launchPrisonBluesProcessesIfNecessary(true);
 }
 
-void spoton_rosetta::slotGPGShowStatusMessages(int state)
-{
-  QSettings().setValue
-    ("gui/gpgRosettaShowStatusMessages", QVariant(state).toBool());
-}
-
 void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 {
   /*
@@ -3445,6 +3452,16 @@ void spoton_rosetta::slotRename(void)
     }
 }
 
+void spoton_rosetta::slotSaveCheckBoxState(int state)
+{
+  if(sender() == ui.gpg_show_status_messages)
+    QSettings().setValue
+      ("gui/gpgRosettaShowStatusMessages", QVariant(state).toBool());
+  else if(sender() == ui.gpg_sign_messages)
+    QSettings().setValue
+      ("gui/rosettaGPGSignMessages", QVariant(state).toBool());
+}
+
 void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
 {
   QSettings().setValue("gui/rosettaGPG", ui.gpg->text().trimmed());
@@ -3453,9 +3470,9 @@ void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
 
 void spoton_rosetta::slotSaveGPGEmailIndex(int index)
 {
-  if(ui.gpg_address == sender())
+  if(sender() == ui.gpg_address)
     QSettings().setValue("gui/rosettaGPGEmailAddressIndex", index);
-  else if(ui.gpg_email_addresses == sender())
+  else if(sender() == ui.gpg_email_addresses)
     QSettings().setValue("gui/rosettaGPGEmailAddressesIndex", index);
 }
 

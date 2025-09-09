@@ -149,7 +149,6 @@ class spoton_rosetta: public QMainWindow
   void slotGPGMessagesReadTimer(void);
   void slotGPGParticipantsChanged(QTableWidgetItem *item);
   void slotGPGPullTimer(void);
-  void slotGPGShowStatusMessages(int state);
   void slotGPGStatusTimerTimeout(void);
   void slotImportGPGKeys(void);
   void slotNewGPGKeys(void);
@@ -163,6 +162,7 @@ class spoton_rosetta: public QMainWindow
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
   void slotRename(void);
+  void slotSaveCheckBoxState(int state);
   void slotSaveGPGAttachmentProgram(void);
   void slotSaveGPGEmailIndex(int index);
   void slotSaveName(void);
