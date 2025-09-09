@@ -471,7 +471,7 @@ QByteArray spoton_rosetta::gpgEncrypt
  const QByteArray &message,
  const QByteArray &receiver,
  const QByteArray &sender,
- const bool sign) const
+ const bool sign)
 {
 #ifdef SPOTON_GPGME_ENABLED
   ok = false;

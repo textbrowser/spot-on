@@ -90,14 +90,14 @@ class spoton_rosetta: public QMainWindow
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
-  QByteArray gpgEncrypt(bool &ok,
-			const QByteArray &message,
-			const QByteArray &receiver,
-			const QByteArray &sender,
-			const bool sign) const;
   QIcon offlineIcon(void) const;
   QIcon onlineIcon(void) const;
   QMap<QString, QByteArray> gpgEmailAddresses(void) const;
+  static QByteArray gpgEncrypt(bool &ok,
+			       const QByteArray &message,
+			       const QByteArray &receiver,
+			       const QByteArray &sender,
+			       const bool sign);
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;
   static QString s_status;
