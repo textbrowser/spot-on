@@ -79,8 +79,6 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
   if(data.trimmed().isEmpty())
     return tr("Empty GPG Data");
 
-  gpgme_check_version(nullptr);
-
   auto dump(tr("Empty GPG Data"));
   gpgme_ctx_t ctx = nullptr;
 
@@ -148,8 +146,6 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 #ifdef SPOTON_GPGME_ENABLED
   if(data.trimmed().isEmpty())
     return "";
-
-  gpgme_check_version(nullptr);
 
   QString email("");
   gpgme_ctx_t ctx = nullptr;

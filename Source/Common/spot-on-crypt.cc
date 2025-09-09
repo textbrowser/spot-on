@@ -151,7 +151,7 @@ static auto digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #else
 static auto digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #endif
-static int error_buffer_size = 64;
+static int error_buffer_size = 256;
 
 /*
 ** Ignore some OpenSSL 3 warnings.
@@ -977,8 +977,6 @@ QByteArray spoton_crypt::fingerprint(const QByteArray &publicKey)
   if(publicKey.trimmed().isEmpty())
     return QByteArray();
 
-  gpgme_check_version(nullptr);
-
   QByteArray fingerprint;
   gpgme_ctx_t ctx = nullptr;
 
@@ -1027,8 +1025,6 @@ QByteArray spoton_crypt::gpgInformation(const QByteArray &publicKey)
 #ifdef SPOTON_GPGME_ENABLED
   if(publicKey.trimmed().isEmpty())
     return QByteArray();
-
-  gpgme_check_version(nullptr);
 
   QByteArray information;
   gpgme_ctx_t ctx = nullptr;

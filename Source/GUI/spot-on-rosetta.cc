@@ -51,11 +51,15 @@
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 QString spoton_rosetta::s_status = "spoton://online=";
+static int error_buffer_size = 256;
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
+#ifdef SPOTON_GPGME_ENABLED
+  gpgme_check_version(nullptr);
+#endif
   m_gpgPullTimer.setInterval(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_gpgReadMessagesTimer.start(5000);
@@ -463,7 +467,6 @@ QByteArray spoton_rosetta::gpgEncrypt
  const bool sign) const
 {
 #ifdef SPOTON_GPGME_ENABLED
-  gpgme_check_version(nullptr);
   ok = false;
 
   QByteArray output;
@@ -568,11 +571,15 @@ QByteArray spoton_rosetta::gpgEncrypt
 
   if(err != GPG_ERR_NO_ERROR)
     {
+      QByteArray buffer(error_buffer_size, 0);
+
+      gpgme_strerror_r
+	(err, buffer.data(), static_cast<size_t> (buffer.length()));
       output = tr("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
-	arg(gpgme_strerror(err)).toUtf8();
+	arg(buffer.constData()).toUtf8();
       spoton_misc::logError
 	(QString("spoton_rosetta::gpgEncrypt(): error (%1) raised.").
-	 arg(gpgme_strerror(err)));
+	 arg(buffer.constData()));
     }
   else
     ok = true;
@@ -1286,8 +1293,6 @@ void spoton_rosetta::slotAddContact(void)
 	    return;
 	  }
 
-	gpgme_check_version(nullptr);
-
 	gpgme_ctx_t ctx = nullptr;
 	auto err = gpgme_new(&ctx);
 
@@ -1751,11 +1756,10 @@ void spoton_rosetta::slotConvertDecrypt(void)
     auto const index1 = data.indexOf(begin);
     auto const index2 = data.indexOf(end);
 
-    if(index1 >= 0 && index1 < index2)
+    if(index1 < index2 && index1 >= 0)
       {
 	data = data.mid
 	  (index1, index2 - index1 + static_cast<int> (qstrlen(end)));
-	gpgme_check_version(nullptr);
 
 	QColor signatureColor(240, 128, 128); // Light coral!
 	auto signedMessage(tr("Invalid signature."));
@@ -1856,9 +1860,14 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	if(err != GPG_ERR_NO_ERROR)
 	  {
 	    ui.from->setText(tr("Empty"));
+
+	    QByteArray buffer(error_buffer_size, 0);
+
+	    gpgme_strerror_r
+	      (err, buffer.data(), static_cast<size_t> (buffer.length()));
 	    ui.outputDecrypt->setText
 	      (tr("spoton_rosetta::slotConvertDecrypt(): error (%1) raised.").
-	       arg(gpgme_strerror(err)));
+	       arg(buffer.constData()));
 	  }
 
 	ui.signedMessage->setStyleSheet
@@ -2509,8 +2518,6 @@ void spoton_rosetta::slotDelete(void)
 #ifdef SPOTON_GPGME_ENABLED
   if(destinationType == DestinationTypes::GPG && rc == QMessageBox::YesAll)
     {
-      gpgme_check_version(nullptr);
-
       gpgme_ctx_t ctx = nullptr;
       auto err = gpgme_new(&ctx);
 
@@ -2786,6 +2793,11 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 
 	QDir().mkpath(destination);
 
+	/*
+	** Let's not create status files if the recipient has been missing
+	** for some time.
+	*/
+
 	QTemporaryFile file
 	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
 
@@ -3008,10 +3020,8 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
   auto const index1 = message.indexOf(begin);
   auto const index2 = message.indexOf(end);
 
-  if(index1 < 0 || index2 < 0 || index1 >= index2)
+  if(index1 < 0 || index1 >= index2 || index2 < 0)
     return;
-
-  gpgme_check_version(nullptr);
 
   QByteArray msg("");
   auto from(tr("(Unknown)"));
@@ -3657,10 +3667,14 @@ void spoton_rosetta::slotWriteGPG(void)
 		    state = true;
 		  }
 		else
-		  showMessage
-		    (tr("Incorrect number of bytes written (%1).").
-		     arg(file.fileName()),
-		     5000);
+		  {
+		    file.remove();
+		    showMessage
+		      (tr("Incorrect number of bytes written (%1). "
+			  "File removed.").
+		       arg(file.fileName()),
+		       5000);
+		  }
 	      }
 	    else
 	      {
