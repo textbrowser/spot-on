@@ -1114,7 +1114,8 @@ void spoton_rosetta::readPrisonBlues
 
 			  process.setArguments
 			    (QStringList() << "--batch"
-			                   << "--decrypt"
+			                   << "--decrypt" // Also verifies
+			                                  // the signature.
 			                   << "--passphrase"
 			                   << passphrase.constData()
 			                   << "--pinentry-mode"
