@@ -2713,7 +2713,8 @@ void spoton_rosetta::slotGPGPullTimer(void)
 void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 {
   /*
-  ** We fail silently in this function.
+  ** We fail silently in this function because status messages
+  ** are voluntary.
   */
 
 #ifdef SPOTON_GPGME_ENABLED
