@@ -553,9 +553,10 @@ QByteArray spoton_rosetta::gpgEncrypt
 
 		  if(err == GPG_ERR_NO_ERROR)
 		    {
-		      if(askForPassphrase)
-			gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
-
+		      gpgme_set_passphrase_cb
+			(ctx,
+			 askForPassphrase ? &gpgPassphrase : nullptr,
+			 nullptr);
 		      err = gpgme_op_encrypt_sign
 			(ctx, keys, flags, plaintext, ciphertext);
 		    }
