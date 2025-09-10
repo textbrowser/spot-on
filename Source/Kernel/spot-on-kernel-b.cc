@@ -1261,7 +1261,6 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
        keyType == "url"))
     return;
 
-  auto const widgetType(list.value(5));
   auto ok = true;
   auto s_crypt1 = crypt(keyType);
   auto s_crypt2 = crypt(keyType + "-signature");

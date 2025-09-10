@@ -2146,8 +2146,7 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
   QWriteLocker locker(&s_emailRequestCacheMutex);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-  s_emailRequestCache.insert
-    (hash, QDateTime::currentDateTime().toSecsSinceEpoch());
+  s_emailRequestCache.insert(hash, QDateTime::currentSecsSinceEpoch());
 #else
   s_emailRequestCache.insert
     (hash, static_cast<qint64> (QDateTime::currentDateTime().toTime_t()));
@@ -2170,8 +2169,7 @@ void spoton_kernel::geminisCacheAdd(const QByteArray &data)
   QWriteLocker locker(&s_geminisCacheMutex);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-  s_geminisCache.insert
-    (hash, QDateTime::currentDateTime().toSecsSinceEpoch());
+  s_geminisCache.insert(hash, QDateTime::currentSecsSinceEpoch());
 #else
   s_geminisCache.insert
     (hash, static_cast<qint64> (QDateTime::currentDateTime().toTime_t()));
@@ -2226,11 +2224,9 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	    query.prepare("INSERT INTO congestion_control "
 			  "(date_time_inserted, hash) VALUES (?, ?)");
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	    query.bindValue
-	      (0, QDateTime::currentDateTime().toSecsSinceEpoch());
+	    query.bindValue(0, QDateTime::currentSecsSinceEpoch());
 #else
-	    query.bindValue
-	      (0, QDateTime::currentDateTime().toTime_t());
+	    query.bindValue(0, QDateTime::currentDateTime().toTime_t());
 #endif
 	    query.bindValue(1, hash.toBase64());
 	    query.exec();
@@ -2254,8 +2250,8 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	  s_messagingCache.insert(hash, 0);
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 	  s_messagingCacheLookup.insert
-	    (QDateTime::currentDateTime().
-	     addMSecs(add_msecs).toSecsSinceEpoch(),
+	    (QDateTime::currentDateTime().addMSecs(add_msecs).
+	     toSecsSinceEpoch(),
 	     hash);
 #else
 	  s_messagingCacheLookup.insert
@@ -3445,7 +3441,7 @@ void spoton_kernel::purgeMessagingCache(void)
       it1.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
+      auto const now = QDateTime::currentSecsSinceEpoch();
 #else
       auto const now = static_cast<qint64>
 	(QDateTime::currentDateTime().toTime_t());
@@ -3474,7 +3470,7 @@ void spoton_kernel::purgeMessagingCache(void)
       it2.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
+      auto const now = QDateTime::currentSecsSinceEpoch();
 #else
       auto const now = static_cast<qint64>
 	(QDateTime::currentDateTime().toTime_t());
@@ -3517,7 +3513,7 @@ void spoton_kernel::purgeMessagingCache(void)
 	      (QString("DELETE FROM congestion_control WHERE "
 		       "%1 - date_time_inserted > %2").
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	       arg(QDateTime::currentDateTime().toSecsSinceEpoch()).
+	       arg(QDateTime::currentSecsSinceEpoch()).
 #else
 	       arg(QDateTime::currentDateTime().toTime_t()).
 #endif
@@ -3551,7 +3547,7 @@ void spoton_kernel::purgeMessagingCache(void)
 	  it3.next();
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	  auto const now = QDateTime::currentDateTime().toSecsSinceEpoch();
+	  auto const now = QDateTime::currentSecsSinceEpoch();
 #else
 	  auto const now = static_cast<qint64>
 	    (QDateTime::currentDateTime().toTime_t());
@@ -6111,33 +6107,59 @@ void spoton_kernel::slotTerminate(const bool registered)
 {
   if(!registered)
     {
-      for(int i = 0; i < m_listeners.keys().size(); i++)
-	{
-	  auto listener = m_listeners.take(m_listeners.keys().at(i));
+      {
+	QMutableHashIterator<qint64, QPointer<spoton_listener> >
+	  it(m_listeners);
 
-	  if(listener)
-	    {
-	      listener->close();
-	      listener->deleteLater();
-	    }
-	}
+	while(it.hasNext())
+	  {
+	    it.next();
 
-      for(int i = 0; i < m_neighbors.keys().size(); i++)
-	{
-	  auto neighbor = m_neighbors.take(m_neighbors.keys().at(i));
+	    auto listener = it.value();
 
-	  if(neighbor)
-	    neighbor->deleteLater();
-	}
+	    if(listener)
+	      {
+		listener->close();
+		listener->deleteLater();
+	      }
 
-      for(int i = 0; i < m_starbeamReaders.keys().size(); i++)
-	{
-	  auto starbeam = m_starbeamReaders.take
-	    (m_starbeamReaders.keys().at(i));
+	    it.remove();
+	  }
+      }
 
-	  if(starbeam)
-	    starbeam->deleteLater();
-	}
+      {
+	QMutableHashIterator<qint64, QPointer<spoton_neighbor> >
+	  it(m_neighbors);
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    auto neighbor = it.value();
+
+	    if(neighbor)
+	      neighbor->deleteLater();
+
+	    it.remove();
+	  }
+      }
+
+      {
+	QMutableHashIterator<qint64, QPointer<spoton_starbeam_reader> >
+	  it(m_starbeamReaders);
+
+	while(it.hasNext())
+	  {
+	    it.next();
+
+	    auto starbeam = it.value();
+
+	    if(starbeam)
+	      starbeam->deleteLater();
+
+	    it.remove();
+	  }
+      }
 
       QCoreApplication::quit();
     }
