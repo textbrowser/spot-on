@@ -116,8 +116,6 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-static QByteArray s_search;
-static QString s_emptyQuery;
 static int s_bytesPerWrite = 4096;
 static int s_waitForBytesWritten = 250;
 static int s_waitForEncrypted = 1000;
@@ -440,7 +438,7 @@ void spoton_web_server_child_main::process
 
       QString html("");
 
-      html.append(s_search);
+      html.append(m_search);
       html.remove("</html>");
       html.append(about);
       html.append("</html>");
@@ -562,7 +560,7 @@ void spoton_web_server_child_main::process
 
       if(search.trimmed().isEmpty())
 	{
-	  querystr.append(s_emptyQuery);
+	  querystr.append(m_emptyQuery);
 	  querystr.append(" ORDER BY 5 DESC ");
 	  querystr.append(QString(" LIMIT %1 ").arg(s_urlLimit));
 	  querystr.append(QString(" OFFSET %1 ").arg(offset));
@@ -757,7 +755,7 @@ void spoton_web_server_child_main::process
 	{
 	  int position = -1;
 
-	  html.append(s_search);
+	  html.append(m_search);
 	  html.replace("value=\"\"", QString("value=\"%1\"").arg(search));
 	  html.remove("</html>");
 	  html.append("<p><font color=\"#696969\" size=2>");
@@ -971,9 +969,9 @@ void spoton_web_server_child_main::process
     {
       write(socket,
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
-	    QByteArray::number(s_search.length()) +
+	    QByteArray::number(m_search.length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(socket, s_search);
+      write(socket, m_search);
     }
   else
     {
@@ -1127,7 +1125,7 @@ void spoton_web_server_child_main::slotKeysReceived(void)
 	  c2 = QChar(j + 97 - 10);
 
 	if(i == 15 && j == 15)
-	  s_emptyQuery.append
+	  m_emptyQuery.append
 	    (QString("SELECT title, "      // 0
 		     "url, "               // 1
 		     "description, "       // 2
@@ -1135,7 +1133,7 @@ void spoton_web_server_child_main::slotKeysReceived(void)
 		     "date_time_inserted " // 4
 		     "FROM spot_on_urls_%1%2 ").arg(c1).arg(c2));
 	else
-	  s_emptyQuery.append
+	  m_emptyQuery.append
 	    (QString("SELECT title, "      // 0
 		     "url, "               // 1
 		     "description, "       // 2
@@ -1147,7 +1145,7 @@ void spoton_web_server_child_main::slotKeysReceived(void)
   QFile file(":/search.html");
 
   file.open(QFile::ReadOnly);
-  s_search = file.readAll();
+  m_search = file.readAll();
   file.close();
 
   QPair<QByteArray, QByteArray> credentials;
@@ -1244,7 +1242,7 @@ void spoton_web_server_child_main::writeDefaultPage
 		      QByteArray::number(socket->localPort()));
       write(socket,
 	    "HTTP/1.1 301 Moved Permanently\r\nContent-Length: " +
-	    QByteArray::number(s_search.length()) +
+	    QByteArray::number(m_search.length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n"
 	    "Location: " +
 	    location +
@@ -1253,8 +1251,8 @@ void spoton_web_server_child_main::writeDefaultPage
   else
     write(socket,
 	  "HTTP/1.1 200 OK\r\nContent-Length: " +
-	  QByteArray::number(s_search.length()) +
+	  QByteArray::number(m_search.length()) +
 	  "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
 
-  write(socket, s_search);
+  write(socket, m_search);
 }

@@ -42,9 +42,11 @@ class spoton_web_server_child_main: public QObject
   ~spoton_web_server_child_main();
 
  private:
+  QByteArray m_search;
   QMap<QString, QVariant> m_settings;
   QScopedPointer<spoton_crypt> m_crypt;
   QSslSocket m_kernelSocket;
+  QString m_emptyQuery;
   qint64 m_socketDescriptor;
   QSqlDatabase urlDatabase(QString &connectionName) const;
   void process(const QPair<QByteArray, QByteArray> &credentials);
