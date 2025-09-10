@@ -2664,7 +2664,8 @@ void spoton_rosetta::slotDelete(void)
 	    err = gpgme_op_keylist_next(ctx, &key);
 
 	  if(err == GPG_ERR_NO_ERROR)
-	    gpgme_op_delete_ext(ctx, key, GPGME_DELETE_FORCE);
+	    gpgme_op_delete_ext
+	      (ctx, key, GPGME_DELETE_ALLOW_SECRET | GPGME_DELETE_FORCE);
 
 	  gpgme_data_release(keydata);
 	  gpgme_key_unref(key);
@@ -3058,6 +3059,13 @@ void spoton_rosetta::slotNewGPGKeys(void)
 			setValue(0);
 		      m_gpgNewKeysUi.gpg_results->verticalScrollBar()->
 			setValue(0);
+
+		      if(process.exitCode() == 0)
+			{
+			  auto const keys
+			    (m_gpgNewKeysUi.gpg_results->toPlainText().
+			     toUtf8());
+			}
 		    }
 
 		  goto repeat_label;
