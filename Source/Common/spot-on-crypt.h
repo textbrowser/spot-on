@@ -85,6 +85,7 @@ class spoton_crypt
   static QByteArray preferredHMAC(const QByteArray &data,
 				  const QByteArray &key);
   static QByteArray preferredHash(const QByteArray &data);
+  static QByteArray preferredHashAlgorithm(void);
   static QByteArray publicGPG(spoton_crypt *crypt);
   static QByteArray publicKeyEncrypt(const QByteArray &data,
 				     const QByteArray &pk,
@@ -147,7 +148,6 @@ class spoton_crypt
   static bool memcmp(const QByteArray &bytes1, const QByteArray &bytes);
   static bool passphraseSet(void);
   static const char *preferredCipherAlgorithm(void);
-  static const char *preferredHashAlgorithm(void);
   static const int SHA224_OUTPUT_SIZE_IN_BYTES = 28;
   static const int SHA384_OUTPUT_SIZE_IN_BYTES = 48;
   static const int XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES = 64; /*

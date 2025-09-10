@@ -1420,6 +1420,11 @@ QByteArray spoton_crypt::preferredHash(const QByteArray &data)
   return hd.result();
 }
 
+QByteArray spoton_crypt::preferredHashAlgorithm(void)
+{
+  return s_preferredHashAlgorithm;
+}
+
 QByteArray spoton_crypt::publicGPG(spoton_crypt *crypt)
 {
   if(!crypt)
@@ -3774,11 +3779,6 @@ bool spoton_crypt::setInitializationVector(QByteArray &bytes,
 const char *spoton_crypt::preferredCipherAlgorithm(void)
 {
   return "aes256";
-}
-
-const char *spoton_crypt::preferredHashAlgorithm(void)
-{
-  return s_preferredHashAlgorithm.constData();
 }
 
 qint64 spoton_crypt::publicKeyCount(void)

@@ -4214,7 +4214,7 @@ void spoton::sendBuzzKeysToKernel(void)
 	       m_ui.kernelKeySize->currentText().toInt() == 0) &&
 	      m_kernelSocket.state() == QAbstractSocket::ConnectedState)))
     {
-      foreach(auto page, m_buzzPages.values())
+      foreach(auto const &page, m_buzzPages.values())
 	if(page && (sent &= (m_kernelSocket.isEncrypted() ||
 			     m_ui.kernelKeySize->currentText().toInt() == 0)))
 	  {
@@ -7183,19 +7183,24 @@ void spoton::slotPopulateBuzzFavorites(void)
 	  action->deleteLater();
 	}
 
-      for(int i = 0; i < map.keys().size(); i++)
+      QMapIterator<QByteArray, QByteArray> it(map);
+      int i = 0;
+
+      while(it.hasNext())
 	{
-	  m_ui.favorites->addItem(map.keys().at(i));
-	  m_ui.favorites->setItemData(i, map.value(map.keys().at(i)));
+	  it.next();
+	  m_ui.favorites->addItem(it.key());
+	  m_ui.favorites->setItemData(i, it.value());
 
-	  auto action = new QAction(map.keys().at(i), this);
+	  auto action = new QAction(it.key(), this);
 
-	  action->setData(map.value(map.keys().at(i)));
+	  action->setData(it.value());
 	  connect(action,
 		  SIGNAL(triggered(void)),
 		  this,
 		  SLOT(slotShareBuzzMagnet(void)));
 	  m_ui.shareBuzzMagnet->menu()->addAction(action);
+	  i += 1;
 	}
     }
   else
@@ -7570,12 +7575,19 @@ void spoton::slotPopulateListeners(void)
 
 			    values.insert(" 0", 0);
 
-			    for(int ii = 0; ii < possibilities.size(); ii++)
-			      values.insert
-				(QString::
-				 number(possibilities.keys().at(ii)).
-				 rightJustified(2, ' ') + " " +
-				 possibilities.values().at(ii), 0);
+			    QMapIterator<QBluetooth::SecurityFlags,
+					 QString> it(possibilities);
+
+			    while(it.hasNext())
+			      {
+				it.next();
+				values.insert
+				  (QString::number(it.key()).
+				   rightJustified(2, ' ') +
+				   " " +
+				   it.value(),
+				   0);
+			      }
 
 			    box->addItems(values.keys());
 			    box->setCurrentIndex
