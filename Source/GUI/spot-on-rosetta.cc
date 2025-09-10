@@ -610,6 +610,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 
   return output;
 #else
+  Q_UNUSED(askForPassphrase);
   Q_UNUSED(message);
   Q_UNUSED(receiver);
   Q_UNUSED(sender);
