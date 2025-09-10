@@ -3027,7 +3027,31 @@ void spoton_rosetta::slotNewGPGKeys(void)
 	      if(process.exitCode() != 0)
 		goto repeat_label;
 	      else
-		dialog->close();
+		{
+		  QProcess process;
+		  QString email("test@wonder.org");
+		  QStringList parameters;
+
+		  parameters << "--armor"
+			     << "--export"
+			     << email;
+		  process.setWorkingDirectory(spoton_misc::homePath());
+		  process.start(fileInfo.absoluteFilePath(), parameters);
+
+		  do
+		    {
+		      process.waitForFinished(150);
+		      QApplication::processEvents();
+		    }
+		  while(process.state() == QProcess::Running);
+
+		  m_gpgNewKeysUi.gpg_results->append
+		    (process.readAllStandardOutput().trimmed());
+		  m_gpgNewKeysUi.gpg_results->horizontalScrollBar()->
+		    setValue(0);
+		  m_gpgNewKeysUi.gpg_results->verticalScrollBar()->setValue(0);
+		  goto repeat_label;
+		}
 	    }
 	  else
 	    {
