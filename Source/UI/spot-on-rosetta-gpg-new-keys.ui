@@ -86,7 +86,7 @@
         <bool>true</bool>
        </property>
        <property name="plainText">
-        <string># https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
+        <string notr="true"># https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
 Key-Type: 1
 Key-Length: 4096
@@ -118,9 +118,12 @@ Subkey-Type: 1
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QCheckBox" name="import_in_spoton">
      <property name="text">
       <string>Import the generated keys into Spot-On. Ignored if the GPG process failed.</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -140,7 +143,7 @@ Subkey-Type: 1
   <tabstop>gpg</tabstop>
   <tabstop>gpg_directives</tabstop>
   <tabstop>gpg_results</tabstop>
-  <tabstop>checkBox</tabstop>
+  <tabstop>import_in_spoton</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>

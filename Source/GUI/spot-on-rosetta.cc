@@ -3028,28 +3028,38 @@ void spoton_rosetta::slotNewGPGKeys(void)
 		goto repeat_label;
 	      else
 		{
-		  QProcess process;
-		  QString email("test@wonder.org");
-		  QStringList parameters;
-
-		  parameters << "--armor"
-			     << "--export"
-			     << email;
-		  process.setWorkingDirectory(spoton_misc::homePath());
-		  process.start(fileInfo.absoluteFilePath(), parameters);
-
-		  do
+		  if(m_gpgNewKeysUi.import_in_spoton->isChecked())
 		    {
-		      process.waitForFinished(150);
-		      QApplication::processEvents();
-		    }
-		  while(process.state() == QProcess::Running);
+		      QProcess process;
+		      QStringList parameters;
+		      auto email
+			(m_gpgNewKeysUi.gpg_directives->toPlainText().toUtf8());
 
-		  m_gpgNewKeysUi.gpg_results->append
-		    (process.readAllStandardOutput().trimmed());
-		  m_gpgNewKeysUi.gpg_results->horizontalScrollBar()->
-		    setValue(0);
-		  m_gpgNewKeysUi.gpg_results->verticalScrollBar()->setValue(0);
+		      email = email.mid
+			(email.indexOf(tr("Name-Email:").toUtf8()) +
+			 tr("Name-Email:").toUtf8().length()).
+			split('\n').value(0).trimmed();
+		      parameters << "--armor"
+				 << "--export"
+				 << email;
+		      process.setWorkingDirectory(spoton_misc::homePath());
+		      process.start(fileInfo.absoluteFilePath(), parameters);
+
+		      do
+			{
+			  process.waitForFinished(150);
+			  QApplication::processEvents();
+			}
+		      while(process.state() == QProcess::Running);
+
+		      m_gpgNewKeysUi.gpg_results->append
+			(process.readAllStandardOutput().trimmed());
+		      m_gpgNewKeysUi.gpg_results->horizontalScrollBar()->
+			setValue(0);
+		      m_gpgNewKeysUi.gpg_results->verticalScrollBar()->
+			setValue(0);
+		    }
+
 		  goto repeat_label;
 		}
 	    }
