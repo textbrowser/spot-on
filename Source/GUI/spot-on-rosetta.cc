@@ -562,9 +562,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 		}
 	      else
 		{
-		  if(askForPassphrase)
-		    gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
-
+		  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
 		  err = gpgme_op_encrypt
 		    (ctx, keys, flags, plaintext, ciphertext);
 		}
