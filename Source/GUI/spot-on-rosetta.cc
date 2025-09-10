@@ -65,7 +65,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   m_gpgReadMessagesTimer.start(5000);
   m_gpgStatusTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 2);
   m_prisonBluesReadTimer.start
-    (spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 4);
+    (spoton_common::PRISON_BLUES_PROCESS_INTERVAL / 5);
   m_prisonBluesTimer.start(spoton_common::PRISON_BLUES_PROCESS_INTERVAL);
 #endif
   ui.setupUi(this);
@@ -163,6 +163,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(gpgFileProcessed(void)),
 	  this,
 	  SLOT(slotGPGFileProcessed(void)));
+  connect(this,
+	  SIGNAL(launchPrisonBluesProcessesIfNecessary(const bool)),
+	  this,
+	  SLOT(slotLaunchPrisonBluesProcessesIfNecessary(const bool)));
   connect(this,
 	  SIGNAL(processGPGMessage(const QByteArray &)),
 	  this,
@@ -410,6 +414,8 @@ spoton_rosetta::~spoton_rosetta()
   m_gpgPullTimer.stop();
   m_gpgReadMessagesTimer.stop();
   m_gpgStatusTimer.stop();
+  m_prepareGPGStatusMessagesFuture.cancel();
+  m_prepareGPGStatusMessagesFuture.waitForFinished();
   m_prisonBluesReadTimer.stop();
   m_prisonBluesTimer.stop();
   m_readPrisonBluesFuture.cancel();
@@ -478,6 +484,7 @@ QByteArray spoton_rosetta::gpgEncrypt
  const QByteArray &message,
  const QByteArray &receiver,
  const QByteArray &sender,
+ const bool askForPassphrase,
  const bool sign)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -546,14 +553,18 @@ QByteArray spoton_rosetta::gpgEncrypt
 
 		  if(err == GPG_ERR_NO_ERROR)
 		    {
-		      gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
+		      if(askForPassphrase)
+			gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
+
 		      err = gpgme_op_encrypt_sign
 			(ctx, keys, flags, plaintext, ciphertext);
 		    }
 		}
 	      else
 		{
-		  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
+		  if(askForPassphrase)
+		    gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
+
 		  err = gpgme_op_encrypt
 		    (ctx, keys, flags, plaintext, ciphertext);
 		}
@@ -741,16 +752,6 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {
   QMainWindow::keyPressEvent(event);
-}
-
-void spoton_rosetta::launchPrisonBluesProcessesIfNecessary(const bool pullOnly)
-{
-#ifdef SPOTON_GPGME_ENABLED
-  if(m_prisonBluesTimer.remainingTime() >= 5500)
-    prisonBluesProcess(pullOnly);
-#else
-  Q_UNUSED(pullOnly);
-#endif
 }
 
 void spoton_rosetta::populateContacts(void)
@@ -1000,6 +1001,95 @@ void spoton_rosetta::prepareGPGAttachmentsProgramCompleter(void)
   completer->setModel(model);
   model->setRootPath(QDir::rootPath());
   ui.gpg->setCompleter(completer);
+}
+
+void spoton_rosetta::prepareGPGStatusMessages
+(const QByteArray &sender,
+ const QList<QByteArray> &publicKeys,
+ const QList<QFileInfo> &list,
+ const QStringList &fingerprints)
+{
+  foreach(auto const &directory, list)
+    {
+      if(m_prepareGPGStatusMessagesFuture.isCanceled())
+	return;
+
+      for(int i = 0; i < fingerprints.size(); i++)
+	{
+	  if(m_prepareGPGStatusMessagesFuture.isCanceled())
+	    return;
+
+	  if(!(directory.isWritable()) ||
+	     !(fingerprints.at(i).isEmpty() == false &&
+	       publicKeys.at(i).isEmpty() == false))
+	    continue;
+
+	  auto const destination
+	    (directory.absoluteFilePath() +
+	     QDir::separator() +
+	     fingerprints.value(i));
+
+	  QDir().mkpath(destination);
+
+	  /*
+	  ** Let's not create status files if the recipient has been missing
+	  ** for some time.
+	  */
+
+	  QDirIterator it(destination, QDir::Files);
+	  auto found = false;
+
+	  while(it.hasNext())
+	    {
+	      it.next();
+
+	      auto then(it.fileInfo().lastModified());
+
+	      if(!spoton_misc::
+		 acceptableTimeSeconds(then,
+				       spoton_common::
+				       ROSETTA_GPG_STATUS_TIME_DELTA))
+		{
+		  found = true;
+		  break;
+		}
+	    }
+
+	  if(found)
+	    continue;
+
+	  QTemporaryFile file
+	    (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
+
+	  if(file.open())
+	    {
+	      auto const status
+		(s_status +
+		 sender +
+		 "," +
+		 QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss"));
+	      auto ok = true;
+	      auto const output
+		(gpgEncrypt(ok,
+			    status.toUtf8(),
+			    publicKeys.at(i),
+			    sender,
+			    false,
+			    true));
+
+	      if(ok)
+		{
+		  Q_UNUSED(file.fileName()); // Prevents removal of file.
+		  file.setAutoRemove(false);
+		  file.write(output);
+		}
+	      else
+		file.remove();
+	    }
+	}
+    }
+
+  emit launchPrisonBluesProcessesIfNecessary(false);
 }
 
 void spoton_rosetta::prisonBluesProcess(const bool pullOnly)
@@ -2153,6 +2243,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
 		    receiver,
 		    spoton_crypt::fingerprint(ui.gpg_email_addresses->
 					      currentData().toByteArray()),
+		    true,
 		    ui.sign->isChecked()));
       ui.outputEncrypt->selectAll();
       toDesktop();
@@ -2714,7 +2805,7 @@ void spoton_rosetta::slotGPGParticipantsChanged(QTableWidgetItem *item)
 
 void spoton_rosetta::slotGPGPullTimer(void)
 {
-  launchPrisonBluesProcessesIfNecessary(true);
+  slotLaunchPrisonBluesProcessesIfNecessary(true);
 }
 
 void spoton_rosetta::slotGPGStatusTimerTimeout(void)
@@ -2768,7 +2859,8 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	}
     }
 
-  if(fingerprints.isEmpty())
+  if(fingerprints.isEmpty() ||
+     m_prepareGPGStatusMessagesFuture.isFinished() == false)
     {
       QApplication::restoreOverrideCursor();
       return;
@@ -2785,74 +2877,24 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
   auto const sender
     (spoton_crypt::fingerprint(ui.gpg_address->currentData().toByteArray()));
 
-  foreach(auto const &directory, list)
-    for(int i = 0; i < fingerprints.size(); i++)
-      {
-	if(!(directory.isWritable()) ||
-	   !(fingerprints.at(i).isEmpty() == false &&
-	     publicKeys.at(i).isEmpty() == false))
-	  continue;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+  m_prepareGPGStatusMessagesFuture = QtConcurrent::run
+    (&spoton_rosetta::prepareGPGStatusMessages,
+     this,
+     sender,
+     publicKeys,
+     list,
+     fingerprints);
+#else
+  m_prepareGPGStatusMessagesFuture = QtConcurrent::run
+    (this,
+     &spoton_rosetta::prepareGPGStatusMessages,
+     sender,
+     publicKeys,
+     list,
+     fingerprints);
+#endif
 
-	auto const destination
-	  (directory.absoluteFilePath() +
-	   QDir::separator() +
-	   fingerprints.value(i));
-
-	QDir().mkpath(destination);
-
-	/*
-	** Let's not create status files if the recipient has been missing
-	** for some time.
-	*/
-
-	QDirIterator it(destination, QDir::Files);
-	auto found = false;
-
-	while(it.hasNext())
-	  {
-	    it.next();
-
-	    auto then(it.fileInfo().lastModified());
-
-	    if(!spoton_misc::
-	       acceptableTimeSeconds(then,
-				     spoton_common::
-				     ROSETTA_GPG_STATUS_TIME_DELTA))
-	      {
-		found = true;
-		break;
-	      }
-	  }
-
-	if(found)
-	  continue;
-
-	QTemporaryFile file
-	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.txt");
-
-	if(file.open())
-	  {
-	    auto const status
-	      (s_status +
-	       sender +
-	       "," +
-	       QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss"));
-	    auto ok = true;
-	    auto const output
-	      (gpgEncrypt(ok, status.toUtf8(), publicKeys.at(i), sender, true));
-
-	    if(ok)
-	      {
-		Q_UNUSED(file.fileName()); // Prevents removal of file.
-		file.setAutoRemove(false);
-		file.write(output);
-	      }
-	    else
-	      file.remove();
-	  }
-      }
-
-  launchPrisonBluesProcessesIfNecessary(false);
   QApplication::restoreOverrideCursor();
 #endif
 }
@@ -2885,6 +2927,17 @@ void spoton_rosetta::slotImportGPGKeys(void)
   m_gpgImport->showNormal();
   m_gpgImport->activateWindow();
   m_gpgImport->raise();
+#endif
+}
+
+void spoton_rosetta::slotLaunchPrisonBluesProcessesIfNecessary
+(const bool pullOnly)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  if(m_prisonBluesTimer.remainingTime() >= 5500)
+    prisonBluesProcess(pullOnly);
+#else
+  Q_UNUSED(pullOnly);
 #endif
 }
 
@@ -3250,14 +3303,14 @@ void spoton_rosetta::slotPublishGPG(void)
 	(tr("The directory %1 is not writable.").
 	 arg(directory.absoluteFilePath()), 5000);
 
-  state ? launchPrisonBluesProcessesIfNecessary(false) : (void) 0;
+  state ? slotLaunchPrisonBluesProcessesIfNecessary(false) : (void) 0;
 }
 
 void spoton_rosetta::slotPullGPG(void)
 {
   QSettings().setValue("gui/gpgRosettaPull", ui.gpg_pull->isChecked());
   ui.gpg_pull->isChecked() ?
-    launchPrisonBluesProcessesIfNecessary(true) : (void) 0;
+    slotLaunchPrisonBluesProcessesIfNecessary(true) : (void) 0;
   ui.gpg_pull->isChecked() ? m_gpgPullTimer.start() : m_gpgPullTimer.stop();
 }
 
@@ -3684,7 +3737,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	       crypt);
 	    auto ok = true;
 	    auto const output
-	      (gpgEncrypt(ok, message.toUtf8(), publicKey, sender, sign));
+	      (gpgEncrypt(ok, message.toUtf8(), publicKey, sender, true, sign));
 
 	    if(ok)
 	      {
@@ -3726,7 +3779,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	  showMessage(tr("Could not create a temporary file."), 5000);
       }
 
-  state ? launchPrisonBluesProcessesIfNecessary(false) : (void) 0;
+  state ? slotLaunchPrisonBluesProcessesIfNecessary(false) : (void) 0;
   ui.gpg_message->clear();
   QApplication::restoreOverrideCursor();
 #endif

@@ -76,6 +76,7 @@ class spoton_rosetta: public QMainWindow
     Size
   };
 
+  QFuture<void> m_prepareGPGStatusMessagesFuture;
   QFuture<void> m_readPrisonBluesFuture;
   QMap<QString, QString> m_gpgMessages;
   QPointer<spoton> m_parent;
@@ -98,6 +99,7 @@ class spoton_rosetta: public QMainWindow
 			       const QByteArray &message,
 			       const QByteArray &receiver,
 			       const QByteArray &sender,
+			       const bool askForPassphrase,
 			       const bool sign);
 #ifdef SPOTON_GPGME_ENABLED
   static QPointer<spoton_rosetta> s_rosetta;
@@ -109,10 +111,14 @@ class spoton_rosetta: public QMainWindow
 				     int fd);
 #endif
   void keyPressEvent(QKeyEvent *event);
-  void launchPrisonBluesProcessesIfNecessary(const bool pullOnly);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
   void prepareGPGAttachmentsProgramCompleter(void);
+  void prepareGPGStatusMessages
+    (const QByteArray &sender,
+     const QList<QByteArray> &publicKeys,
+     const QList<QFileInfo> &list,
+     const QStringList &fingerprints);
   void prisonBluesProcess(const bool pullOnly);
   void publishAttachments
     (const QString &destination,
@@ -152,6 +158,7 @@ class spoton_rosetta: public QMainWindow
   void slotGPGPullTimer(void);
   void slotGPGStatusTimerTimeout(void);
   void slotImportGPGKeys(void);
+  void slotLaunchPrisonBluesProcessesIfNecessary(const bool pullOnly);
   void slotNewGPGKeys(void);
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
@@ -176,6 +183,7 @@ class spoton_rosetta: public QMainWindow
  signals:
   void gpgFileProcessed(void);
   void gpgKeysRemoved(void);
+  void launchPrisonBluesProcessesIfNecessary(const bool pullOnly);
   void participantAdded(const QString &type);
   void participantDeleted(const QString &oid, const QString &type);
   void participantNameChanged
