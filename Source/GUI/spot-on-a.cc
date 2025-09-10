@@ -4459,7 +4459,6 @@ void spoton::slotActivateKernel(void)
   do
     {
       QApplication::processEvents();
-      status = false;
 
       if(spoton_misc::kernelPid() > 0 || time.hasExpired(10000))
 	{

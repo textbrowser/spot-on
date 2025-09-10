@@ -351,7 +351,7 @@ static void threefish_encrypt(char *E,
 			      const size_t block_size,
 			      bool *ok)
 {
-  if(Q_UNLIKELY(!E || !K || !P || P_size == 0 || !T || block_size == 0))
+  if(Q_UNLIKELY(!E || !K || !P || !T || P_size == 0 || block_size == 0))
     {
       if(ok)
 	*ok = false;
@@ -370,7 +370,7 @@ static void threefish_encrypt_implementation(char *E,
 					     const size_t block_size,
 					     bool *ok)
 {
-  if(Q_UNLIKELY(!E || !K || !T || !P || P_size == 0 || block_size == 0))
+  if(Q_UNLIKELY(!E || !K || !P || !T || P_size == 0 || block_size == 0))
     {
       if(ok)
 	*ok = false;

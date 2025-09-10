@@ -2356,7 +2356,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
 			       0,
 			       ""));
 
-  if(ui.sign->isChecked())
+  if(sCrypt && ui.sign->isChecked())
     {
       if(ok)
 	myPublicKey = eCrypt->publicKey(&ok);

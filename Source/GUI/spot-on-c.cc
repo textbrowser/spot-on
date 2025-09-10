@@ -1970,9 +1970,9 @@ void spoton::slotComputeFileHash(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QByteArray hash;
+  QString field("");
   auto const fileName(item->text());
   auto const type(action->property("hash").toString());
-  auto field("");
 
   if(type == "sha-1")
     {
