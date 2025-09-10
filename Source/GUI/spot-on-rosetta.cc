@@ -1009,6 +1009,7 @@ void spoton_rosetta::prepareGPGStatusMessages
  const QList<QFileInfo> &list,
  const QStringList &fingerprints)
 {
+#ifdef SPOTON_GPGME_ENABLED
   foreach(auto const &directory, list)
     {
       if(m_prepareGPGStatusMessagesFuture.isCanceled())
@@ -1090,6 +1091,12 @@ void spoton_rosetta::prepareGPGStatusMessages
     }
 
   emit launchPrisonBluesProcessesIfNecessary(false);
+#else
+  Q_UNUSED(fingerprints);
+  Q_UNUSED(list);
+  Q_UNUSED(publicKeys);
+  Q_UNUSED(sender);
+#endif
 }
 
 void spoton_rosetta::prisonBluesProcess(const bool pullOnly)
