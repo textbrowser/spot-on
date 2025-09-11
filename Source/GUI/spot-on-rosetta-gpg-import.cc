@@ -123,10 +123,12 @@ QString spoton_rosetta_gpg_import::dump(const QByteArray &data)
 
 	      dump = tr("E-Mail: %1<br>"
 			"Key ID: %2<br>"
-			"Name: %3<br>"
-			"Fingerprint: %4").
+			"Key Information: %3<br>"
+			"Name: %4<br>"
+			"Fingerprint: %5").
 		arg(email).
 		arg(keyid).
+		arg(spoton_crypt::gpgInformation(data).constData()).
 		arg(name).
 		arg(fingerprint);
 	      gpgme_key_unref(key);
