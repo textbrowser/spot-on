@@ -58,6 +58,10 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotShowCurrentDump(int)));
+  connect(m_ui.email_addresses,
+	  SIGNAL(activated(int)),
+	  this,
+	  SLOT(slotShowCurrentDump(int)));
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -280,6 +284,9 @@ void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
 
   if(error.isEmpty())
     emit gpgKeysImported();
+#else
+  Q_UNUSED(error);
+  Q_UNUSED(k);
 #endif
 }
 
@@ -357,12 +364,6 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 
   QApplication::restoreOverrideCursor();
 #endif
-}
-
-void spoton_rosetta_gpg_import::showNormal(void)
-{
-  showCurrentDump();
-  QMainWindow::showNormal();
 }
 
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)

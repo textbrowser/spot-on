@@ -132,12 +132,6 @@
      <height>34</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_File">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="action_Close"/>
-   </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
      <string>&amp;Edit</string>
@@ -146,17 +140,8 @@
     <addaction name="separator"/>
     <addaction name="action_Remove_GPG_Keys"/>
    </widget>
-   <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
   </widget>
-  <action name="action_Close">
-   <property name="text">
-    <string>&amp;Close</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
-   </property>
-  </action>
   <action name="action_Clear">
    <property name="text">
     <string>&amp;Clear</string>
@@ -177,22 +162,5 @@
  <resources>
   <include location="../Icons/icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>action_Close</sender>
-   <signal>triggered()</signal>
-   <receiver>spoton_rosetta_gpg_import</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>149</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

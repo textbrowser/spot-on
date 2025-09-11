@@ -112,6 +112,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
   ui.dump->setVisible(false);
   ui.from->setText(tr("Empty"));
+  ui.gpg_participants->horizontalHeader()->setSortIndicator
+    (0, Qt::AscendingOrder);
   ui.gpg_pull->setChecked
     (QSettings().value("gui/gpgRosettaPull", true).toBool());
   ui.gpg_show_status_messages->setChecked
@@ -128,10 +130,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
-  ui.tabWidget->setCurrentIndex
-    (qBound(0,
-	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
-	    ui.tabWidget->count() - 1));
   ui.tool_bar->addAction(ui.action_Clear_Clipboard_Buffer);
   ui.tool_bar->addAction(ui.action_Copy);
   ui.tool_bar->addAction(ui.action_Import_GPG_Keys);
@@ -406,6 +404,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #ifdef Q_OS_MACOS
   spoton_utilities::enableTabDocumentMode(this);
 #endif
+  restoreState(QSettings().value("gui/rosettaMainWindowState").toByteArray());
   slotPullGPG();
 }
 
@@ -749,8 +748,15 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 }
 #endif
 
+void spoton_rosetta::closeEvent(QCloseEvent *event)
+{
+  QMainWindow::closeEvent(event);
+  QSettings().setValue("gui/rosettaMainWindowState", saveState());
+}
+
 void spoton_rosetta::createGPGImportObject(void)
 {
+#ifdef SPOTON_GPGME_ENABLED
   if(!m_gpgImport)
     {
       m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
@@ -767,6 +773,7 @@ void spoton_rosetta::createGPGImportObject(void)
 	      m_gpgImport,
 	      SLOT(slotGPGKeysRemoved(void)));
     }
+#endif
 }
 
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
@@ -944,6 +951,9 @@ void spoton_rosetta::populateContacts(void)
 		SIGNAL(itemChanged(QTableWidgetItem *)),
 		this,
 		SLOT(slotGPGParticipantsChanged(QTableWidgetItem *)));
+	ui.gpg_participants->sortByColumn
+	  (ui.gpg_participants->horizontalHeader()->sortIndicatorSection(),
+	   ui.gpg_participants->horizontalHeader()->sortIndicatorOrder());
 	ui.gpg_participants->resizeColumnsToContents();
 	ui.gpg_participants->scrollToTop();
       }
@@ -1352,6 +1362,15 @@ void spoton_rosetta::setParent(spoton *parent)
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
+#ifdef SPOTON_GPGME_ENABLED
+  m_parent ? slotImportGPGKeys() : (void) 0;
+  m_gpgImport ?
+    ui.tabWidget->insertTab(1, m_gpgImport, tr("GPG Import")) : false;
+#endif
+  ui.tabWidget->setCurrentIndex
+    (qBound(0,
+	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
+	    ui.tabWidget->count() - 1));
 }
 
 void spoton_rosetta::show(spoton *parent)
@@ -2937,10 +2956,8 @@ void spoton_rosetta::slotImportGPGKeys(void)
 
   if(m_gpgImport)
     {
-      spoton_utilities::centerWidget(m_gpgImport, m_parent);
-      m_gpgImport->showNormal();
-      m_gpgImport->activateWindow();
-      m_gpgImport->raise();
+      m_gpgImport->showCurrentDump();
+      ui.tabWidget->setCurrentIndex(1);
     }
 #endif
 }
@@ -2984,6 +3001,11 @@ void spoton_rosetta::slotNewGPGKeys(void)
     (QSettings().value("gui/gpgPath", "").toString());
   m_gpgNewKeysUi.gpg->selectAll();
   m_gpgNewKeysUi.gpg_results->clear();
+#ifndef SPOTON_GPGME_ENABLED
+  m_gpgNewKeysUi.import_in_spoton->setEnabled(false);
+  m_gpgNewKeysUi.import_in_spoton->setToolTip
+    (tr("The GnuPG Made Easy library is not available."));
+#endif
 
  repeat_label:
 
@@ -3036,6 +3058,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
 		goto repeat_label;
 	      else
 		{
+#ifdef SPOTON_GPGME_ENABLED
 		  if(m_gpgNewKeysUi.import_in_spoton->isChecked())
 		    {
 		      auto email
@@ -3088,6 +3111,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
 			    }
 			}
 		    }
+#endif
 
 		  goto repeat_label;
 		}
