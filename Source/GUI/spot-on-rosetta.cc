@@ -341,10 +341,6 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotSaveName(void)));
-  connect(ui.tabWidget,
-	  SIGNAL(currentChanged(int)),
-	  this,
-	  SLOT(slotTabChanged(int)));
   prepareGPGAttachmentsProgramCompleter();
   slotSetIcons();
   ui.cipher->addItems(spoton_crypt::cipherTypes());
@@ -757,9 +753,12 @@ void spoton_rosetta::closeEvent(QCloseEvent *event)
 void spoton_rosetta::createGPGImportObject(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  if(!m_gpgImport)
+  if(m_gpgImport == nullptr && m_parent)
     {
-      m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
+      ui.tabWidget->insertTab
+	(1,
+	 m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent),
+	 tr("GPG Import"));
       connect(m_gpgImport,
 	      SIGNAL(gpgKeysImported(void)),
 	      this,
@@ -1356,21 +1355,22 @@ void spoton_rosetta::setParent(spoton *parent)
 {
   m_parent = parent;
   populateContacts();
+  slotImportGPGKeys();
   ui.name->setText
     (QString::fromUtf8(QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().constData(),
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
-#ifdef SPOTON_GPGME_ENABLED
-  m_parent ? slotImportGPGKeys() : (void) 0;
-  m_gpgImport ?
-    ui.tabWidget->insertTab(1, m_gpgImport, tr("GPG Import")) : false;
-#endif
   ui.tabWidget->setCurrentIndex
     (qBound(0,
 	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
 	    ui.tabWidget->count() - 1));
+  connect(ui.tabWidget,
+	  SIGNAL(currentChanged(int)),
+	  this,
+	  SLOT(slotTabChanged(int)),
+	  Qt::UniqueConnection);
 }
 
 void spoton_rosetta::show(spoton *parent)
