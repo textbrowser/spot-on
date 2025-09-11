@@ -88,13 +88,15 @@
        <property name="plainText">
         <string notr="true"># https://www.gnupg.org/documentation/manuals/gnupg-devel/Unattended-GPG-key-generation.html
 
-Key-Type: 1
-Key-Length: 4096
+Key-Type: eddsa
+Key-Curve: Ed25519
+Key-Usage: sign
 Expire-Date: 0
 Name-Email: spot-on@wonder.org
 Name-Real: Spot-On
-Subkey-Length: 4096
-Subkey-Type: 1
+Subkey-Type: ecdh
+Subkey-Curve: Curve25519
+Subkey-Usage: encrypt
 </string>
        </property>
        <property name="placeholderText">
