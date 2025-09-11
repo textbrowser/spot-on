@@ -570,10 +570,14 @@ QByteArray spoton_rosetta::gpgEncrypt
 
       if(err == GPG_ERR_NO_ERROR)
 	{
+	  if(gpgme_data_seek(ciphertext, 0, SEEK_SET) == -1)
+	    {
+	      err = GPG_ERR_NO_DATA;
+	      goto release_label;
+	    }
+
 	  QByteArray bytes(4096, 0);
 	  ssize_t rc = 0;
-
-	  gpgme_data_seek(ciphertext, 0, SEEK_SET);
 
 	  while
 	    ((rc = gpgme_data_read(ciphertext,
@@ -582,6 +586,7 @@ QByteArray spoton_rosetta::gpgEncrypt
 	    output.append(bytes.mid(0, static_cast<int> (rc)));
 	}
 
+    release_label:
       gpgme_data_release(ciphertext);
       gpgme_data_release(plaintext);
     }
@@ -1952,10 +1957,14 @@ void spoton_rosetta::slotConvertDecrypt(void)
 	      {
 		ui.outputDecrypt->clear();
 
+		if(gpgme_data_seek(plaintext, 0, SEEK_SET) == -1)
+		  {
+		    err = GPG_ERR_NO_DATA;
+		    goto release_label;
+		  }
+
 		QByteArray bytes(4096, 0);
 		ssize_t rc = 0;
-
-		gpgme_data_seek(plaintext, 0, SEEK_SET);
 
 		while
 		  ((rc =
@@ -2008,6 +2017,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
 		  }
 	      }
 
+	  release_label:
 	    gpgme_data_release(ciphertext);
 	    gpgme_data_release(plaintext);
 	  }
@@ -3201,10 +3211,14 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
       if(err == GPG_ERR_NO_ERROR)
 	{
+	  if(gpgme_data_seek(plaintext, 0, SEEK_SET) == -1)
+	    {
+	      err = GPG_ERR_NO_DATA;
+	      goto release_label;
+	    }
+
 	  QByteArray bytes(4096, 0);
 	  ssize_t rc = 0;
-
-	  gpgme_data_seek(plaintext, 0, SEEK_SET);
 
 	  while
 	    ((rc = gpgme_data_read(plaintext,
@@ -3253,6 +3267,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 	    }
 	}
 
+    release_label:
       gpgme_data_release(ciphertext);
       gpgme_data_release(plaintext);
     }
