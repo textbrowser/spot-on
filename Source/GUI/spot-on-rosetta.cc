@@ -749,6 +749,26 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 }
 #endif
 
+void spoton_rosetta::createGPGImportObject(void)
+{
+  if(!m_gpgImport)
+    {
+      m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
+      connect(m_gpgImport,
+	      SIGNAL(gpgKeysImported(void)),
+	      this,
+	      SLOT(slotPopulateGPGEmailAddresses(void)));
+      connect(m_gpgImport,
+	      SIGNAL(gpgKeysRemoved(void)),
+	      this,
+	      SLOT(slotPopulateGPGEmailAddresses(void)));
+      connect(this,
+	      SIGNAL(gpgKeysRemoved(void)),
+	      m_gpgImport,
+	      SLOT(slotGPGKeysRemoved(void)));
+    }
+}
+
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {
   QMainWindow::keyPressEvent(event);
@@ -2913,28 +2933,15 @@ void spoton_rosetta::slotImportGPGKeys(void)
   menuBar()->repaint();
   repaint();
   QApplication::processEvents();
+  createGPGImportObject();
 
-  if(!m_gpgImport)
+  if(m_gpgImport)
     {
-      m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent);
-      connect(m_gpgImport,
-	      SIGNAL(gpgKeysImported(void)),
-	      this,
-	      SLOT(slotPopulateGPGEmailAddresses(void)));
-      connect(m_gpgImport,
-	      SIGNAL(gpgKeysRemoved(void)),
-	      this,
-	      SLOT(slotPopulateGPGEmailAddresses(void)));
-      connect(this,
-	      SIGNAL(gpgKeysRemoved(void)),
-	      m_gpgImport,
-	      SLOT(slotGPGKeysRemoved(void)));
+      spoton_utilities::centerWidget(m_gpgImport, m_parent);
+      m_gpgImport->showNormal();
+      m_gpgImport->activateWindow();
+      m_gpgImport->raise();
     }
-
-  spoton_utilities::centerWidget(m_gpgImport, m_parent);
-  m_gpgImport->showNormal();
-  m_gpgImport->activateWindow();
-  m_gpgImport->raise();
 #endif
 }
 
@@ -3031,8 +3038,6 @@ void spoton_rosetta::slotNewGPGKeys(void)
 		{
 		  if(m_gpgNewKeysUi.import_in_spoton->isChecked())
 		    {
-		      QProcess process;
-		      QStringList parameters;
 		      auto email
 			(m_gpgNewKeysUi.gpg_directives->toPlainText().toUtf8());
 
@@ -3040,31 +3045,47 @@ void spoton_rosetta::slotNewGPGKeys(void)
 			(email.indexOf(tr("Name-Email:").toUtf8()) +
 			 tr("Name-Email:").toUtf8().length()).
 			split('\n').value(0).trimmed();
-		      parameters << "--armor"
-				 << "--export"
-				 << email;
-		      process.setWorkingDirectory(spoton_misc::homePath());
-		      process.start(fileInfo.absoluteFilePath(), parameters);
 
-		      do
+		      if(!email.isEmpty())
 			{
-			  process.waitForFinished(150);
-			  QApplication::processEvents();
-			}
-		      while(process.state() == QProcess::Running);
+			  QProcess process;
+			  QStringList parameters;
 
-		      m_gpgNewKeysUi.gpg_results->append
-			(process.readAllStandardOutput().trimmed());
-		      m_gpgNewKeysUi.gpg_results->horizontalScrollBar()->
-			setValue(0);
-		      m_gpgNewKeysUi.gpg_results->verticalScrollBar()->
-			setValue(0);
+			  parameters << "--armor"
+				     << "--export"
+				     << email;
+			  process.setWorkingDirectory(spoton_misc::homePath());
+			  process.start
+			    (fileInfo.absoluteFilePath(), parameters);
 
-		      if(process.exitCode() == 0)
-			{
-			  auto const keys
-			    (m_gpgNewKeysUi.gpg_results->toPlainText().
-			     toUtf8());
+			  do
+			    {
+			      process.waitForFinished(150);
+			      QApplication::processEvents();
+			    }
+			  while(process.state() == QProcess::Running);
+
+			  m_gpgNewKeysUi.gpg_results->append
+			    (process.readAllStandardOutput().trimmed());
+			  m_gpgNewKeysUi.gpg_results->horizontalScrollBar()->
+			    setValue(0);
+			  m_gpgNewKeysUi.gpg_results->verticalScrollBar()->
+			    setValue(0);
+
+			  if(process.exitCode() == 0)
+			    {
+			      createGPGImportObject();
+
+			      if(m_gpgImport)
+				{
+				  QString error("");
+
+				  m_gpgImport->import
+				    (error,
+				     m_gpgNewKeysUi.gpg_results->toPlainText().
+				     toUtf8());
+				}
+			    }
 			}
 		    }
 

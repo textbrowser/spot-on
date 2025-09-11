@@ -187,6 +187,102 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 #endif
 }
 
+void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  error.clear();
+
+  QByteArray const begin("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+  QByteArray const end("-----END PGP PUBLIC KEY BLOCK-----");
+  auto const index1 = k.indexOf(begin);
+  auto const index2 = k.indexOf(end);
+  
+  if(index1 < 0 || index1 >= index2 || index2 < 0)
+    {
+      error = tr("Invalid GPG key block.");
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  auto const key
+    (k.mid(index1, index2 - index1 + static_cast<int> (qstrlen(end))));
+
+  if(key.isEmpty())
+    {
+      error = tr("Invalid GPG key block.");
+      QApplication::restoreOverrideCursor();
+      return;
+    }
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	query.exec("CREATE TABLE IF NOT EXISTS gpg ("
+		   "public_keys TEXT NOT NULL, "
+		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
+
+	auto crypt = m_spoton ?
+	  m_spoton->crypts().value("rosetta", nullptr) : nullptr;
+
+	if(crypt)
+	  {
+	    auto const fingerprint(spoton_crypt::fingerprint(key));
+	    auto ok = true;
+
+	    if(fingerprint.isEmpty())
+	      {
+		error = tr("GPGME error. Please verify that the "
+			   "provided keys are correct.");
+		ok = false;
+	      }
+
+	    query.prepare
+	      ("INSERT OR REPLACE INTO gpg "
+	       "(public_keys, public_keys_hash) VALUES (?, ?)");
+
+	    if(ok)
+	      query.addBindValue
+		(crypt->encryptedThenHashed(key, &ok).toBase64());
+
+	    if(ok)
+	      query.addBindValue
+		(crypt->keyedHash(fingerprint, &ok).toBase64());
+
+	    if(ok)
+	      {
+		if(!query.exec())
+		  error = tr("A database error occurred.");
+	      }
+	    else if(error.isEmpty())
+	      error = tr("A cryptographic error occurred.");
+	  }
+	else
+	  error = tr("Invalid crypt object. Critical error.");
+      }
+    else
+      error = tr("Unable to access the database idiotes.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+  QApplication::restoreOverrideCursor();
+
+  if(error.isEmpty())
+    emit gpgKeysImported();
+#endif
+}
+
 void spoton_rosetta_gpg_import::showCurrentDump(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -194,7 +290,8 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 
-  auto crypt = m_spoton->crypts().value("rosetta", nullptr);
+  auto crypt = m_spoton ?
+    m_spoton->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!crypt)
     {
@@ -279,79 +376,9 @@ void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 void spoton_rosetta_gpg_import::slotImport(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
   QString error("");
 
-  {
-    auto db(spoton_misc::database(connectionName));
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("CREATE TABLE IF NOT EXISTS gpg ("
-		   "public_keys TEXT NOT NULL, "
-		   "public_keys_hash TEXT NOT NULL PRIMARY KEY)");
-
-	auto crypt = m_spoton->crypts().value("rosetta", nullptr);
-
-	if(crypt)
-	  {
-	    auto publicKey
-	      (m_ui.public_keys->toPlainText().trimmed().toUtf8());
-	    auto ok = true;
-
-	    if(!publicKey.isEmpty())
-	      {
-		auto const fingerprint(spoton_crypt::fingerprint(publicKey));
-
-		if(fingerprint.isEmpty())
-		  {
-		    error = tr("GPGME error. Please verify that the "
-			       "provided keys are correct.");
-		    ok = false;
-		  }
-
-		query.prepare("INSERT OR REPLACE INTO gpg "
-			      "(public_keys, public_keys_hash) VALUES (?, ?)");
-
-		if(ok)
-		  query.addBindValue
-		    (crypt->encryptedThenHashed(publicKey, &ok).toBase64());
-
-		if(ok)
-		  query.addBindValue
-		    (crypt->keyedHash(fingerprint, &ok).toBase64());
-
-		if(ok)
-		  {
-		    if(!query.exec())
-		      error = tr("A database error occurred.");
-		  }
-		else if(error.isEmpty())
-		  error = tr("A cryptographic error occurred.");
-	      }
-	    else
-	      error = tr("Please provide non-empty keys.");
-
-	    spoton_crypt::memzero(publicKey);
-	  }
-	else
-	  error = tr("Invalid crypt object. Critical error.");
-      }
-    else
-      error = tr("Unable to access the database idiotes.db.");
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
+  import(error, m_ui.public_keys->toPlainText().trimmed().toUtf8());
 
   if(!error.isEmpty())
     {
@@ -360,10 +387,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
       QApplication::processEvents();
     }
   else
-    {
-      m_ui.public_keys->selectAll();
-      emit gpgKeysImported();
-    }
+    m_ui.public_keys->selectAll();
 
   showCurrentDump();
 #endif
@@ -376,7 +400,8 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
   if(publicKey.isEmpty())
     return;
 
-  auto crypt = m_spoton->crypts().value("rosetta", nullptr);
+  auto crypt = m_spoton ?
+    m_spoton->crypts().value("rosetta", nullptr) : nullptr;
 
   if(!crypt)
     {

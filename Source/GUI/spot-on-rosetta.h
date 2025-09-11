@@ -110,6 +110,7 @@ class spoton_rosetta: public QMainWindow
 				     int prev_was_bad,
 				     int fd);
 #endif
+  void createGPGImportObject(void);
   void keyPressEvent(QKeyEvent *event);
   void populateContacts(void);
   void populateGPGEmailAddresses(void);
