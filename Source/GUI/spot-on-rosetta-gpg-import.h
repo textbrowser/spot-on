@@ -50,6 +50,7 @@ class spoton_rosetta_gpg_import: public QMainWindow
   Ui_spoton_rosetta_gpg_import m_ui;
 
  private slots:
+  void slotClear(void);
   void slotGPGKeysRemoved(void);
   void slotImport(void);
   void slotRemoveGPGKey(void);
@@ -60,7 +61,9 @@ class spoton_rosetta_gpg_import: public QMainWindow
  signals:
   void gpgKeysImported(void);
   void gpgKeysRemoved(void);
-  void shareKeyBundle(const QByteArray &data);
+  void shareKeyBundle(const QByteArray &data,
+		      const QString &fingerprint,
+		      const QString &originEmail);
 };
 
 #endif

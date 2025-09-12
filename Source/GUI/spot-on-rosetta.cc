@@ -763,7 +763,7 @@ void spoton_rosetta::createGPGImportObject(void)
       ui.tabWidget->insertTab
 	(1,
 	 m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent),
-	 tr("GPG Import / GPG Share Keys"));
+	 tr("GPG Import / GPG Share"));
       connect(m_gpgImport,
 	      SIGNAL(gpgKeysImported(void)),
 	      this,

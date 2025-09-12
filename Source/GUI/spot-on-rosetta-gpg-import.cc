@@ -48,16 +48,8 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),
-	  m_ui.destination_email,
-	  SLOT(clear(void)));
-  connect(m_ui.action_Clear,
-	  SIGNAL(triggered(void)),
-	  m_ui.destination_fingerprint,
-	  SLOT(clear(void)));
-  connect(m_ui.action_Clear,
-	  SIGNAL(triggered(void)),
-	  m_ui.public_keys,
-	  SLOT(clear(void)));
+	  this,
+	  SLOT(slotClear(void)));
   connect(m_ui.action_Remove_GPG_Keys,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -379,6 +371,14 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
 #endif
 }
 
+void spoton_rosetta_gpg_import::slotClear(void)
+{
+  m_ui.destination_email->clear();
+  m_ui.destination_fingerprint->clear();
+  m_ui.public_keys->clear();
+  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
+}
+
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
   m_ui.email_addresses->clear();
@@ -561,24 +561,56 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
   auto const email(m_ui.destination_email->text().trimmed());
   auto const fingerprint(m_ui.destination_fingerprint->text().trimmed());
 
-  if(email.isEmpty() || fingerprint.isEmpty())
+  if(email.isEmpty() || fingerprint.length() != 40)
     return;
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
+  QByteArray data;
+  QByteArray output("-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----\n\n");
+  QScopedPointer<spoton_crypt> crypt;
   QString error("");
   auto const keys
     (spoton_crypt::
      derivedKeys("aes256",
 		 "sha3-512",
-		 5000,  // The number of iterations.
-		 email, // The secret.
+		 100000, // The number of iterations.
+		 email,  // The secret.
 		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
-		 false, // Multiple passes.
+		 false,  // Multiple passes instead of a single pass.
 		 error));
+  auto ok = false;
 
   if(!error.isEmpty())
     goto done_label;
+
+  crypt.reset(new spoton_crypt("aes256",
+			       "sha3-512",
+			       QByteArray(),
+			       keys.first,
+			       keys.second,
+			       0,
+			       0,
+			       ""));
+  data = crypt->encryptedThenHashed
+    (m_ui.public_keys->toPlainText().toLatin1(), &ok).toBase64();
+
+  if(!ok)
+    goto done_label;
+
+  for(int i = 0; i < data.length(); i++)
+    {
+      output.append(data[i]);
+
+      if((i + 1) % 64 == 0)
+	output.append('\n');
+    }
+
+  output = output.trimmed();
+  output.append("\n\n");
+  output.append("-----END SPOT-ON PUBLIC KEY BLOCK-----");
+  emit shareKeyBundle
+    (output, fingerprint, m_ui.email_addresses->currentText());
 
  done_label:
   QApplication::restoreOverrideCursor();

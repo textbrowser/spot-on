@@ -2605,7 +2605,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
      iterationCount,
      passphrase,
      salt,
-     512,
+     256,
      singleIteration,
      error);
 }
