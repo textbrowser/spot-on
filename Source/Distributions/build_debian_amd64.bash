@@ -39,14 +39,14 @@ chmod -x ./opt/spot-on/Lib/lib*
 find ./opt/spot-on -type f -exec chmod g+w {} \;
 rm ./opt/spot-on/Documentation/*.qrc
 
-# Preparing Spot-On-2025.09.12_amd64.deb:
+# Preparing Spot-On-2025.09.26_amd64.deb:
 
 mkdir -p spot-on-debian/opt
 mkdir -p spot-on-debian/usr/share/applications
 cp -p ./Distributions/spot-on.desktop spot-on-debian/usr/share/applications/.
 cp -pr ./DEBIAN spot-on-debian/.
 cp -r ./opt/spot-on spot-on-debian/opt/.
-fakeroot dpkg-deb --build spot-on-debian Spot-On-2025.09.12_amd64.deb
+fakeroot dpkg-deb --build spot-on-debian Spot-On-2025.09.26_amd64.deb
 make distclean
 rm -fr ./opt
 rm -fr ./spot-on-debian
