@@ -116,7 +116,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="importButton">
+             <widget class="spoton_animated_push_button" name="importButton">
               <property name="text">
                <string>&amp;Import</string>
               </property>
@@ -184,6 +184,16 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
+             <widget class="QLineEdit" name="results">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+              <property name="placeholderText">
+               <string>Share Results</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer_3">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -197,7 +207,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="share">
+             <widget class="spoton_animated_push_button" name="share">
               <property name="text">
                <string>&amp;Share</string>
               </property>
@@ -243,6 +253,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>spoton_animated_push_button</class>
+   <extends>QPushButton</extends>
+   <header>spot-on-animated-push-button.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
   <tabstop>email_addresses</tabstop>
   <tabstop>deleteContact</tabstop>

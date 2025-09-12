@@ -206,7 +206,7 @@ void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
   QByteArray const end("-----END PGP PUBLIC KEY BLOCK-----");
   auto const index1 = k.indexOf(begin);
   auto const index2 = k.indexOf(end);
-  
+
   if(index1 < 0 || index1 >= index2 || index2 < 0)
     {
       error = tr("Invalid GPG key block.");
@@ -396,12 +396,16 @@ void spoton_rosetta_gpg_import::slotImport(void)
 
   if(!error.isEmpty())
     {
+      m_ui.importButton->animateNegatively(2500);
       QMessageBox::critical
 	(this, tr("%1: Error").arg(SPOTON_APPLICATION_NAME), error);
       QApplication::processEvents();
     }
   else
-    m_ui.public_keys->selectAll();
+    {
+      m_ui.importButton->animate(2500);
+      m_ui.public_keys->selectAll();
+    }
 
   showCurrentDump();
 #endif
@@ -613,6 +617,12 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
     (output, fingerprint, m_ui.email_addresses->currentText());
 
  done_label:
+
+  if(error.isEmpty())
+    m_ui.share->animate(2500);
+  else
+    m_ui.share->animateNegatively(2500);
+
   QApplication::restoreOverrideCursor();
 }
 

@@ -56,6 +56,7 @@ HEADERS	= Common/spot-on-external-address.h \
           Common/spot-on-fortuna.h \
           Common/spot-on-version.h \
           GUI/spot-on.h \
+          GUI/spot-on-animated-push-button.h \
           GUI/spot-on-buzzpage.h \
           GUI/spot-on-chatwindow.h \
           GUI/spot-on-documentation.h \
