@@ -48,6 +48,14 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),
+	  m_ui.destination_email,
+	  SLOT(clear(void)));
+  connect(m_ui.action_Clear,
+	  SIGNAL(triggered(void)),
+	  m_ui.destination_fingerprint,
+	  SLOT(clear(void)));
+  connect(m_ui.action_Clear,
+	  SIGNAL(triggered(void)),
 	  m_ui.public_keys,
 	  SLOT(clear(void)));
   connect(m_ui.action_Remove_GPG_Keys,
@@ -70,7 +78,6 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotRemoveGPGKey(void)));
-  setWindowTitle(tr("%1: Rosetta GPG Import").arg(SPOTON_APPLICATION_NAME));
 }
 
 spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
