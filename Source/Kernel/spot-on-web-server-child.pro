@@ -36,9 +36,9 @@ LIBS += -L/opt/homebrew/lib
 }
 
 unix {
-QMAKE_CLEAN += ../Spot-On-Web-Server-Child-Main
+QMAKE_CLEAN += ../Spot-On-Web-Server-Child
 } else {
-QMAKE_CLEAN += ..\\..\\release\\Spot-On-Web-Server-Child-Main
+QMAKE_CLEAN += ..\\..\\release\\Spot-On-Web-Server-Child
 }
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
