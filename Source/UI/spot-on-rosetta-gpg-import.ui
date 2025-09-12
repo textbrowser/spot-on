@@ -155,7 +155,7 @@
             <item row="1" column="0">
              <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Destination GPG Fingerprint</string>
+               <string>Destination GPG Fingerprint (Forty Characters)</string>
               </property>
              </widget>
             </item>
@@ -184,12 +184,12 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QLineEdit" name="results">
+             <widget class="QLineEdit" name="share_results">
               <property name="readOnly">
                <bool>true</bool>
               </property>
               <property name="placeholderText">
-               <string>Share Results</string>
+               <string>Share Error</string>
               </property>
              </widget>
             </item>

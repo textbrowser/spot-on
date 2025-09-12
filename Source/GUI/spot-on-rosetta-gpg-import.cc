@@ -562,26 +562,33 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
 
 void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
 {
+  QString error("");
   auto const email(m_ui.destination_email->text().trimmed());
   auto const fingerprint(m_ui.destination_fingerprint->text().trimmed());
 
-  if(email.isEmpty() || fingerprint.length() != 40)
-    return;
+  if(email.contains('@') == false ||
+     email.length() < 3 ||
+     fingerprint.length() != 40)
+    {
+      error = tr("Empty or invalid destination value(s).");
+      m_ui.share->animateNegatively(2500);
+      m_ui.share_results->setText(error);
+      return;
+    }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   QByteArray data;
   QByteArray output("-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----\n\n");
   QScopedPointer<spoton_crypt> crypt;
-  QString error("");
   auto const keys
     (spoton_crypt::
      derivedKeys("aes256",
 		 "sha3-512",
-		 100000, // The number of iterations.
-		 email,  // The secret.
+		 5000,  // The number of iterations.
+		 email, // The secret.
 		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
-		 false,  // Multiple passes instead of a single pass.
+		 false, // Multiple passes instead of a single pass.
 		 error));
   auto ok = false;
 
@@ -623,6 +630,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
   else
     m_ui.share->animateNegatively(2500);
 
+  m_ui.share_results->setText(error);
   QApplication::restoreOverrideCursor();
 }
 
