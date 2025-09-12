@@ -62,22 +62,26 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 	  SIGNAL(triggered(void)),
 	  this,
 	  SLOT(slotRemoveGPGKeys(void)));
+  connect(m_ui.deleteContact,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRemoveGPGKey(void)));
   connect(m_ui.email_addresses,
-	  SIGNAL(currentIndexChanged(int)),
+	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotShowCurrentDump(int)));
   connect(m_ui.email_addresses,
-	  SIGNAL(activated(int)),
+	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotShowCurrentDump(int)));
   connect(m_ui.importButton,
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotImport(void)));
-  connect(m_ui.deleteContact,
+  connect(m_ui.share,
 	  SIGNAL(clicked(void)),
 	  this,
-	  SLOT(slotRemoveGPGKey(void)));
+	  SLOT(slotShareKeyBundle(void)));
 }
 
 spoton_rosetta_gpg_import::~spoton_rosetta_gpg_import()
@@ -550,6 +554,34 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
       m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
       emit gpgKeysRemoved();
     }
+}
+
+void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
+{
+  auto const email(m_ui.destination_email->text().trimmed());
+  auto const fingerprint(m_ui.destination_fingerprint->text().trimmed());
+
+  if(email.isEmpty() || fingerprint.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  QString error("");
+  auto const keys
+    (spoton_crypt::
+     derivedKeys("aes256",
+		 "sha3-512",
+		 5000,  // The number of iterations.
+		 email, // The secret.
+		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
+		 false, // Multiple passes.
+		 error));
+
+  if(!error.isEmpty())
+    goto done_label;
+
+ done_label:
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta_gpg_import::slotShowCurrentDump(int index)

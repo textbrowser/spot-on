@@ -38,7 +38,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>-137</y>
+             <y>0</y>
              <width>922</width>
              <height>982</height>
             </rect>
@@ -461,13 +461,13 @@
           <item>
            <widget class="QSpinBox" name="generator_stream_size">
             <property name="minimum">
-             <number>100</number>
+             <number>768</number>
             </property>
             <property name="maximum">
-             <number>1000</number>
+             <number>2500</number>
             </property>
             <property name="value">
-             <number>256</number>
+             <number>768</number>
             </property>
            </widget>
           </item>

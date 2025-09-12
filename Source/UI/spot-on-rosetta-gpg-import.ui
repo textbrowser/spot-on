@@ -197,9 +197,9 @@
              </spacer>
             </item>
             <item>
-             <widget class="QPushButton" name="publish">
+             <widget class="QPushButton" name="share">
               <property name="text">
-               <string>&amp;Publish</string>
+               <string>&amp;Share</string>
               </property>
              </widget>
             </item>
@@ -250,7 +250,7 @@
   <tabstop>importButton</tabstop>
   <tabstop>destination_email</tabstop>
   <tabstop>destination_fingerprint</tabstop>
-  <tabstop>publish</tabstop>
+  <tabstop>share</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>

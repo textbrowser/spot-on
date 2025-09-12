@@ -446,7 +446,9 @@ QByteArray spoton_crypt::derivedSha1Key
  const int hashKeySize,
  const unsigned long int iterationCount)
 {
-  if(gcry_md_test_algo(gcry_md_map_name("sha1")) != 0 || salt.isEmpty())
+  if(gcry_md_test_algo(gcry_md_map_name("sha1")) != 0 ||
+     hashKeySize <= 0 ||
+     salt.isEmpty())
     return QByteArray();
   else
     gcry_fast_random_poll();
@@ -2603,7 +2605,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
      iterationCount,
      passphrase,
      salt,
-     256,
+     512,
      singleIteration,
      error);
 }
