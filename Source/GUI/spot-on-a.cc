@@ -2500,14 +2500,6 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_ui.neighborIP->setInputMask("");
   m_ui.neighborScopeId->setEnabled(false);
   m_ui.neighborScopeIdLabel->setEnabled(false);
-#if defined(Q_OS_WINDOWS)
-  m_ui.emailParticipants->setStyleSheet
-    ("QTableWidget {selection-background-color: lightgreen}");
-  m_ui.participants->setStyleSheet
-    ("QTableWidget {selection-background-color: lightgreen}");
-  m_ui.urlParticipants->setStyleSheet
-    ("QTableWidget {selection-background-color: lightgreen}");
-#endif
   splash->showMessage
     (tr("Preparing INI entries."),
      Qt::AlignBottom | Qt::AlignHCenter,

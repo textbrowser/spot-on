@@ -45,10 +45,6 @@ spoton_emailwindow::spoton_emailwindow
   m_ui.emailParticipants->setColumnHidden(1, true); // OID
   m_ui.emailParticipants->setColumnHidden(2, true); // neighbor_oid
   m_ui.emailParticipants->setColumnHidden(3, true); // public_key_hash
-#if defined(Q_OS_WINDOWS)
-  m_ui.emailParticipants->setStyleSheet
-    ("QTableWidget {selection-background-color: lightgreen}");
-#endif
   m_ui.emailSecrets->setMenu(new QMenu(this));
   m_ui.emailSecrets->setVisible(false);
   m_ui.emailSecrets->menu()->setStyleSheet("QMenu {menu-scrollable: 1;}");

@@ -49,7 +49,7 @@ spoton_neighborstatistics::spoton_neighborstatistics(spoton *parent):
   m_timer.setInterval(2500);
   m_timer.start();
 #if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
-  setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
+  setWindowFlags(Qt::WindowStaysOnTopHint | windowFlags());
 #endif
 }
 
