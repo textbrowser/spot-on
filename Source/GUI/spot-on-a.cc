@@ -10738,8 +10738,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
 				 "Gemini Pair)"),
 			      this,
 			      SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
+      action->setEnabled("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #else
       action = menu.addAction(tr("&Call Participant"),
@@ -10754,8 +10753,7 @@ void spoton::slotShowContextMenu(const QPoint &point)
       action = menu.addAction(tr("&Two-Way Calling"),
 			      this,
 			      SLOT(slotCallParticipant(void)));
-      action->setEnabled
-	("chat" == participantKeyType(m_ui.participants));
+      action->setEnabled("chat" == participantKeyType(m_ui.participants));
       action->setProperty("type", "calling_two_way");
 #endif
       action = menu.addAction(tr("&Terminate Call"),

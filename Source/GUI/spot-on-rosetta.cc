@@ -51,7 +51,9 @@
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 QString spoton_rosetta::s_status = "spoton://online=";
-static int error_buffer_size = 256;
+const static char *begin_pgp = "-----BEGIN PGP MESSAGE-----";
+const static char *end_pgp = "-----END PGP MESSAGE-----";
+int static error_buffer_size = 256;
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
@@ -1290,10 +1292,11 @@ void spoton_rosetta::readPrisonBlues
 		    {
 		      auto const bytes(file.readAll().trimmed());
 
-		      emit processGPGMessage(bytes);
-
-		      if(bytes.startsWith("-----BEGIN PGP MESSAGE-----"))
-			file.remove();
+		      if(bytes.startsWith(begin_pgp))
+			{
+			  emit processGPGMessage(bytes);
+			  file.remove();
+			}
 		    }
 		}
 	    }
@@ -1912,16 +1915,14 @@ void spoton_rosetta::slotConvertDecrypt(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   {
-    QByteArray const begin("-----BEGIN PGP MESSAGE-----");
-    QByteArray const end("-----END PGP MESSAGE-----");
     auto data(ui.inputDecrypt->toPlainText().trimmed().toUtf8());
-    auto const index1 = data.indexOf(begin);
-    auto const index2 = data.indexOf(end);
+    auto const index1 = data.indexOf(begin_pgp);
+    auto const index2 = data.indexOf(end_pgp);
 
     if(index1 < index2 && index1 >= 0)
       {
 	data = data.mid
-	  (index1, index2 - index1 + static_cast<int> (qstrlen(end)));
+	  (index1, index2 - index1 + static_cast<int> (qstrlen(end_pgp)));
 
 	QColor signatureColor(240, 128, 128); // Light coral!
 	auto signedMessage(tr("Invalid signature."));
@@ -3166,10 +3167,8 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
     return;
 
 #ifdef SPOTON_GPGME_ENABLED
-  QByteArray const begin("-----BEGIN PGP MESSAGE-----");
-  QByteArray const end("-----END PGP MESSAGE-----");
-  auto const index1 = message.indexOf(begin);
-  auto const index2 = message.indexOf(end);
+  auto const index1 = message.indexOf(begin_pgp);
+  auto const index2 = message.indexOf(end_pgp);
 
   if(index1 < 0 || index1 >= index2 || index2 < 0)
     return;
@@ -3185,7 +3184,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
     {
       auto const data
 	(message.
-	 mid(index1, index2 - index1 + static_cast<int> (qstrlen(end))));
+	 mid(index1, index2 - index1 + static_cast<int> (qstrlen(end_pgp))));
       gpgme_data_t ciphertext = nullptr;
       gpgme_data_t plaintext = nullptr;
 
