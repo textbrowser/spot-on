@@ -228,6 +228,8 @@ class spoton_misc
     (const QByteArray &magnet);
   static spoton_crypt *parsePrivateApplicationMagnet(const QByteArray &magnet);
   static spoton_crypt *retrieveUrlCommonCredentials(spoton_crypt *crypt);
+  static spoton_crypt *spotonGPGCredentials
+    (const QString &email, const QString &fingerprint);
   static void alterDatabasesAfterAuthentication(spoton_crypt *crypt);
   static void cleanupDatabases(spoton_crypt *crypt);
   static void closeSocket(const qintptr socketDescriptor);

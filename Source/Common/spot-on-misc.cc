@@ -4190,6 +4190,27 @@ spoton_crypt *spoton_misc::retrieveUrlCommonCredentials(spoton_crypt *crypt)
   return c;
 }
 
+spoton_crypt *spoton_misc::spotonGPGCredentials
+(const QString &email, const QString &fingerprint)
+{
+  QString error("");
+  auto const keys
+    (spoton_crypt::
+     derivedKeys("aes256",
+		 "sha3-512",
+		 5000,  // The number of iterations.
+		 email, // The secret.
+		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
+		 false, // Multiple passes instead of a single pass.
+		 error));
+
+  if(!error.isEmpty())
+    return nullptr;
+
+  return new spoton_crypt
+    ("aes256", "sha3-512", QByteArray(), keys.first, keys.second, 0, 0, "");
+}
+
 void spoton_misc::alterDatabasesAfterAuthentication(spoton_crypt *crypt)
 {
   if(!crypt)

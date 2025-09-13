@@ -580,29 +580,13 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
 
   QByteArray data;
   QByteArray output("-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----\n\n");
-  QScopedPointer<spoton_crypt> crypt;
-  auto const keys
-    (spoton_crypt::
-     derivedKeys("aes256",
-		 "sha3-512",
-		 5000,  // The number of iterations.
-		 email, // The secret.
-		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
-		 false, // Multiple passes instead of a single pass.
-		 error));
+  QScopedPointer<spoton_crypt> crypt
+    (spoton_misc::spotonGPGCredentials(email, fingerprint));
   auto ok = false;
 
-  if(!error.isEmpty())
+  if(!crypt)
     goto done_label;
 
-  crypt.reset(new spoton_crypt("aes256",
-			       "sha3-512",
-			       QByteArray(),
-			       keys.first,
-			       keys.second,
-			       0,
-			       0,
-			       ""));
   data = crypt->encryptedThenHashed
     (m_ui.public_keys->toPlainText().toLatin1(), &ok).toBase64();
 
