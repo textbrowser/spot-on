@@ -3236,7 +3236,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 bool spoton_misc::prepareUrlDistillersDatabase(void)
 {
   QString connectionName("");
-  auto ok = false;
+  auto ok = true;
 
   {
     auto db(database(connectionName));
@@ -3260,8 +3260,6 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 		       "permission TEXT NOT NULL, "
 		       "PRIMARY KEY (direction_hash, domain_hash))"))
 	  ok = false;
-	else
-	  ok = true;
       }
     else
       ok = false;
@@ -3276,7 +3274,7 @@ bool spoton_misc::prepareUrlDistillersDatabase(void)
 bool spoton_misc::prepareUrlKeysDatabase(void)
 {
   QString connectionName("");
-  auto ok = false;
+  auto ok = true;
 
   {
     auto db(database(connectionName));
@@ -3292,8 +3290,6 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 		       "cipher_type TEXT NOT NULL, "
 		       "symmetric_key TEXT NOT NULL)"))
 	  ok = false;
-	else
-	  ok = true;
 
 	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
 		       "import_key_information_trigger "
@@ -3302,8 +3298,6 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 		       "DELETE FROM import_key_information; "
 		       "END"))
 	  ok = false;
-	else
-	  ok &= true;
 
 	if(!query.exec("CREATE TABLE IF NOT EXISTS remote_key_information ("
 		       "cipher_type TEXT NOT NULL, "
@@ -3311,8 +3305,6 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 		       "hash_key TEXT NOT NULL, "
 		       "hash_type TEXT NOT NULL)"))
 	  ok = false;
-	else
-	  ok &= true;
 
 	if(!query.exec("CREATE TRIGGER IF NOT EXISTS "
 		       "remote_key_information_trigger "
@@ -3321,8 +3313,6 @@ bool spoton_misc::prepareUrlKeysDatabase(void)
 		       "DELETE FROM remote_key_information; "
 		       "END"))
 	  ok = false;
-	else
-	  ok &= true;
       }
     else
       ok = false;
@@ -3373,7 +3363,7 @@ bool spoton_misc::registerKernel(const pid_t pid)
     return false;
 
   QString connectionName("");
-  auto ok = false;
+  auto ok = true;
 
   {
     auto db(database(connectionName));
@@ -3398,6 +3388,8 @@ bool spoton_misc::registerKernel(const pid_t pid)
 	query.addBindValue(pid);
 	ok = query.exec();
       }
+    else
+      ok = false;
 
     db.close();
   }

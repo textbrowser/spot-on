@@ -603,7 +603,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
 
   output = output.trimmed();
   output.append("\n\n");
-  output.append("-----END SPOT-ON PUBLIC KEY BLOCK-----");
+  output.append("-----END SPOT-ON PUBLIC KEY BLOCK-----\n");
   emit shareKeyBundle
     (output, fingerprint, m_ui.email_addresses->currentText());
 

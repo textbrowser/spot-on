@@ -88,7 +88,8 @@ class spoton_rosetta: public QMainWindow
   QTimer m_gpgStatusTimer;
   QTimer m_prisonBluesReadTimer;
   QTimer m_prisonBluesTimer;
-  QVector<QByteArray> m_gpgFingerprints;
+  QVector<QPair<QByteArray, QString> > m_gpgPairs; // Fingerprints
+                                                   // E-Mail Addresses
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
   Ui_spoton_rosetta ui;
   QByteArray copyMyRosettaPublicKey(void) const;
@@ -130,7 +131,7 @@ class spoton_rosetta: public QMainWindow
     (const QByteArray &passphrase,
      const QList<QFileInfo> &directories,
      const QString &gpgProgram,
-     const QVector<QByteArray> &vector);
+     const QVector<QPair<QByteArray, QString> > &gpgPairs);
   void resizeEvent(QResizeEvent *event);
   void saveGPGMessage(const QMap<GPGMessage, QVariant> &map);
   void showInformationMessage(const QString &message);
@@ -178,6 +179,9 @@ class spoton_rosetta: public QMainWindow
   void slotSaveGPGEmailIndex(int index);
   void slotSaveName(void);
   void slotSetIcons(void);
+  void slotShareKeyBundle(const QByteArray &data,
+			  const QString &fingerprint,
+			  const QString &originEmail);
   void slotSplitterMoved(int pox, int index);
   void slotTabChanged(int index);
   void slotWriteGPG(void);

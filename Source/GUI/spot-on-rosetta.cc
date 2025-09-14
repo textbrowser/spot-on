@@ -52,7 +52,9 @@
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 QString spoton_rosetta::s_status = "spoton://online=";
 const static char *begin_pgp = "-----BEGIN PGP MESSAGE-----";
+const static char *begin_spoton = "-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----";
 const static char *end_pgp = "-----END PGP MESSAGE-----";
+const static char *end_spoton = "-----END SPOT-ON PUBLIC KEY BLOCK-----";
 int static error_buffer_size = 256;
 #endif
 
@@ -774,6 +776,14 @@ void spoton_rosetta::createGPGImportObject(void)
 	      SIGNAL(gpgKeysRemoved(void)),
 	      this,
 	      SLOT(slotPopulateGPGEmailAddresses(void)));
+      connect(m_gpgImport,
+	      SIGNAL(shareKeyBundle(const QByteArray &,
+				    const QString &,
+				    const QString &)),
+	      this,
+	      SLOT(slotShareKeyBundle(const QByteArray &,
+				      const QString &,
+				      const QString &)));
       connect(this,
 	      SIGNAL(gpgKeysRemoved(void)),
 	      m_gpgImport,
@@ -985,7 +995,7 @@ void spoton_rosetta::populateContacts(void)
 
 void spoton_rosetta::populateGPGEmailAddresses(void)
 {
-  m_gpgFingerprints.clear();
+  m_gpgPairs.clear();
   ui.gpg_address->blockSignals(true);
   ui.gpg_address->clear();
   ui.gpg_email_addresses->blockSignals(true);
@@ -996,7 +1006,9 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
   while(it.hasNext())
     {
       it.next();
-      m_gpgFingerprints.append(spoton_crypt::fingerprint(it.value()));
+      m_gpgPairs.append
+	(QPair<QByteArray, QString> (spoton_crypt::fingerprint(it.value()),
+				     it.value()));
       ui.gpg_address->addItem(it.key(), it.value());
       ui.gpg_email_addresses->addItem(it.key(), it.value());
     }
@@ -1218,7 +1230,7 @@ void spoton_rosetta::readPrisonBlues
 (const QByteArray &passphrase,
  const QList<QFileInfo> &directories,
  const QString &gpgProgram,
- const QVector<QByteArray> &vector)
+ const QVector<QPair<QByteArray, QString> > &gpgPairs)
 {
   auto const maximumFileSize = static_cast<qint64>
     (qCeil(1.5 * spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE));
@@ -1228,14 +1240,15 @@ void spoton_rosetta::readPrisonBlues
       if(m_readPrisonBluesFuture.isCanceled())
 	return;
 
-      QVectorIterator<QByteArray> it(vector);
+      QVectorIterator<QPair<QByteArray, QString> > it(gpgPairs);
 
       while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
 	{
+	  auto const pair(it.next());
 	  QDir const dir
 	    (directories[i].absoluteFilePath() +
 	     QDir::separator() +
-	     it.next());
+	     pair.first);
 
 	  if(dir.isReadable())
 	    {
@@ -1296,6 +1309,26 @@ void spoton_rosetta::readPrisonBlues
 			{
 			  emit processGPGMessage(bytes);
 			  file.remove();
+			}
+		      else if(bytes.startsWith(begin_spoton))
+			{
+			  QScopedPointer<spoton_crypt> crypt
+			    (spoton_misc::
+			     spotonGPGCredentials(pair.second,  // E-Mail
+						  pair.first)); // Fingerprint
+
+			  if(crypt)
+			    {
+			      auto data
+				(QByteArray(bytes).
+				 replace(begin_spoton, "").
+				 replace(end_spoton, "").
+				 trimmed());
+			      auto ok = true;
+
+			      data = crypt->decryptedAfterAuthenticated
+				(QByteArray::fromBase64(data), &ok);
+			    }
 			}
 		    }
 		}
@@ -3442,7 +3475,7 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 	 passphrase,
 	 m_parent->prisonBluesDirectories(),
 	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
-	 m_gpgFingerprints);
+	 m_gpgPairs);
 #else
       m_readPrisonBluesFuture = QtConcurrent::run
 	(this,
@@ -3450,7 +3483,7 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 	 passphrase,
 	 m_parent->prisonBluesDirectories(),
 	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
-	 m_gpgFingerprints);
+	 m_gpgPairs);
 #endif
     }
 }
@@ -3697,6 +3730,43 @@ void spoton_rosetta::slotSetIcons(void)
   ui.gpg_pull->setIcon(QIcon(QString(":/%1/down.png").arg(iconSet)));
   ui.gpg_send->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
   ui.save->setIcon(QIcon(QString(":/%1/ok.png").arg(iconSet)));
+}
+
+void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
+					const QString &fingerprint,
+					const QString &originEmail)
+{
+  Q_UNUSED(originEmail);
+
+  if(data.trimmed().isEmpty() || fingerprint.trimmed().isEmpty())
+    return;
+
+  auto const list(m_parent->prisonBluesDirectories());
+  auto state = false;
+
+  foreach(auto const &directory, list)
+    if(directory.isWritable())
+      {
+	QDir().mkpath
+	  (directory.absoluteFilePath() + QDir::separator() + fingerprint);
+
+	QTemporaryFile file
+	  (directory.absoluteFilePath() +
+	   QDir::separator() +
+	   fingerprint +
+	   QDir::separator() +
+	   "PrisonBluesXXXXXXXXXX.txt");
+
+	if(file.open())
+	  {
+	    Q_UNUSED(file.fileName()); // Prevents removal of file.
+	    file.setAutoRemove(false);
+	    file.write(data);
+	    state = true;
+	  }
+      }
+
+  state ? slotLaunchPrisonBluesProcessesIfNecessary(false) : (void) 0;
 }
 
 void spoton_rosetta::slotSplitterMoved(int pos, int index)

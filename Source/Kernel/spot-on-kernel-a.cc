@@ -1505,7 +1505,8 @@ bool spoton_kernel::initializeSecurityContainers(const QString &passphrase,
 	error = "keyed hash failure";
     }
 
-  if(!computedHash.isEmpty() && !saltedPassphraseHash.isEmpty() &&
+  if(!computedHash.isEmpty() &&
+     !saltedPassphraseHash.isEmpty() &&
      spoton_crypt::memcmp(computedHash, saltedPassphraseHash))
     if(error.isEmpty())
       {
