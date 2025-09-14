@@ -313,6 +313,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(returnPressed(void)),
 	  this,
 	  SLOT(slotWriteGPG(void)));
+  connect(ui.gpg_messages,
+	  SIGNAL(anchorClicked(const QUrl &)),
+	  this,
+	  SLOT(slotAddGPGKeyBundle(const QUrl &)));
   connect(ui.gpg_pull,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1244,6 +1248,8 @@ void spoton_rosetta::readPrisonBlues
   while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
     fingerprints[it.next().first] = 0;
 
+  fingerprints.clear();
+
   for(int i = 0; i < directories.size(); i++)
     {
       if(m_readPrisonBluesFuture.isCanceled())
@@ -1802,6 +1808,11 @@ void spoton_rosetta::slotAddContact(void)
       emit participantAdded("rosetta");
       populateContacts();
     }
+}
+
+void spoton_rosetta::slotAddGPGKeyBundle(const QUrl &url)
+{
+  Q_UNUSED(url);
 }
 
 void spoton_rosetta::slotAttachForGPG(void)
@@ -3511,12 +3522,8 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
     return;
 
   QString content("");
-  QString message("");
   auto const now(QDateTime::currentDateTime());
 
-  message = QString
-    (tr("A GPG key bundle (<a href='add_key'><b>%1</b></a>) was received. "
-	"Please accept the key bundle via the link.").arg(dump.trimmed()));
   content.append
     (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
      arg(now.toString("MM")).
@@ -3525,7 +3532,10 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
      arg(now.toString("hh")).
      arg(now.toString("mm")).
      arg(now.toString("ss")));
-  content.append(QString("<i>%1</i>").arg(message));
+  content.append
+    (tr("<i>A GPG key bundle (<b>%2</b>) was received.</i>").
+     arg(spoton_crypt::fingerprint(data).constData()).
+     arg(dump.trimmed()));
   ui.gpg_messages->append(content);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());

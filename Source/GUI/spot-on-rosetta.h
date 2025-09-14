@@ -141,6 +141,7 @@ class spoton_rosetta: public QMainWindow
 
  private slots:
   void slotAddContact(void);
+  void slotAddGPGKeyBundle(const QUrl &url);
   void slotAttachForGPG(void);
   void slotClear(void);
   void slotClearClipboardBuffer(void);
