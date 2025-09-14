@@ -170,6 +170,8 @@ class spoton_rosetta: public QMainWindow
   void slotPublishGPG(void);
   void slotPullGPG(void);
   void slotReadPrisonBluesTimeout(void);
+  void slotReceivedGPGKeyBundle
+    (const QByteArray &data, const QString &dump);
   void slotRemoveGPGAttachment(const QUrl &url);
   void slotRemoveGPGKeys(void);
   void slotRemoveStoredINIGPGPassphrase(void);
@@ -195,6 +197,7 @@ class spoton_rosetta: public QMainWindow
   void participantNameChanged
     (const QByteArray &publicKeyHash, const QString &name);
   void processGPGMessage(const QByteArray &message);
+  void receivedGPGKeyBundle(const QByteArray &data, const QString &dump);
 };
 
 #endif

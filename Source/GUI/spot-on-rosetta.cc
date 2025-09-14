@@ -173,6 +173,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(processGPGMessage(const QByteArray &)),
 	  this,
 	  SLOT(slotProcessGPGMessage(const QByteArray &)));
+  connect(this,
+	  SIGNAL(receivedGPGKeyBundle(const QByteArray &, const QString &)),
+	  this,
+	  SLOT(slotReceivedGPGKeyBundle(const QByteArray &, const QString &)));
   connect(ui.action_Clear_Clipboard_Buffer,
 	  SIGNAL(triggered(void)),
 	  this,
@@ -1008,7 +1012,7 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
       it.next();
       m_gpgPairs.append
 	(QPair<QByteArray, QString> (spoton_crypt::fingerprint(it.value()),
-				     it.value()));
+				     it.key()));
       ui.gpg_address->addItem(it.key(), it.value());
       ui.gpg_email_addresses->addItem(it.key(), it.value());
     }
@@ -1232,8 +1236,13 @@ void spoton_rosetta::readPrisonBlues
  const QString &gpgProgram,
  const QVector<QPair<QByteArray, QString> > &gpgPairs)
 {
+  QHash<QByteArray, char> fingerprints;
+  QVectorIterator<QPair<QByteArray, QString> > it(gpgPairs);
   auto const maximumFileSize = static_cast<qint64>
     (qCeil(1.5 * spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE));
+
+  while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
+    fingerprints[it.next().first] = 0;
 
   for(int i = 0; i < directories.size(); i++)
     {
@@ -1328,6 +1337,13 @@ void spoton_rosetta::readPrisonBlues
 
 			      data = crypt->decryptedAfterAuthenticated
 				(QByteArray::fromBase64(data), &ok);
+
+			      if(!fingerprints.
+				 contains(spoton_crypt::fingerprint(data)) &&
+				 ok)
+				emit receivedGPGKeyBundle
+				  (data,
+				   spoton_rosetta_gpg_import::dump(data));
 			    }
 			}
 		    }
@@ -3486,6 +3502,33 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 	 m_gpgPairs);
 #endif
     }
+}
+
+void spoton_rosetta::slotReceivedGPGKeyBundle
+(const QByteArray &data, const QString &dump)
+{
+  if(data.trimmed().isEmpty() || dump.trimmed().isEmpty())
+    return;
+
+  QString content("");
+  QString message("");
+  auto const now(QDateTime::currentDateTime());
+
+  message = QString
+    (tr("A GPG key bundle (<a href='add_key'><b>%1</b></a>) was received. "
+	"Please accept the key bundle via the link.").arg(dump.trimmed()));
+  content.append
+    (QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>] ").
+     arg(now.toString("MM")).
+     arg(now.toString("dd")).
+     arg(now.toString("yyyy")).
+     arg(now.toString("hh")).
+     arg(now.toString("mm")).
+     arg(now.toString("ss")));
+  content.append(QString("<i>%1</i>").arg(message));
+  ui.gpg_messages->append(content);
+  ui.gpg_messages->verticalScrollBar()->setValue
+    (ui.gpg_messages->verticalScrollBar()->maximum());
 }
 
 void spoton_rosetta::slotRemoveGPGAttachment(const QUrl &url)
