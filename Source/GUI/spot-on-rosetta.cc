@@ -88,6 +88,9 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.gpg_email_addresses->setEnabled(false);
   ui.gpg_email_addresses->setToolTip
     (tr("The GnuPG Made Easy library is not available."));
+  ui.pending_group_box->setEnabled(false);
+  ui.pending_group_box->setToolTip
+    (tr("The GnuPG Made Easy library is not available."));
   ui.publish->setEnabled(false);
   ui.publish->setToolTip(tr("The GnuPG Made Easy library is not available."));
   ui.tabWidget->setTabEnabled(1, false);
@@ -102,7 +105,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 			     SLOT(slotCopyMyGPGKeys(void)));
 #else
   auto action = ui.copy->menu()->addAction
-    (tr("Copy My &GPG Public Keys (Missing GPGME)"));
+    (tr("Copy My &GPG Public Keys (Missing GPGME Library)"));
 
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
@@ -134,6 +137,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.outputEncrypt->setLineWrapColumnOrWidth(80);
   ui.outputEncrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.outputEncrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.pending->horizontalHeader()->setSortIndicator(0, Qt::AscendingOrder);
+  ui.pending->setColumnHidden(ui.pending->columnCount() - 1, true);
   ui.tool_bar->addAction(ui.action_Clear_Clipboard_Buffer);
   ui.tool_bar->addAction(ui.action_Copy);
   ui.tool_bar->addAction(ui.action_Import_GPG_Keys);
@@ -1322,11 +1327,14 @@ void spoton_rosetta::readPrisonBlues
 
 		      if(bytes.startsWith(begin_pgp))
 			{
+#ifdef SPOTON_GPGME_ENABLED
 			  emit processGPGMessage(bytes);
+#endif
 			  file.remove();
 			}
 		      else if(bytes.startsWith(begin_spoton))
 			{
+#ifdef SPOTON_GPGME_ENABLED
 			  QScopedPointer<spoton_crypt> crypt
 			    (spoton_misc::
 			     spotonGPGCredentials(pair.second,  // E-Mail
@@ -1351,6 +1359,9 @@ void spoton_rosetta::readPrisonBlues
 				  (data,
 				   spoton_rosetta_gpg_import::dump(data));
 			    }
+#else
+			  file.remove();
+#endif
 			}
 		    }
 		}
@@ -3522,6 +3533,7 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
     return;
 
   QString content("");
+  auto const fingerprint(spoton_crypt::fingerprint(data));
   auto const now(QDateTime::currentDateTime());
 
   content.append
@@ -3534,10 +3546,32 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
      arg(now.toString("ss")));
   content.append
     (tr("<i>A GPG key bundle (<b>%1</b>) was received.</i>").
-     arg(spoton_crypt::fingerprint(data).constData()));
+     arg(fingerprint.constData()));
   ui.gpg_messages->append(content);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());
+
+  for(int i = 0; i < ui.pending->rowCount(); i++)
+    if(ui.pending->item(i, 0) && ui.pending->item(i, 0)->text() == fingerprint)
+      return;
+
+  ui.pending->setRowCount(ui.pending->rowCount() + 1);
+  ui.pending->setSortingEnabled(false);
+
+  auto item = new QTableWidgetItem(fingerprint.constData());
+
+  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  ui.pending->setItem(ui.pending->rowCount() - 1, 0, item);
+  item = new QTableWidgetItem(dump);
+  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  ui.pending->setItem(ui.pending->rowCount() - 1, 1, item);
+  item = new QTableWidgetItem(data.constData());
+  item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  ui.pending->setItem(ui.pending->rowCount() - 1, 2, item);
+  ui.pending->sortByColumn
+    (ui.pending->horizontalHeader()->sortIndicatorSection(),
+     ui.pending->horizontalHeader()->sortIndicatorOrder());
+  ui.pending->setSortingEnabled(true);
 }
 
 void spoton_rosetta::slotRemoveGPGAttachment(const QUrl &url)
@@ -3772,6 +3806,7 @@ void spoton_rosetta::slotSetIcons(void)
     iconSet = "nouve";
 
   ui.add->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
+  ui.add_pending->setIcon(QIcon(QString(":/%1/add.png").arg(iconSet)));
   ui.clearContact->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.clearInput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
   ui.clearOutput->setIcon(QIcon(QString(":/%1/clear.png").arg(iconSet)));
