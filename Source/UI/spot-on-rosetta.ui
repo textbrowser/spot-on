@@ -119,7 +119,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
-         <widget class="QTabWidget" name="tabWidget">
+         <widget class="QTabWidget" name="tab">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -759,7 +759,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>659</width>
+                    <width>1027</width>
                     <height>792</height>
                    </rect>
                   </property>
@@ -1431,7 +1431,7 @@
   <tabstop>save</tabstop>
   <tabstop>copy</tabstop>
   <tabstop>scrollArea</tabstop>
-  <tabstop>tabWidget</tabstop>
+  <tabstop>tab</tabstop>
   <tabstop>decryptPaste</tabstop>
   <tabstop>decryptReset</tabstop>
   <tabstop>convertDecrypt</tabstop>

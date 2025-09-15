@@ -93,9 +93,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
     (tr("The GnuPG Made Easy library is not available."));
   ui.publish->setEnabled(false);
   ui.publish->setToolTip(tr("The GnuPG Made Easy library is not available."));
-  ui.tabWidget->setTabEnabled(1, false);
-  ui.tabWidget->setTabToolTip
-    (1, tr("The GnuPG Made Easy library is not available."));
+  ui.tab->setTabEnabled(1, false);
+  ui.tab->setTabToolTip(1, tr("The GnuPG Made Easy library is not available."));
 #endif
   ui.copy->setMenu(new QMenu(this));
 #ifdef SPOTON_GPGME_ENABLED
@@ -777,7 +776,7 @@ void spoton_rosetta::createGPGImportObject(void)
 #ifdef SPOTON_GPGME_ENABLED
   if(m_gpgImport == nullptr && m_parent)
     {
-      ui.tabWidget->insertTab
+      ui.tab->insertTab
 	(1,
 	 m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent),
 	 tr("GPG Import / GPG Share"));
@@ -1436,11 +1435,11 @@ void spoton_rosetta::setParent(spoton *parent)
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
-  ui.tabWidget->setCurrentIndex
+  ui.tab->setCurrentIndex
     (qBound(0,
 	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
-	    ui.tabWidget->count() - 1));
-  connect(ui.tabWidget,
+	    ui.tab->count() - 1));
+  connect(ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
 	  SLOT(slotTabChanged(int)),
@@ -1824,6 +1823,7 @@ void spoton_rosetta::slotAddContact(void)
 void spoton_rosetta::slotAddGPGKeyBundle(const QUrl &url)
 {
   Q_UNUSED(url);
+  ui.tab->setCurrentIndex(ui.tab->count() - 1);
 }
 
 void spoton_rosetta::slotAttachForGPG(void)
@@ -3039,7 +3039,7 @@ void spoton_rosetta::slotImportGPGKeys(void)
   if(m_gpgImport)
     {
       m_gpgImport->showCurrentDump();
-      ui.tabWidget->setCurrentIndex(1);
+      ui.tab->setCurrentIndex(1);
     }
 #endif
 }
@@ -3545,8 +3545,8 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   content.append
-    (tr("<i>A GPG key bundle (<b>%1</b>) was received.</i>").
-     arg(fingerprint.constData()));
+    (tr("<i>A GPG key bundle (<b><a href='show_new_contact'>%1</a></b>) "
+	"was received.</i>").arg(fingerprint.constData()));
   ui.gpg_messages->append(content);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());
