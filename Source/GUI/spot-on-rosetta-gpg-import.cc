@@ -621,6 +621,8 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
 void spoton_rosetta_gpg_import::slotShowCurrentDump(int index)
 {
   Q_UNUSED(index);
+  m_ui.export_label->setText
+    ("gpg --armor --export " + m_ui.email_addresses->currentText());
   m_ui.public_keys->setPlainText
     (m_ui.email_addresses->currentData().toByteArray());
   m_ui.public_keys_dump->setText

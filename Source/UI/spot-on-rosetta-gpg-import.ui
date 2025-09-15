@@ -63,7 +63,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="export_label">
             <property name="text">
              <string>gpg --armor --export you@you.org</string>
             </property>

@@ -3533,9 +3533,8 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
      arg(now.toString("mm")).
      arg(now.toString("ss")));
   content.append
-    (tr("<i>A GPG key bundle (<b>%2</b>) was received.</i>").
-     arg(spoton_crypt::fingerprint(data).constData()).
-     arg(dump.trimmed()));
+    (tr("<i>A GPG key bundle (<b>%1</b>) was received.</i>").
+     arg(spoton_crypt::fingerprint(data).constData()));
   ui.gpg_messages->append(content);
   ui.gpg_messages->verticalScrollBar()->setValue
     (ui.gpg_messages->verticalScrollBar()->maximum());

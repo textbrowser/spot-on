@@ -758,7 +758,7 @@
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>0</y>
+                    <y>-201</y>
                     <width>1027</width>
                     <height>792</height>
                    </rect>
@@ -1365,6 +1365,7 @@
   <tabstop>gpg_address</tabstop>
   <tabstop>gpg_sign_messages</tabstop>
   <tabstop>gpg_participants</tabstop>
+  <tabstop>gpg</tabstop>
   <tabstop>attachments</tabstop>
   <tabstop>attach</tabstop>
   <tabstop>gpg_message</tabstop>
@@ -1372,7 +1373,6 @@
   <tabstop>newContact</tabstop>
   <tabstop>add</tabstop>
   <tabstop>clearContact</tabstop>
-  <tabstop>gpg</tabstop>
  </tabstops>
  <resources>
   <include location="../Icons/icons.qrc"/>
