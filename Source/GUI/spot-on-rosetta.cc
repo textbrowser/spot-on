@@ -1389,8 +1389,6 @@ void spoton_rosetta::readPrisonBlues
   while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
     fingerprints[it.next().first] = 0;
 
-  fingerprints.clear();
-
   for(int i = 0; i < directories.size(); i++)
     {
       if(m_readPrisonBluesFuture.isCanceled())
@@ -1495,9 +1493,9 @@ void spoton_rosetta::readPrisonBlues
 				  (data,
 				   spoton_rosetta_gpg_import::dump(data));
 			    }
-#else
-			  file.remove();
 #endif
+
+			  file.remove();
 			}
 		    }
 		}
@@ -1855,6 +1853,28 @@ void spoton_rosetta::slotAddGPGKeyBundle(const QUrl &url)
 
 void spoton_rosetta::slotAddPending(void)
 {
+  auto list(ui.pending->selectionModel()->selectedRows(2));
+
+  if(list.isEmpty())
+    return;
+
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+  std::sort(list.begin(), list.end(), spoton::sortByRow);
+
+  for(int i = list.size() - 1; i >= 0; i--)
+    {
+      QString error("");
+      auto const data(list.at(i).data().toString());
+
+      addGPGContact(error, data.toLatin1());
+
+      if(error.isEmpty())
+	ui.pending->removeRow(list.at(i).row());
+
+      list.removeAt(i);
+    }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rosetta::slotAttachForGPG(void)
