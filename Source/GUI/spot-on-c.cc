@@ -3780,8 +3780,7 @@ void spoton::slotPopulateStars(void)
 	** Second, transmitted.
 	*/
 
-	list = m_ui.transmitted->selectionModel()->selectedRows
-	  (6); // Mosaic
+	list = m_ui.transmitted->selectionModel()->selectedRows(6); // Mosaic
 
 	if(!list.isEmpty())
 	  mosaic = list.at(0).data().toString();
@@ -4251,8 +4250,7 @@ void spoton::slotRemoveUrlParticipants(void)
       {
 	QSqlQuery query(db);
 	auto const list
-	  (m_ui.urlParticipants->selectionModel()->
-	   selectedRows(1)); // OID
+	  (m_ui.urlParticipants->selectionModel()->selectedRows(1)); // OID
 
 	for(int i = 0; i < list.size(); i++)
 	  {
@@ -4407,11 +4405,7 @@ void spoton::slotRenameParticipant(void)
 	    (list.value(0).row(), 3); // public_key_hash
 
 	  if(item)
-	    {
-	      auto const publicKeyHash(item->text());
-
-	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
-	    }
+	    emit participantNameChanged(item->text().toLatin1(), name);
 	}
       else if(tabName == "urls")
 	{
@@ -4419,11 +4413,7 @@ void spoton::slotRenameParticipant(void)
 	    (list.value(0).row(), 3); // public_key_hash
 
 	  if(item)
-	    {
-	      auto const publicKeyHash(item->text());
-
-	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
-	    }
+	    emit participantNameChanged(item->text().toLatin1(), name);
 	}
     }
 }

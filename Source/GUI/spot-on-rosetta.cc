@@ -3682,7 +3682,7 @@ void spoton_rosetta::slotRemovePending(void)
     }
 
   QApplication::processEvents();
-  std::sort(list.begin(), list.end());
+  std::sort(list.begin(), list.end(), spoton::sortByRow);
 
   for(int i = list.size() - 1; i >= 0; i--)
     {
