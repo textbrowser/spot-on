@@ -786,8 +786,8 @@ void spoton_rosetta::addGPGContact(QString &error, const QByteArray &data)
       return;
     }
 
-  if(data.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
-     data.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
+  if(!(data.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
+       data.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----")))
     {
       error = tr("Invalid GPG key block.");
       return;
@@ -1861,6 +1861,8 @@ void spoton_rosetta::slotAddPending(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   std::sort(list.begin(), list.end(), spoton::sortByRow);
 
+  auto state = false;
+
   for(int i = list.size() - 1; i >= 0; i--)
     {
       QString error("");
@@ -1869,12 +1871,16 @@ void spoton_rosetta::slotAddPending(void)
       addGPGContact(error, data.toLatin1());
 
       if(error.isEmpty())
-	ui.pending->removeRow(list.at(i).row());
+	{
+	  state = true;
+	  ui.pending->removeRow(list.at(i).row());
+	}
 
       list.removeAt(i);
     }
 
   QApplication::restoreOverrideCursor();
+  state ? populateContacts() : (void) 0;
 }
 
 void spoton_rosetta::slotAttachForGPG(void)

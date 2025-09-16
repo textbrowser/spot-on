@@ -580,7 +580,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
   QByteArray data;
   QByteArray output("-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----\n\n");
   QScopedPointer<spoton_crypt> crypt
-    (spoton_misc::spotonGPGCredentials(email, fingerprint));
+    (spoton_misc::spotonGPGCredentials(email, fingerprint.toUpper()));
   auto ok = false;
 
   if(!crypt)
