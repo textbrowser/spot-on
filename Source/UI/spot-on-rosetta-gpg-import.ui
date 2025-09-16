@@ -144,11 +144,21 @@
            </widget>
           </item>
           <item>
-           <layout class="QFormLayout" name="formLayout">
+           <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
              <widget class="QLabel" name="label">
               <property name="text">
                <string>Destination E-Mail</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="destination_email">
+              <property name="placeholderText">
+               <string>Destination E-Mail</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>true</bool>
               </property>
              </widget>
             </item>
@@ -163,16 +173,6 @@
              <widget class="QLineEdit" name="destination_fingerprint">
               <property name="placeholderText">
                <string>Destination GPG Fingerprint</string>
-              </property>
-              <property name="clearButtonEnabled">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="destination_email">
-              <property name="placeholderText">
-               <string>Destination E-Mail</string>
               </property>
               <property name="clearButtonEnabled">
                <bool>true</bool>
@@ -254,6 +254,7 @@
   <tabstop>importButton</tabstop>
   <tabstop>destination_email</tabstop>
   <tabstop>destination_fingerprint</tabstop>
+  <tabstop>share_results</tabstop>
   <tabstop>share</tabstop>
  </tabstops>
  <resources>
