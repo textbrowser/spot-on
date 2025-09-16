@@ -1641,7 +1641,7 @@ void spoton_rosetta::slotAddContact(void)
 
 #ifdef SPOTON_GPGME_ENABLED
   {
-    auto const key(ui.newContact->toPlainText().trimmed().toUtf8());
+    auto const key(ui.newContact->toPlainText().trimmed().toLatin1());
 
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
@@ -3251,7 +3251,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
 				  m_gpgImport->import
 				    (error,
 				     m_gpgNewKeysUi.gpg_results->toPlainText().
-				     toUtf8());
+				     toLatin1());
 				}
 			    }
 			}

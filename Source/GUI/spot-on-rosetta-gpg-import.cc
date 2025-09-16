@@ -391,7 +391,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
 #ifdef SPOTON_GPGME_ENABLED
   QString error("");
 
-  import(error, m_ui.public_keys->toPlainText().trimmed().toUtf8());
+  import(error, m_ui.public_keys->toPlainText().trimmed().toLatin1());
 
   if(!error.isEmpty())
     {
