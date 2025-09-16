@@ -2112,24 +2112,24 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
   if(hashType.isEmpty())
     {
       error = QObject::tr("empty hashType");
-      spoton_misc::logError("spoton_crypt::saltedPassphrase(): "
-			    "empty hashType.");
+      spoton_misc::logError
+	("spoton_crypt::saltedPassphrase(): empty hashType.");
       goto done_label;
     }
 
   if(passphrase.isEmpty())
     {
       error = QObject::tr("empty passphrase");
-      spoton_misc::logError("spoton_crypt::saltedPassphrase(): "
-			    "empty passphrase.");
+      spoton_misc::logError
+	("spoton_crypt::saltedPassphrase(): empty passphrase.");
       goto done_label;
     }
 
   if(salt.isEmpty())
     {
       error = QObject::tr("empty salt");
-      spoton_misc::logError("spoton_crypt::saltedPassphrase(): "
-			    "empty salt.");
+      spoton_misc::logError
+	("spoton_crypt::saltedPassphrase(): empty salt.");
       goto done_label;
     }
 
@@ -2140,8 +2140,7 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
       error = QObject::tr("gcry_md_map_name() returned zero");
       spoton_misc::logError
 	(QString("spoton_crypt::saltedPassphraseHash(): "
-		 "gcry_md_map_name() "
-		 "returned zero for %1.").arg(hashType));
+		 "gcry_md_map_name() returned zero for %1.").arg(hashType));
       goto done_label;
     }
 
@@ -2152,8 +2151,8 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
       error = QObject::tr("gcry_md_get_algo_dlen() returned zero");
       spoton_misc::logError
 	(QString("spoton_crypt::saltedPassphraseHash(): "
-		 "gcry_md_get_algo_dlen() "
-		 "returned zero for %1.").arg(hashType));
+		 "gcry_md_get_algo_dlen() returned zero for %1.").
+	 arg(hashType));
       goto done_label;
     }
 

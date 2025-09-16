@@ -773,6 +773,135 @@ gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
 }
 #endif
 
+void spoton_rosetta::addGPGContact(QString &error, const QByteArray &data)
+{
+  error.clear();
+#ifdef SPOTON_GPGME_ENABLED
+  spoton_crypt *eCrypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
+
+  if(!eCrypt)
+    {
+      error = tr("Invalid spoton_crypt object. This is a fatal flaw.");
+      return;
+    }
+
+  if(data.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
+     data.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
+    {
+      error = tr("Invalid GPG key block.");
+      return;
+    }
+
+  auto const fingerprint1(spoton_crypt::fingerprint(data));
+  auto const fingerprint2
+    (spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)));
+
+  if(fingerprint1 == fingerprint2 &&
+     fingerprint1.isEmpty() == false &&
+     fingerprint2.isEmpty() == false)
+    {
+      error = tr("Please do not add personal GPG key bundles.");
+      return;
+    }
+
+  gpgme_ctx_t ctx = nullptr;
+  auto err = gpgme_new(&ctx);
+
+  if(err == GPG_ERR_NO_ERROR)
+    {
+      gpgme_data_t keydata = nullptr;
+
+      err = gpgme_data_new_from_mem
+	// 1 = A private copy.
+	(&keydata, data.constData(), static_cast<size_t> (data.length()), 1);
+
+      if(err == GPG_ERR_NO_ERROR)
+	err = gpgme_op_import(ctx, keydata);
+
+      gpgme_data_release(keydata);
+    }
+
+  gpgme_release(ctx);
+
+  if(err != GPG_ERR_NO_ERROR)
+    {
+      error = tr("GPGME error. Cannot add the key block to the key ring.");
+      return;
+    }
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+	auto const fingerprint(spoton_crypt::fingerprint(data));
+	auto ok = true;
+
+	/*
+	** GPG public keys are not encrypted in the key ring.
+	*/
+
+	query.exec("ALTER TABLE gpg ADD state TEXT");
+	query.exec("CREATE TABLE IF NOT EXISTS gpg ("
+		   "email TEXT NOT NULL, "
+		   "public_keys TEXT NOT NULL, "
+		   "public_keys_hash TEXT NOT NULL PRIMARY KEY, "
+		   "state TEXT)");
+
+	if(fingerprint.isEmpty())
+	  {
+	    error = tr("GPGME error.");
+	    ok = false;
+	  }
+
+	query.prepare("INSERT OR REPLACE INTO gpg "
+		      "(email, public_keys, public_keys_hash, state) "
+		      "VALUES (?, ?, ?, ?)");
+
+	if(ok)
+	  query.addBindValue
+	    (eCrypt->
+	     encryptedThenHashed(spoton_rosetta_gpg_import::email(data).
+				 toUtf8(), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (eCrypt->encryptedThenHashed(data, &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue(eCrypt->keyedHash(fingerprint, &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (eCrypt->keyedHash("online=false", &ok).toBase64());
+
+	if(ok)
+	  {
+	    if(!query.exec())
+	      error = tr("A database error occurred.");
+	  }
+	else if(error.isEmpty())
+	  error = tr("A cryptographic error occurred.");
+      }
+    else
+      error = tr("Unable to access the database friends_public_keys.db.");
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+#else
+  Q_UNUSED(data);
+#endif
+}
+
 void spoton_rosetta::closeEvent(QCloseEvent *event)
 {
   QMainWindow::closeEvent(event);
@@ -1519,119 +1648,9 @@ void spoton_rosetta::slotAddContact(void)
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
       {
-	auto const fingerprint1(spoton_crypt::fingerprint(key));
-	auto const fingerprint2
-	  (spoton_crypt::fingerprint(spoton_crypt::publicGPG(eCrypt)));
-
-	if(fingerprint1 == fingerprint2 &&
-	   fingerprint1.isEmpty() == false &&
-	   fingerprint2.isEmpty() == false)
-	  {
-	    showMessage(tr("Please do not add personal GPG keys."), 5000);
-	    return;
-	  }
-
-	gpgme_ctx_t ctx = nullptr;
-	auto err = gpgme_new(&ctx);
-
-	if(err == GPG_ERR_NO_ERROR)
-	  {
-	    gpgme_data_t keydata = nullptr;
-
-	    err = gpgme_data_new_from_mem
-	      // 1 = A private copy.
-	      (&keydata,
-	       key.constData(),
-	       static_cast<size_t> (key.length()),
-	       1);
-
-	    if(err == GPG_ERR_NO_ERROR)
-	      err = gpgme_op_import(ctx, keydata);
-
-	    gpgme_data_release(keydata);
-	  }
-
-	gpgme_release(ctx);
-
-	if(err != GPG_ERR_NO_ERROR)
-	  {
-	    showMessage
-	      (tr("GPGME error. Cannot add the key block to the key ring."),
-	       5000);
-	    return;
-	  }
-
-	QString connectionName("");
 	QString error("");
 
-	{
-	  auto db(spoton_misc::database(connectionName));
-
-	  db.setDatabaseName
-	    (spoton_misc::homePath() +
-	     QDir::separator() +
-	     "friends_public_keys.db");
-
-	  if(db.open())
-	    {
-	      QSqlQuery query(db);
-	      auto const fingerprint(spoton_crypt::fingerprint(key));
-	      auto ok = true;
-
-	      /*
-	      ** GPG public keys are not encrypted in the key ring.
-	      */
-
-	      query.exec("ALTER TABLE gpg ADD state TEXT");
-	      query.exec("CREATE TABLE IF NOT EXISTS gpg ("
-			 "email TEXT NOT NULL, "
-			 "public_keys TEXT NOT NULL, "
-			 "public_keys_hash TEXT NOT NULL PRIMARY KEY, "
-			 "state TEXT)");
-
-	      if(fingerprint.isEmpty())
-		{
-		  error = tr("GPGME error.");
-		  ok = false;
-		}
-
-	      query.prepare("INSERT OR REPLACE INTO gpg "
-			    "(email, public_keys, public_keys_hash, state) "
-			    "VALUES (?, ?, ?, ?)");
-
-	      if(ok)
-		query.addBindValue
-		  (eCrypt->encryptedThenHashed(spoton_rosetta_gpg_import::
-					       email(key).toUtf8(), &ok).
-		   toBase64());
-
-	      if(ok)
-		query.addBindValue
-		  (eCrypt->encryptedThenHashed(key, &ok).toBase64());
-
-	      if(ok)
-		query.addBindValue
-		  (eCrypt->keyedHash(fingerprint, &ok).toBase64());
-
-	      if(ok)
-		query.addBindValue
-		  (eCrypt->keyedHash("online=false", &ok).toBase64());
-
-	      if(ok)
-		{
-		  if(!query.exec())
-		    error = tr("A database error occurred.");
-		}
-	      else if(error.isEmpty())
-		error = tr("A cryptographic error occurred.");
-	    }
-	  else
-	    error = tr("Unable to access the database friends_public_keys.db.");
-
-	  db.close();
-	}
-
-	QSqlDatabase::removeDatabase(connectionName);
+	addGPGContact(error, key);
 
 	if(!error.isEmpty())
 	  showMessage(error, 5000);
@@ -3626,7 +3645,7 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
   mb.setIcon(QMessageBox::Question);
   mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
   mb.setDefaultButton(QMessageBox::No);
-  mb.setText(tr("Remove all of your local GPG keys? "
+  mb.setText(tr("Remove all of your local GPG key bundles? "
 		"The keys will not be removed from the GPG key ring."));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);

@@ -111,6 +111,7 @@ class spoton_rosetta: public QMainWindow
 				     int prev_was_bad,
 				     int fd);
 #endif
+  void addGPGContact(QString &error, const QByteArray &data);
   void closeEvent(QCloseEvent *event);
   void createGPGImportObject(void);
   void keyPressEvent(QKeyEvent *event);

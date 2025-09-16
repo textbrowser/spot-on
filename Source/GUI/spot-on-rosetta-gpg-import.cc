@@ -198,9 +198,9 @@ QString spoton_rosetta_gpg_import::email(const QByteArray &data)
 
 void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
 {
+  error.clear();
 #ifdef SPOTON_GPGME_ENABLED
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  error.clear();
 
   QByteArray const begin("-----BEGIN PGP PUBLIC KEY BLOCK-----");
   QByteArray const end("-----END PGP PUBLIC KEY BLOCK-----");
@@ -290,7 +290,6 @@ void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
   if(error.isEmpty())
     emit gpgKeysImported();
 #else
-  Q_UNUSED(error);
   Q_UNUSED(k);
 #endif
 }
