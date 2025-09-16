@@ -1937,10 +1937,9 @@ void spoton::slotSetNeighborPriority(void)
   else
     priority = QThread::Priority(action->property("priority").toInt());
 
-  QModelIndexList list;
-
-  list = m_ui.neighbors->selectionModel()->selectedRows
-    (m_ui.neighbors->columnCount() - 1); // OID
+  auto const list
+    (m_ui.neighbors->selectionModel()->
+     selectedRows(m_ui.neighbors->columnCount() - 1)); // OID
 
   if(list.isEmpty())
     return;

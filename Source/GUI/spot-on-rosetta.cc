@@ -213,6 +213,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotAddContact(void)));
+  connect(ui.add_pending,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotAddPending(void)));
   connect(ui.attach,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -349,6 +353,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(clicked(void)),
 	  this,
 	  SLOT(slotPublishGPG(void)));
+  connect(ui.remove_pending,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRemovePending(void)));
   connect(ui.rename,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -1824,6 +1832,10 @@ void spoton_rosetta::slotAddGPGKeyBundle(const QUrl &url)
 {
   Q_UNUSED(url);
   ui.tab->setCurrentIndex(ui.tab->count() - 1);
+}
+
+void spoton_rosetta::slotAddPending(void)
+{
 }
 
 void spoton_rosetta::slotAttachForGPG(void)
@@ -3562,11 +3574,13 @@ void spoton_rosetta::slotReceivedGPGKeyBundle
 
   item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
   ui.pending->setItem(ui.pending->rowCount() - 1, 0, item);
-  item = new QTableWidgetItem(dump);
+  item = new QTableWidgetItem(QString(dump).replace("<br>", "\n"));
   item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  item->setToolTip(QString("<html>%1</html>").arg(item->text()));
   ui.pending->setItem(ui.pending->rowCount() - 1, 1, item);
   item = new QTableWidgetItem(data.constData());
   item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+  ui.pending->resizeRowsToContents();
   ui.pending->setItem(ui.pending->rowCount() - 1, 2, item);
   ui.pending->sortByColumn
     (ui.pending->horizontalHeader()->sortIndicatorSection(),
@@ -3643,6 +3657,38 @@ void spoton_rosetta::slotRemoveGPGKeys(void)
 
   populateGPGEmailAddresses();
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_rosetta::slotRemovePending(void)
+{
+  auto list(ui.pending->selectionModel()->selectedRows());
+
+  if(list.isEmpty())
+    return;
+
+  QMessageBox mb(this);
+
+  mb.setIcon(QMessageBox::Question);
+  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
+  mb.setText(tr("Remove the selected item(s)?"));
+  mb.setWindowIcon(windowIcon());
+  mb.setWindowModality(Qt::ApplicationModal);
+  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
+
+  if(mb.exec() != QMessageBox::Yes)
+    {
+      QApplication::processEvents();
+      return;
+    }
+
+  QApplication::processEvents();
+  std::sort(list.begin(), list.end());
+
+  for(int i = list.size() - 1; i >= 0; i--)
+    {
+      ui.pending->removeRow(list.at(i).row());
+      list.removeAt(i);
+    }
 }
 
 void spoton_rosetta::slotRemoveStoredINIGPGPassphrase(void)
