@@ -246,7 +246,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  ui.gpg_messages,
 	  SLOT(clear(void)));
   connect(ui.contacts,
-	  SIGNAL(currentIndexChanged(int)),
+	  SIGNAL(activated(int)),
 	  this,
 	  SLOT(slotContactsChanged(int)));
   connect(ui.convertDecrypt,
@@ -1941,6 +1941,7 @@ void spoton_rosetta::slotContactsChanged(int index)
       ui.deleteContact->setEnabled(false);
       ui.dump->setVisible(false);
       ui.rename->setEnabled(false);
+      ui.rename->setToolTip("");
       ui.sign->setChecked(true);
       ui.sign->setEnabled(false);
       return;
@@ -1978,6 +1979,10 @@ void spoton_rosetta::slotContactsChanged(int index)
 #ifdef SPOTON_GPGME_ENABLED
       ui.gpg_email_addresses->setEnabled(true);
 #endif
+      ui.rename->setEnabled(false);
+      ui.rename->setToolTip
+	(tr("<html>The e-mail name may not be modified because the respective "
+	    "GPG key bundle contains the original e-mail name.</html>"));
     }
   else
     {
@@ -1985,11 +1990,12 @@ void spoton_rosetta::slotContactsChanged(int index)
       ui.dump->setVisible(false);
       ui.gpg_email_addresses->setCurrentIndex(0);
       ui.gpg_email_addresses->setEnabled(false);
+      ui.rename->setEnabled(destinationType == DestinationTypes::ROSETTA);
+      ui.rename->setToolTip("");
     }
 
   ui.hash->setCurrentIndex(0);
   ui.hash->setEnabled(destinationType == DestinationTypes::ROSETTA);
-  ui.rename->setEnabled(destinationType != DestinationTypes::ZZZ);
   ui.sign->setChecked(true);
   ui.sign->setEnabled(destinationType != DestinationTypes::ZZZ);
 }

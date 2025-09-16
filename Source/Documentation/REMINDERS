@@ -359,13 +359,12 @@ Completed Items
 248.   GPG executable for creating credentials from Rosetta.
 249.   Optional Chat GIT per participant. See GIT Messages column in the
        Chat page.
-250.   Remove HTML tags from local Web results.
+250.   The git script should allow for pulling only.
 251.   GPG congestion. This is not possible because we do not retain
        digital digests across sessions.
 252.   Detect expired Web Server certificate. A local browser suffices.
 253.   Detect expired listener certificates. A local connection suffices.
 254.   Optional Rosetta GPG status messages.
-255.   The git script should allow for pulling only.
 
 Remaining Items
 
@@ -377,3 +376,4 @@ Remaining Items
 6.     QString::arg() with comma separators.
 7.     Increase the hash key size parameter in spoton_crypt::derivedKeys()
        from 256 to 512.
+8.     Remove HTML tags from local Web results.
