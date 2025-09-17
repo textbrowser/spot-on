@@ -29,6 +29,9 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#ifdef Q_OS_MACOS
+#include "Common/spot-on-misc.h"
+#endif
 #include "spot-on-defines.h"
 #include "spot-on-encryptfile-page.h"
 #include "spot-on-encryptfile.h"
