@@ -246,6 +246,11 @@ int main(int argc, char *argv[])
   QCoreApplication::setApplicationName("SpotOn");
   QCoreApplication::setApplicationVersion(SPOTON_VERSION_STRING);
   QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#ifdef Q_OS_MACOS
+  QCoreApplication::setAttribute
+    (Qt::AA_DontUseNativeMenuBar,
+     spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"));
+#endif
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setOrganizationName("SpotOn");
   QSettings::setDefaultFormat(QSettings::IniFormat);
