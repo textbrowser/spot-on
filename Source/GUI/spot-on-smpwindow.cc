@@ -151,7 +151,8 @@ spoton_smpwindow::spoton_smpwindow(spoton *parent):QMainWindow()
 	  this,
 	  SLOT(slotSaveCombinationBoxOption(int)));
 #ifdef Q_OS_MACOS
-  spoton_utilities::enableTabDocumentMode(this);
+  if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
+    spoton_utilities::enableTabDocumentMode(this);
 #endif
 }
 

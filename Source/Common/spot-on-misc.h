@@ -131,8 +131,8 @@ class spoton_misc
   static QString formattedSize(const double size);
   static QString homePath(void);
   static QString htmlEncode(const QString &string);
-  static QString keyTypeFromPublicKeyHash(const QByteArray &publicKeyHash,
-					  spoton_crypt *crypt);
+  static QString keyTypeFromPublicKeyHash
+    (const QByteArray &publicKeyHash, spoton_crypt *crypt);
   static QString massageIpForUi(const QString &ip, const QString &protocol);
   static QString nameFromPublicKeyHash(const QByteArray &publicKeyHash,
 				       spoton_crypt *crypt);
@@ -168,6 +168,7 @@ class spoton_misc
 				    const QString &keyType,
 				    spoton_crypt *crypt);
   static bool isAuthenticatedHint(spoton_crypt *crypt);
+  static bool isEnvironmentSet(const char *name);
   static bool isIpBlocked(const QHostAddress &address,
 			  spoton_crypt *crypt);
   static bool isIpBlocked(const QString &address,

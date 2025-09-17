@@ -2346,6 +2346,14 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
   return ok;
 }
 
+bool spoton_misc::isEnvironmentSet(const char *name)
+{
+  if(!name)
+    return false;
+  else
+    return qgetenv(name).isNull() == false;
+}
+
 bool spoton_misc::isIpBlocked(const QHostAddress &address, spoton_crypt *crypt)
 {
   if(address.isNull())

@@ -40,7 +40,8 @@ spoton_tabwidget::spoton_tabwidget(QWidget *parent):QTabWidget(parent)
   m_parent = nullptr;
   m_timer.start(2500);
 #ifdef Q_OS_MACOS
-  setStyleSheet("QTabWidget::tab-bar {alignment: left;}");
+  if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
+    setStyleSheet("QTabWidget::tab-bar {alignment: left;}");
 #endif
 }
 

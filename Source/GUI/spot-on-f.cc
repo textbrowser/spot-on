@@ -980,7 +980,8 @@ void spoton::slotEstablishForwardSecrecy(void)
 #endif
   ui.tab->setCurrentIndex(0);
 #ifdef Q_OS_MACOS
-  ui.tab->setDocumentMode(true);
+  if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
+    ui.tab->setDocumentMode(true);
 #endif
   ui.tab->setTabEnabled(1, false);
   ui.text_1->setText(tr("Please select."));
