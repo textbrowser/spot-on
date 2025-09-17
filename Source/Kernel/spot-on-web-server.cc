@@ -135,8 +135,9 @@ QProcess *spoton_web_server::process(const bool https, const int fd)
   auto process = new QProcess(this);
 
   process->setProperty("fd", fd);
+#ifndef Q_OS_WINDOWS
   process->setWorkingDirectory(spoton_misc::homePath());
-
+#endif
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #ifdef Q_OS_MACOS
   if(QFileInfo(program).isBundle())
