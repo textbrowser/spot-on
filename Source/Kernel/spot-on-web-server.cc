@@ -301,6 +301,8 @@ void spoton_web_server::slotTimeout(void)
   auto const port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
+  spoton_misc::logError(QString("Web server port is %1.").arg(port));
+
   if(port == 0)
     {
       m_http->close();
