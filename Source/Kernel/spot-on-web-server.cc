@@ -135,9 +135,8 @@ QProcess *spoton_web_server::process(const bool https, const int fd)
   auto process = new QProcess(this);
 
   process->setProperty("fd", fd);
-#ifndef Q_OS_WINDOWS
   process->setWorkingDirectory(spoton_misc::homePath());
-#endif
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 #ifdef Q_OS_MACOS
   if(QFileInfo(program).isBundle())
@@ -216,6 +215,10 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
       spoton_misc::closeSocket(fd);
       return;
     }
+  else if(process->state() == QProcess::NotRunning)
+    spoton_misc::logError("The Web process is not running.");
+  else
+    spoton_misc::logError("The Web process was started correctly.");
 
   QTimer::singleShot(30000, process, SLOT(kill(void)));
   connect(process,
