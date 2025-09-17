@@ -301,8 +301,6 @@ void spoton_web_server::slotTimeout(void)
   auto const port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
-  spoton_misc::logError(QString("Web server port is %1.").arg(port));
-
   if(port == 0)
     {
       m_http->close();
@@ -383,6 +381,10 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_http->isListening())
     {
+      spoton_misc::logError
+	(QString("Web server is listening on %1:%2.").
+	 arg(m_http->serverAddress().toString()).arg(m_http->serverPort()));
+
       auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTP_SO_LINGER", -1).toInt();
 
@@ -403,6 +405,10 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_https->isListening())
     {
+      spoton_misc::logError
+	(QString("Web server is listening on %1:%2.").
+	 arg(m_https->serverAddress().toString()).arg(m_https->serverPort()));
+
       auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTPS_SO_LINGER", -1).toInt();
 
