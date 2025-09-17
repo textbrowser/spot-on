@@ -208,7 +208,7 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
   if(fd < 0)
     {
       spoton_misc::logError
-	(QString("Cannot duplicate %1.").arg(socketDescriptor));
+	(QString("Cannot duplicate the socket %1.").arg(socketDescriptor));
       return;
     }
 
@@ -221,8 +221,6 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
     }
   else if(process->state() == QProcess::NotRunning)
     spoton_misc::logError("The Web process is not running.");
-  else
-    spoton_misc::logError("The Web process was started correctly.");
 
   QTimer::singleShot(30000, process, SLOT(kill(void)));
   connect(process,
@@ -270,7 +268,7 @@ void spoton_web_server::slotHttpsClientConnected
   if(fd < 0)
     {
       spoton_misc::logError
-	(QString("Cannot duplicate %1.").arg(socketDescriptor));
+	(QString("Cannot duplicate the socket %1.").arg(socketDescriptor));
       return;
     }
 
@@ -283,8 +281,6 @@ void spoton_web_server::slotHttpsClientConnected
     }
   else if(process->state() == QProcess::NotRunning)
     spoton_misc::logError("The Web process is not running.");
-  else
-    spoton_misc::logError("The Web process was started correctly.");
 
   QTimer::singleShot(30000, process, SLOT(kill(void)));
   connect(process,
