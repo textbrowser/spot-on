@@ -4437,7 +4437,7 @@ void spoton::slotActivateKernel(void)
     QProcess::startDetached(program, QStringList());
 #elif defined(Q_OS_WINDOWS)
   QProcess::startDetached
-    (QString("\"%1\"").arg(program), QStringList(), spoton_misc::homePath());
+    (QString("\"%1\"").arg(program), QStringList());
 #else
   QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #endif
@@ -4454,7 +4454,7 @@ void spoton::slotActivateKernel(void)
     QProcess::startDetached(program, QStringList());
 #elif defined(Q_OS_WINDOWS)
   QProcess::startDetached
-    (QString("\"%1\"").arg(program), QStringList(), spoton_misc::homePath());
+    (QString("\"%1\"").arg(program), QStringList());
 #else
   QProcess::startDetached(program, QStringList(), spoton_misc::homePath());
 #endif
