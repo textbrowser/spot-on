@@ -95,6 +95,8 @@ data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
+libassuan.files = ..\\libAssuan\\Libraries.win64\\*.dll
+libassuan.path = release\\.
 libgcrypt.files = ..\\libGCrypt\\Libraries.win64\\*.dll
 libgcrypt.path = release\\.
 libgpgme.files = ..\\libGPGME\\Libraries.win64\\*
@@ -135,6 +137,7 @@ translations.path = release\\Translations\\.
 
 INSTALLS = data \
            documentation \
+           libassuan \
            libgcrypt \
            libgpgme \
            libntrudll \

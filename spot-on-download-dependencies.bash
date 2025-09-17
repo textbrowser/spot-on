@@ -13,6 +13,33 @@ fi
 
 rc=0
 
+# Assuan
+
+assuan=mingw-w64-x86_64-libassuan-2.5.7-1-any.pkg.tar.zst
+
+rm -f $assuan
+wget --output-document=$assuan \
+     --progress=bar \
+     https://repo.msys2.org/mingw/mingw64/$assuan
+
+rc=$?
+
+if [ $rc -eq 0 ] && [ -r "$assuan" ]
+then
+    tar -I zstd -vxf $assuan
+    mkdir -p libAssuan/Libraries.win64
+    mv mingw64/bin/*.dll libAssuan/Libraries.win64/.
+    chmod +w,-x libAssuan/Libraries.win64/*.dll*
+    rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
+elif [ $rc -eq 0 ]
+then
+    echo "Cannot read $assuan."
+
+    rc=1
+fi
+
+rm -f $assuan
+
 # GCrypt
 
 gcrypt=mingw-w64-x86_64-libgcrypt-1.11.2-1-any.pkg.tar.zst
