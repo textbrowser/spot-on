@@ -95,6 +95,8 @@ data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation\\*.pdf
 documentation.path = release\\.
+gpgmeexecutables.files = ..\\libGPGME\\Executables.win64\\*.exe
+gpgmeexecutables.path = release\\.
 libassuan.files = ..\\libAssuan\\Libraries.win64\\*.dll
 libassuan.path = release\\.
 libgcrypt.files = ..\\libGCrypt\\Libraries.win64\\*.dll
@@ -111,8 +113,8 @@ libntrudll.files = ..\\libNTRU\\*.dll
 libntrudll.path = release\\.
 libopenssl.files = ..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
-otherexecutables.files = ..\\*\\Executables.win64\\*.exe
-otherexecutables.path = release\\.
+opensslexecutables.files = ..\\libOpenSSL\\Executables.win64\\*.exe
+opensslexecutables.path = release\\.
 plugins.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins.path = release\\plugins\\.
 qt.files = Qt\\qt.conf
@@ -139,12 +141,13 @@ translations.path = release\\Translations\\.
 
 INSTALLS = data \
            documentation \
+           gpgmeexecutables \
            libassuan \
            libgcrypt \
            libgpgme \
            libntrudll \
            libopenssl \
-           otherexecutables \
+           opensslexecutables \
            plugins \
            qt \
            qtlibraries \
