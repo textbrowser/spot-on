@@ -854,12 +854,14 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
 #if defined(Q_OS_MACOS)
   if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
-    foreach(auto toolButton, m_sbWidget->findChildren<QToolButton *> ())
-      {
-	toolButton->setStyleSheet
-	  ("QToolButton {border: none;}"
-	   "QToolButton::menu-button {border: none;}");
-      }
+    {
+      foreach(auto toolButton, m_sbWidget->findChildren<QToolButton *> ())
+	{
+	  toolButton->setStyleSheet
+	    ("QToolButton {border: none;}"
+	     "QToolButton::menu-button {border: none;}");
+	}
+    }
 #endif
 #ifndef SPOTON_MCELIECE_ENABLED
   m_ui.encryptionKeyType->model()->setData
@@ -3607,20 +3609,22 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 
 #if defined(Q_OS_MACOS)
   if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
-    foreach(auto toolButton, findChildren<QToolButton *> ())
-      {
+    {
+      foreach(auto toolButton, findChildren<QToolButton *> ())
+	{
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
-	toolButton->setStyleSheet
-	  ("QToolButton {border: none; padding-right: 10px;}"
-	   "QToolButton::menu-arrow {image: none;}"
-	   "QToolButton::menu-button {border: none;}");
+	  toolButton->setStyleSheet
+	    ("QToolButton {border: none; padding-right: 10px;}"
+	     "QToolButton::menu-arrow {image: none;}"
+	     "QToolButton::menu-button {border: none;}");
 #else
-	toolButton->setStyleSheet
-	  ("QToolButton {border: none; padding-right: 15px;}"
-	   "QToolButton::menu-arrow {image: none;}"
-	   "QToolButton::menu-button {border: none; width: 15px;}");
+	  toolButton->setStyleSheet
+	    ("QToolButton {border: none; padding-right: 15px;}"
+	     "QToolButton::menu-arrow {image: none;}"
+	     "QToolButton::menu-button {border: none; width: 15px;}");
 #endif
-      }
+	}
+    }
 #endif
 
   launchKernel ?
