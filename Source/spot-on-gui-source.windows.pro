@@ -9,6 +9,7 @@ FORMS = UI\\spot-on-adaptive-echo-prompt.ui \
         UI\\spot-on-encryptfile-page.ui \
         UI\\spot-on-forward-secrecy-algorithms-selection.ui \
         UI\\spot-on-goldbug.ui \
+        UI\\spot-on-gpg-passphrase.ui \
         UI\\spot-on-ipinformation.ui \
         UI\\spot-on-keyboard.ui \
         UI\\spot-on-logviewer.ui \
