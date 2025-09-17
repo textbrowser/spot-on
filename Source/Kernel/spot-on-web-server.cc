@@ -208,7 +208,8 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
   if(fd < 0)
     {
       spoton_misc::logError
-	(QString("Cannot duplicate the socket %1.").arg(socketDescriptor));
+	(QString("Cannot duplicate the Web server socket %1.").
+	 arg(socketDescriptor));
       return;
     }
 
@@ -268,7 +269,8 @@ void spoton_web_server::slotHttpsClientConnected
   if(fd < 0)
     {
       spoton_misc::logError
-	(QString("Cannot duplicate the socket %1.").arg(socketDescriptor));
+	(QString("Cannot duplicate the Web server socket %1.").
+	 arg(socketDescriptor));
       return;
     }
 
