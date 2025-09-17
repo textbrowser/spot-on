@@ -60,6 +60,7 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 INCLUDEPATH	+= . \
                    ..\\. \
                    ..\\libGCrypt\\Include.win64 \
+                   ..\\libGPGME\\Include.win64 \
                    ..\\libOpenSSL\\Include.win64 \
                    GUI
 

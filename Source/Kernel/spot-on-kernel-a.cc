@@ -50,8 +50,8 @@ extern "C"
 #include <termios.h>
 #include <unistd.h>
 #else
+#include <winsock2.h> // Must be included before windows.h (-Wcpp).
 #include <windows.h>
-#include <winsock2.h>
 #endif
 }
 
