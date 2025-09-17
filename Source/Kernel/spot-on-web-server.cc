@@ -206,7 +206,11 @@ void spoton_web_server::slotHttpClientConnected(const qintptr socketDescriptor)
   spoton_misc::closeSocketWithoutShutdown(socketDescriptor);
 
   if(fd < 0)
-    return;
+    {
+      spoton_misc::logError
+	(QString("Cannot duplicate %1.").arg(socketDescriptor));
+      return;
+    }
 
   auto process = this->process(false, fd);
 
@@ -264,7 +268,11 @@ void spoton_web_server::slotHttpsClientConnected
   spoton_misc::closeSocketWithoutShutdown(socketDescriptor);
 
   if(fd < 0)
-    return;
+    {
+      spoton_misc::logError
+	(QString("Cannot duplicate %1.").arg(socketDescriptor));
+      return;
+    }
 
   auto process = this->process(true, fd);
 
@@ -273,6 +281,10 @@ void spoton_web_server::slotHttpsClientConnected
       spoton_misc::closeSocket(fd);
       return;
     }
+  else if(process->state() == QProcess::NotRunning)
+    spoton_misc::logError("The Web process is not running.");
+  else
+    spoton_misc::logError("The Web process was started correctly.");
 
   QTimer::singleShot(30000, process, SLOT(kill(void)));
   connect(process,
@@ -381,10 +393,6 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_http->isListening())
     {
-      spoton_misc::logError
-	(QString("Web server is listening on %1:%2.").
-	 arg(m_http->serverAddress().toString()).arg(m_http->serverPort()));
-
       auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTP_SO_LINGER", -1).toInt();
 
@@ -405,10 +413,6 @@ void spoton_web_server::slotTimeout(void)
 
   if(m_https->isListening())
     {
-      spoton_misc::logError
-	(QString("Web server is listening on %1:%2.").
-	 arg(m_https->serverAddress().toString()).arg(m_https->serverPort()));
-
       auto const so_linger = spoton_kernel::setting
 	("WEB_SERVER_HTTPS_SO_LINGER", -1).toInt();
 
