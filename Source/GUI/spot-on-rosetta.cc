@@ -110,9 +110,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
   ui.attachments_label->setText
-    (tr("An attachment larger than %1 bytes will be ignored. Click an "
+    (tr("An attachment larger than %1 will be ignored. Click an "
 	"attachment to remove it.").
-     arg(QLocale().toString(spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)));
+     arg(spoton_misc::
+	 prettyFileSize(spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)));
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
 			     this,
 			     SLOT(slotCopyMyRosettaPublicKeys(void)));
