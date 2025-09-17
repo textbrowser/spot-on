@@ -111,6 +111,8 @@ libntrudll.files = ..\\libNTRU\\*.dll
 libntrudll.path = release\\.
 libopenssl.files = ..\\libOpenSSL\\Libraries.win64\\*.dll
 libopenssl.path = release\\.
+otherexecutables.files = ..\\*\\Executables.win64\\*.exe
+otherexecutables.path = release\\.
 plugins.files = $$[QT_INSTALL_PLUGINS]\\*
 plugins.path = release\\plugins\\.
 qt.files = Qt\\qt.conf
@@ -142,6 +144,7 @@ INSTALLS = data \
            libgpgme \
            libntrudll \
            libopenssl \
+           otherexecutables \
            plugins \
            qt \
            qtlibraries \
