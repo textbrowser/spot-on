@@ -45,6 +45,7 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 {
   m_spoton = spoton;
   m_ui.setupUi(this);
+  m_ui.menu_bar->setVisible(false);
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
   connect(m_ui.action_Clear,
 	  SIGNAL(triggered(void)),

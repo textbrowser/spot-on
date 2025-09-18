@@ -130,6 +130,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.inputDecrypt->setLineWrapColumnOrWidth(80);
   ui.inputDecrypt->setLineWrapMode(QTextEdit::FixedColumnWidth);
   ui.inputDecrypt->setWordWrapMode(QTextOption::WrapAnywhere);
+  ui.menu_bar->setVisible(false);
   ui.name->setMaxLength(spoton_common::NAME_MAXIMUM_LENGTH);
   ui.newContact->setLineWrapColumnOrWidth(80);
   ui.newContact->setLineWrapMode(QTextEdit::FixedColumnWidth);
