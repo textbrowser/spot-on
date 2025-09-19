@@ -652,6 +652,8 @@ void spoton::prepareOtherOptions(void)
      otherOptions(QByteArray::
 		  fromBase64(m_settings.value("gui/other_options").
 			     toByteArray())));
+  auto const empty = m_settings.value("gui/other_options").
+    toByteArray().isEmpty();
   int i = -1;
 
   m_optionsUi.other_options->setRowCount(0);
@@ -686,6 +688,12 @@ void spoton::prepareOtherOptions(void)
       else
 	{
 	  m_settings[key] = value;
+
+	  if(empty)
+	    {
+	      if(key == "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
+		m_settings[key] = "512";
+	    }
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
 	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
@@ -965,6 +973,8 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
 void spoton::slotApplyOtherOptions(void)
 {
   QString str("");
+  auto const empty = QSettings().value("gui/other_options").
+    toByteArray().isEmpty();
 
   for(int i = 0; i < m_optionsUi.other_options->rowCount(); i++)
     {
@@ -973,6 +983,13 @@ void spoton::slotApplyOtherOptions(void)
 
       if(!item1 || !item2)
 	continue;
+
+      if(empty)
+	{
+	  if(item1->text().trimmed() ==
+	     "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
+	    item2->setText("512");
+	}
 
       if(item2->text().trimmed().isEmpty())
 	item2->setText

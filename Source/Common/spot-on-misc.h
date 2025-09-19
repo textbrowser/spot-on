@@ -140,6 +140,8 @@ class spoton_misc
   static QString prettyFileSize(const qint64 size);
   static QString removeSpecialHtmlTags(const QString &text);
   static QString wrap(const QString &t, const int c = 80);
+  static QVariant other
+    (const QString &name, const QVariant &defaultValue = QVariant());
   static bool acceptableTimeSeconds(QDateTime &then, const int delta);
   static bool allParticipantsHaveGeminis(void);
   static bool authenticateAccount(QByteArray &name,
@@ -309,6 +311,7 @@ class spoton_misc
 
  private:
   static QAtomicInt s_enableLog;
+  static QMap<QString, QVariant> s_otherOptions;
   static QReadWriteLock s_dbMutex;
   static quint64 s_dbId;
   spoton_misc(void);

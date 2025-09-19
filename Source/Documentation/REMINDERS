@@ -366,6 +366,8 @@ Completed Items
 253.   Detect expired listener certificates. A local connection suffices.
 254.   Optional Rosetta GPG status messages.
 255.   Drag-and-drop attachments.
+256.   Increase the hash key size parameter in spoton_crypt::derivedKeys()
+       from 256 to 512.
 
 Remaining Items
 
@@ -375,7 +377,5 @@ Remaining Items
 4.     Qt 6 and audio may die.
 5.     Neighbors as separate processes.
 6.     QString::arg() with comma separators.
-7.     Increase the hash key size parameter in spoton_crypt::derivedKeys()
-       from 256 to 512.
-8.     Remove HTML tags from local Web results.
-9.     Web server on Windows. Very difficult.
+7.     Remove HTML tags from local Web results.
+8.     Web server on Windows. Very difficult.

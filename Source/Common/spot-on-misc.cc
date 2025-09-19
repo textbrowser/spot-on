@@ -113,6 +113,8 @@ static bool lengthGreaterThan(const QString &string1, const QString &string2)
 }
 
 QAtomicInt spoton_misc::s_enableLog = 0;
+QMap<QString, QVariant> spoton_misc::s_otherOptions =
+  spoton_misc::defaultOtherOptions();
 QReadWriteLock spoton_misc::s_dbMutex;
 quint64 spoton_misc::s_dbId = 0;
 
@@ -1013,6 +1015,7 @@ QMap<QString, QVariant> spoton_misc::defaultOtherOptions(void)
   map["PRISON_BLUES_REMOTE_SERVER"] = "192.168.178.15:5710";
   map["PUBLISHED_PAGES"] = "/dev/null, Title-Line, URL-Line";
   map["SMP_PREFERRED_HASH_ALGORITHM"] = "sha3-512";
+  map["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "256";
   map["WEB_PAGES_SHARED_DIRECTORY"] = "/dev/null";
   map["WEB_SERVER_CERTIFICATE_LIFETIME"] = QString::number
     (spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME);
@@ -1026,7 +1029,8 @@ QMap<QString, QVariant> spoton_misc::defaultOtherOptions(void)
 
 QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 {
-  QMap<QString, QVariant> map(defaultOtherOptions());
+  s_otherOptions = defaultOtherOptions();
+
   auto const list(bytes.split('\n'));
 
   for(int i = 0; i < list.size(); i++)
@@ -1035,7 +1039,7 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 
       if(str.startsWith("#"))
 	{
-	  map[str] = QVariant();
+	  s_otherOptions[str] = QVariant();
 	  continue;
 	}
 
@@ -1047,10 +1051,10 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 
       if(!pair.value(0).trimmed().isEmpty() &&
 	 !pair.value(1).trimmed().isEmpty())
-	map[pair.value(0).trimmed()] = pair.value(1).trimmed();
+	s_otherOptions[pair.value(0).trimmed()] = pair.value(1).trimmed();
     }
 
-  return map;
+  return s_otherOptions;
 }
 
 QPair<QByteArray, QByteArray> spoton_misc::decryptedAdaptiveEchoPair
@@ -1158,6 +1162,32 @@ QPair<QByteArray, QByteArray> spoton_misc::findGeminiInCosmos
     }
 
   return gemini;
+}
+
+QSqlDatabase spoton_misc::database(QString &connectionName)
+{
+  QSqlDatabase db;
+  QWriteLocker locker(&s_dbMutex);
+  auto const dbId = s_dbId += 1;
+
+  locker.unlock();
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  if(QRandomGenerator::global())
+    db = QSqlDatabase::addDatabase
+      ("QSQLITE",
+       QString("spoton_database_%1_%2").
+       arg(QRandomGenerator::global()->generate64()).arg(dbId));
+  else
+    db = QSqlDatabase::addDatabase
+      ("QSQLITE",
+       QString("spoton_database_%1_%2").
+       arg(QRandomGenerator().generate64()).arg(dbId));
+#else
+  db = QSqlDatabase::addDatabase
+    ("QSQLITE", QString("spoton_database_%1_%2").arg(qrand()).arg(dbId));
+#endif
+  connectionName = db.connectionName();
+  return db;
 }
 
 QString spoton_misc::adjustPQConnectOptions(const QString &s)
@@ -1280,32 +1310,6 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
     return QString("Unknown");
   else
     return QString(country);
-}
-
-QSqlDatabase spoton_misc::database(QString &connectionName)
-{
-  QSqlDatabase db;
-  QWriteLocker locker(&s_dbMutex);
-  auto const dbId = s_dbId += 1;
-
-  locker.unlock();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-  if(QRandomGenerator::global())
-    db = QSqlDatabase::addDatabase
-      ("QSQLITE",
-       QString("spoton_database_%1_%2").
-       arg(QRandomGenerator::global()->generate64()).arg(dbId));
-  else
-    db = QSqlDatabase::addDatabase
-      ("QSQLITE",
-       QString("spoton_database_%1_%2").
-       arg(QRandomGenerator().generate64()).arg(dbId));
-#else
-  db = QSqlDatabase::addDatabase
-    ("QSQLITE", QString("spoton_database_%1_%2").arg(qrand()).arg(dbId));
-#endif
-  connectionName = db.connectionName();
-  return db;
 }
 
 QString spoton_misc::databaseName(void)
@@ -1581,6 +1585,11 @@ QString spoton_misc::wrap(const QString &t, const int c)
     }
 
   return text;
+}
+
+QVariant spoton_misc::other(const QString &name, const QVariant &defaultValue)
+{
+  return s_otherOptions.value(name, defaultValue);
 }
 
 bool spoton_misc::acceptableTimeSeconds(QDateTime &then, const int delta)

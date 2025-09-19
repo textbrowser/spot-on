@@ -2604,7 +2604,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
      iterationCount,
      passphrase,
      salt,
-     256,
+     spoton_misc::other("SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE", 256).toInt(),
      singleIteration,
      error);
 }
