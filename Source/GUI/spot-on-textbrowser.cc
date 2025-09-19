@@ -26,14 +26,19 @@
 */
 
 #include <QApplication>
+#include <QDragEnterEvent>
+#include <QMimeData>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
 #include <QRegularExpression>
 #endif
+#include <QtDebug>
 
+#include "Common/spot-on-misc.h"
 #include "spot-on-textbrowser.h"
 
 spoton_textbrowser::spoton_textbrowser(QWidget *parent):QTextBrowser(parent)
 {
+  m_removeSpecial = true;
 }
 
 spoton_textbrowser::~spoton_textbrowser()
@@ -139,15 +144,98 @@ QString spoton_textbrowser::removeSpecial(const QString &text)
 
 void spoton_textbrowser::append(const QString &text)
 {
-  QTextBrowser::append(removeSpecial(text));
+  if(m_removeSpecial)
+    QTextBrowser::append(removeSpecial(text));
+  else
+    QTextBrowser::append(text);
+}
+
+void spoton_textbrowser::dragEnterEvent(QDragEnterEvent *event)
+{
+  QTextBrowser::dragEnterEvent(event);
+  m_dropFile = QFileInfo();
+
+  if(event && event->mimeData())
+    {
+      m_dropFile.setFile
+	(QUrl::fromUserInput(event->mimeData()->text()).toLocalFile());
+
+      if(toPlainText().
+	 contains(QString("%1 (%2)").
+		  arg(m_dropFile.absoluteFilePath()).
+		  arg(spoton_misc::prettyFileSize(m_dropFile.size()))))
+	{
+	  event->ignore();
+	  m_dropFile = QFileInfo();
+	}
+      else
+	{
+	  if(m_dropFile.isFile() && m_dropFile.isReadable())
+	    event->accept();
+	  else
+	    m_dropFile = QFileInfo();
+	}
+    }
+}
+
+void spoton_textbrowser::dragLeaveEvent(QDragLeaveEvent *event)
+{
+  QTextBrowser::dragLeaveEvent(event);
+  m_dropFile = QFileInfo();
+}
+
+void spoton_textbrowser::dragMoveEvent(QDragMoveEvent *event)
+{
+  if(event && m_dropFile.isFile() && m_dropFile.isReadable())
+    event->accept();      
+  else
+    {
+      QTextBrowser::dragMoveEvent(event);
+      m_dropFile = QFileInfo();
+    }
+}
+
+void spoton_textbrowser::dropEvent(QDropEvent *event)
+{
+  if(event && m_dropFile.isFile() && m_dropFile.isReadable())
+    {
+      if(toPlainText().
+	 contains(QString("%1 (%2)").
+		  arg(m_dropFile.absoluteFilePath()).
+		  arg(spoton_misc::prettyFileSize(m_dropFile.size()))))
+	event->ignore();
+      else
+	{
+	  append
+	    (QString("<a href=\"%1 (%2)\">%1 (%2)</a>").
+	     arg(m_dropFile.absoluteFilePath()).
+	     arg(spoton_misc::prettyFileSize(m_dropFile.size())));
+	  event->accept();
+	}
+
+      m_dropFile = QFileInfo();
+    }
+  else
+    QTextBrowser::dropEvent(event);
 }
 
 void spoton_textbrowser::setContent(const QByteArray &text)
 {
-  QTextBrowser::setHtml(removeSpecial(text));
+  if(m_removeSpecial)
+    QTextBrowser::setHtml(removeSpecial(text));
+  else
+    QTextBrowser::setHtml(text);
 }
 
 void spoton_textbrowser::setHtml(const QString &text)
 {
-  QTextBrowser::setHtml(removeSpecial(text));
+  if(m_removeSpecial)
+    QTextBrowser::setHtml(removeSpecial(text));
+  else
+    QTextBrowser::setHtml(text);
+}
+
+void spoton_textbrowser::setRemoveSpecial(const bool state)
+{
+  m_removeSpecial = state;
 }

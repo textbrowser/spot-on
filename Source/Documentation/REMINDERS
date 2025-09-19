@@ -365,6 +365,7 @@ Completed Items
 252.   Detect expired Web Server certificate. A local browser suffices.
 253.   Detect expired listener certificates. A local connection suffices.
 254.   Optional Rosetta GPG status messages.
+255.   Drag-and-drop attachments.
 
 Remaining Items
 
@@ -378,4 +379,3 @@ Remaining Items
        from 256 to 512.
 8.     Remove HTML tags from local Web results.
 9.     Web server on Windows. Very difficult.
-10.    Drag-and-drop attachments.

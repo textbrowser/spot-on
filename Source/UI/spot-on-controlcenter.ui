@@ -536,8 +536,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>962</width>
-                <height>672</height>
+                <width>436</width>
+                <height>607</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1828,7 +1828,7 @@
                              <number>5</number>
                             </property>
                             <item>
-                             <widget class="QTextBrowser" name="attachment">
+                             <widget class="spoton_textbrowser" name="attachment">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                                 <horstretch>0</horstretch>
@@ -2450,8 +2450,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>682</height>
+             <width>729</width>
+             <height>461</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_56">
@@ -3206,7 +3206,7 @@
                     <rect>
                      <x>0</x>
                      <y>0</y>
-                     <width>363</width>
+                     <width>374</width>
                      <height>1622</height>
                     </rect>
                    </property>
@@ -3789,8 +3789,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>682</height>
+             <width>765</width>
+             <height>234</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -4202,7 +4202,7 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>935</width>
+                  <width>811</width>
                   <height>692</height>
                  </rect>
                 </property>
@@ -5093,8 +5093,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>682</height>
+             <width>714</width>
+             <height>426</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -5179,7 +5179,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>941</width>
+                 <width>906</width>
                  <height>749</height>
                 </rect>
                </property>
@@ -6235,10 +6235,10 @@
           <widget class="QWidget" name="scrollAreaWidgetContents">
            <property name="geometry">
             <rect>
-             <x>-78</x>
-             <y>-661</y>
-             <width>1034</width>
-             <height>1379</height>
+             <x>0</x>
+             <y>0</y>
+             <width>1067</width>
+             <height>1359</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7535,8 +7535,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>951</width>
-             <height>730</height>
+             <width>672</width>
+             <height>732</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_43">
@@ -8760,7 +8760,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>951</width>
+             <width>934</width>
              <height>878</height>
             </rect>
            </property>
@@ -9598,8 +9598,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>972</width>
-             <height>682</height>
+             <width>308</width>
+             <height>179</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_59">
@@ -10118,14 +10118,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>spoton_textedit</class>
-   <extends>QTextEdit</extends>
-   <header>GUI/spot-on-textedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>spoton_textbrowser</class>
    <extends>QTextBrowser</extends>
    <header>spot-on-textbrowser.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textedit</class>
+   <extends>QTextEdit</extends>
+   <header>GUI/spot-on-textedit.h</header>
   </customwidget>
   <customwidget>
    <class>spoton_tabwidget</class>

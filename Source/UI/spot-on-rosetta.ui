@@ -114,7 +114,7 @@
          <x>0</x>
          <y>0</y>
          <width>1090</width>
-         <height>691</height>
+         <height>662</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -758,9 +758,9 @@
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>0</y>
-                    <width>631</width>
-                    <height>736</height>
+                    <y>-201</y>
+                    <width>1027</width>
+                    <height>792</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1078,7 +1078,7 @@
                         </widget>
                        </item>
                        <item>
-                        <widget class="QTextBrowser" name="attachments">
+                        <widget class="spoton_textbrowser" name="attachments">
                          <property name="sizePolicy">
                           <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                            <horstretch>0</horstretch>
@@ -1344,7 +1344,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>24</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Edit">
@@ -1424,6 +1424,11 @@
    <class>spoton_textedit</class>
    <extends>QTextEdit</extends>
    <header>GUI/spot-on-textedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>spoton_textbrowser</class>
+   <extends>QTextBrowser</extends>
+   <header>spot-on-textbrowser.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -40,6 +40,8 @@ spoton_emailwindow::spoton_emailwindow
   m_parent = parent;
   m_receiver_sender_hash = receiver_sender_hash;
   m_ui.setupUi(this);
+  m_ui.attachment->setAcceptDrops(true);
+  m_ui.attachment->setRemoveSpecial(false);
   m_ui.emailParticipants->horizontalHeader()->setSortIndicator
     (0, Qt::AscendingOrder);
   m_ui.emailParticipants->setColumnHidden(1, true); // OID

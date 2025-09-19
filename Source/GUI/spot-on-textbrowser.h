@@ -28,6 +28,7 @@
 #ifndef _spoton_textbrowser_h_
 #define _spoton_textbrowser_h_
 
+#include <QFileInfo>
 #include <QTextBrowser>
 
 class spoton_textbrowser: public QTextBrowser
@@ -41,6 +42,15 @@ class spoton_textbrowser: public QTextBrowser
   void append(const QString &text);
   void setContent(const QByteArray &text);
   void setHtml(const QString &text);
+  void setRemoveSpecial(const bool state);
+
+ private:
+  QFileInfo m_dropFile;
+  bool m_removeSpecial;
+  void dragEnterEvent(QDragEnterEvent *event);
+  void dragLeaveEvent(QDragLeaveEvent *event);
+  void dragMoveEvent(QDragMoveEvent *event);
+  void dropEvent(QDropEvent *event);
 };
 
 #endif

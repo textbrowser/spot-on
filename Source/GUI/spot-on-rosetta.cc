@@ -109,6 +109,8 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   action->setEnabled(false);
   action->setToolTip(ui.action_Import_GPG_Keys->toolTip());
 #endif
+  ui.attachments->setAcceptDrops(true);
+  ui.attachments->setRemoveSpecial(false);
   ui.attachments_label->setText
     (tr("An attachment larger than %1 will be ignored. Click an "
 	"attachment to remove it.").

@@ -658,6 +658,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     }
 
   list.clear();
+  m_ui.attachment->setAcceptDrops(true);
+  m_ui.attachment->setRemoveSpecial(false);
 #if SPOTON_GOLDBUG == 0
   m_ui.attachment_label->setText
     (tr("Please note that individual attachments are limited to %1 MiB. "
