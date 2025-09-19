@@ -1033,26 +1033,29 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 
   auto const list(bytes.split('\n'));
 
-  for(int i = 0; i < list.size(); i++)
-    {
-      QString const str(list.at(i).trimmed());
+  if(list.size() <= 1)
+    s_otherOptions["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "512";
+  else
+    for(int i = 0; i < list.size(); i++)
+      {
+	QString const str(list.at(i).trimmed());
 
-      if(str.startsWith("#"))
-	{
-	  s_otherOptions[str] = QVariant();
-	  continue;
-	}
+	if(str.startsWith("#"))
+	  {
+	    s_otherOptions[str] = QVariant();
+	    continue;
+	  }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
-      auto const pair(str.split(":=", Qt::SkipEmptyParts));
+	auto const pair(str.split(":=", Qt::SkipEmptyParts));
 #else
-      auto const pair(str.split(":=", QString::SkipEmptyParts));
+	auto const pair(str.split(":=", QString::SkipEmptyParts));
 #endif
 
-      if(!pair.value(0).trimmed().isEmpty() &&
-	 !pair.value(1).trimmed().isEmpty())
-	s_otherOptions[pair.value(0).trimmed()] = pair.value(1).trimmed();
-    }
+	if(!pair.value(0).trimmed().isEmpty() &&
+	   !pair.value(1).trimmed().isEmpty())
+	  s_otherOptions[pair.value(0).trimmed()] = pair.value(1).trimmed();
+      }
 
   return s_otherOptions;
 }
