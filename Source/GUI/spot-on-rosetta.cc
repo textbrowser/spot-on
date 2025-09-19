@@ -147,6 +147,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.tool_bar->addAction(ui.action_Paste);
   ui.tool_bar->addAction(ui.action_Remove_GPG_Keys);
   ui.tool_bar->addAction(ui.action_Remove_Stored_INI_GPG_Passphrase);
+  ui.tool_bar->toggleViewAction()->setEnabled(false);
   connect(&m_gpgPullTimer,
 	  SIGNAL(timeout(void)),
 	  this,
