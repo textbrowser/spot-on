@@ -136,7 +136,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>AES encryption and SHA-3 authentication keys shall be created from the e-mail and fingerprint. </string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please select the key bundle that you would like to share from the above Public Key(s) section. AES encryption and SHA-3 authentication keys shall be created from the destination e-mail and fingerprint values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -216,7 +216,7 @@
      <x>0</x>
      <y>0</y>
      <width>650</width>
-     <height>24</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Edit">

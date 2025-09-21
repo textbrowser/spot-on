@@ -330,6 +330,10 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  SIGNAL(anchorClicked(const QUrl &)),
 	  this,
 	  SLOT(slotAddGPGKeyBundle(const QUrl &)));
+  connect(ui.gpg_participants,
+	  SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
+	  this,
+	  SLOT(slotGPGParticipantsDoubleClicked(QTableWidgetItem *)));
   connect(ui.gpg_pull,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -3008,6 +3012,17 @@ void spoton_rosetta::slotGPGParticipantsChanged(QTableWidgetItem *item)
   }
 
   QSqlDatabase::removeDatabase(connectionName);
+}
+
+void spoton_rosetta::slotGPGParticipantsDoubleClicked(QTableWidgetItem *item)
+{
+  if(!item)
+    return;
+
+  auto clipboard = QApplication::clipboard();
+
+  if(clipboard)
+    clipboard->setText(item->text());
 }
 
 void spoton_rosetta::slotGPGPullTimer(void)
