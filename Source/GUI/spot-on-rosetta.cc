@@ -1490,8 +1490,10 @@ void spoton_rosetta::readPrisonBlues
 #ifdef SPOTON_GPGME_ENABLED
 			  QScopedPointer<spoton_crypt> crypt
 			    (spoton_misc::
-			     spotonGPGCredentials(pair.second,  // E-Mail
-						  pair.first)); // Fingerprint
+			     spotonGPGCredentials(// E-Mail
+						  pair.second,
+						  // GPG Fingerprint
+						  pair.first));
 
 			  if(crypt)
 			    {

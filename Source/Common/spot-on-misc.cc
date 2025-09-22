@@ -4210,9 +4210,10 @@ spoton_crypt *spoton_misc::spotonGPGCredentials
     (spoton_crypt::
      derivedKeys("aes256",
 		 "sha3-512",
-		 5000,  // The number of iterations.
+		 25000, // The number of iterations.
 		 email, // The secret.
 		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
+		 512,   // Hash key size.
 		 false, // Multiple passes instead of a single pass.
 		 error));
 

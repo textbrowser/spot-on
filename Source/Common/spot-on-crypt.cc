@@ -153,12 +153,8 @@ static auto digital_signature_hash_algorithm = GCRY_MD_SHA512;
 #endif
 static int error_buffer_size = 256;
 
-/*
-** Ignore some OpenSSL 3 warnings.
-*/
-
-spoton_crypt::spoton_crypt(const QByteArray &privateKey,
-			   const QByteArray &publicKey)
+spoton_crypt::spoton_crypt
+(const QByteArray &privateKey, const QByteArray &publicKey)
 {
   init("", "", QByteArray(), QByteArray(), QByteArray(), 0, 0, "", "cbc");
   m_privateKeyLength = static_cast<size_t> (privateKey.length());
