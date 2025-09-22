@@ -43,18 +43,16 @@ class spoton_rosetta_gpg_import: public QMainWindow
   static QString dump(const QByteArray &data);
   static QString email(const QByteArray &data);
   void import(QString &error, const QByteArray &k);
-  void showCurrentDump(void);
+  void populate(void);
 
  private:
   QPointer<spoton> m_spoton;
   Ui_spoton_rosetta_gpg_import m_ui;
 
  private slots:
-  void slotClear(void);
   void slotGPGKeysRemoved(void);
   void slotImport(void);
   void slotRemoveGPGKey(void);
-  void slotRemoveGPGKeys(void);
   void slotShareKeyBundle(void);
   void slotShowCurrentDump(int index);
 

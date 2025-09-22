@@ -758,7 +758,7 @@
                   <property name="geometry">
                    <rect>
                     <x>0</x>
-                    <y>0</y>
+                    <y>-201</y>
                     <width>1027</width>
                     <height>792</height>
                    </rect>
@@ -1266,17 +1266,17 @@
                  </attribute>
                  <column>
                   <property name="text">
-                   <string>Fingerprint</string>
+                   <string>GPG Fingerprint</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Information</string>
+                   <string>GPG Information</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Key Bundle</string>
+                   <string>Key Bundle (Hidden)</string>
                   </property>
                  </column>
                 </widget>

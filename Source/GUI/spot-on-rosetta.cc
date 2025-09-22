@@ -3131,7 +3131,7 @@ void spoton_rosetta::slotImportGPGKeys(void)
 
   if(m_gpgImport)
     {
-      m_gpgImport->showCurrentDump();
+      m_gpgImport->populate();
       ui.tab->setCurrentIndex(1);
     }
 #endif

@@ -45,16 +45,7 @@ spoton_rosetta_gpg_import::spoton_rosetta_gpg_import
 {
   m_spoton = spoton;
   m_ui.setupUi(this);
-  m_ui.menu_bar->setVisible(false);
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
-  connect(m_ui.action_Clear,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotClear(void)));
-  connect(m_ui.action_Remove_GPG_Keys,
-	  SIGNAL(triggered(void)),
-	  this,
-	  SLOT(slotRemoveGPGKeys(void)));
   connect(m_ui.deleteContact,
 	  SIGNAL(clicked(void)),
 	  this,
@@ -295,10 +286,11 @@ void spoton_rosetta_gpg_import::import(QString &error, const QByteArray &k)
 #endif
 }
 
-void spoton_rosetta_gpg_import::showCurrentDump(void)
+void spoton_rosetta_gpg_import::populate(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
   m_ui.email_addresses->clear();
+  m_ui.gpg_share_email->clear();
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 
@@ -308,6 +300,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   if(!crypt)
     {
       m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
+      m_ui.gpg_share_email->addItem("Empty"); // Please do not translate Empty.
       return;
     }
 
@@ -360,6 +353,7 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
     {
       it.next();
       m_ui.email_addresses->addItem(it.key(), it.value());
+      m_ui.gpg_share_email->addItem(it.key(), it.value());
     }
 
   if(m_ui.email_addresses->count() > 0)
@@ -367,22 +361,21 @@ void spoton_rosetta_gpg_import::showCurrentDump(void)
   else
     m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
 
+  if(m_ui.gpg_share_email->count() > 0)
+    m_ui.gpg_share_email->setCurrentIndex(0);
+  else
+    m_ui.gpg_share_email->addItem("Empty"); // Please do not translate Empty.
+
   QApplication::restoreOverrideCursor();
 #endif
-}
-
-void spoton_rosetta_gpg_import::slotClear(void)
-{
-  m_ui.destination_email->clear();
-  m_ui.destination_fingerprint->clear();
-  m_ui.public_keys->clear();
-  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 }
 
 void spoton_rosetta_gpg_import::slotGPGKeysRemoved(void)
 {
   m_ui.email_addresses->clear();
   m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
+  m_ui.gpg_share_email->clear();
+  m_ui.gpg_share_email->addItem("Empty"); // Please do not translate Empty.
   m_ui.public_keys->clear();
   m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 }
@@ -407,7 +400,7 @@ void spoton_rosetta_gpg_import::slotImport(void)
       m_ui.public_keys->selectAll();
     }
 
-  showCurrentDump();
+  populate();
 #endif
 }
 
@@ -491,6 +484,8 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
 
   if(ok)
     {
+      auto const text(m_ui.email_addresses->currentText());
+
       m_ui.email_addresses->removeItem(m_ui.email_addresses->currentIndex());
 
       if(m_ui.email_addresses->count() == 0)
@@ -501,61 +496,12 @@ void spoton_rosetta_gpg_import::slotRemoveGPGKey(void)
 	  m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
 	}
 
-      emit gpgKeysRemoved();
-    }
-}
+      m_ui.gpg_share_email->removeItem(m_ui.gpg_share_email->findText(text));
 
-void spoton_rosetta_gpg_import::slotRemoveGPGKeys(void)
-{
-  QMessageBox mb(this);
+      if(m_ui.gpg_share_email->count() == 0)
+	m_ui.gpg_share_email->addItem
+	  ("Empty"); // Please do not translate Empty.
 
-  mb.setIcon(QMessageBox::Question);
-  mb.setStandardButtons(QMessageBox::No | QMessageBox::Yes);
-  mb.setDefaultButton(QMessageBox::No);
-  mb.setText(tr("Are you sure that you wish to remove your GPG keys? "
-		"The keys will not be removed from the GPG key ring."));
-  mb.setWindowIcon(windowIcon());
-  mb.setWindowModality(Qt::ApplicationModal);
-  mb.setWindowTitle(tr("%1: Confirmation").arg(SPOTON_APPLICATION_NAME));
-
-  if(mb.exec() != QMessageBox::Yes)
-    {
-      QApplication::processEvents();
-      return;
-    }
-
-  QApplication::processEvents();
-
-  QString connectionName("");
-  auto ok = false;
-
-  {
-    auto db(spoton_misc::database(connectionName));
-
-    db.setDatabaseName
-      (spoton_misc::homePath() + QDir::separator() + "idiotes.db");
-
-    if(db.open())
-      {
-	QSqlQuery query(db);
-
-	query.exec("PRAGMA secure_delete = ON");
-
-	if(query.exec("DELETE FROM gpg"))
-	  ok = true;
-      }
-
-    db.close();
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-
-  if(ok)
-    {
-      m_ui.email_addresses->clear();
-      m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
-      m_ui.public_keys->clear();
-      m_ui.public_keys_dump->setText(tr("Empty GPG Data"));
       emit gpgKeysRemoved();
     }
 }
@@ -588,7 +534,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
     goto done_label;
 
   data = crypt->encryptedThenHashed
-    (m_ui.public_keys->toPlainText().toLatin1(), &ok).toBase64();
+    (m_ui.gpg_share_email->currentData().toByteArray(), &ok).toBase64();
 
   if(!ok)
     goto done_label;
@@ -605,7 +551,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
   output.append("\n\n");
   output.append("-----END SPOT-ON PUBLIC KEY BLOCK-----\n");
   emit shareKeyBundle
-    (output, fingerprint, m_ui.email_addresses->currentText());
+    (output, fingerprint, m_ui.gpg_share_email->currentText());
 
  done_label:
 

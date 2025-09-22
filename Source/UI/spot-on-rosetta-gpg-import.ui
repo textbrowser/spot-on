@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>579</height>
+    <width>700</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -136,7 +136,7 @@
           <item>
            <widget class="QLabel" name="label_3">
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please select the key bundle that you would like to share from the above Public Key(s) section. AES encryption and SHA-3 authentication keys shall be created from the destination e-mail and fingerprint values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please select the GPG key bundle that you would like to share. AES encryption and SHA-3 authentication keys shall be created from the destination e-mail and fingerprint values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>
@@ -145,14 +145,14 @@
           </item>
           <item>
            <layout class="QGridLayout" name="gridLayout">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_4">
               <property name="text">
-               <string>Destination E-Mail</string>
+               <string>Destination GPG Fingerprint (Forty Characters)</string>
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="1" column="1">
              <widget class="QLineEdit" name="destination_email">
               <property name="placeholderText">
                <string>Destination E-Mail</string>
@@ -162,14 +162,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Destination GPG Fingerprint (Forty Characters)</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
+            <item row="2" column="1">
              <widget class="QLineEdit" name="destination_fingerprint">
               <property name="placeholderText">
                <string>Destination GPG Fingerprint</string>
@@ -178,6 +171,47 @@
                <bool>true</bool>
               </property>
              </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Destination E-Mail</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>GPG Key Bundle</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QComboBox" name="gpg_share_email">
+                <property name="sizeAdjustPolicy">
+                 <enum>QComboBox::AdjustToContents</enum>
+                </property>
+                <property name="minimumContentsLength">
+                 <number>15</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
             </item>
            </layout>
           </item>
@@ -210,35 +244,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menu_bar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>650</width>
-     <height>34</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menu_Edit">
-    <property name="title">
-     <string>&amp;Edit</string>
-    </property>
-    <addaction name="action_Clear"/>
-    <addaction name="separator"/>
-    <addaction name="action_Remove_GPG_Keys"/>
-   </widget>
-   <addaction name="menu_Edit"/>
-  </widget>
-  <action name="action_Clear">
-   <property name="text">
-    <string>&amp;Clear</string>
-   </property>
-  </action>
-  <action name="action_Remove_GPG_Keys">
-   <property name="text">
-    <string>Remove GPG Keys</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -252,6 +257,7 @@
   <tabstop>deleteContact</tabstop>
   <tabstop>public_keys</tabstop>
   <tabstop>importButton</tabstop>
+  <tabstop>gpg_share_email</tabstop>
   <tabstop>destination_email</tabstop>
   <tabstop>destination_fingerprint</tabstop>
   <tabstop>share_results</tabstop>
