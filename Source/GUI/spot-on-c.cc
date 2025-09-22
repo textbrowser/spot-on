@@ -663,7 +663,19 @@ void spoton::populateStatistics(const QList<QPair<QString, QVariant> > &list)
     (locale.toString(m_pqUrlFaultyCounter.fetchAndAddOrdered(0)));
   item->setEditable(false);
   item->setToolTip(item->text());
-  m_statisticsModel->setItem(row, 1, item);
+
+  if(QThreadPool::globalInstance())
+    {
+      item = new QStandardItem("Tasks");
+      item->setEditable(false);
+      m_statisticsModel->setItem(row, 0, item);
+      item = new QStandardItem
+	(locale.toString(QThreadPool::globalInstance()->activeThreadCount()));
+      item->setEditable(false);
+      item->setToolTip(item->text());
+      m_statisticsModel->setItem(row, 1, item);
+    }
+
   m_statisticsUi.view->horizontalHeader()->setStretchLastSection(true);
   m_statisticsUi.view->sortByColumn(0, Qt::AscendingOrder);
   m_statisticsUi.view->resizeColumnToContents(0);
