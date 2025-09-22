@@ -3284,6 +3284,9 @@ void spoton_rosetta::slotNewGPGKeys(void)
 				    (error,
 				     m_gpgNewKeysUi.gpg_results->toPlainText().
 				     toLatin1());
+
+				  if(error.isEmpty())
+				    m_gpgImport->populate();
 				}
 			    }
 			}
