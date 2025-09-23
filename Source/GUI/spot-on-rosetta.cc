@@ -1423,13 +1423,17 @@ void spoton_rosetta::readPrisonBlues
  const QString &gpgProgram,
  const QVector<QPair<QByteArray, QString> > &gpgPairs)
 {
+#ifdef SPOTON_GPGME_ENABLED
   QHash<QByteArray, char> fingerprints;
   QVectorIterator<QPair<QByteArray, QString> > it(gpgPairs);
+#endif
   auto const maximumFileSize = static_cast<qint64>
     (qCeil(1.5 * spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE));
 
+#ifdef SPOTON_GPGME_ENABLED
   while(it.hasNext() && m_readPrisonBluesFuture.isCanceled() == false)
     fingerprints[it.next().first] = 0;
+#endif
 
   for(int i = 0; i < directories.size(); i++)
     {
