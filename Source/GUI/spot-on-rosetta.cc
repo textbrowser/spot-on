@@ -1499,18 +1499,16 @@ void spoton_rosetta::readPrisonBlues
 
 		  if(file.open(QIODevice::ReadOnly))
 		    {
+#ifdef SPOTON_GPGME_ENABLED
 		      auto const bytes(file.readAll().trimmed());
 
 		      if(bytes.startsWith(begin_pgp))
 			{
-#ifdef SPOTON_GPGME_ENABLED
 			  emit processGPGMessage(bytes);
-#endif
 			  file.remove();
 			}
 		      else if(bytes.startsWith(begin_spoton))
 			{
-#ifdef SPOTON_GPGME_ENABLED
 			  QScopedPointer<spoton_crypt> crypt
 			    (spoton_misc::
 			     spotonGPGCredentials(// E-Mail
@@ -1537,10 +1535,12 @@ void spoton_rosetta::readPrisonBlues
 				  (data,
 				   spoton_rosetta_gpg_import::dump(data));
 			    }
-#endif
 
 			  file.remove();
 			}
+#else
+		      file.remove();
+#endif
 		    }
 		}
 	    }
