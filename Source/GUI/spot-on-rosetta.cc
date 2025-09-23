@@ -1364,18 +1364,33 @@ void spoton_rosetta::publishAttachments
 	 spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)
 	continue;
 
-      QTemporaryFile file
-	(destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.gpg");
+      QString output("");
 
-      if(!file.open())
-	continue;
+      {
+	QTemporaryFile file
+	  (destination + QDir::separator() + "PrisonBluesXXXXXXXXXX.gpg");
+
+	if(!file.open())
+	  {
+	    showMessage
+	      (tr("Error creating a temporary file for "
+		  "attachment %1 and recipient %2.").
+	       arg(attachment).arg(participant),
+	       5000);
+	    continue;
+	  }
+	else
+	  output = file.fileName();
+
+	file.remove();
+      }
 
       QStringList parameters;
 
       parameters << "--batch"
 		 << "--encrypt"
 		 << "--output"
-		 << file.fileName()
+		 << output
 		 << "--passphrase"
 		 << passphrase.constData()
 		 << "--pinentry-mode"
@@ -1390,13 +1405,11 @@ void spoton_rosetta::publishAttachments
       if(!QProcess::startDetached(fileInfo.absoluteFilePath(),
 				  parameters,
 				  spoton_misc::homePath()))
-	{
-	  file.remove();
-	  showMessage
-	    (tr("A separate GPG process could not be launched for "
-		"encrypting the file %1").arg(attachment),
-	     5000);
-	}
+	showMessage
+	  (tr("A separate GPG process could not be launched for "
+	      "encrypting the file %1 and recipient %2.").
+	   arg(attachment).arg(participant),
+	   5000);
       else
 	showInformationMessage
 	  (tr("The file <b>%1</b> is being encrypted by a separate "
