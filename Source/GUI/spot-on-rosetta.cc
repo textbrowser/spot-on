@@ -1390,7 +1390,17 @@ void spoton_rosetta::publishAttachments
       if(!QProcess::startDetached(fileInfo.absoluteFilePath(),
 				  parameters,
 				  spoton_misc::homePath()))
-	file.remove();
+	{
+	  file.remove();
+	  showMessage
+	    (tr("A separate GPG process could not be launched for "
+		"encrypting the file %1").arg(attachment),
+	     5000);
+	}
+      else
+	showInformationMessage
+	  (tr("The file <b>%1</b> is being encrypted by a separate "
+	      "GPG process.").arg(attachment));
     }
 }
 
