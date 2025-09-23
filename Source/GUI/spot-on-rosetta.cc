@@ -4006,6 +4006,11 @@ void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
 	    file.write(data);
 	    state = true;
 	  }
+	else
+	  showMessage
+	    (tr("Error creating a temporary file for "
+		"sharing a GPG key bundle with %1.").arg(fingerprint),
+	     5000);
       }
 
   state ? slotLaunchPrisonBluesProcessesIfNecessary(false) : (void) 0;
