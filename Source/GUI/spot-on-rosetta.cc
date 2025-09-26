@@ -414,7 +414,12 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 
   slotDecryptClear();
-  ui.gpg->setText(settings.value("gui/rosettaGPG", "").toString());
+#ifdef Q_OS_LINUX
+  ui.gpg->setText(settings.value("gui/rosettaGPG", "/usr/bin/gpg").toString());
+#elif defined(Q_OS_MACOS)
+  ui.gpg->setText
+    (settings.value("gui/rosettaGPG", "/opt/homebrew/bin/gpg").toString());
+#endif
 
 #if defined(Q_OS_MACOS)
   if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
@@ -439,7 +444,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
     spoton_utilities::enableTabDocumentMode(this);
 #endif
-  restoreState(QSettings().value("gui/rosettaMainWindowState").toByteArray());
+  restoreState(settings.value("gui/rosettaMainWindowState").toByteArray());
   slotPullGPG();
 }
 
@@ -3201,8 +3206,13 @@ void spoton_rosetta::slotNewGPGKeys(void)
       model->setRootPath(QDir::rootPath());
     }
 
+#ifdef Q_OS_LINUX
   m_gpgNewKeysUi.gpg->setText
-    (QSettings().value("gui/gpgPath", "").toString());
+    (QSettings().value("gui/gpgPath", "/usr/bin/gpg").toString());
+#elif defined(Q_OS_MACOS)
+  m_gpgNewKeysUi.gpg->setText
+    (QSettings().value("gui/gpgPath", "/opt/homebrew/bin/gpg").toString());
+#endif
   m_gpgNewKeysUi.gpg->selectAll();
   m_gpgNewKeysUi.gpg_results->clear();
 #ifndef SPOTON_GPGME_ENABLED
@@ -3396,8 +3406,7 @@ void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
 
       if(err == GPG_ERR_NO_ERROR)
 	{
-	  err = gpgme_set_pinentry_mode
-	    (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
+	  err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
 	  gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
 	}
 
