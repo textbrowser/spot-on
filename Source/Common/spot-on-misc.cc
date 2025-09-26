@@ -4909,8 +4909,10 @@ void spoton_misc::launchPrisonBluesProcesses
 	      if(statusBar)
 		statusBar->showMessage
 		  (QObject::
-		   tr("The program %1 was started with argument %2.").
-		   arg(process->program()).arg(QString::number(pullOnly)),
+		   tr("The program %1 was started with a %2 request.").
+		   arg(process->program()).
+		   arg(pullOnly ?
+		       QObject::tr("pull-only") : QObject::tr("standard")),
 		   5000);
 	    }
 	  else

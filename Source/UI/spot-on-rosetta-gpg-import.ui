@@ -118,7 +118,7 @@
             <item>
              <widget class="spoton_animated_push_button" name="importButton">
               <property name="text">
-               <string>&amp;Import</string>
+               <string>&amp;Import YOUR Key Bundle</string>
               </property>
              </widget>
             </item>
@@ -230,7 +230,7 @@
             <item>
              <widget class="spoton_animated_push_button" name="share">
               <property name="text">
-               <string>&amp;Share</string>
+               <string>&amp;Share YOUR Key Bundle</string>
               </property>
              </widget>
             </item>
