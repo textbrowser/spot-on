@@ -440,10 +440,12 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	}
     }
 #endif
+
 #ifdef Q_OS_MACOS
   if(!spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"))
     spoton_utilities::enableTabDocumentMode(this);
 #endif
+
   restoreState(settings.value("gui/rosettaMainWindowState").toByteArray());
   slotPullGPG();
 }
