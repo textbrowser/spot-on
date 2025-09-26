@@ -1081,7 +1081,7 @@ void spoton_rosetta::populateContacts(void)
 		   SIGNAL(itemChanged(QTableWidgetItem *)),
 		   this,
 		   SLOT(slotGPGParticipantsChanged(QTableWidgetItem *)));
-	ui.gpg_participants->setRowCount(names.size());
+	ui.gpg_participants->setRowCount(fingerprints.size()); // GPG people!
 
 	while(it.hasNext())
 	  {
@@ -1103,7 +1103,11 @@ void spoton_rosetta::populateContacts(void)
 	       static_cast<int> (it.value().first),
 	       Qt::ItemDataRole(Qt::UserRole + 1));
 
-	    auto item = new QTableWidgetItem(ui.contacts->itemText(i));
+	    if(it.value().first != DestinationTypes::GPG)
+	      continue;
+
+	    auto item = new QTableWidgetItem
+	      (str.isEmpty() ? "unknown@unknown.org" : str);
 
 	    item->setCheckState
 	      (states.value(str).contains("online=true") ?
@@ -1131,7 +1135,8 @@ void spoton_rosetta::populateContacts(void)
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 2, item);
-	    item = new QTableWidgetItem(gpgInformation.value(str).simplified());
+	    item = new QTableWidgetItem
+	      (gpgInformation.value(str).simplified());
 	    item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 	    item->setToolTip(item->text());
 	    ui.gpg_participants->setItem(i, 3, item);
