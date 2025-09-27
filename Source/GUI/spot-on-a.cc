@@ -2698,8 +2698,22 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.geoipPath6->setCursorPosition(0);
 #endif
 #endif
+#ifdef Q_OS_FREEBSD
   m_optionsUi.openssl->setText
-    (m_settings.value("gui/openssl").toString().trimmed());
+    (m_settings.value("gui/openssl", "/usr/local/bin/openssl").
+     toString().trimmed());
+#elif defined(Q_OS_LINUX)
+  m_optionsUi.openssl->setText
+    (m_settings.value("gui/openssl", "/usr/bin/openssl").toString().trimmed());
+#elif defined(Q_OS_MACOS)
+  m_optionsUi.openssl->setText
+    (m_settings.value("gui/openssl", "/opt/homebrew/bin/openssl").
+     toString().trimmed());
+#elif defined(Q_OS_OPENBSD)
+  m_optionsUi.openssl->setText
+    (m_settings.value("gui/openssl", "/usr/local/bin/openssl").
+     toString().trimmed());
+#endif
   m_optionsUi.openssl->setCursorPosition(0);
   m_optionsUi.openssl_arguments->setPlainText
     (m_settings.value("gui/openssl_arguments").toString().trimmed());
