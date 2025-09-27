@@ -414,11 +414,17 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
       splitters.at(i)->restoreState(settings.value(keys.at(i)).toByteArray());
 
   slotDecryptClear();
-#ifdef Q_OS_LINUX
+#ifdef Q_OS_FREEBSD
+  ui.gpg->setText
+    (settings.value("gui/rosettaGPG", "/usr/local/bin/gpg").toString());
+#elif defined(Q_OS_LINUX)
   ui.gpg->setText(settings.value("gui/rosettaGPG", "/usr/bin/gpg").toString());
 #elif defined(Q_OS_MACOS)
   ui.gpg->setText
     (settings.value("gui/rosettaGPG", "/opt/homebrew/bin/gpg").toString());
+#elif defined(Q_OS_OPENBSD)
+  ui.gpg->setText
+    (settings.value("gui/rosettaGPG", "/usr/local/bin/gpg").toString());
 #endif
 
 #if defined(Q_OS_MACOS)
@@ -3213,12 +3219,18 @@ void spoton_rosetta::slotNewGPGKeys(void)
       model->setRootPath(QDir::rootPath());
     }
 
-#ifdef Q_OS_LINUX
+#ifdef Q_OS_FREEBSD
+  m_gpgNewKeysUi.gpg->setText
+    (QSettings().value("gui/gpgPath", "/usr/local/bin/gpg").toString());
+#elif defined(Q_OS_LINUX)
   m_gpgNewKeysUi.gpg->setText
     (QSettings().value("gui/gpgPath", "/usr/bin/gpg").toString());
 #elif defined(Q_OS_MACOS)
   m_gpgNewKeysUi.gpg->setText
     (QSettings().value("gui/gpgPath", "/opt/homebrew/bin/gpg").toString());
+#elif defined(Q_OS_OPENBSD)
+  m_gpgNewKeysUi.gpg->setText
+    (QSettings().value("gui/gpgPath", "/usr/local/bin/gpg").toString());
 #endif
   m_gpgNewKeysUi.gpg->selectAll();
   m_gpgNewKeysUi.gpg_results->clear();
