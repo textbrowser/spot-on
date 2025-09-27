@@ -458,15 +458,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 
 spoton_rosetta::~spoton_rosetta()
 {
-  m_gpgPullTimer.stop();
-  m_gpgReadMessagesTimer.stop();
-  m_gpgStatusTimer.stop();
-  m_prepareGPGStatusMessagesFuture.cancel();
-  m_prepareGPGStatusMessagesFuture.waitForFinished();
-  m_prisonBluesReadTimer.stop();
-  m_prisonBluesTimer.stop();
-  m_readPrisonBluesFuture.cancel();
-  m_readPrisonBluesFuture.waitForFinished();
+  deactivate();
 }
 
 QByteArray spoton_rosetta::copyMyRosettaPublicKey(void) const
@@ -975,6 +967,15 @@ void spoton_rosetta::createGPGImportObject(void)
 
 void spoton_rosetta::deactivate(void)
 {
+  m_gpgPullTimer.stop();
+  m_gpgReadMessagesTimer.stop();
+  m_gpgStatusTimer.stop();
+  m_prepareGPGStatusMessagesFuture.cancel();
+  m_prepareGPGStatusMessagesFuture.waitForFinished();
+  m_prisonBluesReadTimer.stop();
+  m_prisonBluesTimer.stop();
+  m_readPrisonBluesFuture.cancel();
+  m_readPrisonBluesFuture.waitForFinished();
 }
 
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)

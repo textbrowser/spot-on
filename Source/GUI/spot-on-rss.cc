@@ -383,16 +383,9 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 
 spoton_rss::~spoton_rss()
 {
-  m_cancelImport.fetchAndStoreOrdered(1);
-  m_downloadContentTimer.stop();
-  m_downloadTimer.stop();
-  m_importTimer.stop();
+  deactivateImplementation();
   m_purgeTimer.stop();
   m_statisticsTimer.stop();
-  m_importFuture.cancel();
-  m_importFuture.waitForFinished();
-  m_parseXmlFuture.cancel();
-  m_parseXmlFuture.waitForFinished();
 }
 
 bool spoton_rss::importUrl(const QList<QVariant> &list,
@@ -532,6 +525,13 @@ void spoton_rss::deactivate(void)
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
   m_ui.activate->setChecked(false);
   m_ui.periodic_import->setChecked(false);
+  deactivateImplementation();
+  QApplication::restoreOverrideCursor();
+}
+
+void spoton_rss::deactivateImplementation(void)
+{
+  m_cancelImport.fetchAndStoreOrdered(1);
   m_downloadContentTimer.stop();
   m_downloadTimer.stop();
   m_importTimer.stop();
@@ -539,7 +539,6 @@ void spoton_rss::deactivate(void)
   m_importFuture.waitForFinished();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
-  QApplication::restoreOverrideCursor();
 }
 
 void spoton_rss::hideUrl(const QUrl &url, const bool state)

@@ -73,6 +73,7 @@ class spoton_rss: public QMainWindow
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
+  void deactivateImplementation(void);
   void hideUrl(const QUrl &url, const bool state);
   void import(const int maximumKeywords);
   void parseXmlContent(const QByteArray &data, const QUrl &url);
