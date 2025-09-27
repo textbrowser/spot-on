@@ -55,6 +55,7 @@ class spoton_rosetta: public QMainWindow
   spoton_rosetta(void);
   ~spoton_rosetta();
   QLineEdit *attachmentsGPGPath(void) const;
+  void deactivate(void);
   void setName(const QString &text);
   void setParent(spoton *parent);
   void show(spoton *parent);

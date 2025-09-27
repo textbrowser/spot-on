@@ -379,3 +379,4 @@ Remaining Items
 6.     QString::arg() with comma separators.
 7.     Remove HTML tags from local Web results.
 8.     Web server on Windows. Very difficult.
+9.     Re-encode and Rosetta processes.

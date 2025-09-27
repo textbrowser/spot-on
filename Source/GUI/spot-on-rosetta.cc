@@ -973,6 +973,10 @@ void spoton_rosetta::createGPGImportObject(void)
 #endif
 }
 
+void spoton_rosetta::deactivate(void)
+{
+}
+
 void spoton_rosetta::keyPressEvent(QKeyEvent *event)
 {
   QMainWindow::keyPressEvent(event);

@@ -9720,16 +9720,15 @@ void spoton::slotSetPassphrase(void)
       if(m_ui.passphrase_rb->isChecked())
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing passphrase? Please note that URL data must "
-		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "and the kernel will be deactivated."));
+		      "be re-encoded via a separate tool. "
+		      "Please see the future Re-Encode URLs option. "
+		      "RSS, Rosetta, and the kernel will be deactivated."));
       else
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing answer/question? Please note that URL "
-		      "data must "
-		      "be re-encoded via a separate tool. Please see "
-		      "the future Re-Encode URLs option. The RSS mechanism "
-		      "and the kernel will be deactivated."));
+		      "data must be re-encoded via a separate tool. "
+		      "Please see the future Re-Encode URLs option. "
+		      "RSS, Rosetta, and the kernel will be deactivated."));
 
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::ApplicationModal);
@@ -9748,6 +9747,7 @@ void spoton::slotSetPassphrase(void)
 	{
 	  repaint();
 	  QApplication::processEvents();
+	  m_rosetta->deactivate();
 	  m_rss->deactivate();
 	  slotDeactivateKernel();
 	  reencode = true;
@@ -9762,6 +9762,7 @@ void spoton::slotSetPassphrase(void)
       ** Deactivate machines before preparing keys.
       */
 
+      m_rosetta->deactivate();
       m_rss->deactivate();
       slotDeactivateKernel();
     }
@@ -9848,7 +9849,9 @@ void spoton::slotSetPassphrase(void)
 
 		  spoton_crypt::reencodePrivatePublicKeys
 		    (crypt.data(),
-		     m_crypts.value("chat", nullptr), list.at(i), error2);
+		     m_crypts.value("chat", nullptr),
+		     list.at(i),
+		     error2);
 		  m_sb.status->clear();
 
 		  if(!error2.isEmpty())
