@@ -1627,6 +1627,11 @@ void spoton_rosetta::setName(const QString &text)
 
 void spoton_rosetta::setParent(spoton *parent)
 {
+  auto const index = qBound
+    (0,
+     QSettings().value("gui/rosettaTabIndex", 0).toInt(),
+     ui.tab->count() - 1);
+
   m_parent = parent;
   populateContacts();
   slotImportGPGKeys();
@@ -1636,10 +1641,7 @@ void spoton_rosetta::setParent(spoton *parent)
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
-  ui.tab->setCurrentIndex
-    (qBound(0,
-	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
-	    ui.tab->count() - 1));
+  ui.tab->setCurrentIndex(index);
   connect(ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
