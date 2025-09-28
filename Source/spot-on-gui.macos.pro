@@ -66,6 +66,14 @@ exists(/opt/homebrew/lib) {
 LIBS += -L/opt/homebrew/lib
 }
 
+exists(/usr/local/include) {
+INCLUDEPATH += /usr/local/include
+}
+
+exists(/usr/local/lib) {
+LIBS += -L/usr/local/lib
+}
+
 INCLUDEPATH	  += . ../. GUI
 ICON		  = Icons/Logo/spot-on-logo.icns
 LIBS		  += -L../libNTRU \

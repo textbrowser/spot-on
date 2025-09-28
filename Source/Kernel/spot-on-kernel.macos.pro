@@ -57,6 +57,14 @@ exists(/opt/homebrew/lib) {
 LIBS += -L/opt/homebrew/lib
 }
 
+exists(/usr/local/include) {
+INCLUDEPATH += /usr/local/include
+}
+
+exists(/usr/local/lib) {
+LIBS += -L/usr/local/lib
+}
+
 INCLUDEPATH	  += . ../. ../../.
 LIBS		  += -L../../libNTRU \
                      -framework Cocoa \
