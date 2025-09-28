@@ -6022,7 +6022,7 @@ void spoton::slotResetAll(void)
   mb.setDefaultButton(QMessageBox::No); // After setStandardButtons().
   mb.setText(tr("Are you sure that you wish to reset %1? All "
 		"data will be lost. PostgreSQL databases must be "
-		"removed separately.").
+		"removed separately. %1 will be restarted.").
 	     arg(SPOTON_APPLICATION_NAME));
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
@@ -6070,30 +6070,7 @@ void spoton::slotResetAll(void)
   for(int i = settings.allKeys().size() - 1; i >= 0; i--)
     settings.remove(settings.allKeys().at(i));
 
-#if defined(Q_OS_WINDOWS)
-  auto const program(QCoreApplication::applicationDirPath() +
-		     QDir::separator() +
-		     SPOTON_APPLICATION_NAME);
-
-  (::ShellExecuteA(0,
-		   "open",
-		   program.toUtf8().constData(),
-		   0,
-		   0,
-		   SW_SHOWNORMAL));
-#else
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-  QProcess::startDetached(QCoreApplication::applicationDirPath() +
-			  QDir::separator() +
-			  SPOTON_APPLICATION_NAME,
-			  QStringList());
-#else
-  QProcess::startDetached(QCoreApplication::applicationDirPath() +
-			  QDir::separator() +
-			  SPOTON_APPLICATION_NAME);
-#endif
-#endif
-  QCoreApplication::quit();
+  restart();
 }
 
 void spoton::slotRetrieveMail(void)

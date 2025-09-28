@@ -2352,8 +2352,8 @@ bool spoton_misc::isAuthenticatedHint(spoton_crypt *crypt)
   auto ok = true;
 
   bytes = crypt->decryptedAfterAuthenticated
-    (QByteArray::fromBase64(settings.
-			    value("gui/authenticationHint").toByteArray()),
+    (QByteArray::
+     fromBase64(settings.value("gui/authenticationHint").toByteArray()),
      &ok);
   return ok;
 }

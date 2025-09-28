@@ -742,6 +742,34 @@ void spoton::resizeEvent(QResizeEvent *event)
   QMainWindow::resizeEvent(event);
 }
 
+void spoton::restart(void)
+{
+#if defined(Q_OS_WINDOWS)
+  auto const program(QCoreApplication::applicationDirPath() +
+		     QDir::separator() +
+		     SPOTON_APPLICATION_NAME);
+
+  (::ShellExecuteA(0,
+		   "open",
+		   program.toUtf8().constData(),
+		   0,
+		   0,
+		   SW_SHOWNORMAL));
+#else
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+  QProcess::startDetached(QCoreApplication::applicationDirPath() +
+			  QDir::separator() +
+			  SPOTON_APPLICATION_NAME,
+			  QStringList());
+#else
+  QProcess::startDetached(QCoreApplication::applicationDirPath() +
+			  QDir::separator() +
+			  SPOTON_APPLICATION_NAME);
+#endif
+#endif
+  QCoreApplication::quit();
+}
+
 void spoton::retrieveNeighbors(void)
 {
   QFileInfo const fileInfo

@@ -690,6 +690,7 @@ class spoton: public QMainWindow
   void refreshInstitutions(void);
   void removeFavorite(const bool removeAll);
   void resizeEvent(QResizeEvent *event);
+  void restart(void);
   void retrieveNeighbors(void);
   void retrieveParticipants(spoton_crypt *crypt);
   void saveDestination(const QString &path);

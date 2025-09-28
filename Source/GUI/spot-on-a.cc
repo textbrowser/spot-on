@@ -9722,13 +9722,17 @@ void spoton::slotSetPassphrase(void)
 		      "existing passphrase? Please note that URL data must "
 		      "be re-encoded via a separate tool. "
 		      "Please see the future Re-Encode URLs option. "
-		      "RSS, Rosetta, and the kernel will be deactivated."));
+		      "The kernel will be deactivated. "
+		      "Spot-On will be restarted after the "
+		      "process completes."));
       else
 	mb.setText(tr("Are you sure that you wish to replace the "
 		      "existing answer/question? Please note that URL "
 		      "data must be re-encoded via a separate tool. "
 		      "Please see the future Re-Encode URLs option. "
-		      "RSS, Rosetta, and the kernel will be deactivated."));
+		      "The kernel will be deactivated. "
+		      "Spot-On will be restarted after the "
+		      "process completes."));
 
       mb.setWindowIcon(windowIcon());
       mb.setWindowModality(Qt::ApplicationModal);
@@ -10083,6 +10087,8 @@ void spoton::slotSetPassphrase(void)
 		(m_sb, crypt.data(), m_crypts.value("chat", nullptr));
 	      spoton_crypt::removeFlawedEntries(crypt.data());
 	      QApplication::restoreOverrideCursor();
+	      restart();
+	      return;
 	    }
 
 	  QHashIterator<QString, spoton_crypt *> it(m_crypts);
