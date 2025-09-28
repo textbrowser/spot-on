@@ -13,6 +13,11 @@ else ifneq ($(SIMD), none)
     SIMD=auto
     CFLAGS+=-DNTRU_DETECT_SIMD
 else
+    MACHINE=$(shell uname -m)
+    ifeq ($(MACHINE), i386)
+    	 SIMD=auto
+	 CFLAGS+=-DNTRU_DETECT_SIMD
+    endif
 endif
 
 # use -march=native if SIMD=auto
