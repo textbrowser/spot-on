@@ -179,9 +179,15 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 	  this,
 	  SLOT(slotLaunchPrisonBluesProcessesIfNecessary(const bool)));
   connect(this,
-	  SIGNAL(processGPGMessage(const QByteArray &)),
+	  SIGNAL(processGPGMessageSignal(const QByteArray &,
+					 const QString &,
+					 const QString &,
+					 const bool)),
 	  this,
-	  SLOT(slotProcessGPGMessage(const QByteArray &)));
+	  SLOT(slotProcessedGPGMessage(const QByteArray &,
+				       const QString &,
+				       const QString &,
+				       const bool)));
   connect(this,
 	  SIGNAL(receivedGPGKeyBundle(const QByteArray &, const QString &)),
 	  this,
@@ -1352,6 +1358,119 @@ void spoton_rosetta::prisonBluesProcess(const bool pullOnly)
 #endif
 }
 
+void spoton_rosetta::processGPGMessage(const QByteArray &message)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  auto const index1 = message.indexOf(begin_pgp);
+  auto const index2 = message.indexOf(end_pgp);
+
+  if(index1 < 0 || index1 >= index2 || index2 < 0)
+    return;
+
+  QByteArray msg("");
+  auto from(tr("(Unknown)"));
+  auto signedMessage(tr("(Invalid Signature)"));
+  auto validSignature = false;
+  gpgme_ctx_t ctx = nullptr;
+  gpgme_error_t err = gpgme_new(&ctx);
+
+  if(err == GPG_ERR_NO_ERROR)
+    {
+      auto const data
+	(message.
+	 mid(index1, index2 - index1 + static_cast<int> (qstrlen(end_pgp))));
+      gpgme_data_t ciphertext = nullptr;
+      gpgme_data_t plaintext = nullptr;
+
+      gpgme_set_armor(ctx, 1);
+      err = gpgme_data_new(&plaintext);
+
+      if(err == GPG_ERR_NO_ERROR)
+	err = gpgme_data_new_from_mem
+	  (&ciphertext,
+	   data.constData(),
+	   static_cast<size_t> (data.length()),
+	   1);
+
+      if(err == GPG_ERR_NO_ERROR)
+	{
+	  err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
+	  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
+	}
+
+      if(err == GPG_ERR_NO_ERROR)
+	err = gpgme_op_decrypt_verify(ctx, ciphertext, plaintext);
+
+      if(err == GPG_ERR_NO_ERROR)
+	{
+	  if(gpgme_data_seek(plaintext, 0, SEEK_SET) == -1)
+	    {
+	      err = GPG_ERR_NO_DATA;
+	      goto release_label;
+	    }
+
+	  QByteArray bytes(4096, 0);
+	  ssize_t rc = 0;
+
+	  while
+	    ((rc = gpgme_data_read(plaintext,
+				   bytes.data(),
+				   static_cast<size_t> (bytes.length()))) > 0)
+	    msg.append(bytes.mid(0, static_cast<int> (rc)));
+
+	  msg = msg.trimmed();
+
+	  auto result = gpgme_op_verify_result(ctx);
+
+	  if(result)
+	    {
+	      auto signature = result->signatures;
+
+	      if(signature && signature->fpr)
+		{
+		  gpgme_key_t key = nullptr;
+
+		  if(gpgme_get_key(ctx, signature->fpr, &key, 0) ==
+		     GPG_ERR_NO_ERROR)
+		    {
+		      if(key->uids && key->uids->email)
+			{
+			  QByteArray f(key->uids->email);
+
+			  from = QString::fromUtf8(f.constData(), f.length());
+			}
+		      else
+			from = tr("(Unknown)");
+		    }
+		  else
+		    from = tr("(Unknown)");
+
+		  gpgme_key_unref(key);
+		}
+	      else
+		from = tr("(Unknown)");
+
+	      if((signature && (signature->summary & GPGME_SIGSUM_VALID)) ||
+		 (signature && !signature->summary))
+		{
+		  signedMessage = tr("(Signed)");
+		  validSignature = true;
+		}
+	    }
+	}
+
+    release_label:
+      gpgme_data_release(ciphertext);
+      gpgme_data_release(plaintext);
+    }
+
+  gpgme_release(ctx);
+  emit processGPGMessageSignal(msg, from, signedMessage, validSignature);
+#else
+  Q_UNUSED(message);
+#endif
+}
+
 void spoton_rosetta::publishAttachments
 (const QString &destination,
  const QString &participant,
@@ -1531,7 +1650,7 @@ void spoton_rosetta::readPrisonBlues
 
 		      if(bytes.startsWith(begin_pgp))
 			{
-			  emit processGPGMessage(bytes);
+			  processGPGMessage(bytes);
 			  file.remove();
 			}
 		      else if(bytes.startsWith(begin_spoton))
@@ -3396,180 +3515,78 @@ void spoton_rosetta::slotPrisonBluesTimeout(void)
   prisonBluesProcess(false);
 }
 
-void spoton_rosetta::slotProcessGPGMessage(const QByteArray &message)
+void spoton_rosetta::slotProcessedGPGMessage
+(const QByteArray &message,
+ const QString &from,
+ const QString &signedMessage,
+ const bool validSignature)
 {
   if(message.trimmed().isEmpty())
     return;
 
 #ifdef SPOTON_GPGME_ENABLED
-  auto const index1 = message.indexOf(begin_pgp);
-  auto const index2 = message.indexOf(end_pgp);
+  QString const tmp = qUtf8Printable
+    (QString::fromUtf8(message.constData(), message.length()));
 
-  if(index1 < 0 || index1 >= index2 || index2 < 0)
-    return;
-
-  QByteArray msg("");
-  auto from(tr("(Unknown)"));
-  auto signedMessage(tr("(Invalid Signature)"));
-  auto validSignature = false;
-  gpgme_ctx_t ctx = nullptr;
-  gpgme_error_t err = gpgme_new(&ctx);
-
-  if(err == GPG_ERR_NO_ERROR)
+  if(tmp.startsWith(s_status))
     {
-      auto const data
-	(message.
-	 mid(index1, index2 - index1 + static_cast<int> (qstrlen(end_pgp))));
-      gpgme_data_t ciphertext = nullptr;
-      gpgme_data_t plaintext = nullptr;
+      if(!validSignature)
+	return;
 
-      gpgme_set_armor(ctx, 1);
-      err = gpgme_data_new(&plaintext);
+      auto const list(tmp.mid(s_status.length()).split(','));
 
-      if(err == GPG_ERR_NO_ERROR)
-	err = gpgme_data_new_from_mem
-	  (&ciphertext,
-	   data.constData(),
-	   static_cast<size_t> (data.length()),
-	   1);
-
-      if(err == GPG_ERR_NO_ERROR)
+      if(list.size() == 2)
 	{
-	  err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
-	  gpgme_set_passphrase_cb(ctx, &gpgPassphrase, nullptr);
-	}
+	  for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
+	    if(ui.gpg_participants->item(i, 0) &&
+	       ui.gpg_participants->item(i, 1) &&
+	       ui.gpg_participants->item(i, 1)->text() == list.at(0))
+	      {
+		ui.gpg_participants->item(i, 0)->setData
+		  (Qt::ItemDataRole(Qt::UserRole + 1), list.at(1));
 
-      if(err == GPG_ERR_NO_ERROR)
-	err = gpgme_op_decrypt_verify(ctx, ciphertext, plaintext);
+		auto dateTime
+		  (QDateTime::fromString(list.at(1), "MMddyyyyhhmmss"));
 
-      if(err == GPG_ERR_NO_ERROR)
-	{
-	  if(gpgme_data_seek(plaintext, 0, SEEK_SET) == -1)
-	    {
-	      err = GPG_ERR_NO_DATA;
-	      goto release_label;
-	    }
+		if(spoton_misc::
+		   acceptableTimeSeconds(dateTime,
+					 spoton_common::
+					 ROSETTA_GPG_STATUS_TIME_DELTA))
+		  ui.gpg_participants->item(i, 0)->setIcon(onlineIcon());
+		else
+		  ui.gpg_participants->item(i, 0)->setIcon(offlineIcon());
 
-	  QByteArray bytes(4096, 0);
-	  ssize_t rc = 0;
-
-	  while
-	    ((rc = gpgme_data_read(plaintext,
-				   bytes.data(),
-				   static_cast<size_t> (bytes.length()))) > 0)
-	    msg.append(bytes.mid(0, static_cast<int> (rc)));
-
-	  msg = msg.trimmed();
-
-	  auto result = gpgme_op_verify_result(ctx);
-
-	  if(result)
-	    {
-	      auto signature = result->signatures;
-
-	      if(signature && signature->fpr)
-		{
-		  gpgme_key_t key = nullptr;
-
-		  if(gpgme_get_key(ctx, signature->fpr, &key, 0) ==
-		     GPG_ERR_NO_ERROR)
-		    {
-		      if(key->uids && key->uids->email)
-			{
-			  QByteArray f(key->uids->email);
-
-			  from = QString::fromUtf8(f.constData(), f.length());
-			}
-		      else
-			from = tr("(Unknown)");
-		    }
-		  else
-		    from = tr("(Unknown)");
-
-		  gpgme_key_unref(key);
-		}
-	      else
-		from = tr("(Unknown)");
-
-	      if((signature && (signature->summary & GPGME_SIGSUM_VALID)) ||
-		 (signature && !signature->summary))
-		{
-		  signedMessage = tr("(Signed)");
-		  validSignature = true;
-		}
-	    }
-	}
-
-    release_label:
-      gpgme_data_release(ciphertext);
-      gpgme_data_release(plaintext);
-    }
-
-  gpgme_release(ctx);
-
-  if(err == GPG_ERR_NO_ERROR && msg.length() > 0)
-    {
-      QString const tmp = qUtf8Printable
-	(QString::fromUtf8(msg.constData(), msg.length()));
-
-      if(tmp.startsWith(s_status))
-	{
-	  if(!validSignature)
-	    return;
-
-	  auto const list(tmp.mid(s_status.length()).split(','));
-
-	  if(list.size() == 2)
-	    {
-	      for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
-		if(ui.gpg_participants->item(i, 0) &&
-		   ui.gpg_participants->item(i, 1) &&
-		   ui.gpg_participants->item(i, 1)->text() == list.at(0))
-		  {
-		    ui.gpg_participants->item(i, 0)->setData
-		      (Qt::ItemDataRole(Qt::UserRole + 1), list.at(1));
-
-		    auto dateTime
-		      (QDateTime::fromString(list.at(1), "MMddyyyyhhmmss"));
-
-		    if(spoton_misc::
-		       acceptableTimeSeconds(dateTime,
-					     spoton_common::
-					     ROSETTA_GPG_STATUS_TIME_DELTA))
-		      ui.gpg_participants->item(i, 0)->setIcon(onlineIcon());
-		    else
-		      ui.gpg_participants->item(i, 0)->setIcon(offlineIcon());
-
-		    break;
-		  }
-	    }
-	}
-      else
-	{
-	  QString content("");
-	  auto const now(QDateTime::currentDateTime());
-
-	  content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]: ").
-	    arg(now.toString("MM")).
-	    arg(now.toString("dd")).
-	    arg(now.toString("yyyy")).
-	    arg(now.toString("hh")).
-	    arg(now.toString("mm")).
-	    arg(now.toString("ss"));
-	  content.append
-	    (QString("<font color=blue>%1 <b>%2</b>: </font>").
-	     arg(from).arg(signedMessage));
-	  content.append(tmp);
-	  content = m_parent &&
-	    m_parent->
-	    m_settings.value("gui/enableChatEmoticons", false).toBool() ?
-	    m_parent->mapIconToEmoticon(content) :
-	    content;
-	  ui.gpg_messages->append(content);
-	  ui.gpg_messages->verticalScrollBar()->setValue
-	    (ui.gpg_messages->verticalScrollBar()->maximum());
+		break;
+	      }
 	}
     }
+  else
+    {
+      QString content("");
+      auto const now(QDateTime::currentDateTime());
+
+      content = QString("[%1/%2/%3 %4:%5<font color=gray>:%6</font>]: ").
+	arg(now.toString("MM")).
+	arg(now.toString("dd")).
+	arg(now.toString("yyyy")).
+	arg(now.toString("hh")).
+	arg(now.toString("mm")).
+	arg(now.toString("ss"));
+      content.append
+	(QString("<font color=blue>%1 <b>%2</b>: </font>").
+	 arg(from).arg(signedMessage));
+      content.append(tmp);
+      content = m_parent &&
+	m_parent->m_settings.value("gui/enableChatEmoticons", false).toBool() ?
+	m_parent->mapIconToEmoticon(content) : content;
+      ui.gpg_messages->append(content);
+      ui.gpg_messages->verticalScrollBar()->setValue
+	(ui.gpg_messages->verticalScrollBar()->maximum());
+    }
+#else
+  Q_UNUSED(from);
+  Q_UNUSED(signedMessage);
+  Q_UNUSED(validSignature);
 #endif
 }
 

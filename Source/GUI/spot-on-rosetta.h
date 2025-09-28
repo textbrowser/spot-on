@@ -125,6 +125,7 @@ class spoton_rosetta: public QMainWindow
      const QList<QFileInfo> &list,
      const QStringList &fingerprints);
   void prisonBluesProcess(const bool pullOnly);
+  void processGPGMessage(const QByteArray &message);
   void publishAttachments
     (const QString &destination,
      const QString &participant,
@@ -171,7 +172,11 @@ class spoton_rosetta: public QMainWindow
   void slotParticipantAdded(const QString &type);
   void slotPopulateGPGEmailAddresses(void);
   void slotPrisonBluesTimeout(void);
-  void slotProcessGPGMessage(const QByteArray &message);
+  void slotProcessedGPGMessage
+    (const QByteArray &message,
+     const QString &from,
+     const QString &signedMessage,
+     const bool validSignature);
   void slotPublishGPG(void);
   void slotPullGPG(void);
   void slotReadPrisonBluesTimeout(void);
@@ -202,7 +207,11 @@ class spoton_rosetta: public QMainWindow
   void participantDeleted(const QString &oid, const QString &type);
   void participantNameChanged
     (const QByteArray &publicKeyHash, const QString &name);
-  void processGPGMessage(const QByteArray &message);
+  void processGPGMessageSignal
+    (const QByteArray &message,
+     const QString &from,
+     const QString &signedMessage,
+     const bool validSignature);
   void receivedGPGKeyBundle(const QByteArray &data, const QString &dump);
 };
 
