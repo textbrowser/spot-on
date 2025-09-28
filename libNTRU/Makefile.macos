@@ -13,7 +13,7 @@ else ifneq ($(SIMD), none)
     SIMD=auto
     CFLAGS+=-DNTRU_DETECT_SIMD
 else
-    MACHINE=$(shell uname -m)
+    MACHINE=$(shell uname -p)
     ifeq ($(MACHINE), i386)
     	 SIMD=auto
 	 CFLAGS+=-DNTRU_DETECT_SIMD
