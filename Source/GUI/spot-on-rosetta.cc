@@ -1688,8 +1688,11 @@ void spoton_rosetta::showMessage
     return;
 
   if(statusBar())
-    statusBar()->showMessage
-      (message.trimmed(), qBound(1000, milliseconds, 25000));
+    {
+      if(statusBar()->currentMessage().trimmed().isEmpty())
+	statusBar()->showMessage
+	  (message.trimmed(), qBound(1000, milliseconds, 25000));
+    }
   else
     {
       QMessageBox::critical

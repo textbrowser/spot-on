@@ -600,7 +600,7 @@ void spoton::launchPrisonBluesProcesses
        m_prisonBluesProcesses,
        pullOnly,
        m_crypts.value("chat", nullptr));
-  else if(statusBar)
+  else if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
     statusBar->showMessage
       (tr("The kernel is active and will be launching Prison Blues "
 	  "process(es)."),

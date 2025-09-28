@@ -4863,7 +4863,7 @@ void spoton_misc::launchPrisonBluesProcesses
 
 	  if(QFileInfo(script).isExecutable() == false)
 	    {
-	      if(statusBar)
+	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
 		{
 		  if(script.trimmed().isEmpty())
 		    statusBar->showMessage
@@ -4886,7 +4886,7 @@ void spoton_misc::launchPrisonBluesProcesses
 
 	  if(process->state() == QProcess::Running)
 	    {
-	      if(statusBar)
+	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
 		statusBar->showMessage
 		  (QObject::
 		   tr("The program %1 is already active. Ignoring.").
@@ -4906,7 +4906,7 @@ void spoton_misc::launchPrisonBluesProcesses
 
 	  if(process->waitForStarted(5000))
 	    {
-	      if(statusBar)
+	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
 		statusBar->showMessage
 		  (QObject::
 		   tr("The program %1 was started with a %2 request.").
@@ -4917,7 +4917,7 @@ void spoton_misc::launchPrisonBluesProcesses
 	    }
 	  else
 	    {
-	      if(statusBar)
+	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
 		statusBar->showMessage
 		  (QObject::tr("The program %1 did not start.").
 		   arg(process->program()),
