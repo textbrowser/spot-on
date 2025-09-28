@@ -46,6 +46,126 @@
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2025.09.28</u></h4>
+	  Welcome to the 2025.09.28 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>A super Blue-Balloon-Papa release!</li>
+	      <li>Added PostgreSQL and SQLite indices to the URL databases.
+		The new objects will decrease search times. Super blue and
+		super fast!</li>
+	      <li>Allow drag-and-drop file attachments on Rosetta and e-mail
+		attachments.</li>
+	      <li>Animated widgets; here and there and everywhere.</li>
+	      <li>Center progress dialogs.</li>
+	      <li>Confirm removal of GPG passphrase from the INI file;
+		Rosetta.</li>
+	      <li>Corrected ECC key generation via the OpenSSL executable. The
+		subject information must be properly enclosed.</li>
+	      <li>Corrected spoton_crypt::initializePrivateKeyContainer().
+		The atomic variable m_isMcEliece must be set to zero if
+		gcry_calloc_secure() fails.</li>
+	      <li>Correctly delete the private key in
+		spoton_crypt::freePrivateKey(). If GCrypt secure memory is
+		enabled, gcry_free() must be issued instead of free().</li>
+	      <li>Default of ECC keys in GPG key generation instead of RSA.
+	      </li>
+	      <li>Default path for the OpenSSL executable for FreeBSD, Linux,
+		MacOS, and OpenBSD in Options -> Settings -> OpenSSL Program.
+		New installations only.</li>
+	      <li>Denote processed Prison Blues messages in Rosetta.
+		Optional.</li>
+	      <li>Disable mouse-wheel events in Options. Some widgets retain
+		values which are modified via mouse-wheel events. Such events
+		are difficult to notice during scroll events.</li>
+	      <li>Display key information for GPG participants in Rosetta.</li>
+	      <li>Do not display Base-64 information in Settings -> Public Keys
+		for empty entries.</li>
+	      <li>Execute, if present, gpgme_check_version() in the Rosetta
+		constructor. Removed all other instances.</li>
+	      <li>Fifteen years of Spot-On!</li>
+	      <li>GCrypt 1.11.2; Windows.</li>
+	      <li>GCrypt's minimum secure memory is now 15000 bytes.</li>
+	      <li>GPG attachments in Rosetta. The GPG program must be available
+		locally. Decrypted attachments are recorded in the Spot-On
+		home directory (.spot-on/Rosetta-GPG).</li>
+	      <li>GPG-application support in Rosetta. The new process
+		allows for the creation of custom GPG keys. Generated keys
+		will be placed in the local key ring.</li>
+	      <li>Include GPGME_DELETE_ALLOW_SECRET in
+		gpgme_op_delete_ext().</li>
+	      <li>Improved spoton_crypt::removeFlawedEntries() by detecting
+		an entry's identifier. If the identifier is not known,
+		delete the respective entry from idiotes.db.</li>
+	      <li>Improved text in a Rosetta confirmation prompt(s).</li>
+	      <li>Increased the minimum Generator Stream Size in the SMP
+		Window to 768.</li>
+	      <li>Independence from techno-feudalism.</li>
+	      <li>Initialize an SMP container if a participant receives
+		an SMP-verification request.</li>
+	      <li>Inspect the results of gpgme_data_seek().</li>
+	      <li>Launch a kernel process and set its working directory as
+		.spot-on (or the official Spot-On directory). MacOS non-bundled
+		kernels will be ignored.</li>
+	      <li>New GIT Messages column in the Chat page.</li>
+	      <li>New Options -> Miscellaneous -> PREFERRED_HASH_ALGORITHM.
+	      </li>
+	      <li>New Options -> Miscellaneous ->
+		SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE.</li>
+	      <li>New Options -> OpenSSL Program Arguments.</li>
+	      <li>OpenSSL 3.5.2; Windows</li>
+	      <li>Optional status messages in Rosetta -> GPG Messaging.</li>
+	      <li>Optionally-import new GPG keys into Spot-On via New GPG
+		Keys.</li>
+	      <li>Optionally-share presence via GIT in Rosetta. Status messages
+		are gathered in separate tasks.</li>
+	      <li>Prefer container iterators (QHashIterator, etc.);
+		memory and performance.</li>
+	      <li>Prevent duplicate e-mail attachments.</li>
+	      <li>Prison Blues Key Exchange via GIT (PB-KEG)!</li>
+	      <li>Prison Blues messages are now processed in separate tasks.
+		GPG passphrase prompts will not be displayed!</li>
+	      <li>QAudioOutput and Qt 6: retain the QAudioOutput object in an
+		intelligent pointer. Otherwise, memory will be lost.</li>
+	      <li>Qt 6.8.3 LTS on MacOS.</li>
+	      <li>Qt 6.8.3 LTS on Windows.</li>
+	      <li>Qt 6: QAudioOutput has a maximum volume of 1.0.</li>
+	      <li>Remove temporary message files generated in Rosetta if
+		extreme errors occur.</li>
+	      <li>Removed the "GIT message(s)." check box from the Chat
+		page.</li>
+	      <li>Removed the kernel option --disable-ui-server as the server
+		is required for the separate Web processes.</li>
+	      <li>Renamed INI keys:
+		gui/chat_time_delta -> gui/chatTimeDelta,
+		gui/gpg_passphrase -> gui/gpgPassphrase.</li>
+	      <li>Replaced GPGME_SIGSUM_GREEN with GPGME_SIGSUM_VALID in
+		Rosetta.</li>
+	      <li>Replaced QDateTime::currentDateTime().toSecsSinceEpoch() with
+		QDateTime::currentSecsSinceEpoch() for Qt 6 and newer.</li>
+	      <li>Restart Spot-On after a re-encoding process.</li>
+	      <li>Retain Rosetta -> GPG Messaging -> Sign messages.</li>
+	      <li>Retain the current Rosetta GPG E-Mail Address widget
+		values.</li>
+	      <li>Retain the current Rosetta tab index in the INI file.</li>
+	      <li>Rosetta GPG e-mail names must not be modified as the
+		respective
+		GPG key bundles contain the original e-mail names.</li>
+	      <li>Rosetta GPG: sign via the selected e-mail's signature key
+		instead of the default signature key.</li>
+	      <li>Sound files are now included in the application. The Sounds
+		directory will not be distributed.</li>
+	      <li>Terminate Fortuna loop in process_device() for QFile
+		device.</li>
+	      <li>The Rosetta GPG Import window is now part of the Rosetta
+		page.</li>
+	      <li>The Web server now launches separate processes! Please
+		prepare	URLs -> Spot-On-Web-Server-Child Executable Absolute
+		Name!</li>
+	      <li>The first beautiful LTS release of 2025!</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2025.05.12</u></h4>
 	  Welcome to the 2025.05.12 release of Spot-On. Corrections and
 	  new features are detailed below.
