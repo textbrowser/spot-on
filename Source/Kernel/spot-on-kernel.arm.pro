@@ -10,7 +10,8 @@ LANGUAGE = C++
 QT	 += concurrent network sql widgets
 
 qtHaveModule(websockets) {
-QT += websockets
+DEFINES += SPOTON_WEBSOCKETS_ENABLED
+QT      += websockets
 }
 
 qtHaveModule(bluetooth) {
@@ -25,8 +26,7 @@ DEFINES += QT_DEPRECATED_WARNINGS \
            SPOTON_LINKED_WITH_LIBPTHREAD \
            SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
-           SPOTON_SCTP_ENABLED \
-	   SPOTON_WEBSOCKETS_ENABLED
+           SPOTON_SCTP_ENABLED
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
