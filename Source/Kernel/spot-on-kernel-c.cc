@@ -652,7 +652,12 @@ void spoton_kernel::writePrisonBluesChat
 	    Q_UNUSED(file.fileName()); // Prevents removal of file.
 	    file.setAutoRemove(false);
 	    state = true;
-	    stream << message << Qt::endl;
+	    stream << message;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
+	    stream << Qt::endl;
+#else
+	    stream << endl;
+#endif
 	  }
       }
 
