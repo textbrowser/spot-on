@@ -87,7 +87,6 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
-                          -Wdangling-reference \
                           -Wdouble-promotion \
                           -Werror \
                           -Wextra \
