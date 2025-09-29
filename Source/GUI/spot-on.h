@@ -30,7 +30,9 @@
 
 #include <QApplication>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
 #include <QAudioOutput>
+#endif
 #endif
 #include <QCheckBox>
 #include <QClipboard>
@@ -47,7 +49,9 @@
 #include <QLineEdit>
 #include <QLocale>
 #include <QMainWindow>
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
 #include <QMediaPlayer>
+#endif
 #include <QMessageBox>
 #include <QMouseEvent>
 #ifdef Q_OS_WINDOWS
@@ -534,7 +538,9 @@ class spoton: public QMainWindow
   QPointer<spoton_rosetta> m_rosetta;
   QPointer<spoton_status_activity> m_statusActivity;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
   QScopedPointer<QAudioOutput> m_audioOutput;
+#endif
 #endif
   QSet<QString> m_urlPrefixes;
   QSqlDatabase m_urlDatabase;
@@ -906,9 +912,11 @@ class spoton: public QMainWindow
   void slotMaximumClientsChanged(int index);
   void slotMaximumEmailFileSizeChanged(int value);
   void slotMaximumUrlKeywordsChanged(int value);
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
   void slotMediaError(QMediaPlayer::Error error);
   void slotMediaError(QMediaPlayer::Error error, const QString &errorString);
   void slotMediaStatusChanged(QMediaPlayer::MediaStatus status);
+#endif
   void slotMessagesAnchorClicked(const QUrl &link);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotMonitorEvents(bool state);

@@ -27,7 +27,9 @@
 
 #include <QApplication>
 #include <QDateTime>
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
 #include <QMediaPlayer>
+#endif
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QSettings>
@@ -349,6 +351,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 
  done_label:
 
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
   if(error.isEmpty())
     {
       auto player = findChild<QMediaPlayer *> ();
@@ -373,6 +376,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 	  player->play();
 	}
     }
+#endif
 
   if(!error.isEmpty())
     {

@@ -30,7 +30,9 @@
 
 #include <QApplication>
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
 #include <QAudioOutput>
+#endif
 #endif
 #include <QIcon>
 #include <QPointer>
@@ -66,7 +68,9 @@ class spoton_chatwindow: public QMainWindow
   QPointer<QSslSocket> m_kernelSocket;
   QPointer<spoton> m_parent;
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
   QScopedPointer<QAudioOutput> m_audioOutput;
+#endif
 #endif
   QString m_id;
   QString m_keyType;

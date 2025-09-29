@@ -16,6 +16,12 @@ LIBS    += -lgpgme
 message("GPGME enabled!")
 }
 
+qtHaveModule(multimedia) {
+DEFINES += SPOTON_MULTIMEDIA_SUPPORTED
+QT      += multimedia
+message("Qt's multimedia module discovered!")
+}
+
 DEFINES	+= QT_DEPRECATED_WARNINGS
 
 FORMS = UI/spot-on-adaptive-echo-prompt.ui \

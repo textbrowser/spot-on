@@ -3048,6 +3048,13 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.play_sounds->setToolTip
     (tr("Be careful! Qt 6 and newer may cause abnormal terminations."));
 #endif
+#ifndef SPOTON_MULTIMEDIA_SUPPORTED
+  m_optionsUi.play_sounds->setChecked(false);
+  m_optionsUi.play_sounds->setEnabled(false);
+  m_optionsUi.play_sounds->setToolTip
+    (tr("This option is disabled because Qt's multimedia module was not "
+	"present during the creation of %1.").arg(SPOTON_APPLICATION_NAME));
+#endif
   m_ui.hideOfflineParticipants->setChecked
     (m_settings.value("gui/hideOfflineParticipants", false).toBool());
   m_ui.kernelLogEvents->setChecked

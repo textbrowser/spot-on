@@ -1,3 +1,8 @@
+qtHaveModule(multimedia) {
+DEFINES += SPOTON_MULTIMEDIA_SUPPORTED
+QT      += multimedia
+}
+
 FORMS = UI\\spot-on-adaptive-echo-prompt.ui \
         UI\\spot-on-buzzpage.ui \
         UI\\spot-on-chatwindow.ui \

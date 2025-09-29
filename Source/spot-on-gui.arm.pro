@@ -19,10 +19,6 @@ QT      += bluetooth
 message("Bluetooth enabled!")
 }
 
-qtHaveModule(multimedia) {
-QT += multimedia
-}
-
 qtHaveModule(webenginewidgets) {
 DEFINES += SPOTON_WEBENGINE_ENABLED
 QT      += webenginewidgets

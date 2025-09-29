@@ -608,6 +608,7 @@ void spoton::initializeUrlDistillers(void)
 
 void spoton::playSound(const QString &name)
 {
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
   auto player = findChild<QMediaPlayer *> ();
 
   if(player)
@@ -643,6 +644,9 @@ void spoton::playSound(const QString &name)
 	  this,
 	  SLOT(slotMediaStatusChanged(QMediaPlayer::MediaStatus)));
   player->play();
+#else
+  Q_UNUSED(name);
+#endif
 }
 
 void spoton::populatePoptasticWidgets(const QHash<QString, QVariant> &hash)
@@ -1438,6 +1442,7 @@ void spoton::slotLaunchKernelAfterAuthentication(bool state)
   settings.setValue("gui/launchKernelAfterAuth", state);
 }
 
+#ifdef SPOTON_MULTIMEDIA_SUPPORTED
 void spoton::slotMediaError(QMediaPlayer::Error error)
 {
   auto player = qobject_cast<QMediaPlayer *> (sender());
@@ -1473,6 +1478,7 @@ void spoton::slotMediaStatusChanged(QMediaPlayer::MediaStatus status)
   if(status == QMediaPlayer::EndOfMedia)
     player->deleteLater();
 }
+#endif
 
 void spoton::slotOntopChatDialogs(bool state)
 {

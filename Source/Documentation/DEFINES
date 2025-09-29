@@ -48,6 +48,10 @@ SPOTON_MCELIECE_ENABLED
 
 Enable if McEliece is desired. Requires the NTL library.
 
+SPOTON_MULTIMEDIA_SUPPORTED
+
+Defined if Qt's multimedia module is present.
+
 SPOTON_POPTASTIC_SUPPORTED
 
 Enable Poptastic.
