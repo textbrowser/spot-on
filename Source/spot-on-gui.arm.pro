@@ -8,11 +8,9 @@ CONFIG		+= qt release warn_on
 LANGUAGE	= C++
 QT		+= concurrent \
                    gui \
-                   multimedia \
                    network \
                    printsupport \
                    sql \
-                   websockets \
                    widgets
 
 qtHaveModule(bluetooth) {
@@ -21,9 +19,17 @@ QT += bluetooth
 message("Bluetooth enabled!")
 }
 
+qtHaveModule(multimedia) {
+QT += multimedia
+}
+
 qtHaveModule(webenginewidgets) {
 DEFINES += SPOTON_WEBENGINE_ENABLED
 QT += webenginewidgets
+}
+
+qtHaveModule(websockets) {
+QT += websockets
 }
 
 DEFINES	+= SPOTON_DATELESS_COMPILATION \
