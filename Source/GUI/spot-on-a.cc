@@ -245,7 +245,9 @@ int main(int argc, char *argv[])
   qInstallMessageHandler(qt_message_handler);
   QCoreApplication::setApplicationName("SpotOn");
   QCoreApplication::setApplicationVersion(SPOTON_VERSION_STRING);
+#if QT_VERSION >= 0x050700
   QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
+#endif
 #ifdef Q_OS_MACOS
   QCoreApplication::setAttribute
     (Qt::AA_DontUseNativeMenuBar,
