@@ -1,5 +1,5 @@
 Architecture: arm64
-Depends: libcurl3-gnutls,
+Depends: libcurl4-gnutls,
 	 libgcrypt20,
 	 libgeoip1,
 	 libgmp10,
