@@ -368,6 +368,7 @@ Completed Items
 255.   Drag-and-drop attachments.
 256.   Increase the hash key size parameter in spoton_crypt::derivedKeys()
        from 256 to 512.
+257.   Re-encode and Rosetta processes.
 
 Remaining Items
 
@@ -379,4 +380,3 @@ Remaining Items
 6.     QString::arg() with comma separators.
 7.     Remove HTML tags from local Web results.
 8.     Web server on Windows. Very difficult.
-9.     Re-encode and Rosetta processes.
