@@ -60,7 +60,6 @@ QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH	+= . \
                    ../. \
-                   ../../. \
                    ../../libNTL/unix.d/include \
                    /usr/include/postgresql
 LIBS		+= -L../../libNTL/unix.d/src/.libs \

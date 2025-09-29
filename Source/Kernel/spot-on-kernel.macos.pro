@@ -65,7 +65,7 @@ exists(/usr/local/lib) {
 LIBS += -L/usr/local/lib
 }
 
-INCLUDEPATH	  += . ../. ../../.
+INCLUDEPATH	  += . ../.
 LIBS		  += -L../../libNTRU \
                      -framework Cocoa \
                      -lcrypto \

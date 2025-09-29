@@ -95,7 +95,7 @@ QMAKE_CXXFLAGS_RELEASE += -Wstrict-overflow=1
 QMAKE_CXXFLAGS_RELEASE -= -Wstrict-overflow=5
 }
 
-INCLUDEPATH += . ../. ../../.
+INCLUDEPATH += . ../.
 LIBS	    += -L../../libNTRU \
                -lcrypto \
                -lgcrypt \

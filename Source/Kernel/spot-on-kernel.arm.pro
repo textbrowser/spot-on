@@ -63,7 +63,6 @@ QMAKE_LFLAGS_RPATH     =
 
 INCLUDEPATH    += . \
                    ../. \
-                   ../../. \
                    /usr/include/postgresql
 LIBS	       += -L../../libNTRU \
                   -lcrypto \

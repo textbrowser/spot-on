@@ -55,7 +55,6 @@ QMAKE_EXTRA_TARGETS    = libntru purge
 
 INCLUDEPATH    += . \
                   ../. \
-                  ../../. \
                   /usr/local/include/postgresql
 LIBS	       += -L../../libNTRU \
                   -L/usr/local/lib \
