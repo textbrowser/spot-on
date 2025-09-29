@@ -29,7 +29,7 @@ fi
 lupdate spot-on.arm.pro 2>/dev/null
 lrelease spot-on.arm.pro 2>/dev/null
 make -j $(nproc)
-cp -p ../../libNTRU/libntru.so ./opt/spot-on/Lib/.
+cp -p ../libNTRU/libntru.so ./opt/spot-on/Lib/.
 cp -p ./Data/spot-on-neighbors.txt ./opt/spot-on/.
 cp -p ./Icons/Logo/spot-on-logo.png ./opt/spot-on/.
 cp -p ./SQL/* ./opt/spot-on/SQL/.
