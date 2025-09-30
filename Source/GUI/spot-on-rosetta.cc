@@ -1476,7 +1476,10 @@ void spoton_rosetta::publishAttachments
  const QString &participant,
  const QStringList &attachments)
 {
-  if(attachments.isEmpty() || destination.isEmpty() || participant.isEmpty())
+  if(attachments.isEmpty() ||
+     destination.isEmpty() ||
+     m_parent == nullptr ||
+     participant.isEmpty())
     return;
 
   QFileInfo const fileInfo
@@ -3675,7 +3678,7 @@ void spoton_rosetta::slotPullGPG(void)
 
 void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 {
-  if(m_readPrisonBluesFuture.isFinished() && m_parent)
+  if(m_parent && m_readPrisonBluesFuture.isFinished())
     {
       QByteArray passphrase;
       auto crypt = m_parent->crypts().value("chat", nullptr);
@@ -4039,7 +4042,9 @@ void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
 {
   Q_UNUSED(originEmail);
 
-  if(data.trimmed().isEmpty() || fingerprint.trimmed().isEmpty())
+  if(data.trimmed().isEmpty() ||
+     fingerprint.trimmed().isEmpty() ||
+     m_parent == nullptr)
     return;
 
   auto const list(m_parent->prisonBluesDirectories());
