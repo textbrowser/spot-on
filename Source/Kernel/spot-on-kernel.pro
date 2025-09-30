@@ -109,7 +109,7 @@ LIBS += -lGeoIP
 }
 
 exists(/usr/include/NTL) {
-LIBS += -lntl
+LIBS += -lgmp -lntl
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
@@ -118,7 +118,7 @@ LIBS        += -lpq
 }
 
 exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
-LIBS            += -lcurl
+LIBS += -lcurl
 }
 
 MOC_DIR        = Temporary/moc

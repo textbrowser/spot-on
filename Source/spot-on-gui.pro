@@ -112,37 +112,37 @@ QMAKE_CXXFLAGS_RELEASE -= -Wredundant-decls \
                           -Wstrict-overflow=5
 }
 
-INCLUDEPATH	+= . ../. GUI
-LIBS		+= -L../libNTRU \
-                   -lcrypto \
-                   -lgcrypt \
-                   -lgpg-error \
-                   -lntru \
-                   -lpthread \
-                   -lssl
+INCLUDEPATH += . ../. GUI
+LIBS	    += -L../libNTRU \
+               -lcrypto \
+               -lgcrypt \
+               -lgpg-error \
+               -lntru \
+               -lpthread \
+               -lssl
 
 exists(/usr/include/GeoIP.h) {
-LIBS            += -lGeoIP
+LIBS += -lGeoIP
 }
 
 exists(/usr/include/NTL) {
-LIBS            += -lntl
+LIBS += -lgmp -lntl
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
-INCLUDEPATH     += /usr/include/postgresql
-LIBS            += -lpq
+INCLUDEPATH += /usr/include/postgresql
+LIBS        += -lpq
 }
 
 exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
-LIBS            += -lcurl
+LIBS += -lcurl
 }
 
-MOC_DIR         = Temporary/moc
-OBJECTS_DIR     = Temporary/obj
-PRE_TARGETDEPS  = libntru.so
-PROJECTNAME	= Spot-On
-RCC_DIR         = Temporary/rcc
-TARGET		= Spot-On
-TEMPLATE	= app
-UI_DIR          = Temporary/ui
+MOC_DIR        = Temporary/moc
+OBJECTS_DIR    = Temporary/obj
+PRE_TARGETDEPS = libntru.so
+PROJECTNAME    = Spot-On
+RCC_DIR        = Temporary/rcc
+TARGET	       = Spot-On
+TEMPLATE       = app
+UI_DIR         = Temporary/ui
