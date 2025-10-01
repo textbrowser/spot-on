@@ -2950,8 +2950,10 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
 	  if(buffer)
 	    {
-	      if(gcry_sexp_sprint(key_t, GCRYSEXP_FMT_ADVANCED,
-				  buffer, length) == 0)
+	      if(gcry_sexp_sprint(key_t,
+				  GCRYSEXP_FMT_ADVANCED,
+				  buffer,
+				  length) == 0)
 		{
 		  error = QObject::tr("gcry_sexp_sprint() failure");
 		  spoton_misc::logError
