@@ -41,7 +41,7 @@ QByteArray spoton_crypt::publicKeyDecryptNTRU(const QByteArray &data, bool *ok)
      static_cast<uint> (m_publicKey.length()) <= qstrlen("ntru-public-key-"))
     {
       spoton_misc::logError
-	("spoton_crypt::publicKeyDecryptNTRU(): something peculiar!");
+	("spoton_crypt::publicKeyDecryptNTRU(): something is peculiar!");
       return QByteArray();
     }
 
