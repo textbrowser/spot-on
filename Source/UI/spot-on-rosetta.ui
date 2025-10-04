@@ -114,7 +114,7 @@
          <x>0</x>
          <y>0</y>
          <width>1090</width>
-         <height>662</height>
+         <height>691</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -759,8 +759,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1027</width>
-                    <height>792</height>
+                    <width>1026</width>
+                    <height>692</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1053,30 +1053,23 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QLabel" name="attachments_label">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string>Attachments Label</string>
-                       </property>
-                       <property name="wordWrap">
-                        <bool>true</bool>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <layout class="QHBoxLayout" name="horizontalLayout_51">
                        <property name="spacing">
                         <number>5</number>
                        </property>
                        <item>
-                        <widget class="QLabel" name="label_8">
+                        <widget class="QLabel" name="attachments_label">
+                         <property name="sizePolicy">
+                          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                           <horstretch>0</horstretch>
+                           <verstretch>0</verstretch>
+                          </sizepolicy>
+                         </property>
                          <property name="text">
-                          <string>Attachments</string>
+                          <string>Attachments Label</string>
+                         </property>
+                         <property name="wordWrap">
+                          <bool>true</bool>
                          </property>
                         </widget>
                        </item>
@@ -1087,6 +1080,12 @@
                            <horstretch>0</horstretch>
                            <verstretch>0</verstretch>
                           </sizepolicy>
+                         </property>
+                         <property name="maximumSize">
+                          <size>
+                           <width>16777215</width>
+                           <height>50</height>
+                          </size>
                          </property>
                          <property name="toolTip">
                           <string>Click an attachment to remove it.</string>
@@ -1347,7 +1346,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>34</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Edit">
