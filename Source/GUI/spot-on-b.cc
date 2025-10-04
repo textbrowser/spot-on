@@ -6923,6 +6923,7 @@ void spoton::slotSetIcons(int index)
   m_sb.errorlog->setIcon(QIcon(QString(":/%1/information.png").arg(iconSet)));
   m_sb.forward_secrecy_request->setIcon
     (QIcon(QString(":/%1/key.png").arg(iconSet)));
+  m_sb.lock->setIcon(QIcon(QString(":/%1/lock.png").arg(iconSet)));
 
   // Tab
 

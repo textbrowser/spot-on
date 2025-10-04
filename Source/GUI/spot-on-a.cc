@@ -2666,6 +2666,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (QIcon(QString(":/%1/status-offline.png").
 	   arg(m_settings.value("gui/iconSet", "nouve").toString().
 	       toLower())));
+  m_sb.lock->setIcon
+    (QIcon(QString(":/%1/lock.png").
+	   arg(m_settings.value("gui/iconSet", "nouve").toString().
+	       toLower())));
   m_sb.neighbors->setIcon
     (QIcon(QString(":/%1/status-offline.png").
 	   arg(m_settings.value("gui/iconSet", "nouve").toString().

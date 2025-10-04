@@ -154,50 +154,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="down">
-        <property name="maximumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="../Icons/icons.qrc">:/generic/down.png</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="up">
-        <property name="maximumSize">
-         <size>
-          <width>32</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="pixmap">
-         <pixmap resource="../Icons/icons.qrc">:/generic/up.png</pixmap>
-        </property>
-        <property name="scaledContents">
-         <bool>true</bool>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="lock">
         <property name="toolTip">
          <string>Lock the application. Similar to a screen saver.</string>
-        </property>
-        <property name="text">
-         <string>Lock</string>
         </property>
        </widget>
       </item>
@@ -212,6 +171,32 @@
         <property name="icon">
          <iconset resource="../Icons/icons.qrc">
           <normaloff>:/generic/poptastic.png</normaloff>:/generic/poptastic.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="down">
+        <property name="pixmap">
+         <pixmap resource="../Icons/icons.qrc">:/generic/down.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="up">
+        <property name="pixmap">
+         <pixmap resource="../Icons/icons.qrc">:/generic/up.png</pixmap>
+        </property>
+        <property name="scaledContents">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
