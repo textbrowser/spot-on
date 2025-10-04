@@ -1517,6 +1517,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveSharePrivateKeys(bool)));
+  connect(m_optionsUi.share_git,
+	  SIGNAL(toggled(bool)),
+	  this,
+	  SLOT(slotCheckboxToggled(bool)));
   connect(m_optionsUi.sslControlString,
 	  SIGNAL(editingFinished(void)),
 	  this,
@@ -2599,24 +2603,25 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("kernel/cachePurgeInterval", 15.00).toDouble());
   m_optionsUi.kernelUpdateInterval->setValue
     (m_settings.value("gui/kernelUpdateTimer", 3.50).toDouble());
-  m_optionsUi.listenersUpdateInterval->setValue
-    (m_settings.value("gui/listenersUpdateTimer", 3.50).toDouble());
-  m_optionsUi.neighborsUpdateInterval->setValue
-    (m_settings.value("gui/neighborsUpdateTimer", 3.50).toDouble());
-  m_optionsUi.starbeamUpdateInterval->setValue
-    (m_settings.value("gui/starbeamUpdateTimer", 3.50).toDouble());
-  m_optionsUi.searchResultsPerPage->setValue
-    (m_settings.value("gui/searchResultsPerPage", 10).toInt());
-  m_optionsUi.maximum_url_keywords_interface->setValue
-    (m_settings.value("gui/maximum_url_keywords_import_interface", 50).
-     toInt());
-  m_optionsUi.maximum_url_keywords_kernel->setValue
-    (m_settings.value("gui/maximum_url_keywords_import_kernel", 50).toInt());
   m_optionsUi.kernel_url_batch_size->setValue
     (m_settings.value("gui/kernel_url_batch_size", 5).toInt());
+  m_optionsUi.listenersUpdateInterval->setValue
+    (m_settings.value("gui/listenersUpdateTimer", 3.50).toDouble());
+  m_optionsUi.maximum_url_keywords_interface->setValue
+    (m_settings.value("gui/maximum_url_keywords_import_interface", 50).toInt());
+  m_optionsUi.maximum_url_keywords_kernel->setValue
+    (m_settings.value("gui/maximum_url_keywords_import_kernel", 50).toInt());
+  m_optionsUi.neighborsUpdateInterval->setValue
+    (m_settings.value("gui/neighborsUpdateTimer", 3.50).toDouble());
   m_optionsUi.postgresql_kernel_url_distribution_timeout->setValue
     (m_settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
      toInt());
+  m_optionsUi.searchResultsPerPage->setValue
+    (m_settings.value("gui/searchResultsPerPage", 10).toInt());
+  m_optionsUi.share_git->setChecked
+    (m_settings.value("gui/share_git", false).toBool());
+  m_optionsUi.starbeamUpdateInterval->setValue
+    (m_settings.value("gui/starbeamUpdateTimer", 3.50).toDouble());
   m_optionsUi.tear_off_menus->setChecked
     (m_settings.value("gui/tear_off_menus", true).toBool());
   m_optionsUi.terminate_kernel_on_ui_exit->setChecked

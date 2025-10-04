@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1599</y>
+         <y>-4594</y>
          <width>769</width>
-         <height>5318</height>
+         <height>5350</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -676,6 +676,13 @@
               <string>GIT</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QCheckBox" name="share_git">
+                <property name="text">
+                 <string>Share messages with an active kernel.</string>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QLabel" name="label_38">
                 <property name="text">
@@ -3211,6 +3218,7 @@
   <tabstop>refreshEmail</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
+  <tabstop>share_git</tabstop>
   <tabstop>git_table</tabstop>
   <tabstop>apply_git</tabstop>
   <tabstop>select_git</tabstop>

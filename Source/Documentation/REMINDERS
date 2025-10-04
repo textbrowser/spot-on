@@ -373,10 +373,9 @@ Completed Items
 Remaining Items
 
 1.     Include destination and origin digests in credential bundles.
-2.     Prison Blues remote server for non-Unix.
-3.     Log translated errors in spoton_crypt.
-4.     Qt 6 and audio may die.
-5.     Neighbors as separate processes.
-6.     QString::arg() with comma separators.
-7.     Remove HTML tags from local Web results.
-8.     Web server on Windows. Very difficult.
+2.     Log translated errors in spoton_crypt.
+3.     Qt 6 and audio may die.
+4.     Neighbors as separate processes.
+5.     QString::arg() with comma separators.
+6.     Remove HTML tags from local Web results.
+7.     Web server on Windows. Very difficult.

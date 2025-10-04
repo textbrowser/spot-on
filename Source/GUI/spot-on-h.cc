@@ -1041,6 +1041,15 @@ void spoton::slotBehaveAsHumanProxy(bool state)
   m_settings["gui/human_proxy"] = state;
 }
 
+void spoton::slotCheckboxToggled(bool state)
+{
+  if(m_optionsUi.share_git == sender())
+    {
+      QSettings().setValue("gui/share_git", state);
+      m_settings["gui/share_git"] = state;
+    }
+}
+
 void spoton::slotDisableOptionsWheelEvents(void)
 {
   foreach(auto widget, m_optionsWindow->findChildren<QWidget *> ())
