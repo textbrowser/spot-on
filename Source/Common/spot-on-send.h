@@ -131,6 +131,10 @@ class spoton_send
   static QByteArray message0091b
     (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
+  static QByteArray messageGPG
+    (const QByteArray &fingerprint,
+     const QByteArray &message,
+     const QPair<QByteArray, QByteArray> &adaptiveEchoPair);
   static QByteArray messageXYZ
     (const QByteArray &message,
      const QPair<QByteArray, QByteArray> &adaptiveEchoPair);

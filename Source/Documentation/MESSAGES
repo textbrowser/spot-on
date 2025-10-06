@@ -745,3 +745,18 @@ EOL
 	    Preceding Data and Encrypted Timestamp,
 	    Encrypted Timestamp (Base-64)
 }
+
+Prison Blues
+
+Groups: 2
+{
+	0 - 0105
+	1 - GPG Message
+	2 - GPG Fingerprint
+}
+EOL
+{
+	0 - Keyed (Adaptive Echo Digest Key) Message Code of the
+	    Preceding Data and Encrypted Timestamp,
+	    Encrypted Timestamp (Base-64)
+}

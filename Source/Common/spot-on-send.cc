@@ -43,8 +43,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
   if(!adaptiveEchoPair.first.isEmpty() && !adaptiveEchoPair.second.isEmpty())
     {
       auto timestamp
-	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
-	 toLatin1());
+	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toLatin1());
       auto const length = static_cast<int>
 	(spoton_crypt::cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm()));
@@ -60,8 +59,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
       timestamp = crypt.encrypted(timestamp, &ok);
 
       if(ok)
-	authenticated = crypt.keyedHash(message + timestamp, &ok) +
-	  timestamp;
+	authenticated = crypt.keyedHash(message + timestamp, &ok) + timestamp;
     }
   else
     ok = false;
@@ -69,7 +67,8 @@ QByteArray spoton_send::adaptiveEchoAuthentication
   if(ok)
     authenticated = message + "\n" + authenticated.toBase64();
   else
-    authenticated = message + "\n" +
+    authenticated = message +
+      "\n" +
       spoton_crypt::weakRandomBytes(100).toBase64(); /*
 						     ** 64 (hash) +
 						     ** 14 (timestamp) +
@@ -115,8 +114,7 @@ QByteArray spoton_send::message0000
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -154,8 +152,7 @@ QByteArray spoton_send::message0000a
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -193,8 +190,7 @@ QByteArray spoton_send::message0000b
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -232,8 +228,7 @@ QByteArray spoton_send::message0000d
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -255,10 +250,8 @@ QByteArray spoton_send::message0001a
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -290,10 +283,8 @@ QByteArray spoton_send::message0001b
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -325,10 +316,8 @@ QByteArray spoton_send::message0001c
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -350,10 +339,8 @@ QByteArray spoton_send::message0002a
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -375,10 +362,8 @@ QByteArray spoton_send::message0002b
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -413,10 +398,8 @@ QByteArray spoton_send::message0011(const QByteArray &keyType,
   results.replace
     ("%1",
      QByteArray::number(content.length() +
-			QString("type=0011&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", content);
+			QString("type=0011&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", content);
   return results;
 }
 
@@ -435,8 +418,7 @@ QByteArray spoton_send::message0012(const QByteArray &message)
     ("%1",
      QByteArray::number(message.length() +
 			QString("type=0012&content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", message);
+  results.replace("%2", message);
   return results;
 }
 
@@ -469,8 +451,7 @@ QByteArray spoton_send::message0013
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -489,8 +470,7 @@ QByteArray spoton_send::message0014(const QByteArray &message)
     ("%1",
      QByteArray::number(message.toBase64().length() +
 			QString("type=0014&content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", message.toBase64());
+  results.replace("%2", message.toBase64());
   return results;
 }
 
@@ -509,8 +489,7 @@ QByteArray spoton_send::message0030(const QByteArray &message)
     ("%1",
      QByteArray::number(message.length() +
 			QString("type=0030&content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", message);
+  results.replace("%2", message);
   return results;
 }
 
@@ -541,10 +520,8 @@ QByteArray spoton_send::message0030(const QBluetoothAddress &address,
   results.replace
     ("%1",
      QByteArray::number(content.length() +
-			QString("type=0030&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", content);
+			QString("type=0030&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", content);
   return results;
 }
 #endif
@@ -576,10 +553,8 @@ QByteArray spoton_send::message0030(const QHostAddress &address,
   results.replace
     ("%1",
      QByteArray::number(content.length() +
-			QString("type=0030&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", content);
+			QString("type=0030&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", content);
   return results;
 }
 
@@ -597,10 +572,8 @@ QByteArray spoton_send::message0040a(const QByteArray &message)
   results.replace
     ("%1",
      QByteArray::number(message.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", message);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", message);
   return results;
 }
 
@@ -624,8 +597,7 @@ QByteArray spoton_send::message0040b(const QByteArray &message,
     ("%1",
      QByteArray::number(message.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", message);
+  results.replace("%2", message);
   return results;
 }
 
@@ -648,10 +620,8 @@ QByteArray spoton_send::message0050(const QByteArray &hash,
   results.replace
     ("%1",
      QByteArray::number(content.length() +
-			QString("type=0050&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", content);
+			QString("type=0050&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", content);
   return results;
 }
 
@@ -674,10 +644,8 @@ QByteArray spoton_send::message0051(const QByteArray &hash,
   results.replace
     ("%1",
      QByteArray::number(content.length() +
-			QString("type=0051&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", content);
+			QString("type=0051&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", content);
   return results;
 }
 
@@ -696,8 +664,7 @@ QByteArray spoton_send::message0052(void)
     ("%1",
      QByteArray::number(QByteArray("0").toBase64().length() +
 			QString("type=0052&content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", QByteArray("0").toBase64());
+  results.replace("%2", QByteArray("0").toBase64());
   return results;
 }
 
@@ -719,10 +686,8 @@ QByteArray spoton_send::message0060
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -744,10 +709,8 @@ QByteArray spoton_send::message0061
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -765,10 +728,8 @@ QByteArray spoton_send::message0065(const QByteArray &magnet)
   results.replace
     ("%1",
      QByteArray::number(magnet.toBase64().length() +
-			QString("type=0065&content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", magnet.toBase64());
+			QString("type=0065&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", magnet.toBase64());
   return results;
 }
 
@@ -787,8 +748,7 @@ QByteArray spoton_send::message0070(const QByteArray &motd)
     ("%1",
      QByteArray::number(motd.toBase64().length() +
 			QString("type=0070&content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", motd.toBase64());
+  results.replace("%2", motd.toBase64());
   return results;
 }
 
@@ -810,10 +770,8 @@ QByteArray spoton_send::message0080
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -835,10 +793,8 @@ QByteArray spoton_send::message0090
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -860,10 +816,8 @@ QByteArray spoton_send::message0091a
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
-  results.replace
-    ("%2", authenticated);
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -885,10 +839,30 @@ QByteArray spoton_send::message0091b
   results.replace
     ("%1",
      QByteArray::number(authenticated.length() +
-			QString("content=\r\n\r\n\r\n").
-			length()));
+			QString("content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
+  return results;
+}
+
+QByteArray spoton_send::messageGPG
+(const QByteArray &fingerprint,
+ const QByteArray &message,
+ const QPair<QByteArray, QByteArray> &adaptiveEchoPair)
+{
+  QByteArray results;
+  auto const authenticated
+    (adaptiveEchoAuthentication(message + fingerprint, adaptiveEchoPair));
+
+  results.append
+    ("POST HTTP/1.1\r\n"
+     "Content-Type: application/x-www-form-urlencoded\r\n"
+     "Content-Length: %1\r\n\r\n"
+     "type=0105&content=%2\r\n\r\n\r\n");
   results.replace
-    ("%2", authenticated);
+    ("%1",
+     QByteArray::number(authenticated.length() +
+			QString("type=0105&content=\r\n\r\n\r\n").length()));
+  results.replace("%2", authenticated);
   return results;
 }
 
@@ -911,7 +885,6 @@ QByteArray spoton_send::messageXYZ
     ("%1",
      QByteArray::number(authenticated.length() +
 			QString("content=\r\n\r\n\r\n").length()));
-  results.replace
-    ("%2", authenticated);
+  results.replace("%2", authenticated);
   return results;
 }
