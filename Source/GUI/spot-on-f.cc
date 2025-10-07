@@ -1622,8 +1622,7 @@ void spoton::slotPurgeEphemeralKeys(void)
 
   if(!writeKernelSocketData(message))
     spoton_misc::logError
-      (QString("spoton::slotPurgeEphemeralKeys(): write() failure for "
-	       "%1:%2.").
+      (QString("spoton::slotPurgeEphemeralKeys(): write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 }
@@ -1695,8 +1694,7 @@ void spoton::slotReplayMessages(void)
 
       if(!writeKernelSocketData(message))
 	spoton_misc::logError
-	  (QString("spoton::slotReplayMessages(): write() failure for "
-		   "%1:%2.").
+	  (QString("spoton::slotReplayMessages(): write() failure for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
       else
@@ -1969,8 +1967,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   if(!writeKernelSocketData(message))
     spoton_misc::logError
       (QString("spoton::slotRespondToForwardSecrecy(): "
-	       "write() failure for "
-	       "%1:%2.").
+	       "write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
   else

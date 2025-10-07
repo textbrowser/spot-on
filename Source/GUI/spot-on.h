@@ -466,6 +466,7 @@ class spoton: public QMainWindow
   QStandardItemModel *starbeamReceivedModel(void) const;
   Ui_spoton_mainwindow ui(void) const;
   bool isKernelActive(void) const;
+  bool writeKernelSocketData(const QByteArray &bytes);
   qint64 selectedHumanProxyOID(void) const;
   spoton_crypt *urlCommonCrypt(void) const;
   static QHash<QString, QStringList> s_publicKeySizes;
@@ -631,7 +632,6 @@ class spoton: public QMainWindow
 			   const bool gitMessage);
   bool updateMailStatus(const QString &oid, const QString &status);
   bool verifyInitializationPassphrase(QWidget *parent);
-  bool writeKernelSocketData(const QByteArray &bytes);
   int applyGoldBugToLetter(const QByteArray &goldbug, const int row);
   int tabIndexFromName(const QString &name) const;
   void appendItalicChatMessage(const QString &t);

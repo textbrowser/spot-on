@@ -4658,8 +4658,7 @@ void spoton::slotShareBuzzMagnet(void)
 
   if(!writeKernelSocketData(message))
     spoton_misc::logError
-      (QString("spoton::slotShareBuzzMagnet(): write() failure "
-	       "for %1:%2.").
+      (QString("spoton::slotShareBuzzMagnet(): write() failure for %1:%2.").
        arg(m_kernelSocket.peerAddress().toString()).
        arg(m_kernelSocket.peerPort()));
 }

@@ -4118,9 +4118,18 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
-  auto const list(m_parent->prisonBluesDirectories());
+  auto list(m_parent->prisonBluesDirectories());
+  auto share = false;
 
-  if(list.isEmpty())
+  if(QSettings().value("gui/share_git", false).toBool() &&
+     m_parent->isKernelActive())
+    {
+      if(list.isEmpty())
+	list << QFileInfo();
+
+      share = true;
+    }
+  else if(list.isEmpty())
     {
       showMessage(tr("Please configure GIT. Options -> GIT."), 5000);
       return;
@@ -4198,15 +4207,42 @@ void spoton_rosetta::slotWriteGPG(void)
   foreach(auto const &directory, list)
     for(int i = 0; i < fingerprints.size(); i++)
       {
-	if(!(directory.isWritable()) ||
-	   !(fingerprints.value(i).isValid() &&
+	if(!(fingerprints.at(i).isValid() &&
 	     publicKeyHashes.value(i).isValid()))
+	  continue;
+
+	auto const publicKey = spoton_misc::publicKeyFromHash
+	  (QByteArray::
+	   fromBase64(publicKeyHashes.value(i).data().toByteArray()),
+	   true,
+	   crypt);
+	auto ok = true;
+	auto const output
+	  (gpgEncrypt(ok, message.toUtf8(), publicKey, sender, true, sign));
+
+	if(ok)
+	  {
+	    if(share)
+	      m_parent->writeKernelSocketData
+		("sharegit_" +
+		 output.toBase64() +
+		 "_" +
+		 fingerprints.at(i).data().toByteArray().toBase64() +
+		 "\n");
+	  }
+	else
+	  {
+	    showMessage(output, 5000);
+	    continue;
+	  }
+
+	if(!directory.isWritable())
 	  continue;
 
 	auto const destination
 	  (directory.absoluteFilePath() +
 	   QDir::separator() +
-	   fingerprints.value(i).data().toString());
+	   fingerprints.at(i).data().toString());
 
 	QDir().mkpath(destination);
 	publishAttachments
@@ -4219,49 +4255,29 @@ void spoton_rosetta::slotWriteGPG(void)
 
 	if(file.open())
 	  {
-	    auto const publicKey = spoton_misc::publicKeyFromHash
-	      (QByteArray::
-	       fromBase64(publicKeyHashes.value(i).data().toByteArray()),
-	       true,
-	       crypt);
-	    auto ok = true;
-	    auto const output
-	      (gpgEncrypt(ok, message.toUtf8(), publicKey, sender, true, sign));
+	    Q_UNUSED(file.fileName()); // Prevents removal of file.
+	    file.setAutoRemove(false);
 
-	    if(ok)
+	    if(file.write(output) == static_cast<qint64> (output.length()))
 	      {
-		Q_UNUSED(file.fileName()); // Prevents removal of file.
-		file.setAutoRemove(false);
+		if(ui.gpg_show_status_messages->isChecked())
+		  showInformationMessage
+		    (tr("The message file <b>%1</b> "
+			"was generated for <b>%2</b>.").
+		     arg(QFileInfo(file.fileName()).fileName()).
+		     arg(participants.value(i).data().toString()));
 
-		if(file.write(output) ==
-		   static_cast<qint64> (output.length()))
-		  {
-		    m_gpgMessages[file.fileName()] =
-		      participants.value(i).data().toString();
-
-		    if(ui.gpg_show_status_messages->isChecked())
-		      showInformationMessage
-			(tr("The message file <b>%1</b> "
-			    "was generated for <b>%2</b>.").
-			 arg(QFileInfo(file.fileName()).fileName()).
-			 arg(participants.value(i).data().toString()));
-
-		    state = true;
-		  }
-		else
-		  {
-		    file.remove();
-		    showMessage
-		      (tr("Incorrect number of bytes written (%1). "
-			  "File removed.").
-		       arg(file.fileName()),
-		       5000);
-		  }
+		m_gpgMessages[file.fileName()] =
+		  participants.value(i).data().toString();
+		state = true;
 	      }
 	    else
 	      {
 		file.remove();
-		showMessage(output, 5000);
+		showMessage
+		  (tr("Incorrect number of bytes written (%1). File removed.").
+		   arg(file.fileName()),
+		   5000);
 	      }
 	  }
 	else

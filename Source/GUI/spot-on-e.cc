@@ -384,8 +384,7 @@ bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
   if(!writeKernelSocketData(message))
     {
       spoton_misc::logError
-	(QString("spoton::sendSMPLinkToKernel(): write() failure for "
-		 "%1:%2.").
+	(QString("spoton::sendSMPLinkToKernel(): write() failure for %1:%2.").
 	 arg(m_kernelSocket.peerAddress().toString()).
 	 arg(m_kernelSocket.peerPort()));
       return false;

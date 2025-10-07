@@ -4176,10 +4176,7 @@ void spoton::slotKernelKeySizeChanged(int index)
 
   m_kernelSocket.setProperty("key_size", text.toInt());
   m_settings["gui/kernelKeySize"] = text.toInt();
-
-  QSettings settings;
-
-  settings.setValue
+  QSettings().setValue
     ("gui/kernelKeySize", m_settings.value("gui/kernelKeySize"));
 }
 

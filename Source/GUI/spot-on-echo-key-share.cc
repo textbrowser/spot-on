@@ -701,8 +701,8 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 
   if(!eCrypt || !sCrypt)
     {
-      showError(tr("Invalid eCrypt and/or sCrypt object(s). This is a "
-		   "fatal error."));
+      showError
+	(tr("Invalid eCrypt and/or sCrypt object(s). This is a fatal error."));
       return;
     }
   else if(!m_kernelSocket)
@@ -849,8 +849,7 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 		 != static_cast<qint64> (message.length()))
 		spoton_misc::logError
 		  (QString("spoton_echo_key_share::shareSelected():"
-			   "write() failure "
-			   "for %1:%2.").
+			   "write() failure for %1:%2.").
 		   arg(m_kernelSocket->peerAddress().toString()).
 		   arg(m_kernelSocket->peerPort()));
 	    }

@@ -2266,16 +2266,14 @@ void spoton::slotUrlLinkClicked(const QUrl &u)
 
       if(!writeKernelSocketData(message))
 	spoton_misc::logError
-	  (QString("spoton::slotUrlLinkClicked(): write() failure for "
-		   "%1:%2.").
+	  (QString("spoton::slotUrlLinkClicked(): write() failure for %1:%2.").
 	   arg(m_kernelSocket.peerAddress().toString()).
 	   arg(m_kernelSocket.peerPort()));
       else
 	{
-	  m_sb.status->setText(tr("URL %1 shared with your friendly "
-				  "participants.").
-			       arg(spoton_misc::urlToEncoded(original).
-				   constData()));
+	  m_sb.status->setText
+	    (tr("URL %1 shared with your friendly participants.").
+	     arg(spoton_misc::urlToEncoded(original).constData()));
 	  m_sb.status->repaint();
 	}
 
