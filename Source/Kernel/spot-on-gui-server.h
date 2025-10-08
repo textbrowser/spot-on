@@ -149,6 +149,7 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void purgeEphemeralKeyPair(const QByteArray &publicKeyHash);
   void purgeEphemeralKeys(void);
   void retrieveMail(void);
+  void shareGit(const QByteArray &message, const QByteArray &fingerprint);
   void shareLink(const QByteArray &link);
   void smpMessageReceivedFromUI(const QByteArrayList &list);
 };

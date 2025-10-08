@@ -554,17 +554,16 @@ void spoton_gui_server::slotReadyRead(void)
 	  if(message.startsWith("addbuzz_") &&
 	     m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("addbuzz_")));
+	      message.remove(0, static_cast<int> (qstrlen("addbuzz_")));
 
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 4)
                 spoton_kernel::addBuzzKey
-                 (QByteArray::fromBase64(list.value(0)),
-                  QByteArray::fromBase64(list.value(1)),
-		  QByteArray::fromBase64(list.value(2)),
-		  QByteArray::fromBase64(list.value(3)));
+                 (QByteArray::fromBase64(list.at(0)),
+                  QByteArray::fromBase64(list.at(1)),
+		  QByteArray::fromBase64(list.at(2)),
+		  QByteArray::fromBase64(list.at(3)));
 	    }
 	  else if(message.startsWith("befriendparticipant_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
@@ -576,47 +575,46 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
-		  (list.value(0).toLongLong(),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
-		   QByteArray::fromBase64(list.value(4)),
-		   QByteArray::fromBase64(list.value(5)),
-		   QByteArray::fromBase64(list.value(6)),
+		  (list.at(0).toLongLong(),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
+		   QByteArray::fromBase64(list.at(4)),
+		   QByteArray::fromBase64(list.at(5)),
+		   QByteArray::fromBase64(list.at(6)),
 		   "0012");
 	    }
 	  else if(message.startsWith("buzz_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("buzz_")));
+	      message.remove(0, static_cast<int> (qstrlen("buzz_")));
 
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit buzzReceivedFromUI
-		  (QByteArray::fromBase64(list.value(0)),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
+		  (QByteArray::fromBase64(list.at(0)),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
 		   QByteArray(),
 		   QByteArray(),
 		   "0040a",
-		   QByteArray::fromBase64(list.value(4)),
-		   QByteArray::fromBase64(list.value(5)),
-		   QByteArray::fromBase64(list.value(6)));
+		   QByteArray::fromBase64(list.at(4)),
+		   QByteArray::fromBase64(list.at(5)),
+		   QByteArray::fromBase64(list.at(6)));
 	      else if(list.size() == 9)
 		emit buzzReceivedFromUI
-		  (QByteArray::fromBase64(list.value(0)),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
-		   QByteArray::fromBase64(list.value(4)),
-		   QByteArray::fromBase64(list.value(5)),
+		  (QByteArray::fromBase64(list.at(0)),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
+		   QByteArray::fromBase64(list.at(4)),
+		   QByteArray::fromBase64(list.at(5)),
 		   "0040b",
-		   QByteArray::fromBase64(list.value(6)),
-		   QByteArray::fromBase64(list.value(7)),
-		   QByteArray::fromBase64(list.value(8)));
+		   QByteArray::fromBase64(list.at(6)),
+		   QByteArray::fromBase64(list.at(7)),
+		   QByteArray::fromBase64(list.at(8)));
 	    }
 	  else if(message.startsWith("call_participant_using_forward_"
 				     "secrecy_") &&
@@ -631,21 +629,20 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 2)
 		emit callParticipantUsingForwardSecrecy
-		  (list.value(0), list.value(1).toLongLong());
+		  (list.at(0), list.at(1).toLongLong());
 	    }
 	  else if(message.startsWith("call_participant_using_gemini_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
 	      message.remove
 		(0,
-		 static_cast<int> (qstrlen("call_participant_"
-					   "using_gemini_")));
+		 static_cast<int> (qstrlen("call_participant_using_gemini_")));
 
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
-		emit callParticipantUsingGemini(list.value(0),
-						list.value(1).toLongLong());
+		emit callParticipantUsingGemini
+		  (list.at(0), list.at(1).toLongLong());
 	    }
 	  else if(message.startsWith("call_participant_using_public_key_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
@@ -658,8 +655,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
-		emit callParticipant(list.value(0),
-				     list.value(1).toLongLong());
+		emit callParticipant(list.at(0), list.at(1).toLongLong());
 	    }
 	  else if(message.startsWith("detach_listener_neighbors_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
@@ -683,8 +679,7 @@ void spoton_gui_server::slotReadyRead(void)
 	  else if(message.startsWith("echokeypair_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("echokeypair_")));
+	      message.remove(0, static_cast<int> (qstrlen("echokeypair_")));
 
 	      auto const list(message.split('_'));
 
@@ -721,15 +716,13 @@ void spoton_gui_server::slotReadyRead(void)
 	    }
 	  else if(message.startsWith("initiatessltls_"))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("initiatessltls_")));
+	      message.remove(0, static_cast<int> (qstrlen("initiatessltls_")));
 
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
 		emit initiateSSLTLSSession
-		  (list.value(0).toInt() == 1,
-		   list.value(1).toLongLong());
+		  (list.at(0).toInt() == 1, list.at(1).toLongLong());
 	    }
 	  else if(message.startsWith("keys_"))
 	    {
@@ -774,8 +767,8 @@ void spoton_gui_server::slotReadyRead(void)
 			     spoton_kernel::
 			     setting("gui/hashType", "sha512").toString(),
 			     QByteArray(),
-			     QByteArray::fromBase64(list.value(0)),
-			     QByteArray::fromBase64(list.value(1)),
+			     QByteArray::fromBase64(list.at(0)),
+			     QByteArray::fromBase64(list.at(1)),
 			     spoton_kernel::setting("gui/saltLength",
 						    512).toInt(),
 			     static_cast<unsigned
@@ -837,13 +830,13 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 7)
 		emit messageReceivedFromUI
-		  (list.value(0).toLongLong(),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
-		   QByteArray::fromBase64(list.value(4)),
-		   list.value(5).toLongLong(),
-		   QVariant(list.value(6)).toBool(),
+		  (list.at(0).toLongLong(),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
+		   QByteArray::fromBase64(list.at(4)),
+		   list.at(5).toLongLong(),
+		   QVariant(list.at(6)).toBool(),
 		   "chat");
 	    }
 	  else if(message.startsWith("poptasticmessage_") &&
@@ -856,11 +849,11 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 7)
 		emit messageReceivedFromUI
-		  (list.value(0).toLongLong(),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
-		   QByteArray::fromBase64(list.value(4)),
+		  (list.at(0).toLongLong(),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
+		   QByteArray::fromBase64(list.at(4)),
 		   -1,
 		   false,
 		   "poptastic");
@@ -882,8 +875,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 1)
-		emit publicizeListenerPlaintext
-		  (list.value(0).toLongLong());
+		emit publicizeListenerPlaintext(list.at(0).toLongLong());
 	    }
 	  else if(message.startsWith("purge_ephemeral_key_pair_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
@@ -943,14 +935,24 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(list.size() == 2)
 		emit buzzMagnetReceivedFromUI
-		  (list.value(0).toLongLong(),
-		   QByteArray::fromBase64(list.value(1)));
+		  (list.at(0).toLongLong(),
+		   QByteArray::fromBase64(list.at(1)));
+	    }
+	  else if(message.startsWith("sharegit_"))
+	    {
+	      message.remove(0, static_cast<int> (qstrlen("sharegit_")));
+
+	      auto const list(message.split('_'));
+
+	      if(list.size() == 2)
+		emit shareGit
+		  (QByteArray::fromBase64(list.at(0)),
+		   QByteArray::fromBase64(list.at(1)));
 	    }
 	  else if(message.startsWith("sharelink_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("sharelink_")));
+	      message.remove(0, static_cast<int> (qstrlen("sharelink_")));
 
 	      if(!message.isEmpty())
 		emit shareLink(message);
@@ -958,20 +960,19 @@ void spoton_gui_server::slotReadyRead(void)
 	  else if(message.startsWith("sharepublickey_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))
 	    {
-	      message.remove
-		(0, static_cast<int> (qstrlen("sharepublickey_")));
+	      message.remove(0, static_cast<int> (qstrlen("sharepublickey_")));
 
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 7)
 		emit publicKeyReceivedFromUI
-		  (list.value(0).toLongLong(),
-		   QByteArray::fromBase64(list.value(1)),
-		   QByteArray::fromBase64(list.value(2)),
-		   QByteArray::fromBase64(list.value(3)),
-		   QByteArray::fromBase64(list.value(4)),
-		   QByteArray::fromBase64(list.value(5)),
-		   QByteArray::fromBase64(list.value(6)),
+		  (list.at(0).toLongLong(),
+		   QByteArray::fromBase64(list.at(1)),
+		   QByteArray::fromBase64(list.at(2)),
+		   QByteArray::fromBase64(list.at(3)),
+		   QByteArray::fromBase64(list.at(4)),
+		   QByteArray::fromBase64(list.at(5)),
+		   QByteArray::fromBase64(list.at(6)),
 		   "0011");
 	    }
 	  else if(message.startsWith("smp_") &&
@@ -1108,16 +1109,15 @@ void spoton_gui_server::slotTimeout(void)
 
 	query.setForwardOnly(true);
 
-	if(query.exec("SELECT port FROM kernel_gui_server"))
-	  if(query.next())
-	    port = query.value(0).toByteArray().toUShort();
+	if(query.exec("SELECT port FROM kernel_gui_server") && query.next())
+	  port = query.value(0).toByteArray().toUShort();
 
 	if(port == 0 || port != serverPort())
 	  {
 	    QSqlQuery updateQuery(db);
 
-	    updateQuery.prepare("INSERT INTO kernel_gui_server (port) "
-				"VALUES (?)");
+	    updateQuery.prepare
+	      ("INSERT INTO kernel_gui_server (port) VALUES (?)");
 	    updateQuery.bindValue(0, serverPort());
 
 	    if(updateQuery.exec())
