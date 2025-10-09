@@ -851,7 +851,7 @@ QByteArray spoton_send::messageGPG
 {
   QByteArray results;
   auto const authenticated
-    (adaptiveEchoAuthentication(message + "\n" + fingerprint,
+    (adaptiveEchoAuthentication(fingerprint + "\n" + message,
 				adaptiveEchoPair));
 
   results.append

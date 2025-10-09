@@ -4225,9 +4225,9 @@ void spoton_rosetta::slotWriteGPG(void)
 	    if(share)
 	      m_parent->writeKernelSocketData
 		("sharegit_" +
-		 output.toBase64() +
-		 "_" +
 		 fingerprints.at(i).data().toByteArray().toBase64() +
+		 "_" +
+		 output.toBase64() +
 		 "\n");
 	  }
 	else

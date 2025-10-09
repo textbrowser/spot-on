@@ -221,7 +221,7 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
 }
 
 void spoton_neighbor::slotShareGit
-(const QByteArray &message, const QByteArray &fingerprint)
+(const QByteArray &fingerprint, const QByteArray &message)
 {
   if(!m_privateApplicationCredentials.isEmpty() && m_passthrough)
     return;

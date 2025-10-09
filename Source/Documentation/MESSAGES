@@ -565,8 +565,6 @@ Message Type ("0070")
 
 URL Distribution
 
-Message Type ("0080")
-
 Groups: 4
 Public Key (Base-64)
 {
@@ -750,8 +748,8 @@ Prison Blues (0105)
 
 Groups: 2
 {
-	0 - GPG Message (Base-64)
-	1 - GPG Fingerprint (Base-64)
+	0 - GPG Fingerprint (Base-64)
+	1 - GPG Message (Base-64)
 }
 EOL
 {

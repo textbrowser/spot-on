@@ -561,7 +561,7 @@ class spoton_neighbor: public QThread
   void slotSendMessage
     (const QByteArray &data, const spoton_send::spoton_send_method sendMethod);
   void slotSendStatus(const QByteArrayList &list);
-  void slotShareGit(const QByteArray &message, const QByteArray &fingerprint);
+  void slotShareGit(const QByteArray &fingerprint, const QByteArray &message);
   void slotSpecialTimerTimeout(void);
   void slotSslErrors(const QList<QSslError> &errors);
   void slotStopTimer(QTimer *timer);
