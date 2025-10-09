@@ -187,7 +187,7 @@ void spoton_textbrowser::dragLeaveEvent(QDragLeaveEvent *event)
 void spoton_textbrowser::dragMoveEvent(QDragMoveEvent *event)
 {
   if(event && m_dropFile.isFile() && m_dropFile.isReadable())
-    event->accept();      
+    event->accept();
   else
     {
       QTextBrowser::dragMoveEvent(event);
