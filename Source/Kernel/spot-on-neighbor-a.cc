@@ -3166,10 +3166,7 @@ void spoton_neighbor::slotWrite
   ** to send the message to its peers.
   */
 
-  if(id == m_id)
-    return;
-
-  if(data.length() > m_laneWidth)
+  if(data.length() > m_laneWidth || id == m_id)
     return;
 
   {
@@ -3213,7 +3210,7 @@ void spoton_neighbor::slotWrite
 	spoton_misc::logError
 	  (QString("spoton_neighbor::slotWrite(): write() error for %1:%2.").
 	   arg(m_address).arg(m_port));
-      else if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+      else if(!m_privateApplicationCredentials.isEmpty() && m_passthrough)
 	spoton_kernel::messagingCacheAdd(data + QByteArray::number(id));
       else
 	spoton_kernel::messagingCacheAdd(data);

@@ -429,7 +429,7 @@ bool spoton_neighbor::readyToWrite(void) const
 bool spoton_neighbor::writeMessage006X(const QByteArray &data,
 				       const QString &messageType)
 {
-  if(m_passthrough && !m_privateApplicationCredentials.isEmpty())
+  if(!m_privateApplicationCredentials.isEmpty() && m_passthrough)
     return false;
 
   bool ok = true;
@@ -462,9 +462,8 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   return ok;
 }
 
-int spoton_neighbor::write(const char *data,
-			   const int size,
-			   const bool emitDropped)
+int spoton_neighbor::write
+(const char *data, const int size, const bool emitDropped)
 {
   if(!data || size < 0)
     return -1;
@@ -596,8 +595,8 @@ int spoton_neighbor::write(const char *data,
 		  if(udpMinimum > 0)
 		    continue;
 		}
-	      else if(m_udpSocket->
-		      error() == QAbstractSocket::UnknownSocketError)
+	      else if(m_udpSocket->error() ==
+		      QAbstractSocket::UnknownSocketError)
 		{
 		  /*
 		  ** If the end-point is absent, QIODevice::write() may

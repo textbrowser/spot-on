@@ -945,9 +945,7 @@ void spoton_gui_server::slotReadyRead(void)
 	      auto const list(message.split('_'));
 
 	      if(list.size() == 2)
-		emit shareGit
-		  (QByteArray::fromBase64(list.at(0)),
-		   QByteArray::fromBase64(list.at(1)));
+		emit shareGit(list.at(0), list.at(1));
 	    }
 	  else if(message.startsWith("sharelink_") &&
 		  m_guiIsAuthenticated.value(socket->socketDescriptor(), false))

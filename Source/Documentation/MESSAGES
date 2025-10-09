@@ -746,13 +746,12 @@ EOL
 	    Encrypted Timestamp (Base-64)
 }
 
-Prison Blues
+Prison Blues (0105)
 
 Groups: 2
 {
-	0 - 0105
-	1 - GPG Message
-	2 - GPG Fingerprint
+	0 - GPG Message (Base-64)
+	1 - GPG Fingerprint (Base-64)
 }
 EOL
 {

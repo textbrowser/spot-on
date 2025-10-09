@@ -1763,13 +1763,11 @@ void spoton_kernel::connectSignalsToNeighbor
   if(!neighbor)
     return;
 
-  if(m_fireShare)
-    connect(m_fireShare,
-	    SIGNAL(sendURLs(const QByteArray &)),
-	    neighbor,
-	    SLOT(slotWriteURLs(const QByteArray &)),
-	    Qt::UniqueConnection);
-
+  connect(m_fireShare,
+	  SIGNAL(sendURLs(const QByteArray &)),
+	  neighbor,
+	  SLOT(slotWriteURLs(const QByteArray &)),
+	  Qt::UniqueConnection);
   connect(m_guiServer,
 	  SIGNAL(echoKeyShare(const QByteArrayList &)),
 	  neighbor,
@@ -1784,6 +1782,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SIGNAL(initiateSSLTLSSession(const bool, const qint64)),
 	  neighbor,
 	  SLOT(slotInitiateSSLTLSSession(const bool, const qint64)),
+	  Qt::UniqueConnection);
+  connect(m_guiServer,
+	  SIGNAL(shareGit(const QByteArray &, const QByteArray &)),
+	  neighbor,
+	  SLOT(slotShareGit(const QByteArray &, const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
 	  SIGNAL(authenticationRequested(const QString &)),
@@ -1975,11 +1978,9 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotSendForwardSecrecySessionKeys(const QByteArray &)),
 	  Qt::UniqueConnection);
   connect(this,
-	  SIGNAL(sendMail(const QPairByteArrayInt64List &,
-			  const QString &)),
+	  SIGNAL(sendMail(const QPairByteArrayInt64List &, const QString &)),
 	  neighbor,
-	  SLOT(slotSendMail(const QPairByteArrayInt64List &,
-			    const QString &)),
+	  SLOT(slotSendMail(const QPairByteArrayInt64List &, const QString &)),
 	  Qt::UniqueConnection);
   connect(this,
 	  SIGNAL(sendMessage(const QByteArray &,
@@ -1994,10 +1995,12 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotSendStatus(const QByteArrayList &)),
 	  Qt::UniqueConnection);
   connect(this,
-	  SIGNAL(write(const QByteArray &, const qint64,
+	  SIGNAL(write(const QByteArray &,
+		       const qint64,
 		       const QPairByteArrayByteArray &)),
 	  neighbor,
-	  SLOT(slotWrite(const QByteArray &, const qint64,
+	  SLOT(slotWrite(const QByteArray &,
+			 const qint64,
 			 const QPairByteArrayByteArray &)),
 	  Qt::UniqueConnection);
 }

@@ -28,6 +28,7 @@
 #include <QSslConfiguration>
 #include <QSslKey>
 
+#include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 
 QSslConfiguration spoton_neighbor::sslConfiguration(void) const
@@ -217,4 +218,29 @@ void spoton_neighbor::slotInitiateSSLTLSSession(const bool client,
     m_tcpSocket->startClientEncryption();
   else
     m_tcpSocket->startServerEncryption();
+}
+
+void spoton_neighbor::slotShareGit
+(const QByteArray &message, const QByteArray &fingerprint)
+{
+  if(!m_privateApplicationCredentials.isEmpty() && m_passthrough)
+    return;
+
+  if(readyToWrite())
+    {
+      QByteArray data;
+      auto const ae
+	(spoton_misc::decryptedAdaptiveEchoPair(m_adaptiveEchoPair,
+						spoton_kernel::crypt("chat")));
+
+      data = spoton_send::messageGPG(fingerprint, message, ae);
+
+      if(write(data.constData(), data.length()) != data.length())
+	spoton_misc::logError
+	  (QString("spoton_neighbor::slotShareGit(): write() error "
+		   "for %1:%2.").
+	   arg(m_address).arg(m_port));
+      else
+	spoton_kernel::messagingCacheAdd(data);
+    }
 }
