@@ -61,7 +61,7 @@ QString spoton_neighbor::findMessageType
 
   if(interfaces > 0 && (list.size() == 2 || list.size() == 3))
     {
-      symmetricKeys = spoton_kernel::findBuzzKey(list.value(0), list.value(1));
+      symmetricKeys = spoton_kernel::findBuzzKey(list.at(0), list.at(1));
 
       if(!symmetricKeys.isEmpty())
 	{
@@ -75,7 +75,7 @@ QString spoton_neighbor::findMessageType
 			     0,
 			     "");
 
-	  data = crypt.decrypted(list.value(0), &ok);
+	  data = crypt.decrypted(list.at(0), &ok);
 
 	  if(ok)
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
@@ -99,8 +99,8 @@ QString spoton_neighbor::findMessageType
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
       auto const gemini
-	(spoton_misc::findGeminiInCosmos(list.value(0),
-					 list.value(1),
+	(spoton_misc::findGeminiInCosmos(list.at(0),
+					 list.at(1),
 					 s_crypt));
 
       if(!gemini.first.isEmpty())
@@ -115,7 +115,7 @@ QString spoton_neighbor::findMessageType
 			     0,
 			     "");
 
-	  data = crypt.decrypted(list.value(0), &ok);
+	  data = crypt.decrypted(list.at(0), &ok);
 
 	  if(ok)
 	    {
@@ -152,7 +152,7 @@ QString spoton_neighbor::findMessageType
   if(list.size() == 3 && s_crypt)
     {
       symmetricKeys = spoton_misc::findEchoKeys
-	(list.value(0), list.value(1), type, s_crypt);
+	(list.at(0), list.at(1), type, s_crypt);
 
       if(type == "0090")
 	goto done_label;
@@ -177,7 +177,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  auto ok = true;
 
-	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.at(0), &ok);
 
 	  if(ok)
 	    {
@@ -210,15 +210,15 @@ QString spoton_neighbor::findMessageType
       {
 	if(list.size() == 3)
 	  symmetricKeys = spoton_kernel::findInstitutionKey
-	    (list.value(0), list.value(1));
+	    (list.at(0), list.at(1));
 	else
 	  symmetricKeys = spoton_kernel::findInstitutionKey
-	    (list.value(0) +
-	     list.value(1) +
-	     list.value(2) +
-	     list.value(3) +
-	     list.value(4),
-	     list.value(5));
+	    (list.at(0) +
+	     list.at(1) +
+	     list.at(2) +
+	     list.at(3) +
+	     list.at(4),
+	     list.at(5));
 
 	if(!symmetricKeys.isEmpty())
 	  {
@@ -238,7 +238,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  auto ok = true;
 
-	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.at(0), &ok);
 
 	  if(ok)
 	    type = QByteArray::fromBase64(data.split('\n').value(0));
@@ -267,7 +267,7 @@ QString spoton_neighbor::findMessageType
 	  QByteArray data;
 	  auto ok = true;
 
-	  data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	  data = s_crypt->publicKeyDecrypt(list.at(0), &ok);
 
 	  if(ok)
 	    {
@@ -328,7 +328,7 @@ QString spoton_neighbor::findMessageType
 	QByteArray data;
 	auto ok = true;
 
-	data = s_crypt->publicKeyDecrypt(list.value(0), &ok);
+	data = s_crypt->publicKeyDecrypt(list.at(0), &ok);
 
 	if(ok)
 	  {
@@ -374,10 +374,7 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3 && (s_crypt = spoton_kernel::crypt("email")))
     symmetricKeys = spoton_misc::findForwardSecrecyKeys
-      (list.value(0),
-       list.value(1),
-       type,
-       s_crypt);
+      (list.at(0), list.at(1), type, s_crypt);
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair
@@ -3582,6 +3579,9 @@ void spoton_neighbor::processData(void)
 	    process0092(length, data, symmetricKeys);
 	  else if(messageType == "0100")
      	    process0100(length, data, symmetricKeys);
+	  else if(messageType == "0105")
+	    {
+	    }
 	  else
 	    messageType.clear();
 
