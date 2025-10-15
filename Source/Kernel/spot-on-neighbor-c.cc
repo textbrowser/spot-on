@@ -314,8 +314,7 @@ QString spoton_neighbor::findMessageType
   if(interfaces > 0 && list.size() == 4)
     for(int i = 0; i < spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.size(); i++)
       {
-	auto const keyType
-	  (spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
+	auto const keyType(spoton_common::SPOTON_ENCRYPTION_KEY_NAMES.at(i));
 
 	s_crypt = spoton_kernel::crypt(keyType);
 
@@ -429,7 +428,7 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   if(!m_privateApplicationCredentials.isEmpty() && m_passthrough)
     return false;
 
-  bool ok = true;
+  auto ok = true;
 
   if((ok = readyToWrite()))
     {
@@ -467,7 +466,7 @@ int spoton_neighbor::write
   else if(size == 0)
     return 0;
 
-  const char *d = data;
+  auto const d = data;
   auto remaining = static_cast<qint64> (size);
   auto udpMinimum = static_cast<qint64>
     (qMin(spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE, size));

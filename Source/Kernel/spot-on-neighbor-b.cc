@@ -232,7 +232,7 @@ void spoton_neighbor::close(void)
     {
       if(!m_isUserDefined)
 	{
-	  int socketDescriptor = static_cast<int>
+	  auto const socketDescriptor = static_cast<int>
 	    (m_tcpSocket->socketDescriptor());
 
 #if defined(Q_OS_WINDOWS)
