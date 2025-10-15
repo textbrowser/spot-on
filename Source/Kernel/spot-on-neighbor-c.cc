@@ -4913,8 +4913,9 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (4, s_crypt->keyedHash(date_l + message_l + subject_l,
-				   &ok).toBase64());
+	    (4,
+	     s_crypt->keyedHash(date_l + message_l + subject_l, &ok).
+	     toBase64());
 
 	if(ok)
 	  if(!message_l.isEmpty())
@@ -5058,26 +5059,25 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
     if(db.open())
       {
 	QSqlQuery query(db);
-	bool ok = true;
+	auto ok = true;
 
 	query.prepare("INSERT INTO post_office "
 		      "(date_received, message_bundle, "
 		      "message_bundle_hash, recipient_hash) "
 		      "VALUES (?, ?, ?, ?)");
 	query.bindValue
-	  (0, s_crypt->
-	   encryptedThenHashed(QDateTime::currentDateTime().
-			       toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
+	  (0,
+	   s_crypt->encryptedThenHashed(QDateTime::currentDateTime().
+					toString(Qt::ISODate).toLatin1(),
+					&ok).toBase64());
 
 	if(ok)
 	  {
 	    QByteArray data;
 
-	    data =
-	      list.value(0).toBase64() + "\n" + // Symmetric Key Bundle
-	      list.value(1).toBase64() + "\n" + // Data
-	      list.value(2).toBase64();         // Message Code
+	    data = list.value(0).toBase64() + "\n" + // Symmetric Key Bundle
+	      list.value(1).toBase64() + "\n" +      // Data
+	      list.value(2).toBase64();              // Message Code
 	    query.bindValue
 	      (1, s_crypt->encryptedThenHashed(data, &ok).toBase64());
 

@@ -5882,8 +5882,8 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 		{
 		  if(!goldbug.isEmpty())
 		    {
-		      auto crypt = spoton_misc::
-			cryptFromForwardSecrecyMagnet(goldbug);
+		      auto crypt = spoton_misc::cryptFromForwardSecrecyMagnet
+			(goldbug);
 
 		      if(crypt)
 			for(int i = 0; i < items.size(); i++)
