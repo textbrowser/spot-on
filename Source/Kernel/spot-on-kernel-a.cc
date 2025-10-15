@@ -93,7 +93,6 @@ QMultiHash<qint64,
 	   QPointer<spoton_neighbor> > spoton_kernel::s_connectionCounts;
 QMultiMap<qint64, QByteArray> spoton_kernel::s_messagingCacheLookup;
 QList<QList<QByteArray> > spoton_kernel::s_institutionKeys;
-QList<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
 QList<int> spoton_common::LANE_WIDTHS = QList<int> () << 14500
 						      << 20000
                                                       << 25000
@@ -119,6 +118,7 @@ QReadWriteLock spoton_kernel::s_messagingCacheMutex;
 QReadWriteLock spoton_kernel::s_settingsMutex;
 QReadWriteLock spoton_kernel::s_totalNeighborsBytesReadWrittenMutex;
 QReadWriteLock spoton_kernel::s_totalUiBytesReadWrittenMutex;
+QSet<QPair<QByteArray, QByteArray> > spoton_kernel::s_adaptiveEchoPairs;
 QString spoton_common::POSTGRESQL_CONNECTION_OPTIONS =
   "connect_timeout=10;sslmode=verify-full";
 QString spoton_common::SSL_CONTROL_STRING =
@@ -1329,16 +1329,16 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
   return list;
 }
 
-QList<QPair<QByteArray, QByteArray> > spoton_kernel::adaptiveEchoTokens(void)
+QPointer<spoton_kernel> spoton_kernel::instance(void)
+{
+  return s_kernel;
+}
+
+QSet<QPair<QByteArray, QByteArray> > spoton_kernel::adaptiveEchoTokens(void)
 {
   QReadLocker locker(&s_adaptiveEchoPairsMutex);
 
   return s_adaptiveEchoPairs;
-}
-
-QPointer<spoton_kernel> spoton_kernel::instance(void)
-{
-  return s_kernel;
 }
 
 QVariant spoton_kernel::setting(const QString &name)
@@ -2011,7 +2011,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 {
   QReadLocker locker(&s_adaptiveEchoPairsMutex);
 
-  auto const adaptiveEchoPairs(s_adaptiveEchoPairs);
+  auto const adaptiveEchoPairs(s_adaptiveEchoPairs.values());
 
   locker.unlock();
 
@@ -2050,9 +2050,9 @@ void spoton_kernel::discoverAdaptiveEchoPair
 
   for(int i = 0; i < adaptiveEchoPairs.size(); i++)
     {
-      QByteArray tokenType(adaptiveEchoPairs.at(i).second);
       auto ok = true;
       auto token(adaptiveEchoPairs.at(i).first);
+      auto tokenType(adaptiveEchoPairs.at(i).second);
 
       token = s_crypt->decryptedAfterAuthenticated(token, &ok);
 
@@ -2107,8 +2107,7 @@ void spoton_kernel::discoverAdaptiveEchoPair
 	    continue;
 
 	  auto dateTime
-	    (QDateTime::fromString(timestamp.constData(),
-				   "MMddyyyyhhmmss"));
+	    (QDateTime::fromString(timestamp.constData(), "MMddyyyyhhmmss"));
 
 	  if(!dateTime.isValid())
 	    continue;
@@ -2390,9 +2389,7 @@ void spoton_kernel::prepareListeners(void)
 		  (query.value(0).toByteArray());
 		pair.second = QByteArray::fromBase64
 		  (query.value(1).toByteArray());
-
-		if(!s_adaptiveEchoPairs.contains(pair))
-		  s_adaptiveEchoPairs.append(pair);
+		s_adaptiveEchoPairs.insert(pair); // Unique values guaranteed.
 	      }
 	  }
 
@@ -6068,15 +6065,14 @@ void spoton_kernel::slotStatusTimerExpired(void)
 		(0, s_crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
 	    else
 	      query.bindValue
-		(0, s_crypt->keyedHash(QByteArray("poptastic"), &ok).
-		 toBase64());
+		(0,
+		 s_crypt->keyedHash(QByteArray("poptastic"), &ok).toBase64());
 
 	    query.bindValue
 	      (1, QDateTime::currentDateTime().toString(Qt::ISODate));
 
 	    if(i == 1)
-	      query.bindValue
-		(2, 2.5 * spoton_common::STATUS_INTERVAL);
+	      query.bindValue(2, 2.5 * spoton_common::STATUS_INTERVAL);
 	    else
 	      query.bindValue
 		(2, 2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL);
@@ -6119,12 +6115,10 @@ void spoton_kernel::slotTerminate(const bool registered)
 	  {
 	    it.next();
 
-	    auto listener = it.value();
-
-	    if(listener)
+	    if(it.value())
 	      {
-		listener->close();
-		listener->deleteLater();
+		it.value()->close();
+		it.value()->deleteLater();
 	      }
 
 	    it.remove();
@@ -6139,10 +6133,8 @@ void spoton_kernel::slotTerminate(const bool registered)
 	  {
 	    it.next();
 
-	    auto neighbor = it.value();
-
-	    if(neighbor)
-	      neighbor->deleteLater();
+	    if(it.value())
+	      it.value()->deleteLater();
 
 	    it.remove();
 	  }
@@ -6156,10 +6148,8 @@ void spoton_kernel::slotTerminate(const bool registered)
 	  {
 	    it.next();
 
-	    auto starbeam = it.value();
-
-	    if(starbeam)
-	      starbeam->deleteLater();
+	    if(it.value())
+	      it.value()->deleteLater();
 
 	    it.remove();
 	  }
@@ -6207,8 +6197,7 @@ void spoton_kernel::slotUpdateSettings(void)
   spoton_misc::correctSettingsContainer(s_settings);
   spoton_misc::setTimeVariables(s_settings);
   locker.unlock();
-  spoton_misc::enableLog
-    (setting("gui/kernelLogEvents", false).toBool());
+  spoton_misc::enableLog(setting("gui/kernelLogEvents", false).toBool());
 
   if(m_urlDistribution)
     {
@@ -6251,9 +6240,8 @@ void spoton_kernel::slotUpdateSettings(void)
   else
     m_publishAllListenersPlaintextTimer.stop();
 
-  integer =
-    static_cast<int> (setting("gui/secondary_storage_congestion_control",
-			      false).toBool());
+  integer = static_cast<int>
+    (setting("gui/secondary_storage_congestion_control", false).toBool());
 
   if(integer != s_congestionControlSecondaryStorage)
     {
@@ -6619,7 +6607,7 @@ void spoton_kernel::writeMessage006X(const QByteArray &data,
 
 	  if(it.value())
 	    {
-	      if(i == *neighborIndex)
+	      if(*neighborIndex == i)
 		{
 		  if(it.value()->writeMessage006X(data, messageType))
 		    {
@@ -6644,12 +6632,11 @@ void spoton_kernel::writeMessage006X(const QByteArray &data,
 	{
 	  it.next();
 
-	  if(it.value())
-	    if(it.value()->writeMessage006X(data, messageType))
-	      {
-		if(ok)
-		  *ok = true;
-	      }
+	  if(it.value() && it.value()->writeMessage006X(data, messageType))
+	    {
+	      if(ok)
+		*ok = true;
+	    }
 	}
     }
 }

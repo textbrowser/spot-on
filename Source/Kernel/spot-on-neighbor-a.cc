@@ -3120,40 +3120,20 @@ void spoton_neighbor::slotTimeout(void)
   ** in the complete set of adaptive echo tokens.
   */
 
-  QSet<QPair<QByteArray, QByteArray> > a;
   QWriteLocker locker2(&m_learnedAdaptiveEchoPairsMutex);
 
-  for(int i = 0; i < m_learnedAdaptiveEchoPairs.size(); i++)
-    a.insert(m_learnedAdaptiveEchoPairs.at(i));
-
-  locker2.unlock();
-
-  QSet<QPair<QByteArray, QByteArray> > b;
-  auto const list(spoton_kernel::adaptiveEchoTokens());
-
-  for(int i = 0; i < list.size(); i++)
-    b.insert(list.at(i));
-
-  a.intersect(b);
-  locker2.relock();
-  m_learnedAdaptiveEchoPairs.clear();
-
-  QSetIterator<QPair<QByteArray, QByteArray> > it(a);
-
-  while(it.hasNext())
-    m_learnedAdaptiveEchoPairs.append(it.next());
-
+  m_learnedAdaptiveEchoPairs.intersect(spoton_kernel::adaptiveEchoTokens());
   locker2.unlock();
 
   if(!m_isUserDefined &&
      !m_passthrough &&
-     m_privateApplicationCredentials.isEmpty())
-    if(m_sourceOfRandomness > 0)
-      if(readyToWrite())
-	write(spoton_crypt::
-	      weakRandomBytes(static_cast<size_t> (m_sourceOfRandomness)).
-	      constData(),
-	      m_sourceOfRandomness);
+     m_privateApplicationCredentials.isEmpty() &&
+     m_sourceOfRandomness > 0 &&
+     readyToWrite())
+    write(spoton_crypt::
+	  weakRandomBytes(static_cast<size_t> (m_sourceOfRandomness)).
+	  constData(),
+	  m_sourceOfRandomness);
 }
 
 void spoton_neighbor::slotWrite

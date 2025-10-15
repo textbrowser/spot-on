@@ -86,8 +86,8 @@ class spoton_kernel: public QObject
 				       const QByteArray &hash);
   static QList<QByteArray> findInstitutionKey(const QByteArray &data,
 					      const QByteArray &hash);
-  static QList<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
   static QPointer<spoton_kernel> instance(void);
+  static QSet<QPair<QByteArray, QByteArray> > adaptiveEchoTokens(void);
   static QSqlDatabase urlDatabase(QString &connectionName);
   static QVariant setting(const QString &name);
   static QVariant setting(const QString &name, const QVariant &defaultValue);
@@ -195,7 +195,6 @@ class spoton_kernel: public QObject
   static QHash<QString, QVariant> s_settings;
   static QHash<QString, spoton_crypt *> s_crypts;
   static QList<QList<QByteArray> > s_institutionKeys;
-  static QList<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QMultiMap<qint64, QByteArray> s_messagingCacheLookup;
   static QReadWriteLock s_adaptiveEchoPairsMutex;
   static QReadWriteLock s_buzzKeysMutex;
@@ -206,6 +205,7 @@ class spoton_kernel: public QObject
   static QReadWriteLock s_institutionLastModificationTimeMutex;
   static QReadWriteLock s_messagingCacheMutex;
   static QReadWriteLock s_settingsMutex;
+  static QSet<QPair<QByteArray, QByteArray> > s_adaptiveEchoPairs;
   static QString prisonBluesSequence(void);
   bool initializeSecurityContainers(const QString &passphrase,
 				    const QString &answer);

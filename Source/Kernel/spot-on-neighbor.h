@@ -290,7 +290,6 @@ class spoton_neighbor: public QThread
   QHash<QPair<QHostAddress, quint16>, char> m_verifiedUdpClients;
 #endif
   QList<QFuture<void> > m_privateApplicationFutures;
-  QList<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QMap<quint64, QByteArray> m_privateApplicationMap;
   QMutex m_privateApplicationMutex;
   QPair<QByteArray, QByteArray> m_adaptiveEchoPair;
@@ -326,6 +325,7 @@ class spoton_neighbor: public QThread
   QReadWriteLock m_maximumBufferSizeMutex;
   QReadWriteLock m_maximumContentLengthMutex;
   QReadWriteLock m_receivedUuidMutex;
+  QSet<QPair<QByteArray, QByteArray> > m_learnedAdaptiveEchoPairs;
   QSslCertificate m_peerCertificate;
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)) && !defined(SPOTON_DTLS_DISABLED)
   QSslConfiguration m_udpSslConfiguration;

@@ -384,8 +384,11 @@ QString spoton_neighbor::findMessageType
     {
       QWriteLocker locker(&m_learnedAdaptiveEchoPairsMutex);
 
-      if(!m_learnedAdaptiveEchoPairs.contains(discoveredAdaptiveEchoPair))
-	m_learnedAdaptiveEchoPairs.append(discoveredAdaptiveEchoPair);
+      /*
+      ** Unique values are guaranteed.
+      */
+
+      m_learnedAdaptiveEchoPairs.insert(discoveredAdaptiveEchoPair);
     }
 
   return type;
@@ -3594,10 +3597,12 @@ void spoton_neighbor::processData(void)
 		  {
 		    QWriteLocker locker(&m_learnedAdaptiveEchoPairsMutex);
 
-		    if(!m_learnedAdaptiveEchoPairs.
-		       contains(discoveredAdaptiveEchoPair))
-		      m_learnedAdaptiveEchoPairs.
-			append(discoveredAdaptiveEchoPair);
+		    /*
+		    ** Unique values are guaranteed.
+		    */
+
+		    m_learnedAdaptiveEchoPairs.insert
+		      (discoveredAdaptiveEchoPair);
 		  }
 
 		messageType = "starbeam";
