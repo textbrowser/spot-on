@@ -37,7 +37,7 @@ QString spoton_neighbor::findMessageType
  QPair<QByteArray, QByteArray> &discoveredAdaptiveEchoPair)
 {
   QString type("");
-  auto const interfaces = m_kernelInterfaces.fetchAndAddOrdered(0);
+  auto const interfaces = spoton_kernel::interfaces();
   auto list(data.trimmed().split('\n'));
   auto s_crypt = spoton_kernel::crypt("chat");
 
@@ -99,9 +99,7 @@ QString spoton_neighbor::findMessageType
      spoton_misc::participantCount("chat", s_crypt) > 0)
     {
       auto const gemini
-	(spoton_misc::findGeminiInCosmos(list.at(0),
-					 list.at(1),
-					 s_crypt));
+	(spoton_misc::findGeminiInCosmos(list.at(0), list.at(1), s_crypt));
 
       if(!gemini.first.isEmpty())
 	{
@@ -371,9 +369,14 @@ QString spoton_neighbor::findMessageType
 	  }
       }
 
-  if(list.size() == 3 && (s_crypt = spoton_kernel::crypt("email")))
-    symmetricKeys = spoton_misc::findForwardSecrecyKeys
-      (list.at(0), list.at(1), type, s_crypt);
+  if(list.size() == 3)
+    {
+      if(list.at(1).contains("-----BEGIN PGP MESSAGE-----"))
+	type = "0105";
+      else
+	symmetricKeys = spoton_misc::findForwardSecrecyKeys
+	  (list.at(0), list.at(1), type, spoton_kernel::crypt("email"));
+    }
 
  done_label:
   spoton_kernel::discoverAdaptiveEchoPair
@@ -1817,7 +1820,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 	    if(db.open())
 	      {
 		QSqlQuery query(db);
-		bool ok = true;
+		auto ok = true;
 
 		if(!m_isUserDefined)
 		  {
@@ -3490,7 +3493,7 @@ void spoton_neighbor::processData(void)
 	  if(indexOf > -1)
 	    {
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	      auto match = rx.match(data);
+	      auto const match = rx.match(data);
 
 	      data.remove(0, indexOf + match.capturedLength());
 	      length -= match.capturedLength();

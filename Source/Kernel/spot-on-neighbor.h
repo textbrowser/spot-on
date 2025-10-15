@@ -275,7 +275,6 @@ class spoton_neighbor: public QThread
 
  private:
   QAtomicInt m_abort;
-  QAtomicInt m_kernelInterfaces;
   QAtomicInt m_passthrough;
   QAtomicInt m_waitforbyteswritten_msecs;
   QByteArray m_accountClientSentSalt;

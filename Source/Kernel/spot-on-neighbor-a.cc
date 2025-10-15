@@ -90,7 +90,6 @@ spoton_neighbor::spoton_neighbor
     m_bluetoothSocket->setParent(this);
 #else
 #endif
-  m_kernelInterfaces = spoton_kernel::interfaces();
   m_keySize = qAbs(keySize);
   m_laneWidth = qBound(spoton_common::LANE_WIDTH_MINIMUM,
 		       laneWidth,
@@ -601,7 +600,6 @@ spoton_neighbor::spoton_neighbor
   m_id = id;
   m_ipAddress = ipAddress;
   m_isUserDefined = userDefined;
-  m_kernelInterfaces = spoton_kernel::interfaces();
   m_keySize = qAbs(keySize);
 
   if(transport == "tcp" || transport == "udp" || transport == "websocket")
@@ -2908,8 +2906,6 @@ void spoton_neighbor::slotTimeout(void)
       deleteLater();
       return;
     }
-
-  m_kernelInterfaces.fetchAndStoreOrdered(spoton_kernel::interfaces());
 
   if(m_isUserDefined)
     if(status == "connected")

@@ -187,8 +187,8 @@ void spoton_gui_server_tcp_server::slotSocketDestroyed(QObject *object)
 {
   Q_UNUSED(object);
 
-  auto const value =
-    qMax(0, -1 + spoton_kernel::s_interfaces.fetchAndAddOrdered(0));
+  auto const value = qMax
+    (0, -1 + spoton_kernel::s_interfaces.fetchAndAddOrdered(0));
 
   spoton_kernel::s_interfaces.fetchAndStoreOrdered(value);
 }

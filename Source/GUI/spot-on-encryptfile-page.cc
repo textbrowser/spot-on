@@ -459,7 +459,7 @@ void spoton_encryptfile_page::encrypt(const bool sign,
 
       if(error.isEmpty() && !hashes.isEmpty())
 	{
-	  bool ok = true;
+	  auto ok = true;
 	  spoton_crypt crypt(credentials.value(0).toString(),
 			     credentials.value(1).toString(),
 			     QByteArray(),

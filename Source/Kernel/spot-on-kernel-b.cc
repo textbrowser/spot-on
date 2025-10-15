@@ -96,9 +96,7 @@ void spoton_kernel::importUrls(void)
   }
 
   auto s_crypt = this->crypt("chat");
-  spoton_crypt *crypt = nullptr;
-
-  crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
+  auto crypt = spoton_misc::retrieveUrlCommonCredentials(s_crypt);
 
   if(!crypt || !s_crypt)
     {
