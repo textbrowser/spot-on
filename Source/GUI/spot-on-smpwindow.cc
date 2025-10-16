@@ -785,7 +785,7 @@ void spoton_smpwindow::slotGenerateData(void)
       return;
     }
 
-  QString secret(m_ui.secret->text().trimmed());
+  auto const secret(m_ui.secret->text().trimmed());
 
   if(secret.isEmpty())
     {

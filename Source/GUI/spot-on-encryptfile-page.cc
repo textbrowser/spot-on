@@ -849,7 +849,7 @@ void spoton_encryptfile_page::slotSelect(void)
 
       if(sender() == ui.select)
 	{
-	  QString str(dialog.selectedFiles().value(0));
+	  auto const str(dialog.selectedFiles().value(0));
 
 	  ui.file->setText(str);
 	  ui.file->setCursorPosition(0);

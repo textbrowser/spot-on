@@ -1779,7 +1779,7 @@ void spoton::slotRespondToForwardSecrecy(void)
   Ui_spoton_forwardsecrecyalgorithmsselection ui;
   auto const publicKeyHash
     (m_sb.forward_secrecy_request->property("public_key_hash").toByteArray());
-  QString str(publicKeyHash.toBase64());
+  QString const str(publicKeyHash.toBase64());
   auto s_crypt = m_crypts.value("email", nullptr);
   auto sfs = m_forwardSecrecyRequests.value(publicKeyHash);
 

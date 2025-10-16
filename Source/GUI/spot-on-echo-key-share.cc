@@ -249,7 +249,7 @@ void spoton_echo_key_share::addCategory(void)
   if(!crypt)
     return;
 
-  QString category;
+  QString category("");
   auto ok = true;
 
   category = QInputDialog::getText

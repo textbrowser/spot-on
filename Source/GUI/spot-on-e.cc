@@ -2249,9 +2249,9 @@ void spoton::slotShareStarBeam(void)
 
 	if(ok)
 	  {
-	    QString origin;
+	    auto const origin
+	      (QString("%1 (%2)").arg(participant).arg(publicKeyHash));
 
-	    origin = QString("%1 (%2)").arg(participant).arg(publicKeyHash);
 	    query.addBindValue
 	      (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
 	  }

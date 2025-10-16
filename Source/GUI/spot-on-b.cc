@@ -1791,9 +1791,9 @@ void spoton::initializeKernelSocket(void)
 
       if(error.isEmpty())
 	{
-	  QSslKey key;
 	  QSslConfiguration configuration;
-	  QString sslCS
+	  QSslKey key;
+	  auto const sslCS
 	    (m_settings.value("gui/sslControlString",
 			      spoton_common::SSL_CONTROL_STRING).toString());
 

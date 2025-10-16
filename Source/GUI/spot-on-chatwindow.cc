@@ -690,11 +690,9 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 	if(ok)
 	  {
-	    QString origin;
+	    auto const origin
+	      (QString("%1 (%2)").arg(ui.name->text()).arg(m_publicKeyHash));
 
-	    origin = QString("%1 (%2)").
-	      arg(ui.name->text()).
-	      arg(m_publicKeyHash);
 	    query.addBindValue
 	      (crypt->encryptedThenHashed(origin.toUtf8(), &ok).toBase64());
 	  }

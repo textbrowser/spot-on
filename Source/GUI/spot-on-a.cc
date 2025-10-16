@@ -5046,7 +5046,6 @@ void spoton::slotAddNeighbor(void)
     if(db.open())
       {
 	QSqlQuery query(db);
-	QString port(QString::number(m_ui.neighborPort->value()));
 	QString protocol("");
 	QString proxyHostName("");
 	QString proxyPassword("");
@@ -5056,6 +5055,7 @@ void spoton::slotAddNeighbor(void)
 	QString status("connected");
 	QString transport("tcp");
 	QString transportUniqueness("");
+	auto const port(QString::number(m_ui.neighborPort->value()));
 	auto ip(m_ui.neighborIP->text().toLower().trimmed());
 	auto scopeId(m_ui.neighborScopeId->text());
 	auto sslCS(m_ui.neighborsSslControlString->text().trimmed());
@@ -8813,27 +8813,27 @@ void spoton::slotPopulateNeighbors(QSqlDatabase *db,
       QByteArray bytes3;
       QByteArray bytes4;
       QByteArray bytes5;
-      QString bytes6;
+      QString bytes6("");
 
       ok = true;
       bytes1 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnREMOTE_IP).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnREMOTE_IP).toByteArray()),
+	 &ok);
       bytes2 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnREMOTE_PORT).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnREMOTE_PORT).toByteArray()),
+	 &ok);
       bytes3 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnSCOPE_ID).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnSCOPE_ID).toByteArray()),
+	 &ok);
       bytes4 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnPROXY_IP).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnPROXY_IP).toByteArray()),
+	 &ok);
       bytes5 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnPROXY_PORT).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnPROXY_PORT).toByteArray()),
+	 &ok);
       bytes6 = crypt->decryptedAfterAuthenticated
-	(QByteArray::fromBase64(query->value(columnTRANSPORT).
-				toByteArray()), &ok);
+	(QByteArray::fromBase64(query->value(columnTRANSPORT).toByteArray()),
+	 &ok);
 
       if(bytes1 == remoteIp &&
 	 bytes2 == remotePort &&
@@ -8909,7 +8909,7 @@ void spoton::slotPopulateParticipants
   QList<int> rows;  // Chat
   QList<int> rowsE; // E-Mail
   QList<int> rowsU; // URLs
-  QString hpData; // Human Proxy
+  QString hpData(""); // Human Proxy
   QStringList hashes;
   QStringList hashesE;
   QStringList hashesU;
