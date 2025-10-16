@@ -691,7 +691,9 @@ void spoton::prepareOtherOptions(void)
 
 	  if(empty)
 	    {
-	      if(key == "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
+	      if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
+		m_settings[key] = "sha3-512";
+	      else if(key == "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
 		m_settings[key] = "512";
 	    }
 
@@ -1014,8 +1016,11 @@ void spoton::slotApplyOtherOptions(void)
 
       if(empty)
 	{
-	  if(item1->text().trimmed() ==
-	     "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
+	  auto const text(item1->text().trimmed());
+
+	  if(text == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
+	    item2->setText("sha3-512");
+	  else if(text == "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
 	    item2->setText("512");
 	}
 

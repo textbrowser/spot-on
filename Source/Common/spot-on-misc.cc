@@ -1034,7 +1034,10 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
   auto const list(bytes.split('\n'));
 
   if(list.size() <= 1)
-    s_otherOptions["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "512";
+    {
+      s_otherOptions["GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING"] = "sha3-512";
+      s_otherOptions["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "512";
+    }
   else
     for(int i = 0; i < list.size(); i++)
       {
