@@ -49,32 +49,40 @@ QByteArray spoton::copyMyOpenLibraryPublicKey(void) const
      !m_crypts.value("open-library-signature", nullptr))
     return QByteArray();
 
-  QByteArray name;
   QByteArray mPublicKey;
   QByteArray mSignature;
+  QByteArray name;
   QByteArray sPublicKey;
   QByteArray sSignature;
   auto ok = true;
 
-  name = m_settings.value("gui/openLibraryName", "unknown").toByteArray();
   mPublicKey = m_crypts.value("open-library")->publicKey(&ok);
+  name = m_settings.value("gui/openLibraryName", "unknown").toByteArray();
 
   if(ok)
-    mSignature = m_crypts.value("open-library")->
-      digitalSignature(mPublicKey, &ok);
+    mSignature = m_crypts.value("open-library")->digitalSignature
+      (mPublicKey, &ok);
 
   if(ok)
     sPublicKey = m_crypts.value("open-library-signature")->publicKey(&ok);
 
   if(ok)
-    sSignature = m_crypts.value("open-library-signature")->
-      digitalSignature(sPublicKey, &ok);
+    sSignature = m_crypts.value("open-library-signature")->digitalSignature
+      (sPublicKey, &ok);
 
   if(ok)
-    return "K" + QByteArray("open-library").toBase64() + "@" +
-      name.toBase64() + "@" +
-      qCompress(mPublicKey).toBase64() + "@" + mSignature.toBase64() + "@" +
-      sPublicKey.toBase64() + "@" + sSignature.toBase64();
+    return "K" +
+      QByteArray("open-library").toBase64() +
+      "@" +
+      name.toBase64() +
+      "@" +
+      qCompress(mPublicKey).toBase64() +
+      "@" +
+      mSignature.toBase64() +
+      "@" +
+      sPublicKey.toBase64() +
+      "@" +
+      sSignature.toBase64();
   else
     return QByteArray();
 }
@@ -207,22 +215,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
     {
       auto str(list.at(i).trimmed());
 
-      if(str.startsWith("rn="))
-	{
-	  str.remove(0, 3);
-	  channel = str;
-	}
-      else if(str.startsWith("xf="))
-	{
-	  str.remove(0, 3);
-	  iterationCount = static_cast<unsigned long int> (qAbs(str.toInt()));
-	}
-      else if(str.startsWith("xs="))
-	{
-	  str.remove(0, 3);
-	  channelSalt = str;
-	}
-      else if(str.startsWith("ct="))
+      if(str.startsWith("ct="))
 	{
 	  str.remove(0, 3);
 	  channelType = str;
@@ -236,6 +229,21 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	{
 	  str.remove(0, 3);
 	  hashType = str;
+	}
+      else if(str.startsWith("rn="))
+	{
+	  str.remove(0, 3);
+	  channel = str;
+	}
+      else if(str.startsWith("xf="))
+	{
+	  str.remove(0, 3);
+	  iterationCount = static_cast<unsigned long int> (qAbs(str.toInt()));
+	}
+      else if(str.startsWith("xs="))
+	{
+	  str.remove(0, 3);
+	  channelSalt = str;
 	}
       else if(str.startsWith("xt="))
 	{
@@ -271,11 +279,10 @@ void spoton::joinBuzzChannel(const QUrl &url)
     }
 
   if(m_buzzIds.contains(keys.first))
-    id = m_buzzIds[keys.first];
+    id = m_buzzIds.value(keys.first);
   else
     {
-      id = spoton_crypt::
-	strongRandomBytes
+      id = spoton_crypt::strongRandomBytes
 	(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
       m_buzzIds[keys.first] = id;
     }
@@ -547,11 +554,10 @@ void spoton::slotBuzzInvite(void)
   if(!page)
     {
       if(m_buzzIds.contains(keys.first))
-	id = m_buzzIds[keys.first];
+	id = m_buzzIds.value(keys.first);
       else
 	{
-	  id = spoton_crypt::
-	    strongRandomBytes
+	  id = spoton_crypt::strongRandomBytes
 	    (spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
 	  m_buzzIds[keys.first] = id;
 	}
