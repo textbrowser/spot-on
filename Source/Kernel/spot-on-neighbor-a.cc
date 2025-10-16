@@ -2320,13 +2320,16 @@ void spoton_neighbor::slotSendCapabilities(void)
 
   locker.unlock();
 
-  QUuid uuid
+  QUuid const uuid
     (spoton_kernel::
      setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
 
-  message = spoton_send::message0014(uuid.toString().toLatin1() + "\n" +
-				     QByteArray::number(m_laneWidth) + "\n" +
-				     echoMode.toLatin1());
+  message = spoton_send::message0014
+    (uuid.toString().toLatin1() +
+     "\n" +
+     QByteArray::number(m_laneWidth) +
+     "\n" +
+     echoMode.toLatin1());
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError
