@@ -339,6 +339,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 	  SIGNAL(destroyed(void)),
 	  mainWindow,
 	  SLOT(deleteLater(void)));
+  mainWindow->resize(500, 600);
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
   mainWindow->setWindowIcon(windowIcon());
@@ -347,9 +348,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
      arg(SPOTON_APPLICATION_NAME).
      arg(page->channel().constData()));
   mainWindow->show();
-  new QShortcut(tr("Ctrl+W"),
-		mainWindow,
-		SLOT(close(void)));
+  new QShortcut(tr("Ctrl+W"), mainWindow, SLOT(close(void)));
   page->show();
   page->showUnify(true);
 
@@ -618,6 +617,7 @@ void spoton::slotBuzzInvite(void)
 	      SIGNAL(destroyed(void)),
 	      mainWindow,
 	      SLOT(deleteLater(void)));
+      mainWindow->resize(500, 600);
       mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
       mainWindow->setCentralWidget(page);
       mainWindow->setWindowIcon(windowIcon());
@@ -626,9 +626,7 @@ void spoton::slotBuzzInvite(void)
 	 arg(SPOTON_APPLICATION_NAME).
 	 arg(page->channel().constData()));
       mainWindow->show();
-      new QShortcut(tr("Ctrl+W"),
-		    mainWindow,
-		    SLOT(close(void)));
+      new QShortcut(tr("Ctrl+W"), mainWindow, SLOT(close(void)));
       page->show();
       page->showUnify(true);
     }
