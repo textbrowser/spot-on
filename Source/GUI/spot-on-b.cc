@@ -746,8 +746,7 @@ bool spoton::addFriendsKey(const QByteArray &k,
 	    (parent,
 	     tr("%1: Error").arg(SPOTON_APPLICATION_NAME),
 	     tr("Invalid key type. Expecting 'chat', 'email', "
-		"'open-library', "
-		"'poptastic', 'rosetta', or 'url'."));
+		"'open-library', 'poptastic', 'rosetta', or 'url'."));
 	  QApplication::processEvents();
 	  return false;
 	}
