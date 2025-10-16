@@ -335,6 +335,10 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
   auto mainWindow = new QMainWindow(nullptr);
 
+  connect(page,
+	  SIGNAL(destroyed(void)),
+	  mainWindow,
+	  SLOT(deleteLater(void)));
   mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
   mainWindow->setCentralWidget(page);
   mainWindow->setWindowIcon(windowIcon());
@@ -610,6 +614,10 @@ void spoton::slotBuzzInvite(void)
 
       auto mainWindow = new QMainWindow(nullptr);
 
+      connect(page,
+	      SIGNAL(destroyed(void)),
+	      mainWindow,
+	      SLOT(deleteLater(void)));
       mainWindow->setAttribute(Qt::WA_DeleteOnClose, true);
       mainWindow->setCentralWidget(page);
       mainWindow->setWindowIcon(windowIcon());

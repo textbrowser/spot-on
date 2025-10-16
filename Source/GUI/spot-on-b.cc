@@ -4028,11 +4028,11 @@ void spoton::slotJoinBuzzChannel(void)
     }
 
   if(m_buzzIds.contains(keys.first))
-    id = m_buzzIds[keys.first];
+    id = m_buzzIds.value(keys.first);
   else
     {
-      id = spoton_crypt::
-	strongRandomBytes(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
+      id = spoton_crypt::strongRandomBytes
+	(spoton_common::BUZZ_MAXIMUM_ID_LENGTH / 2).toHex();
       m_buzzIds[keys.first] = id;
     }
 
