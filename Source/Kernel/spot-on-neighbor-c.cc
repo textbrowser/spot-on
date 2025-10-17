@@ -3147,6 +3147,36 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 	{
 	  for(int i = 0; i < list.size(); i++)
 	    list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	  if(list.at(0).length() == 40 &&
+	     list.at(1).endsWith("-----END PGP MESSAGE-----") &&
+	     list.at(1).startsWith("-----BEGIN PGP MESSAGE-----"))
+	    {
+	      foreach(auto const &directory,
+		      spoton_misc::
+		      prisonBluesDirectories(spoton_kernel::crypt("chat")))
+		if(directory.isWritable())
+		  {
+		    QDir().mkpath
+		      (directory.absoluteFilePath() +
+		       QDir::separator() +
+		       list.at(0));
+
+		    QTemporaryFile file
+		      (directory.absoluteFilePath() +
+		       QDir::separator() +
+		       list.at(0) +
+		       QDir::separator() +
+		       "PrisonBluesXXXXXXXXXX.txt");
+
+		    if(file.open())
+		      {
+			Q_UNUSED(file.fileName()); // Prevents removal of file.
+			file.setAutoRemove(false);
+			file.write(list.at(1));
+		      }
+		  }
+	    }
 	}
     }
   else

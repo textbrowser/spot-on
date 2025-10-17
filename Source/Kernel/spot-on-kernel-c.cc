@@ -604,8 +604,10 @@ void spoton_kernel::slotSMPMessageReceivedFromUI(const QByteArrayList &list)
   if(QByteArray::fromBase64(list.value(0)) == "poptastic")
     postPoptasticMessage
       (QByteArray::fromBase64(list.value(1)),
-       spoton_send::messageXYZ(list.value(2) + "\n" +
-			       list.value(3) + "\n" +
+       spoton_send::messageXYZ(list.value(2) +
+			       "\n" +
+			       list.value(3) +
+			       "\n" +
 			       list.value(4),
 			       QPair<QByteArray, QByteArray> ()));
 }
