@@ -514,7 +514,7 @@ void spoton_rosetta_gpg_import::slotShareKeyBundle(void)
 
   if(email.contains('@') == false ||
      email.length() < 3 ||
-     fingerprint.length() != 40)
+     fingerprint.length() != spoton_crypt::gpgFingerprintLength())
     {
       error = tr("Empty or invalid destination value(s).");
       m_ui.share->animateNegatively(2500);

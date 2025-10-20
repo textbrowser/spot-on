@@ -3148,7 +3148,7 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 	  for(int i = 0; i < list.size(); i++)
 	    list.replace(i, QByteArray::fromBase64(list.at(i)));
 
-	  if(list.at(0).length() == 40 &&
+	  if(list.at(0).length() == spoton_crypt::gpgFingerprintLength() &&
 	     list.at(1).endsWith("-----END PGP MESSAGE-----") &&
 	     list.at(1).startsWith("-----BEGIN PGP MESSAGE-----"))
 	    {

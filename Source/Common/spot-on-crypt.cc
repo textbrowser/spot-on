@@ -3773,6 +3773,11 @@ const char *spoton_crypt::preferredCipherAlgorithm(void)
   return "aes256";
 }
 
+int spoton_crypt::gpgFingerprintLength(void)
+{
+  return 40;
+}
+
 qint64 spoton_crypt::publicKeyCount(void)
 {
   QString connectionName("");
