@@ -3359,8 +3359,9 @@ void spoton_neighbor::processData(void)
 				 data.contains("type=0052&content=")))
 	    continue;
 	}
-      else if(useAccounts &&
-	      length > 0 && data.contains("type=0051&content="))
+      else if(length > 0 &&
+	      useAccounts &&
+	      data.contains("type=0051&content="))
 	{
 	  /*
 	  ** The server responded. Let's determine if the server's
@@ -3493,9 +3494,9 @@ void spoton_neighbor::processData(void)
 	    data = data.mid(0, indexOf + 2);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-	  QRegularExpression rx
+	  QRegularExpression const rx
 #else
-	  QRegExp rx
+	  QRegExp const rx
 #endif
 	    ("(type=[0-9][0-9][0-9][0-9][a-z]{0,1}&){0,1}content=");
 
@@ -3867,11 +3868,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 	QSqlQuery query(db);
 	auto ok = true;
 
-	query.prepare
-	  ("UPDATE neighbors SET certificate = ? WHERE OID = ?");
+	query.prepare("UPDATE neighbors SET certificate = ? WHERE OID = ?");
 	query.bindValue
-	  (0, s_crypt->encryptedThenHashed(certificate.toPem(),
-					   &ok).toBase64());
+	  (0,
+	   s_crypt->encryptedThenHashed(certificate.toPem(), &ok).toBase64());
 	query.bindValue(1, m_id);
 
 	if(ok)
@@ -4408,11 +4408,15 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 		*/
 
 		spoton_misc::saveFriendshipBundle
-		  (keyType, name, publicKey, sPublicKey,
-		   noid, db, s_crypt);
+		  (keyType, name, publicKey, sPublicKey, noid, db, s_crypt);
 		spoton_misc::saveFriendshipBundle
-		  (keyType + "-signature", name, sPublicKey,
-		   QByteArray(), noid, db, s_crypt);
+		  (keyType + "-signature",
+		   name,
+		   sPublicKey,
+		   QByteArray(),
+		   noid,
+		   db,
+		   s_crypt);
 	      }
 	  }
 	else
@@ -4420,8 +4424,13 @@ void spoton_neighbor::savePublicKey(const QByteArray &keyType,
 	    spoton_misc::saveFriendshipBundle
 	      (keyType, name, publicKey, sPublicKey, -1, db, s_crypt);
 	    spoton_misc::saveFriendshipBundle
-	      (keyType + "-signature", name, sPublicKey, QByteArray(), -1,
-	       db, s_crypt);
+	      (keyType + "-signature",
+	       name,
+	       sPublicKey,
+	       QByteArray(),
+	       -1,
+	       db,
+	       s_crypt);
 	  }
       }
 
@@ -4713,7 +4722,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
   if(!s_crypt)
     return;
 
-  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash, "email",
+  if(!spoton_misc::isAcceptedParticipant(senderPublicKeyHash,
+					 "email",
 					 s_crypt))
     return;
 
@@ -4732,22 +4742,21 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
       recipientDigest = spoton_crypt::preferredHash(recipientDigest);
 
       if(!ok ||
-	 !spoton_misc::
-	 isValidSignature("0001b" +
-			  symmetricKey +
-			  hashKey +
-			  symmetricKeyAlgorithm +
-			  hashKeyAlgorithm +
-			  senderPublicKeyHash +
-			  name +
-			  subject +
-			  message +
-			  date +
-			  attachmentData +
-			  QByteArray::number(goldbugUsed) +
-			  recipientDigest,
-			  senderPublicKeyHash,
-			  signature, s_crypt))
+	 !spoton_misc::isValidSignature("0001b" +
+					symmetricKey +
+					hashKey +
+					symmetricKeyAlgorithm +
+					hashKeyAlgorithm +
+					senderPublicKeyHash +
+					name +
+					subject +
+					message +
+					date +
+					attachmentData +
+					QByteArray::number(goldbugUsed) +
+					recipientDigest,
+					senderPublicKeyHash,
+					signature, s_crypt))
 	{
 	  spoton_misc::logError
 	    ("spoton_neighbor::storeLetter(): invalid signature.");
@@ -4811,7 +4820,6 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		  QByteArray ak;
 		  QByteArray ea;
 		  QByteArray ek;
-		  QByteArray magnet;
 
 		  if(ok)
 		    aa = s_crypt->decryptedAfterAuthenticated
@@ -4839,7 +4847,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 		  if(ok)
 		    {
-		      magnet = spoton_misc::forwardSecrecyMagnetFromList
+		      auto const magnet = spoton_misc::
+			forwardSecrecyMagnetFromList
 			(QList<QByteArray> () << aa << ak << ea << ek);
 
 		      auto crypt = spoton_misc::cryptFromForwardSecrecyMagnet
@@ -4978,7 +4987,6 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	      if(!attachmentData_l.isEmpty())
 		{
 		  auto const variant(query.lastInsertId());
-		  auto const id = query.lastInsertId().toLongLong();
 
 		  if(variant.isValid())
 		    {
@@ -5015,14 +5023,15 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 					    "(data, folders_oid, name) "
 					    "VALUES (?, ?, ?)");
 			      query.bindValue
-				(0, s_crypt->encryptedThenHashed(pair.first,
-								 &ok).
-				 toBase64());
-			      query.bindValue(1, id);
+				(0,
+				 s_crypt->encryptedThenHashed(pair.first,
+							      &ok).toBase64());
+			      query.bindValue(1, variant.toLongLong());
 
 			      if(ok)
 				query.bindValue
-				  (2, s_crypt->
+				  (2,
+				   s_crypt->
 				   encryptedThenHashed(pair.second,
 						       &ok).toBase64());
 
