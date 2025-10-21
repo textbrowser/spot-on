@@ -254,6 +254,45 @@ spoton_gui_server::~spoton_gui_server()
   spoton_misc::logError("The UI server has been terminated.");
 }
 
+void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
+{
+  auto const keySize = spoton_kernel::setting
+    ("gui/kernelKeySize", 2048).toInt();
+
+  foreach(auto socket, findChildren<QSslSocket *> ())
+    if(m_guiIsAuthenticated.
+       value(socket->socketDescriptor(), false) && (keySize == 0 ||
+						    socket->isEncrypted()))
+      {
+	qint64 w = 0;
+
+	if((w = socket->write(message.constData(),
+			      message.length())) != message.length())
+	  spoton_misc::logError
+	    (QString("spoton_gui_server::sendMessageToUIs(): "
+		     "write() failure for %1:%2.").
+	     arg(socket->peerAddress().toString()).
+	     arg(socket->peerPort()));
+
+	if(w > 0)
+	  {
+	    QWriteLocker locker
+	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
+
+	    spoton_kernel::s_totalUiBytesReadWritten.second +=
+	      static_cast<quint64> (w);
+	  }
+      }
+    else
+      spoton_misc::logError
+	(QString("spoton_gui_server::sendMessageToUIs(): "
+		 "socket %1:%2 is not encrypted, if required, or the user "
+		 "interface has not been authenticated. "
+		 "Ignoring write() request.").
+	 arg(socket->peerAddress().toString()).
+	 arg(socket->peerPort()));
+}
+
 void spoton_gui_server::slotAuthenticationRequested
 (const QString &peerInformation)
 {
@@ -303,15 +342,18 @@ void spoton_gui_server::slotClientConnected(void)
       connect(socket,
 	      SIGNAL(disconnected(void)),
 	      this,
-	      SLOT(slotClientDisconnected(void)));
+	      SLOT(slotClientDisconnected(void)),
+	      Qt::UniqueConnection);
       connect(socket,
 	      SIGNAL(modeChanged(QSslSocket::SslMode)),
 	      this,
-	      SLOT(slotModeChanged(QSslSocket::SslMode)));
+	      SLOT(slotModeChanged(QSslSocket::SslMode)),
+	      Qt::UniqueConnection);
       connect(socket,
 	      SIGNAL(readyRead(void)),
 	      this,
-	      SLOT(slotReadyRead(void)));
+	      SLOT(slotReadyRead(void)),
+	      Qt::UniqueConnection);
     }
 }
 
@@ -400,43 +442,14 @@ void spoton_gui_server::slotForwardSecrecyResponse
   sendMessageToUIs(message);
 }
 
-void spoton_gui_server::sendMessageToUIs(const QByteArray &message)
+void spoton_gui_server::slotGPGMessage
+(const QByteArray &fingerprint, const QByteArray &message)
 {
-  auto const keySize = spoton_kernel::setting
-    ("gui/kernelKeySize", 2048).toInt();
+  if(spoton_kernel::interfaces() == 0)
+    return;
 
-  foreach(auto socket, findChildren<QSslSocket *> ())
-    if(m_guiIsAuthenticated.
-       value(socket->socketDescriptor(), false) && (keySize == 0 ||
-						    socket->isEncrypted()))
-      {
-	qint64 w = 0;
-
-	if((w = socket->write(message.constData(),
-			      message.length())) != message.length())
-	  spoton_misc::logError
-	    (QString("spoton_gui_server::sendMessageToUIs(): "
-		     "write() failure for %1:%2.").
-	     arg(socket->peerAddress().toString()).
-	     arg(socket->peerPort()));
-
-	if(w > 0)
-	  {
-	    QWriteLocker locker
-	      (&spoton_kernel::s_totalUiBytesReadWrittenMutex);
-
-	    spoton_kernel::s_totalUiBytesReadWritten.second +=
-	      static_cast<quint64> (w);
-	  }
-      }
-    else
-      spoton_misc::logError
-	(QString("spoton_gui_server::sendMessageToUIs(): "
-		 "socket %1:%2 is not encrypted, if required, or the user "
-		 "interface has not been authenticated. "
-		 "Ignoring write() request.").
-	 arg(socket->peerAddress().toString()).
-	 arg(socket->peerPort()));
+  sendMessageToUIs
+    ("gpg_message_" + fingerprint.toBase64() + "_" + message.toBase64() + "\n");
 }
 
 void spoton_gui_server::slotModeChanged(QSslSocket::SslMode mode)

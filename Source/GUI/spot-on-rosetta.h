@@ -56,6 +56,8 @@ class spoton_rosetta: public QMainWindow
   ~spoton_rosetta();
   QLineEdit *attachmentsGPGPath(void) const;
   void deactivate(void);
+  void processGPGMessage
+    (const QByteArray &fingerprint, const QByteArray &message);
   void setName(const QString &text);
   void setParent(spoton *parent);
   void show(spoton *parent);

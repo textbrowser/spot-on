@@ -5016,6 +5016,18 @@ void spoton::slotReceivedKernelMessage(void)
 		     arg(str.mid(0, 16) + "..." + str.right(16)));
 		}
 	    }
+	  else if(data.startsWith("gpg_message_"))
+	    {
+	      data.remove(0, static_cast<int> (qstrlen("gpg_message_")));
+
+	      auto list(data.split('_'));
+
+	      for(int i = 0; i < list.size(); i++)
+		list.replace(i, QByteArray::fromBase64(list.at(i)));
+
+	      if(list.size() == 2)
+		m_rosetta->processGPGMessage(list.at(0), list.at(1));
+	    }
 	  else if(data.startsWith("message_"))
 	    {
 	      data.remove

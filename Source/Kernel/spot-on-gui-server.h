@@ -92,6 +92,8 @@ class spoton_gui_server: public spoton_gui_server_tcp_server
   void slotFileChanged(const QString &path);
   void slotForwardSecrecyRequest(const QByteArrayList &list);
   void slotForwardSecrecyResponse(const QByteArrayList &list);
+  void slotGPGMessage
+    (const QByteArray &fingerprint, const QByteArray &message);
   void slotModeChanged(QSslSocket::SslMode mode);
   void slotNewEMailArrived(void);
   void slotNotification(const QString &text);

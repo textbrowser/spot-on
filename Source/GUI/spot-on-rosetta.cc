@@ -1358,6 +1358,13 @@ void spoton_rosetta::prisonBluesProcess(const bool pullOnly)
 #endif
 }
 
+void spoton_rosetta::processGPGMessage
+(const QByteArray &fingerprint, const QByteArray &message)
+{
+  Q_UNUSED(fingerprint);
+  processGPGMessage(message);
+}
+
 void spoton_rosetta::processGPGMessage(const QByteArray &message)
 {
 #ifdef SPOTON_GPGME_ENABLED

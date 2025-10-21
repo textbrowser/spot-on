@@ -597,6 +597,7 @@ class spoton_neighbor: public QThread
   void disconnected(void);
   void dropped(const QByteArray &data);
   void forwardSecrecyRequest(const QByteArrayList &list);
+  void gpgMessage(const QByteArray &fingerprint, const QByteArray &message);
   void newData(void);
   void newEMailArrived(void);
   void notification(const QString &text);

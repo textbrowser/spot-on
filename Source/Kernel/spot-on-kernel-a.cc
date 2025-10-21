@@ -1809,6 +1809,11 @@ void spoton_kernel::connectSignalsToNeighbor
 	  SLOT(slotForwardSecrecyRequest(const QByteArrayList &)),
 	  Qt::UniqueConnection);
   connect(neighbor,
+	  SIGNAL(gpgMessage(const QByteArray &, const QByteArray &)),
+	  m_guiServer,
+	  SLOT(slotGPGMessage(const QByteArray &, const QByteArray &)),
+	  Qt::UniqueConnection);
+  connect(neighbor,
 	  SIGNAL(newEMailArrived(void)),
 	  m_guiServer,
 	  SLOT(slotNewEMailArrived(void)),

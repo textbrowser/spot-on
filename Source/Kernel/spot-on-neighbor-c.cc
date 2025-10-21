@@ -675,8 +675,7 @@ void spoton_neighbor::addToBytesWritten(const qint64 bytesWritten)
   locker.unlock();
 
   {
-    QWriteLocker locker
-      (&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
+    QWriteLocker locker(&spoton_kernel::s_totalNeighborsBytesReadWrittenMutex);
 
     spoton_kernel::s_totalNeighborsBytesReadWritten.second +=
       static_cast<quint64> (qAbs(bytesWritten));
@@ -3145,13 +3144,19 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 
       if(list.size() == 3)
 	{
+	  list.replace
+	    (0,
+	     list.at(0).mid(static_cast<int> (qstrlen("type=0105&content="))));
+
 	  for(int i = 0; i < list.size(); i++)
-	    list.replace(i, QByteArray::fromBase64(list.at(i)));
+	    list.replace(i, QByteArray::fromBase64(list.at(i)).trimmed());
 
 	  if(list.at(0).length() == spoton_crypt::gpgFingerprintLength() &&
 	     list.at(1).endsWith("-----END PGP MESSAGE-----") &&
 	     list.at(1).startsWith("-----BEGIN PGP MESSAGE-----"))
 	    {
+	      emit gpgMessage(list.at(0), list.at(1));
+
 	      foreach(auto const &directory,
 		      spoton_misc::
 		      prisonBluesDirectories(spoton_kernel::crypt("chat")))
