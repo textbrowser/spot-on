@@ -5018,6 +5018,7 @@ void spoton::slotReceivedKernelMessage(void)
 	    }
 	  else if(data.startsWith("gpg_message_"))
 	    {
+#ifdef SPOTON_GPGME_ENABLED
 	      data.remove(0, static_cast<int> (qstrlen("gpg_message_")));
 
 	      auto list(data.split('_'));
@@ -5027,6 +5028,7 @@ void spoton::slotReceivedKernelMessage(void)
 
 	      if(list.size() == 2)
 		m_rosetta->processGPGMessage(list.at(0), list.at(1));
+#endif
 	    }
 	  else if(data.startsWith("message_"))
 	    {

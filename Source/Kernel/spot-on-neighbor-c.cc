@@ -3155,7 +3155,16 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 	     list.at(1).endsWith("-----END PGP MESSAGE-----") &&
 	     list.at(1).startsWith("-----BEGIN PGP MESSAGE-----"))
 	    {
+	      /*
+	      ** Share the message with the interface.
+	      */
+
 	      emit gpgMessage(list.at(0), list.at(1));
+
+	      /*
+	      ** Record the message locally as it may be intended for
+	      ** this Spot-On instance.
+	      */
 
 	      foreach(auto const &directory,
 		      spoton_misc::
