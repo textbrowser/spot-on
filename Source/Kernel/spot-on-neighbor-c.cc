@@ -3557,17 +3557,15 @@ void spoton_neighbor::processData(void)
 	      (originalData, m_id, QPair<QByteArray, QByteArray> ());
 
 	  /*
-	  ** Please note that findMessageType() calls
-	  ** participantCount(). Therefore, the process() methods
-	  ** that would do not.
+	  ** Please note that findMessageType() calls participantCount().
+	  ** Therefore, the process() methods that would do not.
 	  */
 
 	  QList<QByteArray> symmetricKeys;
 	  QPair<QByteArray, QByteArray> discoveredAdaptiveEchoPair;
 
 	  /*
-	  ** The findMessageType() method does not detect StarBeam
-	  ** data.
+	  ** The findMessageType() method does not detect StarBeam data.
 	  */
 
 	  auto messageType
