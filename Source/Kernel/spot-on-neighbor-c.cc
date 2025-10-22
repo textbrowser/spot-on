@@ -3648,8 +3648,8 @@ void spoton_neighbor::processData(void)
 	    }
 	  else if(echoMode == "full")
 	    {
-	      if(messageType == "0001b" &&
-		 data.trimmed().split('\n').size() == 7)
+	      if(data.trimmed().split('\n').size() == 7 &&
+		 messageType == "0001b")
 		emit receivedMessage
 		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	      else if(messageType.isEmpty() ||
@@ -3664,6 +3664,13 @@ void spoton_neighbor::processData(void)
 
 		emit receivedMessage
 		  (originalData, m_id, QPair<QByteArray, QByteArray> ());
+	      else if(messageType == "0105")
+		/*
+		** Prison Blues.
+		*/
+
+		emit receivedMessage
+		  (originalData, m_id, discoveredAdaptiveEchoPair);
 	      else if(!discoveredAdaptiveEchoPair.first.isEmpty() &&
 		      !discoveredAdaptiveEchoPair.second.isEmpty() &&
 		      messageType == "starbeam")
