@@ -1649,8 +1649,15 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 
       if(m_id != -1)
 	savePublicKey
-	  (list.value(0), list.value(1), qUncompress(list.value(2)),
-	   list.value(3), list.value(4), list.value(5), m_id, false, true,
+	  (list.value(0),
+	   list.value(1),
+	   qUncompress(list.value(2)),
+	   list.value(3),
+	   list.value(4),
+	   list.value(5),
+	   m_id,
+	   false,
+	   true,
 	   "0011");
       else
 	spoton_misc::logError("spoton_neighbor::process0011(): "
@@ -1711,8 +1718,16 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
 
       emit resetKeepAlive();
       savePublicKey
-	(list.value(0), list.value(1), qUncompress(list.value(2)),
-	 list.value(3), list.value(4), list.value(5), -1, false, true, "0012");
+	(list.value(0),
+	 list.value(1),
+	 qUncompress(list.value(2)),
+	 list.value(3),
+	 list.value(4),
+	 list.value(5),
+	 -1,
+	 false,
+	 true,
+	 "0012");
     }
   else
     spoton_misc::logError
