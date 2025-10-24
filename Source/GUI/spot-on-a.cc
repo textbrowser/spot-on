@@ -2619,7 +2619,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.searchResultsPerPage->setValue
     (m_settings.value("gui/searchResultsPerPage", 10).toInt());
   m_optionsUi.share_git->setChecked
-    (m_settings.value("gui/share_git", false).toBool());
+    (m_settings.value("gui/share_git", true).toBool());
   m_optionsUi.starbeamUpdateInterval->setValue
     (m_settings.value("gui/starbeamUpdateTimer", 3.50).toDouble());
   m_optionsUi.tear_off_menus->setChecked

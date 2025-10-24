@@ -1447,7 +1447,7 @@ void spoton_rosetta::processGPGMessage(const QByteArray &message)
 		    {
 		      if(key->uids && key->uids->email)
 			{
-			  QByteArray f(key->uids->email);
+			  QByteArray const f(key->uids->email);
 
 			  from = QString::fromUtf8(f.constData(), f.length());
 			}
@@ -4133,7 +4133,7 @@ void spoton_rosetta::slotWriteGPG(void)
   auto list(m_parent->prisonBluesDirectories());
   auto share = false;
 
-  if(QSettings().value("gui/share_git", false).toBool() &&
+  if(QSettings().value("gui/share_git", true).toBool() &&
      m_parent->isKernelActive())
     {
       if(list.isEmpty())

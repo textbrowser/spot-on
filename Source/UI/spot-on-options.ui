@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-4594</y>
+         <y>-756</y>
          <width>769</width>
          <height>5350</height>
         </rect>
@@ -680,6 +680,9 @@
                <widget class="QCheckBox" name="share_git">
                 <property name="text">
                  <string>Share messages with an active kernel.</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
