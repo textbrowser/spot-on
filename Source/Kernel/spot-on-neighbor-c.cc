@@ -4940,17 +4940,17 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 		      "status, subject, participant_oid) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, s_crypt->
-	   encryptedThenHashed(date_l, &ok).toBase64());
+	  (0, s_crypt->encryptedThenHashed(date_l, &ok).toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
-	  query.bindValue(2, s_crypt->encryptedThenHashed(QByteArray(), &ok).
-			  toBase64());
+	  query.bindValue
+	    (2, s_crypt->encryptedThenHashed(QByteArray(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, s_crypt->
+	    (3,
+	     s_crypt->
 	     encryptedThenHashed(QByteArray::number(goldbugUsed_l), &ok).
 	     toBase64());
 
@@ -4974,8 +4974,7 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 	    query.bindValue
 	      (7, s_crypt->encryptedThenHashed(name_l, &ok).toBase64());
 
-	query.bindValue
-	  (8, senderPublicKeyHash.toBase64());
+	query.bindValue(8, senderPublicKeyHash.toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -4987,7 +4986,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (11, s_crypt->
+	    (11,
+	     s_crypt->
 	     encryptedThenHashed(QByteArray("Unread"), &ok).toBase64());
 
 	if(ok)
@@ -4996,8 +4996,8 @@ void spoton_neighbor::storeLetter(const QByteArray &symmetricKey,
 
 	if(ok)
 	  query.bindValue
-	    (13, s_crypt->
-	     encryptedThenHashed(QByteArray::number(-1), &ok).
+	    (13,
+	     s_crypt->encryptedThenHashed(QByteArray::number(-1), &ok).
 	     toBase64());
 
 	if(ok)
