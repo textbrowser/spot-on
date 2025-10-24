@@ -3144,9 +3144,11 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 
       if(list.size() == 3)
 	{
-	  list.replace
-	    (0,
-	     list.at(0).mid(static_cast<int> (qstrlen("type=0105&content="))));
+	  if(list.at(0).indexOf("type=0105&content=") >= 0)
+	    list.replace
+	      (0,
+	       list.at(0).
+	       mid(static_cast<int> (qstrlen("type=0105&content="))));
 
 	  for(int i = 0; i < list.size(); i++)
 	    list.replace(i, QByteArray::fromBase64(list.at(i)).trimmed());
