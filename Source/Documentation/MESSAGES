@@ -749,6 +749,7 @@ Prison Blues (0105)
 Groups: 2
 {
 	0 - GPG Fingerprint (Base-64)
+	EOL
 	1 - GPG Message (Base-64)
 }
 EOL
