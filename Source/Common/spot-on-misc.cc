@@ -1012,7 +1012,6 @@ QMap<QString, QVariant> spoton_misc::defaultOtherOptions(void)
     (spoton_common::MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE);
   map["P2P_SERVERLESS_CONNECT_INTERVAL_MSECS"] = "1";
   map["PREFERRED_HASH_ALGORITHM"] = "sha512";
-  map["PRISON_BLUES_REMOTE_SERVER"] = "192.168.178.15:5710";
   map["PUBLISHED_PAGES"] = "/dev/null, Title-Line, URL-Line";
   map["SMP_PREFERRED_HASH_ALGORITHM"] = "sha3-512";
   map["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "256";
@@ -1054,10 +1053,11 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
 #else
 	auto const pair(str.split(":=", QString::SkipEmptyParts));
 #endif
+	auto const key(pair.value(0).trimmed());
+	auto const value(pair.value(1).trimmed());
 
-	if(!pair.value(0).trimmed().isEmpty() &&
-	   !pair.value(1).trimmed().isEmpty())
-	  s_otherOptions[pair.value(0).trimmed()] = pair.value(1).trimmed();
+	if(!key.isEmpty() && !value.isEmpty() && s_otherOptions.contains(key))
+	  s_otherOptions[key] = value;
       }
 
   return s_otherOptions;
