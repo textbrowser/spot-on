@@ -1622,14 +1622,15 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
   ** We may have received a name and a public key.
   */
 
+  auto const static str = "type=0011&content="; 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0011&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove(0, indexOf + static_cast<int> (qstrlen("type=0011&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -1648,17 +1649,16 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
 	list.replace(i, QByteArray::fromBase64(list.at(i)));
 
       if(m_id != -1)
-	savePublicKey
-	  (list.value(0),
-	   list.value(1),
-	   qUncompress(list.value(2)),
-	   list.value(3),
-	   list.value(4),
-	   list.value(5),
-	   m_id,
-	   false,
-	   true,
-	   "0011");
+	savePublicKey(list.value(0),
+		      list.value(1),
+		      qUncompress(list.value(2)),
+		      list.value(3),
+		      list.value(4),
+		      list.value(5),
+		      m_id,
+		      false,
+		      true,
+		      "0011");
       else
 	spoton_misc::logError("spoton_neighbor::process0011(): "
 			      "m_id equals negative one. "
@@ -1684,7 +1684,9 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0012&content="));
+  auto const static str = "type=0012&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a name and a public key.
@@ -1692,13 +1694,12 @@ void spoton_neighbor::process0012(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0012&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0012&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -1772,7 +1773,9 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0014&content="));
+  auto const static str = "type=0014&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a uuid.
@@ -1780,13 +1783,12 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0014&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0014&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -1901,7 +1903,9 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0030&content="));
+  auto const static str = "type=0030&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a listener's information.
@@ -1909,13 +1913,12 @@ void spoton_neighbor::process0030(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0030&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0030&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -2196,7 +2199,9 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0050&content="));
+  auto const static str = "type=0050&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a name and a password from the client.
@@ -2204,13 +2209,12 @@ void spoton_neighbor::process0050(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0050&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0050&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -2325,7 +2329,9 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0051&content="));
+  auto const static str = "type=0051&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a name and a password from the server.
@@ -2333,13 +2339,12 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0051&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0051&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -2527,17 +2532,18 @@ void spoton_neighbor::process0065(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0065&content="));
+  auto const static str = "type=0065&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0065&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0065&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -2602,7 +2608,9 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0070&content="));
+  auto const static str = "type=0070&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   /*
   ** We may have received a message of the day.
@@ -2610,13 +2618,12 @@ void spoton_neighbor::process0070(int length, const QByteArray &dataIn)
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0070&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0070&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(length == data.length())
     {
@@ -2994,17 +3001,18 @@ void spoton_neighbor::process0095a(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0095a&content="));
+  auto const static str = "type=0095a&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0095a&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0095a&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -3032,17 +3040,18 @@ void spoton_neighbor::process0095b(int length, const QByteArray &dataIn)
   if(indexOf < 0)
     return;
 
-  length -= static_cast<int> (qstrlen("type=0095b&content="));
+  auto const static str = "type=0095b&content=";
+
+  length -= static_cast<int> (qstrlen(str));
 
   auto data(dataIn.mid(0, indexOf + 2));
 
-  indexOf = data.indexOf("type=0095b&content=");
+  indexOf = data.indexOf(str);
 
   if(indexOf < 0)
     return;
 
-  data.remove
-    (0, indexOf + static_cast<int> (qstrlen("type=0095b&content=")));
+  data.remove(0, indexOf + static_cast<int> (qstrlen(str)));
 
   if(data.length() == length)
     {
@@ -3159,11 +3168,10 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 
       if(list.size() == 3)
 	{
-	  if(list.at(0).indexOf("type=0105&content=") >= 0)
-	    list.replace
-	      (0,
-	       list.at(0).
-	       mid(static_cast<int> (qstrlen("type=0105&content="))));
+	  auto const static str = "type=0105&content=";
+
+	  if(list.at(0).indexOf(str) >= 0)
+	    list.replace(0, list.at(0).mid(static_cast<int> (qstrlen(str))));
 
 	  for(int i = 0; i < list.size(); i++)
 	    list.replace(i, QByteArray::fromBase64(list.at(i)).trimmed());
