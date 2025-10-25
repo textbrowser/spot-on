@@ -639,10 +639,9 @@ void spoton::populateGITTable(void)
 
 void spoton::prepareEnvironmentVariables(void)
 {
-  auto const variable
-    (QSettings().value("gui/theme_override").toByteArray().trimmed());
-
-  qputenv("QT_STYLE_OVERRIDE", variable);
+  qputenv
+    ("QT_STYLE_OVERRIDE",
+     QSettings().value("gui/theme_override").toByteArray().trimmed());
 }
 
 void spoton::prepareOtherOptions(void)

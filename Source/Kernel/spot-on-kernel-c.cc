@@ -625,7 +625,7 @@ void spoton_kernel::slotWriteMessage0061(const QByteArray &data)
 void spoton_kernel::writePrisonBluesChat
 (const QByteArray &message, const QByteArray &publicKeyHash)
 {
-  if(message.trimmed().isEmpty() || publicKeyHash.toHex().trimmed().isEmpty())
+  if(message.trimmed().isEmpty() || publicKeyHash.trimmed().isEmpty())
     return;
 
   auto const publicKeyHashHex(publicKeyHash.toHex());
