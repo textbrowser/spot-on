@@ -1564,7 +1564,7 @@ void spoton_rosetta::publishAttachments
 				  spoton_misc::homePath()))
 	showMessage
 	  (tr("A separate GPG process could not be launched for "
-	      "encrypting the file %1 and recipient %2.").
+	      "encrypting the file %1 for recipient %2.").
 	   arg(attachment).arg(participant),
 	   5000);
       else
@@ -4155,12 +4155,17 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
-  auto const message(ui.gpg_message->toPlainText().trimmed());
+  auto message(ui.gpg_message->toPlainText().trimmed());
 
   if(message.isEmpty())
     {
-      showMessage(tr("Please provide a message."), 5000);
-      return;
+      if(ui.attachments->toPlainText().isEmpty())
+	{
+	  showMessage(tr("Please provide a message or an attachment."), 5000);
+	  return;
+	}
+      else
+	message = "Attachment(s)."; // Do not translate.
     }
 
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
