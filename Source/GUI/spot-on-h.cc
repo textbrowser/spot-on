@@ -639,9 +639,18 @@ void spoton::populateGITTable(void)
 
 void spoton::prepareEnvironmentVariables(void)
 {
-  qputenv
-    ("QT_STYLE_OVERRIDE",
-     QSettings().value("gui/theme_override").toByteArray().trimmed());
+  auto const value
+    (QSettings().value("gui/theme_override").toByteArray().trimmed());
+
+#ifdef Q_OS_MACOS
+  if(!QSettings().contains("gui/theme_override"))
+    {
+      QSettings().setValue("gui/theme_override", "Fusion");
+      qputenv("QT_STYLE_OVERRIDE", "Fusion");
+      return;
+    }
+#endif
+  qputenv("QT_STYLE_OVERRIDE", value);
 }
 
 void spoton::prepareOtherOptions(void)

@@ -1622,7 +1622,7 @@ void spoton_neighbor::process0011(int length, const QByteArray &dataIn)
   ** We may have received a name and a public key.
   */
 
-  auto const static str = "type=0011&content="; 
+  auto const static str = "type=0011&content=";
   auto data(dataIn.mid(0, indexOf + 2));
 
   indexOf = data.indexOf(str);
