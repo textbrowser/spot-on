@@ -102,6 +102,8 @@ UI_DIR            = Temporary/ui
 
 QMAKE_STRIP	= echo
 
+copyshell.extra    = cp ./Shell/spot-on-git.sh ./Spot-On.d/.
+copyshell.path     = ./Spot-On.d
 copyspoton.extra   = cp -r ./Spot-On.app ./Spot-On.d/.
 copyspoton.path    = ./Spot-On.d
 libntru.extra      = cp ../libNTRU/libntru.dylib \
@@ -121,6 +123,7 @@ translations.files = Translations/*.qm
 translations.path  = ./Spot-On.d/Translations
 
 INSTALLS = preinstall \
+           copyshell \
            copyspoton \
            sounds \
            translations \
