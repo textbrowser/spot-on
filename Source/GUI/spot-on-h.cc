@@ -642,7 +642,7 @@ void spoton::prepareEnvironmentVariables(void)
   auto const value
     (QSettings().value("gui/theme_override").toByteArray().trimmed());
 
-#ifdef Q_OS_MACOS
+#if defined(Q_OS_MACOS) || defined(Q_OS_WINDOWS)
   if(!QSettings().contains("gui/theme_override"))
     {
       QSettings().setValue("gui/theme_override", "Fusion");
