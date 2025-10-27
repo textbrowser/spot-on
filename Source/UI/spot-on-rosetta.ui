@@ -114,7 +114,7 @@
          <x>0</x>
          <y>0</y>
          <width>1090</width>
-         <height>691</height>
+         <height>662</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -759,8 +759,8 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1026</width>
-                    <height>692</height>
+                    <width>659</width>
+                    <height>728</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -1238,6 +1238,13 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
+                <widget class="QLabel" name="label_8">
+                 <property name="text">
+                  <string>The below table contains GPG key bundles which were shared with you via GIT.</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QTableWidget" name="pending">
                  <property name="alternatingRowColors">
                   <bool>true</bool>
@@ -1346,7 +1353,7 @@
      <x>0</x>
      <y>0</y>
      <width>1100</width>
-     <height>24</height>
+     <height>34</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_Edit">
