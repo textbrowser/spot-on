@@ -769,11 +769,9 @@ spoton_neighbor::spoton_neighbor
   if(m_bindIpAddress.isEmpty())
     prepareSslConfiguration(QByteArray(), QByteArray(), true, m_keySize);
 
-  if(m_transport != "bluetooth")
-    if(m_address.isEmpty())
-      if(!m_ipAddress.isEmpty())
-	QHostInfo::lookupHost
-	  (m_ipAddress, this, SLOT(slotHostFound(const QHostInfo &)));
+  if(m_protocol.toLower() == "dynamic dns" && m_transport != "bluetooth")
+    QHostInfo::lookupHost
+      (m_ipAddress, this, SLOT(slotHostFound(const QHostInfo &)));
 
   if(m_transport != "bluetooth")
     m_scopeId = scopeId;
