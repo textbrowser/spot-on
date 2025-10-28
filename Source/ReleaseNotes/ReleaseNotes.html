@@ -9,8 +9,10 @@
 	<li>Corrected discovery of IP addresses for Dynamic DNS neighbors.
 	  QHostInfo::lookupHost() must be launched whenever the Dynamic DNS
 	  protocol is configured.</li>
-	<li>Do not create Prison Blues directories if the special GIT
-	  process has not been executed.</li>
+	<li>Improved spot-on-git.sh. The directory local .git directory
+	  must exist and if it does not, spot-on-git.sh will attempt to
+	  correct the respective Prison Blues directory via a temporary
+	  directory.</li>
 	<li>New Options -> GIT -> Share messages with an active kernel.
 	  If enabled, Prison Blues messages from Rosetta GPG will be
 	  shared with an active kernel. The kernel will share the
