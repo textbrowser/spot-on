@@ -175,10 +175,8 @@ then
 	exit 0
     fi
 
-    echo "Adding local GPG files."
-    git add --all */*.gpg 1>/dev/null 2>/dev/null
-    echo "Adding local text files."
-    git add --all */*.txt 1>/dev/null 2>/dev/null
+    echo "Adding local GPG and text files."
+    git add --all */*.gpg */*.txt 1>/dev/null 2>/dev/null
 
     rc=$?
 
