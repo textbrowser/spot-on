@@ -127,8 +127,7 @@ find "$local_directory" \
 
 # Merge.
 
-echo "Instructing GIT to avoid the rebase strategy. " \
-     "Merge changes instead."
+echo "Instructing GIT to avoid the rebase strategy. Merge changes instead."
 git config pull.rebase false 1>/dev/null 2>/dev/null
 
 if [ ! $? -eq 0 ]
@@ -165,9 +164,6 @@ then
 	if [ ! -z "$(git status | grep 'git push' 2>/dev/null)" ]
 	then
 	    echo "A git-push is required!"
-
-	    site=$(eval "echo ${GIT_SITE}")
-
 	    git push "$site" 1>/dev/null 2>/dev/null
 	fi
 
@@ -208,8 +204,6 @@ then
     else
 	echo "Great!"
     fi
-
-    site=$(eval "echo ${GIT_SITE}")
 
     echo "Issuing a GIT-PUSH request."
     git push "$site" 1>/dev/null 2>/dev/null
