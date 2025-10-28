@@ -66,8 +66,7 @@ typedef union spoton_type_punning_sockaddr
     struct sockaddr_in sockaddr_in;
     struct sockaddr_in6 sockaddr_in6;
     struct sockaddr_storage sockaddr_storage;
-}
-spoton_type_punning_sockaddr_t;
+} spoton_type_punning_sockaddr_t;
 
 class QStatusBar;
 class QTcpSocket;
