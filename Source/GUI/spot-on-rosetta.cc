@@ -1266,8 +1266,7 @@ void spoton_rosetta::prepareGPGStatusMessages
 	  if(m_prepareGPGStatusMessagesFuture.isCanceled())
 	    return;
 
-	  if(!(directory.exists()) ||
-	     !(directory.isWritable()) ||
+	  if(!(directory.isWritable()) ||
 	     !(fingerprints.at(i).isEmpty() == false &&
 	       publicKeys.at(i).isEmpty() == false))
 	    continue;
@@ -3652,7 +3651,7 @@ void spoton_rosetta::slotPublishGPG(void)
   auto state = false;
 
   foreach(auto const &directory, list)
-    if(directory.exists() && directory.isWritable())
+    if(directory.isWritable())
       {
 	QDir().mkpath
 	  (directory.absoluteFilePath() + QDir::separator() + fingerprint);
@@ -4065,7 +4064,7 @@ void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
   auto state = false;
 
   foreach(auto const &directory, list)
-    if(directory.exists() && directory.isWritable())
+    if(directory.isWritable())
       {
 	QDir().mkpath
 	  (directory.absoluteFilePath() + QDir::separator() + fingerprint);
@@ -4255,7 +4254,7 @@ void spoton_rosetta::slotWriteGPG(void)
 	    continue;
 	  }
 
-	if(!directory.exists() || !directory.isWritable())
+	if(!directory.isWritable())
 	  continue;
 
 	auto const destination
