@@ -633,7 +633,7 @@ void spoton_kernel::writePrisonBluesChat
 
   foreach(auto const &directory,
 	  spoton_misc::prisonBluesDirectories(crypt("chat")))
-    if(directory.isWritable())
+    if(directory.exists() && directory.isWritable())
       {
 	QDir().mkpath
 	  (directory.absoluteFilePath() +

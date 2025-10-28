@@ -3624,7 +3624,9 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     {
       QFileInfo const fileInfo(spoton_misc::homePath());
 
-      if(!fileInfo.isReadable() || !fileInfo.isWritable())
+      if(!fileInfo.exists() ||
+	 !fileInfo.isReadable() ||
+	 !fileInfo.isWritable())
 	{
 	  auto const str(tr("The directory %1 must be readable and writable.").
 			 arg(fileInfo.absolutePath()));

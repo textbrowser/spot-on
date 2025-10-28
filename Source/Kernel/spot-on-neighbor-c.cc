@@ -3194,7 +3194,7 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 	      foreach(auto const &directory,
 		      spoton_misc::
 		      prisonBluesDirectories(spoton_kernel::crypt("chat")))
-		if(directory.isWritable())
+		if(directory.exists() && directory.isWritable())
 		  {
 		    QDir().mkpath
 		      (directory.absoluteFilePath() +
