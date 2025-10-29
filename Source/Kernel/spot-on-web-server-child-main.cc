@@ -1047,6 +1047,7 @@ void spoton_web_server_child_main::processLocal
 		      process.start();
 		      process.waitForStarted();
 		      process.write(content);
+		      process.waitForBytesWritten();
 		      process.closeWriteChannel();
 		      process.waitForFinished();
 
