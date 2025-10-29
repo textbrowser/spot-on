@@ -1047,6 +1047,7 @@ void spoton_web_server_child_main::processLocal
 		      process.start();
 		      process.waitForStarted();
 		      process.write(content);
+		      process.closeWriteChannel();
 		      process.waitForFinished();
 
 		      if(process.exitStatus() == QProcess::NormalExit)
@@ -1066,6 +1067,9 @@ void spoton_web_server_child_main::processLocal
 			  if(!output.isEmpty())
 			    content = output;
 			}
+
+		      process.kill();
+		      process.terminate();
 		    }
 #endif
 
