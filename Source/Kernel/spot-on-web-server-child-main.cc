@@ -1028,6 +1028,46 @@ void spoton_web_server_child_main::processLocal
 
 	      if(!content.isEmpty())
 		{
+#ifdef Q_OS_LINUX
+		  QFileInfo fileInfo("/usr/bin/html2text");
+#elif defined(Q_OS_MACOS)
+		  QFileInfo fileInfo("/opt/homebrew/bin/html2text");
+#endif
+
+#ifdef Q_OS_UNIX
+		  if(!fileInfo.isExecutable())
+		    fileInfo = QFileInfo("html2text");
+
+		  if(fileInfo.isExecutable())
+		    {
+		      QProcess process;
+
+		      process.setArguments(QStringList() << "-utf8");
+		      process.setProgram(fileInfo.absoluteFilePath());
+		      process.waitForStarted();
+		      process.write(content);
+		      process.waitForFinished();
+
+		      if(process.exitStatus() == QProcess::NormalExit)
+			{
+			  QByteArray output;
+
+			  do
+			    {
+			      auto const data
+				(process.readAllStandardOutput().trimmed());
+
+			      if(!data.isEmpty())
+				output.append(data);
+			    }
+			  while(!data.isEmpty());
+
+			  if(!output.isEmpty())
+			    content = output;
+			}
+		    }
+#endif
+
 		  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
 		    QByteArray::number(content.length()) +
 		    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n";
