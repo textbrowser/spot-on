@@ -1053,20 +1053,13 @@ void spoton_web_server_child_main::processLocal
 
 		      if(process.exitStatus() == QProcess::NormalExit)
 			{
-			  QByteArray output;
+			  auto const data(process.readAllStandardOutput());
 
-			  do
+			  if(!data.isEmpty())
 			    {
-			      auto const data
-				(process.readAllStandardOutput().trimmed());
-
-			      if(!data.isEmpty())
-				output.append(data);
+			      content = data;
+			      content.replace("\n", "<br>");
 			    }
-			  while(!data.isEmpty());
-
-			  if(!output.isEmpty())
-			    content = output;
 			}
 
 		      process.kill();
