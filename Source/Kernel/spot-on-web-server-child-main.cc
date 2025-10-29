@@ -1028,15 +1028,23 @@ void spoton_web_server_child_main::processLocal
 
 	      if(!content.isEmpty())
 		{
-#ifdef Q_OS_LINUX
-		  QFileInfo fileInfo("/usr/bin/html2text");
-#elif defined(Q_OS_MACOS)
-		  QFileInfo fileInfo("/opt/homebrew/bin/html2text");
-#endif
-
 #ifdef Q_OS_UNIX
-		  if(!fileInfo.isExecutable())
-		    fileInfo = QFileInfo("html2text");
+		  QFileInfo fileInfo;
+		  QStringList list;
+
+		  list << "/opt/homebrew/bin/html2text"
+		       << "/usr/bin/html2text"
+		       << "/usr/local/bin/html2text"
+		       << "/usr/local/opt/bin/html2text"
+		       << "html2text";
+
+		  foreach(auto const &i, list)
+		    {
+		      fileInfo = QFileInfo(i);
+
+		      if(fileInfo.isExecutable())
+			break;
+		    }
 
 		  if(fileInfo.isExecutable())
 		    {
