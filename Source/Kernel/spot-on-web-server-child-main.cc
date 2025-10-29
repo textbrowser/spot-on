@@ -1044,6 +1044,7 @@ void spoton_web_server_child_main::processLocal
 
 		      process.setArguments(QStringList() << "-utf8");
 		      process.setProgram(fileInfo.absoluteFilePath());
+		      process.start();
 		      process.waitForStarted();
 		      process.write(content);
 		      process.waitForFinished();
