@@ -1758,6 +1758,14 @@ void spoton_rosetta::saveGPGMessage(const QMap<GPGMessage, QVariant> &map)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton_rosetta::setMinimalDisplay(const bool state)
+{
+  ui.gpg->setVisible(!state);
+  ui.messages_order_label->setVisible(!state);
+  ui.participants_label->setVisible(!state);
+  ui.tool_bar->setVisible(!state);
+}
+
 void spoton_rosetta::setName(const QString &text)
 {
   ui.name->setText(text);

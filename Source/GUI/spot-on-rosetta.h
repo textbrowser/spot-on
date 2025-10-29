@@ -58,6 +58,7 @@ class spoton_rosetta: public QMainWindow
   void deactivate(void);
   void processGPGMessage
     (const QByteArray &fingerprint, const QByteArray &message);
+  void setMinimalDisplay(const bool state);
   void setName(const QString &text);
   void setParent(spoton *parent);
   void show(spoton *parent);

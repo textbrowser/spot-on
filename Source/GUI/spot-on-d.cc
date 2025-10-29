@@ -2644,6 +2644,7 @@ void spoton::slotShowMinimalDisplay(bool state)
       qobject_cast<QWidget *> (object)->setVisible(!state);
 
   m_optionsUi.saveCopy->setVisible(!state);
+  m_rosetta->setMinimalDisplay(state);
   m_ui.activateKernel->setVisible(true);
   m_ui.addException->setVisible(!state);
   m_ui.aeBox->setVisible(!state);
@@ -2715,6 +2716,7 @@ void spoton::slotShowMinimalDisplay(bool state)
   m_ui.sslKeySizeLabel->setVisible(!state);
   m_ui.urlDistributionModel->setVisible(!state);
 #else
+  m_rosetta->setMinimalDisplay(state);
   m_settings["gui/minimal"] = state;
   m_ui.buzz_details->setVisible(!state);
   m_ui.chat_frame->setVisible(!state);

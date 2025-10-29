@@ -759,7 +759,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>659</width>
+                    <width>1027</width>
                     <height>728</height>
                    </rect>
                   </property>
@@ -863,7 +863,7 @@
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_7">
+                          <widget class="QLabel" name="messages_order_label">
                            <property name="text">
                             <string>Messages will arrive in some order.</string>
                            </property>
@@ -969,7 +969,7 @@
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLabel" name="label_9">
+                          <widget class="QLabel" name="participants_label">
                            <property name="text">
                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Share signed online-presence messages with checked participants. Status messages are not shared via the kernel and therefore the Rosetta interface is required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
