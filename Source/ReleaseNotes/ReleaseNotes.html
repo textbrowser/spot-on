@@ -34,6 +34,9 @@
 	<li>Replaced adaptive-echo list container with a reasonable set.</li>
 	<li>Set QT_STYLE_OVERRIDE to Fusion on MacOS and Windows if the INI
 	  value gui/theme_override has not been prepared.</li>
+	<li>Set the environment variable QT_SSL_USE_TEMPORARY_KEYCHAIN on
+	  MacOS for Spot-On, Spot-On-Kernel, and Spot-On-Web-Server-Child
+	  processes. QSslSocket will create its own temporary keychain.</li>
 	<li>The Options option GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING will
 	  now default to sha3-512.</li>
 	<li>Windows LTS release!</li>

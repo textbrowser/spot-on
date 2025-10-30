@@ -232,6 +232,9 @@ int main(int argc, char *argv[])
 
   qputenv("QT_ENABLE_REGEXP_JIT", "0");
   qputenv("QV4_FORCE_INTERPRETER", "1");
+#ifdef Q_OS_MACOS
+  qputenv("QT_SSL_USE_TEMPORARY_KEYCHAIN", "1");
+#endif
   spoton_misc::prepareSignalHandler(signal_handler);
 #ifndef SPOTON_POSTGRESQL_DISABLED
   PQinitOpenSSL(0, 0); // We will initialize OpenSSL and libcrypto.
