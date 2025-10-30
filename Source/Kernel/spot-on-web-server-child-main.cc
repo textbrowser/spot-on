@@ -141,6 +141,9 @@ int main(int argc, char *argv[])
 
       if(!settings.isEmpty())
 	{
+#ifdef Q_OS_MACOS
+	  qputenv("QT_SSL_USE_TEMPORARY_KEYCHAIN", 1);
+#endif
 	  QCoreApplication qapplication(argc, argv);
 	  spoton_web_server_child_main thread(settings);
 
