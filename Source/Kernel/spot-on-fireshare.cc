@@ -348,8 +348,8 @@ void spoton_fireshare::slotTimeout(void)
 		       "description, " // 2
 		       "content "      // 3
 		       "FROM spot_on_urls_%1 "
-		       "WHERE url_hash = ?").arg(shareHash.mid(0, 2).
-						 constData()));
+		       "WHERE url_hash = ?").
+	       arg(shareHash.mid(0, 2).constData()));
 	    query.bindValue(0, shareHash.constData());
 
 	    if(query.exec())
@@ -548,7 +548,7 @@ void spoton_fireshare::slotTimeout(void)
 
 	    signature = s_crypt2->digitalSignature
 	      (keyInformation +
-	       data +
+	       data + // Our (sender) identity is included in data.
 	       now.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
 	       recipientDigest,
 	       &ok);
