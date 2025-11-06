@@ -565,7 +565,7 @@ void spoton_urldistribution::run(void)
 
 	    signature = s_crypt2->digitalSignature
 	      (keyInformation +
-	       data +
+	       data + // Our (sender) identity is included in data.
 	       now.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
 	       recipientDigest,
 	       &ok);

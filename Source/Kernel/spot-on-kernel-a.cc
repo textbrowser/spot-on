@@ -3204,32 +3204,20 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 
 	      if(!query.isNull(0))
 		gemini.first = s_crypt1->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.
-					  value(0).
-					  toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
 
 	      if(ok)
 		publicKey = s_crypt1->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.
-					  value(1).
-					  toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
 		if(!query.isNull(2))
 		  gemini.second = s_crypt1->decryptedAfterAuthenticated
-		    (QByteArray::fromBase64(query.
-					    value(2).
-					    toByteArray()),
-		     &ok);
+		    (QByteArray::fromBase64(query.value(2).toByteArray()), &ok);
 
 	      if(ok)
 		receiverName = s_crypt1->decryptedAfterAuthenticated
-		  (QByteArray::fromBase64(query.
-					  value(3).
-					  toByteArray()),
-		   &ok);
+		  (QByteArray::fromBase64(query.value(3).toByteArray()), &ok);
 
 	      if(!ok)
 		continue;
@@ -3240,12 +3228,11 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
 		 toString().toLatin1());
-	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+	      auto const hashType
+		(setting("gui/kernelHashType", "sha512").toString().toLatin1());
 
 	      if(keyType == "chat")
-		name = setting("gui/nodeName", "unknown").
-		  toByteArray();
+		name = setting("gui/nodeName", "unknown").toByteArray();
 	      else
 		name = hash.value("in_username").toByteArray();
 
