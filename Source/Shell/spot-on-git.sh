@@ -2,13 +2,13 @@
 
 # Alexis Megas.
 
-# We will not correct GIT errors.
-
 # If git has locked the local directory, a git command will fail.
 # We will not remove the lock.
 
 # If the local directory already exists, a git-clone will fail.
 # We will not remove the local directory.
+
+# We will not correct GIT errors.
 
 pull_only=0
 
@@ -23,13 +23,13 @@ then
     exit 1
 fi
 
-if [ -z ${GIT_LOCAL_DIRECTORY} ]
+if [ -z "${GIT_LOCAL_DIRECTORY}" ]
 then
     echo "Please export GIT_LOCAL_DIRECTORY. Bye!"
     exit 1
 fi
 
-if [ -z ${GIT_SITE} ]
+if [ -z "${GIT_SITE}" ]
 then
     echo "Please export GIT_SITE. Bye!"
     exit 1
