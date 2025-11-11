@@ -4873,7 +4873,9 @@ void spoton_misc::launchPrisonBluesProcesses
 		      (QObject::tr("The GIT script is not executable."), 5000);
 		  else
 		    statusBar->showMessage
-		      (QObject::tr("The script %1 is not executable."), 5000);
+		      (QObject::tr("The script %1 is not executable.").
+		       arg(script),
+		       5000);
 		}
 
 	      continue;
