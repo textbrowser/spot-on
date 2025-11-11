@@ -19,7 +19,7 @@ fi
 
 if [ -z "$(which git)" ]
 then
-    echo "Please install git."
+    echo "Please install git. Bye!"
     exit 1
 fi
 
@@ -172,14 +172,22 @@ then
     fi
 
     echo "Adding local GPG and text files."
-    git add --all */*.gpg */*.txt 1>/dev/null 2>/dev/null
+    git add --all */*.gpg 1>/dev/null 2>/dev/null
 
     rc=$?
 
     if [ ! $rc -eq 0 ]
     then
-	echo "GIT-ADD failed! Bye!"
-	exit $rc
+	echo "GIT-ADD-GPG failed! Continuing!"
+    fi
+
+    git add --all */*.txt 1>/dev/null 2>/dev/null
+
+    rc=$?
+
+    if [ ! $rc -eq 0 ]
+    then
+	echo "GIT-ADD-TXT failed! Continuing!"
     fi
 
     echo "Committing new data."
