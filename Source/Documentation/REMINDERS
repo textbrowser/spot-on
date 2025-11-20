@@ -380,3 +380,4 @@ Remaining Items
 5.     QString::arg() with comma separators.
 6.     Web server on Windows. Very difficult.
 7.     Windows GIT and non-GPG.
+8.     Add XChaCha20.
