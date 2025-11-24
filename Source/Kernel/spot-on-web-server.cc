@@ -83,6 +83,8 @@ QByteArray spoton_web_server::settings(const bool https, const int fd) const
   map["MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE"] =
     spoton_kernel::setting
     ("MAXIMUM_KERNEL_WEB_SERVER_SOCKET_READ_BUFFER_SIZE").toInt();
+  map["WEB_SERVER_HTML2TEXT_PATH"] = spoton_kernel::setting
+    ("WEB_SERVER_HTML2TEXT_PATH").toString().trimmed();
   map["WEB_SERVER_KEY_SIZE"] = spoton_kernel::setting("WEB_SERVER_KEY_SIZE").
     toInt();
   map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = spoton_kernel::setting
