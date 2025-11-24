@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-756</y>
+         <y>-2617</y>
          <width>769</width>
          <height>5350</height>
         </rect>
@@ -1891,7 +1891,10 @@
            <item>
             <widget class="QLabel" name="label_34">
              <property name="text">
-              <string>Fields and values are trimmed.</string>
+              <string>Fields and values are trimmed. Please set a file path to a nonexistent file in order to disable the property.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
