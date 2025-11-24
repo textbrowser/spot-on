@@ -11,10 +11,13 @@
 	  protocol is configured.</li>
 	<li>Improved spot-on-git.sh. The directory local .git directory
 	  must exist and if it does not, spot-on-git.sh will attempt to
-	  correct the respective Prison Blues directory via a temporary
+	  create the respective Prison Blues directory via a temporary
 	  directory.</li>
-	<li>Local Web content will be served without HTML. Unix-like
-	  systems only and the html2text program is required.</li>
+	<li>Local Web content will be served without HTML. The html2text
+	  program is required. The program's path will be contained in
+	  the new setting Options -> Miscellaneous ->
+	  WEB_SERVER_HTML2TEXT_PATH. Initially, the path will be
+	  estimated.</li>
 	<li>Minimal Rosetta GPG display.</li>
 	<li>New Options -> GIT -> Share messages with an active kernel.
 	  If enabled, Prison Blues messages from Rosetta GPG will be
@@ -22,6 +25,7 @@
 	  messages with other Spot-On neighbors. Neighbors, if configured,
 	  will process the special bundles as if they were generated
 	  locally.</li>
+	<li>New Options -> Miscellaneous -> WEB_SERVER_HTML2TEXT_PATH.</li>
 	<li>Prefer at() over value() if the size of the container is
 	  known.</li>
 	<li>Properly close a separated Buzz window if the child page

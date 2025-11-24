@@ -1031,23 +1031,9 @@ void spoton_web_server_child_main::processLocal
 
 	      if(!content.isEmpty())
 		{
-#ifdef Q_OS_UNIX
-		  QFileInfo fileInfo;
-		  QStringList list;
-
-		  list << "/opt/homebrew/bin/html2text"
-		       << "/usr/bin/html2text"
-		       << "/usr/local/bin/html2text"
-		       << "/usr/local/opt/bin/html2text"
-		       << "html2text";
-
-		  foreach(auto const &i, list)
-		    {
-		      fileInfo = QFileInfo(i);
-
-		      if(fileInfo.isExecutable())
-			break;
-		    }
+		  QFileInfo fileInfo
+		    (m_settings.
+		     value("WEB_SERVER_HTML2TEXT_PATH").toString().trimmed());
 
 		  if(fileInfo.isExecutable())
 		    {
@@ -1076,7 +1062,6 @@ void spoton_web_server_child_main::processLocal
 		      process.kill();
 		      process.terminate();
 		    }
-#endif
 
 		  html = "HTTP/1.1 200 OK\r\nContent-Length: " +
 		    QByteArray::number(content.length()) +

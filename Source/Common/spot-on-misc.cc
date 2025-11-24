@@ -1018,6 +1018,23 @@ QMap<QString, QVariant> spoton_misc::defaultOtherOptions(void)
   map["WEB_PAGES_SHARED_DIRECTORY"] = "/dev/null";
   map["WEB_SERVER_CERTIFICATE_LIFETIME"] = QString::number
     (spoton_common::WEB_SERVER_CERTIFICATE_LIFETIME);
+  map["WEB_SERVER_HTML2TEXT_PATH"] = "";
+
+  foreach(auto const &i, QStringList() << "/opt/homebrew/bin/html2text"
+	                               << "/usr/bin/html2text"
+	                               << "/usr/local/bin/html2text"
+	                               << "/usr/local/opt/bin/html2text"
+	                               << "html2text")
+    {
+      auto const fileInfo = QFileInfo(i);
+
+      if(fileInfo.isExecutable())
+	{
+	  map["WEB_SERVER_HTML2TEXT_PATH"] = fileInfo.absoluteFilePath();
+	  break;
+	}
+    }
+
   map["WEB_SERVER_HTTP_SO_LINGER"] = "-1";
   map["WEB_SERVER_HTTPS_SO_LINGER"] = "-1";
   map["WEB_SERVER_KEY_SIZE"] = QString::number
