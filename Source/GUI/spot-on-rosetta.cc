@@ -530,7 +530,7 @@ QByteArray spoton_rosetta::gpgEncrypt
  const QByteArray &message,
  const QByteArray &receiver,
  const QByteArray &sender,
- const bool askForPassphrase,
+ const bool askForPassphrase, // This function may be issued from a task.
  const bool sign)
 {
 #ifdef SPOTON_GPGME_ENABLED
@@ -747,11 +747,12 @@ QMap<QString, QByteArray> spoton_rosetta::gpgEmailAddresses(void) const
 }
 
 #ifdef SPOTON_GPGME_ENABLED
-gpgme_error_t spoton_rosetta::gpgPassphrase(void *hook,
-					    const char *uid_hint,
-					    const char *passphrase_info,
-					    int prev_was_bad,
-					    int fd)
+gpgme_error_t spoton_rosetta::gpgPassphrase
+(void *hook,
+ const char *uid_hint,
+ const char *passphrase_info,
+ int prev_was_bad,
+ int fd)
 {
   Q_UNUSED(hook);
   Q_UNUSED(passphrase_info);
