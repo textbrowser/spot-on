@@ -381,3 +381,5 @@ Remaining Items
 6.     Web server on Windows. Very difficult.
 7.     Windows GIT and non-GPG.
 8.     Add XChaCha20.
+9.     Rosetta requires an initial fetch of the key ring password for
+       status messages.
