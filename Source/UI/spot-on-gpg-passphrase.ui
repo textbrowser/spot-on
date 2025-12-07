@@ -18,7 +18,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>If Retain is on, the passphrase will be stored in an encrypted container within the INI file. It will not be re-encoded during a re-encoding process.</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The passphrase will be stored in an encrypted container within the INI file. It will be re-encoded during a re-encoding process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -26,31 +26,20 @@
     </widget>
    </item>
    <item>
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLineEdit" name="passphrase">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-       <property name="placeholderText">
-        <string>GPG Passphrase</string>
-       </property>
-       <property name="clearButtonEnabled">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCheckBox" name="retain">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Retain the GPG passphrase in the INI in an encrypted container. The passphrase will not be re-encoded if a new Spot-On password is created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>Retain</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QLineEdit" name="passphrase">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
+     </property>
+     <property name="placeholderText">
+      <string>GPG Passphrase</string>
+     </property>
+     <property name="clearButtonEnabled">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QGridLayout" name="gridLayout"/>
    </item>
    <item>
     <spacer name="verticalSpacer">
@@ -78,7 +67,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>passphrase</tabstop>
   <tabstop>buttonBox</tabstop>
  </tabstops>
  <resources>

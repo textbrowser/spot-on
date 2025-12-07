@@ -761,7 +761,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase
   if(!s_rosetta || !s_rosetta->m_parent)
     return GPG_ERR_CANCELED;
 
-  auto crypt = s_rosetta->m_parent->crypts().value("chat", nullptr);
+  auto crypt = s_rosetta->m_parent->crypts().value("rosetta", nullptr);
 
   if(!crypt)
     return GPG_ERR_CANCELED;
@@ -784,11 +784,8 @@ gpgme_error_t spoton_rosetta::gpgPassphrase
 	}
 
       passphrase = ui.passphrase->text().toUtf8();
-
-      if(ui.retain->isChecked())
-	QSettings().setValue
-	  ("gui/gpgPassphrase",
-	   crypt->encryptedThenHashed(passphrase, nullptr));
+      QSettings().setValue
+	("gui/gpgPassphrase", crypt->encryptedThenHashed(passphrase, nullptr));
     }
 
   Q_UNUSED
@@ -1502,7 +1499,7 @@ void spoton_rosetta::publishAttachments
   if(!fileInfo.isExecutable())
     return;
 
-  auto crypt = m_parent->crypts().value("chat", nullptr);
+  auto crypt = m_parent->crypts().value("rosetta", nullptr);
 
   if(!crypt)
     return;
@@ -1776,11 +1773,9 @@ void spoton_rosetta::setName(const QString &text)
 
 void spoton_rosetta::setParent(spoton *parent)
 {
-  auto const index = qBound
-    (0,
-     QSettings().value("gui/rosettaTabIndex", 0).toInt(),
-     ui.tab->count() - 1);
-
+#ifdef SPOTON_GPGME_ENABLED
+  QTimer::singleShot(2500, this, SLOT(slotAskForGPGPassphrase(void)));
+#endif
   m_parent = parent;
   populateContacts();
   slotImportGPGKeys();
@@ -1790,7 +1785,10 @@ void spoton_rosetta::setParent(spoton *parent)
 		       QSettings().value("gui/rosettaName", "unknown").
 		       toByteArray().length()).trimmed());
   ui.name->setCursorPosition(0);
-  ui.tab->setCurrentIndex(index);
+  ui.tab->setCurrentIndex
+    (qBound(0,
+	    QSettings().value("gui/rosettaTabIndex", 0).toInt(),
+	    ui.tab->count() - 1));
   connect(ui.tab,
 	  SIGNAL(currentChanged(int)),
 	  this,
@@ -2101,6 +2099,44 @@ void spoton_rosetta::slotAddPending(void)
 
   QApplication::restoreOverrideCursor();
   state ? populateContacts() : (void) 0;
+}
+
+void spoton_rosetta::slotAskForGPGPassphrase(void)
+{
+#ifdef SPOTON_GPGME_ENABLED
+  auto crypt = m_parent ?
+    m_parent->crypts().value("rosetta", nullptr) : nullptr;
+
+  if(!crypt)
+    {
+      showMessage
+	(tr("Invalid spoton_crypt object. This is a fatal flaw."), 5000);
+      return;
+    }
+
+  auto passphrase(QSettings().value("gui/gpgPassphrase").toByteArray());
+
+  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
+
+  if(passphrase.isEmpty())
+    {
+      auto ok = true;
+
+      passphrase = QInputDialog::getText
+	(this,
+	 tr("%1: GPG Passphrase").arg(SPOTON_APPLICATION_NAME),
+	 tr("Please provide the correct passphrase for the GPG key ring!"),
+	 QLineEdit::Normal,
+	 "",
+	 &ok).toUtf8();
+
+      if(!ok || passphrase.isEmpty())
+	return;
+
+      QSettings().setValue
+	("gui/gpgPassphrase", crypt->encryptedThenHashed(passphrase, nullptr));
+    }
+#endif
 }
 
 void spoton_rosetta::slotAttachForGPG(void)
@@ -3246,7 +3282,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 
   QList<QByteArray> publicKeys;
   QStringList fingerprints;
-  auto crypt = m_parent->crypts().value("chat", nullptr);
+  auto crypt = m_parent->crypts().value("rosetta", nullptr);
 
   for(int i = 0; i < ui.gpg_participants->rowCount(); i++)
     {
@@ -3647,7 +3683,7 @@ void spoton_rosetta::slotPublishGPG(void)
 				  itemData(ui.contacts->currentIndex()).
 				  toByteArray()),
 		       true,
-		       m_parent->crypts().value("chat", nullptr)));
+		       m_parent->crypts().value("rosetta", nullptr)));
 
   if(fingerprint.trimmed().isEmpty())
     {
@@ -3703,13 +3739,16 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
   if(m_parent && m_readPrisonBluesFuture.isFinished())
     {
       QByteArray passphrase;
-      auto crypt = m_parent->crypts().value("chat", nullptr);
+      auto crypt = m_parent->crypts().value("rosetta", nullptr);
 
       if(crypt)
 	{
 	  passphrase = QSettings().value("gui/gpgPassphrase").toByteArray();
 	  passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
 	}
+
+      if(passphrase.isEmpty())
+	return;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
       m_readPrisonBluesFuture = QtConcurrent::run
@@ -3936,7 +3975,7 @@ void spoton_rosetta::slotRename(void)
      &ok);
   name = name.mid(0, spoton_common::NAME_MAXIMUM_LENGTH);
 
-  if(name.isEmpty() || !ok)
+  if(!ok || name.isEmpty())
     return;
 
   QString connectionName("");
@@ -4157,7 +4196,7 @@ void spoton_rosetta::slotWriteGPG(void)
       return;
     }
 
-  auto crypt = m_parent->crypts().value("chat", nullptr);
+  auto crypt = m_parent->crypts().value("rosetta", nullptr);
 
   if(!crypt)
     {
