@@ -1,7 +1,7 @@
 <html>
   <body>
-    <h4><u>Spot-On 2025.11.28</u></h4>
-    Welcome to the 2025.11.28 release of Spot-On. Corrections and
+    <h4><u>Spot-On 2025.12.25</u></h4>
+    Welcome to the 2025.12.25 release of Spot-On. Corrections and
     new features are detailed below.
     <p>
       <ul>
@@ -9,10 +9,10 @@
 	<li>Corrected discovery of IP addresses for Dynamic DNS neighbors.
 	  QHostInfo::lookupHost() must be launched whenever the Dynamic DNS
 	  protocol is configured.</li>
-	<li>Improved spot-on-git.sh. The directory local .git directory
-	  must exist and if it does not, spot-on-git.sh will attempt to
-	  create the respective Prison Blues directory via a temporary
-	  directory.</li>
+	<li>Final LTS of 2025!</li>
+	<li>Improved spot-on-git.sh. The .git directory must exist and
+	  if it does not, spot-on-git.sh will attempt to create the
+	  respective Prison Blues directory via a temporary directory.</li>
 	<li>Local Web content will be served without HTML. The html2text
 	  program is required. The program's path will be contained in
 	  the new setting Options -> Miscellaneous ->
@@ -28,6 +28,8 @@
 	<li>New Options -> Miscellaneous -> WEB_SERVER_HTML2TEXT_PATH.</li>
 	<li>Prefer at() over value() if the size of the container is
 	  known.</li>
+	<li>Prompt for the GPG key ring passphrase after Spot-On is
+	  launched if the passphrase is not present in the INI file.</li>
 	<li>Properly close a separated Buzz window if the child page
 	  is dismissed.</li>
 	<li>Removed Options -> Miscellaneous ->
@@ -43,7 +45,6 @@
 	  processes. QSslSocket will create its own temporary keychain.</li>
 	<li>The Options option GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING will
 	  now default to sha3-512.</li>
-	<li>Windows LTS release!</li>
 	<li>Windows OpenSSL 3.6.</li>
       </ul>
     </p>
