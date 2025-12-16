@@ -10,7 +10,7 @@
 	  QHostInfo::lookupHost() must be launched whenever the Dynamic DNS
 	  protocol is configured.</li>
 	<li>Final LTS of 2025!</li>
-	<li>Improved spot-on-git.sh. The .git directory must exist and
+	<li>Improved spot-on-git.sh. The local .git directory must exist and
 	  if it does not, spot-on-git.sh will attempt to create the
 	  respective Prison Blues directory via a temporary directory.</li>
 	<li>Local Web content will be served without HTML. The html2text
@@ -29,7 +29,8 @@
 	<li>Prefer at() over value() if the size of the container is
 	  known.</li>
 	<li>Prompt for the GPG key ring passphrase after Spot-On is
-	  launched if the passphrase is not present in the INI file.</li>
+	  launched if the passphrase is not present in the INI file. The
+	  passphrase is required for GPG status messages.</li>
 	<li>Properly close a separated Buzz window if the child page
 	  is dismissed.</li>
 	<li>Removed Options -> Miscellaneous ->
