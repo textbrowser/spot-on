@@ -108,7 +108,7 @@ then
     fi
 fi
 
-# Remove files older than five minutes.
+# Remove Smoke files older than one minute.
 
 echo "Removing Smoke files older than one minute."
 find "$local_directory" \
@@ -117,6 +117,9 @@ find "$local_directory" \
      -name "*Smoke*.txt" \
      -type f \
      -exec rm -f {} 2>/dev/null \;
+
+# Remove files older than fifteen days.
+
 echo "Removing files older than fifteen days."
 find "$local_directory" \
      ! -path "*.git*" \
