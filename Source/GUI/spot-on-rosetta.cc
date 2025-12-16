@@ -1372,11 +1372,17 @@ void spoton_rosetta::processGPGMessage
 void spoton_rosetta::processGPGMessage(const QByteArray &message)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  auto const index1 = message.indexOf(begin_pgp);
-  auto const index2 = message.indexOf(end_pgp);
+  auto index1 = message.indexOf(begin_pgp);
+  auto index2 = message.indexOf(end_pgp);
 
   if(index1 < 0 || index1 >= index2 || index2 < 0)
-    return;
+    {
+      index1 = message.indexOf(begin_spoton);
+      index2 = message.indexOf(end_spoton);
+
+      if(index1 < 0 || index1 >= index2 || index2 < 0)
+	return;
+    }
 
   QByteArray msg("");
   auto from(tr("(Unknown)"));
@@ -4107,6 +4113,15 @@ void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
      fingerprint.trimmed().isEmpty() ||
      m_parent == nullptr)
     return;
+
+  if(QSettings().value("gui/share_git", true).toBool() &&
+     m_parent->isKernelActive())
+    m_parent->writeKernelSocketData
+      ("sharegit_" +
+       fingerprint.toLatin1().toBase64() +
+       "_" +
+       data.toBase64() +
+       "\n");
 
   auto const list(m_parent->prisonBluesDirectories());
   auto state = false;

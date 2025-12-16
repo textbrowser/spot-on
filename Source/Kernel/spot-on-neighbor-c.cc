@@ -31,6 +31,11 @@
 #include "spot-on-kernel.h"
 #include "spot-on-neighbor.h"
 
+const static char *begin_pgp = "-----BEGIN PGP MESSAGE-----";
+const static char *begin_spoton = "-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----";
+const static char *end_pgp = "-----END PGP MESSAGE-----";
+const static char *end_spoton = "-----END SPOT-ON PUBLIC KEY BLOCK-----";
+
 QString spoton_neighbor::findMessageType
 (const QByteArray &data,
  QList<QByteArray> &symmetricKeys,
@@ -371,7 +376,7 @@ QString spoton_neighbor::findMessageType
 
   if(list.size() == 3)
     {
-      if(list.at(1).contains("-----BEGIN PGP MESSAGE-----"))
+      if(list.at(1).contains(begin_pgp) || list.at(1).contains(begin_spoton))
 	type = "0105";
       else
 	symmetricKeys = spoton_misc::findForwardSecrecyKeys
@@ -3176,46 +3181,51 @@ void spoton_neighbor::process0105(int length, const QByteArray &data)
 	  for(int i = 0; i < list.size(); i++)
 	    list.replace(i, QByteArray::fromBase64(list.at(i)).trimmed());
 
-	  if(list.at(0).length() == spoton_crypt::gpgFingerprintLength() &&
-	     list.at(1).endsWith("-----END PGP MESSAGE-----") &&
-	     list.at(1).startsWith("-----BEGIN PGP MESSAGE-----"))
-	    {
-	      /*
-	      ** Share the message with the interface.
-	      */
+	  if(list.at(0).length() == spoton_crypt::gpgFingerprintLength())
+	    if((list.at(1).endsWith(end_pgp) &&
+		list.at(1).startsWith(begin_pgp)) ||
+	       (list.at(1).endsWith(end_spoton) &&
+		list.at(1).startsWith(begin_spoton)))
+	      {
+		/*
+		** Share the message with the interface.
+		*/
 
-	      emit gpgMessage(list.at(0), list.at(1));
+		emit gpgMessage(list.at(0), list.at(1));
 
-	      /*
-	      ** Record the message locally as it may be intended for
-	      ** this Spot-On instance.
-	      */
+		/*
+		** Record the message locally as it may be intended for
+		** this Spot-On instance.
+		*/
 
-	      foreach(auto const &directory,
-		      spoton_misc::
-		      prisonBluesDirectories(spoton_kernel::crypt("chat")))
-		if(directory.isWritable())
-		  {
-		    QDir().mkpath
-		      (directory.absoluteFilePath() +
-		       QDir::separator() +
-		       list.at(0));
+		foreach(auto const &directory,
+			spoton_misc::
+			prisonBluesDirectories(spoton_kernel::crypt("chat")))
+		  if(directory.isWritable())
+		    {
+		      QDir().mkpath
+			(directory.absoluteFilePath() +
+			 QDir::separator() +
+			 list.at(0));
 
-		    QTemporaryFile file
-		      (directory.absoluteFilePath() +
-		       QDir::separator() +
-		       list.at(0) +
-		       QDir::separator() +
-		       "PrisonBluesXXXXXXXXXX.txt");
+		      QTemporaryFile file
+			(directory.absoluteFilePath() +
+			 QDir::separator() +
+			 list.at(0) +
+			 QDir::separator() +
+			 "PrisonBluesXXXXXXXXXX.txt");
 
-		    if(file.open())
-		      {
-			Q_UNUSED(file.fileName()); // Prevents removal of file.
-			file.setAutoRemove(false);
-			file.write(list.at(1));
-		      }
-		  }
-	    }
+		      if(file.open())
+			{
+			  Q_UNUSED(file.fileName()); /*
+						     ** Prevents removal of
+						     ** file.
+						     */
+			  file.setAutoRemove(false);
+			  file.write(list.at(1));
+			}
+		    }
+	      }
 	}
     }
   else
