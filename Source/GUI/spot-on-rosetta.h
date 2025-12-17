@@ -128,7 +128,9 @@ class spoton_rosetta: public QMainWindow
      const QList<QFileInfo> &list,
      const QStringList &fingerprints);
   void prisonBluesProcess(const bool pullOnly);
-  void processGPGMessage(const QByteArray &message);
+  void processGPGMessage
+    (const QByteArray &message,
+     const QVector<QPair<QByteArray, QString> > &gpgPairs);
   void publishAttachments
     (const QString &destination,
      const QString &participant,

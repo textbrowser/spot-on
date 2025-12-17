@@ -1362,15 +1362,21 @@ void spoton_rosetta::processGPGMessage
 {
 #ifdef SPOTON_GPGME_ENABLED
   Q_UNUSED(fingerprint);
-  processGPGMessage(message);
+  processGPGMessage(message, m_gpgPairs);
 #else
   Q_UNUSED(fingerprint);
   Q_UNUSED(message);
 #endif
 }
 
-void spoton_rosetta::processGPGMessage(const QByteArray &message)
+void spoton_rosetta::processGPGMessage
+(const QByteArray &message,
+ const QVector<QPair<QByteArray, QString> > &gpgPairs)
 {
+  /*
+  ** This method must be safe with other tasks!
+  */
+
 #ifdef SPOTON_GPGME_ENABLED
   auto index1 = message.indexOf(begin_pgp);
   auto index2 = message.indexOf(end_pgp);
@@ -1383,8 +1389,12 @@ void spoton_rosetta::processGPGMessage(const QByteArray &message)
       if(index1 < 0 || index1 >= index2 || index2 < 0)
 	return;
 
+      /*
+      ** Process the special Spot-On GPG key.
+      */
+
       QHash<QByteArray, char> fingerprints;
-      QVectorIterator<QPair<QByteArray, QString> > it(m_gpgPairs);
+      QVectorIterator<QPair<QByteArray, QString> > it(gpgPairs);
 
       while(it.hasNext())
 	fingerprints[it.next().first] = 0;
@@ -1523,6 +1533,7 @@ void spoton_rosetta::processGPGMessage(const QByteArray &message)
   gpgme_release(ctx);
   emit processGPGMessageSignal(msg, from, signedMessage, validSignature);
 #else
+  Q_UNUSED(gpgPairs);
   Q_UNUSED(message);
 #endif
 }
@@ -1709,7 +1720,7 @@ void spoton_rosetta::readPrisonBlues
 
 		      if(bytes.startsWith(begin_pgp))
 			{
-			  processGPGMessage(bytes);
+			  processGPGMessage(bytes, gpgPairs);
 			  file.remove();
 			}
 		      else if(bytes.startsWith(begin_spoton))
