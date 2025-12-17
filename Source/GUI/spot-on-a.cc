@@ -10274,6 +10274,7 @@ void spoton::slotSetPassphrase(void)
       ** Save the various entities.
       */
 
+      m_rosetta->setName(str3);
       m_settings["gui/buzzName"] = str3.toUtf8();
       m_settings["gui/cipherType"] = m_ui.cipherType->currentText();
       m_settings["gui/emailName"] = str3.toUtf8();
