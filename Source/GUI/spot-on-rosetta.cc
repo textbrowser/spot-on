@@ -1382,6 +1382,45 @@ void spoton_rosetta::processGPGMessage(const QByteArray &message)
 
       if(index1 < 0 || index1 >= index2 || index2 < 0)
 	return;
+
+      QHash<QByteArray, char> fingerprints;
+      QVectorIterator<QPair<QByteArray, QString> > it(m_gpgPairs);
+
+      while(it.hasNext())
+	fingerprints[it.next().first] = 0;
+
+      it.toFront();
+
+      while(it.hasNext())
+	{
+	  auto const pair(it.next());
+	  QScopedPointer<spoton_crypt> crypt
+	    (spoton_misc::spotonGPGCredentials(// E-Mail
+					       pair.second,
+					       // GPG Fingerprint
+					       pair.first));
+
+	  if(crypt)
+	    {
+	      auto data(QByteArray(message).
+			replace(begin_spoton, "").
+			replace(end_spoton, "").
+			trimmed());
+	      auto ok = true;
+
+	      data = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(data), &ok);
+
+	      if(!fingerprints.contains(spoton_crypt::fingerprint(data)) && ok)
+		{
+		  emit receivedGPGKeyBundle
+		    (data, spoton_rosetta_gpg_import::dump(data));
+		  break;
+		}
+	    }
+	}
+
+      return;
     }
 
   QByteArray msg("");
