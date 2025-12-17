@@ -3095,12 +3095,13 @@ void spoton_rosetta::slotDelete(void)
 
   if(destinationType == DestinationTypes::GPG)
     mb.setText
-      (tr("Are you sure that you wish to remove the selected contact? "
+      (tr("Are you sure that you wish to remove the selected contact (%1)? "
 	  "The contact will also be removed from the GPG key ring "
-	  "if Yes to All is selected."));
+	  "if Yes to All is selected.").arg(ui.contacts->currentText()));
   else
     mb.setText
-      (tr("Are you sure that you wish to remove the selected contact?"));
+      (tr("Are you sure that you wish to remove the selected "
+	  "contact (%1)?").arg(ui.contacts->currentText()));
 
   mb.setWindowIcon(windowIcon());
   mb.setWindowModality(Qt::ApplicationModal);
