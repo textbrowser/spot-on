@@ -1945,7 +1945,8 @@ void spoton::slotWizardButtonClicked(void)
 	m_wizardUi->previous->setEnabled(true);
 	break;
       }
-    case 2: case 3:
+    case 2:
+    case 3:
       {
 	m_wizardUi->initialize->setVisible(false);
 	m_wizardUi->next->setEnabled(true);
