@@ -51,19 +51,16 @@
 #ifdef SPOTON_GPGME_ENABLED
 QPointer<spoton_rosetta> spoton_rosetta::s_rosetta = nullptr;
 QString spoton_rosetta::s_status = "spoton://online=";
+const int static error_buffer_size = 256;
 const static char *begin_pgp = "-----BEGIN PGP MESSAGE-----";
 const static char *begin_spoton = "-----BEGIN SPOT-ON PUBLIC KEY BLOCK-----";
 const static char *end_pgp = "-----END PGP MESSAGE-----";
 const static char *end_spoton = "-----END SPOT-ON PUBLIC KEY BLOCK-----";
-int static error_buffer_size = 256;
 #endif
 
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
-#ifdef SPOTON_GPGME_ENABLED
-  gpgme_check_version(nullptr);
-#endif
   m_gpgPullTimer.setInterval(5000);
 #ifdef SPOTON_GPGME_ENABLED
   m_gpgReadMessagesTimer.start(5000);

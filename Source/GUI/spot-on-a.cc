@@ -226,11 +226,10 @@ int main(int argc, char *argv[])
 	  launchKernel = true;
       }
 
-  /*
-  ** Disable JIT.
-  */
-
-  qputenv("QT_ENABLE_REGEXP_JIT", "0");
+#ifdef SPOTON_GPGME_ENABLED
+  gpgme_check_version(nullptr);
+#endif
+  qputenv("QT_ENABLE_REGEXP_JIT", "0"); // Disable JIT.
 #ifdef Q_OS_MACOS
   qputenv("QT_SSL_USE_TEMPORARY_KEYCHAIN", "1");
 #endif
