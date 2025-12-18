@@ -915,24 +915,24 @@ void spoton_gui_server::slotReadyRead(void)
 
 	      if(crypt)
 		{
-		  QString string("");
+		  QString str("");
 
-		  string += spoton_kernel::setting
+		  str += spoton_kernel::setting
 		    ("gui/cipherType").toString();
-		  string += "_";
-		  string += spoton_kernel::setting("gui/hashType").toString();
-		  string += "_";
-		  string += QString::number
+		  str += "_";
+		  str += spoton_kernel::setting("gui/hashType").toString();
+		  str += "_";
+		  str += QString::number
 		    (spoton_kernel::setting("gui/saltLength").toInt());
-		  string += "_";
-		  string += QString::number
+		  str += "_";
+		  str += QString::number
 		    (spoton_kernel::setting("gui/iterationCount").toInt());
-		  string += "_";
-		  string += crypt->symmetricKey().toBase64();
-		  string += "_";
-		  string += crypt->hashKey().toBase64();
-		  string += "\n";
-		  socket->write(string.toUtf8());
+		  str += "_";
+		  str += crypt->symmetricKey().toBase64();
+		  str += "_";
+		  str += crypt->hashKey().toBase64();
+		  str += "\n";
+		  socket->write(str.toUtf8());
 		}
 	    }
 	  else if(message.startsWith("retrievemail") &&

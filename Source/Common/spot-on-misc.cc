@@ -548,7 +548,7 @@ QHostAddress spoton_misc::localAddressIPv4(void)
 
   for(int i = 0; i < interfaces.size(); i++)
     {
-      if(!interfaces.at(i).isValid() ||
+      if(!(interfaces.at(i).isValid()) ||
 	 !(interfaces.at(i).flags() & QNetworkInterface::IsUp))
 	continue;
 
@@ -567,13 +567,14 @@ QHostAddress spoton_misc::localAddressIPv4(void)
   return QHostAddress(QHostAddress::LocalHost);
 }
 
-QHostAddress spoton_misc::peerAddressAndPort(
+QHostAddress spoton_misc::peerAddressAndPort
+(
 #if defined(Q_OS_WINDOWS)
-					     const SOCKET socketDescriptor,
+ const SOCKET socketDescriptor,
 #else
-					     const int socketDescriptor,
+ const int socketDescriptor,
 #endif
-					     quint16 *port)
+ quint16 *port)
 {
   QHostAddress address;
   socklen_t length = 0;
@@ -1035,8 +1036,9 @@ QMap<QString, QVariant> spoton_misc::defaultOtherOptions(void)
 	}
     }
 
-  map["WEB_SERVER_HTTP_SO_LINGER"] = "-1";
   map["WEB_SERVER_HTTPS_SO_LINGER"] = "-1";
+  map["WEB_SERVER_HTTP_SO_LINGER"] = "-1";
+  map["WEB_SERVER_IP_ADDRESS"] = localAddressIPv4().toString();
   map["WEB_SERVER_KEY_SIZE"] = QString::number
     (spoton_common::WEB_SERVER_KEY_SIZE);
   map["WEB_SERVER_SSL_OPTION_DISABLE_SESSION_TICKETS"] = "true";
@@ -1053,6 +1055,7 @@ QMap<QString, QVariant> spoton_misc::otherOptions(const QByteArray &bytes)
     {
       s_otherOptions["GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING"] = "sha3-512";
       s_otherOptions["SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE"] = "512";
+      s_otherOptions["WEB_SERVER_IP_ADDRESS"] = localAddressIPv4().toString();
     }
   else
     for(int i = 0; i < list.size(); i++)

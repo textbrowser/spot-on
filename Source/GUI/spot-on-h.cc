@@ -1030,6 +1030,9 @@ void spoton::slotApplyOtherOptions(void)
 	    item2->setText("sha3-512");
 	  else if(text == "SPOTON_CRYPT_DERIVED_KEYS_HASH_KEY_SIZE")
 	    item2->setText("512");
+	  else if(text == "WEB_SERVER_IP_ADDRESS")
+	    item2->setText
+	      (spoton_misc::localAddressIPv4().toString().trimmed());
 	}
 
       if(item2->text().trimmed().isEmpty())
@@ -1154,7 +1157,9 @@ void spoton::slotGenerateSOSSCertificate(void)
      certificate,
      privateKey,
      publicKey,
-     spoton_misc::localAddressIPv4(),
+     QHostAddress(m_settings.value("WEB_SERVER_IP_ADDRESS",
+				   spoton_misc::localAddressIPv4().
+				   toString()).toString()),
      m_settings.value("WEB_SERVER_CERTIFICATE_LIFETIME",
 		      static_cast<int> (spoton_common::
 					WEB_SERVER_CERTIFICATE_LIFETIME)).
@@ -2263,7 +2268,7 @@ void spoton::slotWebServerInformationTimeout(void)
 	  (tr("The Spot-On Search Engine may be accessed via "
 	      "<a href=\"http://%1:%2\">http://%1:%2</a> and "
 	      "<a href=\"https://%1:%3\">https://%1:%3</a>.").
-	   arg(spoton_misc::localAddressIPv4().toString()).
+	   arg(m_settings.value("WEB_SERVER_IP_ADDRESS").toString().trimmed()).
 	   arg(m_ui.web_server_port->value()).
 	   arg(m_ui.web_server_port->value() + 5));
       else
