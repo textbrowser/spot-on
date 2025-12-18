@@ -310,10 +310,12 @@ void spoton_web_server::slotHttpsThreadFinished(void)
 
 void spoton_web_server::slotTimeout(void)
 {
+  auto const address
+    (QHostAddress(spoton_kernel::setting("WEB_SERVER_IP_ADDRESS").toString()));
   auto const port = static_cast<quint16>
     (spoton_kernel::setting("gui/web_server_port", 0).toInt());
 
-  if(port == 0)
+  if(address.isNull() || port == 0)
     {
       m_http->close();
       m_https->clear();
@@ -324,16 +326,23 @@ void spoton_web_server::slotTimeout(void)
   auto const maximumClients = spoton_kernel::setting
     ("gui/soss_maximum_clients", 10).toInt();
 
-  if((m_http->isListening() && m_http->serverPort() != port) ||
-     m_httpClientCount.fetchAndAddOrdered(0) >= maximumClients)
-    m_http->close();
-
-  if((m_https->isListening() &&
-      m_https->serverPort() != static_cast<quint16> (port + 5)) ||
-     m_httpsClientCount.fetchAndAddOrdered(0) >= maximumClients)
+  if(m_http->isListening())
     {
-      m_https->clear();
-      m_https->close();
+      if(address != m_http->serverAddress() ||
+	 m_http->serverPort() != port ||
+	 m_httpClientCount.fetchAndAddOrdered(0) >= maximumClients)
+	m_http->close();
+    }
+
+  if(m_https->isListening())
+    {
+      if(address != m_https->serverAddress() ||
+	 m_https->serverPort() != static_cast<quint16> (port + 5) ||
+	 m_httpsClientCount.fetchAndAddOrdered(0) >= maximumClients)
+	{
+	  m_https->clear();
+	  m_https->close();
+	}
     }
 
   if(m_https->certificate().isEmpty() || m_https->privateKey().isEmpty())
@@ -386,15 +395,10 @@ void spoton_web_server::slotTimeout(void)
 
   if(!m_http->isListening() &&
      m_httpClientCount.fetchAndAddOrdered(0) < maximumClients)
-    {
-      auto const str
-	(spoton_kernel::setting("WEB_SERVER_IP_ADDRESS").toString().trimmed());
-
-      if(!m_http->listen(QHostAddress(str), port))
-	spoton_misc::logError
-	  ("spoton_web_server::slotTimeout(): m_http->listen() failure. "
-	   "This is a serious problem!");
-    }
+    if(!m_http->listen(address, port))
+      spoton_misc::logError
+	("spoton_web_server::slotTimeout(): m_http->listen() failure. "
+	 "This is a serious problem!");
 
   if(m_http->isListening())
     {
@@ -410,15 +414,10 @@ void spoton_web_server::slotTimeout(void)
 
   if(!m_https->isListening() &&
      m_httpsClientCount.fetchAndAddOrdered(0) < maximumClients)
-    {
-      auto const str
-	(spoton_kernel::setting("WEB_SERVER_IP_ADDRESS").toString().trimmed());
-
-      if(!m_https->listen(QHostAddress(str), static_cast<quint16> (port + 5)))
-	spoton_misc::logError
-	  ("spoton_web_server::slotTimeout(): m_https->listen() failure. "
-	   "This is a serious problem!");
-    }
+    if(!m_https->listen(address, static_cast<quint16> (port + 5)))
+      spoton_misc::logError
+	("spoton_web_server::slotTimeout(): m_https->listen() failure. "
+	 "This is a serious problem!");
 
   if(m_https->isListening())
     {
