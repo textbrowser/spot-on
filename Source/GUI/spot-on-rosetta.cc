@@ -2335,8 +2335,9 @@ void spoton_rosetta::slotContactsChanged(int index)
 #endif
       ui.rename->setEnabled(false);
       ui.rename->setToolTip
-	(tr("<html>The e-mail name may not be modified because the respective "
-	    "GPG key bundle contains the original e-mail name.</html>"));
+	(tr("<html>The e-mail address may not be modified because the "
+	    "respective GPG key bundle contains the original e-mail "
+	    "address.</html>"));
     }
   else
     {
