@@ -367,6 +367,9 @@ void spoton_rosetta_gpg_import::populate(void)
     m_ui.gpg_share_email->addItem("Empty"); // Please do not translate Empty.
 
   QApplication::restoreOverrideCursor();
+#else
+  m_ui.email_addresses->addItem("Empty"); // Please do not translate Empty.
+  m_ui.gpg_share_email->addItem("Empty"); // Please do not translate Empty.
 #endif
 }
 
