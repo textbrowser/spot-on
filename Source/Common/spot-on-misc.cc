@@ -4909,6 +4909,30 @@ void spoton_misc::launchPrisonBluesProcesses
 	      prisonBluesProcesses[it.key() % size] = process;
 	    }
 
+	  if(process->error() != QProcess::UnknownError)
+	    {
+	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
+		{
+		  auto const str(process->program().trimmed());
+
+		  if(str.isEmpty())
+		    statusBar->showMessage
+		      (QObject::
+		       tr("The program will be renewed because of an error."),
+		       5000);
+		  else
+		    statusBar->showMessage
+		      (QObject::
+		       tr("The program %1 will be renewed because of an "
+			  "error.").arg(str),
+		       5000);
+		}
+
+	      delete process;
+	      process = new QProcess(parent);
+	      prisonBluesProcesses[it.key() % size] = process;
+	    }
+
 	  if(process->state() == QProcess::Running)
 	    {
 	      if(statusBar && statusBar->currentMessage().trimmed().isEmpty())
