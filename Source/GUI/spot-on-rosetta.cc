@@ -1752,7 +1752,12 @@ void spoton_rosetta::readPrisonBlues
 			  file.remove();
 			}
 #else
-		      file.remove();
+		      /*
+		      ** Do not remove the file. Perhaps the kernel
+		      ** will remove it.
+		      */
+
+		      // file.remove();
 #endif
 		    }
 		}

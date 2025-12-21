@@ -271,6 +271,14 @@ void spoton_kernel::readPrisonBlues(void)
 	  if(file.open(QIODevice::ReadOnly))
 	    {
 	      auto data(file.readAll());
+	      auto const index = data.indexOf("content=");
+
+	      if(index < 0)
+		/*
+		** GPG-like message. The interface will process the file.
+		*/
+
+		continue;
 
 	      if(spoton_kernel::messagingCacheContains(data))
 		{
@@ -280,9 +288,7 @@ void spoton_kernel::readPrisonBlues(void)
 	      else
 		spoton_kernel::messagingCacheAdd(data);
 
-	      data = data.mid
-		(data.indexOf("content=") +
-		 static_cast<int> (qstrlen("content=")));
+	      data = data.mid(index + static_cast<int> (qstrlen("content=")));
 	      data = data.mid(0, data.indexOf(spoton_send::EOM)).trimmed();
 
 	      auto const list
