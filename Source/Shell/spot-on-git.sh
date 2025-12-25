@@ -233,5 +233,7 @@ else
     exit $rc
 fi
 
+echo "Optimizing the local GIT directory."
+git gc 1>/dev/null 2>/dev/null
 echo "$0 completed successfully!"
 exit 0
