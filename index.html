@@ -46,6 +46,66 @@
 	<img src="images/spot-on.png">
 	<hr>
         <section id="main_content">
+	  <h4><u>Spot-On 2025.12.25</u></h4>
+	  Welcome to the 2025.12.25 release of Spot-On. Corrections and
+	  new features are detailed below.
+	  <p>
+	    <ul>
+	      <li>Allow empty messages in Rosetta GPG if sharing
+		attachments.</li>
+	      <li>Corrected discovery of IP addresses for Dynamic DNS
+		neighbors. QHostInfo::lookupHost() must be launched whenever
+		the Dynamic DNS protocol is configured.</li>
+	      <li>Final LTS of 2025!</li>
+	      <li>Improved spot-on-git.sh. The local .git directory must exist
+		and if it does not, spot-on-git.sh will attempt to create the
+		respective Prison Blues directory via a temporary
+		directory.</li>
+	      <li>Local Web content will be served without HTML. The html2text
+		program is required. The program's path will be contained in
+		the new setting Options -> Miscellaneous ->
+		WEB_SERVER_HTML2TEXT_PATH. Initially, the path will be
+		estimated.</li>
+	      <li>Minimal Rosetta GPG display.</li>
+	      <li>NTL 11.6.0 for Linux!</li>
+	      <li>New Options -> GIT -> Share messages with an active kernel.
+		If enabled, Prison Blues messages from Rosetta GPG will be
+		shared with an active kernel. The kernel will share the
+		messages with other Spot-On neighbors. Neighbors,
+		if configured, will process the special bundles as if they
+		were generated locally.</li>
+	      <li>New Options -> Miscellaneous ->
+		WEB_SERVER_HTML2TEXT_PATH.</li>
+	      <li>New Options -> Miscellaneous -> WEB_SERVER_IP_ADDRESS. The
+		default value is the default local IP address.</li>
+	      <li>Prefer at() over value() if the size of the container is
+		known.</li>
+	      <li>Prison Blues Key Exchange via GIT (PB-KEG) is now functional
+		for Windows. Please remember the special Unix-like hardware
+		requirement.</li>
+	      <li>Prompt for the GPG key ring passphrase after Spot-On is
+		launched if the passphrase is not present in the INI file. The
+		passphrase is required for GPG status messages.</li>
+	      <li>Properly close a separated Buzz window if the child page
+		is dismissed.</li>
+	      <li>Removed Options -> Miscellaneous ->
+		PRISON_BLUES_REMOTE_SERVER.</li>
+	      <li>Removed the WebEngine module from the MacOS build. The
+		module may be easily added to a local build. Please read
+		spot-on-gui.pro.</li>
+	      <li>Replaced adaptive-echo list container with a reasonable
+		set.</li>
+	      <li>Set QT_STYLE_OVERRIDE to Fusion on MacOS and Windows if
+		the INI	value gui/theme_override has not been prepared.</li>
+	      <li>Set the environment variable QT_SSL_USE_TEMPORARY_KEYCHAIN
+		on MacOS for Spot-On, Spot-On-Kernel, and
+		Spot-On-Web-Server-Child processes. QSslSocket will create
+		its own temporary keychain.</li>
+	      <li>The Options option GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING
+		will now default to sha3-512.</li>
+	      <li>Windows OpenSSL 3.6.</li>
+	    </ul>
+	  </p>
 	  <h4><u>Spot-On 2025.09.28</u></h4>
 	  Welcome to the 2025.09.28 release of Spot-On. Corrections and
 	  new features are detailed below.
