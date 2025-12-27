@@ -163,7 +163,7 @@
       <item>
        <widget class="QToolButton" name="pop_poptastic">
         <property name="toolTip">
-         <string>Pop Poptastic messages.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pop Poptastic messages. An active kernel is required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string/>
