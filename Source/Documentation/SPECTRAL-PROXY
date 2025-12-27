@@ -1,4 +1,4 @@
-A Spectral Human Proxy is a proxy of a proxy of ... a proxy. For example,
+A Spectral Human Proxy is a proxy of a proxy of a ... a proxy. For example,
 person A specifies B as a proxy and B specifies C as a proxy and C specifies
 D as a proxy, etc. A receiver R receiving a message from A is actually
 receiving a message from X. Every proxy which is able to decipher a message

@@ -7,10 +7,9 @@ Please consider the following examples.
 
 Example #1
 
-Let A, B, C, and D be server nodes and let a, b, c, and d be four
-client nodes.
+Let A, B, C, and D be server nodes and let a, b, c, and d be client nodes.
 
-Suppose the network topology is as follows (a drawing will help):
+Suppose the network topology is as follows (an illustration will help):
 
 a - A - B - b
 B - C - c
@@ -35,7 +34,7 @@ Let S, a, and e be client and server nodes. Let b, c, d, and f be client
 nodes. Suppose d is also a server node. Suppose S, a, c, and f are aware of
 the secret token t_1.
 
-The network topology is as follows (again, a drawing will help):
+The network topology is as follows (again, an illustration will help):
 
 f - e - a - S
 d - S

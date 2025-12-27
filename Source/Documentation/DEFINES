@@ -30,6 +30,7 @@ Enable GPGME. Requires the GPGME library.
 SPOTON_LINKED_WITH_LIBGEOIP
 
 Enable if GeoIP is desired. Requires the GeoIP library.
+GeoIP is obsolete.
 
 SPOTON_LINKED_WITH_LIBNTRU
 
