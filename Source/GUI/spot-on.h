@@ -967,6 +967,7 @@ class spoton: public QMainWindow
   void slotPrepareSMP(const QString &hash);
   void slotPrepareSMP(void);
   void slotPrepareUrlDatabases(void);
+  void slotPrisonBluesProcessReadyStandardOutput(void);
   void slotProtocolRadioToggled(bool state);
   void slotProxyChecked(bool state);
   void slotProxyTypeChanged(int index);

@@ -27,6 +27,7 @@
 
 #include <QApplication>
 #include <QProgressDialog>
+#include <QStandardItemModel>
 #include <QtConcurrent>
 
 #include <limits>
@@ -1587,6 +1588,19 @@ void spoton::slotPostgreSQLWebServerCredentials(void)
 void spoton::slotPrepareContextMenuMirrors(void)
 {
   prepareContextMenuMirrors();
+}
+
+void spoton::slotPrisonBluesProcessReadyStandardOutput(void)
+{
+  auto process = qobject_cast<QProcess *> (sender());
+
+  if(!process)
+    return;
+
+  populateStatistics
+    (QList<QPair<QString, QVariant> > () << QPair<QString, QVariant>
+    (QString("Prison Blues Process (%1)").arg(process->processId()),
+     process->readAllStandardOutput().trimmed()));
 }
 
 void spoton::slotResetAddListener(void)

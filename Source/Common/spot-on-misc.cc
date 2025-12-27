@@ -4907,6 +4907,13 @@ void spoton_misc::launchPrisonBluesProcesses
 	    {
 	      process = new QProcess(parent);
 	      prisonBluesProcesses[it.key() % size] = process;
+
+	      if(parent)
+		parent->connect
+		  (process,
+		   SIGNAL(readyReadStandardOutput(void)),
+		   parent,
+		   SLOT(slotPrisonBluesProcessReadyStandardOutput(void)));
 	    }
 
 	  if(process->error() != QProcess::UnknownError)

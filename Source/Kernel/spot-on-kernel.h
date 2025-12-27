@@ -305,6 +305,7 @@ class spoton_kernel: public QObject
   void slotPoptasticPop(void);
   void slotPoptasticPost(void);
   void slotPrepareObjects(void);
+  void slotPrisonBluesProcessReadyStandardOutput(void);
   void slotPrisonBluesTimeout(void);
   void slotPublicKeyReceivedFromUI(const qint64 oid,
 				   const QByteArray &keyType,

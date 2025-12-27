@@ -538,6 +538,44 @@ void spoton_kernel::slotPrepareObjects(void)
   prepareStarbeamReaders();
 }
 
+void spoton_kernel::slotPrisonBluesProcessReadyStandardOutput(void)
+{
+  auto process = qobject_cast<QProcess *> (sender());
+
+  if(!process)
+    return;
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "kernel.db");
+
+    if(db.open())
+      {
+	QSqlQuery query(db);
+
+	if(setting("gui/limit_sqlite_synchronization", false).toBool())
+	  query.exec("PRAGMA synchronous = OFF");
+	else
+	  query.exec("PRAGMA synchronous = NORMAL");
+
+	query.prepare("INSERT OR REPLACE INTO kernel_statistics "
+		      "(statistic, value) "
+		      "VALUES (?, ?)");
+	query.addBindValue("Prison Blues Process");
+	query.addBindValue(process->readAllStandardOutput().trimmed());
+	query.exec();
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
+}
+
 void spoton_kernel::slotPrisonBluesTimeout(void)
 {
   spoton_misc::launchPrisonBluesProcesses
