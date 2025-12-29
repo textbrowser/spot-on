@@ -3980,11 +3980,11 @@ void spoton::slotJoinBuzzChannel(void)
   QPair<QByteArray, QByteArray> keys;
   QPointer<spoton_buzzpage> page;
   QString error("");
-  auto const channel(m_ui.channel->text().toLatin1());
-  auto const channelSalt(m_ui.channelSalt->text().toLatin1());
-  auto const channelType(m_ui.channelType->currentText().toLatin1());
-  auto const hashKey(m_ui.buzzHashKey->text().toLatin1());
-  auto const hashType(m_ui.buzzHashType->currentText().toLatin1());
+  auto const channel(m_ui.channel->text().toUtf8());
+  auto const channelSalt(m_ui.channelSalt->text().toUtf8());
+  auto const channelType(m_ui.channelType->currentText().toUtf8());
+  auto const hashKey(m_ui.buzzHashKey->text().toUtf8());
+  auto const hashType(m_ui.buzzHashType->currentText().toUtf8());
   auto const iterationCount = static_cast<unsigned long int>
     (m_ui.buzzIterationCount->value());
 

@@ -1119,8 +1119,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed
-		   (ipAddress.
-		    toLatin1(), &ok).toBase64());
+		   (ipAddress.toLatin1(), &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1140,8 +1139,8 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (4, newCrypt->keyedHash((ipAddress + port + scopeId +
-					   transport).
-					  toLatin1(), &ok).toBase64());
+					   transport).toLatin1(),
+					  &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
