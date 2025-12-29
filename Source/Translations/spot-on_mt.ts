@@ -400,108 +400,108 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="1381"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="1380"/>
         <source>Re-encoding neighbors.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="1788"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="1787"/>
         <source>Re-encoding poptastic.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="1909"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="1908"/>
         <source>Re-encoding rss.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="2146"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="2145"/>
         <source>Re-encoding secrets.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="2239"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="2238"/>
         <source>Re-encoding starbeam.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="2582"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="2581"/>
         <source>Re-encoding urls_distillers_information.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../GUI/spot-on-reencode.cc" line="2678"/>
+        <location filename="../GUI/spot-on-reencode.cc" line="2677"/>
         <source>Re-encoding urls_key_information.db.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="1573"/>
-        <location filename="../Common/spot-on-misc.cc" line="1576"/>
+        <location filename="../Common/spot-on-misc.cc" line="1574"/>
+        <location filename="../Common/spot-on-misc.cc" line="1577"/>
         <source>0 Bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="1578"/>
+        <location filename="../Common/spot-on-misc.cc" line="1579"/>
         <source>1 Byte</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="1580"/>
+        <location filename="../Common/spot-on-misc.cc" line="1581"/>
         <source>%1 Bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="1582"/>
+        <location filename="../Common/spot-on-misc.cc" line="1583"/>
         <source>%1 KiB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="1585"/>
+        <location filename="../Common/spot-on-misc.cc" line="1586"/>
         <source>%1 MiB</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4893"/>
+        <location filename="../Common/spot-on-misc.cc" line="4894"/>
         <source>The GIT script is not executable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4896"/>
+        <location filename="../Common/spot-on-misc.cc" line="4897"/>
         <source>The script %1 is not executable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4928"/>
+        <location filename="../Common/spot-on-misc.cc" line="4929"/>
         <source>The program will be renewed because of an error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4933"/>
+        <location filename="../Common/spot-on-misc.cc" line="4934"/>
         <source>The program %1 will be renewed because of an error.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4948"/>
+        <location filename="../Common/spot-on-misc.cc" line="4949"/>
         <source>The program %1 is already active. Ignoring.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4968"/>
+        <location filename="../Common/spot-on-misc.cc" line="4969"/>
         <source>The program %1 was started with a %2 request.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4971"/>
+        <location filename="../Common/spot-on-misc.cc" line="4972"/>
         <source>pull-only</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4971"/>
+        <location filename="../Common/spot-on-misc.cc" line="4972"/>
         <source>standard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../Common/spot-on-misc.cc" line="4978"/>
+        <location filename="../Common/spot-on-misc.cc" line="4979"/>
         <source>The program %1 did not start.</source>
         <translation type="unfinished"></translation>
     </message>

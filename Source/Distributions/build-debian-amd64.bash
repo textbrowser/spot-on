@@ -19,7 +19,7 @@ mkdir -p ./opt/spot-on/Documentation
 mkdir -p ./opt/spot-on/Lib
 mkdir -p ./opt/spot-on/SQL
 mkdir -p ./opt/spot-on/Translations
-qmake -o Makefile spot-on.pro
+qmake6 -o Makefile spot-on.pro
 lupdate spot-on.pro 2>/dev/null
 lrelease spot-on.pro 2>/dev/null
 make -j $(nproc)
