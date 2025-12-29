@@ -1,9 +1,11 @@
 Architecture: powerpc
 Depends: libcurl3-gnutls,
 	 libgcrypt20,
-	 libgpg-error0,
 	 libgeoip1,
+	 libgmp10,
+	 libgpg-error0,
 	 libgpgme11,
+	 libntl44,
 	 libpq5,
 	 libqt5bluetooth5,
 	 libqt5concurrent5,
