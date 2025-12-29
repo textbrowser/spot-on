@@ -1148,7 +1148,8 @@ QList<QByteArray> spoton_kernel::findBuzzKey(const QByteArray &data,
 	(data, it.value().value(2), it.value().value(3), &ok);
 
       if(ok)
-	if(!computedHash.isEmpty() && !hash.isEmpty() &&
+	if(!computedHash.isEmpty() &&
+	   !hash.isEmpty() &&
 	   spoton_crypt::memcmp(computedHash, hash))
 	  {
 	    list = it.value();
