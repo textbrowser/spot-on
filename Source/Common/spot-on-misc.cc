@@ -929,9 +929,10 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 	  {
 	    query.prepare
 	      ("SELECT * FROM poptastic WHERE in_username_hash = ?");
-	    query.bindValue(0, crypt->keyedHash(in_username.
-						trimmed().toLatin1(),
-						ok).toBase64());
+	    query.bindValue
+	      (0,
+	       crypt->keyedHash(in_username.trimmed().toLatin1(), ok).
+	       toBase64());
 	  }
 
 	if(query.exec())
@@ -1741,8 +1742,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTimeUtc().
-		       toString("MMddyyyyhhmm").
-		       toLatin1() + salt,
+		       toString("MMddyyyyhhmm").toLatin1() + salt,
 		       name + password,
 		       spoton_crypt::preferredHashAlgorithm(),
 		       &ok);
@@ -1758,8 +1758,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTimeUtc().addSecs(60).
-		       toString("MMddyyyyhhmm").
-		       toLatin1() + salt,
+		       toString("MMddyyyyhhmm").toLatin1() + salt,
 		       name + password,
 		       spoton_crypt::preferredHashAlgorithm(),
 		       &ok);
@@ -3738,9 +3737,10 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 		      "participant_oid) "
 		      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->
-	   encryptedThenHashed(now.toString(Qt::ISODate).
-			       toLatin1(), &ok).toBase64());
+	  (0,
+	   crypt->
+	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(), &ok).
+	   toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
 	if(ok)
@@ -3755,9 +3755,10 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 
 	if(ok)
 	  query.bindValue
-	    (4, crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
-				 message + subject,
-				 &ok).toBase64());
+	    (4,
+	     crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+			      message +
+			      subject, &ok).toBase64());
 
 	if(ok)
 	  if(!message.isEmpty())
