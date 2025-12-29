@@ -383,3 +383,5 @@ Remaining Items
 7.     Windows GIT and non-GPG (Chat).
 8.     Add XChaCha20.
 9.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.
+10.    Replace toLatin1() with toUtf8(). Qt 5 Buzz is not compatible with
+       Qt 6 Buzz.
