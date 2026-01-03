@@ -179,7 +179,7 @@ QMap<QString, QByteArray> spoton_smpwindow::streams
        m_ui.secrets->item(i, 3))
       if(keyTypes.contains(m_ui.secrets->item(i, 2)->text()))
 	map[m_ui.secrets->item(i, 3)->text()] = m_ui.secrets->item(i, 0)->
-	  text().toLatin1();
+	  text().toUtf8();
 
   return map;
 }
@@ -235,7 +235,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 		     static_cast<size_t> (guess.toUtf8().length()),
 		     GCRY_KDF_PBKDF2,
 		     gcry_md_map_name(m_ui.generator_hash_type->
-				      currentText().toLatin1().
+				      currentText().toUtf8().
 				      constData()),
 		     salt.constData(),
 		     static_cast<size_t> (salt.length()),
@@ -288,7 +288,7 @@ void spoton_smpwindow::generateSecretData(spoton_smpwindow_smp *smp)
 	if(ok)
 	  query.addBindValue
 	    (s_crypt->encryptedThenHashed(smp->m_keyType.
-					  toLatin1(), &ok).toBase64());
+					  toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.exec();
@@ -612,8 +612,8 @@ void spoton_smpwindow::slotExecute(void)
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << m_ui.transfer_cipher_type->currentText().toLatin1()
-	   << m_ui.transfer_hash_type->currentText().toLatin1();
+	   << m_ui.transfer_cipher_type->currentText().toUtf8()
+	   << m_ui.transfer_hash_type->currentText().toUtf8();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -641,11 +641,11 @@ void spoton_smpwindow::slotExecute(void)
     ("0092" +
      encryptionKey +
      hashKey +
-     m_ui.transfer_cipher_type->currentText().toLatin1() +
-     m_ui.transfer_hash_type->currentText().toLatin1() +
+     m_ui.transfer_cipher_type->currentText().toUtf8() +
+     m_ui.transfer_hash_type->currentText().toUtf8() +
      myPublicKeyHash +
      data +
-     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8() +
      recipientDigest,
      &ok);
 
@@ -663,7 +663,7 @@ void spoton_smpwindow::slotExecute(void)
 
     stream << myPublicKeyHash
 	   << data
-	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1()
+	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8()
 	   << signature;
 
     if(stream.status() != QDataStream::Ok)
@@ -701,7 +701,7 @@ void spoton_smpwindow::slotExecute(void)
       return;
     }
 
-  bytes = "smp_" + keyType.toLatin1().toBase64() + "_" +
+  bytes = "smp_" + keyType.toUtf8().toBase64() + "_" +
     name.toUtf8().toBase64() + "_" +
     keyInformation.toBase64() + "_" +
     bytes.toBase64() + "_" +
@@ -1349,8 +1349,8 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     stream << QByteArray("0092")
 	   << encryptionKey
 	   << hashKey
-	   << m_ui.transfer_cipher_type->currentText().toLatin1()
-	   << m_ui.transfer_hash_type->currentText().toLatin1();
+	   << m_ui.transfer_cipher_type->currentText().toUtf8()
+	   << m_ui.transfer_hash_type->currentText().toUtf8();
 
     if(stream.status() != QDataStream::Ok)
       {
@@ -1375,11 +1375,11 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
     ("0092" +
      encryptionKey +
      hashKey +
-     m_ui.transfer_cipher_type->currentText().toLatin1() +
-     m_ui.transfer_hash_type->currentText().toLatin1() +
+     m_ui.transfer_cipher_type->currentText().toUtf8() +
+     m_ui.transfer_hash_type->currentText().toUtf8() +
      myPublicKeyHash +
      data +
-     dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+     dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8() +
      recipientDigest,
      &ok);
 
@@ -1395,7 +1395,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
 
     stream << myPublicKeyHash
 	   << data
-	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1()
+	   << dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8()
 	   << signature;
 
     if(stream.status() != QDataStream::Ok)
@@ -1429,7 +1429,7 @@ void spoton_smpwindow::slotSMPMessageReceivedFromKernel
       goto done_label;
     }
 
-  bytes = "smp_" + smp->m_keyType.toLatin1().toBase64() + "_" +
+  bytes = "smp_" + smp->m_keyType.toUtf8().toBase64() + "_" +
     name.toUtf8().toBase64() + "_" +
     keyInformation.toBase64() + "_" +
     bytes.toBase64() + "_" +

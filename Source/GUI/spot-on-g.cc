@@ -260,7 +260,7 @@ void spoton::joinBuzzChannel(const QUrl &url)
 				   "sha1", // PBKDF2.
 				   iterationCount,
 				   channel + channelType + hashType,
-				   channelSalt.toLatin1(),
+				   channelSalt.toUtf8(),
 				   true,
 				   error);
   QApplication::restoreOverrideCursor();
@@ -289,13 +289,13 @@ void spoton::joinBuzzChannel(const QUrl &url)
 
   page = new spoton_buzzpage
     (&m_kernelSocket,
-     channel.toLatin1(),
-     channelSalt.toLatin1(),
-     channelType.toLatin1(),
+     channel.toUtf8(),
+     channelSalt.toUtf8(),
+     channelType.toUtf8(),
      id,
      iterationCount,
-     hashKey.toLatin1(),
-     hashType.toLatin1(),
+     hashKey.toUtf8(),
+     hashType.toUtf8(),
      keys.first,
      this);
   m_buzzPages[page->key()] = page;
@@ -662,13 +662,13 @@ void spoton::slotBuzzInvite(void)
       message.append(QString("%1_").arg(oids.at(i)).toUtf8());
       message.append(name.toBase64());
       message.append("_");
-      message.append(magnet.toLatin1().toBase64());
+      message.append(magnet.toUtf8().toBase64());
       message.append("_");
       message.append
 	(QByteArray("1").toBase64()); // Artificial sequence number.
       message.append("_");
       message.append(QDateTime::currentDateTimeUtc().
-		     toString("MMddyyyyhhmmss").toLatin1().toBase64());
+		     toString("MMddyyyyhhmmss").toUtf8().toBase64());
       message.append("_");
       message.append(QByteArray::number(selectedHumanProxyOID()));
       message.append("_");
@@ -734,10 +734,10 @@ void spoton::slotChatSecretsActionSelected(void)
     (0, static_cast<int> (spoton_crypt::
 			  cipherKeyLength(spoton_crypt::
 					  preferredCipherAlgorithm()))).
-    toLatin1();
+    toUtf8();
   gemini.second = action->property("stream").toString().mid
     (gemini.first.length(), spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES).
-    toLatin1();
+    toUtf8();
 
   if(saveGemini(gemini, item1->text()))
     {
@@ -1555,7 +1555,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	{
 	  QScopedPointer<spoton_crypt> crypt
 	    (spoton_misc::parsePrivateApplicationMagnet(ui.secret->text().
-							toLatin1()));
+							toUtf8()));
 
 	  if(!crypt)
 	    {
@@ -1604,9 +1604,9 @@ void spoton::slotSetPrivateApplicationInformation(void)
 	     ui.hash_type->currentText(),
 	     static_cast<unsigned long int> (ui.iteration_count->value()),
 	     secret.mid(0, 16).toUtf8(),
-	     ui.cipher_type->currentText().toLatin1().toHex() +
-	     ui.hash_type->currentText().toLatin1().toHex() +
-	     ui.iteration_count->text().toLatin1().toHex(),
+	     ui.cipher_type->currentText().toUtf8().toHex() +
+	     ui.hash_type->currentText().toUtf8().toHex() +
+	     ui.iteration_count->text().toUtf8().toHex(),
 	     spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
 	     false,
 	     error);
@@ -1656,7 +1656,7 @@ void spoton::slotSetPrivateApplicationInformation(void)
 				"WHERE OID = ?");
 
 		query.bindValue
-		  (0, crypt->encryptedThenHashed(magnet.toLatin1(),
+		  (0, crypt->encryptedThenHashed(magnet.toUtf8(),
 						 &ok).toBase64());
 		query.bindValue(1, oid);
 
@@ -1993,10 +1993,10 @@ void spoton::updatePoptasticNameSettingsFromWidgets(spoton_crypt *crypt)
 
   m_settings["gui/poptasticName"] =
     m_poptasticRetroPhoneSettingsUi.chat_primary_account->currentText().
-    toLatin1();
+    toUtf8();
   m_settings["gui/poptasticNameEmail"] =
     m_poptasticRetroPhoneSettingsUi.email_primary_account->currentText().
-    toLatin1();
+    toUtf8();
   settings.setValue
     ("gui/poptasticName",
      crypt->encryptedThenHashed(m_settings.value("gui/poptasticName").

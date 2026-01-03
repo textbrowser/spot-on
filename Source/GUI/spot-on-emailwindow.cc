@@ -821,7 +821,7 @@ void spoton_emailwindow::slotSendMail(void)
 	    auto const name(names.takeFirst().toUtf8());
 	    auto const now(QDateTime::currentDateTime());
 	    auto const oid(oids.takeFirst());
-	    auto const publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
+	    auto const publicKeyHash(publicKeyHashes.takeFirst().toUtf8());
 	    auto const subject(m_ui.outgoingSubject->text().toUtf8());
 	    auto ok = true;
 
@@ -833,7 +833,7 @@ void spoton_emailwindow::slotSendMail(void)
 		else
 		  mode = "pure-forward-secrecy";
 
-		goldbug = forwardSecrecyCredentials.first().toLatin1();
+		goldbug = forwardSecrecyCredentials.first().toUtf8();
 	      }
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
@@ -883,7 +883,7 @@ void spoton_emailwindow::slotSendMail(void)
 	    query.addBindValue
 	      (crypt->
 	       encryptedThenHashed(now.toString(Qt::ISODate).
-				   toLatin1(), &ok).toBase64());
+				   toUtf8(), &ok).toBase64());
 	    query.addBindValue(1); // Sent Folder
 
 	    /*
@@ -929,7 +929,7 @@ void spoton_emailwindow::slotSendMail(void)
 	    if(ok)
 	      query.addBindValue
 		(crypt->
-		 keyedHash(now.toString(Qt::ISODate).toLatin1() +
+		 keyedHash(now.toString(Qt::ISODate).toUtf8() +
 			   message + subject, &ok).toBase64());
 
 	    if(ok)
@@ -972,7 +972,7 @@ void spoton_emailwindow::slotSendMail(void)
 
 	    if(ok)
 	      query.addBindValue
-		(crypt->encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
+		(crypt->encryptedThenHashed(oid.toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      if(query.exec())

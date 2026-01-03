@@ -316,7 +316,7 @@ void spoton_chatwindow::sendMessage(bool *ok)
 			1).toBase64());
   message.append("_");
   message.append(QDateTime::currentDateTimeUtc().
-		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+		 toString("MMddyyyyhhmmss").toUtf8().toBase64());
   message.append("_");
 
   if(m_parent)

@@ -384,7 +384,7 @@ void spoton::importNeighbors(const QString &filePath)
 		      query.bindValue
 			(9, crypt->
 			 encryptedThenHashed
-			 (country.toLatin1(), &ok).toBase64());
+			 (country.toUtf8(), &ok).toBase64());
 
 		    if(ok)
 		      query.bindValue
@@ -395,7 +395,7 @@ void spoton::importNeighbors(const QString &filePath)
 		    if(ok)
 		      query.bindValue
 			(11, crypt->
-			 keyedHash(country.remove(" ").toLatin1(), &ok).
+			 keyedHash(country.remove(" ").toUtf8(), &ok).
 			 toBase64());
 
 		    if(ok)
@@ -1564,7 +1564,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 			  "neighbor_oid = -1 WHERE "
 			  "public_key_hash = ? AND "
 			  "neighbor_oid = 0");
-	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.bindValue(0, publicKeyHash.toUtf8());
 	    query.exec();
 	    query.prepare("UPDATE friends_public_keys SET "
 			  "neighbor_oid = -1 WHERE "
@@ -1573,7 +1573,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
 			  "relationships_with_signatures WHERE "
 			  "public_key_hash = ?) "
 			  "AND neighbor_oid = 0");
-	    query.bindValue(0, publicKeyHash.toLatin1());
+	    query.bindValue(0, publicKeyHash.toUtf8());
 	    query.exec();
 	  }
 
@@ -1631,7 +1631,7 @@ void spoton::sharePublicKeyWithParticipant(const QString &keyType)
       message.append("befriendparticipant_");
       message.append(oid.toUtf8());
       message.append("_");
-      message.append(keyType.toLatin1().toBase64());
+      message.append(keyType.toUtf8().toBase64());
       message.append("_");
       message.append(name.toBase64());
       message.append("_");
@@ -1734,7 +1734,7 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
   ** Validate the magnet.
   */
 
-  if(!spoton_misc::isValidStarBeamMagnet(magnet.toLatin1()))
+  if(!spoton_misc::isValidStarBeamMagnet(magnet.toUtf8()))
     {
       error = tr("Invalid StarBeam magnet. Are you missing tokens?");
       goto done_label;
@@ -1754,11 +1754,11 @@ void spoton::slotAddEtpMagnet(const QString &text, const bool displayError)
 		      "(magnet, magnet_hash, origin) "
 		      "VALUES (?, ?, ?)");
 	query.addBindValue
-	  (crypt->encryptedThenHashed(magnet.toLatin1(), &ok).toBase64());
+	  (crypt->encryptedThenHashed(magnet.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(magnet.toLatin1(), &ok).toBase64());
+	    (crypt->keyedHash(magnet.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -1848,11 +1848,11 @@ void spoton::slotAddReceiveNova(void)
 	  ("INSERT OR REPLACE INTO received_novas (nova, nova_hash) "
 	   "VALUES (?, ?)");
 	query.addBindValue
-	  (crypt->encryptedThenHashed(nova.toLatin1(), &ok).toBase64());
+	  (crypt->encryptedThenHashed(nova.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(nova.toLatin1(), &ok).toBase64());
+	    (crypt->keyedHash(nova.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -2348,7 +2348,7 @@ void spoton::slotCopyUrlFriendshipBundle(void)
   QPair<QByteArray, QByteArray> gemini;
   QString receiverName("");
   auto const cipherType(m_settings.value("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto ok = true;
 
   if(cipherType.isEmpty())
@@ -2655,7 +2655,7 @@ void spoton::slotDeleteNova(void)
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM received_novas WHERE nova_hash = ?");
 	query.addBindValue
-	  (crypt->keyedHash(list.at(0).data().toString().toLatin1(), &ok).
+	  (crypt->keyedHash(list.at(0).data().toString().toUtf8(), &ok).
 	   toBase64());
 
 	if(ok)
@@ -4408,7 +4408,7 @@ void spoton::slotRenameParticipant(void)
 		    chat->setName(name);
 		}
 
-	      emit participantNameChanged(publicKeyHash.toLatin1(), name);
+	      emit participantNameChanged(publicKeyHash.toUtf8(), name);
 	    }
 	}
       else if(tabName == "email")
@@ -4417,7 +4417,7 @@ void spoton::slotRenameParticipant(void)
 	    (list.value(0).row(), 3); // public_key_hash
 
 	  if(item)
-	    emit participantNameChanged(item->text().toLatin1(), name);
+	    emit participantNameChanged(item->text().toUtf8(), name);
 	}
       else if(tabName == "urls")
 	{
@@ -4425,7 +4425,7 @@ void spoton::slotRenameParticipant(void)
 	    (list.value(0).row(), 3); // public_key_hash
 
 	  if(item)
-	    emit participantNameChanged(item->text().toLatin1(), name);
+	    emit participantNameChanged(item->text().toUtf8(), name);
 	}
     }
 }
@@ -4781,7 +4781,7 @@ void spoton::slotTransmit(void)
 	if(checkBox->isChecked())
 	  {
 	    zero = false;
-	    magnets << checkBox->text().replace("&&", "&").toLatin1();
+	    magnets << checkBox->text().replace("&&", "&").toUtf8();
 	  }
     }
 
@@ -4801,7 +4801,7 @@ void spoton::slotTransmit(void)
       {
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
-	auto const nova(m_ui.transmitNova->text().toLatin1());
+	auto const nova(m_ui.transmitNova->text().toUtf8());
 
 	if(!nova.isEmpty())
 	  {

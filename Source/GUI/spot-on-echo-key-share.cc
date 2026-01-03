@@ -194,7 +194,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->encryptedThenHashed(cipherType.toLatin1(), &ok).
+	    (3, crypt->encryptedThenHashed(cipherType.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -203,7 +203,7 @@ bool spoton_echo_key_share::save(const QPair<QByteArray, QByteArray> &keys,
 
 	if(ok)
 	  query.bindValue
-	    (5, crypt->encryptedThenHashed(hashType.toLatin1(), &ok).
+	    (5, crypt->encryptedThenHashed(hashType.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -821,14 +821,14 @@ void spoton_echo_key_share::shareSelected(const QString &keyType)
 			     "");
 
 	  stream << QByteArray("0090")
-		 << keyType.toLatin1()
+		 << keyType.toUtf8()
 		 << name
 		 << qCompress(publicKey)
 		 << signature
 		 << sPublicKey
 		 << sSignature
 		 << QDateTime::currentDateTimeUtc().
-	            toString("MMddyyyyhhmmss").toLatin1();
+	            toString("MMddyyyyhhmmss").toUtf8();
 
 	  if(stream.status() != QDataStream::Ok)
 	    ok = false;
@@ -988,8 +988,8 @@ void spoton_echo_key_share::slotMenuAction(void)
 	 m_ui.hash->currentText(),
 	 static_cast<unsigned long int> (m_ui.iteration_count->value()),
 	 name.mid(0, 16).toUtf8(),
-	 m_ui.cipher->currentText().toLatin1().toHex() +
-	 m_ui.hash->currentText().toLatin1().toHex() +
+	 m_ui.cipher->currentText().toUtf8().toHex() +
+	 m_ui.hash->currentText().toUtf8().toHex() +
 	 name.mid(16).toUtf8(),
 	 spoton_crypt::XYZ_DIGEST_OUTPUT_SIZE_IN_BYTES,
 	 false,

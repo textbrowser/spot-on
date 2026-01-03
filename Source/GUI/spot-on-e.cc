@@ -119,7 +119,7 @@ QString spoton::savePoptasticAccount(void)
 	query.addBindValue
 	  (crypt->
 	   encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_method->
-			       currentText().toLatin1(), &ok).toBase64());
+			       currentText().toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -137,7 +137,7 @@ QString spoton::savePoptasticAccount(void)
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
 				 in_server_address->
 				 text().trimmed().
-				 toLatin1(), &ok).toBase64());
+				 toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -151,21 +151,21 @@ QString spoton::savePoptasticAccount(void)
 	  query.addBindValue
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.in_ssltls->
-				 currentText().toLatin1(), &ok).toBase64());
+				 currentText().toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
 				 in_username->text().
-				 trimmed().toLatin1(), &ok).
+				 trimmed().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.addBindValue
 	    (crypt->
 	     keyedHash(m_poptasticRetroPhoneSettingsUi.
-		       in_username->text().trimmed().toLatin1(),
+		       in_username->text().trimmed().toUtf8(),
 		       &ok).toBase64());
 
 	if(ok)
@@ -192,7 +192,7 @@ QString spoton::savePoptasticAccount(void)
 	  query.addBindValue
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_method->currentText().toLatin1(),
+				 out_method->currentText().toUtf8(),
 				 &ok).toBase64());
 
 	if(ok)
@@ -209,7 +209,7 @@ QString spoton::savePoptasticAccount(void)
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
 				 out_server_address->
 				 text().trimmed().
-				 toLatin1(), &ok).toBase64());
+				 toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -223,7 +223,7 @@ QString spoton::savePoptasticAccount(void)
 	  query.addBindValue
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
-				 out_ssltls->currentText().toLatin1(),
+				 out_ssltls->currentText().toUtf8(),
 				 &ok).toBase64());
 
 	if(ok)
@@ -231,7 +231,7 @@ QString spoton::savePoptasticAccount(void)
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
 				 out_username->text().
-				 trimmed().toLatin1(), &ok).
+				 trimmed().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -271,7 +271,7 @@ QString spoton::savePoptasticAccount(void)
 	    (crypt->
 	     encryptedThenHashed(m_poptasticRetroPhoneSettingsUi.
 				 proxy_server_address->text().
-				 trimmed().toLatin1(), &ok).
+				 trimmed().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -369,12 +369,12 @@ bool spoton::sendSMPLinkToKernel(const QList<QByteArray> &list,
 
   message.append(name.toBase64());
   message.append("_");
-  message.append(magnet.toLatin1().toBase64());
+  message.append(magnet.toUtf8().toBase64());
   message.append("_");
   message.append(QByteArray("1").toBase64()); // Artificial sequence number.
   message.append("_");
   message.append(QDateTime::currentDateTimeUtc().
-		 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+		 toString("MMddyyyyhhmmss").toUtf8().toBase64());
   message.append("_");
   message.append(QByteArray::number(selectedHumanProxyOID()));
   message.append("_");
@@ -558,7 +558,7 @@ void spoton::initializeUrlDistillers(void)
 	    QSqlQuery query(db);
 	    auto const direction(list.at(i).value(1).toByteArray());
 	    auto const domain
-	      (list.at(i).value(0).toUrl().scheme().toLatin1() + "://" +
+	      (list.at(i).value(0).toUrl().scheme().toUtf8() + "://" +
 	       list.at(i).value(0).toUrl().host().toUtf8() +
 	       list.at(i).value(0).toUrl().path().toUtf8());
 	    auto const permission(list.at(i).value(2).toByteArray());
@@ -1173,7 +1173,7 @@ void spoton::slotDeletePoptasticAccount(void)
 	query.prepare("DELETE FROM poptastic WHERE in_username_hash = ?");
 	query.bindValue
 	  (0, crypt->keyedHash(m_poptasticRetroPhoneSettingsUi.
-			       account->currentText().toLatin1(), &ok).
+			       account->currentText().toUtf8(), &ok).
 	   toBase64());
 
 	if(ok)
@@ -1227,7 +1227,7 @@ void spoton::slotDeletePoptasticAccount(void)
 		setCurrentIndex(0);
 	      m_settings["gui/poptasticName"] =
 		m_poptasticRetroPhoneSettingsUi.
-		chat_primary_account->currentText().toLatin1();
+		chat_primary_account->currentText().toUtf8();
 
 	      QSettings settings;
 
@@ -1250,7 +1250,7 @@ void spoton::slotDeletePoptasticAccount(void)
 		setCurrentIndex(0);
 	      m_settings["gui/poptasticNameEmail"] =
 		m_poptasticRetroPhoneSettingsUi.
-		email_primary_account->currentText().toLatin1();
+		email_primary_account->currentText().toUtf8();
 
 	      QSettings settings;
 
@@ -2377,12 +2377,12 @@ void spoton::slotTestPoptasticPop3Settings(void)
     {
       curl_easy_setopt
 	(curl, CURLOPT_PASSWORD,
-	 m_poptasticRetroPhoneSettingsUi.in_password->text().toLatin1().
+	 m_poptasticRetroPhoneSettingsUi.in_password->text().toUtf8().
 	 constData());
       curl_easy_setopt
 	(curl, CURLOPT_USERNAME,
 	 m_poptasticRetroPhoneSettingsUi.in_username->
-	 text().trimmed().toLatin1().
+	 text().trimmed().toUtf8().
 	 constData());
 
       if(m_poptasticRetroPhoneSettingsUi.proxy->isChecked())
@@ -2404,7 +2404,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 	    scheme = "socks5";
 
 	  url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
-	  curl_easy_setopt(curl, CURLOPT_PROXY, url.toLatin1().constData());
+	  curl_easy_setopt(curl, CURLOPT_PROXY, url.toUtf8().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
 			   m_poptasticRetroPhoneSettingsUi.proxy_password->
 			   text().
@@ -2412,7 +2412,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
 	  curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
 			   m_poptasticRetroPhoneSettingsUi.proxy_username->
 			   text().
-			   trimmed().toLatin1().constData());
+			   trimmed().toUtf8().constData());
 	}
 
       QString url("");
@@ -2478,7 +2478,7 @@ void spoton::slotTestPoptasticPop3Settings(void)
       curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
       curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
-      curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+      curl_easy_setopt(curl, CURLOPT_URL, url.toUtf8().constData());
       res = curl_easy_perform(curl);
 
       if(res == CURLE_OK)
@@ -2523,12 +2523,12 @@ void spoton::slotTestPoptasticSmtpSettings(void)
     {
       curl_easy_setopt
 	(curl, CURLOPT_PASSWORD,
-	 m_poptasticRetroPhoneSettingsUi.out_password->text().toLatin1().
+	 m_poptasticRetroPhoneSettingsUi.out_password->text().toUtf8().
 	 constData());
       curl_easy_setopt
 	(curl, CURLOPT_USERNAME,
 	 m_poptasticRetroPhoneSettingsUi.out_username->text().
-	 trimmed().toLatin1().
+	 trimmed().toUtf8().
 	 constData());
 
       if(m_poptasticRetroPhoneSettingsUi.proxy->isChecked())
@@ -2550,7 +2550,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	    scheme = "socks5";
 
 	  url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
-	  curl_easy_setopt(curl, CURLOPT_PROXY, url.toLatin1().constData());
+	  curl_easy_setopt(curl, CURLOPT_PROXY, url.toUtf8().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
 			   m_poptasticRetroPhoneSettingsUi.
 			   proxy_password->text().
@@ -2558,7 +2558,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 	  curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
 			   m_poptasticRetroPhoneSettingsUi.
 			   proxy_username->text().
-			   trimmed().toLatin1().constData());
+			   trimmed().toUtf8().constData());
 	}
 
       QString url("");
@@ -2630,7 +2630,7 @@ void spoton::slotTestPoptasticSmtpSettings(void)
       curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
       curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);
-      curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+      curl_easy_setopt(curl, CURLOPT_URL, url.toUtf8().constData());
       res = curl_easy_perform(curl);
 
       if(res == CURLE_OK)
@@ -2796,7 +2796,7 @@ void spoton::verifySMPSecret(const QString &hash,
 	{
 	  auto const name
 	    (spoton_misc::
-	     nameFromPublicKeyHash(QByteArray::fromBase64(hash.toLatin1()),
+	     nameFromPublicKeyHash(QByteArray::fromBase64(hash.toUtf8()),
 				   m_crypts.value("chat")));
 
 	  if(name.isEmpty())

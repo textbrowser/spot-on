@@ -3209,7 +3209,7 @@ void spoton_rss::slotSaveProxy(void)
 	       "enabled, hostname, password, port, type, username) "
 	       "VALUES (?, ?, ?, ?, ?, ?)");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(enabled.toLatin1(), &ok).
+	      (0, crypt->encryptedThenHashed(enabled.toUtf8(), &ok).
 	       toBase64());
 
 	    if(ok)
@@ -3224,12 +3224,12 @@ void spoton_rss::slotSaveProxy(void)
 
 	    if(ok)
 	      query.bindValue
-		(3, crypt->encryptedThenHashed(port.toLatin1(), &ok).
+		(3, crypt->encryptedThenHashed(port.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(4, crypt->encryptedThenHashed(type.toLatin1(), &ok).
+		(4, crypt->encryptedThenHashed(type.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)

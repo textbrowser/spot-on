@@ -371,6 +371,8 @@ Completed Items
 258.   Remove HTML tags from local Web results. Requires html2text program.
 259.   Rosetta requires an initial fetch of the key ring password for
        status messages.
+260.   Replace toLatin1() with toUtf8(). Qt 5 Buzz is not compatible with
+       Qt 6 Buzz.
 
 Remaining Items
 
@@ -383,5 +385,3 @@ Remaining Items
 7.     Windows GIT and non-GPG (Chat).
 8.     Add XChaCha20.
 9.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.
-10.    Replace toLatin1() with toUtf8(). Qt 5 Buzz is not compatible with
-       Qt 6 Buzz.

@@ -1406,7 +1406,7 @@ int spoton::applyGoldBugToLetter(const QByteArray &goldbug,
 		    (QByteArray::fromBase64(query.value(i).
 					    toByteArray()));
 		else if(i == 6) // attachment(s)
-		  list.append(query.value(i).toString().toLatin1());
+		  list.append(query.value(i).toString().toUtf8());
 		else
 		  list.append
 		    (m_crypts.value("email")->
@@ -2572,7 +2572,7 @@ void spoton::sendMessage(bool *ok)
 	     toBase64());
 	  message.append("_");
 	  message.append(QDateTime::currentDateTimeUtc().
-			 toString("MMddyyyyhhmmss").toLatin1().toBase64());
+			 toString("MMddyyyyhhmmss").toUtf8().toBase64());
 	  message.append("_");
 	  message.append(QByteArray::number(selectedHumanProxyOID()));
 	  message.append("_");
@@ -2734,13 +2734,13 @@ void spoton::slotAddAcceptedIP(void)
 	else
 	  {
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(ip.toString().toLatin1(),
+	      (0, crypt->encryptedThenHashed(ip.toString().toUtf8(),
 					     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(1, crypt->keyedHash(ip.toString().
-				     toLatin1(), &ok).
+				     toUtf8(), &ok).
 		 toBase64());
 	  }
 
@@ -2833,16 +2833,16 @@ void spoton::slotAddAccount(void)
 		      "one_time_account) "
 		      "VALUES (?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(name.toLatin1(), &ok).toBase64());
+	  (0, crypt->encryptedThenHashed(name.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->keyedHash(name.toLatin1(),
+	    (1, crypt->keyedHash(name.toUtf8(),
 				 &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->encryptedThenHashed(password.toLatin1(),
+	    (2, crypt->encryptedThenHashed(password.toUtf8(),
 					   &ok).toBase64());
 
 	query.bindValue(3, oid);
@@ -2883,7 +2883,7 @@ void spoton::slotAddFriendsKey(void)
 {
   auto const key
     (m_ui.friendInformation->toPlainText().remove("\n").remove("\r\n").
-     toLatin1().trimmed());
+     toUtf8().trimmed());
 #if SPOTON_GOLDBUG == 0
   auto parent = m_addParticipantWindow;
 #else
@@ -3063,7 +3063,7 @@ void spoton::slotCopyFriendshipBundle(void)
   QPair<QByteArray, QByteArray> gemini;
   QString receiverName("");
   auto const cipherType(m_settings.value("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto ok = true;
 
   if(cipherType.isEmpty())
@@ -3172,7 +3172,7 @@ void spoton::slotCopyFriendshipBundle(void)
 		     0,
 		     "");
 
-  data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
+  data = crypt.encrypted(keyType.toUtf8().toBase64() + "@" +
 			 myName.toBase64() + "@" +
 			 qCompress(myPublicKey).toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
@@ -3466,7 +3466,7 @@ void spoton::slotDeleteAcceptedIP(void)
 	query.prepare("DELETE FROM listeners_allowed_ips WHERE "
 		      "ip_address_hash = ? AND listener_oid = ?");
 	query.bindValue
-	  (0, crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(ip.toUtf8(), &ok).toBase64());
 	query.bindValue(1, oid);
 
 	if(ok)
@@ -3505,7 +3505,7 @@ void spoton::slotDeleteAcceptedIP(void)
 	    if(ok)
 	      query.bindValue
 		(0,
-		 crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+		 crypt->keyedHash(ip.toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      ok = query.exec();
@@ -3595,7 +3595,7 @@ void spoton::slotDeleteAccount(void)
 	query.prepare("DELETE FROM listeners_accounts WHERE "
 		      "account_name_hash = ? AND listener_oid = ?");
 	query.addBindValue
-	  (crypt->keyedHash(list.at(0).data().toString().toLatin1(), &ok).
+	  (crypt->keyedHash(list.at(0).data().toString().toUtf8(), &ok).
 	   toBase64());
 	query.addBindValue(oid);
 
@@ -4739,8 +4739,8 @@ void spoton::slotParticipantsItemChanged(QTableWidgetItem *item)
 
   QPair<QByteArray, QByteArray> gemini;
 
-  gemini.first = item1->text().toLatin1();
-  gemini.second = item2->text().toLatin1();
+  gemini.first = item1->text().toUtf8();
+  gemini.second = item2->text().toUtf8();
   saveGemini(gemini, m_ui.participants->item(item->row(), 1)->text()); // OID
 }
 
@@ -5499,7 +5499,7 @@ void spoton::slotReceivedKernelMessage(void)
 		    msg.append
 		      (tr("<font color=orange>unsigned: </font>"));
 
-		  if(spoton_misc::isValidInstitutionMagnet(content.toLatin1()))
+		  if(spoton_misc::isValidInstitutionMagnet(content.toUtf8()))
 		    {
 		      QString str("");
 
@@ -5511,7 +5511,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      content = str;
 		    }
 		  else if(spoton_misc::
-			  isValidStarBeamMagnet(content.toLatin1()))
+			  isValidStarBeamMagnet(content.toUtf8()))
 		    {
 		      if(m_settings.value("gui/autoAddSharedSBMagnets",
 					  true).toBool())
@@ -6008,7 +6008,7 @@ void spoton::slotReply(void)
 		{
 		  QApplication::processEvents();
 		  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-		  addFriendsKey(str.toLatin1(), "E", this);
+		  addFriendsKey(str.toUtf8(), "E", this);
 		  m_emailAddressAdded = str;
 		  slotPopulateParticipants();
 		  QApplication::restoreOverrideCursor();
@@ -6486,7 +6486,7 @@ void spoton::slotSendMail(void)
 	    auto const name(names.takeFirst().toUtf8());
 	    auto const now(QDateTime::currentDateTime());
 	    auto const oid(oids.takeFirst());
-	    auto const publicKeyHash(publicKeyHashes.takeFirst().toLatin1());
+	    auto const publicKeyHash(publicKeyHashes.takeFirst().toUtf8());
 	    auto const subject(m_ui.outgoingSubject->text().toUtf8());
 	    auto ok = true;
 
@@ -6498,7 +6498,7 @@ void spoton::slotSendMail(void)
 		else
 		  mode = "pure-forward-secrecy";
 
-		goldbug = forwardSecrecyCredentials.first().toLatin1();
+		goldbug = forwardSecrecyCredentials.first().toUtf8();
 	      }
 	    else if(m_ui.email_fs_gb->currentIndex() == 1)
 	      {
@@ -6548,7 +6548,7 @@ void spoton::slotSendMail(void)
 	    query.bindValue
 	      (0, crypt->
 	       encryptedThenHashed(now.toString(Qt::RFC2822Date).
-				   toLatin1(), &ok).toBase64());
+				   toUtf8(), &ok).toBase64());
 	    query.bindValue(1, 1); // Sent Folder
 
 	    /*
@@ -6595,7 +6595,7 @@ void spoton::slotSendMail(void)
 	    if(ok)
 	      query.bindValue
 		(4, crypt->
-		 keyedHash(now.toString(Qt::RFC2822Date).toLatin1() +
+		 keyedHash(now.toString(Qt::RFC2822Date).toUtf8() +
 			   message + subject, &ok).toBase64());
 
 	    if(ok)
@@ -6643,7 +6643,7 @@ void spoton::slotSendMail(void)
 	    if(ok)
 	      query.bindValue
 		(14, crypt->
-		 encryptedThenHashed(oid.toLatin1(), &ok).toBase64());
+		 encryptedThenHashed(oid.toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      if(query.exec())

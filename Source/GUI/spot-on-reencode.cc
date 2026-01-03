@@ -1119,33 +1119,33 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed
-		   (ipAddress.toLatin1(), &ok).toBase64());
+		   (ipAddress.toUtf8(), &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (1, newCrypt->encryptedThenHashed(port.toLatin1(),
+		  (1, newCrypt->encryptedThenHashed(port.toUtf8(),
 						    &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (2, newCrypt->encryptedThenHashed(scopeId.toLatin1(), &ok).
+		  (2, newCrypt->encryptedThenHashed(scopeId.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (3, newCrypt->encryptedThenHashed(protocol.toLatin1(), &ok).
+		  (3, newCrypt->encryptedThenHashed(protocol.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (4, newCrypt->keyedHash((ipAddress + port + scopeId +
-					   transport).toLatin1(),
+					   transport).toUtf8(),
 					  &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (5, newCrypt->
-		   encryptedThenHashed(echoMode.toLatin1(), &ok).toBase64());
+		   encryptedThenHashed(echoMode.toUtf8(), &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
@@ -1164,12 +1164,12 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		updateQuery.bindValue
-		  (9, newCrypt->encryptedThenHashed(transport.toLatin1(),
+		  (9, newCrypt->encryptedThenHashed(transport.toUtf8(),
 						    &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (10, newCrypt->encryptedThenHashed(orientation.toLatin1(),
+		  (10, newCrypt->encryptedThenHashed(orientation.toUtf8(),
 						     &ok).toBase64());
 
 	      if(ok)
@@ -1185,7 +1185,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		    updateQuery.bindValue
 		      (11, newCrypt->
 		       encryptedThenHashed(privateApplicationCredentials.
-					   toLatin1(), &ok).toBase64());
+					   toUtf8(), &ok).toBase64());
 		}
 
 	      updateQuery.bindValue(12, query.value(11));
@@ -1590,44 +1590,44 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (0, newCrypt->encryptedThenHashed(ipAddress.
-						    toLatin1(),
+						    toUtf8(),
 						    &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (1, newCrypt->encryptedThenHashed(port.toLatin1(),
+		  (1, newCrypt->encryptedThenHashed(port.toUtf8(),
 						    &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (2, newCrypt->encryptedThenHashed(scopeId.toLatin1(), &ok).
+		  (2, newCrypt->encryptedThenHashed(scopeId.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (3, newCrypt->encryptedThenHashed(country.toLatin1(), &ok).
+		  (3, newCrypt->encryptedThenHashed(country.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (4, newCrypt->keyedHash((ipAddress + port + scopeId +
-					   transport).toLatin1(), &ok).
+					   transport).toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (5, newCrypt->keyedHash(ipAddress.toLatin1(), &ok).
+		  (5, newCrypt->keyedHash(ipAddress.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (6, newCrypt->keyedHash(country.toLatin1(), &ok).
+		  (6, newCrypt->keyedHash(country.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (7, newCrypt->
-		   encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+		   encryptedThenHashed(proxyHostName.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
@@ -1639,13 +1639,13 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (9, newCrypt->
-		   encryptedThenHashed(proxyPort.toLatin1(), &ok).
+		   encryptedThenHashed(proxyPort.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (10, newCrypt->
-		   encryptedThenHashed(proxyType.toLatin1(), &ok).
+		   encryptedThenHashed(proxyType.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
@@ -1660,7 +1660,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 
 	      if(ok)
 		updateQuery.bindValue
-		  (13, newCrypt->encryptedThenHashed(echoMode.toLatin1(),
+		  (13, newCrypt->encryptedThenHashed(echoMode.toUtf8(),
 						     &ok).toBase64());
 
 	      if(ok)
@@ -1671,30 +1671,30 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 	      if(ok)
 		updateQuery.bindValue
 		  (15, newCrypt->
-		   encryptedThenHashed(protocol.toLatin1(), &ok).
+		   encryptedThenHashed(protocol.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (16, newCrypt->encryptedThenHashed
-		   (accountName.toLatin1(), &ok).
+		   (accountName.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (17, newCrypt->
-		   encryptedThenHashed(accountPassword.toLatin1(),
+		   encryptedThenHashed(accountPassword.toUtf8(),
 				       &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
-		  (18, newCrypt->encryptedThenHashed(transport.toLatin1(),
+		  (18, newCrypt->encryptedThenHashed(transport.toUtf8(),
 						     &ok).toBase64());
 
 	      if(ok)
 		updateQuery.bindValue
 		  (19, newCrypt->
-		   encryptedThenHashed(orientation.toLatin1(), &ok).
+		   encryptedThenHashed(orientation.toUtf8(), &ok).
 		   toBase64());
 
 	      if(ok)
@@ -1709,7 +1709,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  else
 		    updateQuery.bindValue
 		      (20, newCrypt->
-		       encryptedThenHashed(aeToken.toLatin1(), &ok).
+		       encryptedThenHashed(aeToken.toUtf8(), &ok).
 		       toBase64());
 		}
 
@@ -1725,7 +1725,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  else
 		    updateQuery.bindValue
 		      (21, newCrypt->
-		       encryptedThenHashed(aeTokenType.toLatin1(), &ok).
+		       encryptedThenHashed(aeTokenType.toUtf8(), &ok).
 		       toBase64());
 		}
 
@@ -1742,7 +1742,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		    updateQuery.bindValue
 		      (22, newCrypt->
 		       encryptedThenHashed(privateApplicationCredentials.
-					   toLatin1(), &ok).toBase64());
+					   toUtf8(), &ok).toBase64());
 		}
 
 	      if(ok)
@@ -1757,7 +1757,7 @@ void spoton_reencode::reencode(Ui_spoton_statusbar sb,
 		  else
 		    updateQuery.bindValue
 		      (23, newCrypt->
-		       encryptedThenHashed(bindIpAddress.toLatin1(), &ok).
+		       encryptedThenHashed(bindIpAddress.toUtf8(), &ok).
 		       toBase64());
 		}
 

@@ -704,16 +704,16 @@ void spoton::slotAddAEToken(void)
 	   "token_type) "
 	   "VALUES (?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(token.toLatin1(), &ok).toBase64());
+	  (0, crypt->encryptedThenHashed(token.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (1, crypt->keyedHash((token + type).toLatin1(),
+	    (1, crypt->keyedHash((token + type).toUtf8(),
 				 &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->encryptedThenHashed(type.toLatin1(),
+	    (2, crypt->encryptedThenHashed(type.toUtf8(),
 					   &ok).toBase64());
 
 	if(ok)
@@ -902,28 +902,28 @@ void spoton::slotAddInstitution(const QString &text)
 	   "(cipher_type, hash_type, hash, name, postal_address) "
 	   "VALUES (?, ?, ?, ?, ?)");
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(nameType.toLatin1(),
+	  (0, crypt->encryptedThenHashed(nameType.toUtf8(),
 					 &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (1, crypt->
-	     encryptedThenHashed(postalAddressType.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(postalAddressType.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (2, crypt->keyedHash(name.toLatin1(), &ok).
+	    (2, crypt->keyedHash(name.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (3, crypt->encryptedThenHashed(name.toLatin1(), &ok).
+	    (3, crypt->encryptedThenHashed(name.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (4, crypt->
-	     encryptedThenHashed(postalAddress.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(postalAddress.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -1019,32 +1019,32 @@ void spoton::slotAddMagnet(void)
 	  if(str.startsWith("rn="))
 	    {
 	      str.remove(0, 3);
-	      channel = str.toLatin1();
+	      channel = str.toUtf8();
 	    }
 	  else if(str.startsWith("xf="))
 	    {
 	      str.remove(0, 3);
-	      iterationCount = str.toLatin1();
+	      iterationCount = str.toUtf8();
 	    }
 	  else if(str.startsWith("xs="))
 	    {
 	      str.remove(0, 3);
-	      channelSalt = str.toLatin1();
+	      channelSalt = str.toUtf8();
 	    }
 	  else if(str.startsWith("ct="))
 	    {
 	      str.remove(0, 3);
-	      channelType = str.toLatin1();
+	      channelType = str.toUtf8();
 	    }
 	  else if(str.startsWith("hk="))
 	    {
 	      str.remove(0, 3);
-	      hashKey = str.toLatin1();
+	      hashKey = str.toUtf8();
 	    }
 	  else if(str.startsWith("ht="))
 	    {
 	      str.remove(0, 3);
-	      hashType = str.toLatin1();
+	      hashType = str.toUtf8();
 	    }
 	  else if(str.startsWith("xt="))
 	    {
@@ -1238,7 +1238,7 @@ void spoton::slotAssignNewIPToNeighbor(void)
 			  "WHERE OID = ? AND status_control <> 'deleted' AND "
 			  "user_defined = 1");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(country.toLatin1(), &ok).
+	      (0, crypt->encryptedThenHashed(country.toUtf8(), &ok).
 	       toBase64());
 
 	    if(ok)
@@ -1246,31 +1246,31 @@ void spoton::slotAssignNewIPToNeighbor(void)
 		(1, crypt->
 		 keyedHash((proxyHostName + proxyPort + ip + remotePort +
 			    scopeId +
-			    transport).toLatin1(), &ok).
+			    transport).toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(2, crypt->keyedHash(country.remove(" ").toLatin1(),
+		(2, crypt->keyedHash(country.remove(" ").toUtf8(),
 				     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(3, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
+		(3, crypt->encryptedThenHashed(ip.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(4, crypt->keyedHash(ip.toLatin1(), &ok).toBase64());
+		(4, crypt->keyedHash(ip.toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(5, crypt->encryptedThenHashed(remotePort.toLatin1(),
+		(5, crypt->encryptedThenHashed(remotePort.toUtf8(),
 					       &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(6, crypt->encryptedThenHashed(scopeId.toLatin1(), &ok).
+		(6, crypt->encryptedThenHashed(scopeId.toUtf8(), &ok).
 		 toBase64());
 
 	    query.bindValue(7, oid);
@@ -1527,7 +1527,7 @@ void spoton::slotDeleteAEToken(void)
 	  (crypt->keyedHash((list.at(0)->text() +
 			     list.at(1)->text() +
 			     "\n" +
-			     list.at(2)->text()).toLatin1(), &ok).toBase64());
+			     list.at(2)->text()).toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -1580,7 +1580,7 @@ void spoton::slotDeleteInstitution(void)
 	if(m_crypts.value("email", nullptr))
 	  query.bindValue
 	    (0, m_crypts.value("email")->
-	     keyedHash(list.value(0).data().toString().toLatin1(), &ok).
+	     keyedHash(list.value(0).data().toString().toUtf8(), &ok).
 	     toBase64());
 	else
 	  ok = false;
@@ -1713,15 +1713,15 @@ void spoton::slotMessagesAnchorClicked(const QUrl &link)
 {
   QString type("");
 
-  if(spoton_misc::isValidBuzzMagnet(link.toString().toLatin1()))
+  if(spoton_misc::isValidBuzzMagnet(link.toString().toUtf8()))
     {
       type = "buzz";
       joinBuzzChannel(link);
       return;
     }
-  else if(spoton_misc::isValidInstitutionMagnet(link.toString().toLatin1()))
+  else if(spoton_misc::isValidInstitutionMagnet(link.toString().toUtf8()))
     type = "institution";
-  else if(spoton_misc::isValidStarBeamMagnet(link.toString().toLatin1()))
+  else if(spoton_misc::isValidStarBeamMagnet(link.toString().toUtf8()))
     type = "starbeam";
 
   if(type.isEmpty())
@@ -2312,12 +2312,12 @@ void spoton::slotSetAETokenInformation(void)
 			      "ae_token_type = ? "
 			      "WHERE OID = ? AND user_defined = 1");
 		query.bindValue
-		  (0, crypt->encryptedThenHashed(token.toLatin1(),
+		  (0, crypt->encryptedThenHashed(token.toUtf8(),
 						 &ok).toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (1, crypt->encryptedThenHashed(tokenType.toLatin1(),
+		    (1, crypt->encryptedThenHashed(tokenType.toUtf8(),
 						   &ok).toBase64());
 
 		query.bindValue(2, oid);

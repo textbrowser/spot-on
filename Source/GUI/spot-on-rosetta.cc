@@ -1917,7 +1917,7 @@ void spoton_rosetta::slotAddContact(void)
 
 #ifdef SPOTON_GPGME_ENABLED
   {
-    auto const key(ui.newContact->toPlainText().trimmed().toLatin1());
+    auto const key(ui.newContact->toPlainText().trimmed().toUtf8());
 
     if(key.endsWith("-----END PGP PUBLIC KEY BLOCK-----") &&
        key.startsWith("-----BEGIN PGP PUBLIC KEY BLOCK-----"))
@@ -1950,7 +1950,7 @@ void spoton_rosetta::slotAddContact(void)
     }
 
   auto const key
-    (ui.newContact->toPlainText().remove("\n").remove("\r\n").toLatin1());
+    (ui.newContact->toPlainText().remove("\n").remove("\r\n").toUtf8());
 
   if(key.isEmpty())
     {
@@ -2144,7 +2144,7 @@ void spoton_rosetta::slotAddPending(void)
       QString error("");
       auto const data(list.at(i).data().toString());
 
-      addGPGContact(error, data.toLatin1());
+      addGPGContact(error, data.toUtf8());
 
       if(error.isEmpty())
 	{
@@ -2523,7 +2523,7 @@ void spoton_rosetta::slotConvertDecrypt(void)
   QString error("");
   QString signedMessage("");
   auto data
-    (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toLatin1());
+    (ui.inputDecrypt->toPlainText().remove("\n").remove("\r\n").toUtf8());
   auto ok = true;
 
   if(data.isEmpty())
@@ -2806,7 +2806,7 @@ void spoton_rosetta::slotConvertEncrypt(void)
     }
 
   encryptionKeyLength = spoton_crypt::cipherKeyLength
-    (ui.cipher->currentText().toLatin1());
+    (ui.cipher->currentText().toUtf8());
 
   if(encryptionKeyLength == 0)
     {
@@ -2829,8 +2829,8 @@ void spoton_rosetta::slotConvertEncrypt(void)
      eCrypt);
   stream << encryptionKey
 	 << hashKey
-	 << ui.cipher->currentText().toLatin1()
-	 << ui.hash->currentText().toLatin1();
+	 << ui.cipher->currentText().toUtf8()
+	 << ui.hash->currentText().toUtf8();
 
   if(stream.status() != QDataStream::Ok)
     ok = false;
@@ -3373,7 +3373,7 @@ void spoton_rosetta::slotGPGStatusTimerTimeout(void)
 	    {
 	      fingerprints << item1->text();
 	      publicKeys << spoton_misc::publicKeyFromHash
-		(QByteArray::fromBase64(item2->text().toLatin1()), true, crypt);
+		(QByteArray::fromBase64(item2->text().toUtf8()), true, crypt);
 	    }
 	}
     }
@@ -3589,7 +3589,7 @@ void spoton_rosetta::slotNewGPGKeys(void)
 				  m_gpgImport->import
 				    (error,
 				     m_gpgNewKeysUi.gpg_results->toPlainText().
-				     toLatin1());
+				     toUtf8());
 
 				  if(error.isEmpty())
 				    m_gpgImport->populate();
@@ -4172,7 +4172,7 @@ void spoton_rosetta::slotShareKeyBundle(const QByteArray &data,
      m_parent->isKernelActive())
     m_parent->writeKernelSocketData
       ("sharegit_" +
-       fingerprint.toLatin1().toBase64() +
+       fingerprint.toUtf8().toBase64() +
        "_" +
        data.toBase64() +
        "\n");

@@ -200,7 +200,7 @@ QString spoton::saveCommonUrlCredentials
 	   "VALUES (?, ?, ?, ?)");
 	query.bindValue
 	  (0,
-	   crypt->encryptedThenHashed(cipherType.toLatin1(),
+	   crypt->encryptedThenHashed(cipherType.toUtf8(),
 				      &ok).toBase64());
 
 	if(ok)
@@ -216,7 +216,7 @@ QString spoton::saveCommonUrlCredentials
 	if(ok)
 	  query.bindValue
 	    (3, crypt->
-	     encryptedThenHashed(hashType.toLatin1(),
+	     encryptedThenHashed(hashType.toUtf8(),
 				 &ok).toBase64());
 
 	if(ok)
@@ -631,7 +631,7 @@ void spoton::slotCallParticipantViaForwardSecrecy(void)
   QList<QByteArray> values;
 
   if(!spoton_misc::isValidForwardSecrecyMagnet(forwardSecrecyInformation.
-					       toLatin1(), values))
+					       toUtf8(), values))
     {
       QApplication::restoreOverrideCursor();
       return;
@@ -820,11 +820,11 @@ void spoton::slotDuplicateTransmittedMagnet(void)
 		      "(magnet, magnet_hash, origin) "
 		      "VALUES (?, ?, ?)");
 	query.addBindValue
-	  (crypt->encryptedThenHashed(magnet.toLatin1(), &ok).toBase64());
+	  (crypt->encryptedThenHashed(magnet.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
-	    (crypt->keyedHash(magnet.toLatin1(), &ok).toBase64());
+	    (crypt->keyedHash(magnet.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.addBindValue
@@ -1074,9 +1074,9 @@ void spoton::slotEstablishForwardSecrecy(void)
 	  message.append("_");
 	  message.append(keys.second.toBase64()); // Public Key
 	  message.append("_");
-	  message.append(keyType.toLatin1().toBase64());
+	  message.append(keyType.toUtf8().toBase64());
 	  message.append("_");
-	  message.append(type.toLatin1().toBase64()); // Widget type.
+	  message.append(type.toUtf8().toBase64()); // Widget type.
 	  message.append("\n");
 
 	  if(!writeKernelSocketData(message))
@@ -1882,7 +1882,7 @@ void spoton::slotRespondToForwardSecrecy(void)
       {
 	QSqlQuery query(db);
 	auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
-	  (ui.encryption_algorithm->currentText().toLatin1());
+	  (ui.encryption_algorithm->currentText().toUtf8());
 	auto ok = true;
 
 	if(symmetricKeyLength == 0)
@@ -1907,7 +1907,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	   "public_key_hash = ?");
 	query.bindValue
 	  (0, s_crypt->encryptedThenHashed(ui.authentication_algorithm->
-					   currentText().toLatin1(), &ok).
+					   currentText().toUtf8(), &ok).
 	   toBase64());
 
 	if(ok)
@@ -1917,7 +1917,7 @@ void spoton::slotRespondToForwardSecrecy(void)
 	if(ok)
 	  query.bindValue
 	    (2, s_crypt->encryptedThenHashed(ui.encryption_algorithm->
-					     currentText().toLatin1(), &ok).
+					     currentText().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -1951,14 +1951,14 @@ void spoton::slotRespondToForwardSecrecy(void)
   message.append("_");
   message.append(sfs.m_public_key.toBase64());
   message.append("_");
-  message.append(sfs.m_key_type.toLatin1().toBase64());
+  message.append(sfs.m_key_type.toUtf8().toBase64());
   message.append("_");
-  message.append(ui.authentication_algorithm->currentText().toLatin1().
+  message.append(ui.authentication_algorithm->currentText().toUtf8().
 		 toBase64());
   message.append("_");
   message.append(hashKey.toBase64());
   message.append("_");
-  message.append(ui.encryption_algorithm->currentText().toLatin1().
+  message.append(ui.encryption_algorithm->currentText().toUtf8().
 		 toBase64());
   message.append("_");
   message.append(symmetricKey.toBase64());

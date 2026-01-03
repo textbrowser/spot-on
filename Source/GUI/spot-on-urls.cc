@@ -458,7 +458,7 @@ void spoton::slotAddDistiller(void)
 	QSqlQuery query(db);
 	QStringList list;
 	auto const domain
-	  (url.scheme().toLatin1() + "://" +
+	  (url.scheme().toUtf8() + "://" +
 	   url.host().toUtf8() + url.path().toUtf8());
 
 	if(m_ui.downDist->isChecked())
@@ -485,12 +485,12 @@ void spoton::slotAddDistiller(void)
 			  "VALUES "
 			  "(?, ?, ?, ?, ?)");
 	    query.bindValue
-	      (0, crypt->encryptedThenHashed(direction.toLatin1(),
+	      (0, crypt->encryptedThenHashed(direction.toUtf8(),
 					     &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(1, crypt->keyedHash(direction.toLatin1(), &ok).toBase64());
+		(1, crypt->keyedHash(direction.toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
@@ -825,7 +825,7 @@ void spoton::slotDeleteUrlDistillers(void)
 	  query.prepare("DELETE FROM distillers WHERE "
 			"direction_hash = ? AND domain_hash = ?");
 	  query.bindValue
-	    (0, crypt->keyedHash(direction.toLatin1(),
+	    (0, crypt->keyedHash(direction.toUtf8(),
 				 &ok).toBase64());
 
 	  if(ok)
@@ -1900,7 +1900,7 @@ void spoton::slotSaveUrlCredentials(void)
 {
   QPair<QByteArray, QByteArray> keys;
   QString error("");
-  auto const salt(QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+  auto const salt(QByteArray::fromHex(m_ui.urlSalt->text().toUtf8()));
   auto crypt = m_crypts.value("chat", nullptr);
 
   if(!crypt)
@@ -1944,7 +1944,7 @@ void spoton::slotSaveUrlCredentials(void)
 	       "VALUES (?, ?)");
 	    query.bindValue
 	      (0, crypt->encryptedThenHashed(m_ui.urlCipher->currentText().
-					     toLatin1(),
+					     toUtf8(),
 					     &ok).toBase64());
 
 	    if(ok)
@@ -2547,9 +2547,9 @@ void spoton::slotVerify(void)
   QByteArray computedHash;
   QString error("");
   auto const salt
-    (QByteArray::fromHex(m_ui.urlSalt->text().toLatin1()));
+    (QByteArray::fromHex(m_ui.urlSalt->text().toUtf8()));
   auto const saltedPassphraseHash
-    (QByteArray::fromHex(m_ui.urlIniHash->text().toLatin1()));
+    (QByteArray::fromHex(m_ui.urlIniHash->text().toUtf8()));
   auto ok = false;
 
   computedHash = spoton_crypt::saltedPassphraseHash

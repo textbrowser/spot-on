@@ -3739,12 +3739,12 @@ void spoton::authenticate
 			      "account_password = ? "
 			      "WHERE OID = ? AND user_defined = 1");
 		query.bindValue
-		  (0, crypt->encryptedThenHashed(name.toLatin1(),
+		  (0, crypt->encryptedThenHashed(name.toUtf8(),
 						 &ok).toBase64());
 
 		if(ok)
 		  query.bindValue
-		    (1, crypt->encryptedThenHashed(password.toLatin1(),
+		    (1, crypt->encryptedThenHashed(password.toUtf8(),
 						   &ok).toBase64());
 
 		query.bindValue(2, oid);
@@ -3835,7 +3835,7 @@ void spoton::changeEchoMode(const QString &mode, QTableWidget *tableWidget)
 			"WHERE OID = ?");
 
 	query.bindValue
-	  (0, crypt->encryptedThenHashed(mode.toLatin1(), &ok).
+	  (0, crypt->encryptedThenHashed(mode.toUtf8(), &ok).
 	   toBase64());
 	query.bindValue(1, oid);
 
@@ -4801,37 +4801,37 @@ void spoton::slotAddListener(void)
 	    if(ok)
 	      query.bindValue
 		(0, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+		 encryptedThenHashed(ip.toUtf8(), &ok).toBase64());
 	  }
 	else
 	  {
 	    if(ok)
 	      query.bindValue
-		(0, crypt->encryptedThenHashed(ip.toLatin1(), &ok).
+		(0, crypt->encryptedThenHashed(ip.toUtf8(), &ok).
 		 toBase64());
 	  }
 
 	if(ok)
 	  query.bindValue
 	    (1, crypt->
-	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(port.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (2, crypt->
-	     encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(protocol.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (3, crypt->
-	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(scopeId.toUtf8(), &ok).toBase64());
 
 	query.bindValue(4, status);
 
 	if(ok)
 	  {
 	    hash = crypt->
-	      keyedHash((ip + port + scopeId + transport).toLatin1(), &ok);
+	      keyedHash((ip + port + scopeId + transport).toUtf8(), &ok);
 
 	    if(ok)
 	      query.bindValue(5, hash.toBase64());
@@ -5175,7 +5175,7 @@ void spoton::slotAddNeighbor(void)
 #endif
 	query.bindValue
 	  (2, crypt->
-	   encryptedThenHashed(protocol.toLatin1(), &ok).toBase64());
+	   encryptedThenHashed(protocol.toUtf8(), &ok).toBase64());
 
 	if(ip.isEmpty())
 	  query.bindValue
@@ -5188,27 +5188,27 @@ void spoton::slotAddNeighbor(void)
 	    if(ok)
 	      query.bindValue
 		(3, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+		 encryptedThenHashed(ip.toUtf8(), &ok).toBase64());
 	  }
 	else
 	  {
 	    if(ok)
 	      query.bindValue
 		(3, crypt->
-		 encryptedThenHashed(ip.toLatin1(), &ok).toBase64());
+		 encryptedThenHashed(ip.toUtf8(), &ok).toBase64());
 	  }
 
 	if(ok)
 	  query.bindValue
 	    (4, crypt->
-	     encryptedThenHashed(port.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(port.toUtf8(), &ok).toBase64());
 
 	query.bindValue(5, 1); // Sticky
 
 	if(ok)
 	  query.bindValue
 	    (6, crypt->
-	     encryptedThenHashed(scopeId.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(scopeId.toUtf8(), &ok).toBase64());
 
 	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
 	  {
@@ -5220,7 +5220,7 @@ void spoton::slotAddNeighbor(void)
 	  query.bindValue
 	    (7, crypt->
 	     keyedHash((proxyHostName + proxyPort + ip + port + scopeId +
-			transport).toLatin1(), &ok).
+			transport).toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue(8, status);
@@ -5233,17 +5233,17 @@ void spoton::slotAddNeighbor(void)
 	if(ok)
 	  query.bindValue
 	    (9, crypt->
-	     encryptedThenHashed(country.toLatin1(), &ok).toBase64());
+	     encryptedThenHashed(country.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->keyedHash(ip.toLatin1(), &ok).
+	    (10, crypt->keyedHash(ip.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
 	    (11, crypt->
-	     keyedHash(country.remove(" ").toLatin1(), &ok).
+	     keyedHash(country.remove(" ").toUtf8(), &ok).
 	     toBase64());
 
 	if(m_ui.proxy->isChecked() && m_ui.proxy->isEnabled())
@@ -5271,7 +5271,7 @@ void spoton::slotAddNeighbor(void)
 	if(ok)
 	  query.bindValue
 	    (12, crypt->
-	     encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+	     encryptedThenHashed(proxyHostName.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -5282,12 +5282,12 @@ void spoton::slotAddNeighbor(void)
 
 	if(ok)
 	  query.bindValue
-	    (14, crypt->encryptedThenHashed(proxyPort.toLatin1(),
+	    (14, crypt->encryptedThenHashed(proxyPort.toUtf8(),
 					    &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (15, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+	    (15, crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -5412,7 +5412,7 @@ void spoton::slotAddNeighbor(void)
 	query.bindValue
 	  (28,
 	   crypt->encryptedThenHashed(m_ui.bind_ip->text().
-				      trimmed().toLatin1(), &ok).toBase64());
+				      trimmed().toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  ok = query.exec();
@@ -5844,7 +5844,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
   QPair<QByteArray, QByteArray> gemini;
   QString receiverName("");
   auto const cipherType(m_settings.value("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto ok = true;
 
   if(cipherType.isEmpty())
@@ -5953,7 +5953,7 @@ void spoton::slotCopyEmailFriendshipBundle(void)
 		     0,
 		     "");
 
-  data = crypt.encrypted(keyType.toLatin1().toBase64() + "@" +
+  data = crypt.encrypted(keyType.toUtf8().toBase64() + "@" +
 			 myName.toBase64() + "@" +
 			 qCompress(myPublicKey).toBase64() + "@" +
 			 mySignature.toBase64() + "@" +
@@ -10042,7 +10042,7 @@ void spoton::slotSetPassphrase(void)
 
 	  saltedPassphraseHash = spoton_crypt::keyedHash
 	    (str1.toUtf8(), str2.toUtf8(),
-	     m_ui.hashType->currentText().toLatin1(), &ok);
+	     m_ui.hashType->currentText().toUtf8(), &ok);
 
 	  if(!ok)
 	    error3 = "keyed hash failure";
@@ -11185,7 +11185,7 @@ void spoton::slotValidatePassphrase(void)
       computedHash = spoton_crypt::keyedHash
 	(m_ui.question_authenticate->text().toUtf8(),
 	 m_ui.answer_authenticate->text().toUtf8(),
-	 m_ui.hashType->currentText().toLatin1(), &ok);
+	 m_ui.hashType->currentText().toUtf8(), &ok);
 
       if(!ok)
 	error = "keyed hash failure";
@@ -11404,8 +11404,8 @@ void spoton::slotValidatePassphrase(void)
 		*/
 	      }
 
-	    m_settings["gui/poptasticName"] = name.toLatin1();
-	    m_settings["gui/poptasticNameEmail"] = nameEmail.toLatin1();
+	    m_settings["gui/poptasticName"] = name.toUtf8();
+	    m_settings["gui/poptasticNameEmail"] = nameEmail.toUtf8();
 
 	    if(!m_settings.value("gui/initial_url_distillers_defined",
 				 false).toBool())

@@ -190,7 +190,7 @@ QString spoton::smpSecret(const QString &hash) const
 	query.prepare
 	  ("SELECT smp_secret FROM friends_public_keys WHERE "
 	   "public_key_hash = ?");
-	query.addBindValue(hash.toLatin1());
+	query.addBindValue(hash.toUtf8());
 
 	if(query.exec() && query.next())
 	  string = QString::fromUtf8
@@ -334,7 +334,7 @@ bool spoton::nodeExists(const QSqlDatabase &db,
   if(!crypt)
     return true;
 
-  auto const hash(crypt->keyedHash(identifier.toLatin1(), nullptr));
+  auto const hash(crypt->keyedHash(identifier.toUtf8(), nullptr));
 
   if(hash.isEmpty())
     return true;
@@ -707,9 +707,9 @@ void spoton::prepareOtherOptions(void)
 	    }
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
-	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
+	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toUtf8());
 	  else if(key == "PREFERRED_HASH_ALGORITHM")
-	    spoton_crypt::setPreferredHashAlgorithm(value.toLatin1());
+	    spoton_crypt::setPreferredHashAlgorithm(value.toUtf8());
 	}
     }
 
@@ -999,7 +999,7 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
 	   "public_key_hash = ?");
 	query.addBindValue
 	  (crypt->encryptedThenHashed(secret.toUtf8(), nullptr).toBase64());
-	query.addBindValue(hash.toLatin1());
+	query.addBindValue(hash.toUtf8());
 	query.exec();
       }
 
@@ -1047,8 +1047,8 @@ void spoton::slotApplyOtherOptions(void)
     }
 
   QSettings().setValue
-    ("gui/other_options", str.trimmed().toLatin1().toBase64());
-  m_settings["gui/other_options"] = str.trimmed().toLatin1().toBase64();
+    ("gui/other_options", str.trimmed().toUtf8().toBase64());
+  m_settings["gui/other_options"] = str.trimmed().toUtf8().toBase64();
   prepareOtherOptions();
 }
 
