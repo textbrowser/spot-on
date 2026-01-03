@@ -1860,7 +1860,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 		    if(ok)
 		      query.bindValue
 			(2, s_crypt->
-			 encryptedThenHashed(uuid.toString().toLatin1(),
+			 encryptedThenHashed(uuid.toString().toUtf8(),
 					     &ok).toBase64());
 
 		    query.bindValue(3, m_id);
@@ -1871,7 +1871,7 @@ void spoton_neighbor::process0014(int length, const QByteArray &dataIn)
 				  "WHERE OID = ?");
 		    query.bindValue
 		      (0, s_crypt->
-		       encryptedThenHashed(uuid.toString().toLatin1(),
+		       encryptedThenHashed(uuid.toString().toUtf8(),
 					   &ok).toBase64());
 		    query.bindValue(1, m_id);
 		  }
@@ -2409,7 +2409,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		newHash = spoton_crypt::keyedHash
 		  (QDateTime::currentDateTimeUtc().
 		   toString("MMddyyyyhhmm").
-		   toLatin1() + accountClientSentSalt + salt,
+		   toUtf8() + accountClientSentSalt + salt,
 		   name + password,
 		   spoton_crypt::preferredHashAlgorithm(),
 		   &ok);
@@ -2428,7 +2428,7 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 		      newHash = spoton_crypt::keyedHash
 			(QDateTime::currentDateTimeUtc().addSecs(60).
 			 toString("MMddyyyyhhmm").
-			 toLatin1() + accountClientSentSalt + salt,
+			 toUtf8() + accountClientSentSalt + salt,
 			 name + password,
 			 spoton_crypt::preferredHashAlgorithm(),
 			 &ok);
@@ -3982,7 +3982,7 @@ void spoton_neighbor::saveExternalAddress(const QHostAddress &address,
 			    "WHERE OID = ?");
 	      query.bindValue
 		(0, s_crypt->encryptedThenHashed(address.toString().
-						 toLatin1(), &ok).
+						 toUtf8(), &ok).
 		 toBase64());
 	      query.bindValue(1, m_id);
 	    }
@@ -4296,7 +4296,7 @@ void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
     (name,
      publicKeyHash,
      QByteArray(),
-     QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toLatin1());
+     QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toUtf8());
 }
 
 void spoton_neighbor::saveParticipantStatus(const QByteArray &name,
@@ -5146,7 +5146,7 @@ void spoton_neighbor::storeLetter(const QList<QByteArray> &list,
 	query.bindValue
 	  (0,
 	   s_crypt->encryptedThenHashed(QDateTime::currentDateTime().
-					toString(Qt::ISODate).toLatin1(),
+					toString(Qt::ISODate).toUtf8(),
 					&ok).toBase64());
 
 	if(ok)

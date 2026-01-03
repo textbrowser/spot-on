@@ -807,7 +807,7 @@ void spoton_listener::saveExternalAddress(const QHostAddress &address,
 			    "WHERE OID = ?");
 	      query.bindValue
 		(0, s_crypt->encryptedThenHashed(address.toString().
-						 toLatin1(), &ok).
+						 toUtf8(), &ok).
 		 toBase64());
 	      query.bindValue(1, m_id);
 	    }
@@ -1049,7 +1049,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	      query.bindValue
 		(3,
 		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      toLatin1(),
+					      toUtf8(),
 					      &ok).toBase64());
 
 	    if(ok)
@@ -1062,7 +1062,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      query.bindValue
 		(5,
-		 s_crypt->encryptedThenHashed(neighbor->scopeId().toLatin1(),
+		 s_crypt->encryptedThenHashed(neighbor->scopeId().toUtf8(),
 					      &ok).toBase64());
 
 	    query.bindValue(6, "connected");
@@ -1078,25 +1078,25 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 				     QString::number(neighbor->peerPort()) +
 				     neighbor->scopeId() +
 				     m_transport).
-				    toLatin1(), &ok).toBase64());
+				    toUtf8(), &ok).toBase64());
 
 	    query.bindValue(8, 1); // Sticky
 
 	    if(ok)
 	      query.bindValue
-		(9, s_crypt->encryptedThenHashed(country.toLatin1(),
+		(9, s_crypt->encryptedThenHashed(country.toUtf8(),
 						 &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(10, s_crypt->
 		 keyedHash(neighbor->peerAddress().
-			   toLatin1(), &ok).toBase64());
+			   toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(11, s_crypt->
-		 keyedHash(country.remove(" ").toLatin1(), &ok).toBase64());
+		 keyedHash(country.remove(" ").toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      {
@@ -1105,7 +1105,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		    (12,
 		     s_crypt->encryptedThenHashed(m_externalAddress->
 						  address().
-						  toString().toLatin1(),
+						  toString().toUtf8(),
 						  &ok).toBase64());
 		else
 		  query.bindValue
@@ -1118,7 +1118,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 		(13,
 		 s_crypt->encryptedThenHashed
 		 (neighbor->receivedUuid().toString().
-		  toLatin1(), &ok).toBase64());
+		  toUtf8(), &ok).toBase64());
 
 	    query.bindValue(14, 0);
 
@@ -1131,7 +1131,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      query.bindValue
 		(15, s_crypt->encryptedThenHashed
-		 (proxyHostName.toLatin1(), &ok).
+		 (proxyHostName.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -1141,12 +1141,12 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	    if(ok)
 	      query.bindValue
-		(17, s_crypt->encryptedThenHashed(proxyPort.toLatin1(),
+		(17, s_crypt->encryptedThenHashed(proxyPort.toUtf8(),
 						  &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(18, s_crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+		(18, s_crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -1157,7 +1157,7 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 
 	    if(ok)
 	      query.bindValue
-		(20, s_crypt->encryptedThenHashed(m_echoMode.toLatin1(),
+		(20, s_crypt->encryptedThenHashed(m_echoMode.toUtf8(),
 						  &ok).toBase64());
 
 	    query.bindValue(21, m_keySize);
@@ -1183,13 +1183,13 @@ void spoton_listener::slotNewConnection(const qintptr socketDescriptor,
 	    if(ok)
 	      query.bindValue
 		(27, s_crypt->encryptedThenHashed
-		 (m_transport.toLatin1(), &ok).
+		 (m_transport.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(28, s_crypt->encryptedThenHashed
-		 (m_orientation.toLatin1(), &ok).
+		 (m_orientation.toUtf8(), &ok).
 		 toBase64());
 
 	    query.bindValue(29, m_motd);
@@ -1588,7 +1588,7 @@ void spoton_listener::slotNewConnection(void)
 	      query.bindValue
 		(3,
 		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      toLatin1(),
+					      toUtf8(),
 					      &ok).toBase64());
 
 	    if(ok)
@@ -1602,7 +1602,7 @@ void spoton_listener::slotNewConnection(void)
 	      query.bindValue
 		(5,
 		 s_crypt->encryptedThenHashed(neighbor->scopeId().
-					      toLatin1(),
+					      toUtf8(),
 					      &ok).toBase64());
 
 	    query.bindValue(6, "connected");
@@ -1618,25 +1618,25 @@ void spoton_listener::slotNewConnection(void)
 				     QString::number(neighbor->peerPort()) +
 				     neighbor->scopeId() +
 				     m_transport).
-				    toLatin1(), &ok).toBase64());
+				    toUtf8(), &ok).toBase64());
 
 	    query.bindValue(8, 1); // Sticky
 
 	    if(ok)
 	      query.bindValue
-		(9, s_crypt->encryptedThenHashed(country.toLatin1(),
+		(9, s_crypt->encryptedThenHashed(country.toUtf8(),
 						 &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(10, s_crypt->
 		 keyedHash(neighbor->peerAddress().
-			   toLatin1(), &ok).toBase64());
+			   toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(11, s_crypt->
-		 keyedHash(country.remove(" ").toLatin1(), &ok).toBase64());
+		 keyedHash(country.remove(" ").toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      {
@@ -1645,7 +1645,7 @@ void spoton_listener::slotNewConnection(void)
 		    (12,
 		     s_crypt->encryptedThenHashed(m_externalAddress->
 						  address().
-						  toString().toLatin1(),
+						  toString().toUtf8(),
 						  &ok).toBase64());
 		else
 		  query.bindValue
@@ -1658,7 +1658,7 @@ void spoton_listener::slotNewConnection(void)
 		(13,
 		 s_crypt->encryptedThenHashed
 		 (neighbor->receivedUuid().toString().
-		  toLatin1(), &ok).toBase64());
+		  toUtf8(), &ok).toBase64());
 
 	    query.bindValue(14, 0);
 
@@ -1671,7 +1671,7 @@ void spoton_listener::slotNewConnection(void)
 	    if(ok)
 	      query.bindValue
 		(15, s_crypt->encryptedThenHashed
-		 (proxyHostName.toLatin1(), &ok).
+		 (proxyHostName.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -1681,12 +1681,12 @@ void spoton_listener::slotNewConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(17, s_crypt->encryptedThenHashed(proxyPort.toLatin1(),
+		(17, s_crypt->encryptedThenHashed(proxyPort.toUtf8(),
 						  &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(18, s_crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+		(18, s_crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -1697,7 +1697,7 @@ void spoton_listener::slotNewConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(20, s_crypt->encryptedThenHashed(m_echoMode.toLatin1(),
+		(20, s_crypt->encryptedThenHashed(m_echoMode.toUtf8(),
 						  &ok).toBase64());
 
 	    query.bindValue(21, m_keySize);
@@ -1722,12 +1722,12 @@ void spoton_listener::slotNewConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(27, s_crypt->encryptedThenHashed(m_transport.toLatin1(), &ok).
+		(27, s_crypt->encryptedThenHashed(m_transport.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(28, s_crypt->encryptedThenHashed(m_orientation.toLatin1(),
+		(28, s_crypt->encryptedThenHashed(m_orientation.toUtf8(),
 						  &ok).toBase64());
 
 	    query.bindValue(29, m_motd);
@@ -2351,7 +2351,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	      query.bindValue
 		(3,
 		 s_crypt->encryptedThenHashed(neighbor->peerAddress().
-					      toLatin1(),
+					      toUtf8(),
 					      &ok).toBase64());
 
 	    if(ok)
@@ -2365,7 +2365,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	      query.bindValue
 		(5,
 		 s_crypt->encryptedThenHashed(neighbor->scopeId().
-					      toLatin1(),
+					      toUtf8(),
 					      &ok).toBase64());
 
 	    query.bindValue(6, "connected");
@@ -2381,25 +2381,25 @@ void spoton_listener::slotNewWebSocketConnection(void)
 				     QString::number(neighbor->peerPort()) +
 				     neighbor->scopeId() +
 				     m_transport).
-				    toLatin1(), &ok).toBase64());
+				    toUtf8(), &ok).toBase64());
 
 	    query.bindValue(8, 1); // Sticky
 
 	    if(ok)
 	      query.bindValue
-		(9, s_crypt->encryptedThenHashed(country.toLatin1(),
+		(9, s_crypt->encryptedThenHashed(country.toUtf8(),
 						 &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(10, s_crypt->
 		 keyedHash(neighbor->peerAddress().
-			   toLatin1(), &ok).toBase64());
+			   toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
 		(11, s_crypt->
-		 keyedHash(country.remove(" ").toLatin1(), &ok).toBase64());
+		 keyedHash(country.remove(" ").toUtf8(), &ok).toBase64());
 
 	    if(ok)
 	      {
@@ -2408,7 +2408,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 		    (12,
 		     s_crypt->encryptedThenHashed(m_externalAddress->
 						  address().
-						  toString().toLatin1(),
+						  toString().toUtf8(),
 						  &ok).toBase64());
 		else
 		  query.bindValue
@@ -2421,7 +2421,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 		(13,
 		 s_crypt->encryptedThenHashed
 		 (neighbor->receivedUuid().toString().
-		  toLatin1(), &ok).toBase64());
+		  toUtf8(), &ok).toBase64());
 
 	    query.bindValue(14, 0);
 
@@ -2434,7 +2434,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 	    if(ok)
 	      query.bindValue
 		(15, s_crypt->encryptedThenHashed
-		 (proxyHostName.toLatin1(), &ok).
+		 (proxyHostName.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -2444,12 +2444,12 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(17, s_crypt->encryptedThenHashed(proxyPort.toLatin1(),
+		(17, s_crypt->encryptedThenHashed(proxyPort.toUtf8(),
 						  &ok).toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(18, s_crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+		(18, s_crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
@@ -2459,7 +2459,7 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(20, s_crypt->encryptedThenHashed(m_echoMode.toLatin1(),
+		(20, s_crypt->encryptedThenHashed(m_echoMode.toUtf8(),
 						  &ok).toBase64());
 
 	    query.bindValue(21, m_keySize);
@@ -2487,12 +2487,12 @@ void spoton_listener::slotNewWebSocketConnection(void)
 
 	    if(ok)
 	      query.bindValue
-		(27, s_crypt->encryptedThenHashed(m_transport.toLatin1(), &ok).
+		(27, s_crypt->encryptedThenHashed(m_transport.toUtf8(), &ok).
 		 toBase64());
 
 	    if(ok)
 	      query.bindValue
-		(28, s_crypt->encryptedThenHashed(m_orientation.toLatin1(),
+		(28, s_crypt->encryptedThenHashed(m_orientation.toUtf8(),
 						  &ok).toBase64());
 
 	    query.bindValue(29, m_motd);

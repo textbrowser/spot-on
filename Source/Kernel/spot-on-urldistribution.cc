@@ -506,10 +506,10 @@ void spoton_urldistribution::run(void)
 
   auto const cipherType
     (spoton_kernel::setting("gui/kernelCipherType", "aes256").
-     toString().toLatin1());
+     toString().toUtf8());
   auto const hashType
     (spoton_kernel::setting("gui/kernelHashType", "sha512").
-     toString().toLatin1());
+     toString().toUtf8());
   auto const symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
 
   if(symmetricKeyLength == 0)
@@ -566,7 +566,7 @@ void spoton_urldistribution::run(void)
 	    signature = s_crypt2->digitalSignature
 	      (keyInformation +
 	       data + // Our (sender) identity is included in data.
-	       now.toUTC().toString("MMddyyyyhhmmss").toLatin1() +
+	       now.toUTC().toString("MMddyyyyhhmmss").toUtf8() +
 	       recipientDigest,
 	       &ok);
 	  }
@@ -585,7 +585,7 @@ void spoton_urldistribution::run(void)
 			     "");
 
 	  stream << data
-		 << now.toUTC().toString("MMddyyyyhhmmss").toLatin1()
+		 << now.toUTC().toString("MMddyyyyhhmmss").toUtf8()
 		 << signature;
 
 	  if(stream.status() != QDataStream::Ok)

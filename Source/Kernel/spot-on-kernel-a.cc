@@ -1456,7 +1456,7 @@ bool spoton_kernel::duplicateEmailRequests(const QByteArray &data)
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
      setting("kernel/messaging_cache_algorithm", "sha224").
-     toString().toLatin1(), &ok);
+     toString().toUtf8(), &ok);
 
   if(!ok)
     return false;
@@ -1474,7 +1474,7 @@ bool spoton_kernel::duplicateGeminis(const QByteArray &data)
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
      setting("kernel/messaging_cache_algorithm", "sha224").
-     toString().toLatin1(), &ok);
+     toString().toUtf8(), &ok);
 
   if(!ok)
     return false;
@@ -1597,7 +1597,7 @@ bool spoton_kernel::messagingCacheContains(const QByteArray &data,
       hash = spoton_crypt::keyedHash
 	(data, s_messagingCacheKey,
 	 setting("kernel/messaging_cache_algorithm", "sha224").
-	 toString().toLatin1(), &ok);
+	 toString().toUtf8(), &ok);
 
       if(!ok)
 	return false;
@@ -2149,7 +2149,7 @@ void spoton_kernel::emailRequestCacheAdd(const QByteArray &data)
     (data,
      s_messagingCacheKey,
      setting("kernel/messaging_cache_algorithm", "sha224").toString().
-     toLatin1(),
+     toUtf8(),
      &ok);
 
   if(!ok)
@@ -2173,7 +2173,7 @@ void spoton_kernel::geminisCacheAdd(const QByteArray &data)
   hash = spoton_crypt::keyedHash
     (data, s_messagingCacheKey,
      setting("kernel/messaging_cache_algorithm", "sha224").
-     toString().toLatin1(), &ok);
+     toString().toUtf8(), &ok);
 
   if(!ok)
     return;
@@ -2202,7 +2202,7 @@ void spoton_kernel::messagingCacheAdd(const QByteArray &data,
 	(data,
 	 s_messagingCacheKey,
 	 setting("kernel/messaging_cache_algorithm", "sha224").
-	 toString().toLatin1(),
+	 toString().toUtf8(),
 	 &ok);
 
       if(!ok)
@@ -3167,7 +3167,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			  "FROM friends_public_keys WHERE "
 			  "key_type_hash = ? AND "
 			  "neighbor_oid = -1");
-	    query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
+	    query.bindValue(0, s_crypt1->keyedHash(keyType.toUtf8(),
 						   &ok).toBase64());
 	  }
 	else
@@ -3181,7 +3181,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			  "ABS(strftime('%s', ?) - "
 			  "strftime('%s', last_status_update)) <= ? AND "
 			  "neighbor_oid = -1");
-	    query.bindValue(0, s_crypt1->keyedHash(keyType.toLatin1(),
+	    query.bindValue(0, s_crypt1->keyedHash(keyType.toUtf8(),
 						   &ok).toBase64());
 	    query.bindValue
 	      (1, QDateTime::currentDateTime().toString(Qt::ISODate));
@@ -3228,9 +3228,9 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 	      QByteArray name;
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
+		 toString().toUtf8());
 	      auto const hashType
-		(setting("gui/kernelHashType", "sha512").toString().toLatin1());
+		(setting("gui/kernelHashType", "sha512").toString().toUtf8());
 
 	      if(keyType == "chat")
 		name = setting("gui/nodeName", "unknown").toByteArray();
@@ -3322,7 +3322,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			   name +
 			   status +
 			   dateTime.toUTC().toString("MMddyyyyhhmmss").
-			   toLatin1() +
+			   toUtf8() +
 			   recipientDigest,
 			   &ok);
 		      }
@@ -3335,7 +3335,7 @@ void spoton_kernel::prepareStatus(const QString &keyType)
 			       << name
 			       << status
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
-			          toLatin1()
+			          toUtf8()
 			       << signature;
 
 			if(stream.status() != QDataStream::Ok)
@@ -3637,7 +3637,7 @@ void spoton_kernel::slotBuzzReceivedFromUI(const QByteArray &key,
 		     0,
 		     "");
 
-  data = messageType.toLatin1().toBase64() + "\n";
+  data = messageType.toUtf8().toBase64() + "\n";
 
   if(messageType == "0040a")
     {
@@ -3774,10 +3774,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
 	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+				  toString().toUtf8());
 	      auto const symmetricKeyAlgorithm
 		(setting("gui/kernelCipherType", "aes256").toString().
-		 toLatin1());
+		 toUtf8());
 	      size_t symmetricKeyLength = 0;
 
 	      if(ok)
@@ -3860,7 +3860,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 			   geminis.first +
 			   geminis.second +
 			   dateTime.toUTC().toString("MMddyyyyhhmmss").
-			   toLatin1() +
+			   toUtf8() +
 			   recipientDigest,
 			   &ok);
 		      }
@@ -3873,7 +3873,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &publicKeyHash,
 			       << geminis.first
 			       << geminis.second
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
-			          toLatin1()
+			          toUtf8()
 			       << signature;
 
 			if(stream.status() != QDataStream::Ok)
@@ -3999,10 +3999,10 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 	      QByteArray keyInformation;
 	      QByteArray symmetricKey;
 	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+				  toString().toUtf8());
 	      auto const symmetricKeyAlgorithm
 		(setting("gui/kernelCipherType", "aes256").toString().
-		 toLatin1());
+		 toUtf8());
 	      size_t symmetricKeyLength = 0;
 
 	      if(ok)
@@ -4085,7 +4085,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 			   gemini.first +
 			   gemini.second +
 			   dateTime.toUTC().toString("MMddyyyyhhmmss").
-			   toLatin1() +
+			   toUtf8() +
 			   recipientDigest,
 			   &ok);
 		      }
@@ -4098,7 +4098,7 @@ void spoton_kernel::slotCallParticipant(const QByteArray &keyType,
 			       << gemini.first
 			       << gemini.second
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
-			          toLatin1()
+			          toUtf8()
 			       << signature;
 
 			if(stream.status() != QDataStream::Ok)
@@ -4330,7 +4330,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			   symmetricKey +
 			   hashKey +
 			   dateTime.toUTC().toString("MMddyyyyhhmmss").
-			   toLatin1() +
+			   toUtf8() +
 			   recipientDigest,
 			   &ok);
 		      }
@@ -4344,7 +4344,7 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			       << symmetricKey
 			       << hashKey
 			       << dateTime.toUTC().toString("MMddyyyyhhmmss").
-			          toLatin1()
+			          toUtf8()
 			       << signature;
 
 			if(stream.status() != QDataStream::Ok)
@@ -4479,9 +4479,9 @@ void spoton_kernel::slotMessageReceivedFromUI
   QString neighborOid("");
   QString receiverName("");
   auto const cipherType
-    (setting("gui/kernelCipherType", "aes256").toString().toLatin1());
+    (setting("gui/kernelCipherType", "aes256").toString().toUtf8());
   auto const hashType
-    (setting("gui/kernelHashType", "sha512").toString().toLatin1());
+    (setting("gui/kernelHashType", "sha512").toString().toUtf8());
   auto const myPublicKeyHash(spoton_crypt::preferredHash(publicKey));
 
   spoton_misc::retrieveSymmetricData(gemini,
@@ -5056,7 +5056,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		   message1 +
 		   requesterHashInformation +
 		   message2 +
-		   dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+		   dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8(),
 		   &ok);
 
 	      if(!ok)
@@ -5077,7 +5077,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		 requesterHashInformation.toBase64() + "\n" +
 		 message2.toBase64() + "\n" +
 		 dateTime.toUTC().toString("MMddyyyyhhmmss").
-		 toLatin1().toBase64() + "\n" +
+		 toUtf8().toBase64() + "\n" +
 		 signature.toBase64(), &ok);
 
 	      if(ok)
@@ -5133,9 +5133,9 @@ void spoton_kernel::slotRetrieveMail(void)
 	      QByteArray symmetricKey;
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
+		 toString().toUtf8());
 	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+				  toString().toUtf8());
 	      auto const message(spoton_crypt::strongRandomBytes(64));
 	      auto const symmetricKeyLength = spoton_crypt::cipherKeyLength
 		(cipherType);
@@ -5196,7 +5196,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		   hashType +
 		   myPublicKeyHash +
 		   message +
-		   dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1(),
+		   dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8(),
 		   &ok);
 
 	      if(ok)
@@ -5214,7 +5214,7 @@ void spoton_kernel::slotRetrieveMail(void)
 		    (myPublicKeyHash.toBase64() + "\n" +
 		     message.toBase64() + "\n" +
 		     dateTime.toUTC().toString("MMddyyyyhhmmss").
-		     toLatin1().toBase64() + "\n" +
+		     toUtf8().toBase64() + "\n" +
 		     signature.toBase64(), &ok);
 
 		  if(ok)
@@ -5257,9 +5257,9 @@ void spoton_kernel::slotScramble(void)
   QByteArray messageCode;
   QByteArray symmetricKey;
   auto const cipherType(setting("gui/kernelCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto const hashType(setting("gui/kernelHashType", "sha512").
-		      toString().toLatin1());
+		      toString().toUtf8());
   auto const symmetricKeyLength = spoton_crypt::cipherKeyLength(cipherType);
   auto ok = true;
 
@@ -5430,9 +5430,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      QString institutionCipherType("");
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
+		 toString().toUtf8());
 	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+				  toString().toUtf8());
 	      auto const randomBytes(spoton_crypt::strongRandomBytes(64));
 	      auto goldbugUsed = false;
 	      auto ok = true;
@@ -5744,9 +5744,9 @@ void spoton_kernel::slotSendMail(const QByteArray &goldbug,
 	      QByteArray symmetricKey;
 	      auto const cipherType
 		(setting("gui/kernelCipherType", "aes256").
-		 toString().toLatin1());
+		 toString().toUtf8());
 	      auto const hashType(setting("gui/kernelHashType", "sha512").
-				  toString().toLatin1());
+				  toString().toUtf8());
 	      auto goldbugUsed = false;
 	      auto ok = true;
 	      auto symmetricKeyLength = spoton_crypt::cipherKeyLength
@@ -6184,9 +6184,9 @@ void spoton_kernel::slotUpdateSettings(void)
 	  s_settings[key] = value;
 
 	  if(key == "GCRY_SEXP_BUILD_HASH_ALGORITHM_STRING")
-	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toLatin1());
+	    spoton_crypt::setGcrySexpBuildHashAlgorithm(value.toUtf8());
 	  else if(key == "PREFERRED_HASH_ALGORITHM")
-	    spoton_crypt::setPreferredHashAlgorithm(value.toLatin1());
+	    spoton_crypt::setPreferredHashAlgorithm(value.toUtf8());
 	}
     }
 

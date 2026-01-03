@@ -310,7 +310,7 @@ void spoton_kernel::readPrisonBlues(void)
 		 list.value(0), // Public Key Hash
 		 QByteArray(),  // Status
 		 QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
-		 toLatin1(),    // Timestamp
+		 toUtf8(),    // Timestamp
 		 2.5 * spoton_common::PRISON_BLUES_STATUS_INTERVAL, // Seconds
 		 s_crypt);
 	      emit receivedChatMessage
@@ -421,7 +421,7 @@ void spoton_kernel::slotCallParticipantUsingForwardSecrecy
 	      stream << QByteArray("0000d")
 		     << list.value(4)
 		     << list.value(5)
-		     << dateTime.toUTC().toString("MMddyyyyhhmmss").toLatin1();
+		     << dateTime.toUTC().toString("MMddyyyyhhmmss").toUtf8();
 
 	      if(stream.status() != QDataStream::Ok)
 		ok = false;

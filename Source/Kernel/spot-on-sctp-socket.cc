@@ -748,7 +748,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
 #if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA
-	(reinterpret_cast<LPSTR> (m_ipAddress.toLatin1().data()),
+	(reinterpret_cast<LPSTR> (m_ipAddress.toUtf8().data()),
 	 AF_INET,
 	 0,
 	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
@@ -768,7 +768,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       serveraddr.sin_port = htons(m_connectToPeerPort);
 #else
       rc = inet_pton(AF_INET,
-		     m_ipAddress.toLatin1().constData(),
+		     m_ipAddress.toUtf8().constData(),
 		     &serveraddr.sin_addr);
 
       if(rc != 1)
@@ -824,7 +824,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
 
 #if defined(Q_OS_WINDOWS)
       rc = WSAStringToAddressA
-	(reinterpret_cast<LPSTR> (m_ipAddress.toLatin1().data()),
+	(reinterpret_cast<LPSTR> (m_ipAddress.toUtf8().data()),
 	 AF_INET6,
 	 0,
 	 reinterpret_cast<LPSOCKADDR> (&serveraddr),
@@ -844,7 +844,7 @@ void spoton_sctp_socket::connectToHostImplementation(void)
       serveraddr.sin6_port = htons(m_connectToPeerPort);
 #else
       rc = inet_pton(AF_INET6,
-		     m_ipAddress.toLatin1().constData(),
+		     m_ipAddress.toUtf8().constData(),
 		     &serveraddr.sin6_addr);
 
       if(rc != 1)

@@ -1296,7 +1296,7 @@ void spoton_neighbor::slotAccountAuthenticated(const QByteArray &clientSalt,
 
   hash = spoton_crypt::keyedHash
     (QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmm").
-     toLatin1() + clientSalt + salt,
+     toUtf8() + clientSalt + salt,
      name + password,
      spoton_crypt::preferredHashAlgorithm(),
      &ok);
@@ -1508,7 +1508,7 @@ void spoton_neighbor::slotConnected(void)
 			      "WHERE OID = ?");
 		query.bindValue
 		  (0, s_crypt->
-		   encryptedThenHashed(country.toLatin1(), &ok).toBase64());
+		   encryptedThenHashed(country.toUtf8(), &ok).toBase64());
 		query.bindValue(1, isEncrypted() ? 1 : 0);
 
 		if(m_bluetoothSocket)
@@ -1550,7 +1550,7 @@ void spoton_neighbor::slotConnected(void)
 		if(ok)
 		  query.bindValue
 		    (4, s_crypt->keyedHash(country.remove(" ").
-					   toLatin1(), &ok).
+					   toUtf8(), &ok).
 		     toBase64());
 
 		query.bindValue(5, m_id);
@@ -2238,7 +2238,7 @@ void spoton_neighbor::slotSendAccountInformation(void)
 
 	hash = spoton_crypt::keyedHash
 	  (QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmm").
-	   toLatin1() + salt,
+	   toUtf8() + salt,
 	   name + password,
 	   spoton_crypt::preferredHashAlgorithm(),
 	   &ok);
@@ -2323,11 +2323,11 @@ void spoton_neighbor::slotSendCapabilities(void)
      setting("gui/uuid", "{00000000-0000-0000-0000-000000000000}").toString());
 
   message = spoton_send::message0014
-    (uuid.toString().toLatin1() +
+    (uuid.toString().toUtf8() +
      "\n" +
      QByteArray::number(m_laneWidth) +
      "\n" +
-     echoMode.toLatin1());
+     echoMode.toUtf8());
 
   if(write(message.constData(), message.length()) != message.length())
     spoton_misc::logError

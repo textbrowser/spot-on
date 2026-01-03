@@ -426,13 +426,13 @@ void spoton_kernel::popPoptastic(void)
 
 	  url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
 	  curl_easy_setopt
-	    (curl, CURLOPT_PROXY, url.toLatin1().constData());
+	    (curl, CURLOPT_PROXY, url.toUtf8().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
 			   hash.value("proxy_password").toString().
 			   toUtf8().constData());
 	  curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
 			   hash.value("proxy_username").toString().
-			   trimmed().toLatin1().constData());
+			   trimmed().toUtf8().constData());
 	}
 
       QString removeUrl("");
@@ -520,7 +520,7 @@ void spoton_kernel::popPoptastic(void)
 	curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "EXAMINE INBOX");
 
       curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
-      curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+      curl_easy_setopt(curl, CURLOPT_URL, url.toUtf8().constData());
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, curl_write_memory_callback);
 
       CURLcode rc = CURLE_OK;
@@ -583,11 +583,11 @@ void spoton_kernel::popPoptastic(void)
 	  {
 	    curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout);
 	    curl_easy_setopt
-	      (curl, CURLOPT_URL, removeUrl.toLatin1().constData());
+	      (curl, CURLOPT_URL, removeUrl.toUtf8().constData());
 	    curl_easy_setopt
 	      (curl, CURLOPT_CUSTOMREQUEST,
 	       QString("STORE %1 +Flags \\Deleted").
-	       arg(1).toLatin1().constData());
+	       arg(1).toUtf8().constData());
 
 	    CURLcode rc = CURLE_OK;
 
@@ -752,13 +752,13 @@ void spoton_kernel::postPoptastic(void)
 
 	      url = QString("%1://%2:%3").arg(scheme).arg(address).arg(port);
 	      curl_easy_setopt
-		(curl, CURLOPT_PROXY, url.toLatin1().constData());
+		(curl, CURLOPT_PROXY, url.toUtf8().constData());
 	      curl_easy_setopt(curl, CURLOPT_PROXYPASSWORD,
 			       hash.value("proxy_password").toString().
 			       toUtf8().constData());
 	      curl_easy_setopt(curl, CURLOPT_PROXYUSERNAME,
 			       hash.value("proxy_username").toString().
-			       trimmed().toLatin1().constData());
+			       trimmed().toUtf8().constData());
 	    }
 
 	  /*
@@ -817,7 +817,7 @@ void spoton_kernel::postPoptastic(void)
 	      arg(hash.value("smtp_localname", "localhost").
 		  toString());
 
-	  curl_easy_setopt(curl, CURLOPT_URL, url.toLatin1().constData());
+	  curl_easy_setopt(curl, CURLOPT_URL, url.toUtf8().constData());
 
 	  for(int i = 1;; i++)
 	    {
@@ -836,7 +836,7 @@ void spoton_kernel::postPoptastic(void)
 	      upload_ctx.lines_read = 0;
 	      curl_easy_setopt
 		(curl, CURLOPT_MAIL_FROM,
-		 QString("<%1>").arg(from).toLatin1().constData());
+		 QString("<%1>").arg(from).toUtf8().constData());
 
 	      /*
 	      ** Prepare curl_payload_text.
@@ -845,32 +845,32 @@ void spoton_kernel::postPoptastic(void)
 	      curl_payload_text.clear();
 	      curl_payload_text.append
 		(QString("Date: %1\r\n").arg(QDateTime::currentDateTimeUtc().
-					     toString()).toLatin1());
+					     toString()).toUtf8());
 
 	      if(values.size() == 4)
 		curl_payload_text.append(QString("To: <%1> (%1)\r\n").
 					 arg(values.value("receiver_name").
 					     toString()).
-					 toLatin1());
+					 toUtf8());
 	      else
 		curl_payload_text.append
 		  (QString("To: <%1> (%1)\r\n").
 		   arg(values.value("name").toByteArray().constData()).
-		   toLatin1());
+		   toUtf8());
 
 	      curl_payload_text.append(QString("From: <%1>\r\n").arg(from).
-				       toLatin1());
+				       toUtf8());
 	      curl_payload_text.append
 		(QString("Message-ID: <%1>\r\n").
 		 arg(spoton_crypt::weakRandomBytes(16).toHex().
-		     constData()).toLatin1());
+		     constData()).toUtf8());
 
 	      if(values.size() == 4)
 		{
 		  curl_payload_text.append
 		    (QString("Subject: %1\r\n").
 		     arg(spoton_crypt::preferredHash(bytes.simplified()).
-			 toHex().constData()).toLatin1());
+			 toHex().constData()).toUtf8());
 		  curl_payload_text.append("\r\n");
 		}
 	      else
@@ -978,7 +978,7 @@ void spoton_kernel::postPoptastic(void)
 	      if(values.size() == 4)
 		recipients = curl_slist_append
 		  (recipients, values.value("receiver_name").toString().
-		   toLatin1().constData());
+		   toUtf8().constData());
 	      else
 		recipients = curl_slist_append
 		  (recipients, values.value("name").toByteArray().constData());
@@ -1272,9 +1272,9 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
     return;
 
   auto const cipherType(setting("gui/fsCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto const hashType(setting("gui/fsHashType", "sha512").
-		      toString().toLatin1());
+		      toString().toUtf8());
   auto const myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   auto const publicKey
     (spoton_misc::publicKeyFromHash(list.value(1), false, s_crypt1));
@@ -1341,7 +1341,7 @@ void spoton_kernel::slotForwardSecrecyInformationReceivedFromUI
 
   QByteArray signature;
   auto const utcDate(QDateTime::currentDateTimeUtc().
-		     toString("MMddyyyyhhmmss").toLatin1());
+		     toString("MMddyyyyhhmmss").toUtf8());
 
   if(sign)
     {
@@ -1473,9 +1473,9 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
     return;
 
   auto const cipherType(setting("gui/fsCipherType", "aes256").
-			toString().toLatin1());
+			toString().toUtf8());
   auto const hashType(setting("gui/fsHashType", "sha512").
-		      toString().toLatin1());
+		      toString().toUtf8());
   auto const myPublicKeyHash(spoton_crypt::preferredHash(myPublicKey));
   auto const publicKey
     (spoton_misc::publicKeyFromHash(list.value(0), false, s_crypt1));
@@ -1557,7 +1557,7 @@ void spoton_kernel::slotForwardSecrecyResponseReceivedFromUI
 
   QByteArray signature;
   auto const utcDate(QDateTime::currentDateTimeUtc().
-		     toString("MMddyyyyhhmmss").toLatin1());
+		     toString("MMddyyyyhhmmss").toUtf8());
 
   if(sign)
     {
@@ -1687,7 +1687,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	     QByteArray(),                                   // Status
 	     QDateTime::currentDateTimeUtc().
 	     toString("MMddyyyyhhmmss").
-	     toLatin1(),                                     // Timestamp
+	     toUtf8(),                                       // Timestamp
 	     2.5 * spoton_common::POPTASTIC_STATUS_INTERVAL, // Seconds
 	     crypt("poptastic"));
 	  emit receivedChatMessage
@@ -2414,7 +2414,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    query.bindValue
 	      (0, s_crypt->
 	       encryptedThenHashed(date.toString(Qt::RFC2822Date).
-				   toLatin1(), &ok).toBase64());
+				   toUtf8(), &ok).toBase64());
 	    query.bindValue(1, 0); // Inbox Folder
 
 	    if(ok)
@@ -2431,7 +2431,7 @@ void spoton_kernel::slotPoppedMessage(const QByteArray &message)
 	    if(ok)
 	      query.bindValue
 		(4, s_crypt->keyedHash(date.toString(Qt::RFC2822Date).
-				       toLatin1() + m + subject,
+				       toUtf8() + m + subject,
 				       &ok).toBase64());
 
 	    if(ok)

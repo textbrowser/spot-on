@@ -339,12 +339,12 @@ void spoton_starbeam_reader::pulsate(const QByteArray &buffer,
 	 << QFileInfo(fileName).fileName().toUtf8()
 	 << QByteArray::number(m_position)
 	 << QByteArray::number(size)
-	 << fileSize.toLatin1()
+	 << fileSize.toUtf8()
 	 << data
-	 << pulseSize.toLatin1()
+	 << pulseSize.toUtf8()
 	 << hash
 	 << QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").
-            toLatin1()
+            toUtf8()
 	 << QByteArray::number(m_id)
 	 << QByteArray::number(m_ultra)
 	 << sha3_512_hash;
