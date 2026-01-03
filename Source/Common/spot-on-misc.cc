@@ -931,7 +931,7 @@ QList<QHash<QString, QVariant> > spoton_misc::poptasticSettings
 	      ("SELECT * FROM poptastic WHERE in_username_hash = ?");
 	    query.bindValue
 	      (0,
-	       crypt->keyedHash(in_username.trimmed().toLatin1(), ok).
+	       crypt->keyedHash(in_username.trimmed().toUtf8(), ok).
 	       toBase64());
 	  }
 
@@ -1273,7 +1273,7 @@ QString spoton_misc::countryCodeFromIPAddress(const QString &ipAddress)
 
       if(gi)
 	code = GeoIP_country_code_by_addr
-	  (gi, ipAddress.toLatin1().constData());
+	  (gi, ipAddress.toUtf8().constData());
       else
 	logError("spoton_misc::countryCodeFromIPAddress(): gi is zero.");
     }
@@ -1323,7 +1323,7 @@ QString spoton_misc::countryNameFromIPAddress(const QString &ipAddress)
 
       if(gi)
 	country = GeoIP_country_name_by_addr
-	  (gi, ipAddress.toLatin1().constData());
+	  (gi, ipAddress.toUtf8().constData());
       else
 	logError("spoton_misc::countryNameFromIPAddress(): gi is zero.");
     }
@@ -1551,7 +1551,7 @@ QString spoton_misc::percentEncoding(const QString &string)
   for(int i = 0; i < string.length(); i++)
     if(string.at(i) == '%')
       {
-	auto const hex(string.mid(i + 1, 2).toLatin1());
+	auto const hex(string.mid(i + 1, 2).toUtf8());
 	int d = 0;
 	std::stringstream stream;
 
@@ -1742,7 +1742,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTimeUtc().
-		       toString("MMddyyyyhhmm").toLatin1() + salt,
+		       toString("MMddyyyyhhmm").toUtf8() + salt,
 		       name + password,
 		       spoton_crypt::preferredHashAlgorithm(),
 		       &ok);
@@ -1758,7 +1758,7 @@ bool spoton_misc::authenticateAccount(QByteArray &name,
 		  if(ok)
 		    newHash = spoton_crypt::keyedHash
 		      (QDateTime::currentDateTimeUtc().addSecs(60).
-		       toString("MMddyyyyhhmm").toLatin1() + salt,
+		       toString("MMddyyyyhhmm").toUtf8() + salt,
 		       name + password,
 		       spoton_crypt::preferredHashAlgorithm(),
 		       &ok);
@@ -2297,7 +2297,7 @@ bool spoton_misc::isAcceptedIP(const QString &address,
 		      "WHERE ip_address_hash IN (?, ?) AND "
 		      "listener_oid = ?)");
 	query.bindValue
-	  (0, crypt->keyedHash(address.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(address.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue(1, crypt->keyedHash("Any", &ok).toBase64());
@@ -2349,7 +2349,7 @@ bool spoton_misc::isAcceptedParticipant(const QByteArray &publicKeyHash,
 		      "neighbor_oid = -1 AND "
 		      "public_key_hash = ?)");
 	query.bindValue
-	  (0, crypt->keyedHash(keyType.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(keyType.toUtf8(), &ok).toBase64());
 	query.bindValue(1, publicKeyHash.toBase64());
 
 	if(ok && query.exec())
@@ -2431,7 +2431,7 @@ bool spoton_misc::isIpBlocked(const QString &address, spoton_crypt *crypt)
 		      "remote_ip_address_hash = ? AND "
 		      "status_control = 'blocked')");
 	query.bindValue
-	  (0, crypt->keyedHash(address.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(address.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  if(query.exec())
@@ -3152,6 +3152,10 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 #endif
 				     const quint16 port)
 {
+  /*
+  ** This method is ignored.
+  */
+
   auto ok = true;
 
   if(address.protocol() == QAbstractSocket::IPv4Protocol)
@@ -3185,7 +3189,7 @@ bool spoton_misc::joinMulticastGroup(const QHostAddress &address,
 	}
       else
 	{
-	  auto const option = static_cast<u_char> (loop.toChar().toLatin1());
+	  auto const option = static_cast<u_char> (loop.toChar().unicode());
 	  socklen_t length = 0;
 
 	  length = sizeof(option);
@@ -3739,7 +3743,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	query.bindValue
 	  (0,
 	   crypt->
-	   encryptedThenHashed(now.toString(Qt::ISODate).toLatin1(), &ok).
+	   encryptedThenHashed(now.toString(Qt::ISODate).toUtf8(), &ok).
 	   toBase64());
 	query.bindValue(1, 0); // Inbox Folder
 
@@ -3756,7 +3760,7 @@ bool spoton_misc::storeAlmostAnonymousLetter(const QList<QByteArray> &list,
 	if(ok)
 	  query.bindValue
 	    (4,
-	     crypt->keyedHash(now.toString(Qt::ISODate).toLatin1() +
+	     crypt->keyedHash(now.toString(Qt::ISODate).toUtf8() +
 			      message +
 			      subject, &ok).toBase64());
 
@@ -3980,7 +3984,7 @@ qint64 spoton_misc::participantCount(const QString &keyType,
 	query.prepare("SELECT COUNT(*) FROM friends_public_keys "
 		      "WHERE key_type_hash = ? AND neighbor_oid = -1");
 	query.bindValue
-	  (0, crypt->keyedHash(keyType.toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(keyType.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())
@@ -4236,7 +4240,7 @@ spoton_crypt *spoton_misc::spotonGPGCredentials
 		 "sha3-512",
 		 25000, // The number of iterations.
 		 email, // The secret.
-		 spoton_crypt::sha512Hash(fingerprint.toLatin1(), nullptr),
+		 spoton_crypt::sha512Hash(fingerprint.toUtf8(), nullptr),
 		 512,   // Hash key size.
 		 false, // Multiple passes instead of a single pass.
 		 error));
@@ -5009,11 +5013,11 @@ void spoton_misc::logError(const QString &error)
 #endif
       auto const now(QDateTime::currentDateTime());
 
-      file.write(now.toString(Qt::ISODate).toLatin1());
-      file.write(eol.toLatin1());
-      file.write(error.trimmed().toLatin1());
-      file.write(eol.toLatin1());
-      file.write(eol.toLatin1());
+      file.write(now.toString(Qt::ISODate).toUtf8());
+      file.write(eol.toUtf8());
+      file.write(error.trimmed().toUtf8());
+      file.write(eol.toUtf8());
+      file.write(eol.toUtf8());
       file.flush();
     }
 
@@ -5855,7 +5859,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 		    "(SELECT public_key_hash FROM friends_public_keys WHERE "
 		    "key_type_hash <> ?)");
       query.bindValue
-	(0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
+	(0, crypt->keyedHash(list.at(i).toUtf8(), &ok).toBase64());
 
       if(ok)
 	query.exec();
@@ -5873,7 +5877,7 @@ void spoton_misc::purgeSignatureRelationships(const QSqlDatabase &db,
 
       if(ok)
 	query.bindValue
-	  (0, crypt->keyedHash(list.at(i).toLatin1(), &ok).toBase64());
+	  (0, crypt->keyedHash(list.at(i).toUtf8(), &ok).toBase64());
 
       if(ok)
 	query.exec();
@@ -6337,7 +6341,7 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 	if(ok)
 	  query.bindValue
 	    (3,
-	     crypt->encryptedThenHashed(address.toString().toLatin1(),
+	     crypt->encryptedThenHashed(address.toString().toUtf8(),
 					&ok).toBase64());
 
 	if(ok)
@@ -6365,24 +6369,23 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 	     crypt->keyedHash((address.toString() +
 			       QString::number(port) +
 			       "" + // Scope ID
-			       transport).toLatin1(), &ok).
+			       transport).toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue(8, 1); // Sticky
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->encryptedThenHashed(country.toLatin1(),
-					   &ok).toBase64());
+	    (9, crypt->encryptedThenHashed(country.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->keyedHash(address.toString().toLatin1(), &ok).
+	    (10, crypt->keyedHash(address.toString().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, crypt->keyedHash(country.remove(" ").toLatin1(), &ok).
+	    (11, crypt->keyedHash(country.remove(" ").toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue(12, 1);
@@ -6395,7 +6398,7 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (13, crypt->encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+	    (13, crypt->encryptedThenHashed(proxyHostName.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -6405,13 +6408,13 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (15, crypt->encryptedThenHashed(proxyPort.toLatin1(),
-					    &ok).toBase64());
+	    (15,
+	     crypt->encryptedThenHashed(proxyPort.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (16, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
-	     toBase64());
+	    (16,
+	     crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -6444,14 +6447,15 @@ void spoton_misc::savePublishedNeighbor(const QBluetoothAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (24, crypt->encryptedThenHashed(transport.toLatin1(), &ok).
-	     toBase64());
+	    (24,
+	     crypt->encryptedThenHashed(transport.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  {
 	    if(orientation == "packet" || orientation == "stream")
 	      query.bindValue
-		(25, crypt->encryptedThenHashed(orientation.toLatin1(), &ok).
+		(25,
+		 crypt->encryptedThenHashed(orientation.toUtf8(), &ok).
 		 toBase64());
 	    else
 	      query.bindValue
@@ -6563,8 +6567,8 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	if(ok)
 	  query.bindValue
 	    (3,
-	     crypt->encryptedThenHashed(address.toString().toLatin1(),
-					&ok).toBase64());
+	     crypt->encryptedThenHashed(address.toString().toUtf8(), &ok).
+	     toBase64());
 
 	if(ok)
 	  query.bindValue
@@ -6575,7 +6579,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	if(ok)
 	  query.bindValue
 	    (5,
-	     crypt->encryptedThenHashed(address.scopeId().toLatin1(),
+	     crypt->encryptedThenHashed(address.scopeId().toUtf8(),
 					&ok).toBase64());
 
 	if(statusControl.toLower() == "connected" ||
@@ -6594,24 +6598,24 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	     crypt->keyedHash((address.toString() +
 			       QString::number(port) +
 			       address.scopeId() +
-			       transport).toLatin1(), &ok).
+			       transport).toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue(8, 1); // Sticky
 
 	if(ok)
 	  query.bindValue
-	    (9, crypt->encryptedThenHashed(country.toLatin1(),
+	    (9, crypt->encryptedThenHashed(country.toUtf8(),
 					   &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (10, crypt->keyedHash(address.toString().toLatin1(), &ok).
+	    (10, crypt->keyedHash(address.toString().toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (11, crypt->keyedHash(country.remove(" ").toLatin1(), &ok).
+	    (11, crypt->keyedHash(country.remove(" ").toUtf8(), &ok).
 	     toBase64());
 
 	query.bindValue(12, 1);
@@ -6624,7 +6628,7 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (13, crypt->encryptedThenHashed(proxyHostName.toLatin1(), &ok).
+	    (13, crypt->encryptedThenHashed(proxyHostName.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -6634,12 +6638,12 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 
 	if(ok)
 	  query.bindValue
-	    (15, crypt->encryptedThenHashed(proxyPort.toLatin1(),
+	    (15, crypt->encryptedThenHashed(proxyPort.toUtf8(),
 					    &ok).toBase64());
 
 	if(ok)
 	  query.bindValue
-	    (16, crypt->encryptedThenHashed(proxyType.toLatin1(), &ok).
+	    (16, crypt->encryptedThenHashed(proxyType.toUtf8(), &ok).
 	     toBase64());
 
 	if(ok)
@@ -6701,13 +6705,13 @@ void spoton_misc::savePublishedNeighbor(const QHostAddress &address,
 	if(ok)
 	  query.bindValue
 	    (24,
-	     crypt->encryptedThenHashed(transport.toLatin1(), &ok).toBase64());
+	     crypt->encryptedThenHashed(transport.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  {
 	    if(orientation == "packet" || orientation == "stream")
 	      query.bindValue
-		(25, crypt->encryptedThenHashed(orientation.toLatin1(), &ok).
+		(25, crypt->encryptedThenHashed(orientation.toUtf8(), &ok).
 		 toBase64());
 	    else
 	      query.bindValue
