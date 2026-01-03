@@ -509,7 +509,7 @@ QList<QByteArray> spoton_receive::process0000a
 				     ** 4 - Signature
 				     */
 
-				     isValidSignature(messageType.toLatin1() +
+				     isValidSignature(messageType.toUtf8() +
 						      symmetricKey +
 						      hashKey +
 						      symmetricKeyAlgorithm +
@@ -1651,7 +1651,7 @@ QList<QByteArray> spoton_receive::process0091
 	}
 
       if(messageType == "0091a")
-	return QList<QByteArray> () << keyType.toLatin1()
+	return QList<QByteArray> () << keyType.toUtf8()
 				    << list.value(0)
 				    << list.value(1);
       else

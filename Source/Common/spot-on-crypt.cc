@@ -593,7 +593,7 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
   for(int i = 0; i < list.size(); i++)
     if(strstr(m_privateKey,
-	      QString("(%1").arg(list.at(i)).toLatin1().constData()))
+	      QString("(%1").arg(list.at(i)).toUtf8().constData()))
       {
 	if(list.at(i) == "ecc")
 	  {
@@ -1491,7 +1491,7 @@ QByteArray spoton_crypt::publicKey(bool *ok)
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.bindValue(0, keyedHash(m_id.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())
@@ -1707,7 +1707,7 @@ QByteArray spoton_crypt::publicKeyDecrypt(const QByteArray &data, bool *ok)
     }
 
   gcry_sexp_release(raw_t);
-  raw_t = gcry_sexp_find_token(data_t, keyType.toLatin1().constData(), 0);
+  raw_t = gcry_sexp_find_token(data_t, keyType.toUtf8().constData(), 0);
   gcry_sexp_release(data_t);
   data_t = nullptr;
 
@@ -2129,7 +2129,7 @@ QByteArray spoton_crypt::saltedPassphraseHash(const QString &hashType,
       goto done_label;
     }
 
-  hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+  hashAlgorithm = gcry_md_map_name(hashType.toUtf8().constData());
 
   if(hashAlgorithm == 0)
     {
@@ -2511,7 +2511,7 @@ QList<QSslCipher> spoton_crypt::defaultSslCiphers(const QString &scs)
 	}
 
       if(SSL_CTX_set_cipher_list(ctx,
-				 controlString.toLatin1().constData()) == 0)
+				 controlString.toUtf8().constData()) == 0)
 	{
 	  spoton_misc::logError("spoton_crypt::defaultSslCiphers(): "
 				"SSL_CTX_set_cipher_list() failure.");
@@ -2626,8 +2626,8 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   QByteArray temporaryKey;
   QPair<QByteArray, QByteArray> keys;
   auto const cipherAlgorithm = (cipherType == "threefish") ? -1 :
-    gcry_cipher_map_name(cipherType.toLatin1().constData());
-  auto const hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+    gcry_cipher_map_name(cipherType.toUtf8().constData());
+  auto const hashAlgorithm = gcry_md_map_name(hashType.toUtf8().constData());
   gcry_error_t err = 0;
   size_t keyLength = 0;
 
@@ -2662,7 +2662,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	}
     }
   else if(cipherType == "threefish")
-    keyLength = cipherKeyLength(cipherType.toLatin1());
+    keyLength = cipherKeyLength(cipherType.toUtf8());
   else
     {
       error = QObject::tr("unsupported cipher");
@@ -2867,7 +2867,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 
   if((err = gcry_sexp_build(&parameters_t,
 			    nullptr,
-			    genkey.toLatin1().constData())) != 0 ||
+			    genkey.toUtf8().constData())) != 0 ||
      !parameters_t)
     {
       error = QObject::tr("gcry_sexp_build() failure");
@@ -3010,11 +3010,11 @@ QPair<QByteArray, QByteArray> spoton_crypt::generatePrivatePublicKeys
 	  ("INSERT OR REPLACE INTO idiotes (id, id_hash, "
 	   "private_key, public_key) "
 	   "VALUES (?, ?, ?, ?)");
-	query.bindValue(0, encryptedThenHashed(m_id.toLatin1(),
+	query.bindValue(0, encryptedThenHashed(m_id.toUtf8(),
 					       &ok).toBase64());
 
 	if(ok)
-	  query.bindValue(1, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	  query.bindValue(1, keyedHash(m_id.toUtf8(), &ok).toBase64());
 
 	if(ok)
 	  if(!privateKey.isEmpty())
@@ -3077,7 +3077,7 @@ QString spoton_crypt::publicKeyAlgorithm(const QByteArray &data)
        << "rsa";
 
   for(int i = 0; i < list.size(); i++)
-    if(data.contains(QString("(%1").arg(list.at(i)).toLatin1()))
+    if(data.contains(QString("(%1").arg(list.at(i)).toUtf8()))
       {
 	if(list.at(i) == "ecc")
 	  {
@@ -3187,7 +3187,7 @@ QStringList spoton_crypt::buzzHashTypes(void)
 
   for(int i = types.size() - 1; i >= 0; i--)
     {
-      int algorithm = gcry_md_map_name(types.at(i).toLatin1().constData());
+      int algorithm = gcry_md_map_name(types.at(i).toUtf8().constData());
 
       if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3209,7 +3209,7 @@ QStringList spoton_crypt::cipherTypes(void)
   for(int i = types.size() - 1; i >= 0; i--)
     {
       auto const algorithm = gcry_cipher_map_name
-	(types.at(i).toLatin1().constData());
+	(types.at(i).toUtf8().constData());
 
       if(!(algorithm != 0 && gcry_cipher_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3248,7 +3248,7 @@ QStringList spoton_crypt::congestionHashAlgorithms(void)
   for(int i = types.size() - 1; i >= 0; i--)
     {
       auto const algorithm = gcry_md_map_name
-	(types.at(i).toLatin1().constData());
+	(types.at(i).toUtf8().constData());
 
       if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3270,7 +3270,7 @@ QStringList spoton_crypt::hashTypes(void)
   for(int i = types.size() - 1; i >= 0; i--)
     {
       auto const algorithm = gcry_md_map_name
-	(types.at(i).toLatin1().constData());
+	(types.at(i).toUtf8().constData());
 
       if(!(algorithm != 0 && gcry_md_test_algo(algorithm) == 0))
 	types.removeAt(i);
@@ -3351,7 +3351,7 @@ bool spoton_crypt::isAuthenticated(void)
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT public_key FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.bindValue(0, keyedHash(m_id.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  while(query.next())
@@ -3476,7 +3476,7 @@ bool spoton_crypt::isValidSignature(const QByteArray &data,
        << "rsa";
 
   for(int i = 0; i < list.size(); i++)
-    if(publicKey.contains(QString("(%1").arg(list.at(i)).toLatin1()))
+    if(publicKey.contains(QString("(%1").arg(list.at(i)).toUtf8()))
       {
 	if(list.at(i) == "ecc")
 	  {
@@ -3796,7 +3796,7 @@ qint64 spoton_crypt::publicKeyCount(void)
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT COUNT(*) FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.bindValue(0, keyedHash(m_id.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())
@@ -3835,7 +3835,7 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 size_t spoton_crypt::ivLength(const QString &cipherType)
 {
   return gcry_cipher_get_algo_blklen
-    (gcry_cipher_map_name(cipherType.toLatin1().constData()));
+    (gcry_cipher_map_name(cipherType.toUtf8().constData()));
 }
 
 void spoton_crypt::freeHashKey(void)
@@ -4039,11 +4039,11 @@ void spoton_crypt::generateCertificate(const int keySize,
   if(addressString.isEmpty())
     addressString = "Spot-On-" + weakRandomBytes(10).toHex();
 
-  if(std::numeric_limits<int>::max() - addressString.toLatin1().length() < 1)
+  if(std::numeric_limits<int>::max() - addressString.toUtf8().length() < 1)
     commonName = nullptr;
   else
     commonName = static_cast<unsigned char *>
-      (calloc(static_cast<size_t> (addressString.toLatin1().length() + 1),
+      (calloc(static_cast<size_t> (addressString.toUtf8().length() + 1),
 	      sizeof(unsigned char)));
 
   if(!commonName)
@@ -4054,9 +4054,9 @@ void spoton_crypt::generateCertificate(const int keySize,
       goto done_label;
     }
 
-  length = addressString.toLatin1().length();
+  length = addressString.toUtf8().length();
   memcpy(commonName,
-	 addressString.toLatin1().constData(),
+	 addressString.toUtf8().constData(),
 	 static_cast<size_t> (length));
   commonNameEntry = X509_NAME_ENTRY_create_by_NID
     (nullptr,
@@ -4699,10 +4699,10 @@ void spoton_crypt::init(const QString &cipherType,
 {
   Q_UNUSED(passphrase);
   m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
-    gcry_cipher_map_name(cipherType.toLatin1().constData());
+    gcry_cipher_map_name(cipherType.toUtf8().constData());
   m_cipherHandle = nullptr;
   m_cipherType = cipherType;
-  m_hashAlgorithm = gcry_md_map_name(hashType.toLatin1().constData());
+  m_hashAlgorithm = gcry_md_map_name(hashType.toUtf8().constData());
   m_hashKey = nullptr;
   m_hashKeyLength = 0;
   m_hashType = hashType;
@@ -4721,7 +4721,7 @@ void spoton_crypt::init(const QString &cipherType,
   if(m_cipherAlgorithm > 0)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
   else if(m_cipherType == "threefish")
-    m_symmetricKeyLength = cipherKeyLength(m_cipherType.toLatin1());
+    m_symmetricKeyLength = cipherKeyLength(m_cipherType.toUtf8());
   else
     m_symmetricKeyLength = 0;
 
@@ -4979,7 +4979,7 @@ void spoton_crypt::initializePrivateKeyContainer(bool *ok)
 
 	query.setForwardOnly(true);
 	query.prepare("SELECT private_key FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.bindValue(0, keyedHash(m_id.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())
@@ -5178,7 +5178,7 @@ void spoton_crypt::purgePrivatePublicKeys(void)
 
 	query.exec("PRAGMA secure_delete = ON");
 	query.prepare("DELETE FROM idiotes WHERE id_hash = ?");
-	query.bindValue(0, keyedHash(m_id.toLatin1(), &ok).toBase64());
+	query.bindValue(0, keyedHash(m_id.toUtf8(), &ok).toBase64());
 	query.exec();
       }
 
@@ -5264,7 +5264,7 @@ void spoton_crypt::reencodePrivatePublicKeys(spoton_crypt *newCrypt,
 		      "public_key "   // 2
 		      "FROM idiotes WHERE id_hash = ?");
 	query.bindValue
-	  (0, oldCrypt->keyedHash(id.toLatin1(), &ok).toBase64());
+	  (0, oldCrypt->keyedHash(id.toUtf8(), &ok).toBase64());
 
 	if(ok && query.exec())
 	  if(query.next())

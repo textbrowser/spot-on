@@ -43,7 +43,7 @@ QByteArray spoton_send::adaptiveEchoAuthentication
   if(!adaptiveEchoPair.first.isEmpty() && !adaptiveEchoPair.second.isEmpty())
     {
       auto timestamp
-	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toLatin1());
+	(QDateTime::currentDateTimeUtc().toString("MMddyyyyhhmmss").toUtf8());
       auto const length = static_cast<int>
 	(spoton_crypt::cipherKeyLength(spoton_crypt::
 				       preferredCipherAlgorithm()));
@@ -508,7 +508,7 @@ QByteArray spoton_send::message0030(const QBluetoothAddress &address,
      "\r\n"
      "type=0030&content=%2\r\n"
      "\r\n\r\n");
-  content.append(address.toString().toLatin1().toBase64());
+  content.append(address.toString().toUtf8().toBase64());
   content.append("\n");
   content.append(QByteArray::number(port).toBase64());
   content.append("\n");
@@ -516,7 +516,7 @@ QByteArray spoton_send::message0030(const QBluetoothAddress &address,
   content.append("\n");
   content.append(QByteArray("bluetooth").toBase64());
   content.append("\n");
-  content.append(orientation.toLatin1().toBase64());
+  content.append(orientation.toUtf8().toBase64());
   results.replace
     ("%1",
      QByteArray::number(content.length() +
@@ -541,15 +541,15 @@ QByteArray spoton_send::message0030(const QHostAddress &address,
      "\r\n"
      "type=0030&content=%2\r\n"
      "\r\n\r\n");
-  content.append(address.toString().toLatin1().toBase64());
+  content.append(address.toString().toUtf8().toBase64());
   content.append("\n");
   content.append(QByteArray::number(port).toBase64());
   content.append("\n");
-  content.append(address.scopeId().toLatin1().toBase64());
+  content.append(address.scopeId().toUtf8().toBase64());
   content.append("\n");
-  content.append(transport.toLatin1().toBase64());
+  content.append(transport.toUtf8().toBase64());
   content.append("\n");
-  content.append(orientation.toLatin1().toBase64());
+  content.append(orientation.toUtf8().toBase64());
   results.replace
     ("%1",
      QByteArray::number(content.length() +
