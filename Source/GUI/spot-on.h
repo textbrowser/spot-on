@@ -719,7 +719,8 @@ class spoton: public QMainWindow
     (const QString &hash,
      const QString &keyType,
      const QString &oid,
-     const QString &secret);
+     const QString &secret,
+     const bool gitMessage);
 
  private slots:
   void slotAbout(void);
@@ -1125,7 +1126,8 @@ class spoton: public QMainWindow
   void slotVerify(void);
   void slotVerifySMPSecret(const QString &hash,
 			   const QString &keyType,
-			   const QString &oid);
+			   const QString &oid,
+			   const bool gitMessage);
   void slotVerifySMPSecret(void);
   void slotViewEchoKeyShare(void);
   void slotViewLog(void);

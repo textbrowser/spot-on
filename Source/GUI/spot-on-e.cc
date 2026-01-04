@@ -2662,7 +2662,8 @@ void spoton::slotTestPoptasticSmtpSettings(void)
 
 void spoton::slotVerifySMPSecret(const QString &hash,
 				 const QString &keyType,
-				 const QString &oid)
+				 const QString &oid,
+				 const bool gitMessage)
 {
   /*
   ** Chat windows only please!
@@ -2689,7 +2690,7 @@ void spoton::slotVerifySMPSecret(const QString &hash,
       return;
     }
 
-  verifySMPSecret(hash, keyType, oid, smpSecret(hash));
+  verifySMPSecret(hash, keyType, oid, smpSecret(hash), gitMessage);
 }
 
 void spoton::slotVerifySMPSecret(void)
@@ -2712,6 +2713,7 @@ void spoton::slotVerifySMPSecret(void)
   QString hash("");
   QString keyType("");
   QString oid("");
+  auto gitMessage = false;
   auto temporary = true;
   int row = -1;
 
@@ -2731,18 +2733,17 @@ void spoton::slotVerifySMPSecret(void)
 
       if(item)
 	hash = item->text();
+
+      item = m_ui.participants->item(row, 9); // GIT Message (Boolean)
+
+      if(item)
+	gitMessage = item->checkState() == Qt::Checked;
     }
 
-  if(hash.isEmpty())
-    return;
-  else if(keyType.isEmpty())
-    return;
-  else if(oid.isEmpty())
-    return;
-  else if(temporary) // Temporary friend?
+  if(hash.isEmpty() || keyType.isEmpty() || oid.isEmpty() || temporary)
     return; // Not allowed!
 
-  verifySMPSecret(hash, keyType, oid, smpSecret(hash));
+  verifySMPSecret(hash, keyType, oid, smpSecret(hash), gitMessage);
 }
 
 void spoton::slotViewEchoKeyShare(void)
@@ -2753,7 +2754,8 @@ void spoton::slotViewEchoKeyShare(void)
 void spoton::verifySMPSecret(const QString &hash,
 			     const QString &keyType,
 			     const QString &oid,
-			     const QString &secret)
+			     const QString &secret,
+			     const bool gitMessage)
 {
   if(hash.trimmed().isEmpty() || keyType.isEmpty() || oid.isEmpty())
     return;
@@ -2787,7 +2789,7 @@ void spoton::verifySMPSecret(const QString &hash,
 
   if(ok)
     {
-      if(!sendSMPLinkToKernel(list, keyType, oid, true))
+      if(!sendSMPLinkToKernel(list, keyType, oid, gitMessage))
 	appendItalicChatMessage
 	  (tr("Cannot send the SMP container via the kernel for "
 	      "public-key-hash %1. The method sendSMPLinkToKernel() "

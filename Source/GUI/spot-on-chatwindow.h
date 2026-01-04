@@ -105,7 +105,8 @@ class spoton_chatwindow: public QMainWindow
   void prepareSMP(const QString &publicKeyHash);
   void verifySMPSecret(const QString &publicKeyHash,
 		       const QString &keyType,
-		       const QString &oid);
+		       const QString &oid,
+		       const bool gitMessage);
 };
 
 #endif

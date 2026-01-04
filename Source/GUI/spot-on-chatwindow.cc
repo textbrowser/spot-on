@@ -816,5 +816,5 @@ void spoton_chatwindow::slotShareStarBeam(void)
 
 void spoton_chatwindow::slotVerifySMPSecret(void)
 {
-  emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id);
+  emit verifySMPSecret(m_publicKeyHash, m_keyType, m_id, ui.git->isChecked());
 }

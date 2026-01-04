@@ -935,7 +935,7 @@ void spoton::retrieveParticipants(spoton_crypt *crypt)
 		       "gemini, "             // 6
 		       "gemini_hash_key, "    // 7
 		       "key_type, "           // 8
-		       "0, "                  // 9 GIT Messages (Boolean)
+		       "0, "                  // 9 GIT Message (Boolean)
 		       "public_key "          // 10
 		       "FROM friends_public_keys "
 		       "WHERE key_type_hash IN (?, ?, ?, ?)");

@@ -2464,7 +2464,7 @@ void spoton::sendMessage(bool *ok)
   QString to("");
   auto const gitMessages
     (m_ui.participants->selectionModel()->
-     selectedRows(9)); // GIT Messages (Boolean)
+     selectedRows(9)); // GIT Message (Boolean)
   auto const list
     (m_ui.participants->selectionModel()->selectedRows(1)); // OID
   auto const names
@@ -4588,7 +4588,7 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   if(item)
     status = item->text();
 
-  item = m_ui.participants->item(row, 9); // GIT Messages (Boolean)
+  item = m_ui.participants->item(row, 9); // GIT Message (Boolean)
 
   if(item)
     gitMessage = item->checkState() == Qt::Checked;
@@ -4654,11 +4654,13 @@ void spoton::slotParticipantDoubleClicked(QTableWidgetItem *item)
   connect(chat,
 	  SIGNAL(verifySMPSecret(const QString &,
 				 const QString &,
-				 const QString &)),
+				 const QString &,
+				 const bool)),
 	  this,
 	  SLOT(slotVerifySMPSecret(const QString &,
 				   const QString &,
-				   const QString &)));
+				   const QString &,
+				   const bool)));
   connect(this,
 	  SIGNAL(iconsChanged(void)),
 	  chat,
@@ -5254,6 +5256,7 @@ void spoton::slotReceivedKernelMessage(void)
 		      items = findItems(m_ui.participants, hash.toBase64(), 3);
 
 		      QString oid("");
+		      auto gitMessage = false;
 		      auto ok = true;
 		      auto passed = false;
 
@@ -5269,6 +5272,12 @@ void spoton::slotReceivedKernelMessage(void)
 				toString();
 			      oid = item->text();
 			    }
+
+			  item = m_ui.participants->item
+			    (items.at(0)->row(), 9); // GIT Message (Boolean)
+
+			  if(item)
+			    gitMessage = item->checkState() == Qt::Checked;
 			}
 
 		      if(chat)
@@ -5363,7 +5372,7 @@ void spoton::slotReceivedKernelMessage(void)
 			}
 
 		      if(ok)
-			sendSMPLinkToKernel(values, keyType, oid, true);
+			sendSMPLinkToKernel(values, keyType, oid, gitMessage);
 
 		      if(currentTabName() != "chat")
 			m_sb.chat->setVisible(true);

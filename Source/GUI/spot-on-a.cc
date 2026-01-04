@@ -9211,7 +9211,7 @@ void spoton::slotPopulateParticipants
 			item->setText(tr("error"));
 		    }
 		}
-	      else if(i == 9) // GIT Messages (Boolean)
+	      else if(i == 9) // GIT Message (Boolean)
 		{
 		  if(!temporary)
 		    {

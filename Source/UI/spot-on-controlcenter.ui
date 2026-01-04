@@ -536,8 +536,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>436</width>
-                <height>607</height>
+                <width>962</width>
+                <height>672</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -853,7 +853,7 @@
                      <item>
                       <widget class="QLabel" name="label_124">
                        <property name="text">
-                        <string>Please notice the GIT Messages column at the end of the table. The column values are not retained for new sessions.</string>
+                        <string>Please notice the GIT Message column at the end of the table. The column values are not retained for new sessions.</string>
                        </property>
                        <property name="wordWrap">
                         <bool>true</bool>
@@ -939,7 +939,7 @@
                        </column>
                        <column>
                         <property name="text">
-                         <string>GIT Messages</string>
+                         <string>GIT Message</string>
                         </property>
                        </column>
                       </widget>
