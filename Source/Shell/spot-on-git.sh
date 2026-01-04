@@ -50,7 +50,7 @@ then
 	echo "GIT-CLONE failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "GIT-CLONE finished! Great!"
     fi
 fi
 
@@ -59,7 +59,7 @@ cd "$local_directory"
 
 if [ ! $? -eq 0 ]
 then
-    echo "Cannot set current directory! Bye!"
+    echo "CD failed! Cannot set current directory! Bye!"
     exit 1
 fi
 
@@ -77,7 +77,7 @@ then
 	echo "GIT-CLONE failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "GIT-CLONE finished! Great!"
     fi
 
     echo "Moving tmp.d/.git into the current directory."
@@ -90,7 +90,7 @@ then
 	echo "MV failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "MV finished! Great!"
     fi
 
     rm -fr tmp.d
@@ -104,7 +104,7 @@ then
 	echo "GIT-CHECKOUT failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "GIT-CHECKOUT finished! Great!"
     fi
 fi
 
@@ -135,9 +135,9 @@ git config pull.rebase false 1>/dev/null 2>/dev/null
 
 if [ ! $? -eq 0 ]
 then
-    echo "GIT-CONFIG failed!"
+    echo "GIT-CONFIG failed! Continuing!"
 else
-    echo "Great!"
+    echo "GIT-CONFIG finished! Great!"
 fi
 
 # Pull?
@@ -149,20 +149,20 @@ rc=$?
 
 if [ $pull_only -eq 1 ]
 then
-    echo "Exiting after GIT-PULL!"
+    echo "Exiting after a GIT-PULL as requested!"
     exit $rc
 fi
 
 if [ $rc -eq 0 ]
 then
-    echo "Great!"
+    echo "GIT-PULL finished! Great!"
     echo "Determining if there are local revisions."
     rc=$(git ls-files --deleted --exclude-standard --others \
 	     2>/dev/null | wc -l)
 
     if [ $rc -lt 1 ]
     then
-	echo "All set! Bye!"
+	echo "We do not have local revisions! Bye!"
 
 	if [ ! -z "$(git status | grep 'git push' 2>/dev/null)" ]
 	then
@@ -170,11 +170,12 @@ then
 	    git push "$site" 1>/dev/null 2>/dev/null
 	fi
 
+	echo "Cleaning the local directory."
 	git clean -df . 1>/dev/null 2>/dev/null
 	exit 0
     fi
 
-    echo "Adding local GPG and text files."
+    echo "Adding local GPG files."
     git add --all */*.gpg 1>/dev/null 2>/dev/null
 
     rc=$?
@@ -184,6 +185,7 @@ then
 	echo "GIT-ADD-GPG failed! Continuing!"
     fi
 
+    echo "Adding local text files."
     git add --all */*.txt 1>/dev/null 2>/dev/null
 
     rc=$?
@@ -203,7 +205,7 @@ then
 	echo "GIT-COMMIT failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "GIT-COMMIT finished! Great!"
     fi
 
     echo "Issuing a GIT-PULL request."
@@ -211,9 +213,9 @@ then
 
     if [ ! $? -eq 0 ]
     then
-	echo "GIT-PULL failed!"
+	echo "GIT-PULL failed! Continuing!"
     else
-	echo "Great!"
+	echo "GIT-PULL finished! Great!"
     fi
 
     echo "Issuing a GIT-PUSH request."
@@ -226,7 +228,7 @@ then
 	echo "GIT-PUSH failed! Bye!"
 	exit $rc
     else
-	echo "Great!"
+	echo "GIT-PUSH finished! Great!"
     fi
 else
     echo "GIT-PULL failed! Bye!"
