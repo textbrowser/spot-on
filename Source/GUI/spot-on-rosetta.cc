@@ -111,7 +111,7 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
   ui.attachments_label->setText
     (tr("An attachment larger than %1 will be ignored. Click an "
 	"attachment to remove it. A file may also be attached via a "
-	"drag-and-drop.").
+	"drag-and-drop. The GPG executable is required.").
      arg(spoton_misc::
 	 prettyFileSize(spoton_common::GPG_ATTACHMENT_MAXIMUM_SIZE)));
   ui.copy->menu()->addAction(tr("Copy My &Rosetta Public Keys"),
