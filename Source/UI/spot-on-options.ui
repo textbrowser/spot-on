@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-2617</y>
+         <y>-756</y>
          <width>769</width>
          <height>5350</height>
         </rect>
@@ -615,7 +615,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="refreshEmail">
+               <widget class="QCheckBox" name="refresh_email">
                 <property name="text">
                  <string>&amp;Refresh containers after launch.</string>
                 </property>
@@ -897,6 +897,13 @@
                  <widget class="QPushButton" name="apply_git">
                   <property name="text">
                    <string>Apply</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="refresh_git">
+                  <property name="text">
+                   <string>Refresh</string>
                   </property>
                  </widget>
                 </item>
@@ -3221,12 +3228,13 @@
   <tabstop>chatUpdateInterval</tabstop>
   <tabstop>chatTimestamps</tabstop>
   <tabstop>emailAlternatingRowColors</tabstop>
-  <tabstop>refreshEmail</tabstop>
+  <tabstop>refresh_email</tabstop>
   <tabstop>autoEmailRetrieve</tabstop>
   <tabstop>emailRetrievalInterval</tabstop>
   <tabstop>share_git</tabstop>
   <tabstop>git_table</tabstop>
   <tabstop>apply_git</tabstop>
+  <tabstop>refresh_git</tabstop>
   <tabstop>select_git</tabstop>
   <tabstop>listenersUpdateInterval</tabstop>
   <tabstop>keepOnlyUserDefinedNeighbors</tabstop>

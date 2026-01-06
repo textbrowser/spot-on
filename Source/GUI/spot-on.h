@@ -982,6 +982,7 @@ class spoton: public QMainWindow
   void slotReceivedKernelMessage(void);
   void slotReceiversChanged(QTableWidgetItem *item);
   void slotReceiversClicked(bool state);
+  void slotRefreshGITOptions(void);
   void slotRefreshMail(void);
   void slotRefreshPostOffice(void);
   void slotRefreshUrlDistillers(void);

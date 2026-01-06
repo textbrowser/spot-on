@@ -1479,10 +1479,14 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotPublishedKeySizeChanged(int)));
-  connect(m_optionsUi.refreshEmail,
+  connect(m_optionsUi.refresh_email,
 	  SIGNAL(toggled(bool)),
 	  this,
 	  SLOT(slotSaveRefreshEmail(bool)));
+  connect(m_optionsUi.refresh_git,
+	  SIGNAL(clicked(void)),
+	  this,
+	  SLOT(slotRefreshGITOptions(void)));
   connect(m_optionsUi.remove_otm,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2993,7 +2997,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
     (m_settings.value("gui/openLinks", false).toBool());
   m_optionsUi.publishPeriodically->setChecked
     (m_settings.value("gui/publishPeriodically", false).toBool());
-  m_optionsUi.refreshEmail->setChecked
+  m_optionsUi.refresh_email->setChecked
     (m_settings.value("gui/refreshEmail", false).toBool());
   m_optionsUi.chatAlternatingRowColors->setChecked
     (m_settings.value("gui/chatAlternatingRowColors", true).toBool());
@@ -11434,7 +11438,7 @@ void spoton::slotValidatePassphrase(void)
 		m_settings["gui/spot_on_neighbors_txt_processed"] = true;
 	      }
 
-	    if(m_optionsUi.refreshEmail->isChecked())
+	    if(m_optionsUi.refresh_email->isChecked())
 	      {
 		populateMail();
 		refreshInstitutions();

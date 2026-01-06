@@ -1603,6 +1603,11 @@ void spoton::slotPrisonBluesProcessReadyStandardOutput(void)
      process->readAllStandardOutput().trimmed()));
 }
 
+void spoton::slotRefreshGITOptions(void)
+{
+  populateGITTable();
+}
+
 void spoton::slotResetAddListener(void)
 {
   m_ui.days_valid->setValue(365);
