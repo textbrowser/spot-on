@@ -1550,7 +1550,12 @@ void spoton_rosetta::publishAttachments
     (QSettings().value("gui/rosettaGPG").toString().trimmed());
 
   if(!fileInfo.isExecutable())
-    return;
+    {
+      showMessage
+	(tr("Cannot process attachments. The GPG executable is not defined."),
+	 5000);
+      return;
+    }
 
   auto crypt = m_parent->crypts().value("rosetta", nullptr);
 
@@ -1560,6 +1565,14 @@ void spoton_rosetta::publishAttachments
   auto passphrase(QSettings().value("gui/gpgPassphrase").toByteArray());
 
   passphrase = crypt->decryptedAfterAuthenticated(passphrase, nullptr);
+
+  if(passphrase.isEmpty())
+    {
+      showMessage
+	(tr("Cannot process attachments. The GPG passphrase is not defined."),
+	 5000);
+      return;
+    }
 
   for(int i = 0; i < attachments.size(); i++)
     {
