@@ -760,7 +760,7 @@
                     <x>0</x>
                     <y>0</y>
                     <width>1027</width>
-                    <height>728</height>
+                    <height>755</height>
                    </rect>
                   </property>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -937,6 +937,16 @@
                             </spacer>
                            </item>
                           </layout>
+                         </item>
+                         <item>
+                          <widget class="QLabel" name="gpg_fingerprint">
+                           <property name="text">
+                            <string>GPG Fingerprint</string>
+                           </property>
+                           <property name="wordWrap">
+                            <bool>true</bool>
+                           </property>
+                          </widget>
                          </item>
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_6">

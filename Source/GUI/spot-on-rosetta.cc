@@ -1193,6 +1193,7 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
   ui.gpg_address->clear();
   ui.gpg_email_addresses->blockSignals(true);
   ui.gpg_email_addresses->clear();
+  ui.gpg_fingerprint->setText(tr("GPG Fingerprint"));
 
   QMapIterator<QString, QByteArray> it(gpgEmailAddresses());
 
@@ -1200,8 +1201,8 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
     {
       it.next();
       m_gpgPairs.append
-	(QPair<QByteArray, QString> (spoton_crypt::fingerprint(it.value()),
-				     it.key()));
+	(QPair<QByteArray, QString>
+	(spoton_crypt::fingerprint(it.value()), it.key()));
       ui.gpg_address->addItem(it.key(), it.value());
       ui.gpg_email_addresses->addItem(it.key(), it.value());
     }
@@ -1226,6 +1227,14 @@ void spoton_rosetta::populateGPGEmailAddresses(void)
 	    ui.gpg_email_addresses->count() - 1));
   ui.gpg_address->blockSignals(false);
   ui.gpg_email_addresses->blockSignals(false);
+
+  auto const fingerprint
+    (spoton_crypt::fingerprint(ui.gpg_address->currentData().toByteArray()));
+
+  if(fingerprint.isEmpty())
+    ui.gpg_fingerprint->setText(tr("GPG Fingerprint"));
+  else
+    ui.gpg_fingerprint->setText(tr("GPG Fingerprint %1").arg(fingerprint));
 }
 
 void spoton_rosetta::prepareGPGAttachmentsProgramCompleter(void)
@@ -4125,7 +4134,18 @@ void spoton_rosetta::slotSaveGPGAttachmentProgram(void)
 void spoton_rosetta::slotSaveGPGEmailIndex(int index)
 {
   if(sender() == ui.gpg_address)
-    QSettings().setValue("gui/rosettaGPGEmailAddressIndex", index);
+    {
+      QSettings().setValue("gui/rosettaGPGEmailAddressIndex", index);
+
+      auto const fingerprint
+	(spoton_crypt::
+	 fingerprint(ui.gpg_address->currentData().toByteArray()));
+
+      if(fingerprint.isEmpty())
+	ui.gpg_fingerprint->setText(tr("GPG Fingerprint"));
+      else
+	ui.gpg_fingerprint->setText(tr("GPG Fingerprint %1").arg(fingerprint));
+    }
   else if(sender() == ui.gpg_email_addresses)
     QSettings().setValue("gui/rosettaGPGEmailAddressesIndex", index);
 }
