@@ -58,6 +58,10 @@ const static char *end_pgp = "-----END PGP MESSAGE-----";
 const static char *end_spoton = "-----END SPOT-ON PUBLIC KEY BLOCK-----";
 #endif
 
+QByteArray spoton_rosetta::s_gpgPassphrase = QByteArray();
+QByteArray spoton_rosetta::s_gpgPassphraseRandom = QByteArray();
+QReadWriteLock spoton_rosetta::s_gpgPassphraseMutex;
+
 spoton_rosetta::spoton_rosetta(void):QMainWindow()
 {
   QDir().mkpath(spoton_misc::homePath() + QDir::separator() + "Rosetta-GPG");
@@ -598,7 +602,8 @@ QByteArray spoton_rosetta::gpgEncrypt
 		    {
 		      gpgme_set_passphrase_cb
 			(ctx,
-			 askForPassphrase ? &gpgPassphrase : nullptr,
+			 askForPassphrase ?
+			 &gpgPassphrase : &gpgPassphraseFromTask,
 			 nullptr);
 		      err = gpgme_op_encrypt_sign
 			(ctx, keys, flags, plaintext, ciphertext);
@@ -784,6 +789,45 @@ gpgme_error_t spoton_rosetta::gpgPassphrase
       QSettings().setValue
 	("gui/gpgPassphrase", crypt->encryptedThenHashed(passphrase, nullptr));
     }
+
+  {
+    QWriteLocker lock(&s_gpgPassphraseMutex);
+
+    s_gpgPassphrase = spoton_misc::xor_arrays
+      (passphrase,
+       s_gpgPassphraseRandom =
+       spoton_crypt::veryStrongRandomBytes(passphrase.length()));
+  }
+
+  Q_UNUSED
+    (gpgme_io_writen(fd,
+		     passphrase.constData(),
+		     static_cast<size_t> (passphrase.length())));
+  Q_UNUSED(gpgme_io_writen(fd, "\n", static_cast<size_t> (1)));
+  spoton_crypt::memzero(passphrase);
+  return GPG_ERR_NO_ERROR;
+}
+
+gpgme_error_t spoton_rosetta::gpgPassphraseFromTask
+(void *hook,
+ const char *uid_hint,
+ const char *passphrase_info,
+ int prev_was_bad,
+ int fd)
+{
+  Q_UNUSED(hook);
+  Q_UNUSED(passphrase_info);
+  Q_UNUSED(prev_was_bad);
+  Q_UNUSED(uid_hint);
+
+  QByteArray passphrase;
+
+  {
+    QReadLocker lock(&s_gpgPassphraseMutex);
+
+    passphrase = spoton_misc::xor_arrays
+      (s_gpgPassphrase, s_gpgPassphraseRandom);
+  }
 
   Q_UNUSED
     (gpgme_io_writen(fd,
@@ -1467,7 +1511,7 @@ void spoton_rosetta::processGPGMessage
       if(err == GPG_ERR_NO_ERROR)
 	{
 	  err = gpgme_set_pinentry_mode(ctx, GPGME_PINENTRY_MODE_LOOPBACK);
-	  gpgme_set_passphrase_cb(ctx, nullptr, nullptr);
+	  gpgme_set_passphrase_cb(ctx, &gpgPassphraseFromTask, nullptr);
 	}
 
       if(err == GPG_ERR_NO_ERROR)
@@ -1582,6 +1626,15 @@ void spoton_rosetta::publishAttachments
 	 5000);
       return;
     }
+
+  {
+    QWriteLocker lock(&s_gpgPassphraseMutex);
+
+    s_gpgPassphrase = spoton_misc::xor_arrays
+      (passphrase,
+       s_gpgPassphraseRandom =
+       spoton_crypt::veryStrongRandomBytes(passphrase.length()));
+  }
 
   for(int i = 0; i < attachments.size(); i++)
     {
@@ -2215,6 +2268,15 @@ void spoton_rosetta::slotAskForGPGPassphrase(void)
 
       QSettings().setValue
 	("gui/gpgPassphrase", crypt->encryptedThenHashed(passphrase, nullptr));
+
+      {
+	QWriteLocker lock(&s_gpgPassphraseMutex);
+
+	s_gpgPassphrase = spoton_misc::xor_arrays
+	  (passphrase,
+	   s_gpgPassphraseRandom =
+	   spoton_crypt::veryStrongRandomBytes(passphrase.length()));
+      }
     }
 #endif
 }
@@ -3831,6 +3893,15 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 
       if(passphrase.isEmpty())
 	return;
+
+      {
+	QWriteLocker lock(&s_gpgPassphraseMutex);
+
+	s_gpgPassphrase = spoton_misc::xor_arrays
+	  (passphrase,
+	   s_gpgPassphraseRandom =
+	   spoton_crypt::veryStrongRandomBytes(passphrase.length()));
+      }
 
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
       m_readPrisonBluesFuture = QtConcurrent::run

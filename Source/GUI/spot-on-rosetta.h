@@ -31,6 +31,7 @@
 #include <QFileInfo>
 #include <QFuture>
 #include <QPointer>
+#include <QReadWriteLock>
 #include <QTimer>
 
 #ifdef SPOTON_GPGME_ENABLED
@@ -96,6 +97,9 @@ class spoton_rosetta: public QMainWindow
                                                    // E-Mail Addresses
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
   Ui_spoton_rosetta ui;
+  static QByteArray s_gpgPassphrase;
+  static QByteArray s_gpgPassphraseRandom;
+  static QReadWriteLock s_gpgPassphraseMutex;
   QByteArray copyMyRosettaPublicKey(void) const;
   QIcon offlineIcon(void) const;
   QIcon onlineIcon(void) const;
@@ -114,6 +118,11 @@ class spoton_rosetta: public QMainWindow
 				     const char *passphrase_info,
 				     int prev_was_bad,
 				     int fd);
+  static gpgme_error_t gpgPassphraseFromTask(void *hook,
+					     const char *uid_hint,
+					     const char *passphrase_info,
+					     int prev_was_bad,
+					     int fd);
 #endif
   void addGPGContact(QString &error, const QByteArray &data);
   void closeEvent(QCloseEvent *event);
