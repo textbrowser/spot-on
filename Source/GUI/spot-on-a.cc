@@ -67,6 +67,7 @@ extern "C"
 extern "C"
 {
 #include <signal.h>
+#include <sys/resource.h>
 #include <sys/types.h>
 }
 #endif
@@ -217,6 +218,12 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_UNIX
+  struct rlimit limit = {0, 0};
+
+  setrlimit(RLIMIT_CORE, &limit); // Disable core files.
+#endif
+
   auto launchKernel = false;
 
   for(int i = 1; i < argc; i++)

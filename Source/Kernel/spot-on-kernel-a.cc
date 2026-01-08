@@ -47,6 +47,7 @@ extern "C"
 #endif
 #include <signal.h>
 #if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
+#include <sys/resource.h>
 #include <termios.h>
 #include <unistd.h>
 #else
@@ -251,6 +252,12 @@ static void signal_handler(int signal_number)
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_UNIX
+  struct rlimit limit = {0, 0};
+
+  setrlimit(RLIMIT_CORE, &limit); // Disable core files.
+#endif
+
   for(int i = 1; i < argc; i++)
     if(argv[i])
       {

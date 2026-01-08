@@ -782,6 +782,7 @@ gpgme_error_t spoton_rosetta::gpgPassphrase
       if(dialog.exec() != QDialog::Accepted)
 	{
 	  QApplication::processEvents();
+	  spoton_crypt::memzero(passphrase);
 	  return GPG_ERR_CANCELED;
 	}
 
@@ -1627,15 +1628,6 @@ void spoton_rosetta::publishAttachments
       return;
     }
 
-  {
-    QWriteLocker lock(&s_gpgPassphraseMutex);
-
-    s_gpgPassphrase = spoton_misc::xor_arrays
-      (passphrase,
-       s_gpgPassphraseRandom =
-       spoton_crypt::veryStrongRandomBytes(passphrase.length()));
-  }
-
   for(int i = 0; i < attachments.size(); i++)
     {
       auto attachment(attachments.at(i));
@@ -1699,6 +1691,8 @@ void spoton_rosetta::publishAttachments
 	  (tr("The file <b>%1</b> is being encrypted by a separate "
 	      "GPG process.").arg(attachment));
     }
+
+  spoton_crypt::memzero(passphrase);
 }
 
 void spoton_rosetta::readPrisonBlues
@@ -2264,7 +2258,10 @@ void spoton_rosetta::slotAskForGPGPassphrase(void)
 	 &ok).toUtf8();
 
       if(!ok || passphrase.isEmpty())
-	return;
+	{
+	  spoton_crypt::memzero(passphrase);
+	  return;
+	}
 
       QSettings().setValue
 	("gui/gpgPassphrase", crypt->encryptedThenHashed(passphrase, nullptr));
@@ -2278,6 +2275,8 @@ void spoton_rosetta::slotAskForGPGPassphrase(void)
 	   spoton_crypt::veryStrongRandomBytes(passphrase.length()));
       }
     }
+
+  spoton_crypt::memzero(passphrase);
 #endif
 }
 
@@ -3920,6 +3919,7 @@ void spoton_rosetta::slotReadPrisonBluesTimeout(void)
 	 QSettings().value("gui/rosettaGPG").toString().trimmed(),
 	 m_gpgPairs);
 #endif
+      spoton_crypt::memzero(passphrase);
     }
 }
 
