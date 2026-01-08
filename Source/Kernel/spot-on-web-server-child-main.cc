@@ -36,6 +36,13 @@
 #include <QSysInfo>
 #include <QUrl>
 
+#if defined(Q_OS_LINUX) || defined(Q_OS_MACOS) || defined(Q_OS_UNIX)
+extern "C"
+{
+#include <sys/resource.h>
+}
+#endif
+
 #include "Common/spot-on-common.h"
 #include "Common/spot-on-misc.h"
 #include "spot-on-web-server-child-main.h"
@@ -124,6 +131,12 @@ static quint64 s_urlLimit = 10;
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_UNIX
+  struct rlimit limit = {0, 0};
+
+  setrlimit(RLIMIT_CORE, &limit); // Disable core files.
+#endif
+
   auto rc = EXIT_SUCCESS;
 
   try
