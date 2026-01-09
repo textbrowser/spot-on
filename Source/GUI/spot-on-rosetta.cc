@@ -836,6 +836,14 @@ gpgme_error_t spoton_rosetta::gpgPassphraseFromTask
 		     static_cast<size_t> (passphrase.length())));
   Q_UNUSED(gpgme_io_writen(fd, "\n", static_cast<size_t> (1)));
   spoton_crypt::memzero(passphrase);
+
+  {
+    QWriteLocker lock(&s_gpgPassphraseMutex);
+
+    spoton_crypt::memzero(s_gpgPassphrase);
+    spoton_crypt::memzero(s_gpgPassphraseRandom);    
+  }
+
   return GPG_ERR_NO_ERROR;
 }
 #endif
