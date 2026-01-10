@@ -97,9 +97,6 @@ class spoton_rosetta: public QMainWindow
                                                    // E-Mail Addresses
   Ui_spoton_gpg_new_keys m_gpgNewKeysUi;
   Ui_spoton_rosetta ui;
-  static QByteArray s_gpgPassphrase;
-  static QByteArray s_gpgPassphraseRandom;
-  static QReadWriteLock s_gpgPassphraseMutex;
   QByteArray copyMyRosettaPublicKey(void) const;
   QIcon offlineIcon(void) const;
   QIcon onlineIcon(void) const;
@@ -179,6 +176,7 @@ class spoton_rosetta: public QMainWindow
   void slotGPGMessagesReadTimer(void);
   void slotGPGParticipantsChanged(QTableWidgetItem *item);
   void slotGPGParticipantsDoubleClicked(QTableWidgetItem *item);
+  void slotGPGPassphraseFromTask(const int fd);
   void slotGPGPullTimer(void);
   void slotGPGStatusTimerTimeout(void);
   void slotImportGPGKeys(void);
@@ -217,6 +215,7 @@ class spoton_rosetta: public QMainWindow
  signals:
   void gpgFileProcessed(void);
   void gpgKeysRemoved(void);
+  void gpgPassphraseFromTaskSignal(const int fd);
   void launchPrisonBluesProcessesIfNecessary(const bool pullOnly);
   void participantAdded(const QString &type);
   void participantDeleted(const QString &oid, const QString &type);
