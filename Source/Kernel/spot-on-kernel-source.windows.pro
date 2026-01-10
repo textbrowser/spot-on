@@ -28,6 +28,7 @@ SOURCES	= ..\\Common\\spot-on-crypt.cc \
           ..\\Common\\spot-on-send.cc \
           ..\\Common\\spot-on-socket-options.cc \
           ..\\Common\\spot-on-threefish.cc \
+          ..\\Common\\spot-on-xchacha20.cc \
           spot-on-fireshare.cc \
           spot-on-gui-server.cc \
           spot-on-import-published-pages.cc \

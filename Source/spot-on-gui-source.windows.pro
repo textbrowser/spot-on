@@ -76,6 +76,7 @@ SOURCES	= Common\\spot-on-crypt.cc \
           Common\\spot-on-misc.cc \
           Common\\spot-on-send.cc \
           Common\\spot-on-threefish.cc \
+          Common\\spot-on-xchacha20.cc \
           GUI\\spot-on-a.cc \
           GUI\\spot-on-b.cc \
           GUI\\spot-on-buzzpage.cc \

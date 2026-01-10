@@ -25,7 +25,42 @@
 ** SPOT-ON, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef _spoton_version_h_
-#define _spoton_version_h_
-#define SPOTON_VERSION_STRING "2026.01.10"
+#ifndef _spoton_xchacha20_h_
+#define _spoton_xchacha20_h_
+
+#include <QByteArray>
+
+class spoton_xchacha20
+{
+ public:
+  spoton_xchacha20(const QByteArray &key);
+  ~spoton_xchacha20();
+  QByteArray decrypt(const QByteArray &data);
+  QByteArray encrypt(const QByteArray &data);
+  static QByteArray chacha20Block(const QByteArray &key,
+				  const QByteArray &nonce,
+				  const uint32_t counter);
+  static QByteArray chacha20Encrypt(const QByteArray &key,
+				    const QByteArray &nonce,
+				    const QByteArray &plaintext,
+				    const uint32_t counter);
+  static QByteArray hchacha20Block(const QByteArray &key,
+				   const QByteArray &nonce);
+  static QByteArray xchacha20Encrypt(const QByteArray &key,
+				     const QByteArray &nonce,
+				     const QByteArray &plaintext,
+				     const uint32_t counter);
+  static uint32_t extract4Bytes(const QByteArray &bytes, const int offset);
+  static void infuse4Bytes(QByteArray &bytes,
+			     const int offset,
+			     const uint32_t value);
+  static void quarterRound(uint32_t &a, uint32_t &b, uint32_t &c, uint32_t &d);
+  static void rotate(uint32_t &x, const uint32_t n);
+  void setKey(const QByteArray &key);
+
+ private:
+  QByteArray m_key;
+  int m_keyLength;
+};
+
 #endif

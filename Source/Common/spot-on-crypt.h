@@ -58,6 +58,7 @@ extern "C"
 #include <QStringList>
 
 #include "spot-on-fortuna.h"
+#include "spot-on-xchacha20.h"
 
 #ifdef SPOTON_MCELIECE_ENABLED
 class spoton_mceliece;
@@ -245,6 +246,13 @@ class spoton_crypt
 			    const QString &sslControlString,
 			    QSslConfiguration &configuration);
   static void terminate(void);
+
+  template<class T> static void memzero(QVector<T> &vector)
+  {
+    for(auto &&i : vector)
+      i = T();
+  }
+
   spoton_crypt(const QByteArray &privateKey,
 	       const QByteArray &publicKey);
   spoton_crypt(const QString &cipherType,

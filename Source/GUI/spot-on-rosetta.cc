@@ -841,7 +841,7 @@ gpgme_error_t spoton_rosetta::gpgPassphraseFromTask
     QWriteLocker lock(&s_gpgPassphraseMutex);
 
     spoton_crypt::memzero(s_gpgPassphrase);
-    spoton_crypt::memzero(s_gpgPassphraseRandom);    
+    spoton_crypt::memzero(s_gpgPassphraseRandom);
   }
 
   return GPG_ERR_NO_ERROR;
