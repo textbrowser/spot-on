@@ -373,6 +373,7 @@ Completed Items
        status messages.
 260.   Replace toLatin1() with toUtf8(). Qt 5 Buzz is not compatible with
        Qt 6 Buzz.
+261.   Add XChaCha20.
 
 Remaining Items
 
@@ -383,5 +384,4 @@ Remaining Items
 5.     QString::arg() with comma separators.
 6.     Web server on Windows. Very difficult.
 7.     Windows GIT and non-GPG (Chat).
-8.     Add XChaCha20.
-9.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.
+8.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.

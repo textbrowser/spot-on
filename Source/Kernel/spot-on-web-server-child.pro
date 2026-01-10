@@ -230,6 +230,7 @@ SOURCES = ../Common/spot-on-crypt.cc \
           ../Common/spot-on-crypt-ntru.cc \
           ../Common/spot-on-misc.cc \
           ../Common/spot-on-threefish.cc \
+          ../Common/spot-on-xchacha20.cc \
           spot-on-web-server-child-main.cc
 } else {
 SOURCES = ..\\Common\\spot-on-crypt.cc \
@@ -237,6 +238,7 @@ SOURCES = ..\\Common\\spot-on-crypt.cc \
           ..\\Common\\spot-on-crypt-ntru.cc \
           ..\\Common\\spot-on-misc.cc \
           ..\\Common\\spot-on-threefish.cc \
+          ..\\Common\\spot-on-xchacha20.cc \
           spot-on-web-server-child-main.cc
 }
 

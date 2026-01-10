@@ -316,6 +316,7 @@ class spoton_crypt
   QString m_cipherType;
   QString m_hashType;
   QString m_id;
+  bool m_initialized;
   char *m_hashKey; // Stored in secure memory.
   char *m_privateKey; // Stored in secure memory.
   char *m_symmetricKey; // Stored in secure memory.

@@ -57,6 +57,7 @@ extern "C"
 #endif
 #include "spot-on-misc.h"
 #include "spot-on-threefish.h"
+#include "spot-on-xchacha20.h"
 
 extern "C"
 {
@@ -154,7 +155,8 @@ static auto digital_signature_hash_algorithm = GCRY_MD_SHA512;
 static int error_buffer_size = 256;
 
 spoton_crypt::spoton_crypt
-(const QByteArray &privateKey, const QByteArray &publicKey)
+(const QByteArray &privateKey, const QByteArray &publicKey):
+  m_initialized(false)
 {
   init("", "", QByteArray(), QByteArray(), QByteArray(), 0, 0, "", "cbc");
   m_privateKeyLength = static_cast<size_t> (privateKey.length());
@@ -206,7 +208,8 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QByteArray &hashKey,
 			   const int saltLength,
 			   const unsigned long int iterationCount,
-			   const QString &id)
+			   const QString &id):
+  m_initialized(false)
 {
   init(cipherType,
        hashType,
@@ -227,7 +230,8 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const int saltLength,
 			   const unsigned long int iterationCount,
 			   const QString &id,
-			   const QString &modeOfOperation)
+			   const QString &modeOfOperation):
+  m_initialized(false)
 {
   init(cipherType,
        hashType,
@@ -246,7 +250,8 @@ spoton_crypt::spoton_crypt(const QString &cipherType,
 			   const QByteArray &symmetricKey,
 			   const int saltLength,
 			   const unsigned long int iterationCount,
-			   const QString &id)
+			   const QString &id):
+  m_initialized(false)
 {
   init(cipherType,
        hashType,
@@ -280,6 +285,14 @@ QByteArray spoton_crypt::decrypted(const QByteArray &data, bool *ok)
 	*ok = false;
 
       return QByteArray();
+    }
+
+  if(m_cipherType == "xchacha20")
+    {
+      if(ok)
+	*ok = true;
+
+      return spoton_xchacha20(symmetricKey()).decrypt(data);
     }
 
   if(m_threefish)
@@ -829,6 +842,14 @@ QByteArray spoton_crypt::digitalSignature(const QByteArray &data, bool *ok)
 
 QByteArray spoton_crypt::encrypted(const QByteArray &data, bool *ok)
 {
+  if(m_cipherType == "xchacha20")
+    {
+      if(ok)
+	*ok = true;
+
+      return spoton_xchacha20(symmetricKey()).encrypt(data);
+    }
+
   if(m_threefish)
     return m_threefish->encrypted(data, ok);
 
@@ -2625,7 +2646,8 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
   QByteArray key;
   QByteArray temporaryKey;
   QPair<QByteArray, QByteArray> keys;
-  auto const cipherAlgorithm = (cipherType == "threefish") ? -1 :
+  auto const cipherAlgorithm = (cipherType == "threefish" ||
+				cipherType == "xchacha20") ? -1 :
     gcry_cipher_map_name(cipherType.toUtf8().constData());
   auto const hashAlgorithm = gcry_md_map_name(hashType.toUtf8().constData());
   gcry_error_t err = 0;
@@ -2661,7 +2683,7 @@ QPair<QByteArray, QByteArray> spoton_crypt::derivedKeys
 	  goto done_label;
 	}
     }
-  else if(cipherType == "threefish")
+  else if(cipherType == "threefish" || cipherType == "xchacha20")
     keyLength = cipherKeyLength(cipherType.toUtf8());
   else
     {
@@ -3216,6 +3238,7 @@ QStringList spoton_crypt::cipherTypes(void)
     }
 
   types << "threefish";
+  types << "xchacha20";
   std::sort(types.begin(), types.end());
   return types;
 }
@@ -3812,7 +3835,8 @@ qint64 spoton_crypt::publicKeyCount(void)
 
 size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 {
-  auto const cipherAlgorithm = (cipherType == "threefish") ? -1 :
+  auto const cipherAlgorithm = (cipherType == "threefish" ||
+				cipherType == "xchacha20") ? -1 :
     gcry_cipher_map_name(cipherType.constData());
   size_t keyLength = 0;
 
@@ -3822,7 +3846,7 @@ size_t spoton_crypt::cipherKeyLength(const QByteArray &cipherType)
 	spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
 			      "gcry_cipher_get_algo_keylen() failed.");
     }
-  else if(cipherType == "threefish")
+  else if(cipherType == "threefish" || cipherType == "xchacha20")
     keyLength = 32;
   else
     spoton_misc::logError("spoton_crypt::cipherKeyLength(): "
@@ -4698,15 +4722,21 @@ void spoton_crypt::init(const QString &cipherType,
 			const QString &modeOfOperation)
 {
   Q_UNUSED(passphrase);
-  m_cipherAlgorithm = (cipherType == "threefish") ? -1 :
+
+  if(m_initialized)
+    return;
+
+  m_cipherAlgorithm = (cipherType == "threefish" ||
+		       cipherType == "xchacha20") ? -1 :
     gcry_cipher_map_name(cipherType.toUtf8().constData());
   m_cipherHandle = nullptr;
-  m_cipherType = cipherType;
+  m_cipherType = cipherType.toLower().trimmed();
   m_hashAlgorithm = gcry_md_map_name(hashType.toUtf8().constData());
   m_hashKey = nullptr;
   m_hashKeyLength = 0;
   m_hashType = hashType;
   m_id = id;
+  m_initialized = true;
   m_isMcEliece.fetchAndStoreOrdered(0);
   m_iterationCount = iterationCount;
 #ifdef SPOTON_MCELIECE_ENABLED
@@ -4720,7 +4750,7 @@ void spoton_crypt::init(const QString &cipherType,
 
   if(m_cipherAlgorithm > 0)
     m_symmetricKeyLength = gcry_cipher_get_algo_keylen(m_cipherAlgorithm);
-  else if(m_cipherType == "threefish")
+  else if(m_cipherType == "threefish" || m_cipherType == "xchacha20")
     m_symmetricKeyLength = cipherKeyLength(m_cipherType.toUtf8());
   else
     m_symmetricKeyLength = 0;
@@ -4802,10 +4832,13 @@ void spoton_crypt::init(const QString &cipherType,
 	      m_threefish = nullptr;
 	    }
 	}
+      else if(m_cipherType == "xchacha20")
+	{
+	}
       else
-	spoton_misc::logError("spoton_crypt::init(): "
-			      "m_cipherAlgorithm is zero or unsupported "
-			      "cipher.");
+	spoton_misc::logError
+	  ("spoton_crypt::init(): "
+	   "m_cipherAlgorithm is zero or unsupported cipher.");
 
       if(err == 0)
 	{
