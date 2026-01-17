@@ -517,9 +517,7 @@ spoton_mceliece_public_key::spoton_mceliece_public_key(const size_t m,
   */
 
   auto const n = static_cast<long int> (1) << static_cast<long int> (m);
-  long int k = 0;
-
-  k = n - static_cast<long int> (m) * static_cast<long int> (m_t);
+  auto const k = n - static_cast<long int> (m) * static_cast<long int> (m_t);
 
   try
     {
@@ -1646,20 +1644,22 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
 
       mat_GF2.SetDims(H.NumRows(), H.NumCols());
 
+      auto const mt = m * t;
+
       for(long int i = 0; i < n; i++)
-	for(long int j = 0; j < m * t; j++)
-	  mat_GF2[j][i] = H[j][m_privateKey->
-			       m_swappingColumns[static_cast<size_t> (i)]];
+	for(long int j = 0; j < mt; j++)
+	  mat_GF2[j][i] =
+	    H[j][m_privateKey->m_swappingColumns[static_cast<size_t> (i)]];
 
       H = mat_GF2;
 
       NTL::mat_GF2 R;
 
-      R.SetDims(m * t, n - m * t); // R^T has n - mt rows and mt columns.
+      R.SetDims(mt, n - mt); // R^T has mt columns and n - mt rows.
 
       for(long int i = 0; i < R.NumRows(); i++)
 	for(long int j = 0; j < R.NumCols(); j++)
-	  R[i][j] = H[i][j + m * t];
+	  R[i][j] = H[i][j + mt];
 
       R = NTL::transpose(R);
       m_privateKey->prepareG(R);
@@ -1680,9 +1680,8 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
     }
   catch(...)
     {
-      spoton_misc::logError("spoton_mceliece::"
-			    "generatePrivatePublicKeys(): "
-			    "failure.");
+      spoton_misc::logError
+	("spoton_mceliece::generatePrivatePublicKeys(): failure.");
       delete m_privateKey;
       delete m_publicKey;
       m_privateKey = nullptr;
