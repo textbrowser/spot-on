@@ -72,8 +72,8 @@ class spoton_common
   static const int IDENTICAL_CREDENTIALS_ITERATIONS = 5;
   static const int KERNEL_CERTIFICATE_DAYS_VALID = 7;
   static const int KERNEL_URL_DISPATCHER_INTERVAL_STATIC = 60;
-  static const int LANE_WIDTH_DEFAULT = 5242880;
-  static const int LANE_WIDTH_MAXIMUM = 20971520;
+  static const int LANE_WIDTH_DEFAULT = 31457280;
+  static const int LANE_WIDTH_MAXIMUM = 31457280;
   static const int LANE_WIDTH_MINIMUM = 4096;
   static const int LOG_FILE_MAXIMUM_SIZE = 8 * 1024 * 1024;
   static const int MAIL_TIME_DELTA_MAXIMUM_STATIC = 90;

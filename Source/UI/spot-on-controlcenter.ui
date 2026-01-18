@@ -536,8 +536,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>962</width>
-                <height>672</height>
+                <width>436</width>
+                <height>607</height>
                </rect>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_25">
@@ -6236,9 +6236,9 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>0</y>
-             <width>1067</width>
-             <height>1359</height>
+             <y>-661</y>
+             <width>1034</width>
+             <height>1379</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_35">
@@ -7125,6 +7125,11 @@
                    <column>
                     <property name="text">
                      <string>Base-64</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>Disk Size</string>
                     </property>
                    </column>
                   </widget>
