@@ -98,7 +98,7 @@ rm -f $gpgerror
 gpgme=mingw-w64-x86_64-gpgme-1.23.2-11-any.pkg.tar.zst
 
 rm -f "$gpgme"
-wget --output-document=$gpgme --progress=bar "$msys2/$gpgme"
+wget --output-document="$gpgme" --progress=bar "$msys2/$gpgme"
 
 rc=$?
 
