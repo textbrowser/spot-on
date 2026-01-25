@@ -5343,7 +5343,7 @@ void spoton::updatePublicKeysLabel(void)
 
       m_ui.personal_public_keys->setItem(i, 4, item);
       item = new QTableWidgetItem
-	(QString::number(crypt->publicKey(nullptr).length()));
+	(QLocale().toString(crypt->publicKey(nullptr).length()));
       item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
       m_ui.personal_public_keys->setItem(i, 5, item);
     }
