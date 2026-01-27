@@ -967,6 +967,7 @@ void spoton_rosetta::createGPGImportObject(void)
 	(1,
 	 m_gpgImport = new spoton_rosetta_gpg_import(this, m_parent),
 	 tr("GPG Import / GPG Share"));
+      ui.tab->setCurrentIndex(1);
       connect(m_gpgImport,
 	      SIGNAL(gpgKeysImported(void)),
 	      this,
@@ -3506,10 +3507,7 @@ void spoton_rosetta::slotImportGPGKeys(void)
   createGPGImportObject();
 
   if(m_gpgImport)
-    {
-      m_gpgImport->populate();
-      ui.tab->setCurrentIndex(1);
-    }
+    m_gpgImport->populate();
 #endif
 }
 
