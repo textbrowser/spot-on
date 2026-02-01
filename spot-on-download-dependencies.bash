@@ -95,7 +95,7 @@ rm -f $gpgerror
 
 # GPG-ME
 
-gpgme=mingw-w64-x86_64-gpgme-1.23.2-11-any.pkg.tar.zst
+gpgme=mingw-w64-x86_64-gpgme-1.23.2-15-any.pkg.tar.zst
 
 rm -f "$gpgme"
 wget --output-document="$gpgme" --progress=bar "$msys2/$gpgme"
@@ -124,12 +124,12 @@ rm -f "$gpgme"
 
 # OpenSSL
 
-openssl=openssl-3-6-zip
+openssl=openssl-3.6.1.zip
 
 rm -f "$openssl"
 wget --output-document="$openssl" \
      --progress=bar \
-     "https://www.firedaemon.com/download-firedaemon-$openssl"
+     "https://download.firedaemon.com/FireDaemon-OpenSSL/$openssl"
 
 rc=$?
 
