@@ -2438,9 +2438,9 @@ void spoton_kernel::prepareListeners(void)
 	  while(query.next())
 	    {
 	      QPointer<spoton_listener> listener;
-	      auto const status(query.value(4).toString().toLower());
 	      auto const id = query.value(query.record().count() - 1).
 		toLongLong();
+	      auto const status(query.value(4).toString().toLower());
 
 	      /*
 	      ** We're only interested in creating objects for
@@ -2607,10 +2607,9 @@ void spoton_kernel::prepareListeners(void)
 		      ** that were provided to the listener's constructor.
 		      */
 
-		      if(listener)
-			if(!listener->isListening())
-			  listener->listen(listener->serverAddress(),
-					   listener->serverPort());
+		      if(listener && listener->isListening() == false)
+			listener->listen
+			  (listener->serverAddress(), listener->serverPort());
 		    }
 		}
 	      else if(status == "deleted" || status == "offline")
@@ -2650,10 +2649,9 @@ void spoton_kernel::prepareListeners(void)
 	{
 	  spoton_misc::logError
 	    (QString("spoton_kernel::prepareListeners(): "
-		     "listener %1 "
-		     "may have been deleted from the listeners table by an "
-		     "external event. Purging listener from the listeners "
-		     "container.").
+		     "listener %1 may have been deleted from the listeners "
+		     "table by an external event. Purging listener from "
+		     "the listeners container.").
 	     arg(it.key()));
 	  it.remove();
 	}
