@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.55"
-#define GPGRT_VERSION     "1.55"
+#define GPG_ERROR_VERSION "1.58"
+#define GPGRT_VERSION     "1.58"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013700
-#define GPGRT_VERSION_NUMBER     0x013700
+#define GPG_ERROR_VERSION_NUMBER 0x013a00
+#define GPGRT_VERSION_NUMBER     0x013a00
 
 
 #ifdef __GNUC__
@@ -356,6 +356,7 @@ typedef enum
     GPG_ERR_SEXP_BAD_HEX_CHAR = 211,
     GPG_ERR_SEXP_ODD_HEX_NUMBERS = 212,
     GPG_ERR_SEXP_BAD_OCT_CHAR = 213,
+    GPG_ERR_UNEXPECTED_PACKET = 216,
     GPG_ERR_SUBKEYS_EXP_OR_REV = 217,
     GPG_ERR_DB_CORRUPTED = 218,
     GPG_ERR_SERVER_FAILED = 219,
@@ -1989,6 +1990,10 @@ void _gpgrt_log_assert (const char *expr, const char *file, int line,
 /* Allow the child process to set the foreground window (Windows only).  */
 #define GPGRT_PROCESS_ALLOW_SET_FG        (1 << 4)
 
+/* Child process uses "NUL" device for its stdin/stdout/stderr
+ * (Windows only).  */
+#define GPGRT_PROCESS_STDIO_NUL           (1 << 5)
+
 /* Specify how to keep/connect standard fds.  */
 #define GPGRT_PROCESS_STDIN_PIPE          (1 << 8)
 #define GPGRT_PROCESS_STDOUT_PIPE         (1 << 9)
@@ -2308,6 +2313,14 @@ int gpgrt_cmp_version (const char *a, const char *b, int level);
  * returned.  The second function returns an absolute filename.  */
 char *gpgrt_fnameconcat (const char *first, ...) GPGRT_ATTR_SENTINEL(0);
 char *gpgrt_absfnameconcat (const char *first, ...) GPGRT_ATTR_SENTINEL(0);
+
+/* Same as gpgrt_fnameconcat but using flags for extensibility.  */
+#define GPGRT_FCONCAT_ABS     1  /* Expand to an absolute name.  */
+#define GPGRT_FCONCAT_TILDE   2  /* Enable tilde expansion.      */
+#define GPGRT_FCONCAT_SYSCONF 4  /* Prepend the sysconfdir.      */
+char *gpgrt_fconcat (unsigned int flags, const char *first,
+                     ...) GPGRT_ATTR_SENTINEL(0);
+
 
 
 #ifdef __cplusplus

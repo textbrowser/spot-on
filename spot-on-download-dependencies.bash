@@ -68,7 +68,7 @@ rm -f "$gcrypt"
 
 # GPG-Error
 
-gpgerror=mingw-w64-x86_64-libgpg-error-1.55-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86_64-libgpg-error-1.58-1-any.pkg.tar.zst
 
 rm -f "$gpgerror"
 wget --output-document="$gpgerror" --progress=bar "$msys2/$gpgerror"
