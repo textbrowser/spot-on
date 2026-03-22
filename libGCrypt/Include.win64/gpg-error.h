@@ -1,5 +1,5 @@
 /* gpg-error.h or gpgrt.h - Common code for GnuPG and others.    -*- c -*-
- * Copyright (C) 2001-2024 g10 Code GmbH
+ * Copyright (C) 2001-2026 g10 Code GmbH
  *
  * This file is part of libgpg-error (aka libgpgrt).
  *
@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.58"
-#define GPGRT_VERSION     "1.58"
+#define GPG_ERROR_VERSION "1.59"
+#define GPGRT_VERSION     "1.59"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013a00
-#define GPGRT_VERSION_NUMBER     0x013a00
+#define GPG_ERROR_VERSION_NUMBER 0x013b00
+#define GPGRT_VERSION_NUMBER     0x013b00
 
 
 #ifdef __GNUC__

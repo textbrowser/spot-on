@@ -1,6 +1,6 @@
 /* gcrypt.h -  GNU Cryptographic Library Interface              -*- c -*-
  * Copyright (C) 1998-2018 Free Software Foundation, Inc.
- * Copyright (C) 2012-2025 g10 Code GmbH
+ * Copyright (C) 2012-2024 g10 Code GmbH
  *
  * This file is part of Libgcrypt.
  *
@@ -54,11 +54,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.11.2-unknown"
+#define GCRYPT_VERSION "1.12.1-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010b02
+#define GCRYPT_VERSION_NUMBER 0x010c01
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -342,12 +342,9 @@ enum gcry_ctl_cmds
     GCRYCTL_FIPS_SERVICE_INDICATOR_MAC = 85,
     GCRYCTL_FIPS_SERVICE_INDICATOR_MD = 86,
     GCRYCTL_FIPS_SERVICE_INDICATOR_PK_FLAGS = 87,
-    GCRYCTL_MD_CUSTOMIZE = 88
-#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
-    ,
+    GCRYCTL_MD_CUSTOMIZE = 88,
     GCRYCTL_FIPS_SERVICE_INDICATOR = 89,
     GCRYCTL_FIPS_REJECT_NON_FIPS = 90
-#endif /*_GCRYPT_IN_LIBGCRYPT*/
   };
 
 /* Perform various operations defined by CMD. */
@@ -1165,6 +1162,7 @@ enum gcry_pk_algos
     GCRY_PK_ECDSA = 301,    /* (only for external use).  */
     GCRY_PK_ECDH  = 302,    /* (only for external use).  */
     GCRY_PK_EDDSA = 303,    /* (only for external use).  */
+    GCRY_PK_MLDSA = 332,    /* Dilithium (ML-DSA).  */
     GCRY_PK_KEM   = 333     /* Pseudo ID for KEM algos.  */
   };
 
@@ -1570,7 +1568,7 @@ enum gcry_mac_algos
 /* Flags used with the open function.  */
 enum gcry_mac_flags
   {
-    GCRY_MAC_FLAG_SECURE = 1   /* Allocate all buffers in "secure" memory.  */
+    GCRY_MAC_FLAG_SECURE = 1  /* Allocate all buffers in "secure" memory.  */
   };
 
 /* Create a MAC handle for algorithm ALGO.  FLAGS may be given as an bitwise OR
@@ -1785,12 +1783,10 @@ enum gcry_kem_algos
 #define GCRY_KEM_CM6688128F_CIPHER_LEN  GCRY_KEM_CM6688128F_ENCAPS_LEN
 #define GCRY_KEM_CM6688128F_SHARED_LEN  32
 
-#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
 #define GCRY_KEM_MLKEM_RANDOM_LEN       32
 #define GCRY_KEM_MLKEM512_RANDOM_LEN    GCRY_KEM_MLKEM_RANDOM_LEN
 #define GCRY_KEM_MLKEM768_RANDOM_LEN    GCRY_KEM_MLKEM_RANDOM_LEN
 #define GCRY_KEM_MLKEM1024_RANDOM_LEN   GCRY_KEM_MLKEM_RANDOM_LEN
-#endif /*_GCRYPT_IN_LIBGCRYPT*/
 
 #define GCRY_KEM_MLKEM512_SECKEY_LEN    (2*384+2*384+32+2*32)  /* 1632 */
 #define GCRY_KEM_MLKEM512_PUBKEY_LEN    (2*384+32)             /*  800 */
@@ -1837,6 +1833,11 @@ enum gcry_kem_algos
 #define GCRY_KEM_RAW_BP384_SHARED_LEN   (1+48+48)
 
 /* Generate a new key pair with ALGO.  */
+gcry_error_t gcry_kem_genkey (int algo,
+                              void *pubkey, size_t pubkey_len,
+                              void *seckey, size_t seckey_len,
+                              const void *optional, size_t optional_len);
+
 gcry_error_t gcry_kem_keypair (int algo,
                                void *pubkey, size_t pubkey_len,
                                void *seckey, size_t seckey_len);
@@ -2004,8 +2005,6 @@ void gcry_log_debugsxp (const char *text, gcry_sexp_t sexp);
 char *gcry_get_config (int mode, const char *what);
 
 /* Convinience macro to access the FIPS service indicator.  */
-#ifdef _GCRYPT_IN_LIBGCRYPT  /* This is not yet part of the public API.  */
-
 #define gcry_get_fips_service_indicator()       \
   gcry_control (GCRYCTL_FIPS_SERVICE_INDICATOR)
 
@@ -2038,8 +2037,6 @@ char *gcry_get_config (int mode, const char *what);
 
 #define GCRY_FIPS_FLAG_REJECT_DEFAULT \
   GCRY_FIPS_FLAG_REJECT_COMPAT110
-
-#endif /*_GCRYPT_IN_LIBGCRYPT*/
 
 
 /* Log levels used by the internal logging facility. */
