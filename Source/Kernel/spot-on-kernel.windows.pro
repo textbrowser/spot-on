@@ -3,7 +3,7 @@ include(spot-on-kernel-source.windows.pro)
 libntru.commands   = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends    =
 libntru.target     = libntru.dll
-mceliece_supported = "false"
+mceliece_supported = "true"
 purge.commands     = del /F *~
 
 CONFIG   += qt release warn_on
@@ -59,6 +59,7 @@ INCLUDEPATH += . \
 LIBS	    += -L..\\..\\libNTRU \
 	       -L..\\..\\libGCrypt\\Libraries.win64 \
                -L..\\..\\libOpenSSL\\Libraries.win64 \
+               ..\\..\\libNTL\\windows.d\\libraries.d\\libntl.dll.a \
                -lcrypto-3-x64 \
                -lgcrypt-20 \
                -lgpg-error-0 \
