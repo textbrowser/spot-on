@@ -71,7 +71,8 @@ INCLUDEPATH += ..\\..\\libNTL\\windows.d\\include
 LIBS        += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
 }
 
-PRE_TARGETDEPS = libntru.dll
+PRE_TARGETDEPS = ..\\..\\libNTL\\windows.d\\libraries.d\\libntl.a \
+                 libntru.dll
 PROJECTNAME    = Spot-On-Kernel
 TARGET	       = ..\\..\\release\\Spot-On-Kernel
 TEMPLATE       = app
