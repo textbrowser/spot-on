@@ -72,7 +72,8 @@ INCLUDEPATH     += ..\\libNTL\\windows.d\\include
 LIBS		+= -L..\\libNTRU \
                    -L..\\libGCrypt\\Libraries.win64 \
                    -L..\\libGPGME\\Libraries.win64 \
-		   -L..\\libOpenSSL\\Libraries.win64 \
+                   -L..\\libOpenSSL\\Libraries.win64 \
+                   ..\\libNTL\\windows.d\\libraries.d\\libntl.a \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
