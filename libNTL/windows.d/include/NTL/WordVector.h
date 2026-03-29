@@ -38,12 +38,6 @@ NTL_OPEN_NNS
 #define NTL_WordVectorMinAlloc (4)
 #endif
 
-// vectors are always expanded by at least this ratio
-
-#ifndef NTL_WordVectorExpansionRatio
-#define NTL_WordVectorExpansionRatio (1.2)
-#endif
-
 // controls initialization during input
 
 #ifndef NTL_WordVectorInputBlock
@@ -64,6 +58,25 @@ public:
    WordVector(const WordVector& a) : rep(0) { *this = a; }     
 
    WordVector& operator=(const WordVector& a);  
+
+   bool pinned() const 
+   {
+      return rep && (rep[-2] & 1);
+   }
+
+   // assumes *this and other are not pinned
+   void unpinned_swap(WordVector& other)
+   {
+      _ntl_swap(this->rep, other.rep);
+   }
+
+   // assumes *this and other are not pinned
+   void unpinned_move(WordVector& other)
+   {
+      WordVector tmp;
+      tmp.unpinned_swap(other);
+      tmp.unpinned_swap(*this);
+   }
 
    ~WordVector();  
    void kill(); 

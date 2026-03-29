@@ -102,6 +102,10 @@ inline vec_zz_pE& operator*=(vec_zz_pE& x, long a)
    return x;
 }
 
+void random(vec_zz_pE& x, long n);
+inline vec_zz_pE random_vec_zz_pE(long n)
+   { vec_zz_pE x; random(x, n); NTL_OPT_RETURN(vec_zz_pE, x); }
+
 NTL_CLOSE_NNS
 
 #endif

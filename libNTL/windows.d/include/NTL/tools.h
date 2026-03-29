@@ -10,22 +10,24 @@
 #include <NTL/ctools.h>
 #include <NTL/new.h>
 
+#include <utility>
 #include <iostream>
 #include <new>
 #include <stdexcept>
+#include <streambuf>
 
 #include <cstdlib>
 #include <cmath>
+#include <cstring>
 
+#ifdef NTL_SAFE_VECTORS
 
+#include <type_traits>
 
-#if (defined(NTL_THREADS) && defined(__GNUC__) && !defined(NTL_DISABLE_TLS_HACK))
-#define NTL_TLS_HACK
 #endif
 
 
-
-#ifdef NTL_TLS_HACK
+#if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
 #include <pthread.h>
 #endif
 
@@ -34,6 +36,23 @@
 
 #define NTL_SNS std ::
 #define NTL_USE_SNS using namespace std;
+
+#define NTL_IMPORT_FROM_STD \
+   using NTL_SNS abs; \
+   using NTL_SNS ceil; \
+   using NTL_SNS exp; \
+   using NTL_SNS fabs; \
+   using NTL_SNS floor; \
+   using NTL_SNS ldexp; \
+   using NTL_SNS log; \
+   using NTL_SNS sqrt; \
+   using NTL_SNS ostream;  \
+   using NTL_SNS istream;  \
+   using NTL_SNS cerr;  \
+   using NTL_SNS ifstream;  \
+   using NTL_SNS ofstream; 
+
+
 
 #ifndef NTL_LEGACY_NO_NAMESPACE
 
@@ -50,15 +69,8 @@
 // functions that are both overloaded by NTL and are used in
 // the implementation of NTL.
 
-#define NTL_START_IMPL NTL_USE_SNS NTL_OPEN_NNS \
-   using NTL_SNS abs; \
-   using NTL_SNS ceil; \
-   using NTL_SNS exp; \
-   using NTL_SNS fabs; \
-   using NTL_SNS floor; \
-   using NTL_SNS ldexp; \
-   using NTL_SNS log; \
-   using NTL_SNS sqrt; 
+#define NTL_START_IMPL NTL_OPEN_NNS NTL_IMPORT_FROM_STD
+
 
 #define NTL_END_IMPL NTL_CLOSE_NNS
 
@@ -73,7 +85,7 @@
 #define NTL_USE_NNS 
 #define NTL_NNS 
 
-#define NTL_START_IMPL
+#define NTL_START_IMPL NTL_IMPORT_FROM_STD
 #define NTL_END_IMPL
 
 #endif
@@ -236,30 +248,58 @@ inline void swap(long& a, long& b)  {  long t;  t = a; a = b; b = t; }
 inline void swap(int& a, int& b)  {  int t;  t = a; a = b; b = t; }
 
 
+// some convenience casting routines:
+
+inline unsigned long cast_unsigned(long a) { return (unsigned long) a; }
+inline unsigned int cast_unsigned(int a) { return (unsigned int) a; }
+
+
+// these routines respect the NTL_CLEAN_INT flag: if set,
+// they use code that is guaranteed to work, under the
+// assumption that signed integers are two's complement.
+// A good compiler should optimize it all away and generate
+// the same code in either case (tested on gcc, clang, icc, msvc++).
+// This is really an academic exercise...
+
+#ifdef NTL_CLEAN_INT
+
+inline long cast_signed(unsigned long a) 
+{ return NTL_ULONG_TO_LONG(a); }
+
+inline int cast_signed(unsigned int a) 
+{ return NTL_UINT_TO_INT(a); }
+
+#else
+
+inline long cast_signed(unsigned long a) { return long(a); }
+inline int cast_signed(unsigned int a) { return int(a); }
+
+#endif
+
 
 inline void conv(int& x, int a) { x = a; }
 inline void conv(int& x, long a) 
-   { unsigned y = (unsigned) a;  x = NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  x = cast_signed(y); }
 inline void conv(int& x, float a) { x = int(NTL_SNS floor(double(a))); }
 inline void conv(int& x, double a) { x = int(NTL_SNS floor(a)); }
 
 inline void conv(int& x, unsigned a) 
-   { x = NTL_UINT_TO_INT(a); }
+   { x = cast_signed(a); }
 
 inline void conv(int& x, unsigned long a)
-   { unsigned y = (unsigned) a;  x = NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  x = cast_signed(y); }
 
 inline int to_int(int a) { return a; }
 inline int to_int(long a) 
-   { unsigned y = (unsigned) a;  return NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  return cast_signed(y); }
 inline int to_int(float a) { return int(NTL_SNS floor(double(a))); }
 inline int to_int(double a) { return int(NTL_SNS floor(a)); }
 
 inline int to_int(unsigned a) 
-   { return NTL_UINT_TO_INT(a); }
+   { return cast_signed(a); }
 
 inline int to_int(unsigned long a) 
-   { unsigned y = (unsigned) a;  return NTL_UINT_TO_INT(y); }
+   { unsigned y = (unsigned) a;  return cast_signed(y); }
 
 
 inline void conv(long& x, int a) { x = a; }
@@ -268,10 +308,10 @@ inline void conv(long& x, float a) { x = long(NTL_SNS floor(double(a))); }
 inline void conv(long& x, double a) { x = long(NTL_SNS floor(a)); }
 
 inline void conv(long& x, unsigned a)
-   { unsigned long y = a;  x = NTL_ULONG_TO_LONG(y); }
+   { unsigned long y = a;  x = cast_signed(y); }
 
 inline void conv(long& x, unsigned long a)
-   { x = NTL_ULONG_TO_LONG(a); }
+   { x = cast_signed(a); }
 
 inline long to_long(int a) { return a; }
 inline long to_long(long a) { return a; }
@@ -279,10 +319,10 @@ inline long to_long(float a) { return long(NTL_SNS floor(double(a))); }
 inline long to_long(double a) { return long(NTL_SNS floor(a)); }
 
 inline long to_long(unsigned a)
-   { unsigned long y = a;  return NTL_ULONG_TO_LONG(y); }
+   { unsigned long y = a;  return cast_signed(y); }
 
 inline long to_long(unsigned long a)
-   { return NTL_ULONG_TO_LONG(a); }
+   { return cast_signed(a); }
 
 inline void conv(float& x, int a) { x = float(a); }
 inline void conv(float& x, long a) { x = float(a); }
@@ -332,57 +372,6 @@ inline void conv(unsigned long& x, float a) { x = ((unsigned int) to_long(a)); }
 inline void conv(unsigned long& x, double a) { x = ((unsigned int) to_long(a)); }
 
 
-/* ------------------------------------- */
-
-
-// new style converson function
-//   example: ZZ x = conv<ZZ>(1);
-//   note: modern C++ compilers should implemented 
-//     "named return value optimization", so the
-//     result statement should not create a temporary
-
-template<class T, class S>
-T conv(const S& a)
-{
-   T x;
-   conv(x, a);
-   return x;
-}
-
-
-// some convenience casting routines:
-
-inline long cast_signed(unsigned long a) { return long(a); }
-inline int cast_signed(unsigned int a) { return int(a); }
-// DIRT: IMPL-DEF: the behavior here is implementation defined,
-// but on a 2s compliment machine, it should always work
-
-inline unsigned long cast_unsigned(long a) { return (unsigned long) a; }
-inline unsigned int cast_unsigned(int a) { return (unsigned int) a; }
-
-
-// these versions respect the NTL_CLEAN_INT flag: if set,
-// they use code that is guaranteed to work, under the
-// assumption that signed intgers are two's complement.
-// A good compiler should optimize it all away and generate
-// the same code in either case (tested on gcc, clang, icc).
-// This is really an academic exercise...
-
-#ifdef NTL_CLEAN_INT
-
-inline long clean_cast_signed(unsigned long a) 
-{ return NTL_ULONG_TO_LONG(a); }
-
-inline int clean_cast_signed(unsigned int a) 
-{ return NTL_UINT_TO_INT(a); }
-
-#else
-
-inline long clean_cast_signed(unsigned long a) { return long(a); }
-inline int clean_cast_signed(unsigned int a) { return int(a); }
-
-#endif
-
 
 
 
@@ -409,6 +398,8 @@ char IntValToChar(long a);
 
 inline double GetTime() { return _ntl_GetTime(); }
 inline unsigned long GetPID() { return _ntl_GetPID(); }
+
+inline double GetWallTime() { return _ntl_GetWallTime(); }
 
 inline long IsFinite(double *p) { return _ntl_IsFinite(p); }
 
@@ -442,13 +433,22 @@ void PrintTime(NTL_SNS ostream& s, double t);
 // on relative modern versions of gcc, we can 
 // decalare "restricted" pointers in C++
 
+// we also can use __attribute__((always_inline))
+
+
 #define NTL_RESTRICT __restrict
+#define NTL_ALWAYS_INLINE __attribute__((always_inline))
 
 #else
 
 #define NTL_RESTRICT
+#define NTL_ALWAYS_INLINE 
 
 #endif
+
+
+
+
 
 // A very lightly wrapped pointer than does nothing more than provide
 // auto cleanup in a destructor.  Use the UniquePtr class (in SmartPtr.h) 
@@ -457,8 +457,6 @@ void PrintTime(NTL_SNS ostream& s, double t);
 // semantics.
 
 // A call to Deleter::apply should free the pointed-to storage
-// and set the pointer itself to zero, so apply should
-// take an argument that is a reference to a T*.
 
 template<class T, class Deleter>
 class WrappedPtr {
@@ -473,7 +471,7 @@ public:
    WrappedPtr() : rep(0) { }
    void operator=(const raw_ptr& _rep)  { rep = _rep; }
 
-   ~WrappedPtr() { Deleter::apply(rep); } 
+   ~WrappedPtr() { if (rep) Deleter::apply(rep); } 
 
    operator const raw_ptr& () const { return rep; }
    operator raw_ptr& () { return rep; }
@@ -481,9 +479,16 @@ public:
    const raw_ptr* operator&() const { return &rep; }
    raw_ptr* operator&() { return &rep; }
 
-   void kill() { Deleter::apply(rep); }
+   void kill() { if (rep) { Deleter::apply(rep); rep = 0; } }
 
    void swap(WrappedPtr& other) { _ntl_swap(rep, other.rep); }
+
+   void move(WrappedPtr& other) 
+   {
+      WrappedPtr tmp;
+      tmp.swap(other);
+      tmp.swap(*this);
+   }
 
 };
 
@@ -616,8 +621,12 @@ operator+(scope_guard_builder b, F&& f)
 
 
 class DummyScopeGuard {
+  bool active;
 public:
-   void relax() { }
+   DummyScopeGuard() : active(true) { }
+   ~DummyScopeGuard() { if (active) TerminalError("unexpected exception"); }
+   
+   void relax() { active = false; }
 };
 
 #define NTL_SCOPE(var) DummyScopeGuard var; if (false)
@@ -629,19 +638,48 @@ public:
 
 
 
+#define NTL_DETAILS_PTHREAD NTL_NNS details_pthread
 
 
-#ifdef NTL_TLS_HACK
+#if (defined(NTL_THREADS) && defined(NTL_TLS_HACK)) 
+
+// NOTE: All of this TLS code is replicated in CheckThreads.cpp.
 
 
 namespace details_pthread {
 
 
-template<class T> void do_delete_aux(T* t) noexcept { delete t;  }
+struct Node {
+   Node *next;
+
+   Node() : next(0) { }
+   virtual ~Node() { }
+};
+
+template<class T>
+struct DerivedNode : Node {
+   T t;
+
+   template<class... Args>
+   DerivedNode(Args&&... args) : t(std::forward<Args>(args)...) { }
+};
+
+inline void 
+delete_node(Node *p) noexcept { delete p;  }
 // an exception here would likely lead to a complete mess...
 // the noexcept specification should force an immediate termination
 
-template<class T> void do_delete(void* t) { do_delete_aux((T*)t);  }
+inline void 
+delete_list(void *vp)
+{
+   Node *p = (Node *) vp;
+   while (p) {
+      Node *tmp = p;
+      p = p->next;
+      delete_node(tmp);
+   }
+}
+
 
 using namespace std;
 // I'm not sure if pthread stuff might be placed in namespace std
@@ -654,33 +692,44 @@ struct key_wrapper {
       if (pthread_key_create(&key, destructor))
          ResourceError("pthread_key_create failed");
    }
-
-   template<class T>
-   T* set(T *p)
-   {
-      if (!p) MemoryError();
-      if (pthread_setspecific(key, p)) {
-         do_delete_aux(p);
-         ResourceError("pthread_setspecific failed");
-      }
-      return p;
-   }
-
 };
+
+
+inline void
+push_node(Node *p)
+// this pushes a new node to the front to the list
+// of objects that need to be deleted
+{
+   if (!p) MemoryError();
+
+   static key_wrapper wkey(delete_list);
+   // This relies on C++11 thread-safe static initialization.
+   // It also relies on the guarantee that there is just one
+   // global key (this requirement is only needed to 
+   // limit the number of keys, not for correctness).
+
+
+   p->next = (Node *) pthread_getspecific(wkey.key);
+
+   if (pthread_setspecific(wkey.key, p)) {
+      delete_node(p);
+      ResourceError("pthread_setspecific failed");
+   }
+}
 
 }
 
 
 #define NTL_TLS_LOCAL_INIT(type, var, init)  \
-   static NTL_CHEAP_THREAD_LOCAL type *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
-   type *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
+   static NTL_CHEAP_THREAD_LOCAL NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr_ ## var = 0;  \
+   NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr_ ## var;  \
    if (!_ntl_hidden_variable_tls_local_ptr1_ ## var) {  \
-      static details_pthread::key_wrapper hidden_variable_key(details_pthread::do_delete<type>);  \
-      type *_ntl_hidden_variable_tls_local_ptr2_ ## var = hidden_variable_key.set(NTL_NEW_OP type init);  \
+      NTL_DETAILS_PTHREAD::DerivedNode<type> *_ntl_hidden_variable_tls_local_ptr2_ ## var = NTL_NEW_OP NTL_DETAILS_PTHREAD::DerivedNode<type> init;  \
+      NTL_DETAILS_PTHREAD::push_node(_ntl_hidden_variable_tls_local_ptr2_ ## var); \
       _ntl_hidden_variable_tls_local_ptr1_ ## var = _ntl_hidden_variable_tls_local_ptr2_ ## var;  \
       _ntl_hidden_variable_tls_local_ptr_ ## var = _ntl_hidden_variable_tls_local_ptr1_ ## var;  \
    }  \
-   type &var = *_ntl_hidden_variable_tls_local_ptr1_ ## var  \
+   type &var = _ntl_hidden_variable_tls_local_ptr1_ ## var->t  \
 
 
 
@@ -745,7 +794,7 @@ struct ll_type {
 };
 
 
-static inline void 
+inline void 
 ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
 {
   unsigned long hi, lo;
@@ -759,7 +808,7 @@ ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
    );
 }
 
-static inline void 
+inline void 
 ll_imul_add(ll_type& x, unsigned long a, unsigned long b)
 {
   unsigned long hi, lo;
@@ -773,7 +822,7 @@ ll_imul_add(ll_type& x, unsigned long a, unsigned long b)
    );
 }
 
-static inline void 
+inline void 
 ll_mul(ll_type& x, unsigned long a, unsigned long b)
 {
    __asm__ (
@@ -784,7 +833,7 @@ ll_mul(ll_type& x, unsigned long a, unsigned long b)
    );
 }
 
-static inline void 
+inline void 
 ll_imul(ll_type& x, unsigned long a, unsigned long b)
 {
    __asm__ (
@@ -795,7 +844,7 @@ ll_imul(ll_type& x, unsigned long a, unsigned long b)
    );
 }
 
-static inline void
+inline void
 ll_add(ll_type& x, unsigned long a)
 {
    __asm__ (
@@ -806,6 +855,19 @@ ll_add(ll_type& x, unsigned long a)
    "cc"
    );
 }
+
+inline void
+ll_add(ll_type& x, const ll_type& a)
+{
+   __asm__ (
+   "addq %[alo],%[xlo] \n\t"
+   "adcq %[ahi],%[xhi]" :
+   [xhi] "+r" (x.hi), [xlo] "+r" (x.lo) :
+   [ahi] "rm" (a.hi), [alo] "rm" (a.lo) :
+   "cc"
+   );
+}
+
 
 
 
@@ -818,8 +880,33 @@ ll_add(ll_type& x, unsigned long a)
 // an external symbol.  In fact, NTL currently never calls 
 // this with shamt=0, so it is all rather academic...but I want to
 // keep this general for future use.
+
+// NOTE: this implementation assumes that shamt is in the range 
+// 0..NTL_BITS_PER_LONG-1
+
+#if 1
+
+// The shrd instruction can be very slow on some
+// machines.  Two shifts is usually just as good.
+
 template<long shamt>
-static inline unsigned long
+unsigned long
+ll_rshift_get_lo(ll_type x)
+{
+   unsigned long res;
+   if (shamt) 
+      res = (x.lo >> shamt) | (x.hi << (NTL_BITS_PER_LONG-shamt));
+   else
+      res = x.lo;
+      
+   return res;
+}
+
+#else
+
+
+template<long shamt>
+unsigned long
 ll_rshift_get_lo(ll_type x)
 {
    if (shamt) {
@@ -833,21 +920,23 @@ ll_rshift_get_lo(ll_type x)
    return x.lo;
 }
 
+#endif
 
-static inline unsigned long 
+
+inline unsigned long 
 ll_get_lo(const ll_type& x)
 {
    return x.lo;
 }
 
-static inline unsigned long 
+inline unsigned long 
 ll_get_hi(const ll_type& x)
 {
    return x.hi;
 }
 
 
-static inline void
+inline void
 ll_init(ll_type& x, unsigned long a)
 {
    x.lo = a;
@@ -862,7 +951,7 @@ typedef NTL_ULL_TYPE ll_type;
 // NOTE: the following functions definitions should serve as
 // documentation, as well.
 
-static inline void 
+inline void 
 ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
 {
    x += ((ll_type) a)*((ll_type) b);
@@ -870,12 +959,12 @@ ll_mul_add(ll_type& x, unsigned long a, unsigned long b)
 
 // a and b should be representable as positive long's,
 // to allow for the most flexible implementation
-static inline void 
+inline void 
 ll_imul_add(ll_type& x, unsigned long a, unsigned long b)
 {
    x += ((ll_type) long(a))*((ll_type) long(b));
 }
-static inline void 
+inline void 
 ll_mul(ll_type& x, unsigned long a, unsigned long b)
 {
    x = ((ll_type) a)*((ll_type) b);
@@ -883,39 +972,47 @@ ll_mul(ll_type& x, unsigned long a, unsigned long b)
 
 // a and b should be representable as positive long's,
 // to allow for the most flexible implementation
-static inline void 
+inline void 
 ll_imul(ll_type& x, unsigned long a, unsigned long b)
 {
    x = ((ll_type) long(a))*((ll_type) long(b));
 }
 
-static inline void
+inline void
 ll_add(ll_type& x, unsigned long a)
 {
    x += a;
 }
 
+inline void
+ll_add(ll_type& x, const ll_type& a)
+{
+   x += a;
+}
+
+
+// NOTE: shamt must be in the range 0..NTL_BITS_PER_LONG-1
 template<long shamt>
-static inline unsigned long
+unsigned long
 ll_rshift_get_lo(const ll_type& x)
 {
    return ((unsigned long) (x >> shamt));
 }
 
-static inline unsigned long 
+inline unsigned long 
 ll_get_lo(const ll_type& x)
 {
    return ((unsigned long) x);
 }
 
-static inline unsigned long 
+inline unsigned long 
 ll_get_hi(const ll_type& x)
 {
    return ((unsigned long) (x >> NTL_BITS_PER_LONG));
 }
 
 
-static inline void
+inline void
 ll_init(ll_type& x, unsigned long a)
 {
    x = a;
@@ -925,10 +1022,210 @@ ll_init(ll_type& x, unsigned long a)
 #endif
 
 
+inline unsigned long 
+ll_mul_hi(unsigned long a, unsigned long b)
+{
+   ll_type x;
+   ll_mul(x, a, b);
+   return ll_get_hi(x);
+} 
+
 
 #endif
 
 
+
+
+
+#ifdef NTL_SAFE_VECTORS
+
+
+#define NTL_RELOC_TAG (relocatable)
+
+#define NTL_DECLARE_RELOCATABLE_WHEN(x) \
+constexpr bool DeclareRelocatableType x
+
+#if (defined(NTL_HAVE_COPY_TRAITS1) || defined(NTL_WINPACK))
+
+
+// This strategy is used on compilers that fully support C++11 type traits.
+// For some reason, is_trivially_copyable says "true" even if the class
+// has deleted it's copy constructor.  Which means it is not copyable at all.
+// So I added an explicit test for is_copy_constructible.
+// Just to be on the safe side, I check for a trivial destructor.
+
+// This strategy is checked in the CheckCOPY_TRAITS1.cpp program.
+
+// We also use this strategy for the WINPACK distribution. 
+// It should work on Windows with any compiler that properly supports C++11
+
+
+template<class T>
+constexpr bool Relocate_aux_has_trivial_copy(T*)
+{
+   return  std::is_trivially_copyable<T>::value &&
+           std::is_trivially_destructible<T>::value &&
+           std::is_copy_constructible<T>::value;
+}
+
+template<class T>
+constexpr bool Relocate_aux_has_any_copy(T*)
+{
+   return std::is_copy_constructible<T>::value;
+}
+
+#elif (defined(NTL_HAVE_COPY_TRAITS2))
+
+// This strategy is needed on GCC before v5.0, as the required type
+// traits are not impplemented.  Note that on a class with it's copy
+// constructors deleted, __has_trivial_copy is false on GCC before 4.9
+// and true startig with 4.9.  So I had to make use of SFINAE techniques
+// to make sure there actually is a non-deleted copy constructor.
+// Just to be on the safe side, I check for a trivial destructor.
+
+// This strategy is checked in the CheckCOPY_TRAITS2.cpp program.
+
+template <bool statement, typename out>
+struct Relocate_aux_Failable
+{
+     typedef out Type;
+};
+
+struct Relocate_aux_TwoChars { char d[2]; };
+
+template <typename T>
+struct Relocate_aux_has_copy
+{
+
+     static const T *MakeT();
+
+     template <typename U> // U and T are the same type
+     static typename Relocate_aux_Failable<(bool(sizeof U(*MakeT()))), char>::Type copy(int);
+
+     template <typename U>
+     static typename Relocate_aux_Failable<true, Relocate_aux_TwoChars>::Type copy(...);
+
+     enum { value =  sizeof( copy<T>(0) )  == 1 };
+};
+
+
+template<class T>
+constexpr bool Relocate_aux_has_trivial_copy(T*)
+{
+   return  __has_trivial_copy(T) &&
+           __has_trivial_destructor(T) &&
+           Relocate_aux_has_copy<T>::value;
+}
+
+template<class T>
+constexpr bool Relocate_aux_has_any_copy(T*)
+{
+   return Relocate_aux_has_copy<T>::value;
+}
+
+
+#else
+
+#error "lacking compiler support for NTL_SAFE_VECTORS"
+
+#endif
+
+
+// NOTE: I've checked the correctness of the above strategies using
+// Godbolt's compiler explorer across a range of complilers
+// (clang, gcc, icc, MS).
+
+
+template<class T>
+constexpr bool DeclareRelocatableType(T*)
+{
+   return Relocate_aux_has_trivial_copy((T*)0);
+}
+ 
+
+#else
+
+#define NTL_RELOC_TAG (true)
+
+#define NTL_DECLARE_RELOCATABLE_WHEN(x) \
+inline bool DeclareRelocatableType x
+
+
+template<class T>
+inline bool DeclareRelocatableType(T*)
+{
+   return true;
+}
+
+#endif
+
+
+#define NTL_DECLARE_RELOCATABLE(x) NTL_DECLARE_RELOCATABLE_WHEN(x) \
+   { return true; }
+
+
+// Examples: 
+//   NTL_DECLARE_RELOCATABLE((int*))
+//   NTL_DECLARE_RELOCATABLE((Foo<int>*)) 
+//   template <class X, class Y> NTL_DECLARE_RELOCATABLE((Foo<X,Y>*))
+
+
+#if (NTL_CXX_STANDARD >= 2011)
+
+#define NTL_DEFAULT =default;
+
+#else
+
+#define NTL_DEFAULT {}
+
+#endif
+
+
+// The following idea for deriving from streambuf comes from:
+// https://stackoverflow.com/questions/1448467/initializing-a-c-stdistringstream-from-an-in-memory-buffer/1449527#1449527
+
+struct plain_c_string_streambuf : public std::streambuf
+{
+   plain_c_string_streambuf(const char* ss)
+   {
+      char *s = const_cast<char*>(ss);
+      // casting away constant should be safe here,
+      // based of my reading of the functionality
+      // of streambuf from the documentation at cplusplus.com.
+    
+      setg(s, s, s + std::strlen(s));
+   }
+};
+
+// Generic conversion from char* or const char*.  We use SFINAE
+// to prevent conversions from 0. 
+
+
+template<class S, class T>
+typename _ntl_enable_if<_ntl_is_char_pointer<T>::value,void>::type
+conv(S& x, T y)
+{
+   if (!y) InputError("bad conversion from char*");
+   plain_c_string_streambuf buf(y);
+   std::istream istr(&buf);
+   if (!(istr >> x)) InputError("bad conversion from char*");
+}
+
+
+
+// new style converson function
+//   example: ZZ x = conv<ZZ>(1);
+//   note: modern C++ compilers should implemented 
+//     "named return value optimization", so the
+//     result statement should not create a temporary
+
+template<class T, class S>
+T conv(const S& a)
+{
+   T x;
+   conv(x, a);
+   return x;
+}
 
 
 

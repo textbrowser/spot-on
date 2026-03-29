@@ -41,6 +41,14 @@ public:
 };
 
 
+#ifndef NTL_WIZARD_HACK
+
+struct MatPrime_crt_helper;
+void MatPrime_crt_helper_deleter(MatPrime_crt_helper*);
+
+#endif
+
+
 class ZZ_pInfoT {
 private:
    ZZ_pInfoT();                       // disabled
@@ -54,6 +62,18 @@ public:
    long ExtendedModulusSize;
 
    Lazy<ZZ_pFFTInfoT> FFTInfo;
+
+#ifndef NTL_WIZARD_HACK
+
+   struct MatPrime_crt_helper_deleter_policy {
+      static void deleter(MatPrime_crt_helper *p) { MatPrime_crt_helper_deleter(p); }
+   };
+
+
+   Lazy<MatPrime_crt_helper,MatPrime_crt_helper_deleter_policy> MatPrime_crt_helper_info;
+   // PIMPL 
+
+#endif
 
 };
 
@@ -175,14 +195,10 @@ DivHandlerPtr DivHandler;
 ZZ_p() { } // NO_ALLOC
 explicit ZZ_p(long a) { *this = a; }
 
-ZZ_p(const ZZ_p& a) { _ZZ_p__rep = a._ZZ_p__rep; } // NO_ALLOC
-
 ZZ_p(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 ZZ_p(INIT_ALLOC_TYPE) { _ZZ_p__rep.SetSize(ZZ_pInfo->size); }  // allocates space
 
-~ZZ_p() { } 
 
-ZZ_p& operator=(const ZZ_p& a) { _ZZ_p__rep = a._ZZ_p__rep; return *this; }
 
 inline ZZ_p& operator=(long a);
 
@@ -246,6 +262,10 @@ void KillBig() { _ZZ_p__rep.KillBig(); }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_p*))
 
 
 
@@ -510,7 +530,10 @@ inline void conv(ZZ_p& x, const ZZ_p& a) { x = a; }
 /* ------------------------------------- */
 
 
+// Thread-boosted conversion. Defined in vec_zz_p.cpp.
+void conv(Vec<ZZ_p>& x, const Vec<ZZ>& a);
 
+/* ------------------------------------- */
 
 // overload these functions for Vec<ZZ_p>.
 // They are defined in vec_ZZ_p.c

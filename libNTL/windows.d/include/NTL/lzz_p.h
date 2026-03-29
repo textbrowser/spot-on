@@ -84,16 +84,27 @@ void save();
 void restore() const;
 
 
-// some hooks that are useful in helib...
+// some hooks that are useful in helib and elsewhere
 // FIXME: generalize these to other context classes
 // and document
 
 bool null() const { return ptr == 0; } 
 bool equals(const zz_pContext& other) const { return ptr == other.ptr; } 
 long modulus() const { return ptr->p; }
+mulmod_t ModulusInverse() const { return ptr->pinv; }
+const sp_ZZ_reduce_struct& ZZ_red_struct() const { return ptr->ZZ_red_struct; } 
+sp_reduce_struct red_struct() const { return ptr->red_struct; } 
 
 
 };
+
+
+// should be in FFT.h, but because of some weirdess involving NTL_WIZARD_HACK,
+// it has to be here
+inline const sp_ZZ_reduce_struct& GetFFT_ZZ_red_struct(long i) 
+{
+   return FFTTables[i]->zz_p_context->ZZ_red_struct;
+}
 
 
 class zz_pBak {
@@ -173,7 +184,6 @@ explicit zz_p(long a) : _zz_p__rep(0) { *this = a;  }
 
 zz_p(const zz_p& a) : _zz_p__rep(a._zz_p__rep) { }  
 
-~zz_p() { } 
 
 zz_p& operator=(const zz_p& a) { _zz_p__rep = a._zz_p__rep; return *this; }
 
@@ -193,6 +203,8 @@ static long PrimeCnt() { return zz_pInfo->PrimeCnt; }
 
 static long storage() { return sizeof(long); }
 
+static bool IsFFTPrime() { return zz_pInfo->p_info != 0; }
+
 zz_p(long a, INIT_LOOP_HOLE_TYPE) { _zz_p__rep = a; }
 
 // for consistency
@@ -202,6 +214,10 @@ void allocate() { }
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((zz_p*))
 
 inline
 zz_p to_zz_p(long a) 
@@ -215,11 +231,35 @@ void conv(zz_p& x, long a)
    x._zz_p__rep = rem(a, zz_pInfo->p, zz_pInfo->red_struct);
 }
 
+inline void VectorConv(long k, zz_p *x, const long *a)
+{
+   if (k <= 0) return;
+   sp_reduce_struct red_struct = zz_p::red_struct();
+   long p = zz_p::modulus();
+   for (long i = 0; i < k; i++) x[i].LoopHole() = rem(a[i], p, red_struct);
+}
+
 inline zz_p& zz_p::operator=(long a) { conv(*this, a); return *this; }
 
-zz_p to_zz_p(const ZZ& a);
-void conv(zz_p& x, const ZZ& a);
+inline
+zz_p to_zz_p(const ZZ& a)
+{
+   return zz_p(zz_p::ZZ_red_struct().rem(a), INIT_LOOP_HOLE);
+}
 
+inline
+void conv(zz_p& x, const ZZ& a)
+{
+   x._zz_p__rep = zz_p::ZZ_red_struct().rem(a);
+}
+
+
+inline void VectorConv(long k, zz_p *x, const ZZ *a)
+{
+   if (k <= 0) return;
+   const sp_ZZ_reduce_struct& ZZ_red_struct = zz_p::ZZ_red_struct();
+   for (long i = 0; i < k; i++) x[i].LoopHole() = ZZ_red_struct.rem(a[i]);
+}
 
 // read-only access to _zz_p__representation
 inline long rep(zz_p a) { return a._zz_p__rep; }
@@ -421,6 +461,13 @@ inline void random(zz_p& x)
 inline zz_p random_zz_p()
    { zz_p x; random(x); return x; }
 
+inline void VectorRandom(long k, zz_p* x)
+{
+   if (k <= 0) return;
+   RandomBndGenerator gen(zz_p::modulus());
+   for (long i = 0; i < k; i++) x[i].LoopHole() = gen.next();
+}
+
 
 
 // ****** input/output
@@ -463,17 +510,35 @@ InnerProd_LL(const long *ap, const zz_p *bp, long n, long d,
 long
 InnerProd_LL(const zz_p *ap, const zz_p *bp, long n, long d, 
           sp_ll_reduce_struct dinv);
-#endif
 
+inline bool
+InnerProd_L_viable(long n, long d)
+{
+   if (n < 2) n = 2;  
+   // this ensures cast_unsigned(-1)/d^2 is at least 2, which
+   // streamlines things
+   if (n > 128) n = 128;
+   return cast_unsigned(n) <= cast_unsigned(-1L)/cast_unsigned(d) && 
+          cast_unsigned(n)*cast_unsigned(d) <= cast_unsigned(-1L)/cast_unsigned(d);
+}
+
+inline long 
+InnerProd_L_bound(long d)
+{
+   return cast_unsigned(-1L)/(cast_unsigned(d)*cast_unsigned(d));
+   // This calculation ensures that the return value does not sign-overflow,
+   // and that InnerProd_L itself can accumulate an extra term.
+}
 
 long 
 InnerProd_L(const long *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv);
+          sp_reduce_struct dinv, long bound);
 
 long 
 InnerProd_L(const zz_p *ap, const zz_p *bp, long n, long d, 
-          sp_reduce_struct dinv);
+          sp_reduce_struct dinv, long bound);
 
+#endif
 
 NTL_CLOSE_NNS
 

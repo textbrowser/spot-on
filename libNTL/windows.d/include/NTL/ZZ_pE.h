@@ -19,7 +19,6 @@ private:
 public:
 
    ZZ_pEInfoT(const ZZ_pX&);
-   ~ZZ_pEInfoT() { }
 
    ZZ_pXModulus p;
 
@@ -129,15 +128,11 @@ explicit ZZ_pE(long a) { *this = a;  } // NO_ALLOC
 explicit ZZ_pE(const ZZ_p& a) { *this = a;  } // NO_ALLOC
 
 
-ZZ_pE(const ZZ_pE& a)  {  _ZZ_pE__rep = a._ZZ_pE__rep; } // NO_ALLOC
 
 ZZ_pE(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 ZZ_pE(INIT_ALLOC_TYPE) {_ZZ_pE__rep.rep.SetMaxLength(ZZ_pE::degree());  }  // allocates space
 void allocate() { _ZZ_pE__rep.rep.SetMaxLength(ZZ_pE::degree()); }
 
-~ZZ_pE() { } 
-
-ZZ_pE& operator=(const ZZ_pE& a) { _ZZ_pE__rep = a._ZZ_pE__rep; return *this; }
 
 inline ZZ_pE& operator=(long a);
 inline ZZ_pE& operator=(const ZZ_p& a);
@@ -165,6 +160,10 @@ static void init(const ZZ_pX&);
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_pE*))
 
 
 

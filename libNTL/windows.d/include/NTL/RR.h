@@ -39,7 +39,6 @@ RR(RR& z, INIT_TRANS_TYPE) : x(z.x, INIT_TRANS), e(z.e) { }
 void swap(RR& z) { x.swap(z.x); _ntl_swap(e, z.e); }
 
 
-~RR() { }
 
 const ZZ& mantissa() const { return x; }
 long exponent() const { return e; }
@@ -61,10 +60,12 @@ RR(const RR&);
 };
 
 
+
+NTL_DECLARE_RELOCATABLE((RR*))
+
+
 inline void swap(RR& a, RR& b) { a.swap(b); }
 
-// RAII for saving/restoring precision
-// FIXME: document. 
 
 class RRPush {
 private: 
@@ -380,7 +381,7 @@ void conv(RR& z, long a);
 inline void conv(RR& z, int a) { conv(z, long(a)); }
 void conv(RR& z, unsigned long a);
 inline void conv(RR& z, unsigned int a) { conv(z, (unsigned long)(a)); }
-void conv(RR& z, const char *s);
+
 void conv(RR& z, double a);
 inline void conv(RR& z, float a) { conv(z, double(a)); }
 void conv(RR& z, const xdouble& a);

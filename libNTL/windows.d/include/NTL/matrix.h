@@ -39,7 +39,6 @@ public:
    Mat() : _mat__numcols(0) { }  
    Mat(const Mat& a);  
    Mat& operator=(const Mat& a);  
-   ~Mat() { }  
   
    Mat(INIT_SIZE_TYPE, long n, long m);  
   
@@ -69,6 +68,11 @@ public:
   
    long position(const Vec<T>& a) const { return _mat__rep.position(a); } 
    long position1(const Vec<T>& a) const { return _mat__rep.position1(a); } 
+   long alias(const Vec<T>& a) const 
+   {
+      return a.fixed() && a.length() == NumCols() && position1(a) != -1; 
+   }
+
    Mat(Mat& x, INIT_TRANS_TYPE) :  
     _mat__rep(x._mat__rep, INIT_TRANS), _mat__numcols(x._mat__numcols) { }  
 
@@ -77,7 +81,37 @@ public:
       _mat__rep.swap(other._mat__rep);
       _ntl_swap(_mat__numcols, other._mat__numcols);
    }
+
+   void move(Mat& other) 
+   { 
+      Mat tmp;
+      tmp.swap(other);
+      tmp.swap(*this);
+   }
+
+
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
+
+   Mat(Mat&& other) noexcept : Mat() 
+   {
+      this->move(other);
+   }
+
+#ifndef NTL_DISABLE_MOVE_ASSIGN
+   Mat& operator=(Mat&& other) noexcept
+   {
+      this->move(other);
+      return *this;
+   }
+#endif
+
+#endif
+
+
 };  
+
+
+template<class T> NTL_DECLARE_RELOCATABLE((Mat<T>*))
  
 template<class T> 
 inline const Vec< Vec<T> >& rep(const Mat<T>& a)  
@@ -179,6 +213,30 @@ void MakeMatrix(Mat<T>& x, const Vec< Vec<T> >& a)
    for (i = 0; i < n; i++)  
       x[i] = a[i];  
 }  
+
+template<class T>
+bool MakeMatrixStatus(Mat<T>& x, const Vec< Vec<T> >& a)  
+{  
+   long n = a.length();  
+  
+   if (n == 0) {  
+      x.SetDims(0, 0);  
+      return false;  
+   }  
+  
+   long m = a[0].length();  
+   long i;  
+  
+   for (i = 1; i < n; i++)  
+      if (a[i].length() != m)  
+         return true;
+  
+   x.SetDims(n, m);  
+   for (i = 0; i < n; i++)  
+      x[i] = a[i];  
+
+   return false;
+}  
   
 template<class T>
 void swap(Mat<T>& X, Mat<T>& Y)  
@@ -218,7 +276,8 @@ NTL_SNS istream& operator>>(NTL_SNS istream& s, Mat<T>& x)
 {  
    Vec< Vec<T> > buf;  
    NTL_INPUT_CHECK_RET(s, s >> buf);  
-   MakeMatrix(x, buf);  
+   if (MakeMatrixStatus(x, buf)) 
+      NTL_INPUT_ERROR(s, "non-rectangular matrix detected on input");
    return s;  
 }  
   

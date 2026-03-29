@@ -11,6 +11,11 @@
 #include <NTL/Lazy.h>
 #include <NTL/SmartPtr.h>
 
+#ifndef NTL_WIZARD_HACK
+#include <NTL/mat_ZZ_p.h>
+#endif
+
+
 NTL_OPEN_NNS
 
 
@@ -81,14 +86,9 @@ explicit ZZ_pX(const ZZ_p& a) { *this = a; }
 
 ZZ_pX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-ZZ_pX(const ZZ_pX& a) : rep(a.rep) { }
-// initial value is a
+// default copy constrctor and assignment
 
-
-ZZ_pX& operator=(const ZZ_pX& a) 
-   { rep = a.rep; return *this; }
-
-~ZZ_pX() { }
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -134,6 +134,10 @@ void swap(ZZ_pX& x)
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_pX*))
 
 
 
@@ -558,15 +562,16 @@ class FFTRep {
 public:
    long k;                // a 2^k point representation
    long MaxK;             // maximum space allocated
+   long len;              // length of truncated FFT
    long NumPrimes; 
    Unique2DArray<long> tbl;
 
-   FFTRep() : k(-1), MaxK(-1), NumPrimes(0) { }
+   FFTRep() : k(-1), MaxK(-1), len(0), NumPrimes(0) { }
 
-   FFTRep(const FFTRep& R) : k(-1), MaxK(-1), NumPrimes(0)
+   FFTRep(const FFTRep& R) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    { *this = R; }
 
-   FFTRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), NumPrimes(0)
+   FFTRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    {  SetSize(InitK); }
 
    FFTRep& operator=(const FFTRep& R);
@@ -575,8 +580,16 @@ public:
 };
 
 
-void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi);
+void ToFFTRep_trunc(FFTRep& y, const ZZ_pX& x, long k, long len, 
+                    long lo, long hi);
+
+inline void ToFFTRep_trunc(FFTRep& y, const ZZ_pX& x, long k, long len)
+{ ToFFTRep_trunc(y, x, k, len, 0, deg(x)); }
+
+inline
+void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k, long lo, long hi)
 // computes an n = 2^k point convolution of x[lo..hi].
+{ ToFFTRep_trunc(y, x, k, 1L << k, lo, hi); }
 
 inline void ToFFTRep(FFTRep& y, const ZZ_pX& x, long k)
 
@@ -783,7 +796,6 @@ private:
 public:
 
    ZZ_pXMatrix() { }
-   ~ZZ_pXMatrix() { }
 
    void operator=(const ZZ_pXMatrix&);
    ZZ_pX& operator() (long i, long j) { return elts[i][j]; }
@@ -867,7 +879,6 @@ long InvModStatus(ZZ_pX& x, const ZZ_pX& a, const ZZ_pX& f);
 class ZZ_pXModulus {
 public:
    ZZ_pXModulus() : UseFFT(0), n(-1)  { }
-   ~ZZ_pXModulus() { }
    
 
    // the following members may become private in future
@@ -891,6 +902,9 @@ public:
    operator const ZZ_pX& () const { return f; }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((ZZ_pXModulus*))
 
 inline long deg(const ZZ_pXModulus& F) { return F.n; }
 
@@ -984,7 +998,6 @@ public:
    ZZ_pXMultiplier() : UseFFT(0)  { }
    ZZ_pXMultiplier(const ZZ_pX& b, const ZZ_pXModulus& F);
 
-   ~ZZ_pXMultiplier() { }
 
 
    // the following members may become private in the future
@@ -1121,6 +1134,40 @@ void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pXArgument& H,
 inline ZZ_pX 
 CompMod(const ZZ_pX& g, const ZZ_pXArgument& H, const ZZ_pXModulus& F)
    { ZZ_pX x; CompMod(x, g, H, F); NTL_OPT_RETURN(ZZ_pX, x); }
+
+
+// New alternative CompMod strategy that just reduces to 
+// matrix multiplication ... 
+
+#if (!defined(NTL_WIZARD_HACK) && defined(NTL_HAVE_LL_TYPE))
+// NOTE: currently, we only ise the multi-modular matmul NTL_HAVE_LL_TYPE
+// if NTL_HAVE_LL_TYPE is defined.
+
+#define NTL_USE_ZZ_pXNewArgument
+
+#endif
+
+#ifdef NTL_USE_ZZ_pXNewArgument
+
+struct ZZ_pXNewArgument {
+   mat_ZZ_p_opaque mat;
+   ZZ_pX poly;
+};
+
+void build(ZZ_pXNewArgument& H, const ZZ_pX& h, const ZZ_pXModulus& F, long m);
+void CompMod(ZZ_pX& x, const ZZ_pX& g, const ZZ_pXNewArgument& H,
+             const ZZ_pXModulus& F);
+
+void ProjectPowers(vec_ZZ_p& x, const vec_ZZ_p& a, long k,
+                   const ZZ_pXNewArgument& H, const ZZ_pXModulus& F);
+
+#else
+
+typedef ZZ_pXArgument ZZ_pXNewArgument;
+
+#endif
+
+
 
 
 #ifndef NTL_TRANSITION

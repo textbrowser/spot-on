@@ -7,6 +7,7 @@
 #include <NTL/vec_lzz_p.h>
 #include <NTL/Lazy.h>
 #include <NTL/SmartPtr.h>
+#include <NTL/mat_lzz_p.h>
 
 NTL_OPEN_NNS
 
@@ -86,8 +87,6 @@ explicit zz_pX(zz_p a) { *this = a; }
 
 zz_pX(INIT_SIZE_TYPE, long n) { rep.SetMaxLength(n); }
 
-zz_pX(const zz_pX& a) : rep(a.rep) { }
-// initial value is a
 
 inline zz_pX(long i, zz_p c);
 inline zz_pX(long i, long c);
@@ -96,13 +95,12 @@ inline zz_pX(INIT_MONO_TYPE, long i, zz_p c);
 inline zz_pX(INIT_MONO_TYPE, long i, long c);
 inline zz_pX(INIT_MONO_TYPE, long i);
 
-zz_pX& operator=(const zz_pX& a) 
-   { rep = a.rep; return *this; }
 
 inline zz_pX& operator=(long a);
 inline zz_pX& operator=(zz_p a);
 
-~zz_pX() { }
+// default copy constructor and assignment
+// default destructor
 
 void normalize();
 // strip leading zeros
@@ -137,6 +135,9 @@ static const zz_pX& zero();
 zz_pX(zz_pX& x, INIT_TRANS_TYPE) : rep(x.rep, INIT_TRANS) { }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((zz_pX*))
 
 
 
@@ -571,15 +572,16 @@ class fftRep {
 public:
    long k;                // a 2^k point representation
    long MaxK;             // maximum space allocated
+   long len;              // length of truncated FFT
    long NumPrimes;
    UniqueArray<long> tbl[4];
 
-   fftRep() : k(-1), MaxK(-1), NumPrimes(0) { }
+   fftRep() : k(-1), MaxK(-1), len(0), NumPrimes(0) { }
 
-   fftRep(const fftRep& R) : k(-1), MaxK(-1), NumPrimes(0)
+   fftRep(const fftRep& R) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    { *this = R; }
 
-   fftRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), NumPrimes(0)
+   fftRep(INIT_SIZE_TYPE, long InitK) : k(-1), MaxK(-1), len(0), NumPrimes(0)
    { SetSize(InitK); }
 
    fftRep& operator=(const fftRep&); 
@@ -588,8 +590,18 @@ public:
 };
 
 
-void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi);
+
+
+void TofftRep_trunc(fftRep& y, const zz_pX& x, long k, long len,
+                    long lo, long hi);
+
+inline void TofftRep_trunc(fftRep& y, const zz_pX& x, long k, long len)
+{ TofftRep_trunc(y, x, k, len, 0, deg(x)); }
+
+inline
+void TofftRep(fftRep& y, const zz_pX& x, long k, long lo, long hi)
 // computes an n = 2^k point convolution of x[lo..hi].
+{ TofftRep_trunc(y, x, k, 1L << k, lo, hi); }
 
 inline void TofftRep(fftRep& y, const zz_pX& x, long k)
 
@@ -763,7 +775,6 @@ private:
 public:
 
    zz_pXMatrix() { }
-   ~zz_pXMatrix() { }
 
    void operator=(const zz_pXMatrix&);
    zz_pX& operator() (long i, long j) { return elts[i][j]; }
@@ -844,7 +855,6 @@ long InvModStatus(zz_pX& x, const zz_pX& a, const zz_pX& f);
 class zz_pXModulus {
 public:
    zz_pXModulus() : UseFFT(0), n(-1)  { }
-   ~zz_pXModulus() { }
 
    zz_pX f;   // the modulus
    long UseFFT;// flag indicating whether FFT should be used.
@@ -864,6 +874,9 @@ public:
    const zz_pX& val() const { return f; }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((zz_pXModulus*))
 
 
 inline long deg(const zz_pXModulus& F) { return F.n; }
@@ -964,7 +977,6 @@ public:
    zz_pXMultiplier() : UseFFT(0)  { }
    zz_pXMultiplier(const zz_pX& b, const zz_pXModulus& F);
 
-   ~zz_pXMultiplier() { }
 
    zz_pX b;   
    long UseFFT;
@@ -1111,43 +1123,25 @@ CompMod(const zz_pX& g, const zz_pXArgument& H, const zz_pXModulus& F)
    { zz_pX x; CompMod(x, g, H, F); NTL_OPT_RETURN(zz_pX, x); }
 
 
+// New alternative CompMod strategy that just reduces to 
+// matrix multiplication ... 
 
-// experimental variant that yields a faster ModComp
-// Usage:
-//    zz_pXArgument H;
-//    build(H, h, F);
-//    zz_pXAltArgument H1;
-//    build(H1, H, F);  // this keeps a pointer to H, so H must remain alive
-//    CompMod(x, g, H1, F);  // x = g(h) mod f
 
-struct zz_pXAltArgument {
-
-   const zz_pXArgument *orig;
-   zz_pXAltArgument() : orig(0) {}
-
-#ifdef NTL_HAVE_LL_TYPE
-   long strategy;
-
-   long n, m;
-   Vec< Vec<long> > mem;
-   Vec<long*> row;
-
-   // NOTE: the following two members are used on if
-   // NTL_HAVE_AVX; however, we declare them unconditionally 
-   // to facilitate the possibility of dynamic linking based
-   // on architecture
-   Vec< AlignedArray<double> > dmem;
-   Vec<double*> drow;
-
-   sp_ll_reduce_struct pinv_LL;
-   sp_reduce_struct pinv_L;
-#endif
+struct zz_pXNewArgument {
+   Mat<zz_p> mat;
+   zz_pX     poly;
 };
 
-
-void build(zz_pXAltArgument& altH, const zz_pXArgument& H, const zz_pXModulus& F);
-void CompMod(zz_pX& x, const zz_pX& g, const zz_pXAltArgument& A, 
+void build(zz_pXNewArgument& H, const zz_pX& h, const zz_pXModulus& F, long m);
+void CompMod(zz_pX& x, const zz_pX& g, const zz_pXNewArgument& H,
              const zz_pXModulus& F);
+void reduce(zz_pXNewArgument& H, const zz_pXModulus& F);
+
+void ProjectPowers(vec_zz_p& x, const vec_zz_p& a, long k,
+                   const zz_pXNewArgument& H, const zz_pXModulus& F);
+
+
+
 
 
 

@@ -7,9 +7,6 @@
 NTL_OPEN_NNS
 
 struct IntFactor {
-   IntFactor() { }
-   ~IntFactor() { }
-
    long q;
    long a;
    long val;

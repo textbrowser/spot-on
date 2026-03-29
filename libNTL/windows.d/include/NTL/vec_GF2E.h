@@ -105,6 +105,10 @@ inline vec_GF2E VectorCopy(const vec_GF2E& a, long n)
    { vec_GF2E x; VectorCopy(x, a, n); NTL_OPT_RETURN(vec_GF2E, x); }
 
 
+void random(vec_GF2E& x, long n);
+inline vec_GF2E random_vec_GF2E(long n)
+   { vec_GF2E x; random(x, n); NTL_OPT_RETURN(vec_GF2E, x); }
+
 NTL_CLOSE_NNS
 
 #endif

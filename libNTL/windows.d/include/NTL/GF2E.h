@@ -20,13 +20,13 @@ private:
 public:
 
    GF2EInfoT(const GF2X& NewP);
-   ~GF2EInfoT() { }
 
    GF2XModulus p;
 
    long KarCross;
    long ModCross;
    long DivCross;
+   long GCDCross;
 
    long _card_exp;
    Lazy<ZZ> _card;
@@ -113,7 +113,6 @@ GF2X _GF2E__rep;
 // ****** constructors and assignment
 
 GF2E() {  } // NO_ALLOC
-GF2E(const GF2E& a)  {  _GF2E__rep = a._GF2E__rep; } // NO_ALLOC
 
 explicit GF2E(long a) { *this = a;  } // NO_ALLOC
 explicit GF2E(GF2 a) { *this = a;  } // NO_ALLOC
@@ -124,9 +123,6 @@ GF2E(INIT_NO_ALLOC_TYPE) { }  // allocates no space
 GF2E(INIT_ALLOC_TYPE) { _GF2E__rep.xrep.SetMaxLength(GF2E::WordLength());  }  // allocates space
 void allocate() { _GF2E__rep.xrep.SetMaxLength(GF2E::WordLength()); }
 
-~GF2E() { } 
-
-GF2E& operator=(const GF2E& a) { _GF2E__rep = a._GF2E__rep; return *this; }
 
 inline GF2E& operator=(long a);
 inline GF2E& operator=(GF2 a);
@@ -146,6 +142,7 @@ static const GF2XModulus& modulus() { return GF2EInfo->p; }
 static long KarCross() { return GF2EInfo->KarCross; }
 static long ModCross() { return GF2EInfo->ModCross; }
 static long DivCross() { return GF2EInfo->DivCross; }
+static long GCDCross() { return GF2EInfo->GCDCross; }
 
 static long degree() { return GF2EInfo->p.n; }
 
@@ -157,6 +154,10 @@ static void init(const GF2X& NewP);
 
 
 };
+
+
+
+NTL_DECLARE_RELOCATABLE((GF2E*))
 
 
 

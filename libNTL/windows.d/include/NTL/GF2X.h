@@ -30,11 +30,45 @@ GF2X() { }
 explicit GF2X(long a) { *this = a; }
 explicit GF2X(GF2 a) { *this = a; }
 
-~GF2X() { }
+
+// we have to explicitly declare copy constructor and assignment
+// in case we also declare the corresponding move operations
+
+GF2X(const GF2X& a) : xrep(a.xrep) { }
+GF2X& operator=(const GF2X& a) { xrep = a.xrep; return *this; }
+
+#if (NTL_CXX_STANDARD >= 2011 && !defined(NTL_DISABLE_MOVE))
+
+GF2X(GF2X&& a) NTL_FAKE_NOEXCEPT
+{
+   if (a.xrep.pinned()) {
+      *this = a;
+   }
+   else {
+      xrep.unpinned_move(a.xrep);
+   }
+}
+
+#ifndef NTL_DISABLE_MOVE_ASSIGN
+GF2X& operator=(GF2X&& a) NTL_FAKE_NOEXCEPT
+{
+   if (xrep.pinned() || a.xrep.pinned()) {
+      *this = a;
+   }
+   else {
+      xrep.unpinned_move(a.xrep);
+   }
+
+   return *this;
+}
+#endif
+
+
+#endif
+
 
 GF2X(INIT_SIZE_TYPE, long n);
 
-GF2X& operator=(const GF2X& a) { xrep = a.xrep; return *this; }
 
 inline GF2X& operator=(GF2 a);
 inline GF2X& operator=(long a);
@@ -50,9 +84,33 @@ void SetMaxLength(long n);
 
 
 void SetLength(long n);
-ref_GF2 operator[](long i);
-const GF2 operator[](long i) const;
 
+ref_GF2 operator[](long i) 
+{
+#ifdef NTL_RANGE_CHECK
+   if (i < 0) LogicError("index out of range in Vec");
+   long q, r;
+   _ntl_bpl_divrem(cast_unsigned(i), q, r);
+   if (q >= xrep.length()) LogicError("index out of range in Vec");
+#endif
+
+   vec_GF2::iterator t(INIT_LOOP_HOLE, xrep.elts(), i);
+   return *t;
+}
+
+
+const GF2 operator[](long i) const
+{
+#ifdef NTL_RANGE_CHECK
+   if (i < 0) LogicError("index out of range in Vec");
+   long q, r;
+   _ntl_bpl_divrem(cast_unsigned(i), q, r);
+   if (q >= xrep.length()) LogicError("index out of range in Vec");
+#endif
+
+   vec_GF2::const_iterator t(INIT_LOOP_HOLE, xrep.elts(), i);
+   return *t;
+}
 
 
 
@@ -81,6 +139,9 @@ void swap(GF2X& x) { xrep.swap(x.xrep); }
 void KillBig() { xrep.KillBig(); }
 
 };
+
+
+NTL_DECLARE_RELOCATABLE((GF2X*))
 
 
 long IsZero(const GF2X& a);
@@ -381,6 +442,7 @@ public:
 
 }; 
 
+NTL_DECLARE_RELOCATABLE((GF2XModulus*))
 
 inline long deg(const GF2XModulus& F) { return F.n; }
 

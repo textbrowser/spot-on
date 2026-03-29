@@ -3,51 +3,33 @@
 #define NTL_quad_float__H
 
 
+// The quad_float module is derived from the doubledouble
+// library originally developed by Keith Briggs:
+//    http://keithbriggs.info/doubledouble.html
+// I attach the original copyright notice.
+
+
 /*
-Copyright (C) 1997, 1998, 1999, 2000 Victor Shoup
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*****************************************************
-
-The quad_float package is derived from the doubledouble package of
-Keith Briggs.  However, the version employed in NTL has been extensively 
-modified.  Below, I attach the copyright notice from the original
-doubledouble package, which is currently available at 
-
-   http://www.labs.bt.com/people/briggsk2
-
-*****************************************************
 
 Copyright (C) 1997 Keith Martin Briggs
 
-Except where otherwise indicated,
-this program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
-This program is distributed in the hope that it will be useful,
+This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
 */
+
+
 
 #include <NTL/ZZ.h>
 
@@ -76,9 +58,11 @@ public:
   quad_float(double x, double y) : hi(x), lo(y) { } // internal use only
   // FIXME: add a special argument to this to make it more "internal"
 
-  ~quad_float() {}
 
 };  // end class quad_float
+
+
+NTL_DECLARE_RELOCATABLE((quad_float*))
 
 
 
@@ -101,6 +85,21 @@ quad_float to_quad_float(unsigned long n);
 
 
 
+void quad_float_normalize(quad_float& z, const double& xhi, const double& xlo);
+
+void quad_float_in_place_add(quad_float& x, const quad_float& y);
+void quad_float_in_place_sub(quad_float& x, const quad_float& y);
+void quad_float_in_place_mul(quad_float& x, const quad_float& y);
+void quad_float_in_place_div(quad_float& x, const quad_float& y);
+
+void quad_float_in_place_negate(quad_float& x);
+void quad_float_in_place_sqrt(quad_float& y, double& c_ref);
+
+void quad_float_PrecisionOK(long&, const double&);
+
+
+
+
 #if (NTL_BITS_PER_INT < NTL_DOUBLE_PRECISION)
 
 inline quad_float to_quad_float(int n) { return quad_float(n, 0); }
@@ -118,7 +117,11 @@ inline quad_float to_quad_float(unsigned int n)
 
 
 
-inline quad_float to_quad_float(double x) { return quad_float(TrueDouble(x), 0); }
+
+// NOTE: for extended precision platforms, the call to TrueDouble
+// should remove it
+inline quad_float to_quad_float(double x) 
+   { return quad_float(TrueDouble(x), 0); }
 
 inline quad_float to_quad_float(float x) 
    { return to_quad_float(double(x)); }
@@ -126,7 +129,41 @@ inline quad_float to_quad_float(float x)
 inline quad_float& quad_float::operator=(double x) 
    { *this = to_quad_float(x); return *this; }
 
-quad_float operator+(const quad_float&, const quad_float& );
+
+
+
+
+inline quad_float& operator+= (quad_float& x, const quad_float& y)
+   { quad_float_in_place_add(x, y); return x; }
+inline quad_float& operator-= (quad_float& x, const quad_float& y)
+   { quad_float_in_place_sub(x, y); return x; }
+inline quad_float& operator*= (quad_float& x, const quad_float& y)
+   { quad_float_in_place_mul(x, y); return x; }
+inline quad_float& operator/= (quad_float& x, const quad_float& y)
+   { quad_float_in_place_div(x, y); return x; }
+
+inline quad_float operator-(const quad_float& x)
+   { quad_float xx = x; quad_float_in_place_negate(xx); return xx; }
+
+
+
+inline quad_float operator+(const quad_float& x, const quad_float& y)
+   { quad_float xx = x; xx += y; return xx; }
+
+inline quad_float operator-(const quad_float& x, const quad_float& y)
+   { quad_float xx = x; xx -= y; return xx; }
+
+inline quad_float operator*(const quad_float& x, const quad_float& y)
+   { quad_float xx = x; xx *= y; return xx; }
+
+inline quad_float operator/(const quad_float& x, const quad_float& y)
+   { quad_float xx = x; xx /= y; return xx; }
+
+
+
+
+
+
 
 inline quad_float operator+(const quad_float& x, double y )
    { return x + to_quad_float(y); }
@@ -134,15 +171,11 @@ inline quad_float operator+(const quad_float& x, double y )
 inline quad_float operator+(double x, const quad_float& y)
    { return to_quad_float(x) + y; }
 
-quad_float operator-(const quad_float&, const quad_float& );
-
 inline quad_float operator-(const quad_float& x, double y )
    { return x - to_quad_float(y); }
 
 inline quad_float operator-(double x, const quad_float& y)
    { return to_quad_float(x) - y; }
-
-quad_float operator*(const quad_float&, const quad_float& );
 
 inline quad_float operator*(const quad_float& x, double y )
    { return x * to_quad_float(y); }
@@ -150,29 +183,23 @@ inline quad_float operator*(const quad_float& x, double y )
 inline quad_float operator*(double x, const quad_float& y)
    { return to_quad_float(x) * y; }
 
-quad_float operator/(const quad_float&, const quad_float& );
-
 inline quad_float operator/(const quad_float& x, double y )
    { return x / to_quad_float(y); }
 
 inline quad_float operator/(double x, const quad_float& y)
    { return to_quad_float(x) / y; }
 
-quad_float operator-(const quad_float& x);
 
-quad_float& operator+= (quad_float& x, const quad_float& y);
+
 inline quad_float& operator += (quad_float& x, double y)
    { x += to_quad_float(y); return x; }
 
-quad_float& operator-= (quad_float& x, const quad_float& y);
 inline quad_float& operator-= (quad_float& x, double y)
    { x -= to_quad_float(y); return x; }
 
-quad_float& operator*= (quad_float& x, const quad_float& y);
 inline quad_float& operator*= (quad_float& x, double y)
    { x *= to_quad_float(y); return x; }
 
-quad_float& operator/= (quad_float& x, const quad_float& y);
 inline quad_float& operator/= (quad_float& x, double y)
    { x /= to_quad_float(y); return x; }
 
@@ -290,9 +317,8 @@ inline void conv(quad_float& x, const quad_float& a)
 inline quad_float to_quad_float(const quad_float& a)
    { return a; }
 
-quad_float to_quad_float(const char *s);
-inline void conv(quad_float& x, const char *s)
-   { x = to_quad_float(s); }
+inline quad_float to_quad_float(const char *s)
+{ quad_float res; conv(res, s); return res; }
 
 
 
@@ -309,7 +335,6 @@ inline void conv(unsigned long& x, const quad_float& a)
 
 long IsFinite(quad_float *x);
 
-long PrecisionOK();
 
 quad_float ldexp(const quad_float& x, long exp);
 
