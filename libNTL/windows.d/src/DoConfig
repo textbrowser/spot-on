@@ -28,7 +28,7 @@ system("echo '*** CompilerOutput.log ***' > CompilerOutput.log");
 
 
 %MakeFlag = (
-'SHARED'  => 'on',
+'SHARED'  => 'off',
 'NATIVE'  => 'off',
 'ENABLE_LIBTOOL' => 'on',
 'PREFER_PIC' => 'off',
