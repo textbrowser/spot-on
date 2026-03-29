@@ -10,17 +10,27 @@
 
 
 .cpp:
-	g++   -g -O2 -pthread -march=native  $< -o $@    -lntl   -lgmp     -lm
+	g++ -I/usr/include   -g -O2 -pthread  -o $@ $< -L/usr/lib  -Wl,-rpath,/usr/lib -lntl
 
-# ntl was installed as a static library with dependencies: gmp
+# ntl was installed as a shared library with dependencies: gmp
 
 # COMPILER OPTIONS
+# "-I/usr/include" ensures ntl header files found at compile time
 # "-g" enables the debugger
 # "-O2" enables (level 2) optimization (highly recommend not changing)
 # "-pthread" enables multi-threading (also needed for linking)
-# "-march=native" targets compilation to the native instruction set
 # "$<" expands to "foo.cpp" when run as "make foo"
 
 # LINKER OPTIONS
 # "-o $@" expands to "-o foo" when run as "make foo"
+# "-L/usr/lib" ensures ntl is found at link time
+# "-Wl,-rpath,/usr/lib" ensures ntl is found at runtime
+#    alternatively, add /usr/lib to LD_LIBRARY_PATH
 # "-lntl" ensures that program will link to ntl
+
+# ntl was installed using libtool
+
+# in your project, you could alternatively compile and link as follows:
+#	libtool --tag=CXX --mode=link g++ -I/usr/include   -g -O2 -pthread  -o $@ $< -L/usr/lib  -lntl
+# which ensures ntl all dependencies are properly linked and accessible at runtime
+# and may offer convenient access to more linkage options via libtool
