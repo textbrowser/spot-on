@@ -69,7 +69,6 @@ LIBS	    += -L..\\..\\libNTRU \
 
 equals(mceliece_supported, "true") {
 INCLUDEPATH += ..\\..\\libNTL\\windows.d\\include
-LIBS        += -L..\\..\\libNTL\\windows.d\\libraries.d -lntl
 }
 
 PRE_TARGETDEPS = ..\\..\\libNTL\\windows.d\\libraries.d\\libntl.a \
