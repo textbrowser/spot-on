@@ -3,7 +3,7 @@ include(spot-on-kernel-source.windows.pro)
 libntru.commands   = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends    =
 libntru.target     = libntru.dll
-mceliece_supported = "true"
+mceliece_supported = "false"
 purge.commands     = del /F *~
 
 CONFIG   += qt release warn_on
@@ -71,8 +71,7 @@ equals(mceliece_supported, "true") {
 INCLUDEPATH += ..\\..\\libNTL\\windows.d\\include
 }
 
-PRE_TARGETDEPS = ..\\..\\libNTL\\windows.d\\libraries.d\\libntl.a \
-                 libntru.dll
+PRE_TARGETDEPS = libntru.dll
 PROJECTNAME    = Spot-On-Kernel
 TARGET	       = ..\\..\\release\\Spot-On-Kernel
 TEMPLATE       = app

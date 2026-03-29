@@ -3,7 +3,7 @@ include(spot-on-gui-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
-mceliece_supported = "true"
+mceliece_supported = "false"
 
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
@@ -73,7 +73,6 @@ LIBS		+= -L..\\libNTRU \
                    -L..\\libGCrypt\\Libraries.win64 \
                    -L..\\libGPGME\\Libraries.win64 \
                    -L..\\libOpenSSL\\Libraries.win64 \
-                   ..\\libNTL\\windows.d\\libraries.d\\libntl.a \
                    -lcrypto-3-x64 \
                    -lgcrypt-20 \
                    -lgpg-error-0 \
@@ -86,8 +85,7 @@ LIBS		+= -L..\\libNTRU \
 equals(mceliece_supported, "true") {
 }
 
-PRE_TARGETDEPS  = ..\\libNTL\\windows.d\\libraries.d\\libntl.a \
-                  libntru.dll
+PRE_TARGETDEPS  = libntru.dll
 PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On
