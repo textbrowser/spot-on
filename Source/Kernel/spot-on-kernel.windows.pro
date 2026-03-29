@@ -3,7 +3,7 @@ include(spot-on-kernel-source.windows.pro)
 libntru.commands   = $(MAKE) -C ..\\..\\libNTRU
 libntru.depends    =
 libntru.target     = libntru.dll
-mceliece_supported = "false"
+mceliece_supported = "true"
 purge.commands     = del /F *~
 
 CONFIG   += qt release warn_on

@@ -3,7 +3,7 @@ include(spot-on-gui-source.windows.pro)
 libntru.commands = $(MAKE) -C ..\\libNTRU
 libntru.depends =
 libntru.target = libntru.dll
-mceliece_supported = "false"
+mceliece_supported = "true"
 
 CONFIG		+= qt release warn_on
 CONFIG		-= debug
