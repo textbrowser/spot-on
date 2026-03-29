@@ -16,10 +16,8 @@ Let's build the NTL library on a modern Windows computer.
    directory into your Windows computer.
 6. Double-click on the Cygwin64 Terminal icon.
 7. Proceed to the NTL src directory.
-8. Edit the DoConfig file and modify some options.
-   8.1. Enable C++ exceptions.
-   8.2. Enable a shared library build.
-   8.3. Prepare the libtool setting.
+8. Copy the DoConfig file from Spot-On's repository into the
+   src directory.
 9. Issue the ./configure command.
 10. If all is well, issue a make command.
 11. Copy the generated NTL library files into the
@@ -27,3 +25,4 @@ Let's build the NTL library on a modern Windows computer.
 12. Issue a make clean command.
 13. Copy include/NTL files into the libNTL/windows.d/include.d/NTL directory.
 14. Copy src files into the libNTL/windows.d/src directory.
+15. Commit the new revisions.
