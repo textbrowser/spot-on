@@ -149,7 +149,3 @@ INSTALLS = data \
            sounds \
            spotonbat \
            translations
-
-equals(mceliece_supported, "true") {
-INSTALLS += libntl
-}
