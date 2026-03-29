@@ -2215,7 +2215,7 @@ void spoton_rosetta::slotAddPending(void)
 void spoton_rosetta::slotAskForGPGPassphrase(void)
 {
 #ifdef SPOTON_GPGME_ENABLED
-  if(ui.gpg_address->count() == 0)
+  if(ui.gpg_address->count() == 1 && ui.gpg_address->currentText() == "Empty")
     return;
 
   auto crypt = m_parent ?
