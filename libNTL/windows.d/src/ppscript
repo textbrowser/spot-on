@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VIM=$HOME/Applications/MacVim/mvim
+VIM=$HOME/Applications/MacVim.app/Contents/bin/mvim
 
 cd ../doc
 

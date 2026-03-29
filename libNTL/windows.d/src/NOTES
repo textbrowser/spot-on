@@ -1,24 +1,4 @@
 
-FIXME: maybe it would make more sense to take the +1/-1 logic
-out of [cg]_lip_impl block_construct routines and just put it in
-the caller: the ZZ_p and ZZVec BlockConstruct stuff: add 1 there...
-that would mean in the ZZ_p ConstructFromVec we don't do the -1 either...
-not critical...
-
-FIXME: maybe add a reserve method to Vec, for compatibility
-with STL vectors.
-
-
-TODO list:
-     * allow 32-bit SP MulMod...this would allow GPU/SSE 
-       support...both this and previous would require
-       a complete scan to introduce new, special types
-     * add template functions clear(), to clear multiple
-       entries in a Vec or Poly.  The important thing is
-       to provide specialized ones for Vec<GF2> and GF2X.
-
-
-
 -----------------------------
 These are basically notes to myself on preparing a new
 distribution of NTL.
@@ -41,7 +21,37 @@ http://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 export COPYFILE_DISABLE=1
 make ppdoc
 make ppclean
-make package
+make package 
 make winpack
+
+NOTE: the COPYFILE_DISABLE business is for macOS -- it prevents
+extra macOS metadata from being placed in a tarball.
+However, this no longer works.
+Install gtar (gnu tar) via homebrew (brew install gnu-tar)
+and run "make package TAR=gtar"
+
+
+
+=====================================
+
+TODO: add a runtime flag that makes GetTime call GetWallTime
+
+FIXME: maybe it would make more sense to take the +1/-1 logic
+out of [cg]_lip_impl block_construct routines and just put it in
+the caller: the ZZ_p and ZZVec BlockConstruct stuff: add 1 there...
+that would mean in the ZZ_p ConstructFromVec we don't do the -1 either...
+not critical...
+
+FIXME: maybe add a reserve method to Vec, for compatibility
+with STL vectors.
+
+
+TODO list:
+     * allow 32-bit SP MulMod...this would allow GPU/SSE 
+       support...both this and previous would require
+       a complete scan to introduce new, special types
+     * add template functions clear(), to clear multiple
+       entries in a Vec or Poly.  The important thing is
+       to provide specialized ones for Vec<GF2> and GF2X.
 
 
