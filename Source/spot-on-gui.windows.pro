@@ -83,7 +83,6 @@ LIBS		+= -L..\\libNTRU \
                    -lws2_32
 
 equals(mceliece_supported, "true") {
-LIBS            += -L..\\libNTL\\windows.d\\libraries.d -lntl
 }
 
 PRE_TARGETDEPS  = ..\\libNTL\\windows.d\\libraries.d\\libntl.a \
