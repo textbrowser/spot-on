@@ -104,12 +104,6 @@ libgcrypt.files = ..\\libGCrypt\\Libraries.win64\\*.dll
 libgcrypt.path = release\\.
 libgpgme.files = ..\\libGPGME\\Libraries.win64\\*
 libgpgme.path = release\\.
-
-equals(mceliece_supported, "true") {
-libntl.files = ..\\libNTL\\windows.d\\libraries.d\\*.dll
-libntl.path = release\\.
-}
-
 libntrudll.files = ..\\libNTRU\\*.dll
 libntrudll.path = release\\.
 libopenssl.files = ..\\libOpenSSL\\Libraries.win64\\*.dll
