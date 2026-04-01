@@ -31,6 +31,7 @@
 
 #ifdef SPOTON_MCELIECE_ENABLED
 #include <QByteArray>
+#include <QtGlobal>
 #include <QtMath>
 
 #include <bitset>
@@ -328,6 +329,10 @@ bool spoton_mceliece_private_key::prepareP(void)
       for(long int i = 0; i < m_P.NumRows(); i++)
 	do
 	  {
+#ifdef Q_OS_WINDOWS
+	    spoton_crypt::randomPoll();
+#endif
+
 	    auto const j = NTL::RandomBnd(m_P.NumCols());
 
 	    if(indexes.find(j) == indexes.end())
@@ -420,6 +425,10 @@ bool spoton_mceliece_private_key::prepareS(void)
 
       do
 	{
+#ifdef Q_OS_WINDOWS
+	  spoton_crypt::randomPoll();
+#endif
+
 	  for(long int i = 0; i < k; i++)
 	    m_S[i] = NTL::random_vec_GF2(k);
 	}
@@ -1280,6 +1289,10 @@ bool spoton_mceliece::encrypt(const char *plaintext,
 
       do
 	{
+#ifdef Q_OS_WINDOWS
+	  spoton_crypt::randomPoll();
+#endif
+
 	  auto const i = NTL::RandomBnd(e.length());
 
 	  if(e[i] == 0)

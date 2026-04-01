@@ -225,6 +225,7 @@ class spoton_crypt
   }
 
   static void purgeDatabases(void);
+  static void randomPoll(void);
   static void reencodePrivatePublicKeys
     (spoton_crypt *newCrypt,
      spoton_crypt *oldCrypt,
