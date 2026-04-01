@@ -358,7 +358,6 @@ bool spoton_mceliece_private_key::prepareP(void)
       */
 
       m_Pinv = NTL::transpose(m_P);
-      spoton_misc::logError("Prepared P.");
     }
   catch(...)
     {
@@ -439,7 +438,6 @@ bool spoton_mceliece_private_key::prepareS(void)
       while(NTL::determinant(m_S) == 0);
 
       m_Sinv = NTL::inv(m_S);
-      spoton_misc::logError("Prepared S.");
     }
   catch(...)
     {
@@ -464,7 +462,6 @@ bool spoton_mceliece_private_key::prepare_gZ(void)
 							     */
       m_gZ = NTL::BuildRandomIrred
 	(NTL::BuildIrred_GF2EX(static_cast<long int> (m_t)));
-      spoton_misc::logError("Prepared gZ.");
     }
   catch(...)
     {
@@ -1684,7 +1681,6 @@ bool spoton_mceliece::generatePrivatePublicKeys(void)
       m_privateKey->prepareG(R);
       m_publicKey->prepareGcar
 	(m_privateKey->m_G, m_privateKey->m_P, m_privateKey->m_S);
-      spoton_misc::logError("Prepared private and public keys.");
     }
   catch(const std::runtime_error &exception)
     {
