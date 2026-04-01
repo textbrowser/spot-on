@@ -183,6 +183,9 @@ spoton_mceliece_private_key::spoton_mceliece_private_key(const size_t m,
   try
     {
     repeat_label:
+#ifdef Q_OS_WINDOWS
+      spoton_crypt::randomPoll();
+#endif
 
       auto A = NTL::GF2E::zero();
 
@@ -461,6 +464,7 @@ bool spoton_mceliece_private_key::prepare_gZ(void)
 							     */
       m_gZ = NTL::BuildRandomIrred
 	(NTL::BuildIrred_GF2EX(static_cast<long int> (m_t)));
+      spoton_misc::logError("Prepared gZ.");
     }
   catch(...)
     {
