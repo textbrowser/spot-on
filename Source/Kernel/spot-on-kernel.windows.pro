@@ -78,6 +78,6 @@ TARGET	       = ..\\..\\release\\Spot-On-Kernel
 TEMPLATE       = app
 
 libntrudll.files = ..\\..\\libNTRU\\*.dll
-libntrudll.path = ..\\release\\.
+libntrudll.path = ..\\..\\release\\.
 
 INSTALLS = libntrudll
