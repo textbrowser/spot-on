@@ -374,6 +374,8 @@ Completed Items
 260.   Replace toLatin1() with toUtf8(). Qt 5 Buzz is not compatible with
        Qt 6 Buzz.
 261.   Add XChaCha20.
+262.   The libntru.dll file is not properly copied during an install.
+       Perhaps corrected.
 
 Remaining Items
 
@@ -385,4 +387,3 @@ Remaining Items
 6.     Web server on Windows. Very difficult.
 7.     Windows GIT and non-GPG (Chat).
 8.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.
-9.     The libntru.dll file is not properly copied during an install.
