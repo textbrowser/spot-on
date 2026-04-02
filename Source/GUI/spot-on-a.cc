@@ -508,7 +508,8 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 					      << "7680"
 					      << "8192"
 					      << "15360";
-  s_publicKeySizes["mceliece"] = QStringList() << "m11t51"
+  s_publicKeySizes["mceliece"] = QStringList() << "m10t50"
+					       << "m11t51"
 					       << "m11t51-fujisaki-okamoto-a"
 					       << "m11t51-fujisaki-okamoto-b"
 					       << "m12t68"

@@ -194,7 +194,14 @@ void spoton_crypt::generateMcElieceKeys(const QString &keySize,
   size_t m = 0;
   size_t t = 0;
 
-  if(keySize == "m11t51")
+  if(keySize == "m10t50")
+    {
+      conversion = "000";
+      m = 10;
+      prefix = "000-m10t50";
+      t = 50;
+    }
+  else if(keySize == "m11t51")
     {
       conversion = "000";
       m = 11;
