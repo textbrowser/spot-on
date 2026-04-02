@@ -76,3 +76,8 @@ PRE_TARGETDEPS = libntru.dll
 PROJECTNAME    = Spot-On-Kernel
 TARGET	       = ..\\..\\release\\Spot-On-Kernel
 TEMPLATE       = app
+
+libntrudll.files = ..\\..\\libNTRU\\*.dll
+libntrudll.path = ..\\release\\.
+
+INSTALLS = libntrudll
