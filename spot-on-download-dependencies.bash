@@ -124,7 +124,7 @@ rm -f "$gpgme"
 
 # OpenSSL
 
-openssl=openssl-3.6.1.zip
+openssl=openssl-3.6.2.zip
 
 rm -f "$openssl"
 wget --output-document="$openssl" \
