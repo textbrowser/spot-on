@@ -92,6 +92,20 @@ RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On
 TEMPLATE        = app
 
+exists(c:\\cygwin64\\bin) {
+cygwin.files = c:\\cygwin64\\bin\\cyggcc_s-seh-*.dll \
+               c:\\cygwin64\\bin\\cyggmp-*.dll \
+               c:\\cygwin64\\bin\\cygiconv-*.dll \
+               c:\\cygwin64\\bin\\cygintl-*.dll \
+               c:\\cygwin64\\bin\\cygntl-*.dll \
+               c:\\cygwin64\\bin\\cygstdc++-*.dll \
+               c:\\cygwin64\\bin\\cygwin*.dll
+}
+else {
+cygwin.files =
+}
+
+cygwin.path = release\\.
 data.files = Data\\*.txt
 data.path = release\\.
 documentation.files = Documentation\\*.pdf
@@ -134,7 +148,8 @@ spotonbat.path = release\\.
 translations.files = Translations\\*.qm
 translations.path = release\\Translations\\.
 
-INSTALLS = data \
+INSTALLS = cygwin \
+           data \
            documentation \
            gpgmeexecutables \
            libassuan \
