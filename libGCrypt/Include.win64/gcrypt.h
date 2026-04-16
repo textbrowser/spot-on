@@ -1,6 +1,7 @@
 /* gcrypt.h -  GNU Cryptographic Library Interface              -*- c -*-
  * Copyright (C) 1998-2018 Free Software Foundation, Inc.
- * Copyright (C) 2012-2024 g10 Code GmbH
+ * Copyright (C) 2012-2026 g10 Code GmbH
+ * Copyright (C) 2013-2026 Jussi Kivilinna
  *
  * This file is part of Libgcrypt.
  *
@@ -54,11 +55,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.12.1-unknown"
+#define GCRYPT_VERSION "1.12.2-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010c01
+#define GCRYPT_VERSION_NUMBER 0x010c02
 
 
 /* Internal: We can't use the convenience macros for the multi

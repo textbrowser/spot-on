@@ -41,7 +41,7 @@ rm -f "$assuan"
 
 # GCrypt
 
-gcrypt=mingw-w64-x86_64-libgcrypt-1.12.1-1-any.pkg.tar.zst
+gcrypt=mingw-w64-x86_64-libgcrypt-1.12.2-1-any.pkg.tar.zst
 
 rm -f "$gcrypt"
 wget --output-document="$gcrypt" --progress=bar "$msys2/$gcrypt"
@@ -68,7 +68,7 @@ rm -f "$gcrypt"
 
 # GPG-Error
 
-gpgerror=mingw-w64-x86_64-libgpg-error-1.59-1-any.pkg.tar.zst
+gpgerror=mingw-w64-x86_64-libgpg-error-1.59-2-any.pkg.tar.zst
 
 rm -f "$gpgerror"
 wget --output-document="$gpgerror" --progress=bar "$msys2/$gpgerror"
