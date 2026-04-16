@@ -86,7 +86,7 @@ LIBS		+= -L..\\libNTRU \
 equals(mceliece_supported, "true") {
 }
 
-PRE_TARGETDEPS  = libntru.dll
+POST_TARGETDEPS  = libntru.dll
 PROJECTNAME	= Spot-On
 RC_FILE		= Icons\\Resources\\spot-on.rc
 TARGET		= Spot-On

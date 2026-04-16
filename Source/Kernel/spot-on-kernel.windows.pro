@@ -72,7 +72,7 @@ equals(mceliece_supported, "true") {
 INCLUDEPATH += ..\\..\\libNTL\\windows.d\\include
 }
 
-PRE_TARGETDEPS = libntru.dll
+POST_TARGETDEPS = libntru.dll
 PROJECTNAME    = Spot-On-Kernel
 TARGET	       = ..\\..\\release\\Spot-On-Kernel
 TEMPLATE       = app

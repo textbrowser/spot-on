@@ -376,6 +376,7 @@ Completed Items
 261.   Add XChaCha20.
 262.   The libntru.dll file is not properly copied during an install.
        Perhaps corrected.
+263.   Copy Cygwin libraries during an install on Windows.
 
 Remaining Items
 
@@ -387,4 +388,3 @@ Remaining Items
 6.     Web server on Windows. Very difficult.
 7.     Windows GIT and non-GPG (Chat).
 8.     Spectral human proxy. Proxy-of-a-proxy-of-...-a-...-proxy.
-9.     Copy Cygwin libraries during an install on Windows.
