@@ -105,8 +105,7 @@ cygwin.files = c:\\cygwin64\\bin\\cyggcc_s-seh-*.dll \
                c:\\cygwin64\\bin\\cygntl-*.dll \
                c:\\cygwin64\\bin\\cygstdc++-*.dll \
                c:\\cygwin64\\bin\\cygwin*.dll
-}
-else {
+} else {
 cygwin.files =
 }
 
