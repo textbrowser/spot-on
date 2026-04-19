@@ -1,3 +1,2 @@
-Qt 5.5.1 is supported for Debian and PowerPC.
-
-All other systems require Qt LTS.
+All systems require Qt LTS, except for Debian PowerPC. Qt 5.5.1 is
+supported for Debian and PowerPC.

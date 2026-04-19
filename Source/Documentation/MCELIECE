@@ -26,7 +26,7 @@ DEFINES	+= SPOTON_MCELIECE_ENABLED
 4. Modify INCLUDEPATH and LIBS.
 
 INCLUDEPATH += ../libNTL/unix.d/include
-LIBS += -L../libNTL/unix.d/src/.libs -lntl
+LIBS        += -L../libNTL/unix.d/src/.libs -lntl
 
 On FreeBSD, NTL may require GMP.
 
@@ -38,10 +38,10 @@ LIBS += -lgmp -lntl
 
 5. Modify QMAKE_CLEAN. FreeBSD, MacOS, and Windows, please ignore.
 
-QMAKE_CLEAN += ../libNTL/unix.d/src/*.o ../libNTL/unix.d/src/*.lo
+QMAKE_CLEAN += ../libNTL/unix.d/src/*.lo ../libNTL/unix.d/src/*.o
 
 6. Modify PRE_TARGETDEPS and QMAKE_EXTRA_TARGETS.
 Please ignore on FreeBSD, MacOS, and Windows.
 
-PRE_TARGETDEPS = libntl.so libntru.so
+PRE_TARGETDEPS      = libntl.so libntru.so
 QMAKE_EXTRA_TARGETS = libntl libntru purge

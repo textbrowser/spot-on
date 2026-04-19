@@ -3,8 +3,3 @@ Spot-On supports version 1.5.x, and newer, of libgcrypt.
 MacOS
 
 Homebrew is required.
-
-Windows
-
-Developers, please download the Gpg4win installer from
-http://www.gpg4win.org.
