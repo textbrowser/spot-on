@@ -11,7 +11,7 @@
 /* A set of parameters for NTRU Prime */
 typedef struct NtruPrimeParams {
     /* name of the parameter set */
-    char name[11];
+    char name[12];
 
     /* number of polynomial coefficients */
     uint16_t p;
@@ -44,7 +44,7 @@ extern const NtruPrimeParams NTRUPRIME_739;
 /* A set of parameters for NtruEncrypt */
 typedef struct NtruEncParams {
     /* name of the parameter set */
-    char name[11];
+    char name[12];
 
     /* number of polynomial coefficients */
     uint16_t N;
