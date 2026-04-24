@@ -20,12 +20,16 @@ qtHaveModule(bluetooth) {
 DEFINES += SPOTON_BLUETOOTH_ENABLED
 QT += bluetooth
 message("Bluetooth enabled!")
+} else {
+warning("Bluetooth disabled!")
 }
 
 qtHaveModule(websockets) {
 DEFINES += SPOTON_WEBSOCKETS_ENABLED
 QT += websockets
 message("WebSockets enabled!")
+} else {
+warning("WebSockets disabled!")
 }
 
 DEFINES	+= QT_DEPRECATED_WARNINGS \
@@ -49,6 +53,8 @@ message("GeoIP enabled!")
 exists(/usr/include/netinet/sctp.h) {
 DEFINES += SPOTON_SCTP_ENABLED
 message("SCTP enabled!")
+} else {
+warning("SCTP disabled!")
 }
 
 exists(/usr/include/postgresql/libpq-fe.h) {
@@ -60,6 +66,8 @@ DEFINES += SPOTON_POSTGRESQL_DISABLED
 exists(/usr/include/x86_64-linux-gnu/curl/curl.h) {
 DEFINES += SPOTON_POPTASTIC_SUPPORTED
 message("Poptastic enabled!")
+} else {
+warning("Poptastic disabled!")
 }
 
 # Unfortunately, the clean target assumes too much knowledge

@@ -9,7 +9,10 @@ Preparing Debian File
 
 Required Packages
 
+> sudo apt install libcurl4-gnutls-dev
 > sudo apt install libgcrypt20-dev
 > sudo apt install libgpgme-dev
+> sudo apt install libsctp-dev
 > sudo apt install libssl-dev
 > sudo apt install qt6-multimedia-dev
+> sudo apt install qt6-websockets-dev
