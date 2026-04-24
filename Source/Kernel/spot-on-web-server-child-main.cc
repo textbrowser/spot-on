@@ -1192,8 +1192,11 @@ void spoton_web_server_child_main::slotKeysReceived(void)
 
   QFile file(":/search.html");
 
-  file.open(QFile::ReadOnly);
-  m_search = file.readAll();
+  if(file.open(QFile::ReadOnly))
+    m_search = file.readAll();
+  else
+    qDebug() << tr("Cannot open %1 for reading.").arg(file.fileName());
+
   file.close();
 
   QPair<QByteArray, QByteArray> credentials;

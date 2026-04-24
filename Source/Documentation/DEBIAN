@@ -1,4 +1,15 @@
-sudo apt install </path/to/deb/file/debfile.deb>
+Installing Debian File
+
+> sudo apt install </path/to/deb/file/debfile.deb>
+
+Preparing Debian File
 
 > dpkg -S $(objdump -p ./Spot-On* | grep NEEDED | awk '{print $2}') \
   2>/dev/null | awk '{print $1}' | sed s/:amd64://g | sort -u
+
+Required Packages
+
+> sudo apt install libgcrypt20-dev
+> sudo apt install libgpgme-dev
+> sudo apt install libssl-dev
+> sudo apt install qt6-multimedia-dev
