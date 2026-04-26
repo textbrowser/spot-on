@@ -22,8 +22,6 @@ QT      += multimedia
 message("Qt's multimedia module discovered!")
 }
 
-DEFINES	+= QT_DEPRECATED_WARNINGS
-
 FORMS = UI/spot-on-adaptive-echo-prompt.ui \
         UI/spot-on-buzzpage.ui \
         UI/spot-on-chatwindow.ui \
