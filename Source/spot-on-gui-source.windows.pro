@@ -1,3 +1,5 @@
+DEFINES += SPOTON_GOLDBUG=0
+
 qtHaveModule(multimedia) {
 DEFINES += SPOTON_MULTIMEDIA_SUPPORTED
 QT      += multimedia

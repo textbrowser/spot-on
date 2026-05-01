@@ -1,3 +1,5 @@
+DEFINES += SPOTON_GOLDBUG=0
+
 exists(/opt/homebrew/include/gpgme.h) {
 DEFINES += SPOTON_GPGME_ENABLED
 LIBS    += -L /opt/homebrew/lib -lgpgme

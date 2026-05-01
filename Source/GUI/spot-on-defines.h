@@ -28,7 +28,7 @@
 #ifndef _spoton_defines_h_
 #define _spoton_defines_h_
 
-#ifdef SPOTON_GOLDBUG
+#if SPOTON_GOLDBUG == 1
 #ifdef SPOTON_APPLICATION_NAME
 #undefine SPOTON_APPLICATION_NAME
 #endif
