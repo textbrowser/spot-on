@@ -88,6 +88,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wfloat-equal \
                           -Wformat=2 \
                           -Wformat-overflow=2 \
+                          -Wimplicit-fallthrough \
                           -Wl,-z,relro \
                           -Wlogical-op \
                           -Wno-deprecated-copy \
@@ -99,7 +100,9 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstack-protector \
                           -Wstrict-overflow=5 \
                           -Wstringop-overflow=4 \
+                          -Wundef \
                           -Wunused \
+                          -Wvla \
                           -Wzero-as-null-pointer-constant \
                           -fPIE \
                           -fstack-protector-all \

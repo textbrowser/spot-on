@@ -94,12 +94,14 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wall \
                           -Wcast-align \
                           -Wcast-qual \
+                          -Wdangling-reference \
                           -Wdouble-promotion \
                           -Werror \
                           -Wextra \
                           -Wfloat-equal \
                           -Wformat=2 \
                           -Wformat-overflow=2 \
+                          -Wimplicit-fallthrough \
                           -Wl,-z,relro \
                           -Wno-deprecated-copy \
                           -Wno-expansion-to-defined \
@@ -112,6 +114,8 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wstringop-overflow=4 \
                           -Wundef \
                           -Wunused \
+                          -Wvla \
+                          -Wzero-as-null-pointer-constant \
                           -fPIE \
                           -fstack-protector-all \
                           -funroll-loops \
