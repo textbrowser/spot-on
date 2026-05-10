@@ -39,8 +39,8 @@ PowerPC
 qmake -o Makefile spot-on.powerpc.pro
 make
 
-Windows
+Windows Qt MinGW Terminal
 
 qmake -o Makefile spot-on.windows.pro
-mingw32-make
-mingw32-make install
+make
+make install
