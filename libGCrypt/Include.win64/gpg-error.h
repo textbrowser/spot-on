@@ -66,12 +66,12 @@
 #include <stdarg.h>
 
 /* The version string of this header. */
-#define GPG_ERROR_VERSION "1.59"
-#define GPGRT_VERSION     "1.59"
+#define GPG_ERROR_VERSION "1.60"
+#define GPGRT_VERSION     "1.60"
 
 /* The version number of this header. */
-#define GPG_ERROR_VERSION_NUMBER 0x013b00
-#define GPGRT_VERSION_NUMBER     0x013b00
+#define GPG_ERROR_VERSION_NUMBER 0x013c00
+#define GPGRT_VERSION_NUMBER     0x013c00
 
 
 #ifdef __GNUC__
@@ -356,6 +356,8 @@ typedef enum
     GPG_ERR_SEXP_BAD_HEX_CHAR = 211,
     GPG_ERR_SEXP_ODD_HEX_NUMBERS = 212,
     GPG_ERR_SEXP_BAD_OCT_CHAR = 213,
+    GPG_ERR_PUBKEY_NON_COMPLIANT = 214,
+    GPG_ERR_CIPHER_NON_COMPLIANT = 215,
     GPG_ERR_UNEXPECTED_PACKET = 216,
     GPG_ERR_SUBKEYS_EXP_OR_REV = 217,
     GPG_ERR_DB_CORRUPTED = 218,
@@ -444,6 +446,7 @@ typedef enum
     GPG_ERR_BAD_PUK = 320,
     GPG_ERR_NO_RESET_CODE = 321,
     GPG_ERR_BAD_RESET_CODE = 322,
+    GPG_ERR_DIGEST_NON_COMPLIANT = 323,
     GPG_ERR_SYSTEM_BUG = 666,
     GPG_ERR_DNS_UNKNOWN = 711,
     GPG_ERR_DNS_SECTION = 712,
