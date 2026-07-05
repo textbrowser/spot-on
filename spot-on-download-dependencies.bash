@@ -56,8 +56,7 @@ then
     mv mingw64/bin/*.dll libAssuan/Libraries.win64/.
     chmod +w,-x libAssuan/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-elif [ $rc -eq 0 ]
-then
+else
     echo "Cannot read $assuan."
 
     rc=1
@@ -93,8 +92,7 @@ then
     mv mingw64/include/*.h libGCrypt/Include.win64/.
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-elif [ $rc -eq 0 ]
-then
+else
     echo "Cannot read $gcrypt."
 
     rc=1
@@ -130,8 +128,7 @@ then
     mv mingw64/include/gpg-error.h libGCrypt/Include.win64/.
     chmod +w,-x libGCrypt/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-elif [ $rc -eq 0 ]
-then
+else
     echo "Cannot read $gpgerror."
 
     rc=1
@@ -169,8 +166,7 @@ then
     mv mingw64/include/gpgme.h libGPGME/Include.win64/.
     chmod +w,-x libGPGME/Libraries.win64/*.dll*
     rm -fr .BUILDINFO .MTREE .PKGINFO mingw64
-elif [ $rc -eq 0 ]
-then
+else
     echo "Cannot read $gpgme."
 
     rc=1
@@ -180,14 +176,14 @@ rm -f "$gpgme"
 
 # OpenSSL
 
-openssl=openssl-3.6.2.zip
+openssl=openssl-3-5-zip
 
 echo "Downloading $openssl."
 rm -f "$openssl"
 wget --output-document="$openssl" \
      --progress=bar \
      --quiet \
-     "https://download.firedaemon.com/FireDaemon-OpenSSL/$openssl"
+     "https://www.firedaemon.com/download-firedaemon-$openssl"
 
 rc=$?
 
@@ -205,8 +201,7 @@ then
     mv openssl.d/x64/include/openssl libOpenSSL/Include.win64/.
     chmod +w,-x libOpenSSL/Libraries.win64/*.dll
     rm -fr openssl.d
-elif [ $rc -eq 0 ]
-then
+else
     echo "Cannot read $openssl."
 
     rc=1

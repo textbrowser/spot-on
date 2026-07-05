@@ -37,7 +37,7 @@ extern "C" {
  * The FIPS provider vendor name, as a string.
  */
 /* clang-format off */
-#define FIPS_VENDOR "OpenSSL non-compliant FIPS Provider"
+#define FIPS_VENDOR "OpenSSL FIPS Provider"
 /* clang-format on */
 
 #ifdef __cplusplus
