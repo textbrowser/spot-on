@@ -2,7 +2,7 @@
 
 # Alexis Megas.
 
-# Download dependencies for Windows.
+# The program will download the newest packages, save for OpenSSL.
 # Must be executed in the top-level source directory.
 
 if [ "$(which wget)" = "" ]
@@ -39,7 +39,7 @@ assuan="$(cat "$mingw64" | grep mingw-w64-x86_64-libassuan | \
 if [ -z "$assuan" ]
 then
     echo "Cannot find assuan name."
-    rm -fr "$mingw64"
+    rm -f "$mingw64"
     exit 1
 fi
 
@@ -73,7 +73,7 @@ gcrypt="$(cat "$mingw64" | grep mingw-w64-x86_64-libgcrypt | \
 if [ -z "$gcrypt" ]
 then
     echo "Cannot find gcrypt name."
-    rm -fr "$mingw64"
+    rm -f "$mingw64"
     exit 1
 fi
 
@@ -109,7 +109,7 @@ gpgerror="$(cat "$mingw64" | grep mingw-w64-x86_64-libgpg-error | \
 if [ -z "$gcrypt" ]
 then
     echo "Cannot find gpgerror name."
-    rm -fr "$mingw64"
+    rm -f "$mingw64"
     exit 1
 fi
 
@@ -145,7 +145,7 @@ gpgme="$(cat "$mingw64" | grep mingw-w64-x86_64-gpgme | \
 if [ -z "$gpgme" ]
 then
     echo "Cannot find gpgme name."
-    rm -fr "$mingw64"
+    rm -f "$mingw64"
     exit 1
 fi
 
