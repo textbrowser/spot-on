@@ -1011,8 +1011,79 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
 
 void spoton::slotAboutToShowGitRecipientMenu(void)
 {
+  auto crypt = m_crypts.value("chat", nullptr);
+
+  if(!crypt)
+    return;
+
   QApplication::setOverrideCursor(Qt::WaitCursor);
   m_optionsUi.encrypt_git_recipient->menu()->clear();
+
+  QString connectionName("");
+
+  {
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName
+      (spoton_misc::homePath() + QDir::separator() + "friends_public_keys.db");
+
+    if(db.open())
+      {
+	QList<QByteArray> list;
+	QSqlQuery query(db);
+	auto ok = true;
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT key_type, name "
+		      "FROM friends_public_keys "
+		      "WHERE key_type_hash IN (?, ?, ?, ?, ?)");
+	query.addBindValue
+	  (crypt->keyedHash(QByteArray("chat"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("email"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("open-library"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("rosetta"), &ok).toBase64());
+
+	if(ok)
+	  query.addBindValue
+	    (crypt->keyedHash(QByteArray("url"), &ok).toBase64());
+
+	if(ok && query.exec())
+	  while(query.next())
+	    {
+	      QByteArray keyType;
+	      QByteArray name;
+	      auto ok = true;
+
+	      keyType = crypt->decryptedAfterAuthenticated
+		(QByteArray::fromBase64(query.value(0).toByteArray()), &ok);
+
+	      if(ok)
+		name = crypt->decryptedAfterAuthenticated
+		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
+
+	      if(ok)
+		list << name + "@" + keyType;
+	    }
+
+	std::sort(list.begin(), list.end());
+
+	for(int i = 0; i < list.size(); i++)
+	  m_optionsUi.encrypt_git_recipient->menu()->addAction(list[i]);
+      }
+
+    db.close();
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
   QApplication::restoreOverrideCursor();
 }
 

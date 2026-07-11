@@ -1020,11 +1020,11 @@ void spoton_smpwindow::slotRefresh(void)
 	int row = 0;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT "      // 0
-		      "name, "       // 1
-		      "key_type, "   // 2
-		      "public_key, " // 3
-		      "OID "         // 4
+	query.prepare("SELECT "
+		      "name, "       // 0
+		      "key_type, "   // 1
+		      "public_key, " // 2
+		      "OID "         // 3
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?, ?, ?)");
 	query.addBindValue
