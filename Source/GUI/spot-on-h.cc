@@ -1034,7 +1034,7 @@ void spoton::slotAboutToShowGitRecipientMenu(void)
 	auto ok = true;
 
 	query.setForwardOnly(true);
-	query.prepare("SELECT key_type, name "
+	query.prepare("SELECT key_type, name, OID "
 		      "FROM friends_public_keys "
 		      "WHERE key_type_hash IN (?, ?, ?, ?, ?)");
 	query.addBindValue
@@ -1071,13 +1071,14 @@ void spoton::slotAboutToShowGitRecipientMenu(void)
 		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
-		list << name + "@" + keyType;
+		list << name.trimmed() + "@" + keyType.trimmed();
 	    }
 
 	std::sort(list.begin(), list.end());
 
 	for(int i = 0; i < list.size(); i++)
-	  m_optionsUi.encrypt_git_recipient->menu()->addAction(list[i]);
+	  m_optionsUi.encrypt_git_recipient->menu()->addAction
+	    (list[i], this, SLOT(slotEncryptGIT(void)));
       }
 
     db.close();
@@ -1165,6 +1166,10 @@ void spoton::slotEmailPageChanged(int value)
 {
   Q_UNUSED(value);
   populateMail();
+}
+
+void spoton::slotEncryptGIT(void)
+{
 }
 
 void spoton::slotFindInSearch(void)
