@@ -830,6 +830,7 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_statisticsWindow = new QMainWindow(nullptr);
   m_notificationsUi.setupUi(m_notificationsWindow);
   m_optionsUi.setupUi(m_optionsWindow);
+  m_optionsUi.encrypt_git_recipient->setMenu(new QMenu(this));
 #ifndef SPOTON_LINKED_WITH_LIBGEOIP
   m_optionsUi.geoipPath4->setEnabled(false);
   m_optionsUi.geoipPath4->setToolTip
@@ -1487,6 +1488,14 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 	  SIGNAL(currentIndexChanged(int)),
 	  this,
 	  SLOT(slotPublishedKeySizeChanged(int)));
+  connect(m_optionsUi.encrypt_git_recipient,
+	  SIGNAL(clicked(void)),
+	  m_optionsUi.encrypt_git_recipient,
+	  SLOT(showMenu(void)));
+  connect(m_optionsUi.encrypt_git_recipient->menu(),
+	  SIGNAL(aboutToShow(void)),
+	  this,
+	  SLOT(slotAboutToShowGitRecipientMenu(void)));
   connect(m_optionsUi.refresh_email,
 	  SIGNAL(toggled(bool)),
 	  this,
@@ -2634,6 +2643,24 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.postgresql_kernel_url_distribution_timeout->setValue
     (m_settings.value("gui/postgresql_kernel_url_distribution_timeout", 45000).
      toInt());
+  m_optionsUi.encrypt_git_recipient->setArrowType(Qt::NoArrow);
+  m_optionsUi.encrypt_git_recipient->setPopupMode(QToolButton::MenuButtonPopup);
+#if defined(Q_OS_MACOS)
+#if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
+  m_optionsUi.encrypt_git_recipient->setStyleSheet
+    ("QToolButton {border: none; padding-right: 10px;}"
+     "QToolButton::menu-arrow {image: none;}"
+     "QToolButton::menu-button {border: none;}");
+#else
+  m_optionsUi.encrypt_git_recipient->setStyleSheet
+    ("QToolButton {border: none; padding-right: 15px;}"
+     "QToolButton::menu-arrow {image: none;}"
+     "QToolButton::menu-button {border: none; width: 15px;}");
+#endif
+#endif
+  m_optionsUi.encrypt_git_recipient->setText(tr("Please Select Recipient"));
+  m_optionsUi.encrypt_git_recipient->menu()->setStyleSheet
+    ("QMenu {menu-scrollable: 1;}");
   m_optionsUi.searchResultsPerPage->setValue
     (m_settings.value("gui/searchResultsPerPage", 10).toInt());
   m_optionsUi.share_git->setChecked

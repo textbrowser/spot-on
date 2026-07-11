@@ -1009,6 +1009,13 @@ void spoton::saveSMPSecret(const QString &hash, const QString &secret)
   QSqlDatabase::removeDatabase(connectionName);
 }
 
+void spoton::slotAboutToShowGitRecipientMenu(void)
+{
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+  m_optionsUi.encrypt_git_recipient->menu()->clear();
+  QApplication::restoreOverrideCursor();
+}
+
 void spoton::slotApplyOtherOptions(void)
 {
   QString str("");

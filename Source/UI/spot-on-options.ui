@@ -957,8 +957,11 @@
                    </item>
                    <item>
                     <widget class="QPushButton" name="encrypt_git">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If successful, results are placed in the clipboard buffer.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                      <property name="text">
-                      <string>Encrypt (In Clipboard)</string>
+                      <string>Encrypt</string>
                      </property>
                     </widget>
                    </item>
