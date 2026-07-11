@@ -1170,6 +1170,15 @@ void spoton::slotEmailPageChanged(int value)
 
 void spoton::slotEncryptGIT(void)
 {
+  auto item = m_optionsUi.git_table->item
+    (m_optionsUi.git_table->currentRow(), 0);
+
+  if(!item || item->text().trimmed().isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("Please select a non-empty GIT Site."));
+      return;
+    }
 }
 
 void spoton::slotFindInSearch(void)
