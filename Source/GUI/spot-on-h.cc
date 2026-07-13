@@ -1029,7 +1029,7 @@ void spoton::slotAboutToShowGitRecipientMenu(void)
 
     if(db.open())
       {
-	QList<QByteArray> list;
+	QMap<QByteArray, qint64> map;
 	QSqlQuery query(db);
 	auto ok = true;
 
@@ -1071,14 +1071,18 @@ void spoton::slotAboutToShowGitRecipientMenu(void)
 		  (QByteArray::fromBase64(query.value(1).toByteArray()), &ok);
 
 	      if(ok)
-		list << name.trimmed() + "@" + keyType.trimmed();
+		map[name.trimmed() + "@" + keyType.trimmed()] =
+		  query.value(2).toLongLong();
 	    }
 
-	std::sort(list.begin(), list.end());
+	QMapIterator<QByteArray, qint64> it(map);
 
-	for(int i = 0; i < list.size(); i++)
-	  m_optionsUi.encrypt_git_recipient->menu()->addAction
-	    (list[i], this, SLOT(slotEncryptGIT(void)));
+	while(it.hasNext())
+	  {
+	    it.next();
+	    m_optionsUi.encrypt_git_recipient->menu()->addAction
+	      (it.key(), this, SLOT(slotEncryptGIT(void)))->setData(it.value());
+	  }
       }
 
     db.close();
