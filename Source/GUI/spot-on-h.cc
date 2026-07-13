@@ -1174,6 +1174,15 @@ void spoton::slotEmailPageChanged(int value)
 
 void spoton::slotEncryptGIT(void)
 {
+  auto action = qobject_cast<QAction *> (sender());
+
+  if(!action)
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("An extreme error occurred!"));
+      return;
+    }
+
   auto item = m_optionsUi.git_table->item
     (m_optionsUi.git_table->currentRow(), 0);
 
