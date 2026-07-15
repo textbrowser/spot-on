@@ -1192,6 +1192,17 @@ void spoton::slotEncryptGIT(void)
 	(tr("Please select a non-empty GIT Site."));
       return;
     }
+
+  auto const publicKey
+    (spoton_misc::
+     publicKeyFromOID(action->data().toLongLong(), m_crypts.value("chat")));
+
+  if(publicKey.isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("Cannot retrieve the public key for %1.").arg(action->text()));
+      return;
+    }
 }
 
 void spoton::slotFindInSearch(void)
