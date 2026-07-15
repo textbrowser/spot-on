@@ -123,8 +123,6 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM_STATIC;
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
-static int s_bytesPerWrite = 4096;
-static int s_waitForBytesWritten = 250;
 static int s_waitForEncrypted = 1000;
 static int s_waitForReadyRead = 10;
 static quint64 s_urlLimit = 10;
@@ -197,8 +195,9 @@ spoton_web_server_child_main::spoton_web_server_child_main
 	  SLOT(slotKeysReceived(void)));
   spoton_misc::enableLog(true);
 
-  auto keySize = m_settings.value("gui/kernelKeySize").toInt();
-  auto port = static_cast<quint16> (m_settings.value("guiServerPort").toInt());
+  auto const keySize = m_settings.value("gui/kernelKeySize").toInt();
+  auto const port = static_cast<quint16>
+    (m_settings.value("guiServerPort").toInt());
 
   if(keySize == 0)
     {
@@ -295,16 +294,21 @@ QSqlDatabase spoton_web_server_child_main::urlDatabase
 void spoton_web_server_child_main::process
 (const QPair<QByteArray, QByteArray> &credentials)
 {
-  QScopedPointer<QSslSocket> socket(new QSslSocket());
+  auto socket = new QSslSocket(this);
 
   if(!socket->setSocketDescriptor(m_socketDescriptor))
     {
       QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      socket->deleteLater();
       spoton_misc::closeSocket(m_socketDescriptor);
       return;
     }
 
-  connect(socket.data(),
+  connect(socket,
+	  SIGNAL(bytesWritten(qint64)),
+	  this,
+	  SLOT(slotBytesWritten(qint64)));
+  connect(socket,
 	  SIGNAL(disconnected(void)),
 	  QCoreApplication::instance(),
 	  SLOT(quit(void)));
@@ -401,7 +405,7 @@ void spoton_web_server_child_main::process
 
   if(data.endsWith("\r\n\r\n") &&
      data.simplified().trimmed().startsWith("get / http/1."))
-    writeDefaultPage(socket.data());
+    writeDefaultPage(socket);
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /about"))
     {
@@ -458,11 +462,11 @@ void spoton_web_server_child_main::process
       html.remove("</html>");
       html.append(about);
       html.append("</html>");
-      write(socket.data(),
+      write(socket,
 	    "HTTP/1.1 200 OK\r\nContent-Length: " +
 	    QByteArray::number(html.toUtf8().length()) +
 	    "\r\nContent-Type: text/html; charset=utf-8\r\n\r\n");
-      write(socket.data(), html.toUtf8());
+      write(socket, html.toUtf8());
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /current="))
@@ -470,11 +474,11 @@ void spoton_web_server_child_main::process
       data = data.simplified().trimmed().mid(5); // get /c <- c
       data = data.mid(0, data.indexOf(' '));
 
-      const QPair<QString, QString> address
+      QPair<QString, QString> const address
 	(socket->localAddress().toString(),
 	 QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+      process(socket, data, address);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /local-"))
@@ -483,14 +487,14 @@ void spoton_web_server_child_main::process
 	{
 	  data = data.simplified().trimmed().mid(11); // get /local-x <- x
 	  data = data.mid(0, data.indexOf(' '));
-	  processLocal(socket.data(), data);
+	  processLocal(socket, data);
 	}
       else
-	writeDefaultPage(socket.data(), true);
+	writeDefaultPage(socket, true);
     }
   else if(data.endsWith("\r\n\r\n") &&
 	  data.simplified().trimmed().startsWith("get /"))
-    writeDefaultPage(socket.data(), true);
+    writeDefaultPage(socket, true);
   else if(data.simplified().startsWith("post / http/1.") ||
 	  data.simplified().startsWith("post /current="))
     {
@@ -498,16 +502,19 @@ void spoton_web_server_child_main::process
       data = data.mid(data.lastIndexOf("current="));
       data = data.mid(0, data.indexOf(' '));
 
-      const QPair<QString, QString> address
+      QPair<QString, QString> const address
 	(socket->localAddress().toString(),
 	 QString::number(socket->localPort()));
 
-      process(socket.data(), data, address);
+      process(socket, data, address);
     }
   else if(!data.isEmpty())
-    writeDefaultPage(socket.data(), true);
-
-  QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+    writeDefaultPage(socket, true);
+  else
+    {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      socket->deleteLater();
+    }
 }
 
 void spoton_web_server_child_main::process
@@ -516,7 +523,10 @@ void spoton_web_server_child_main::process
  const QPair<QString, QString> &address)
 {
   if(!socket)
-    return;
+    {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      return;
+    }
 
   auto list(QString(data.mid(data.indexOf("current=") + 8)).split("&"));
 
@@ -1003,7 +1013,10 @@ void spoton_web_server_child_main::processLocal
 (QSslSocket *socket, const QByteArray &data)
 {
   if(!socket)
-    return;
+    {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      return;
+    }
 
   QScopedPointer<spoton_crypt> crypt
     (spoton_misc::retrieveUrlCommonCredentials(m_crypt.data()));
@@ -1044,7 +1057,7 @@ void spoton_web_server_child_main::processLocal
 
 	      if(!content.isEmpty())
 		{
-		  QFileInfo fileInfo
+		  QFileInfo const fileInfo
 		    (m_settings.
 		     value("WEB_SERVER_HTML2TEXT_PATH").toString().trimmed());
 
@@ -1093,6 +1106,22 @@ void spoton_web_server_child_main::processLocal
     writeDefaultPage(socket, true);
   else
     write(socket, html);
+}
+
+void spoton_web_server_child_main::slotBytesWritten(qint64 bytes)
+{
+  Q_UNUSED(bytes);
+
+  auto socket = qobject_cast<QSslSocket *> (sender());
+
+  if(!socket)
+    {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      return;
+    }
+
+  if(socket->bytesToWrite() <= 0)
+    QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
 }
 
 void spoton_web_server_child_main::slotKernelConnected(void)
@@ -1248,32 +1277,25 @@ void spoton_web_server_child_main::slotKeysReceived(void)
 void spoton_web_server_child_main::write
 (QSslSocket *socket, const QByteArray &data)
 {
-  if(!socket || data.isEmpty())
-    return;
-
-  for(int i = 0;;)
+  if(data.isEmpty() ||
+     socket == nullptr ||
+     socket->state() != QAbstractSocket::ConnectedState)
     {
-      if(i >= data.length() ||
-	 socket->state() != QAbstractSocket::ConnectedState)
-	break;
-
-      auto const rc = socket->write(data.mid(i, s_bytesPerWrite));
-
-      socket->flush();
-
-      if(rc > 0)
-	{
-	  i += static_cast<int> (rc);
-	  socket->waitForBytesWritten(s_waitForBytesWritten);
-	}
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      return;
     }
+
+  socket->write(data);
 }
 
 void spoton_web_server_child_main::writeDefaultPage
 (QSslSocket *socket, const bool redirect)
 {
   if(!socket)
-    return;
+    {
+      QTimer::singleShot(1000, QCoreApplication::instance(), SLOT(quit(void)));
+      return;
+    }
 
   if(redirect)
     {

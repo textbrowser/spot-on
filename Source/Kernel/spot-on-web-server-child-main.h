@@ -58,6 +58,7 @@ class spoton_web_server_child_main: public QObject
   void writeDefaultPage(QSslSocket *socket, const bool redirect = false);
 
  private slots:
+  void slotBytesWritten(qint64 bytes);
   void slotKernelConnected(void);
   void slotKernelEncrypted(void);
   void slotKernelRead(void);
