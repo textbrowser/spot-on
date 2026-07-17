@@ -1175,8 +1175,9 @@ void spoton::slotEmailPageChanged(int value)
 void spoton::slotEncryptGIT(void)
 {
   auto action = qobject_cast<QAction *> (sender());
+  auto clipboard = QApplication::clipboard();
 
-  if(!action)
+  if(!action || !clipboard)
     {
       m_optionsUi.encrypt_git_output->setText
 	(tr("An extreme error occurred!"));
@@ -1193,6 +1194,24 @@ void spoton::slotEncryptGIT(void)
       return;
     }
 
+  auto url(QUrl::fromUserInput(item->text().trimmed()));
+
+  if(url.isEmpty() || url.isValid() == false)
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("The selected GIT Site does not represent a valid URL."));
+      return;
+    }
+
+  auto const token(url.password().trimmed().toUtf8());
+
+  if(token.isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("The selected GIT Site's password is empty."));
+      return;
+    }
+
   auto const publicKey
     (spoton_misc::
      publicKeyFromOID(action->data().toLongLong(), m_crypts.value("chat")));
@@ -1203,6 +1222,22 @@ void spoton::slotEncryptGIT(void)
 	(tr("Cannot retrieve the public key for %1.").arg(action->text()));
       return;
     }
+
+  auto const keyInformation = spoton_crypt::publicKeyEncrypt
+    (token, qCompress(publicKey), publicKey.mid(0, 25), nullptr);
+
+  if(keyInformation.isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("Public-key encryption failure.").arg(action->text()));
+      return;
+    }
+
+  url.setPassword(keyInformation.toBase64());
+  clipboard->setText(url.toString());
+  m_optionsUi.encrypt_git_output->setText
+    (tr("The URL (%1) has been copied to the clipboard buffer.").
+     arg(url.toString()));
 }
 
 void spoton::slotFindInSearch(void)
