@@ -511,19 +511,16 @@ int spoton_neighbor::write
 	  else
 	    sent = 0;
 
-	  if(sent > 0)
+	  if(m_tcpSocket->state() == QAbstractSocket::ConnectedState &&
+	     m_waitforbyteswritten_msecs > 0 &&
+	     sent > 0)
 	    {
 	      if(remaining - sent > spoton_common::MAXIMUM_TCP_PACKET_SIZE)
-		{
-		  if(m_tcpSocket->state() == QAbstractSocket::ConnectedState &&
-		     m_waitforbyteswritten_msecs > 0)
-		    m_tcpSocket->waitForBytesWritten
-		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-		}
-	      else if(m_tcpSocket->state() ==
-		      QAbstractSocket::ConnectedState &&
-		      m_waitforbyteswritten_msecs > 0)
-		m_tcpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
+		m_tcpSocket->waitForBytesWritten
+		  (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
+	      else
+		m_tcpSocket->waitForBytesWritten
+		  (m_waitforbyteswritten_msecs);
 	    }
 	}
       else if(m_udpSocket)
