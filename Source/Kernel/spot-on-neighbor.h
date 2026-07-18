@@ -280,7 +280,7 @@ class spoton_neighbor: public QThread
   QByteArray m_accountClientSentSalt;
   QByteArray m_accountName;
   QByteArray m_accountPassword;
-  QByteArray m_data;
+  QByteArray m_data; // Received data.
   QByteArray m_privateApplicationCredentials;
   QDateTime m_lastReadTime;
   QDateTime m_startTime;
