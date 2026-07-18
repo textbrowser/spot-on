@@ -30,15 +30,12 @@
 #ifdef Q_OS_FREEBSD
 extern "C"
 {
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 }
 #elif defined(Q_OS_LINUX)
 extern "C"
 {
-#include <linux/sockios.h>
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 }
@@ -51,7 +48,6 @@ extern "C"
 #elif defined(Q_OS_OPENBSD)
 extern "C"
 {
-#include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
 }
@@ -4000,39 +3996,7 @@ qint64 spoton_misc::participantCount(const QString &keyType,
 
 qint64 spoton_misc::sendQueueSize(QTcpSocket *tcpSocket)
 {
-  if(!tcpSocket)
-    return -1;
-
-  qint64 count = 0;
-
-#ifdef Q_OS_FREEBSD
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   FIONWRITE,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_LINUX)
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   SIOCOUTQ,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_MACOS)
-  auto length = (socklen_t) sizeof(count);
-
-  if(getsockopt(static_cast<int> (tcpSocket->socketDescriptor()),
-		SOL_SOCKET,
-		SO_NWRITE,
-		&count,
-		&length) == -1)
-    count = tcpSocket->bytesToWrite();
-#elif defined(Q_OS_OPENBSD)
-  if(ioctl(static_cast<int> (tcpSocket->socketDescriptor()),
-	   TIOCOUTQ,
-	   &count) == -1)
-    count = tcpSocket->bytesToWrite();
-#else
-  count = tcpSocket->bytesToWrite();
-#endif
-  return count;
+  return tcpSocket ? tcpSocket->bytesToWrite() : -1;
 }
 
 qint64 spoton_misc::urlsCount(const QSqlDatabase &db)
