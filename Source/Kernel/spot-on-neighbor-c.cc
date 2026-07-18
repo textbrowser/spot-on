@@ -560,25 +560,20 @@ int spoton_neighbor::write
 		}
 	    }
 
-	  if(sent > 0)
+	  if(m_udpSocket->state() == QAbstractSocket::ConnectedState &&
+	     m_waitforbyteswritten_msecs > 0 &&
+	     sent > 0)
 	    {
 	      if(remaining - sent > udpMinimum)
-		{
-		  if(m_udpSocket->state() == QAbstractSocket::ConnectedState &&
-		     m_waitforbyteswritten_msecs > 0)
-		    m_udpSocket->waitForBytesWritten
-		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-		}
-	      else if(m_udpSocket->state() ==
-		      QAbstractSocket::ConnectedState &&
-		      m_waitforbyteswritten_msecs > 0)
+		m_udpSocket->waitForBytesWritten
+		  (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
+	      else
 		m_udpSocket->waitForBytesWritten(m_waitforbyteswritten_msecs);
 	    }
 
 	  if(sent == -1)
 	    {
-	      if(m_udpSocket->error() ==
-		 QAbstractSocket::DatagramTooLargeError)
+	      if(m_udpSocket->error() == QAbstractSocket::DatagramTooLargeError)
 		{
 		  udpMinimum = udpMinimum / 2;
 
