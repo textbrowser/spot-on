@@ -469,9 +469,8 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   return ok;
 }
 
-int spoton_neighbor::write(const char *data,
-			   const int size,
-			   const bool emitDropped)
+int spoton_neighbor::write
+(const char *data, const int size, const bool emitDropped)
 {
   if(!data || size < 0)
     return -1;
@@ -481,7 +480,7 @@ int spoton_neighbor::write(const char *data,
   auto const d = data;
   auto remaining = static_cast<qint64> (size);
   auto udpMinimum = static_cast<qint64>
-    (qMin(spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE, size));
+    (qMin(size, spoton_common::MAXIMUM_UDP_DATAGRAM_SIZE));
   qint64 sent = 0;
 
   while(remaining > 0)
@@ -491,7 +490,7 @@ int spoton_neighbor::write(const char *data,
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
 	  sent = m_bluetoothSocket->write
 	    (data,
-	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));
+	     qMin(remaining, spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE));
 #endif
 	}
       else if(m_sctpSocket)
@@ -504,8 +503,8 @@ int spoton_neighbor::write(const char *data,
 	  locker.unlock();
 
 	  auto const minimum = qMin
-	    (spoton_common::MAXIMUM_TCP_PACKET_SIZE,
-	     maximumBufferSize - spoton_misc::sendQueueSize(m_tcpSocket));
+	    (maximumBufferSize - spoton_misc::sendQueueSize(m_tcpSocket),
+	     spoton_common::MAXIMUM_TCP_PACKET_SIZE);
 
 	  if(minimum > 0)
 	    sent = m_tcpSocket->write(data, qMin(minimum, remaining));
