@@ -5,6 +5,8 @@
     new features are detailed below.
     <p>
       <ul>
+	<li>Bluetooth sockets do not allow waitForBytesWritten(). Removed
+	logic from the Spot-On-Kernel.</li>
 	<li>The local Web server search engine is now free of
 	  waitForBytesWritten() on the client socket. The child process
 	  will terminate naturally.</li>

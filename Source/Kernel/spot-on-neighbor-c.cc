@@ -469,8 +469,9 @@ bool spoton_neighbor::writeMessage006X(const QByteArray &data,
   return ok;
 }
 
-int spoton_neighbor::write
-(const char *data, const int size, const bool emitDropped)
+int spoton_neighbor::write(const char *data,
+			   const int size,
+			   const bool emitDropped)
 {
   if(!data || size < 0)
     return -1;
@@ -491,24 +492,6 @@ int spoton_neighbor::write
 	  sent = m_bluetoothSocket->write
 	    (data,
 	     qMin(spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE, remaining));
-
-	  if(sent > 0)
-	    {
-	      if(remaining - sent >
-		 spoton_common::MAXIMUM_BLUETOOTH_PACKET_SIZE)
-		{
-		  if(m_bluetoothSocket->state() ==
-		     QBluetoothSocket::SocketState::ConnectedState &&
-		     m_waitforbyteswritten_msecs > 0)
-		    m_bluetoothSocket->waitForBytesWritten
-		      (spoton_common::WAIT_FOR_BYTES_WRITTEN_MSECS_PREFERRED);
-		}
-	      else if(m_bluetoothSocket->state() ==
-		      QBluetoothSocket::SocketState::ConnectedState &&
-		      m_waitforbyteswritten_msecs > 0)
-		m_bluetoothSocket->waitForBytesWritten
-		  (m_waitforbyteswritten_msecs);
-	    }
 #endif
 	}
       else if(m_sctpSocket)
@@ -555,6 +538,10 @@ int spoton_neighbor::write
 		   QByteArray(data,
 			      static_cast<int> (qMin(remaining, udpMinimum))));
 	      else
+		/*
+		** Do not issue writeDatagram() on a connected UDP socket
+		** as it may fail.
+		*/
 #endif
 		sent = m_udpSocket->write(data, qMin(remaining, udpMinimum));
 	    }

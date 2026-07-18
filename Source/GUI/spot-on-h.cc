@@ -635,7 +635,9 @@ void spoton::populateGITTable(void)
 	}
     }
 
+  m_optionsUi.git_table->clearSelection();
   m_optionsUi.git_table->resizeColumnsToContents();
+  m_optionsUi.git_table->scrollToTop();
 }
 
 void spoton::prepareEnvironmentVariables(void)
