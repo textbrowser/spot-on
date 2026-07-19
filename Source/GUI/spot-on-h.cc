@@ -637,7 +637,7 @@ void spoton::populateGITTable(void)
 
   m_optionsUi.git_table->clearSelection();
   m_optionsUi.git_table->resizeColumnsToContents();
-  m_optionsUi.git_table->scrollToTop();
+  m_optionsUi.git_table->scrollToItem(m_optionsUi.git_table->item(0, 0));
 }
 
 void spoton::prepareEnvironmentVariables(void)
@@ -1238,8 +1238,9 @@ void spoton::slotEncryptGIT(void)
   url.setPassword(keyInformation.toBase64());
   clipboard->setText(url.toString());
   m_optionsUi.encrypt_git_output->setText
-    (tr("The URL (%1) has been copied to the clipboard buffer.").
+    (tr("The URL (%1) has been copied into the clipboard buffer.").
      arg(url.toString()));
+  m_optionsUi.encrypt_git_output->setCursorPosition(0);
 }
 
 void spoton::slotFindInSearch(void)
