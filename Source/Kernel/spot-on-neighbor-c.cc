@@ -477,6 +477,7 @@ int spoton_neighbor::write
   else if(size == 0)
     return 0;
 
+  QElapsedTimer elapsed;
   auto const d = data;
   auto remaining = static_cast<qint64> (size);
   auto udpMinimum = static_cast<qint64>
@@ -494,7 +495,10 @@ int spoton_neighbor::write
 #endif
 	}
       else if(m_sctpSocket)
-	sent = m_sctpSocket->write(data, remaining);
+	{
+	  if((sent = m_sctpSocket->write(data, remaining)) > 0)
+	    elapsed.invalidate();
+	}
       else if(m_tcpSocket)
 	{
 	  QReadLocker locker(&m_maximumBufferSizeMutex);
@@ -612,11 +616,18 @@ int spoton_neighbor::write
       if(sent <= 0 || sent > static_cast<qint64> (size))
 	{
 	  if(m_sctpSocket && sent == 0)
-	    /*
-	    ** Would block.
-	    */
+	    {
+	      /*
+	      ** Would block.
+	      */
 
-	    continue;
+	      if(!elapsed.isValid())
+		elapsed.start();
+	      else if(elapsed.elapsed() > 5000)
+		break;
+
+	      continue;
+	    }
 	  else
 	    break;
 	}

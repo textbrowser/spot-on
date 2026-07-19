@@ -12,6 +12,9 @@
 	<li>The local Web server search engine is now free of
 	  waitForBytesWritten() on the client socket. The child process
 	  will terminate naturally.</li>
+	<li>The method spoton_neighbor::write() may block indefinitely
+	  on an SCTP socket. Abort after five consecutive seconds of
+	  inactivity.</li>
       </ul>
     </p>
     <h4><u>Spot-On 2026.07.05</u></h4>
