@@ -724,8 +724,8 @@ void spoton::prepareOtherOptions(void)
   QFileInfo const fileInfo
     (m_settings.value("FORTUNA_FILE", "").toString().trimmed());
   auto const url
-    (QUrl::fromUserInput(m_settings.value("FORTUNA_URL", "").toString().
-			 trimmed()));
+    (QUrl::fromUserInput
+    (m_settings.value("FORTUNA_URL", "").toString().trimmed()));
 
   if((fileInfo.isReadable()) || (url.isEmpty() == false && url.isValid()))
     {
@@ -1192,7 +1192,7 @@ void spoton::slotEncryptGIT(void)
   if(!item || item->text().trimmed().isEmpty())
     {
       m_optionsUi.encrypt_git_output->setText
-	(tr("Please select a non-empty GIT Site."));
+	(tr("Please select a non-empty GIT site."));
       return;
     }
 
@@ -1201,16 +1201,25 @@ void spoton::slotEncryptGIT(void)
   if(url.isEmpty() || url.isValid() == false)
     {
       m_optionsUi.encrypt_git_output->setText
-	(tr("The selected GIT Site does not represent a valid URL."));
+	(tr("The selected GIT site does not represent a valid URL."));
       return;
     }
 
-  auto const token(url.password().trimmed().toUtf8());
+  auto password(url.password().trimmed().toUtf8());
 
-  if(token.isEmpty())
+  if(password.isEmpty())
     {
       m_optionsUi.encrypt_git_output->setText
-	(tr("The selected GIT Site's password is empty."));
+	(tr("The selected GIT site's password is empty."));
+      return;
+    }
+
+  auto user(url.userName().trimmed().toUtf8());
+
+  if(user.isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("The selected GIT site's user is empty."));
       return;
     }
 
@@ -1225,17 +1234,30 @@ void spoton::slotEncryptGIT(void)
       return;
     }
 
-  auto const keyInformation = spoton_crypt::publicKeyEncrypt
-    (token, qCompress(publicKey), publicKey.mid(0, 25), nullptr);
+  password = spoton_crypt::publicKeyEncrypt
+    (password, qCompress(publicKey), publicKey.mid(0, 25), nullptr);
 
-  if(keyInformation.isEmpty())
+  if(password.isEmpty())
     {
       m_optionsUi.encrypt_git_output->setText
-	(tr("Public-key encryption failure.").arg(action->text()));
+	(tr("Public-key encryption failure of the password.").
+	 arg(action->text()));
       return;
     }
 
-  url.setPassword(keyInformation.toBase64());
+  user = spoton_crypt::publicKeyEncrypt
+    (user, qCompress(publicKey), publicKey.mid(0, 25), nullptr);
+
+  if(user.isEmpty())
+    {
+      m_optionsUi.encrypt_git_output->setText
+	(tr("Public-key encryption failure of the user.").
+	 arg(action->text()));
+      return;
+    }
+
+  url.setPassword(password.toBase64());
+  url.setUserName(user.toBase64());
   clipboard->setText(url.toString());
   m_optionsUi.encrypt_git_output->setText
     (tr("The URL (%1) has been copied into the clipboard buffer.").
