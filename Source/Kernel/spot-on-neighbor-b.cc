@@ -291,10 +291,17 @@ void spoton_neighbor::deleteLater(void)
 		     SIGNAL(disconnected(void)),
 		     this,
 		     SLOT(slotDisconnected(void)));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+	  disconnect(m_bluetoothSocket,
+		     SIGNAL(errorOccurred(QBluetoothSocket::SocketError)),
+		     this,
+		     SLOT(slotError(QBluetoothSocket::SocketError)));
+#else
 	  disconnect(m_bluetoothSocket,
 		     SIGNAL(error(QBluetoothSocket::SocketError)),
 		     this,
 		     SLOT(slotError(QBluetoothSocket::SocketError)));
+#endif
 	  disconnect(m_bluetoothSocket,
 		     SIGNAL(readyRead(void)),
 		     this,

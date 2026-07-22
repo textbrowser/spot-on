@@ -127,10 +127,17 @@ spoton_neighbor::spoton_neighbor
 		  SIGNAL(disconnected(void)),
 		  this,
 		  SLOT(slotDisconnected(void)));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+	  connect(m_bluetoothSocket,
+		  SIGNAL(errorOccurred(QBluetoothSocket::SocketError)),
+		  this,
+		  SLOT(slotError(QBluetoothSocket::SocketError)));
+#else
 	  connect(m_bluetoothSocket,
 		  SIGNAL(error(QBluetoothSocket::SocketError)),
 		  this,
 		  SLOT(slotError(QBluetoothSocket::SocketError)));
+#endif
 	  connect(m_bluetoothSocket,
 		  SIGNAL(readyRead(void)),
 		  this,
@@ -2965,10 +2972,18 @@ void spoton_neighbor::slotTimeout(void)
 			    SIGNAL(disconnected(void)),
 			    this,
 			    SLOT(slotDisconnected(void)));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 2, 0))
+		    connect
+		      (m_bluetoothSocket,
+		       SIGNAL(errorOccurred(QBluetoothSocket::SocketError)),
+		       this,
+		       SLOT(slotError(QBluetoothSocket::SocketError)));
+#else
 		    connect(m_bluetoothSocket,
 			    SIGNAL(error(QBluetoothSocket::SocketError)),
 			    this,
 			    SLOT(slotError(QBluetoothSocket::SocketError)));
+#endif
 		    connect(m_bluetoothSocket,
 			    SIGNAL(readyRead(void)),
 			    this,
