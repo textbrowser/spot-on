@@ -172,10 +172,17 @@ spoton_neighbor::spoton_neighbor
 		  SIGNAL(disconnected(void)),
 		  this,
 		  SLOT(slotDisconnected(void)));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+	  connect(m_webSocket,
+		  SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+		  this,
+		  SLOT(slotError(QAbstractSocket::SocketError)));
+#else
 	  connect(m_webSocket,
 		  SIGNAL(error(QAbstractSocket::SocketError)),
 		  this,
 		  SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
 	  connect(m_webSocket,
 		  SIGNAL(sslErrors(const QList<QSslError> &)),
 		  this,
@@ -949,10 +956,17 @@ spoton_neighbor::spoton_neighbor
 	      SIGNAL(disconnected(void)),
 	      this,
 	      SLOT(slotDisconnected(void)));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+      connect(m_webSocket,
+	      SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+	      this,
+	      SLOT(slotError(QAbstractSocket::SocketError)));
+#else
       connect(m_webSocket,
 	      SIGNAL(error(QAbstractSocket::SocketError)),
 	      this,
 	      SLOT(slotError(QAbstractSocket::SocketError)));
+#endif
       connect(m_webSocket,
 	      SIGNAL(proxyAuthenticationRequired(const QNetworkProxy &,
 						 QAuthenticator *)),
