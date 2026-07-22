@@ -427,23 +427,30 @@ QHostAddress spoton_listener::externalAddress(void) const
 
 QString spoton_listener::errorString(void) const
 {
+  QString error("");
+
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
   if(m_bluetoothServer)
-    return QString("%1").arg(m_bluetoothServer->error());
+    error = QString("%1").arg(m_bluetoothServer->error());
 #endif
 
   if(m_sctpServer)
-    return m_sctpServer->errorString();
+    error = m_sctpServer->errorString();
   else if(m_tcpServer)
-    return m_tcpServer->errorString();
+    error = m_tcpServer->errorString();
   else if(m_udpServer)
-    return m_udpServer->errorString();
+    error = m_udpServer->errorString();
 #if QT_VERSION >= 0x050300 && defined(SPOTON_WEBSOCKETS_ENABLED)
   else if(m_webSocketServer)
-    return m_webSocketServer->errorString();
+    error = m_webSocketServer->errorString();
 #endif
 
-  return "";
+  error = error.trimmed();
+
+  if(error.isEmpty())
+    error = "unknown error";
+
+  return error;
 }
 
 QString spoton_listener::orientation(void) const
