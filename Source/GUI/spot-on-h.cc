@@ -1270,7 +1270,7 @@ void spoton::slotFindInSearch(void)
 #if SPOTON_GOLDBUG == 0
   auto const static findPalette = m_ui.find->palette();
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
-  auto options = QTextDocument::FindFlags();
+  auto const options = QTextDocument::FindFlags();
 #else
   QTextDocument::FindFlags options = 0;
 #endif
