@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-1097</y>
+         <y>-671</y>
          <width>769</width>
-         <height>4914</height>
+         <height>4980</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -697,6 +697,16 @@
                </widget>
               </item>
               <item>
+               <widget class="QLabel" name="label_39">
+                <property name="text">
+                 <string>A special encrypted GIT URL may also be pasted into a GIT Site cell. The URL is decrypted after Apply is pressed.</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QTableWidget" name="git_table">
                 <property name="alternatingRowColors">
                  <bool>true</bool>
@@ -922,6 +932,16 @@
                  <string>Encrypt GIT Site</string>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                 <item>
+                  <widget class="QLabel" name="label_37">
+                   <property name="text">
+                    <string>The selected GIT site will be encrypted with the public key of the selected recipient. If successful, the generated URL is copied into the clipboard buffer.</string>
+                   </property>
+                   <property name="wordWrap">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_25">
                    <item>
