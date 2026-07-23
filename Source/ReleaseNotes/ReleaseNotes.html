@@ -13,7 +13,7 @@
 	  waitForBytesWritten() on the client socket. The child process
 	  will terminate naturally.</li>
 	<li>The method spoton_neighbor::write() may block indefinitely
-	  on an SCTP socket. Abort after five consecutive seconds of
+	  on an SCTP socket. Abort if we exceed five consecutive seconds of
 	  inactivity.</li>
 	<li>The signal QBluetoothSocket::error() has been replaced with
 	  errorOccurred() in Qt 6.2.</li>
