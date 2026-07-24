@@ -43,7 +43,7 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-3394</y>
+         <y>-779</y>
          <width>769</width>
          <height>4980</height>
         </rect>
@@ -933,7 +933,7 @@
                  <item>
                   <widget class="QLabel" name="label_37">
                    <property name="text">
-                    <string>The selected GIT site will be encrypted with the public key of the selected recipient. If successful, the generated URL is copied into the clipboard buffer.</string>
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The selected GIT site will be directly encrypted with the public key of the selected recipient. If successful, the generated URL is copied into the clipboard buffer. Please note that the results are not digitally signed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="wordWrap">
                     <bool>true</bool>
