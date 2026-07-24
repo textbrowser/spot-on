@@ -1871,6 +1871,8 @@ void spoton::slotSaveGITEnvironment(void)
   if(!crypt)
     return;
 
+  QApplication::setOverrideCursor(Qt::WaitCursor);
+
   QHash<int, QHash<QString, QString > > hash;
 
   for(int i = 0; i < m_optionsUi.git_table->rowCount(); i++)
@@ -1886,7 +1888,44 @@ void spoton::slotSaveGITEnvironment(void)
 	  auto const localDirectory(item2->text().trimmed());
 	  auto const script(item3->text().trimmed());
 
-	  h["git-site"] = gitSite;
+	  if(m_optionsUi.decrypt_git_sites->isChecked())
+	    {
+	      auto url(QUrl::fromUserInput(gitSite));
+
+	      if(url.isEmpty() == false && url.isValid())
+		{
+		  auto password
+		    (QByteArray::fromBase64(url.password().toUtf8()));
+		  auto user(QByteArray::fromBase64(url.userName().toUtf8()));
+
+		  QHashIterator<QString, spoton_crypt *> it(m_crypts);
+
+		  while(it.hasNext())
+		    {
+		      it.next();
+
+		      if(!it.value())
+			continue;
+
+		      auto ok1 = false;
+		      auto ok2 = false;
+
+		      it.value()->publicKeyDecrypt(password, &ok1);
+		      it.value()->publicKeyDecrypt(user, &ok2);
+
+		      if(ok1 && ok2)
+			{
+			  url.setPassword(password);
+			  url.setUserName(user);
+			  h["git-site"] = url.toString();
+			  break;
+			}
+		    }
+		}
+	    }
+	  else
+	    h["git-site"] = gitSite;
+
 	  h["git-site-checked"] = QString::number
 	    (item1->checkState() == Qt::Checked);
 	  h["local-directory"] = QFileInfo(localDirectory).absoluteFilePath();
@@ -1909,6 +1948,8 @@ void spoton::slotSaveGITEnvironment(void)
 	("gui/git_table", crypt->encryptedThenHashed(bytes, nullptr));
       m_prisonBluesDirectoriesCache.clear();
     }
+
+  QApplication::restoreOverrideCursor();
 }
 
 void spoton::slotSaveLineLimits(int value)
