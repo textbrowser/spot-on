@@ -1884,7 +1884,7 @@ void spoton::slotSaveGITEnvironment(void)
       if(item1 && item2 && item3)
 	{
 	  QHash<QString, QString> h;
-	  auto const gitSite(item1->text().trimmed());
+	  auto gitSite(item1->text().trimmed());
 	  auto const localDirectory(item2->text().trimmed());
 	  auto const script(item3->text().trimmed());
 
@@ -1894,10 +1894,6 @@ void spoton::slotSaveGITEnvironment(void)
 
 	      if(url.isEmpty() == false && url.isValid())
 		{
-		  auto password
-		    (QByteArray::fromBase64(url.password().toUtf8()));
-		  auto user(QByteArray::fromBase64(url.userName().toUtf8()));
-
 		  QHashIterator<QString, spoton_crypt *> it(m_crypts);
 
 		  while(it.hasNext())
@@ -1909,23 +1905,26 @@ void spoton::slotSaveGITEnvironment(void)
 
 		      auto ok1 = false;
 		      auto ok2 = false;
+		      auto password
+			(QByteArray::fromBase64(url.password().toUtf8()));
+		      auto user
+			(QByteArray::fromBase64(url.userName().toUtf8()));
 
-		      it.value()->publicKeyDecrypt(password, &ok1);
-		      it.value()->publicKeyDecrypt(user, &ok2);
+		      password = it.value()->publicKeyDecrypt(password, &ok1);
+		      user = it.value()->publicKeyDecrypt(user, &ok2);
 
 		      if(ok1 && ok2)
 			{
 			  url.setPassword(password);
 			  url.setUserName(user);
-			  h["git-site"] = url.toString();
+			  gitSite = url.toString();
 			  break;
 			}
 		    }
 		}
 	    }
-	  else
-	    h["git-site"] = gitSite;
 
+	  h["git-site"] = gitSite;
 	  h["git-site-checked"] = QString::number
 	    (item1->checkState() == Qt::Checked);
 	  h["local-directory"] = QFileInfo(localDirectory).absoluteFilePath();
