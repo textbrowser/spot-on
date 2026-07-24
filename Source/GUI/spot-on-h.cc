@@ -1260,9 +1260,9 @@ void spoton::slotEncryptGIT(void)
   url.setUserName(user.toBase64());
   clipboard->setText(url.toString());
   m_optionsUi.encrypt_git_output->setText
-    (tr("The URL (%1) has been copied into the clipboard buffer.").
-     arg(url.toString()));
+    (tr("Please share the copied URL with %1.").arg(action->text()));
   m_optionsUi.encrypt_git_output->setCursorPosition(0);
+  QTimer::singleShot(5000, m_optionsUi.encrypt_git_output, SLOT(clear(void)));
 }
 
 void spoton::slotFindInSearch(void)
