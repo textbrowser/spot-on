@@ -50,6 +50,7 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 {
   m_cancelImport = 0;
   m_currentFeedRow = -1;
+  m_currentVerifiedFeedRow = -1;
   m_parent = parent;
   m_ui.setupUi(this);
   m_ui.feeds->horizontalHeader()->setSortIndicator
@@ -2699,6 +2700,8 @@ void spoton_rss::slotFeedVerificationReplyFinished(void)
 
       reply->deleteLater();
     }
+
+  verifyNextFeed();
 }
 
 void spoton_rss::slotFind(void)
@@ -3698,51 +3701,62 @@ void spoton_rss::slotUrlClicked(const QUrl &url)
 
 void spoton_rss::slotVerifyFeeds(void)
 {
+  m_currentVerifiedFeedRow = -1;
   m_ui.verified->clear();
   m_ui.verified_feeds->setChecked(true);
+  verifyNextFeed();
+}
 
-  for(int i = 0; i < m_ui.feeds->rowCount(); i++)
+void spoton_rss::verifyNextFeed(void)
+{
+  m_currentVerifiedFeedRow += 1;
+
+  auto item = m_ui.feeds->item(m_currentVerifiedFeedRow, 0);
+
+  if(!item)
     {
-      auto item = m_ui.feeds->item(i, 0);
-
-      if(!item)
-	continue;
-
-      QNetworkRequest request(item->text());
-
-      request.setRawHeader("Accept", "text/html");
-      request.setRawHeader("User-Agent", s_user_agent);
-
-      auto reply = m_feedNetworkAccessManager.get(request);
-
-      if(!reply)
-	{
-	  emit logError
-	    (QString("QNetworkAccessManager::get() failure on "
-		     "<a href=\"%1\">%1</a>.").
-	     arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
-		 constData()));
-	  continue;
-	}
-
-      reply->ignoreSslErrors();
-#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
-      connect(reply,
-	      SIGNAL(error(QNetworkReply::NetworkError)),
-	      this,
-	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
-#else
-      connect(reply,
-	      SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
-	      this,
-	      SLOT(slotReplyError(QNetworkReply::NetworkError)));
-#endif
-      connect(reply,
-	      SIGNAL(finished(void)),
-	      this,
-	      SLOT(slotFeedVerificationReplyFinished(void)));
-      m_ui.verified->append
-	(tr("Verifying the feed <a href=\"%1\">%1</a>.").
-	 arg(spoton_misc::urlToEncoded(reply->url()).constData()));
+      m_currentVerifiedFeedRow = -1;
+      return;
     }
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 9, 0))
+  m_feedNetworkAccessManager.clearConnectionCache();
+#endif
+
+  QNetworkRequest request(item->text());
+
+  request.setRawHeader("Accept", "text/html");
+  request.setRawHeader("User-Agent", s_user_agent);
+
+  auto reply = m_feedNetworkAccessManager.get(request);
+
+  if(!reply)
+    {
+      emit logError
+	(QString("QNetworkAccessManager::get() failure on "
+		 "<a href=\"%1\">%1</a>.").
+	 arg(spoton_misc::urlToEncoded(QUrl::fromUserInput(item->text())).
+	     constData()));
+      return;
+    }
+
+  reply->ignoreSslErrors();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 15, 0))
+  connect(reply,
+	  SIGNAL(error(QNetworkReply::NetworkError)),
+	  this,
+	  SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#else
+  connect(reply,
+	  SIGNAL(errorOccurred(QNetworkReply::NetworkError)),
+	  this,
+	  SLOT(slotReplyError(QNetworkReply::NetworkError)));
+#endif
+  connect(reply,
+	  SIGNAL(finished(void)),
+	  this,
+	  SLOT(slotFeedVerificationReplyFinished(void)));
+  m_ui.verified->append
+    (tr("Verifying the feed <a href=\"%1\">%1</a>.").
+     arg(spoton_misc::urlToEncoded(reply->url()).constData()));
 }

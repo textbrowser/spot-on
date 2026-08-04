@@ -71,6 +71,7 @@ class spoton_rss: public QMainWindow
   QTimer m_statisticsTimer;
   Ui_spoton_rss m_ui;
   int m_currentFeedRow;
+  int m_currentVerifiedFeedRow;
   bool importUrl(const QList<QVariant> &list, const int maximumKeywords);
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
@@ -91,6 +92,7 @@ class spoton_rss: public QMainWindow
 		    const QString &publicationDate,
 		    const QString &title,
 		    const QUrl &url);
+  void verifyNextFeed(void);
 
  private slots:
   void slotActivate(bool state);
