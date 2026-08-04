@@ -90,7 +90,7 @@
      <item>
       <spacer name="horizontalSpacer_5">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -151,7 +151,7 @@
      <item>
       <widget class="QComboBox" name="account">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToContents</enum>
+        <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
        </property>
        <property name="minimumContentsLength">
         <number>15</number>
@@ -168,7 +168,7 @@
      <item>
       <spacer name="horizontalSpacer_8">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -195,7 +195,7 @@
      <item>
       <widget class="QComboBox" name="chat_primary_account">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToContents</enum>
+        <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
        </property>
        <property name="minimumContentsLength">
         <number>15</number>
@@ -215,7 +215,7 @@
      <item>
       <widget class="QComboBox" name="email_primary_account">
        <property name="sizeAdjustPolicy">
-        <enum>QComboBox::AdjustToContents</enum>
+        <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
        </property>
        <property name="minimumContentsLength">
         <number>15</number>
@@ -225,7 +225,7 @@
      <item>
       <spacer name="horizontalSpacer_10">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -240,7 +240,7 @@
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
+      <enum>QFrame::Shape::NoFrame</enum>
      </property>
      <property name="widgetResizable">
       <bool>true</bool>
@@ -265,9 +265,6 @@
            <widget class="QGroupBox" name="proxy">
             <property name="title">
              <string>Pro&amp;xy</string>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
             <property name="checkable">
              <bool>true</bool>
@@ -294,7 +291,7 @@
              <item>
               <widget class="QFrame" name="proxy_frame">
                <property name="frameShape">
-                <enum>QFrame::NoFrame</enum>
+                <enum>QFrame::Shape::NoFrame</enum>
                </property>
                <layout class="QGridLayout" name="gridLayout_3">
                 <item row="0" column="0">
@@ -315,7 +312,7 @@
                   <item>
                    <widget class="QComboBox" name="proxy_type">
                     <property name="sizeAdjustPolicy">
-                     <enum>QComboBox::AdjustToContents</enum>
+                     <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                     </property>
                     <item>
                      <property name="text">
@@ -332,7 +329,7 @@
                   <item>
                    <spacer name="horizontalSpacer_7">
                     <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
@@ -412,7 +409,7 @@
                   <item>
                    <spacer name="horizontalSpacer_6">
                     <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
+                     <enum>Qt::Orientation::Horizontal</enum>
                     </property>
                     <property name="sizeHint" stdset="0">
                      <size>
@@ -437,7 +434,7 @@
                 <item row="2" column="3">
                  <widget class="QLineEdit" name="proxy_password">
                   <property name="echoMode">
-                   <enum>QLineEdit::Password</enum>
+                   <enum>QLineEdit::EchoMode::Password</enum>
                   </property>
                   <property name="placeholderText">
                    <string>Password</string>
@@ -485,7 +482,7 @@
                  <number>0</number>
                 </property>
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -507,7 +504,7 @@
               <item row="8" column="3">
                <widget class="QComboBox" name="out_authentication">
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -522,7 +519,7 @@
                  <string>&amp;Server Address</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_server_address</cstring>
@@ -532,7 +529,7 @@
               <item row="8" column="1">
                <widget class="QComboBox" name="in_authentication">
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -544,7 +541,7 @@
               <item row="10" column="1">
                <widget class="QLineEdit" name="in_password">
                 <property name="echoMode">
-                 <enum>QLineEdit::Password</enum>
+                 <enum>QLineEdit::EchoMode::Password</enum>
                 </property>
                 <property name="placeholderText">
                  <string>Incoming Password</string>
@@ -560,7 +557,7 @@
                  <string>&amp;Authentification</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_authentication</cstring>
@@ -573,7 +570,7 @@
                  <number>2</number>
                 </property>
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -631,7 +628,7 @@
                  <string>&amp;Password</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_password</cstring>
@@ -644,7 +641,7 @@
                  <number>0</number>
                 </property>
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -671,7 +668,7 @@
               <item row="10" column="3">
                <widget class="QLineEdit" name="out_password">
                 <property name="echoMode">
-                 <enum>QLineEdit::Password</enum>
+                 <enum>QLineEdit::EchoMode::Password</enum>
                 </property>
                 <property name="placeholderText">
                  <string>Outgoing Password</string>
@@ -697,7 +694,7 @@
                  <string>&amp;Method</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_method</cstring>
@@ -710,7 +707,7 @@
                  <string>Outgoing Server</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -720,7 +717,7 @@
                  <string>Incoming Server</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>
@@ -730,7 +727,7 @@
                  <number>2</number>
                 </property>
                 <property name="sizeAdjustPolicy">
-                 <enum>QComboBox::AdjustToContents</enum>
+                 <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
                 </property>
                 <item>
                  <property name="text">
@@ -757,7 +754,7 @@
                 <item>
                  <spacer name="horizontalSpacer">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -777,7 +774,7 @@
                 <item>
                  <spacer name="horizontalSpacer_2">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -808,7 +805,7 @@
                  <string>&amp;Port</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_server_port</cstring>
@@ -821,7 +818,7 @@
                  <string>&amp;Username</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_username</cstring>
@@ -834,7 +831,7 @@
                  <string>&amp;SSL/TLS</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_ssltls</cstring>
@@ -849,7 +846,7 @@
                 <item>
                  <spacer name="horizontalSpacer_3">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -869,7 +866,7 @@
                 <item>
                  <spacer name="horizontalSpacer_4">
                   <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
+                   <enum>Qt::Orientation::Horizontal</enum>
                   </property>
                   <property name="sizeHint" stdset="0">
                    <size>
@@ -887,7 +884,7 @@
                  <string>&amp;Verify Host</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_verify_host</cstring>
@@ -914,7 +911,7 @@
                  <string>&amp;Verify Peer</string>
                 </property>
                 <property name="alignment">
-                 <set>Qt::AlignCenter</set>
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                 <property name="buddy">
                  <cstring>in_verify_peer</cstring>
@@ -990,7 +987,7 @@
             <item>
              <spacer name="horizontalSpacer_9">
               <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+               <enum>Qt::Orientation::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -1015,7 +1012,7 @@
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -1032,10 +1029,10 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok|QDialogButtonBox::StandardButton::Reset</set>
      </property>
     </widget>
    </item>
