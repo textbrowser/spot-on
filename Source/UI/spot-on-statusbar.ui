@@ -54,7 +54,7 @@
    <item>
     <widget class="QFrame" name="frame">
      <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
+      <enum>QFrame::Shadow::Raised</enum>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <property name="spacing">
@@ -176,6 +176,12 @@
       </item>
       <item>
        <widget class="QLabel" name="down">
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="pixmap">
          <pixmap resource="../Icons/icons.qrc">:/generic/down.png</pixmap>
         </property>
@@ -183,12 +189,18 @@
          <bool>true</bool>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QLabel" name="up">
+        <property name="maximumSize">
+         <size>
+          <width>32</width>
+          <height>32</height>
+         </size>
+        </property>
         <property name="pixmap">
          <pixmap resource="../Icons/icons.qrc">:/generic/up.png</pixmap>
         </property>
@@ -196,7 +208,7 @@
          <bool>true</bool>
         </property>
         <property name="alignment">
-         <set>Qt::AlignCenter</set>
+         <set>Qt::AlignmentFlag::AlignCenter</set>
         </property>
        </widget>
       </item>
