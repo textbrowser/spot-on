@@ -232,6 +232,10 @@ spoton_rss::spoton_rss(spoton *parent):QMainWindow(parent)
 	  SIGNAL(logError(const QString &)),
 	  this,
 	  SLOT(slotLogError(const QString &)));
+  connect(this,
+	  SIGNAL(statisticsGathered(const QString &)),
+	  this,
+	  SLOT(slotStatisticsGathered(const QString &)));
   m_originalFindPalette = m_ui.find->palette();
   m_ui.find->setPlaceholderText(tr("Find Text"));
 
@@ -539,6 +543,93 @@ void spoton_rss::deactivateImplementation(void)
   m_importFuture.waitForFinished();
   m_parseXmlFuture.cancel();
   m_parseXmlFuture.waitForFinished();
+  m_statisticsFuture.cancel();
+  m_statisticsFuture.waitForFinished();
+}
+
+void spoton_rss::gatherStatistics(void)
+{
+  QString connectionName("");
+
+  {
+    QString str("");
+    auto db(spoton_misc::database(connectionName));
+
+    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
+
+    if(db.open())
+      {
+	QList<qint64> counts;
+	QSqlQuery query(db);
+
+	query.setForwardOnly(true);
+	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
+		      "UNION "
+		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
+		      "WHERE imported = 2 "
+		      "UNION "
+		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
+		      "WHERE hidden = 1 "
+		      "UNION "
+		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
+		      "WHERE imported = 1 "
+		      "UNION "
+		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
+		      "WHERE imported = 0 "
+		      "UNION "
+		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
+		      "WHERE visited = 1 "
+		      "UNION "
+		      "SELECT COUNT(*), 'g' FROM rss_feeds_links "
+		      "WHERE visited <> 1 "
+		      "UNION "
+		      "SELECT COUNT(*), 'h' FROM rss_feeds_links "
+		      "WHERE visited = 2 "
+		      "UNION "
+		      "SELECT COUNT(*), 'i' FROM rss_feeds_links "
+		      "ORDER BY 2");
+
+	if(query.exec())
+	  while(query.next())
+	    counts << query.value(0).toLongLong();
+
+	QLocale const locale;
+
+	str = tr("%1 RSS Feeds | "         // a
+		 "%2 Failed Imports | "    // b
+		 "%3 Hidden URLs | "       // c
+		 "%4 Imported URLs | "     // d
+		 "%5 Not Imported URLs | " // e
+		 "%6 Indexed URLs | "      // f
+		 "%7 Not Indexed URLs | "  // g
+		 "%8 Malformed | "         // h
+		 "%9 Total URLs").         // i
+	  arg(locale.toString(counts.value(0))).
+	  arg(locale.toString(counts.value(1))).
+	  arg(locale.toString(counts.value(2))).
+	  arg(locale.toString(counts.value(3))).
+	  arg(locale.toString(counts.value(4))).
+	  arg(locale.toString(counts.value(5))).
+	  arg(locale.toString(counts.value(6))).
+	  arg(locale.toString(counts.value(7))).
+	  arg(locale.toString(counts.value(8)));
+      }
+    else
+      str = tr("0 RSS Feeds | "
+	       "0 Failed Imports | "
+	       "0 Hidden URLs | "
+	       "0 Imported URLs | "
+	       "0 Not Imported URLs | "
+	       "0 Indexed URLs | "
+	       "0 Not Indexed URLs | "
+	       "0 Malformed | "
+	       "0 Total URLs");
+
+    db.close();
+    emit statisticsGathered(str);
+  }
+
+  QSqlDatabase::removeDatabase(connectionName);
 }
 
 void spoton_rss::hideUrl(const QUrl &url, const bool state)
@@ -2549,13 +2640,17 @@ void spoton_rss::slotFeedReplyFinished(void)
 
   if(!m_feedDownloadContent.isEmpty())
     if(!url.isEmpty() && url.isValid())
+      {
+	m_parseXmlFuture.cancel();
+	m_parseXmlFuture.waitForFinished();
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-      m_parseXmlFuture = QtConcurrent::run
-	(&spoton_rss::parseXmlContent, this, m_feedDownloadContent, url);
+	m_parseXmlFuture = QtConcurrent::run
+	  (&spoton_rss::parseXmlContent, this, m_feedDownloadContent, url);
 #else
-      m_parseXmlFuture = QtConcurrent::run
-	(this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
+	m_parseXmlFuture = QtConcurrent::run
+	  (this, &spoton_rss::parseXmlContent, m_feedDownloadContent, url);
 #endif
+      }
 
   m_feedDownloadContent.clear();
 }
@@ -3310,98 +3405,26 @@ void spoton_rss::slotShowMenu(void)
   m_ui.action_menu->showMenu();
 }
 
+void spoton_rss::slotStatisticsGathered(const QString &str)
+{
+  QFontMetrics const fm(statusBar()->fontMetrics());
+
+  statusBar()->setToolTip
+    ("<html>" + QString(str).replace(" | ", "<br>") + "</html>");
+  statusBar()->showMessage
+    (fm.elidedText(str.trimmed(), Qt::ElideRight, statusBar()->width() - 25));
+}
+
 void spoton_rss::slotStatisticsTimeout(void)
 {
-  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-  QString connectionName("");
-
-  {
-    QString str("");
-    auto db(spoton_misc::database(connectionName));
-
-    db.setDatabaseName(spoton_misc::homePath() + QDir::separator() + "rss.db");
-
-    if(db.open())
-      {
-	QList<qint64> counts;
-	QSqlQuery query(db);
-
-	query.setForwardOnly(true);
-	query.prepare("SELECT COUNT(*), 'a' FROM rss_feeds "
-		      "UNION "
-		      "SELECT COUNT(*), 'b' FROM rss_feeds_links "
-		      "WHERE imported = 2 "
-		      "UNION "
-		      "SELECT COUNT(*), 'c' FROM rss_feeds_links "
-		      "WHERE hidden = 1 "
-		      "UNION "
-		      "SELECT COUNT(*), 'd' FROM rss_feeds_links "
-		      "WHERE imported = 1 "
-		      "UNION "
-		      "SELECT COUNT(*), 'e' FROM rss_feeds_links "
-		      "WHERE imported = 0 "
-		      "UNION "
-		      "SELECT COUNT(*), 'f' FROM rss_feeds_links "
-		      "WHERE visited = 1 "
-		      "UNION "
-		      "SELECT COUNT(*), 'g' FROM rss_feeds_links "
-		      "WHERE visited <> 1 "
-		      "UNION "
-		      "SELECT COUNT(*), 'h' FROM rss_feeds_links "
-		      "WHERE visited = 2 "
-		      "UNION "
-		      "SELECT COUNT(*), 'i' FROM rss_feeds_links "
-		      "ORDER BY 2");
-
-	if(query.exec())
-	  while(query.next())
-	    counts << query.value(0).toLongLong();
-
-	QLocale const locale;
-
-	str = tr("%1 RSS Feeds | "         // a
-		 "%2 Failed Imports | "    // b
-		 "%3 Hidden URLs | "       // c
-		 "%4 Imported URLs | "     // d
-		 "%5 Not Imported URLs | " // e
-		 "%6 Indexed URLs | "      // f
-		 "%7 Not Indexed URLs | "  // g
-		 "%8 Malformed | "         // h
-		 "%9 Total URLs").         // i
-	  arg(locale.toString(counts.value(0))).
-	  arg(locale.toString(counts.value(1))).
-	  arg(locale.toString(counts.value(2))).
-	  arg(locale.toString(counts.value(3))).
-	  arg(locale.toString(counts.value(4))).
-	  arg(locale.toString(counts.value(5))).
-	  arg(locale.toString(counts.value(6))).
-	  arg(locale.toString(counts.value(7))).
-	  arg(locale.toString(counts.value(8)));
-      }
-    else
-      str = tr("0 RSS Feeds | "
-	       "0 Failed Imports | "
-	       "0 Hidden URLs | "
-	       "0 Imported URLs | "
-	       "0 Not Imported URLs | "
-	       "0 Indexed URLs | "
-	       "0 Not Indexed URLs | "
-	       "0 Malformed | "
-	       "0 Total URLs");
-
-    db.close();
-
-    QFontMetrics const fm(statusBar()->fontMetrics());
-
-    statusBar()->setToolTip
-      ("<html>" + QString(str).replace(" | ", "<br>") + "</html>");
-    statusBar()->showMessage
-      (fm.elidedText(str.trimmed(), Qt::ElideRight, statusBar()->width() - 25));
-  }
-
-  QSqlDatabase::removeDatabase(connectionName);
-  QApplication::restoreOverrideCursor();
+  if(m_statisticsFuture.isFinished())
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    m_statisticsFuture = QtConcurrent::run
+      (&spoton_rss::gatherStatistics, this);
+#else
+    m_statisticsFuture = QtConcurrent::run
+      (this, &spoton_rss::gatherStatistics);
+#endif
 }
 
 void spoton_rss::slotTabChanged(int index)

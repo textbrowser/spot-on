@@ -57,6 +57,7 @@ class spoton_rss: public QMainWindow
   QByteArray m_feedDownloadContent;
   QFuture<void> m_importFuture;
   QFuture<void> m_parseXmlFuture;
+  QFuture<void> m_statisticsFuture;
   QNetworkAccessManager m_contentNetworkAccessManager;
   QNetworkAccessManager m_feedNetworkAccessManager;
   QPalette m_originalFindPalette;
@@ -74,6 +75,7 @@ class spoton_rss: public QMainWindow
   spoton_crypt *urlCommonCrypt(void) const;
   void closeEvent(QCloseEvent *event);
   void deactivateImplementation(void);
+  void gatherStatistics(void);
   void hideUrl(const QUrl &url, const bool state);
   void import(const int maximumKeywords);
   void parseXmlContent(const QByteArray &data, const QUrl &url);
@@ -126,6 +128,7 @@ class spoton_rss: public QMainWindow
   void slotScheduleFeedUpdate(void);
   void slotShowContextMenu(const QPoint &point);
   void slotShowMenu(void);
+  void slotStatisticsGathered(const QString &str);
   void slotStatisticsTimeout(void);
   void slotTabChanged(int index);
   void slotTimeOrderBy(bool state);
@@ -137,6 +140,7 @@ class spoton_rss: public QMainWindow
  signals:
   void downloadFeedImage(const QUrl &imageUrl, const QUrl &url);
   void logError(const QString &error);
+  void statisticsGathered(const QString &str);
 };
 
 #endif
