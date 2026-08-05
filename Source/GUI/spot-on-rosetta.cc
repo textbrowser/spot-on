@@ -1649,14 +1649,14 @@ void spoton_rosetta::publishAttachments
 
       parameters << "--batch"
 		 << "--encrypt"
+		 << "--hidden-recipient"
+		 << participant
 		 << "--output"
 		 << output
 		 << "--passphrase"
 		 << passphrase.constData()
 		 << "--pinentry-mode"
 		 << "loopback"
-		 << "--recipient"
-		 << participant
 		 << "--sign"
 		 << "--trust-model"
 		 << "always"
