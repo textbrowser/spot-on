@@ -2432,6 +2432,10 @@ void spoton_rss::slotDownloadFeedImage(const QUrl &imageUrl, const QUrl &url)
 	     arg(spoton_misc::urlToEncoded(imageUrl).constData()));
 	  return;
 	}
+      else
+	emit logError
+	  (QString("Downloading <a href=\"%1\">%1</a>.").
+	   arg(spoton_misc::urlToEncoded(imageUrl).constData()));
 
       reply->ignoreSslErrors();
       reply->setProperty("url", url);
@@ -2540,14 +2544,27 @@ void spoton_rss::slotFeedImageReplyFinished(void)
 
       reply->deleteLater();
 
-      auto const list(m_ui.feeds->findItems(url.toString(), Qt::MatchExactly));
+      auto const list
+	(m_ui.feeds->findItems(url.toString(), Qt::MatchExactly) +
+	 m_ui.feeds->
+	 findItems(url.toString(QUrl::StripTrailingSlash), Qt::MatchExactly));
 
-      if(!list.isEmpty())
+      if(!list.isEmpty()) // Only one entry please!
 	{
+	  disconnect(m_ui.feeds,
+		     SIGNAL(itemChanged(QTableWidgetItem *)),
+		     this,
+		     SLOT(slotItemChanged(QTableWidgetItem *)));
+
 	  if(!pixmap.isNull())
 	    list.at(0)->setIcon(pixmap);
 	  else
 	    list.at(0)->setIcon(QIcon(":/generic/rss.png"));
+
+	  connect(m_ui.feeds,
+		  SIGNAL(itemChanged(QTableWidgetItem *)),
+		  this,
+		  SLOT(slotItemChanged(QTableWidgetItem *)));
 	}
 
       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
