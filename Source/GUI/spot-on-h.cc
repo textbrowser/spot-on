@@ -431,7 +431,7 @@ void spoton::generalConcurrentMethod(const QHash<QString, QVariant> &settings)
 	db.setDatabaseName
 	  (spoton_misc::homePath() + QDir::separator() + "listeners.db");
 
-	if(db.isOpen())
+	if(db.open())
 	  {
 	    QSqlQuery query(db);
 

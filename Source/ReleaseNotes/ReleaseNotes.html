@@ -7,6 +7,8 @@
       <ul>
 	<li>Bluetooth sockets do not allow waitForBytesWritten(). Removed
 	  logic from the Spot-On-Kernel.</li>
+	<li>Corrected spoton::generalConcurrentMethod(). The method
+	  does not open the database listeners.db.</li>
 	<li>GPG attachments: replaced --recipient with --hidden-recipient.</li>
 	<li>GPGError 1.61.1; Windows.</li>
 	<li>Gathering of RSS statistics is now performed in a separate
