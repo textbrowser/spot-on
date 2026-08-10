@@ -581,8 +581,8 @@ bool spoton_listener::listen(const QString &address, const quint16 port)
 	  QBluetoothServiceInfo::Sequence publicBrowse;
 
 	  publicBrowse << QVariant::fromValue
-	    (QBluetoothUuid(QBluetoothUuid::ServiceClassUuid::
-			    PublicBrowseGroup));
+	    (QBluetoothUuid
+	    (QBluetoothUuid::ServiceClassUuid::PublicBrowseGroup));
 	  m_bluetoothServiceInfo->setAttribute
 	    (QBluetoothServiceInfo::BrowseGroupList, publicBrowse);
 
