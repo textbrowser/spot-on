@@ -29,10 +29,8 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MACOS
 #include <qbluetoothhostinfo.h>
 #include <qbluetoothlocaldevice.h>
-#endif
 #endif
 
 #include "spot-on-kernel.h"
@@ -737,7 +735,6 @@ spoton_neighbor::spoton_neighbor
   if(m_transport == "bluetooth")
     {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MACOS
       auto const list(QBluetoothLocalDevice::allDevices());
 
       if(list.isEmpty())
@@ -746,7 +743,6 @@ spoton_neighbor::spoton_neighbor
       else
 	m_bluetoothServiceDiscoveryAgent =
 	  new QBluetoothServiceDiscoveryAgent(list.at(0).address(), this);
-#endif
 #endif
     }
   else if(m_transport == "sctp")
@@ -2935,7 +2931,6 @@ void spoton_neighbor::slotTimeout(void)
 	if(m_transport == "bluetooth")
 	  {
 #if QT_VERSION >= 0x050501 && defined(SPOTON_BLUETOOTH_ENABLED)
-#ifndef Q_OS_MACOS
 	    QList<QBluetoothServiceInfo> list;
 
 	    if(!m_bluetoothSocket && m_bluetoothServiceDiscoveryAgent)
@@ -2946,13 +2941,8 @@ void spoton_neighbor::slotTimeout(void)
 		  m_bluetoothServiceDiscoveryAgent->start
 		    (QBluetoothServiceDiscoveryAgent::FullDiscovery);
 	      }
-#endif
 
-#ifdef Q_OS_MACOS
-	    for(int i = 0; i < 1; i++)
-#else
 	    for(int i = 0; i < list.size(); i++)
-#endif
 	      {
 		if(m_bluetoothSocket)
 		  break;
@@ -2968,9 +2958,7 @@ void spoton_neighbor::slotTimeout(void)
 		serviceUuid.append("-0000-0000-");
 		serviceUuid.append(QString(m_address).remove(":"));
 
-#ifndef Q_OS_MACOS
 		if(QBluetoothUuid(serviceUuid) == list.at(i).serviceUuid())
-#endif
 		  {
 		    m_bluetoothSocket = new QBluetoothSocket
 		      (QBluetoothServiceInfo::RfcommProtocol, this);
