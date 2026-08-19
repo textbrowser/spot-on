@@ -45,6 +45,41 @@
 	<hr>
 	<img src="images/spot-on.png">
 	<hr>
+	<h4><u>Spot-On 2026.08.19</u></h4>
+	Welcome to the 2026.08.19 release of Spot-On. Corrections and
+	new features are detailed below.
+	<p>
+	  <ul>
+	    <li>Bluetooth sockets do not allow waitForBytesWritten(). Removed
+	      logic from the Spot-On-Kernel.</li>
+	    <li>Corrected spoton::generalConcurrentMethod(). The method
+	      does not open the database listeners.db.</li>
+	    <li>GPG attachments: replaced --recipient with
+	      --hidden-recipient.</li>
+	    <li>GPGError 1.61.1; Windows.</li>
+	    <li>Gathering of RSS statistics is now performed in a separate
+	      task.</li>
+	    <li>Prison Blues credentials may now be shared via Options ->
+	      GIT -> Encrypt GIT Site.</li>
+	    <li>RSS: corrected setting of feed icon in the Feeds table.
+	      The itemChanged() signal must be disabled before a new item icon
+	      is applied.</li>
+	    <li>Simplified spoton_misc::sendQueueSize(). The method now
+	      returns QTcpSocket::bytesToWrite().</li>
+	    <li>The local Web server search engine is now free of
+	      waitForBytesWritten() on the client socket. The child process
+	      will terminate naturally.</li>
+	    <li>The method spoton_neighbor::write() may block indefinitely
+	      on an SCTP socket. Abort if we exceed five consecutive seconds of
+	      inactivity.</li>
+	    <li>The signal QBluetoothSocket::error() has been replaced with
+	      errorOccurred() in Qt 6.2.</li>
+	    <li>The signal QWebSocket::error() has been replaced with
+	      errorOccurred() in Qt 6.5.</li>
+	    <li>Verify RSS feeds incrementally as Qt 6.11.1 exhibits
+	      an interesting QSslSocket::open() violation.</li>
+	  </ul>
+	</p>
 	<h4><u>Spot-On 2026.07.05</u></h4>
 	Welcome to the 2026.07.05 release of Spot-On. Corrections and
 	new features are detailed below.
