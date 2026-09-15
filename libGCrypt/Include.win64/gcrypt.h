@@ -35,7 +35,8 @@
 
 #if defined _WIN32 || defined __WIN32__
 # ifndef __GNUC__
-  typedef long ssize_t;
+# include <basetsd.h>
+  typedef SSIZE_T ssize_t;
   typedef int  pid_t;
 # endif /*!__GNUC__*/
 #endif /*_WIN32*/
@@ -55,11 +56,11 @@ extern "C" {
    return the same version.  The purpose of this macro is to let
    autoconf (using the AM_PATH_GCRYPT macro) check that this header
    matches the installed library.  */
-#define GCRYPT_VERSION "1.12.2-unknown"
+#define GCRYPT_VERSION "1.12.4-unknown"
 
 /* The version number of this header.  It may be used to handle minor
    API incompatibilities.  */
-#define GCRYPT_VERSION_NUMBER 0x010c02
+#define GCRYPT_VERSION_NUMBER 0x010c04
 
 
 /* Internal: We can't use the convenience macros for the multi
@@ -97,8 +98,10 @@ extern "C" {
 #define _GCRY_GCC_ATTR_SENTINEL(a) __attribute__ ((sentinel(a)))
 #endif
 
-#if _GCRY_GCC_VERSION >= 80000
-#define _GCRY_GCC_ATTR_NONSTRING __attribute__((__nonstring__))
+#if defined __has_attribute
+#  if __has_attribute (__nonstring__)
+#    define _GCRY_GCC_ATTR_NONSTRING __attribute__((__nonstring__))
+#  endif
 #endif
 
 #endif /*__GNUC__*/
@@ -807,7 +810,7 @@ void     gcry_mpi_rshift (gcry_mpi_t x, gcry_mpi_t a, unsigned int n);
 void     gcry_mpi_lshift (gcry_mpi_t x, gcry_mpi_t a, unsigned int n);
 
 /* Store NBITS of the value P points to in A and mark A as an opaque
-   value.  On success A received the the ownership of the value P.
+   value.  On success A received the ownership of the value P.
    WARNING: Never use an opaque MPI for anything thing else than
    gcry_mpi_release, gcry_mpi_get_opaque. */
 gcry_mpi_t gcry_mpi_set_opaque (gcry_mpi_t a, void *p, unsigned int nbits);
@@ -824,13 +827,10 @@ gcry_mpi_t gcry_mpi_set_opaque_copy (gcry_mpi_t a,
    that the function should never be used for an non-opaque MPI. */
 void *gcry_mpi_get_opaque (gcry_mpi_t a, unsigned int *nbits);
 
-/* Set the FLAG for the big integer A.  Currently only the flag
-   GCRYMPI_FLAG_SECURE is allowed to convert A into an big intger
-   stored in "secure" memory. */
+/* Set the FLAG for the big integer A.  */
 void gcry_mpi_set_flag (gcry_mpi_t a, enum gcry_mpi_flag flag);
 
-/* Clear FLAG for the big integer A.  Note that this function is
-   currently useless as no flags are allowed. */
+/* Clear FLAG for the big integer A.  */
 void gcry_mpi_clear_flag (gcry_mpi_t a, enum gcry_mpi_flag flag);
 
 /* Return true if the FLAG is set for A. */
@@ -1416,8 +1416,7 @@ int gcry_md_get_algo (gcry_md_hd_t hd);
    ALGO. */
 unsigned int gcry_md_get_algo_dlen (int algo);
 
-/* Return true if the the algorithm ALGO is enabled in the digest
-   object A. */
+/* Return true if the algorithm ALGO is enabled in the digest object A. */
 int gcry_md_is_enabled (gcry_md_hd_t a, int algo);
 
 /* Return true if the digest object A is allocated in "secure" memory. */
@@ -1496,7 +1495,7 @@ struct gcry_cshake_customization
 struct gcry_mac_handle;
 typedef struct gcry_mac_handle *gcry_mac_hd_t;
 
-/* Algorithm IDs for the hash functions we know about. Not all of them
+/* Algorithm IDs for the MAC functions we know about. Not all of them
    are implemented. */
 enum gcry_mac_algos
   {
@@ -1683,7 +1682,9 @@ gpg_error_t gcry_kdf_derive (const void *passphrase, size_t passphraselen,
                              unsigned long iterations,
                              size_t keysize, void *keybuffer);
 
-/* Another API to derive a key from a passphrase.  */
+/* The gcry_kdf_open, gcry_kdf_compute, gcry_kdf_final, and
+ * gcry_kdf_close functions provide a more versatile API to derive a
+ * key from a set of input parameters.  */
 typedef struct gcry_kdf_handle *gcry_kdf_hd_t;
 
 typedef void (*gcry_kdf_job_fn_t) (void *priv);
@@ -1700,6 +1701,8 @@ typedef struct gcry_kdf_thread_ops
   gcry_kdf_wait_all_jobs_fn_t wait_all_jobs;
 } gcry_kdf_thread_ops_t;
 
+/* Take care: the inputs buffers passed to gcry_kdf_open may not be
+ * changed before gcry_kdf_close.  */
 gcry_error_t gcry_kdf_open (gcry_kdf_hd_t *hd, int algo, int subalgo,
                             const unsigned long *param, unsigned int paramlen,
                             const void *passphrase, size_t passphraselen,
@@ -1821,6 +1824,19 @@ enum gcry_kem_algos
 #define GCRY_KEM_DHKEM25519_CIPHER_LEN  GCRY_KEM_DHKEM25519_ENCAPS_LEN
 #define GCRY_KEM_DHKEM25519_SHARED_LEN  32
 
+#define GCRY_KEM_ECC_X448_SECKEY_LEN    56
+#define GCRY_KEM_ECC_X448_PUBKEY_LEN    56
+#define GCRY_KEM_ECC_X448_ENCAPS_LEN    56
+#define GCRY_KEM_ECC_X448_CIPHER_LEN    GCRY_KEM_ECC_X448_ENCAPS_LEN
+/* And shared secret is specific to the protocol.  */
+#define GCRY_KEM_RAW_X448_SHARED_LEN    56
+
+#define GCRY_KEM_DHKEM448_SECKEY_LEN    GCRY_KEM_ECC_X448_SECKEY_LEN
+#define GCRY_KEM_DHKEM448_PUBKEY_LEN    GCRY_KEM_ECC_X448_PUBKEY_LEN
+#define GCRY_KEM_DHKEM448_ENCAPS_LEN    GCRY_KEM_ECC_X448_ENCAPS_LEN
+#define GCRY_KEM_DHKEM448_CIPHER_LEN    GCRY_KEM_DHKEM448_ENCAPS_LEN
+#define GCRY_KEM_DHKEM448_SHARED_LEN    56
+
 #define GCRY_KEM_ECC_BP256_SECKEY_LEN   32
 #define GCRY_KEM_ECC_BP256_PUBKEY_LEN   (1+32+32)
 #define GCRY_KEM_ECC_BP256_ENCAPS_LEN   (1+32+32)
@@ -1839,6 +1855,8 @@ gcry_error_t gcry_kem_genkey (int algo,
                               void *seckey, size_t seckey_len,
                               const void *optional, size_t optional_len);
 
+/* This is function is the same as calling gcry_kem_genkey passing
+ * (NULL,0) for (OPTIONAL,OPTIONAL_LEN).  */
 gcry_error_t gcry_kem_keypair (int algo,
                                void *pubkey, size_t pubkey_len,
                                void *seckey, size_t seckey_len);
