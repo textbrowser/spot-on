@@ -7261,7 +7261,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 
       while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
 	{
-	  auto action = m_ui.shareBuzzMagnet->menu()->actions().first();
+	  auto action = m_ui.shareBuzzMagnet->menu()->actions().constFirst();
 
 	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
 	  action->deleteLater();
@@ -7294,7 +7294,7 @@ void spoton::slotPopulateBuzzFavorites(void)
 
       while(!m_ui.shareBuzzMagnet->menu()->actions().isEmpty())
 	{
-	  auto action = m_ui.shareBuzzMagnet->menu()->actions().first();
+	  auto action = m_ui.shareBuzzMagnet->menu()->actions().constFirst();
 
 	  m_ui.shareBuzzMagnet->menu()->removeAction(action);
 	  action->deleteLater();
