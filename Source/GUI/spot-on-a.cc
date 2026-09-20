@@ -6604,7 +6604,10 @@ void spoton::slotGeneralTimerTimeout(void)
 #elif defined(Q_OS_LINUX)
   gitPath = "/usr/bin/git";
 #elif defined(Q_OS_MACOS)
-  gitPath = "/usr/bin/git";
+  if(QFileInfo("/opt/homebrew/bin/git").isReadable())
+    gitPath = "/opt/homebrew/bin/git";
+  else
+    gitPath = "/usr/bin/git";
 #else
   Q_UNUSED(gitPath);
 #endif
