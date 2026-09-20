@@ -13,7 +13,6 @@ QT		+= concurrent \
                    network \
                    printsupport \
                    sql \
-                   webenginewidgets \
                    widgets
 
 qtHaveModule(bluetooth) {
@@ -22,6 +21,11 @@ QT += bluetooth
 message("Bluetooth enabled!")
 } else {
 warning("Bluetooth disabled!")
+}
+
+qtHaveModule(webenginewidgets) {
+DEFINES += SPOTON_WEBENGINE_ENABLED
+QT      += webenginewidgets
 }
 
 qtHaveModule(websockets) {
@@ -34,8 +38,7 @@ warning("WebSockets disabled!")
 
 DEFINES	+= SPOTON_DATELESS_COMPILATION \
 	   SPOTON_LINKED_WITH_LIBNTRU \
-           SPOTON_LINKED_WITH_LIBPTHREAD \
-           SPOTON_WEBENGINE_ENABLED
+           SPOTON_LINKED_WITH_LIBPTHREAD
 
 exists(/usr/include/NTL) {
 DEFINES += SPOTON_MCELIECE_ENABLED
