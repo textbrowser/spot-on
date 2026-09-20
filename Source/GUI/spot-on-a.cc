@@ -6619,6 +6619,8 @@ void spoton::slotGeneralTimerTimeout(void)
 	    "may not function correctly!</b></html>").arg(gitPath));
       m_optionsUi.git_warning_message->setVisible(true);
     }
+  else
+    m_optionsUi.git_warning_message->setVisible(false);
 #endif
 
   if(m_optionsUi.guiSecureMemoryPool->value() == 0)
