@@ -43,9 +43,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-779</y>
+         <y>-654</y>
          <width>769</width>
-         <height>4980</height>
+         <height>5004</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_25">
@@ -664,6 +664,16 @@
               <string>GIT</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <widget class="QLabel" name="git_warning_message">
+                <property name="text">
+                 <string>GIT Warning Message</string>
+                </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
               <item>
                <widget class="QCheckBox" name="share_git">
                 <property name="text">

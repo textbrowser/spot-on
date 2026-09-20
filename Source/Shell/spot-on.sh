@@ -11,6 +11,7 @@ then
     then
 	export DYLD_LIBRARY_PATH=../libNTRU
 
+	echo "Launching a local Spot-On."
 	./Spot-On.app/Contents/MacOS/Spot-On "$@"
 	exit $?
     fi
@@ -37,6 +38,7 @@ then
 
     export QT_X11_NO_MITSHM=1
 
+    echo "Launching an official Spot-On."
     cd /opt/spot-on && ./Spot-On "$@"
     exit $?
 fi

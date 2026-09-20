@@ -6596,6 +6596,28 @@ void spoton::slotGeneralTimerTimeout(void)
 	     arg(m_settings.value("gui/iconSet", "nouve").toString().
 		 toLower())));
 
+#ifndef Q_OS_WINDOWS
+  QString gitPath("");
+
+#if defined(Q_OS_FREEBSD) || defined(Q_OS_OPENBSD)
+  gitPath = "/usr/local/bin/git";
+#elif defined(Q_OS_LINUX)
+  gitPath = "/usr/bin/git";
+#elif defined(Q_OS_MACOS)
+  gitPath = "/usr/bin/git";
+#else
+  Q_UNUSED(gitPath);
+#endif
+
+  if(!QFileInfo(gitPath).isReadable() && !gitPath.isEmpty())
+    {
+      m_optionsUi.git_warning_message->setText
+	(tr("<html><b>The program %1 is not readable. Prison Blues "
+	    "may not function correctly!</b></html>").arg(gitPath));
+      m_optionsUi.git_warning_message->setVisible(true);
+    }
+#endif
+
   if(m_optionsUi.guiSecureMemoryPool->value() == 0)
     m_optionsUi.guiSecureMemoryPool->setStyleSheet
       ("QSpinBox {background-color: rgb(240, 128, 128);}"); // Light coral!
