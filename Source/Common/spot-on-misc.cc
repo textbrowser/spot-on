@@ -45,6 +45,12 @@ extern "C"
 #include <sys/socket.h>
 #include <unistd.h>
 }
+#elif defined(Q_OS_NETBSD)
+extern "C"
+{
+#include <sys/socket.h>
+#include <unistd.h>
+}
 #elif defined(Q_OS_OPENBSD)
 extern "C"
 {

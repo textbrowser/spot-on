@@ -431,6 +431,9 @@ spoton_rosetta::spoton_rosetta(void):QMainWindow()
 #elif defined(Q_OS_MACOS)
   ui.gpg->setText
     (settings.value("gui/rosettaGPG", "/opt/homebrew/bin/gpg").toString());
+#elif defined(Q_OS_NETBSD)
+  ui.gpg->setText
+    (settings.value("gui/rosettaGPG", "/usr/local/bin/gpg").toString());
 #elif defined(Q_OS_OPENBSD)
   ui.gpg->setText
     (settings.value("gui/rosettaGPG", "/usr/local/bin/gpg").toString());
@@ -3555,6 +3558,9 @@ void spoton_rosetta::slotNewGPGKeys(void)
 #elif defined(Q_OS_MACOS)
   m_gpgNewKeysUi.gpg->setText
     (QSettings().value("gui/gpgPath", "/opt/homebrew/bin/gpg").toString());
+#elif defined(Q_OS_NETBSD)
+  m_gpgNewKeysUi.gpg->setText
+    (QSettings().value("gui/gpgPath", "/usr/local/bin/gpg").toString());
 #elif defined(Q_OS_OPENBSD)
   m_gpgNewKeysUi.gpg->setText
     (QSettings().value("gui/gpgPath", "/usr/local/bin/gpg").toString());

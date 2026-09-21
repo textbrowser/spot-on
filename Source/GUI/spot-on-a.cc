@@ -2765,6 +2765,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_optionsUi.openssl->setText
     (m_settings.value("gui/openssl", "/opt/homebrew/bin/openssl").
      toString().trimmed());
+#elif defined(Q_OS_NETBSD)
+  m_optionsUi.openssl->setText
+    (m_settings.value("gui/openssl", "/usr/local/bin/openssl").
+     toString().trimmed());
 #elif defined(Q_OS_OPENBSD)
   m_optionsUi.openssl->setText
     (m_settings.value("gui/openssl", "/usr/local/bin/openssl").
@@ -6599,15 +6603,15 @@ void spoton::slotGeneralTimerTimeout(void)
 #ifndef Q_OS_WINDOWS
   QString gitPath("");
 
-#if defined(Q_OS_FREEBSD) || defined(Q_OS_OPENBSD)
+#if defined(Q_OS_FREEBSD) || defined(Q_OS_NETBSD) || defined(Q_OS_OPENBSD)
   gitPath = "/usr/local/bin/git";
 #elif defined(Q_OS_LINUX)
   gitPath = "/usr/bin/git";
 #elif defined(Q_OS_MACOS)
-  if(QFileInfo("/opt/homebrew/bin/git").isReadable())
+  if(QSysInfo::currentCpuArchitecture().contains("arm", Qt::CaseInsensitive))
     gitPath = "/opt/homebrew/bin/git";
   else
-    gitPath = "/usr/bin/git";
+    gitPath = "/usr/local/bin/git";
 #else
   Q_UNUSED(gitPath);
 #endif
