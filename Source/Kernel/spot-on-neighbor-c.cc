@@ -861,7 +861,9 @@ void spoton_neighbor::process0001a(int length, const QByteArray &data)
 	     hashKeyAlgorithm,
 	     &ok);
 
-	  if(computedHash.isEmpty() || messageCode1.isEmpty() || !ok ||
+	  if(computedHash.isEmpty() ||
+	     messageCode1.isEmpty() ||
+	     !ok ||
 	     !spoton_crypt::memcmp(computedHash, messageCode1))
 	    {
 	      spoton_misc::logError
@@ -942,7 +944,8 @@ void spoton_neighbor::process0001a(int length, const QByteArray &data)
 	      publicKeyHash = spoton_crypt::preferredHash(publicKey);
 
 	      if(ok &&
-		 !publicKeyHash.isEmpty() && !recipientHash.isEmpty() &&
+		 !publicKeyHash.isEmpty() &&
+		 !recipientHash.isEmpty() &&
 		 spoton_crypt::memcmp(publicKeyHash, recipientHash))
 		{
 		  keyInformation2 = s_crypt->publicKeyDecrypt
@@ -1389,7 +1392,8 @@ void spoton_neighbor::process0002a
 	    {
 	      auto const messageCode(list.value(2));
 
-	      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	      if(!computedHash.isEmpty() &&
+		 !messageCode.isEmpty() &&
 		 spoton_crypt::memcmp(computedHash, messageCode))
 		{
 		  spoton_crypt crypt(symmetricKeyAlgorithm,
@@ -1516,7 +1520,8 @@ void spoton_neighbor::process0002b
 	{
 	  auto const messageCode(list.value(1));
 
-	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	  if(!computedHash.isEmpty() &&
+	     !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      spoton_crypt crypt(symmetricKeys.value(1),
@@ -2064,7 +2069,8 @@ void spoton_neighbor::process0040a(int length,
 	{
 	  auto const messageCode(list.value(1));
 
-	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	  if(!computedHash.isEmpty() &&
+	     !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      auto data(list.value(0));
@@ -2145,7 +2151,8 @@ void spoton_neighbor::process0040b(int length,
 	{
 	  auto const messageCode(list.value(1));
 
-	  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+	  if(!computedHash.isEmpty() &&
+	     !messageCode.isEmpty() &&
 	     spoton_crypt::memcmp(computedHash, messageCode))
 	    {
 	      auto data(list.value(0));
@@ -2405,7 +2412,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
 	      if(ok)
 		{
-		  if(!hash.isEmpty() && !newHash.isEmpty() &&
+		  if(!hash.isEmpty() &&
+		     !newHash.isEmpty() &&
 		     spoton_crypt::memcmp(hash, newHash))
 		    {
 		      m_accountAuthenticated.fetchAndStoreOrdered(1);
@@ -2424,7 +2432,8 @@ void spoton_neighbor::process0051(int length, const QByteArray &dataIn)
 
 		      if(ok)
 			{
-			  if(!hash.isEmpty() && !newHash.isEmpty() &&
+			  if(!hash.isEmpty() &&
+			     !newHash.isEmpty() &&
 			     spoton_crypt::memcmp(hash, newHash))
 			    {
 			      m_accountAuthenticated.fetchAndStoreOrdered(1);
@@ -3104,7 +3113,8 @@ void spoton_neighbor::process0100(int length,
 		{
 		  QByteArray messageCode(list.value(1));
 
-		  if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+		  if(!computedHash.isEmpty() &&
+		     !messageCode.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, messageCode))
 		    {
 		      message = crypt.decrypted(message, &ok);
@@ -3737,9 +3747,9 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		  deleteLater();
 		  return;
 		}
-	      else if(!spoton_crypt::
-		      memcmp(m_peerCertificate.toPem(),
-			     m_tcpSocket->peerCertificate().toPem()))
+	      else if(!spoton_crypt::memcmp
+		     (m_peerCertificate.toPem(),
+		      m_tcpSocket->peerCertificate().toPem()))
 		{
 		  emit notification
 		    (QString("The neighbor %1:%2 generated a fatal "
@@ -3787,10 +3797,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		      deleteLater();
 		      return;
 		    }
-		  else if(!spoton_crypt::
-			  memcmp(m_peerCertificate.toPem(),
-				 m_dtls->dtlsConfiguration().
-				 peerCertificate().toPem()))
+		  else if(!spoton_crypt::memcmp
+			 (m_peerCertificate.toPem(),
+			  m_dtls->dtlsConfiguration().
+			  peerCertificate().toPem()))
 		    {
 		      emit notification
 			(QString("The neighbor %1:%2 generated a fatal "
@@ -3841,10 +3851,10 @@ void spoton_neighbor::recordCertificateOrAbort(void)
 		  deleteLater();
 		  return;
 		}
-	      else if(!spoton_crypt::
-		      memcmp(m_peerCertificate.toPem(),
-			     m_webSocket->sslConfiguration().
-			     peerCertificate().toPem()))
+	      else if(!spoton_crypt::memcmp
+		     (m_peerCertificate.toPem(),
+		      m_webSocket->sslConfiguration().
+		      peerCertificate().toPem()))
 		{
 		  emit notification
 		    (QString("The neighbor %1:%2 generated a fatal "

@@ -72,12 +72,12 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 	    {
 	      long int m = 11;
 
-	      if(memcmp(privateKey,
-			"mceliece-private-key-foa-m12t68",
-			offset) == 0 ||
-		 memcmp(privateKey,
-			"mceliece-private-key-fob-m12t68",
-			offset) == 0)
+	      if(::memcmp(privateKey,
+			  "mceliece-private-key-foa-m12t68",
+			  offset) == 0 ||
+		 ::memcmp(privateKey,
+			  "mceliece-private-key-fob-m12t68",
+			  offset) == 0)
 		m = 12;
 
 	      NTL::GF2E::init(NTL::BuildIrred_GF2X(m)); /*
@@ -87,17 +87,17 @@ spoton_mceliece_private_key::spoton_mceliece_private_key
 							** object(s).
 							*/
 
-	      if(memcmp(privateKey,
-			"mceliece-private-key-foa",
-			offset - 7) == 0)
+	      if(::memcmp(privateKey,
+			  "mceliece-private-key-foa",
+			  offset - 7) == 0)
 		m_conversion = Conversions::FOA;
-	      else if(memcmp(privateKey,
-			     "mceliece-private-key-fob",
-			     offset - 7) == 0)
+	      else if(::memcmp(privateKey,
+			       "mceliece-private-key-fob",
+			       offset - 7) == 0)
 		m_conversion = Conversions::FOB;
-	      else if(memcmp(privateKey,
-			     "mceliece-private-key-pca",
-			     offset - 7) == 0)
+	      else if(::memcmp(privateKey,
+			       "mceliece-private-key-pca",
+			       offset - 7) == 0)
 		m_conversion = Conversions::PCA;
 
 	      memset(c, 0, privateKeyLength - offset + 1);

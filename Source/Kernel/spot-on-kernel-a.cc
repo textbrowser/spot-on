@@ -1228,7 +1228,8 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 		     keyedHash(data, postalAddress, hashType, &ok));
 
 		  if(ok)
-		    if(!computedHash.isEmpty() && !hash.isEmpty() &&
+		    if(!computedHash.isEmpty() &&
+		       !hash.isEmpty() &&
 		       spoton_crypt::memcmp(computedHash, hash))
 		      {
 			list << name << cipherType
@@ -1327,7 +1328,8 @@ QList<QByteArray> spoton_kernel::findInstitutionKey(const QByteArray &data,
 
 	      if(ok)
 		if(list.isEmpty())
-		  if(!computedHash.isEmpty() && !hash.isEmpty() &&
+		  if(!computedHash.isEmpty() &&
+		     !hash.isEmpty() &&
 		     spoton_crypt::memcmp(computedHash, hash))
 		    list << name << cipherType << postalAddress << hashType;
 	    }
@@ -2106,7 +2108,8 @@ void spoton_kernel::discoverAdaptiveEchoPair
       if(!ok)
 	continue;
 
-      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+      if(!computedHash.isEmpty() &&
+	 !messageCode.isEmpty() &&
 	 spoton_crypt::memcmp(computedHash, messageCode))
 	{
 	  /*
@@ -4278,8 +4281,8 @@ void spoton_kernel::slotCallParticipantUsingGemini(const QByteArray &keyType,
 			      symmetricKey = spoton_crypt::strongRandomBytes
 				(symmetricKeyLength);
 
-			      if(!spoton_crypt::
-				 memcmp(gemini.first, symmetricKey))
+			      if(!spoton_crypt::memcmp
+				(gemini.first, symmetricKey))
 				{
 				  found = true;
 				  break;

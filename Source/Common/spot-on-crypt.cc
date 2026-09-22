@@ -3657,31 +3657,15 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
   QByteArray a;
   QByteArray b;
   auto const length = qMax(bytes1.length(), bytes2.length());
-  int rc = 0;
+  quint64 rc = 0;
 
   a = bytes1.leftJustified(length, 0);
   b = bytes2.leftJustified(length, 0);
 
-  /*
-  ** x ^ y returns zero if x and y are identical.
-  */
-
   for(int i = 0; i < length; i++)
-    {
-      std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba1
-	(static_cast<unsigned long long int> (a.at(i)));
-      std::bitset<CHAR_BIT * sizeof(unsigned long int)> ba2
-	(static_cast<unsigned long long int> (b.at(i)));
+    rc |= static_cast<quint64> (a[i]) ^ static_cast<quint64> (b[i]);
 
-      for(size_t j = 0; j < ba1.size(); j++)
-	rc |= ba1[j] ^ ba2[j];
-    }
-
-  return rc == 0; /*
-		  ** Return true if bytes1 and bytes2 are identical or
-		  ** if both bytes1 and bytes2 are empty.
-		  ** Perhaps this final comparison can be enhanced.
-		  */
+  return rc == 0;
 }
 
 bool spoton_crypt::passphraseSet(void)

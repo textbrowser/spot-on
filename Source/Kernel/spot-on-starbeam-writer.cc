@@ -144,7 +144,8 @@ bool spoton_starbeam_writer::append
 	 &ok);
 
       if(ok)
-	if(!list.value(1).isEmpty() && !messageCode.isEmpty() &&
+	if(!list.value(1).isEmpty() &&
+	   !messageCode.isEmpty() &&
 	   spoton_crypt::memcmp(list.value(1), messageCode))
 	  {
 	    magnet = m_magnets.at(i);
@@ -291,7 +292,8 @@ void spoton_starbeam_writer::processData(void)
       if(!ok)
 	continue;
 
-      if(!computedHash.isEmpty() && !messageCode.isEmpty() &&
+      if(!computedHash.isEmpty() &&
+	 !messageCode.isEmpty() &&
 	 spoton_crypt::memcmp(computedHash, messageCode))
 	{
 	  bytes = crypt.decrypted(d, &ok);
