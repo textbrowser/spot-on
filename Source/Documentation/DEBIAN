@@ -7,6 +7,9 @@ Preparing Debian File
 > dpkg -S $(objdump -p ./Spot-On* | grep NEEDED | awk '{print $2}') \
   2>/dev/null | awk '{print $1}' | sed s/:amd64://g | sort -u
 
+For Qt 6 and newer, please also add
+libqt6webenginecore6, libqt6webenginewidgets6 to the control file.
+
 Required Packages
 
 > sudo apt install libcurl4-gnutls-dev

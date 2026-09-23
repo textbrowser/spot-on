@@ -16,8 +16,6 @@ Depends: libcurl4-gnutls-dev,
 	 libqt6qml6,
 	 libqt6sql6,
 	 libqt6svg6,
-	 libqt6webenginecore6,
-	 libqt6webenginewidgets6,
 	 libqt6websockets6,
 	 libqt6widgets6,
 	 libssl3

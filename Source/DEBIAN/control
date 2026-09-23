@@ -11,8 +11,6 @@ Depends: libcurl3t64-gnutls,
 	 libqt6network6t64,
 	 libqt6printsupport6t64,
 	 libqt6sql6t64,
-	 libqt6webenginecore6,
-	 libqt6webenginewidgets6,
 	 libqt6widgets6t64,
 	 libssl3t64
 Maintainer: f83043e79dc03a0abfbcbc376879a97d66f2cacb@protonmail.ch

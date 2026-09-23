@@ -23,7 +23,7 @@ message("Bluetooth enabled!")
 warning("Bluetooth disabled!")
 }
 
-qtHaveModule(webenginewidgets) {
+qtHaveModule(webenginewidgets-disabled) {
 DEFINES += SPOTON_WEBENGINE_ENABLED
 QT      += webenginewidgets
 }
