@@ -23,9 +23,15 @@ message("Bluetooth enabled!")
 DEFINES += SPOTON_DATELESS_COMPILATION \
            SPOTON_LINKED_WITH_LIBNTRU \
            SPOTON_LINKED_WITH_LIBPTHREAD \
-           SPOTON_MCELIECE_ENABLED \
            SPOTON_POPTASTIC_SUPPORTED \
            SPOTON_SCTP_ENABLED
+
+exists(/usr/include/NTL) {
+DEFINES += SPOTON_MCELIECE_ENABLED
+message("McEliece enabled!")
+} else {
+warning("McEliece disabled!")
+}
 
 # Unfortunately, the clean target assumes too much knowledge
 # about the internals of libNTRU.
@@ -68,11 +74,15 @@ LIBS	       += -L../../libNTRU \
                   -lcurl \
                   -lgcrypt \
                   -lgpg-error \
-                  -lntl \
                   -lntru \
                   -lpq \
                   -lpthread \
                   -lssl
+
+exists(/usr/include/NTL) {
+LIBS += -lgmp -lntl
+}
+
 MOC_DIR        = Temporary/moc
 OBJECTS_DIR    = Temporary/obj
 PRE_TARGETDEPS = libntru.so
