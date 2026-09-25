@@ -34,6 +34,6 @@ then
     exit 1
 fi
 
-mv Spot-On.d.dmg Spot-On-2026.09.25.d.dmg
+mv Spot-On.d.dmg Spot-On-2026.09.25_Universal.d.dmg
 make distclean 2>/dev/null
 rm -fr ./Spot-On.d
