@@ -19,7 +19,7 @@ DEFINES += SPOTON_BLUETOOTH_ENABLED \
 	   SPOTON_WEBSOCKETS_ENABLED
 
 contains(QMAKE_HOST.arch, x86_64) {
-QMAKE_APPLE_DEVICE_ARCHS       = arm64 x86_64
+# QMAKE_APPLE_DEVICE_ARCHS = arm64 x86_64
 }
 
 # Unfortunately, the clean target assumes too much knowledge
