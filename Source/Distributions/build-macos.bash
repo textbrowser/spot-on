@@ -22,10 +22,18 @@ fi
 
 make -j $(sysctl -n hw.ncpu)
 make install
-codesign --deep --force -s "textbrowser" ./Spot-On.d/Spot-On.app
-codesign --deep --force -s "textbrowser" ./Spot-On.d/Spot-On-Kernel.app
-codesign --deep --force -s "textbrowser" \
-	 ./Spot-On.d/Spot-On-Web-Server-Child.app
+
+declare -a packages=("./Spot-On.d/Spot-On.app"
+		     "./Spot-On.d/Spot-On-Kernel.app"
+		     "./Spot-On.d/Spot-On-Web-Server-Child.app")
+
+for i in "${hosts[@]}"
+do
+    echo "Signing $i."
+    codesign --deep --force -s "textbrowser" "$i"
+done
+
+echo "Generating the DMG."
 make dmg
 
 if [ ! -r Spot-On.d.dmg ]
@@ -34,6 +42,12 @@ then
     exit 1
 fi
 
-mv Spot-On.d.dmg Spot-On-2026.09.25_Universal.d.dmg
+if [ "$(uname -m)" = "arm64" ]
+then
+    mv Spot-On.d.dmg Spot-On-2026.09.25_ARM64.d.dmg
+else
+    mv Spot-On.d.dmg Spot-On-2026.09.25_X86-64.d.dmg
+fi
+
 make distclean 2>/dev/null
 rm -fr ./Spot-On.d
