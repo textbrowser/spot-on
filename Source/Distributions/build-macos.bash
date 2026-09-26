@@ -11,6 +11,11 @@ make distclean 2>/dev/null
 
 qmake="$(echo ~/Qt/6.8.3/macos/bin/qmake)"
 
+if [ ! -x "$qmake" ]
+then
+    qmake="$(echo ~/Qt/6.11.1/macos/bin/qmake)"
+fi
+
 if [ -x "$qmake" ]
 then
     $qmake -o Makefile spot-on.macos.pro
