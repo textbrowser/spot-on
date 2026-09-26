@@ -33,7 +33,7 @@ if [ $? -eq 0 ]
 then
     echo "OK!"
 else
-    echo "Failure on make-install."
+    echo "Failure on make-install. Bye!"
     exit 1
 fi
 
@@ -50,8 +50,7 @@ do
     then
 	echo "OK."
     else
-	echo "Problem!"
-	exit 1
+	echo "Problem! Continuing."
     fi
 done
 
