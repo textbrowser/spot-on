@@ -46,7 +46,7 @@ do
 done
 
 echo "Generating the DMG."
-make dmg
+make dmg 2>/dev/null
 
 if [ ! -r Spot-On.d.dmg ]
 then
