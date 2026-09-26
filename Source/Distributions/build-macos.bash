@@ -26,7 +26,16 @@ else
 fi
 
 make -j $(sysctl -n hw.ncpu)
-make install 2>/dev/null
+/bin/echo -n "Issuing a make install... "
+make install 1>/dev/null 2>/dev/null
+
+if [ $? -eq 0 ]
+then
+    echo "OK!"
+else
+    echo "Failure on make-install."
+    exit 1
+fi
 
 declare -a packages=("./Spot-On.d/Spot-On.app"
 		     "./Spot-On.d/Spot-On-Kernel.app"
@@ -42,6 +51,7 @@ do
 	echo "OK."
     else
 	echo "Problem!"
+	exit 1
     fi
 done
 
