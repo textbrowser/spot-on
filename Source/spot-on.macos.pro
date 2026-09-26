@@ -1,6 +1,5 @@
 cache()
-dmg.commands   = make install && \
-                 hdiutil create Spot-On.d.dmg -srcfolder Spot-On.d
+dmg.commands   = hdiutil create Spot-On.d.dmg -srcfolder Spot-On.d
 purge.commands = rm -f */*~ *~
 
 QMAKE_EXTRA_TARGETS = dmg purge
