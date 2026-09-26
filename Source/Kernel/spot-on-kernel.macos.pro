@@ -52,7 +52,7 @@ QMAKE_CXXFLAGS_RELEASE         += -O3 \
 QMAKE_CXXFLAGS_RELEASE         -= -O2
 QMAKE_DISTCLEAN                += -r Temporary .qmake.cache .qmake.stash
 QMAKE_EXTRA_TARGETS            = libntru purge
-QMAKE_MACOSX_DEPLOYMENT_TARGET = 12.0
+QMAKE_MACOSX_DEPLOYMENT_TARGET = 15.0
 ICON		               =
 
 exists(/opt/homebrew/include) {
