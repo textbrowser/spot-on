@@ -32,7 +32,7 @@ declare -a packages=("./Spot-On.d/Spot-On.app"
 		     "./Spot-On.d/Spot-On-Kernel.app"
 		     "./Spot-On.d/Spot-On-Web-Server-Child.app")
 
-for i in "${hosts[@]}"
+for i in "${packages[@]}"
 do
     /bin/echo -n "Signing $i... "
     codesign --deep --force -s "textbrowser" "$i" 2>/dev/null
