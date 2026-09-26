@@ -26,7 +26,7 @@ else
 fi
 
 make -j $(sysctl -n hw.ncpu)
-make install
+make install 2>/dev/null
 
 declare -a packages=("./Spot-On.d/Spot-On.app"
 		     "./Spot-On.d/Spot-On-Kernel.app"
