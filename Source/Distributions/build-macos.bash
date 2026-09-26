@@ -35,7 +35,7 @@ declare -a packages=("./Spot-On.d/Spot-On.app"
 for i in "${hosts[@]}"
 do
     echo "Signing $i."
-    codesign --deep --force -s "textbrowser" "$i"
+    codesign --deep --force -s "textbrowser" "$i" 2>/dev/null
 done
 
 echo "Generating the DMG."
