@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # Alexis Megas.
 
+# Please execute this script in an Apple terminal because
+# Apple may prompt for a certificate password (codesign).
+
 if [ ! -e spot-on.macos.pro ]
 then
     echo "Please issue $0 from the primary directory."
