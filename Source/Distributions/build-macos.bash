@@ -10,7 +10,7 @@ then
     exit 1
 fi
 
-make distclean 2>/dev/null
+make distclean 1>/dev/null 2>/dev/null
 
 qmake="$(echo ~/Qt/6.8.3/macos/bin/qmake)"
 
@@ -47,7 +47,7 @@ declare -a packages=("./Spot-On.d/Spot-On.app"
 for i in "${packages[@]}"
 do
     /bin/echo -n "Signing $i... "
-    codesign --deep --force -s "textbrowser" "$i" 2>/dev/null
+    codesign --deep --force -s "textbrowser" "$i" 1>/dev/null 2>/dev/null
 
     if [ $? -eq 0 ]
     then
@@ -58,7 +58,7 @@ do
 done
 
 echo "Generating the DMG."
-make dmg 2>/dev/null
+make dmg 1>/dev/null 2>/dev/null
 
 if [ ! -r Spot-On.d.dmg ]
 then
@@ -73,5 +73,5 @@ else
     mv Spot-On.d.dmg Spot-On-2026.09.25_X86-64.d.dmg
 fi
 
-make distclean 2>/dev/null
+make distclean 1>/dev/null 2>/dev/null
 rm -fr ./Spot-On.d
