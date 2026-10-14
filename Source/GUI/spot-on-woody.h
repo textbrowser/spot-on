@@ -43,7 +43,7 @@ class woody_collapse_expand_tool_button: public QToolButton
   {
     m_tree = tree;
 
-    if(m_tree)
+    if(m_tree && m_tree->header())
       {
 	m_tree->header()->setDefaultAlignment(Qt::AlignCenter);
 	m_tree->header()->setMinimumHeight(30);
@@ -53,7 +53,7 @@ class woody_collapse_expand_tool_button: public QToolButton
 
 	auto font(this->font());
 
-	font.setStyleHint(QFont::Monospace);
+	font.setStyleHint(QFont::Courier);
 	setFont(font);
 	setStyleSheet("QToolButton {border: none;}"
 		      "QToolButton::menu-button {border: none;}");
@@ -131,7 +131,7 @@ class woody_collapse_expand_tool_button: public QToolButton
     if(!m_tree)
       return;
 
-    auto expanded = 0;
+    int expanded = 0;
 
     for(int i = 0; i < m_tree->topLevelItemCount(); i++)
       if(m_tree->topLevelItem(i) && m_tree->topLevelItem(i)->childCount() > 0)
