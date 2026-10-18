@@ -861,6 +861,9 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
   m_sb.chat->setVisible(false);
   m_sb.email->setVisible(false);
   m_sb.forward_secrecy_request->setVisible(false);
+  m_sb.pop_poptastic->setToolTip
+    ("<html><head/><body><p>Pop Poptastic messages. "
+     "An active kernel is required.</p></body></html>");
   m_sb.status->setTextFormat(Qt::RichText);
   m_sb.warning->setVisible(false);
   m_notificationsWindow->setWindowTitle
@@ -6593,12 +6596,20 @@ void spoton::slotGeneralTimerTimeout(void)
 	}
       else
 	m_sb.kernelstatus->setIcon(QIcon(":/generic/kernel-warning.png"));
+
+      m_sb.pop_poptastic->setToolTip
+	("<html><head/><body><p>Pop Poptastic messages.</p></body></html>");
     }
   else
-    m_sb.kernelstatus->setIcon
-      (QIcon(QString(":/%1/deactivate.png").
-	     arg(m_settings.value("gui/iconSet", "nouve").toString().
-		 toLower())));
+    {
+      m_sb.kernelstatus->setIcon
+	(QIcon(QString(":/%1/deactivate.png").
+	       arg(m_settings.value("gui/iconSet", "nouve").toString().
+		   toLower())));
+      m_sb.pop_poptastic->setToolTip
+	("<html><head/><body><p>Pop Poptastic messages. "
+	 "An active kernel is required.</p></body></html>");
+    }
 
 #ifndef Q_OS_WINDOWS
   QString gitPath("");
