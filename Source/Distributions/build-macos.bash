@@ -10,14 +10,28 @@ then
     exit 1
 fi
 
+if [ ! -z "${SSH_TTY}" ]
+then
+    echo "SSH session detected. " \
+	 "MacOS codesign password prompt may be invisible."
+fi
+
 make distclean 1>/dev/null 2>/dev/null
 
-qmake="$(echo ~/Qt/6.8.3/macos/bin/qmake)"
+declare -a qmakes=("$HOME/Qt/6.12.0/macos/bin/qmake"
+		   "$HOME/Qt/6.11.1/macos/bin/qmake"
+		   "$HOME/Qt/6.8.3/macos/bin/qmake")
+qmake=""
 
-if [ ! -x "$qmake" ]
-then
-    qmake="$(echo ~/Qt/6.11.1/macos/bin/qmake)"
-fi
+for i in "${qmakes[@]}"
+do
+    qmake="$(echo $i)"
+
+    if [ -x "$qmake" ]
+    then
+	break
+    fi
+done
 
 if [ -x "$qmake" ]
 then
