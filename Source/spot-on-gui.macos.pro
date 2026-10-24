@@ -47,6 +47,7 @@ QMAKE_CXXFLAGS_RELEASE += -O3 \
                           -Wno-c++20-attribute-extensions \
                           -Wno-cast-align \
                           -Wno-deprecated \
+                          -Wno-gnu-include-next \
                           -Wno-unused-parameter \
                           -Woverloaded-virtual \
                           -Wpointer-arith \

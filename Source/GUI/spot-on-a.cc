@@ -39,6 +39,7 @@ extern "C"
 #include <iostream>
 
 #include <QActionGroup>
+#include <QCompleter>
 #ifdef Q_OS_MACOS
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -48,6 +49,7 @@ extern "C"
 #include <QShortcut>
 #include <QSplashScreen>
 #include <QStandardItemModel>
+#include <QStyleFactory>
 #include <QSysInfo>
 #ifdef SPOTON_WEBENGINE_ENABLED
 #include <QWebEngineProfile>
@@ -189,6 +191,14 @@ int spoton_common::POPTASTIC_FORWARD_SECRECY_TIME_DELTA_MAXIMUM =
 int spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM =
   spoton_common::POPTASTIC_GEMINI_TIME_DELTA_MAXIMUM_STATIC;
 spoton_utilities_private spoton_utilities::s_utilitiesPrivate;
+
+static QStringList sort(const QStringList &list)
+{
+  auto sorted(list);
+
+  std::sort(sorted.begin(), sorted.end());
+  return sorted;
+}
 
 static void qt_message_handler(QtMsgType type,
 			       const QMessageLogContext &context,
@@ -3602,6 +3612,12 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 #endif
     }
 
+  m_optionsUi.theme_override->setCompleter
+    (new QCompleter(sort(QStyleFactory::keys()), this));
+  m_optionsUi.theme_override->completer()->setCompletionMode
+    (QCompleter::UnfilteredPopupCompletion);
+  m_optionsUi.theme_override->completer()->setCaseSensitivity
+    (Qt::CaseInsensitive);
   m_optionsUi.theme_override->setText
     (m_settings.value("gui/theme_override").toString().trimmed());
   m_ui.tab->setIconSize(size);
