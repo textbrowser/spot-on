@@ -267,11 +267,7 @@ int main(int argc, char *argv[])
 #if QT_VERSION >= 0x050700
   QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs, true);
 #endif
-#ifdef Q_OS_MACOS
-  QCoreApplication::setAttribute
-    (Qt::AA_DontUseNativeMenuBar,
-     spoton_misc::isEnvironmentSet("QT_STYLE_OVERRIDE"));
-#endif
+  QCoreApplication::setAttribute(Qt::AA_DontUseNativeMenuBar, true);
   QCoreApplication::setOrganizationDomain("spot-on.sf.net");
   QCoreApplication::setOrganizationName("SpotOn");
   QSettings::setDefaultFormat(QSettings::IniFormat);
@@ -3614,10 +3610,10 @@ spoton::spoton(QSplashScreen *splash, const bool launchKernel):QMainWindow()
 
   m_optionsUi.theme_override->setCompleter
     (new QCompleter(sort(QStyleFactory::keys()), this));
-  m_optionsUi.theme_override->completer()->setCompletionMode
-    (QCompleter::UnfilteredPopupCompletion);
   m_optionsUi.theme_override->completer()->setCaseSensitivity
     (Qt::CaseInsensitive);
+  m_optionsUi.theme_override->completer()->setCompletionMode
+    (QCompleter::UnfilteredPopupCompletion);
   m_optionsUi.theme_override->setText
     (m_settings.value("gui/theme_override").toString().trimmed());
   m_ui.tab->setIconSize(size);
