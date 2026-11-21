@@ -816,7 +816,7 @@ class fortunate_q: public QObject
 
   static QByteArray E(const QByteArray &C, const QByteArray &K)
   {
-    aes256 aes(K.constData());
+    aes256 aes(K.toHex().constData());
     auto const string(std::string(C.toHex().constData()));
 
     return QByteArray::fromHex
