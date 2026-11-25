@@ -3938,7 +3938,7 @@ void spoton_crypt::generateCertificate(const int keySize,
   EVP_PKEY *pk = nullptr;
   RSA *rsa = nullptr;
   X509 *x509 = nullptr;
-  X509_NAME *name = nullptr;
+  X509_NAME const *name = nullptr;
   X509_NAME *subject = nullptr;
   X509_NAME_ENTRY *commonNameEntry = nullptr;
   auto addressString(address.toString().trimmed());
