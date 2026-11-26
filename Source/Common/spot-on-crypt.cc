@@ -3657,7 +3657,7 @@ bool spoton_crypt::memcmp(const QByteArray &bytes1, const QByteArray &bytes2)
   QByteArray a;
   QByteArray b;
   auto const length = qMax(bytes1.length(), bytes2.length());
-  auto rc = static_cast<quint64> (a.length() ^ b.length());
+  auto rc = static_cast<quint64> (bytes1.length() ^ bytes2.length());
 
   a = bytes1.leftJustified(length, 0);
   b = bytes2.leftJustified(length, 0);
